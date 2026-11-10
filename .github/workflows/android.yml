@@ -126,7 +126,9 @@ jobs:
 
       # Android 14 as the Pixel 3a the suite is walked on stands, its animations
       # left on: the host reads the system's animator scale as the user's wish
-      # for less motion, and the verdicts are written with them on.
+      # for less motion, and the verdicts are written with them on. The system
+      # shows no other application's error dialog: one holding the window's
+      # focus keeps the clipboard from the tests' window.
       - name: Android host tests, every verdict held
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -136,4 +138,6 @@ jobs:
           profile: pixel_3a
           disable-animations: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
-          script: STATEUI_TEST_APK="${{ runner.temp }}/android-tests/StateUIAndroidTests.apk" .scripts/Android/test-android.sh
+          script: |
+            "$ANDROID_HOME/platform-tools/adb" shell settings put global hide_error_dialogs 1
+            STATEUI_TEST_APK="${{ runner.temp }}/android-tests/StateUIAndroidTests.apk" .scripts/Android/test-android.sh

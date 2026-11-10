@@ -7,9 +7,10 @@
 /// past the range held at its end, and a time added up from midnight around the day.
 /// Design: docs/design/host/runtime.md#a-day-and-a-time
 @_spi(Host) public enum CalendarArithmetic {
-    /// Whether `day` stands in the Gregorian calendar.
+    /// Whether `day` stands in the Gregorian calendar every toolkit holds: years 1 to 9999.
     public static func exists(_ day: CalendarDate) -> Bool {
-        (1...12).contains(day.month) && (1...days(inMonth: day.month, of: day.year)).contains(day.day)
+        (1...9999).contains(day.year) && (1...12).contains(day.month)
+            && (1...days(inMonth: day.month, of: day.year)).contains(day.day)
     }
 
     /// The range between `earliest` and `latest`, the earlier first whichever the tree gave first; an end not in

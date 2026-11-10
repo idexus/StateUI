@@ -477,7 +477,8 @@ element stops handling takes its id with it.
 The event map is sent when the set of handled events changed. An empty map is
 sent for a continuing element whose last handler went, because there it means
 "clear what you had"; for a new element or a resync an empty set is nothing to
-say.
+say, as a host reads a map a complete message leaves out as none
+([A complete message](../host/patches.md#a-complete-message)).
 
 `addHandler` adds a handler beside any the event already has, never instead of
 it: what a two-way binding leaves behind is a handler, and a modifier that

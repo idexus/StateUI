@@ -34,9 +34,6 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     /** The page's title, shown while no view stands in for it; null for none. */
     private String title;
 
-    /** The line under the title, shown with it; null for none. */
-    private String subtitle;
-
     /** The color the bar's words and its actions' pictures stand in; 0 for Android's own. */
     private int foreground;
     private View titleView;
@@ -85,16 +82,14 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     }
 
     /**
-     * The title, the line under it - null for none - and the color of what stands on the bar; 0 leaves Android's
-     * own. The host paints the bar's background as a view's.
+     * The title and the color of what stands on the bar; 0 leaves Android's own. The host paints the bar's
+     * background as a view's.
      */
-    void show(String title, String subtitle, int foreground) {
+    void show(String title, int foreground) {
         this.title = title;
-        this.subtitle = subtitle;
         this.foreground = foreground;
         if (foreground != 0) {
             setTitleTextColor(foreground);
-            setSubtitleTextColor(foreground);
             Drawable overflow = getOverflowIcon();
             if (overflow != null) overflow.mutate().setTint(foreground);
         }
@@ -140,7 +135,6 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     private void standTitle() {
         boolean row = afterNavigation != null;
         setTitle(row || titleView != null ? null : title);
-        setSubtitle(row || titleView != null ? null : subtitle);
         if (titleRow != null) {
             titleRow.removeAllViews();
             removeView(titleRow);
@@ -167,13 +161,9 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
                 Gravity.START | Gravity.CENTER_VERTICAL));
     }
 
-    /** The title and the line under it, as the toolbar writes its own: in the appearances its style names. */
+    /** The title, as the toolbar writes its own: in the appearance its style names. */
     private View titleWords() {
-        LinearLayout words = new LinearLayout(getContext());
-        words.setOrientation(LinearLayout.VERTICAL);
-        words.addView(line(title, android.R.attr.titleTextAppearance));
-        if (subtitle != null) words.addView(line(subtitle, android.R.attr.subtitleTextAppearance));
-        return words;
+        return line(title, android.R.attr.titleTextAppearance);
     }
 
     private TextView line(String words, int appearance) {

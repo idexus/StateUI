@@ -7,10 +7,17 @@
 /// host: the range's ends in order, a step that moves, the share of work done, and how a stepped number is written.
 /// Design: docs/design/host/runtime.md#a-value-in-a-range
 @_spi(Host) public enum ValueArithmetic {
-    /// The range between `minimum` and `maximum`, the lower end first, whichever the tree gave first.
+    /// The range between `minimum` and `maximum`, the lower end first, whichever the tree gave first - each end within
+    /// half the reach of a 32-bit float, so the span is a number to every toolkit.
+    /// Design: docs/design/host/runtime.md#a-value-in-a-range
     public static func range(_ minimum: Double, _ maximum: Double) -> (lower: Double, upper: Double) {
-        (Swift.min(minimum, maximum), Swift.max(minimum, maximum))
+        let held = { (end: Double) in Swift.min(Swift.max(end, -reach), reach) }
+        let (minimum, maximum) = (held(minimum), held(maximum))
+        return (Swift.min(minimum, maximum), Swift.max(minimum, maximum))
     }
+
+    /// The farthest a range's end stands from nought.
+    private static let reach = Double(Float.greatestFiniteMagnitude) / 2
 
     /// A step that moves: `step` where it is a positive number, else - none given too - 1.
     public static func step(_ step: Double?) -> Double {

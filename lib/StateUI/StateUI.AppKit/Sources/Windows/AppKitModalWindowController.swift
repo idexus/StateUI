@@ -63,7 +63,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
 
         content.visiblePage = element.visiblePage
         content.showBottomBar(of: element.visiblePage)
-        content.set(page: node.presentablePageView, overlays: [])
+        content.set(page: node.presentablePageView, overlays: stateUIOwner?.overlays(ofSheet: element) ?? [])
         let chrome = WindowChrome(window: element, arrangement: element)
         window.title = chrome.title ?? node.core.applicationName
         showBar(chrome, in: window)
@@ -134,7 +134,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
             },
             leadingActions: chrome.actions.start.map { $0.map(AppKitWindowController.action) },
             actions: chrome.actions.end.map { $0.map(AppKitWindowController.action) },
-            overflow: chrome.actions.overflow.map(AppKitWindowController.action),
+            overflow: chrome.actions.overflowSections.map { $0.map(AppKitWindowController.action) },
             close: element.offersClose
                 ? AppKitToolbarAction(
                     identifier: AppKitWindowToolbar.close, title: words.close,

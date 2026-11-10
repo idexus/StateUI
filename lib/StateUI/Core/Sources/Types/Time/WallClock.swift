@@ -50,12 +50,14 @@ public struct WallClock {
     /// The host's local date and time of day: year, month, day, hour, minute, second, millisecond.
     private func local() async throws -> [Int] {
         let numbers = try await callAct(ApplicationContract.currentTime)
-        guard numbers.count == 7 else {
+        // Each the nearest whole number: one that is none - not a number, endless - is an answer unread.
+        let whole = numbers.compactMap(Int.init(nearest:))
+        guard numbers.count == 7, whole.count == 7 else {
             throw StateUIError.unreadableAnswer(
-                act: ApplicationContract.currentTime.token.name, answered: "\(numbers.count) numbers",
-                declared: "seven: a date and a time of day")
+                act: ApplicationContract.currentTime.token.name, answered: "\(numbers)",
+                declared: "seven whole numbers: a date and a time of day")
         }
-        return numbers.map { Int($0) }
+        return whole
     }
 }
 

@@ -98,11 +98,14 @@ final class WebTextInputView: WebDOMView, WebWordsView {
     /// The most characters the field takes, held as the user types: the browser's own bound counts UTF-16 units.
     private var maximumLength: Int?
 
-    /// The user changed the words: held within `maximumLength` - whole while an input method is `composing` them
-    /// (`InputWords.held`) - then handed on where they differ from what the field said.
+    /// The case the field holds what is typed in; nil for as it is typed.
+    var textCase: TextCase?
+
+    /// The user changed the words: held in the field's case within `maximumLength` - as typed while an input method
+    /// is `composing` them (`InputWords.held`) - then handed on where they differ from what the field said.
     private func typed(composing: Bool) {
         var words = WebRelay.value(of: node)
-        if let held = InputWords.held(words, in: nil, toBound: maximumLength, composing: composing) {
+        if let held = InputWords.held(words, in: textCase, toBound: maximumLength, composing: composing) {
             words = held
             WebRelay.setValue(node, held)
         }

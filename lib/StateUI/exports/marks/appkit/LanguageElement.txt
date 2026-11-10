@@ -1,0 +1,39 @@
+# revision 1.1
+Button.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Canvas.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Capsule.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+CheckBox.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+ColorPicker.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+DatePicker.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Ellipse.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Fill.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Grid.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+HStack.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Image.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+ItemsView.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Line.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Link.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Map.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+MotionLayout.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Path.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Picker.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Polygon.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Polyline.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+ProgressBar.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Rectangle.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+ScrollView.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+SearchField.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Separator.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Slider.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Space.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Spinner.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Stepper.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Switch.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Text.language: ☑️ A text's words carry it for VoiceOver; AppKit gives no other view a language of its own.
+TextEditor.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+TextField.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+TimePicker.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+VStack.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+WebView.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.
+Window.language: ☑️ A text's words carry it for VoiceOver; AppKit gives no other view a language of its own.
+ZStack.language: – AppKit gives a view no language of its own: VoiceOver reads it in the system's.

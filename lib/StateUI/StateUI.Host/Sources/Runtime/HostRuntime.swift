@@ -293,7 +293,7 @@
         case .dismissSheets(let pages):
             // One render for them all: none between may ask again for a sheet already gone.
             performUserTransaction {
-                for sheet in pages.compactMap(\.parent) where sheet.type == .sheet {
+                for sheet in pages.compactMap({ $0.enclosing(type: .sheet) }) {
                     sheet.reportUserChange(.isPresented, .isPresentedChanged, .bool(false), in: self)
                 }
             }

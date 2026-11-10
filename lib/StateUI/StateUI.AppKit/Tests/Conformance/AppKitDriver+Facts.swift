@@ -145,12 +145,6 @@ extension AppKitDriver {
         return Self.ground(of: window)
     }
 
-    /// The line under the title of the page `element`, naming its window: the window's subtitle; nil for none.
-    func subtitleHolds(_ element: MountedElement) throws -> HostValue? {
-        let words = try controller(of: element).window?.subtitle ?? ""
-        return words.isEmpty ? nil : words.propValue
-    }
-
     /// The color the bar's words of the window `element` stands in are drawn in: its painted title's, which a band
     /// painted in a bar color shows; nil on the system's material, where the system draws the title.
     func barWordsColor(_ element: MountedElement) throws -> HostValue? {
@@ -272,8 +266,17 @@ extension AppKitDriver {
         else { throw DriverCannot("read what reaches \(element.type.name)") }
         content.layoutSubtreeIfNeeded()
         let local = NSPoint(x: point.x, y: view.isFlipped ? point.y : view.bounds.height - point.y)
-        guard let hit = content.hitTest(frame.convert(view.convert(local, to: nil), from: nil)) else { return false }
+        let inWindow = view.convert(local, to: nil)
+        // A window standing over the element's - a sheet on it, a child window - takes a press where it covers it.
+        let onScreen = window.convertPoint(toScreen: inWindow)
+        if Self.windows(over: window).contains(where: { $0.isVisible && $0.frame.contains(onScreen) }) { return false }
+        guard let hit = content.hitTest(frame.convert(inWindow, from: nil)) else { return false }
         return hit === view || hit.isDescendant(of: view)
+    }
+
+    /// The windows standing over `window`: its sheets, its child windows, and those over them.
+    private static func windows(over window: NSWindow) -> [NSWindow] {
+        (window.sheets + (window.childWindows ?? [])).flatMap { [$0] + windows(over: $0) }
     }
 
     /// A heading is what assistive technology meets with AppKit's heading role.

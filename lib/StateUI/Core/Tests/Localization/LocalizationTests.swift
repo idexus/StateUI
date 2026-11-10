@@ -228,6 +228,37 @@ final class LocalizationTests: XCTestCase {
         XCTAssertEqual(patch.child(.auto(1))?.child(.auto(2))?.props["text"], .string("Save"))
     }
 
+    // MARK: - The language a branch is written in
+
+    /// The element a localization is given on - a composed view's root - says the language in use, and says it again
+    /// as it changes: that element is described again, the provider rebuilding nothing.
+    func testTheElementALocalizationIsGivenOnSaysItsLanguage() {
+        let renders = Renders()
+        let owner = Builds(), reader = Builds()
+        let localization = Localization(TestCatalog.self)
+        let first = renders.render(stack([Provider(builds: owner, reader: reader, localization: localization).node], id: "root"))
+        XCTAssertEqual(first.child(.auto(1))?.child(.auto(2))?.props["language"], .name("en"))
+
+        localization.language = .polish
+        let patch = renders.revisit(changed: changed)
+
+        XCTAssertEqual(owner.count, 1, "the provider reads nothing of it")
+        XCTAssertEqual(patch.child(.auto(1))?.child(.auto(2))?.props["language"], .name("pl"))
+    }
+
+    /// A document with a localization of its own says its own language under the interface's.
+    func testADocumentSaysItsOwnLanguage() {
+        let renders = Renders()
+        let view = InterfaceAndDocument(
+            interfaceReader: Builds(), documentReader: Builds(), interface: Localization(TestCatalog.self),
+            document: Localization(TestCatalog.self, language: .polish))
+        let first = renders.render(stack([view.node], id: "root"))
+
+        XCTAssertEqual(first.child(.auto(1))?.props["language"], .name("en"))
+        XCTAssertNil(first.child(.auto(1))?.child(.auto(2))?.props["language"], "the interface's, held from above")
+        XCTAssertEqual(first.child(.auto(1))?.child(.auto(3))?.props["language"], .name("pl"))
+    }
+
     // MARK: - A fragment in another language
 
     func testSpeakingIsOneObjectPerLanguage() {

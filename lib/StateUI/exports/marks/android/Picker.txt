@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 8.1
 Picker: ✅
 Picker.options: ✓ read options of Picker: the rows the relay keeps, not the spinner's
 Picker.presentation: ☑️ Android has no segmented control: `.segmented` is a radio group in a row.

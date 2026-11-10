@@ -33,7 +33,7 @@ final class WinUISheetView: WinUIView {
     /// the standard size otherwise.
     func show(
         title: String, page: WinUIView?, back: (() -> Void)?, leading: [[WinUIToolbarAction]] = [],
-        trailing: [[WinUIToolbarAction]] = [], overflow: [WinUIToolbarAction] = [], close: (() -> Void)?,
+        trailing: [[WinUIToolbarAction]] = [], overflow: [[WinUIToolbarAction]] = [], close: (() -> Void)?,
         material: HostMaterial = HostMaterial(nil), foreground: HostValue? = nil, words: ChromeWords, fits: Bool
     ) {
         self.back = back
@@ -68,8 +68,28 @@ final class WinUISheetView: WinUIView {
         stateui_winui_sheet_set_ground(handle, wanted.kind, wanted.argb, wanted.opacity, wanted.tintOpacity)
     }
 
+    /// What the sheet lays over its page.
+    private(set) var overlays: [WinUIView] = []
+
+    /// Lays `views` over the page, on the card, the first lowest - a click beside what they hold goes on to the page;
+    /// none takes the layer away.
+    /// Design: docs/design/platforms/winui/pages.md#the-windows-overlays
+    func showOverlays(_ views: [WinUIView]) {
+        guard views.map(ObjectIdentifier.init) != overlays.map(ObjectIdentifier.init) else { return }
+        overlays = views
+        let handles: [StateUIObjectRef?] = views.map(\.handle)
+        stateui_winui_sheet_set_overlays(handle, handles, Int32(handles.count))
+    }
+
     /// The actions on the head as they were last drawn, in reading order, those behind "more" last.
     var drawn: [WinUIToolbarAction] { actions.drawn }
+
+    /// Lets go of the page it shows and what it lays over it: the page may stand on a sheet of its own before this one
+    /// goes, and an element stands in one parent.
+    func letGoOfItsPage() {
+        stateui_winui_sheet_let_go(handle)
+        showOverlays([])
+    }
 
     /// The user pressed the way back (-1), the close button (-2), or an action by its place.
     override func chose(_ index: Int) {

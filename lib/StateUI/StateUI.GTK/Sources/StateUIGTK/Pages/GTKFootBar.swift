@@ -54,7 +54,7 @@ final class GTKFootBar {
             for (button, action) in zip(buttons, (next.leading + next.trailing).joined().filter { !$0.isLabel }) {
                 button.onClicked = action.perform
             }
-            for (button, action) in zip(overflowButtons, next.overflow) { button.onClicked = closing(action) }
+            for (button, action) in zip(overflowButtons, next.overflow.joined()) { button.onClicked = closing(action) }
             return
         }
         for edge in [start, end] {
@@ -79,14 +79,21 @@ final class GTKFootBar {
             }
         }
         while let row = gtk_widget_get_first_child(moreList) { gtk_box_remove(moreList.of(GtkBox.self), row) }
-        overflowButtons = next.overflow.map { action in
-            let button = GTKButtonView.action(action, inMenu: true)
-            button.onClicked = closing(action)
-            gtk_box_append(moreList.of(GtkBox.self), button.widget)
-            return button
+        // Each group a section of the menu, a line between one and the next.
+        overflowButtons = next.overflow.enumerated().flatMap { index, group in
+            if index > 0 { gtk_box_append(moreList.of(GtkBox.self), gtk_separator_new(GTK_ORIENTATION_HORIZONTAL)) }
+            return group.map { action in
+                let button = GTKButtonView.action(action, inMenu: true)
+                button.onClicked = closing(action)
+                gtk_box_append(moreList.of(GtkBox.self), button.widget)
+                return button
+            }
         }
         if !next.overflow.isEmpty { gtk_box_append(end.of(GtkBox.self), more) }
     }
+
+    /// The rows of the More menu: its buttons, and the lines between its sections.
+    var moreListForTesting: GTKWidget { moreList }
 
     /// `action`, closing the More menu first.
     private func closing(_ action: GTKToolbarAction) -> () -> Void {

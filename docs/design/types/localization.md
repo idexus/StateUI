@@ -112,6 +112,20 @@ None matching, the catalog's `defaultLanguage` speaks. A user preferring
 `de-CH`, `pl-PL`, `en-US` of a catalog in English and Polish gets Polish; one
 with `sr-Latn-RS` gets `sr-Latn`, not the Cyrillic variant.
 
+## The language a branch is written in
+
+A `Localization` given with `.environment(_:)` - on a view, a window or a
+scene - says the language it speaks on the element it is given on
+(`LanguageElementContract.language`), and everything under it holds that
+language unless a nearer localization says another: a document in Polish
+inside an English interface is read in Polish by a screen reader and set by
+Polish rules. The element reads the language as it is described, not the body
+that gives the localization: the user choosing another language describes
+that element again and never its provider, whose body reads nothing of the
+localization unless it reads a part. A composed view's modifiers land on its
+body's root with what they read. Where no localization stands, no language is
+said, and the platform's own stands.
+
 ## Messages
 
 `Message<Arguments>` is a field like any other: each language says the whole

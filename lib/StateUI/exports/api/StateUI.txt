@@ -437,6 +437,9 @@ swift.conformance KeyboardElement: StateUI.Views
 swift.conformance KeyboardElementContract: StateUI.Tier
 swift.conformance KeyboardElementContract: StateUI.WornContract
 swift.conformance KeyboardElementContract: Swift.Sendable
+swift.conformance LanguageElementContract: StateUI.Tier
+swift.conformance LanguageElementContract: StateUI.WornContract
+swift.conformance LanguageElementContract: Swift.Sendable
 swift.conformance Layout: StateUI.View
 swift.conformance Layout: StateUI.Views
 swift.conformance LayoutBody: Swift.Equatable
@@ -1090,6 +1093,7 @@ swift.enum ItemDragStart: enum ItemDragStart
 swift.enum ItemsLayout: enum ItemsLayout
 swift.enum ItemsViewContract: enum ItemsViewContract
 swift.enum KeyboardElementContract: enum KeyboardElementContract
+swift.enum LanguageElementContract: enum LanguageElementContract
 swift.enum LayoutContract: enum LayoutContract
 swift.enum LayoutDirection: enum LayoutDirection
 swift.enum LineBreak: enum LineBreak
@@ -1854,6 +1858,8 @@ swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ va
 swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method @SwiftNever.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method @SwiftNever.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method @SwiftNever.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method @SwiftNever.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -1877,10 +1883,6 @@ swift.method @SwiftNever.showsNavigationBar(_:): @MainActor func showsNavigation
 swift.method @SwiftNever.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method @SwiftNever.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method @SwiftNever.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method @SwiftNever.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method @SwiftNever.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method @SwiftNever.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method @SwiftNever.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method @SwiftNever.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method @SwiftNever.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -2042,6 +2044,8 @@ swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method AnyView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method AnyView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method AnyView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method AnyView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -2065,10 +2069,6 @@ swift.method AnyView.showsNavigationBar(_:): @MainActor func showsNavigationBar(
 swift.method AnyView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method AnyView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method AnyView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method AnyView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method AnyView.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method AnyView.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method AnyView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method AnyView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method AnyView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -2289,6 +2289,8 @@ swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Button.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Button.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Button.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Button.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -2318,13 +2320,9 @@ swift.method Button.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<
 swift.method Button.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Button.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Button.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Button.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Button.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method Button.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method Button.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method Button.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
-swift.method Button.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Button.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Button.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Button.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Button.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -2488,6 +2486,8 @@ swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Canvas.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Canvas.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Canvas.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Canvas.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -2512,10 +2512,6 @@ swift.method Canvas.showsNavigationBar(_:): @MainActor func showsNavigationBar(_
 swift.method Canvas.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Canvas.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Canvas.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Canvas.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Canvas.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Canvas.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Canvas.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Canvas.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Canvas.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -2684,6 +2680,8 @@ swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Capsule.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Capsule.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Capsule.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Capsule.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -2709,10 +2707,6 @@ swift.method Capsule.showsTitle(_:): @MainActor func showsTitle(_ state: Binding
 swift.method Capsule.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Capsule.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Capsule.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Capsule.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Capsule.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Capsule.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Capsule.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Capsule.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Capsule.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Capsule.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -2877,6 +2871,8 @@ swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ value
 swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method CheckBox.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method CheckBox.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method CheckBox.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method CheckBox.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -2901,13 +2897,9 @@ swift.method CheckBox.showsNavigationBar(_:): @MainActor func showsNavigationBar
 swift.method CheckBox.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method CheckBox.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method CheckBox.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method CheckBox.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method CheckBox.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method CheckBox.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method CheckBox.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
-swift.method CheckBox.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method CheckBox.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method CheckBox.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method CheckBox.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method CheckBox.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -3082,6 +3074,8 @@ swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ va
 swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ColorPicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method ColorPicker.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method ColorPicker.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method ColorPicker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -3106,10 +3100,6 @@ swift.method ColorPicker.showsNavigationBar(_:): @MainActor func showsNavigation
 swift.method ColorPicker.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method ColorPicker.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method ColorPicker.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method ColorPicker.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method ColorPicker.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method ColorPicker.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method ColorPicker.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ColorPicker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ColorPicker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -3297,6 +3287,8 @@ swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ val
 swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method DatePicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method DatePicker.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method DatePicker.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method DatePicker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -3321,12 +3313,8 @@ swift.method DatePicker.showsNavigationBar(_:): @MainActor func showsNavigationB
 swift.method DatePicker.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method DatePicker.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method DatePicker.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method DatePicker.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method DatePicker.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method DatePicker.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
-swift.method DatePicker.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method DatePicker.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method DatePicker.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method DatePicker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method DatePicker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -3484,6 +3472,8 @@ swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_
 swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method DebugInspector.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method DebugInspector.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspector.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method DebugInspector.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -3507,10 +3497,6 @@ swift.method DebugInspector.showsNavigationBar(_:): @MainActor func showsNavigat
 swift.method DebugInspector.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method DebugInspector.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method DebugInspector.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method DebugInspector.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method DebugInspector.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method DebugInspector.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method DebugInspector.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method DebugInspector.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method DebugInspector.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -3663,6 +3649,8 @@ swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackgr
 swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method DebugInspectorButton.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method DebugInspectorButton.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspectorButton.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method DebugInspectorButton.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -3686,10 +3674,6 @@ swift.method DebugInspectorButton.showsNavigationBar(_:): @MainActor func showsN
 swift.method DebugInspectorButton.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method DebugInspectorButton.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspectorButton.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method DebugInspectorButton.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method DebugInspectorButton.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method DebugInspectorButton.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method DebugInspectorButton.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method DebugInspectorButton.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method DebugInspectorButton.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method DebugInspectorButton.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -3872,6 +3856,8 @@ swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Either.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Either.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Either.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Either.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -3903,10 +3889,6 @@ swift.method Either.showsNavigationBar(_:): @MainActor func showsNavigationBar(_
 swift.method Either.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method Either.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Either.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method Either.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Either.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Either.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Either.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Either.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Either.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Either.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -4080,6 +4062,8 @@ swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Ellipse.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Ellipse.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Ellipse.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Ellipse.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -4105,10 +4089,6 @@ swift.method Ellipse.showsTitle(_:): @MainActor func showsTitle(_ state: Binding
 swift.method Ellipse.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Ellipse.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Ellipse.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Ellipse.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Ellipse.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Ellipse.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Ellipse.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Ellipse.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Ellipse.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Ellipse.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -4267,6 +4247,8 @@ swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ value: Br
 swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Fill.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Fill.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Fill.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Fill.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -4293,10 +4275,6 @@ swift.method Fill.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bo
 swift.method Fill.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Fill.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Fill.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Fill.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Fill.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Fill.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Fill.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Fill.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Fill.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Fill.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -4480,6 +4458,8 @@ swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ va
 swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method GalleryView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method GalleryView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method GalleryView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method GalleryView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -4505,11 +4485,7 @@ swift.method GalleryView.showsNavigationBar(_:): @MainActor func showsNavigation
 swift.method GalleryView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method GalleryView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method GalleryView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method GalleryView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method GalleryView.throwMotion(_:): @MainActor func throwMotion(_ motion: Motion) -> GalleryView<Items, ID>
-swift.method GalleryView.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method GalleryView.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method GalleryView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method GalleryView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method GalleryView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -4662,6 +4638,8 @@ swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_
 swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method GeometryReader.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method GeometryReader.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method GeometryReader.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method GeometryReader.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -4685,10 +4663,6 @@ swift.method GeometryReader.showsNavigationBar(_:): @MainActor func showsNavigat
 swift.method GeometryReader.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method GeometryReader.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method GeometryReader.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method GeometryReader.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method GeometryReader.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method GeometryReader.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method GeometryReader.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method GeometryReader.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method GeometryReader.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -4858,6 +4832,8 @@ swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ value: Br
 swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Grid.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Grid.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Grid.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Grid.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -4886,10 +4862,6 @@ swift.method Grid.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bo
 swift.method Grid.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Grid.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Grid.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Grid.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Grid.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Grid.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Grid.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Grid.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Grid.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Grid.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -5048,6 +5020,8 @@ swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ value: B
 swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Group.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Group.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Group.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Group.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -5071,10 +5045,6 @@ swift.method Group.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ 
 swift.method Group.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method Group.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method Group.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Group.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Group.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Group.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Group.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Group.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Group.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -5241,6 +5211,8 @@ swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method HStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method HStack.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method HStack.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method HStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -5269,10 +5241,6 @@ swift.method HStack.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) ->
 swift.method HStack.spacing(_:): @MainActor func spacing(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method HStack.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method HStack.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method HStack.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method HStack.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method HStack.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method HStack.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method HStack.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method HStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -5437,6 +5405,8 @@ swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ value: B
 swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Image.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Image.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Image.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Image.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -5461,10 +5431,6 @@ swift.method Image.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ 
 swift.method Image.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Image.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Image.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Image.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Image.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Image.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Image.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Image.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Image.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -5646,6 +5612,8 @@ swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ valu
 swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ItemsView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method ItemsView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method ItemsView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method ItemsView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -5672,10 +5640,6 @@ swift.method ItemsView.showsNavigationBar(_:): @MainActor func showsNavigationBa
 swift.method ItemsView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method ItemsView.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method ItemsView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method ItemsView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method ItemsView.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method ItemsView.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method ItemsView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ItemsView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ItemsView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -5856,6 +5820,8 @@ swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ value: Br
 swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Line.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Line.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Line.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Line.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -5881,10 +5847,6 @@ swift.method Line.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bo
 swift.method Line.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Line.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Line.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Line.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Line.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Line.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Line.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Line.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Line.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Line.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -6053,6 +6015,8 @@ swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ value: Br
 swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Link.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Link.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Link.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Link.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -6077,12 +6041,8 @@ swift.method Link.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ v
 swift.method Link.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Link.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Link.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Link.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method Link.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method Link.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
-swift.method Link.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Link.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Link.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Link.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Link.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -6257,6 +6217,8 @@ swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ value: Bru
 swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Map.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Map.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Map.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Map.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -6283,10 +6245,6 @@ swift.method Map.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Se
 swift.method Map.showsTraffic(_:): @MainActor func showsTraffic(_ state: Binding<Bool>) -> Map.Modified
 swift.method Map.showsUserLocation(_:): @MainActor func showsUserLocation(_ state: Binding<Bool>) -> Map.Modified
 swift.method Map.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Map.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Map.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Map.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Map.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Map.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Map.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Map.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -6502,6 +6460,8 @@ swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(
 swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ModifiedContent.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method ModifiedContent.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method ModifiedContent.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method ModifiedContent.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -6525,10 +6485,6 @@ swift.method ModifiedContent.showsNavigationBar(_:): @MainActor func showsNaviga
 swift.method ModifiedContent.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method ModifiedContent.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method ModifiedContent.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method ModifiedContent.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method ModifiedContent.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method ModifiedContent.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method ModifiedContent.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ModifiedContent.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ModifiedContent.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -6702,6 +6658,8 @@ swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ v
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method MotionLayout.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method MotionLayout.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method MotionLayout.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method MotionLayout.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.parameterMotion(_:): @MainActor func parameterMotion(_ motion: Motion) -> MotionLayout<Items, ID, Parameters>
@@ -6728,11 +6686,7 @@ swift.method MotionLayout.showsNavigationBar(_:): @MainActor func showsNavigatio
 swift.method MotionLayout.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method MotionLayout.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method MotionLayout.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method MotionLayout.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method MotionLayout.throwMotion(_:): @MainActor func throwMotion(_ motion: Motion) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method MotionLayout.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method MotionLayout.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method MotionLayout.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method MotionLayout.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -6906,6 +6860,8 @@ swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(
 swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method NavigationStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method NavigationStack.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method NavigationStack.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method NavigationStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -6929,10 +6885,6 @@ swift.method NavigationStack.showsNavigationBar(_:): @MainActor func showsNaviga
 swift.method NavigationStack.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method NavigationStack.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method NavigationStack.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method NavigationStack.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method NavigationStack.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method NavigationStack.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method NavigationStack.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method NavigationStack.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method NavigationStack.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ state: Binding<Double>) -> Self.Modified
@@ -7109,6 +7061,8 @@ swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ value: Br
 swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Path.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Path.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Path.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Path.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -7134,10 +7088,6 @@ swift.method Path.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bo
 swift.method Path.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Path.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Path.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Path.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Path.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Path.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Path.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Path.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Path.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Path.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -7316,6 +7266,8 @@ swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Picker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Picker.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Picker.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Picker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -7342,13 +7294,9 @@ swift.method Picker.showsNavigationBar(_:): @MainActor func showsNavigationBar(_
 swift.method Picker.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Picker.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Picker.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Picker.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method Picker.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method Picker.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
 swift.method Picker.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
-swift.method Picker.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Picker.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Picker.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Picker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Picker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -7524,6 +7472,8 @@ swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Polygon.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Polygon.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Polygon.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Polygon.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -7549,10 +7499,6 @@ swift.method Polygon.showsTitle(_:): @MainActor func showsTitle(_ state: Binding
 swift.method Polygon.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Polygon.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Polygon.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Polygon.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Polygon.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Polygon.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Polygon.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Polygon.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Polygon.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Polygon.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -7724,6 +7670,8 @@ swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ value
 swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Polyline.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Polyline.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Polyline.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Polyline.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -7749,10 +7697,6 @@ swift.method Polyline.showsTitle(_:): @MainActor func showsTitle(_ state: Bindin
 swift.method Polyline.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Polyline.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Polyline.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Polyline.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Polyline.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Polyline.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Polyline.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Polyline.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Polyline.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Polyline.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -7929,6 +7873,8 @@ swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ v
 swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method PositionDots.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method PositionDots.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method PositionDots.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method PositionDots.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -7954,10 +7900,6 @@ swift.method PositionDots.showsNavigationBar(_:): @MainActor func showsNavigatio
 swift.method PositionDots.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method PositionDots.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method PositionDots.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method PositionDots.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method PositionDots.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method PositionDots.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method PositionDots.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method PositionDots.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method PositionDots.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -8119,6 +8061,8 @@ swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ va
 swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ProgressBar.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method ProgressBar.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method ProgressBar.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method ProgressBar.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -8143,11 +8087,7 @@ swift.method ProgressBar.showsNavigationBar(_:): @MainActor func showsNavigation
 swift.method ProgressBar.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method ProgressBar.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method ProgressBar.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method ProgressBar.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method ProgressBar.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
-swift.method ProgressBar.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method ProgressBar.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method ProgressBar.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ProgressBar.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ProgressBar.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -8327,6 +8267,8 @@ swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ valu
 swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Rectangle.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Rectangle.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Rectangle.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Rectangle.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -8352,10 +8294,6 @@ swift.method Rectangle.showsTitle(_:): @MainActor func showsTitle(_ state: Bindi
 swift.method Rectangle.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Rectangle.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Rectangle.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Rectangle.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Rectangle.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Rectangle.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Rectangle.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Rectangle.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Rectangle.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Rectangle.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -8543,6 +8481,8 @@ swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ val
 swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ScrollView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method ScrollView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method ScrollView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method ScrollView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -8570,10 +8510,6 @@ swift.method ScrollView.showsTitle(_:): @MainActor func showsTitle(_ state: Bind
 swift.method ScrollView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method ScrollView.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method ScrollView.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method ScrollView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method ScrollView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method ScrollView.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method ScrollView.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method ScrollView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ScrollView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ScrollView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -8759,6 +8695,8 @@ swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ va
 swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method SearchField.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method SearchField.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method SearchField.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method SearchField.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -8790,13 +8728,9 @@ swift.method SearchField.showsTitle(_:): @MainActor func showsTitle(_ value: Boo
 swift.method SearchField.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method SearchField.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method SearchField.submitLabel(_:): @MainActor func submitLabel(_ state: Binding<SubmitLabel>) -> Self.Modified
-swift.method SearchField.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method SearchField.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method SearchField.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method SearchField.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method SearchField.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
-swift.method SearchField.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method SearchField.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method SearchField.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method SearchField.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method SearchField.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -8957,6 +8891,8 @@ swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ valu
 swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Separator.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Separator.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Separator.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Separator.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -8981,10 +8917,6 @@ swift.method Separator.showsNavigationBar(_:): @MainActor func showsNavigationBa
 swift.method Separator.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Separator.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Separator.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Separator.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Separator.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Separator.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Separator.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Separator.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Separator.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -9169,6 +9101,8 @@ swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Slider.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Slider.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Slider.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Slider.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -9193,11 +9127,7 @@ swift.method Slider.showsNavigationBar(_:): @MainActor func showsNavigationBar(_
 swift.method Slider.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Slider.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Slider.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Slider.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method Slider.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
-swift.method Slider.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Slider.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Slider.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Slider.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Slider.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -9356,6 +9286,8 @@ swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ value: B
 swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Space.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Space.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Space.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Space.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -9382,10 +9314,6 @@ swift.method Space.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<B
 swift.method Space.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Space.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Space.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Space.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Space.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Space.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Space.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Space.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Space.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Space.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -9543,6 +9471,8 @@ swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Spinner.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Spinner.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Spinner.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Spinner.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -9567,11 +9497,7 @@ swift.method Spinner.showsNavigationBar(_:): @MainActor func showsNavigationBar(
 swift.method Spinner.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Spinner.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Spinner.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Spinner.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method Spinner.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
-swift.method Spinner.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Spinner.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Spinner.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Spinner.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Spinner.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -9735,6 +9661,8 @@ swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ valu
 swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method SplitView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method SplitView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method SplitView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method SplitView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -9772,10 +9700,6 @@ swift.method SplitView.sidebarOverlayBackground(_:): @MainActor func sidebarOver
 swift.method SplitView.sidebarOverlayBackground(_:): @MainActor func sidebarOverlayBackground(_ value: Color) -> SplitView.Modified
 swift.method SplitView.sidebarOverlayBackground(_:): @MainActor func sidebarOverlayBackground(_ value: Material) -> SplitView.Modified
 swift.method SplitView.sidebarOverlays(into:): @MainActor func sidebarOverlays(into state: Binding<Bool>) -> SplitView.Modified
-swift.method SplitView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method SplitView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method SplitView.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method SplitView.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method SplitView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method SplitView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method SplitView.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ state: Binding<Double>) -> Self.Modified
@@ -9948,6 +9872,8 @@ swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Stepper.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Stepper.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Stepper.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Stepper.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -9973,10 +9899,6 @@ swift.method Stepper.showsTitle(_:): @MainActor func showsTitle(_ state: Binding
 swift.method Stepper.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Stepper.step(_:): @MainActor func step(_ state: Binding<Double>) -> Stepper.Modified
 swift.method Stepper.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Stepper.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Stepper.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Stepper.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Stepper.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Stepper.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Stepper.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Stepper.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -10282,6 +10204,8 @@ swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Switch.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Switch.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Switch.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Switch.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -10306,13 +10230,9 @@ swift.method Switch.showsNavigationBar(_:): @MainActor func showsNavigationBar(_
 swift.method Switch.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Switch.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Switch.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Switch.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method Switch.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method Switch.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method Switch.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
-swift.method Switch.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Switch.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Switch.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Switch.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Switch.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -10476,6 +10396,8 @@ swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method TabView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method TabView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method TabView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method TabView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -10500,10 +10422,6 @@ swift.method TabView.showsNavigationBar(_:): @MainActor func showsNavigationBar(
 swift.method TabView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method TabView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method TabView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method TabView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method TabView.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method TabView.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method TabView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TabView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method TabView.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ state: Binding<Double>) -> Self.Modified
@@ -10676,6 +10594,8 @@ swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ value: Br
 swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Text.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method Text.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method Text.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method Text.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -10701,14 +10621,10 @@ swift.method Text.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bo
 swift.method Text.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method Text.spans(_:): @MainActor func spans(@TextSpanBuilder _ spans: () -> [TextSpan]) -> Text.Modified
 swift.method Text.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method Text.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method Text.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method Text.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method Text.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method Text.textDecorations(_:): @MainActor func textDecorations(_ state: Binding<TextDecorations>) -> Self.Modified
 swift.method Text.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
-swift.method Text.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method Text.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Text.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Text.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Text.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -10896,6 +10812,8 @@ swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ val
 swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method TextEditor.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method TextEditor.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method TextEditor.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method TextEditor.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -10926,13 +10844,9 @@ swift.method TextEditor.showsTitle(_:): @MainActor func showsTitle(_ state: Bind
 swift.method TextEditor.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method TextEditor.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method TextEditor.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method TextEditor.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method TextEditor.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method TextEditor.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method TextEditor.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method TextEditor.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
-swift.method TextEditor.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method TextEditor.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method TextEditor.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TextEditor.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method TextEditor.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -11116,6 +11030,8 @@ swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ valu
 swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method TextField.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method TextField.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method TextField.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method TextField.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -11148,13 +11064,9 @@ swift.method TextField.showsTitle(_:): @MainActor func showsTitle(_ value: Bool)
 swift.method TextField.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method TextField.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method TextField.submitLabel(_:): @MainActor func submitLabel(_ state: Binding<SubmitLabel>) -> Self.Modified
-swift.method TextField.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method TextField.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method TextField.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method TextField.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method TextField.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
-swift.method TextField.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method TextField.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method TextField.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TextField.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method TextField.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -11385,6 +11297,8 @@ swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ val
 swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method TimePicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method TimePicker.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method TimePicker.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method TimePicker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -11409,12 +11323,8 @@ swift.method TimePicker.showsNavigationBar(_:): @MainActor func showsNavigationB
 swift.method TimePicker.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method TimePicker.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method TimePicker.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method TimePicker.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method TimePicker.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method TimePicker.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
-swift.method TimePicker.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method TimePicker.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method TimePicker.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TimePicker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method TimePicker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -11691,6 +11601,8 @@ swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method VStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method VStack.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method VStack.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method VStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -11718,10 +11630,6 @@ swift.method VStack.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) ->
 swift.method VStack.spacing(_:): @MainActor func spacing(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method VStack.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method VStack.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method VStack.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method VStack.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method VStack.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method VStack.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method VStack.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method VStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -11827,6 +11735,8 @@ swift.method View.pageBackground(_:): @MainActor func pageBackground(_ value: Br
 swift.method View.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method View.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method View.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method View.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method View.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method View.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method View.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method View.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -11841,10 +11751,6 @@ swift.method View.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ s
 swift.method View.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method View.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method View.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method View.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method View.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method View.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method View.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method View.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method View.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method View.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -12109,6 +12015,8 @@ swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method WebView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method WebView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method WebView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method WebView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -12133,10 +12041,6 @@ swift.method WebView.showsNavigationBar(_:): @MainActor func showsNavigationBar(
 swift.method WebView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method WebView.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method WebView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method WebView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method WebView.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method WebView.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method WebView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method WebView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method WebView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -12327,6 +12231,8 @@ swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ZStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method ZStack.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
+swift.method ZStack.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method ZStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -12353,10 +12259,6 @@ swift.method ZStack.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<
 swift.method ZStack.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method ZStack.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method ZStack.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method ZStack.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method ZStack.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method ZStack.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method ZStack.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method ZStack.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ZStack.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ZStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -13141,6 +13043,8 @@ swift.type.property KeyModifiers.shift: static let shift: KeyModifiers
 swift.type.property KeyboardElementContract.keyPressed: static let keyPressed: ElementEvent<KeyboardElementContract, (Key, KeyModifiers)>
 swift.type.property KeyboardElementContract.keysTaken: static let keysTaken: ElementProperty<KeyboardElementContract, [Key]>
 swift.type.property KeyboardElementContract.name: static let name: String
+swift.type.property LanguageElementContract.language: static let language: ElementProperty<LanguageElementContract, LocaleTag>
+swift.type.property LanguageElementContract.name: static let name: String
 swift.type.property LayoutContract.clipsContent: static let clipsContent: ElementProperty<LayoutContract, Bool>
 swift.type.property LayoutContract.ignoresSafeArea: static let ignoresSafeArea: ElementProperty<LayoutContract, SafeAreaEdges>
 swift.type.property LayoutContract.letsInputThrough: static let letsInputThrough: ElementProperty<LayoutContract, Bool>
@@ -13229,7 +13133,6 @@ swift.type.property PageContract.showsBackButton: static let showsBackButton: El
 swift.type.property PageContract.showsCloseButton: static let showsCloseButton: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.showsNavigationBar: static let showsNavigationBar: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.showsTitle: static let showsTitle: ElementProperty<PageContract, Bool>
-swift.type.property PageContract.subtitle: static let subtitle: ElementProperty<PageContract, String>
 swift.type.property PageElementContract.linkOpened: static let linkOpened: ElementEvent<PageElementContract, String>
 swift.type.property PageElementContract.name: static let name: String
 swift.type.property PageElementContract.title: static let title: ElementProperty<PageElementContract, String>

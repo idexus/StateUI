@@ -23,7 +23,7 @@ private struct MenuButtonsPage: View {
 /// A page whose bar holds a button of each way to open a menu: split, its click with its arrow and without, held.
 private struct MenuActionsPage: View {
     var body: some View {
-        Text("Actions").title("Actions").toolbar {
+        Text("Actions").pageTitle("Actions").toolbar {
             ToolbarButton("Save").onClicked {}.menu(.split) { MenuItem("Save a copy") }
             ToolbarButton("Sort").menu { MenuItem("A to Z") }
             ToolbarButton("Share").menu { MenuItem("Mail") }.showsMenuArrow(false)

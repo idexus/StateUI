@@ -62,7 +62,7 @@ final class WebKeyboardTests: XCTestCase {
     }
 
     func testTheArrowsChooseTheNextTab() throws {
-        let host = WebRenderer.running { TabView([0, 1, 2]) { tab in Text("Page \(tab)").title("Tab \(tab)") } }
+        let host = WebRenderer.running { TabView([0, 1, 2]) { tab in Text("Page \(tab)").pageTitle("Tab \(tab)") } }
         host.step()
         let tabs = try XCTUnwrap(host.views(WebTabView.self).first)
         let strip = ":scope > .stateui-tab-strip > [role=tab]"

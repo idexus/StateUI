@@ -91,6 +91,7 @@
         BorderElementTests.self,
         ContentModeElementTests.self,
         TintElementTests.self,
+        LanguageElementTests.self,
         PointsShapeTests.self,
         LineBreakElementTests.self,
         PlaceholderElementTests.self,

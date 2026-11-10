@@ -283,7 +283,11 @@ live element driven by it (`HostStorage.ties`), one more as a tie is described,
 one fewer as it goes or its element leaves. With none, a write puts the value
 at the destination as well, standing still, so a view described later shows it
 from its first frame, and a move arrives at once. `.custom` is the exception:
-its animator is an engine on this side.
+its animator is an engine on this side. A move sent while the state was worn,
+whose last wearer leaves before a host walks it, lands as the walk that took
+the wearer away ends - at its destination, standing still, its waiter told it
+arrived: the host's channel went with the wearer and would answer nobody. A
+wearer leaving one place for another in the same walk keeps the move walking.
 
 ## Themed colors on a carried state
 

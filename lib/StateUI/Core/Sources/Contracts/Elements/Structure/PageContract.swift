@@ -36,10 +36,6 @@ public enum PageContract: ElementContract {
     /// names the window and the way back all the same.
     public static let showsTitle = ElementProperty<Self, Bool>("showsTitle", layer: .adaptive)
 
-    /// The line under the page's title, wherever its title shows: the current document or section; an empty one is
-    /// none.
-    public static let subtitle = ElementProperty<Self, String>("subtitle", layer: .adaptive)
-
     /// The user has left the page for another.
     public static let navigatedFrom = ElementEvent<Self, Void>("navigatedFrom", layer: .adaptive)
 
@@ -52,7 +48,7 @@ public enum PageContract: ElementContract {
     /// The element's own members.
     public static let members: [any ContractMember] = [
         appearing, backButtonTitle, disappearing, showsBackButton, showsCloseButton, showsNavigationBar,
-        showsTitle, subtitle,
+        showsTitle,
         navigatedFrom, navigatedTo, navigatingFrom,
     ]
 }

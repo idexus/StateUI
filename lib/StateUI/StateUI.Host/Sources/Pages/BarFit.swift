@@ -45,10 +45,10 @@
         return Standing(groups: 0, title: .between)
     }
 
-    /// What stands behind the bar's More: the items of each group that left the bar, each group apart, then those
-    /// placed behind it anyway.
+    /// What stands behind the bar's More: the items of each group that left the bar, then of each placed behind it
+    /// anyway - each group a section apart.
     @MainActor
-    public static func behind(left: [[MountedElement]], placed: [MountedElement]) -> [MenuEntry] {
+    public static func behind(left: [[MountedElement]], placed: [[MountedElement]]) -> [MenuEntry] {
         var entries: [MenuEntry] = []
         for items in groupsBehind(left: left, placed: placed) {
             if !entries.isEmpty { entries.append(.separator) }
@@ -57,9 +57,9 @@
         return entries
     }
 
-    /// The groups behind the bar's More, in its order: each group that left the bar, then those placed behind it
-    /// anyway - a host's own items for them, none empty.
-    public static func groupsBehind<Item>(left: [[Item]], placed: [Item]) -> [[Item]] {
-        (left + [placed]).filter { !$0.isEmpty }
+    /// The groups behind the bar's More, in its order, each a section of it: each group that left the bar, then each
+    /// placed behind it anyway - a host's own items for them, none empty.
+    public static func groupsBehind<Item>(left: [[Item]], placed: [[Item]]) -> [[Item]] {
+        (left + placed).filter { !$0.isEmpty }
     }
 }

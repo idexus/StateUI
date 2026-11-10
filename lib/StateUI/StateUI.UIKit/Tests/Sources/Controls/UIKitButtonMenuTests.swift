@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import UIKit
-@_spi(Host) import StateUI
+@_spi(Host) @testable import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIUIKit
 import XCTest
@@ -51,6 +51,28 @@ final class UIKitButtonMenuTests: XCTestCase {
         XCTAssertEqual(arrow.frame.maxX, button.bounds.maxX, accuracy: 0.5, "\(arrow.frame)")
         XCTAssertGreaterThanOrEqual(
             button.configuration?.contentInsets.trailing ?? 0, arrow.frame.width, "the words keep clear of the arrow")
+    }
+
+    /// A split button's arrow says to VoiceOver what the library's words say of the menu behind it, in the system's
+    /// language.
+    func testASplitButtonsArrowIsNamedInTheSystemsLanguage() throws {
+        let locale = StandardEnvironment.locale
+        let before = HostLocaleInfo(
+            language: locale.language, timeZone: locale.timeZone,
+            uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
+            isMetric: locale.isMetric, writingDirection: locale.writingDirection, languages: locale.languages)
+        defer { HostBoundary.setLocaleInfo(before) }
+        HostBoundary.setLocaleInfo(HostLocaleInfo(
+            language: "pl-PL", timeZone: before.timeZone, uses24HourClock: true,
+            firstDayOfWeek: before.firstDayOfWeek, isMetric: true, writingDirection: .leftToRight))
+        let host = UIKitRenderer.running {
+            Button("Save").onClicked {}.menu { MenuItem("Save as") }
+        }
+        defer { host.finish() }
+
+        let button = try XCTUnwrap(host.views(UIKitButtonView.self).first)
+        let arrow = try XCTUnwrap(button.subviews.compactMap { $0 as? UIButton }.first { $0.menu != nil })
+        XCTAssertEqual(arrow.accessibilityLabel, "Więcej")
     }
 
     /// A held button keeps its tap and offers its menu as UIKit opens a button's held, with no arrow; a button whose

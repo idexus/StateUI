@@ -12,7 +12,7 @@ NavigationStack($path) {
 } destination: { section in
     Text(section)
 }
-.title("Settings")
+.pageTitle("Settings")
 .pageIcon("settings.png")
 ```
 

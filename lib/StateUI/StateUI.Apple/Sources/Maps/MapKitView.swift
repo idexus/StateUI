@@ -40,9 +40,20 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
 
     /// Shows `region`, sliding to it where `sliding`: the circle its shorter side spans.
     public func show(_ region: MapRegion, sliding: Bool) {
+        guard let region = MapFraming.shown(region) else { return }
         let side = MapFraming.side(of: region)
         let center = CLLocationCoordinate2D(latitude: region.center.latitude, longitude: region.center.longitude)
-        setRegion(MKCoordinateRegion(center: center, latitudinalMeters: side, longitudinalMeters: side), animated: sliding)
+        var shown = MKCoordinateRegion(center: center, latitudinalMeters: side, longitudinalMeters: side)
+        // MapKit raises on a span past its own: a pole's longitudes reach without end.
+        shown.span = MKCoordinateSpan(
+            latitudeDelta: Self.held(shown.span.latitudeDelta, 180),
+            longitudeDelta: Self.held(shown.span.longitudeDelta, 360))
+        setRegion(shown, animated: sliding)
+    }
+
+    /// `degrees` of a span held to `most`.
+    private static func held(_ degrees: Double, _ most: Double) -> Double {
+        degrees.isFinite ? min(max(degrees, 0), most) : most
     }
 
     /// Draws the world as `type` says, the roads colored by traffic where `traffic` and the map has roads.

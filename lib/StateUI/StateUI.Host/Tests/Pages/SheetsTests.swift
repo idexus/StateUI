@@ -151,6 +151,22 @@ final class SheetsTests: XCTestCase {
         XCTAssertTrue(Sheets.editing.wrappedValue)
     }
 
+    /// A sheet whose arrangement a composed view's anchor holds shows that arrangement: its page stands in front,
+    /// told it appears, and back closes the sheet.
+    func testASheetsArrangementAnAnchorHoldsStandsInFront() throws {
+        AnchoredSheetApplication.register()
+        let runtime = runtime()
+        let presentation = WindowPresentation()
+        _ = presentation.show(try window(runtime), in: runtime.lifecycle)
+
+        XCTAssertEqual(try window(runtime).first(type: .sheet)?.children.first?.type, .anchor, "the sheet holds an anchor")
+        XCTAssertEqual(try shown(runtime).map(\.type), [.navigationStack], "its page is the arrangement the anchor holds")
+        let front = try XCTUnwrap(presentation.frontPage, "a page in front")
+        XCTAssertNotNil(front.first(id: .manual("flow")))
+        XCTAssertTrue(front.isPagePresented, "told it appears")
+        guard case .dismissSheets = presentation.wayBack else { return XCTFail("back closes the sheet") }
+    }
+
     /// Back in a window takes the top sheet's own stack first, then the top sheet.
     func testTheWayBackTakesTheTopSheetsStackThenTheSheet() throws {
         Sheets.stackPath.wrappedValue = [1]
@@ -249,5 +265,38 @@ private struct StackSheetPage: View {
                     Text("Folder")
                 }
             }
+    }
+}
+
+private struct AnchoredSheetApplication: Application {
+    var body: some Scene {
+        WindowGroup { AnchoredSheetPage() }
+    }
+}
+
+/// A page presenting a sheet whose arrangement a composed view builds, one or another, with a watch written on it.
+private struct AnchoredSheetPage: View {
+    var body: some View {
+        Text("Folders")
+            .sheet(isPresented: Sheets.editing.projectedValue) {
+                Flow(compact: Sheets.picking.wrappedValue).onChanged(Sheets.picking.wrappedValue) {}
+            }
+    }
+}
+
+/// One stack or another, by how much room it is given.
+private struct Flow: View {
+    let compact: Bool
+
+    var body: some View {
+        if compact {
+            NavigationStack(Sheets.stackPath.projectedValue) { Text("Flow").id("flow") } destination: { _ in
+                Text("Step")
+            }
+        } else {
+            NavigationStack(Sheets.stackPath.projectedValue) { Text("Wide flow") } destination: { _ in
+                Text("Wide step")
+            }
+        }
     }
 }

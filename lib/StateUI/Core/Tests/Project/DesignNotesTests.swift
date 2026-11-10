@@ -29,7 +29,6 @@ final class DesignNotesTests: XCTestCase {
             .filter { files.fileExists(atPath: SourceTree.repository.appendingPathComponent($0).path) }
     }
 
-    /// Every backend is held, so a new one keeps the rule from its first source.
     /// The library's guards read every module of it: the core, the host layer and the foundation under them - a
     /// rule about the library holds nowhere it does not look.
     func testTheGuardsReadEveryModuleOfTheLibrary() throws {
@@ -38,6 +37,7 @@ final class DesignNotesTests: XCTestCase {
         XCTAssertTrue(Self.held.contains("lib/StateUI/Foundation/Sources"))
     }
 
+    /// Every backend is held, so a new one keeps the rule from its first source.
     func testEveryBackendsSourcesAreHeld() {
         XCTAssertTrue(Self.held.contains("lib/Backends/WebView.GTK/Sources"))
         XCTAssertTrue(Self.held.contains("lib/Backends/WebView.WinUI/Sources"))

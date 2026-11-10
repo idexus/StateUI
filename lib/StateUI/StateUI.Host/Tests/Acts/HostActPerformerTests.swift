@@ -249,6 +249,23 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(answers.failures[4], "no time zone 'Nowhere/Else' is known")
     }
 
+    /// A zone's distance asked on a day no calendar a toolkit holds has - the 30th of February, a year past ten
+    /// thousand - fails with the day, none asked of the toolkit.
+    func testAZonesDistanceOnADayNoCalendarHoldsFails() {
+        let (toolkit, answers) = (Toolkit(), Answers())
+        let acts = performer(toolkit, answers)
+
+        for (completion, day) in [(1, CalendarDate(year: 2026, month: 2, day: 30)), (2, CalendarDate(year: 3_000_000_000, month: 1, day: 1))] {
+            acts.perform(HostActCall(act: .utcOffset, arguments: [.string("Europe/Warsaw"), day.propValue], completion: completion))
+        }
+
+        XCTAssertEqual(answers.failures[1], "no day 2026-2-30 stands in the calendar")
+        XCTAssertEqual(answers.failures[2], "no day 3000000000-1-1 stands in the calendar")
+        XCTAssertTrue(CalendarArithmetic.exists(CalendarDate(year: 9999, month: 12, day: 31)))
+        XCTAssertFalse(CalendarArithmetic.exists(CalendarDate(year: 10_000, month: 1, day: 1)), "past every toolkit's years")
+        XCTAssertFalse(CalendarArithmetic.exists(CalendarDate(year: 0, month: 1, day: 1)))
+    }
+
     /// Questions show one at a time: answering the one showing answers its caller and shows the next; with no window
     /// to ask in, a question fails and the next still shows.
     func testQuestionsShowOneAtATime() throws {

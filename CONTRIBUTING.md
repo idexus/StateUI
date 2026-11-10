@@ -112,6 +112,45 @@ Every public Swift declaration needs `///` documentation. Gallery pages use
 minimal on-screen prose: show behavior directly and tell the user only what
 they need to try.
 
+## Comments and design notes
+
+The code says what a declaration is; `docs/design/` says why. One rule keeps
+it so, and `DesignNotesTests` holds it in every source directory of the
+library, its hosts and its backends:
+
+- **Comments stay under a quarter of every source file's lines.** The license
+  header is not counted, nor is the `///` documentation of a public
+  declaration - what an editor shows on `.`: it says enough to choose and use
+  the declaration, and no more.
+- **A reason, a trap or a rule is a design note.** It belongs in
+  `docs/design/<area>/<note>.md`, in the section about it - add a section
+  where none fits. The code keeps two or three lines saying what the
+  declaration is, and one line pointing to the note:
+
+  ```text
+  /// The words' size: a line that never wraps keeps its own whatever room it is offered.
+  /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
+  ```
+
+  The anchor is the heading's: lowercase, letters and digits kept, each run of
+  spaces or hyphens one hyphen. The test checks that every reference resolves.
+- **Write the present.** A comment and a note say what the code is and why it
+  is so: no history ("now", "used to", "was changed to", an issue as the
+  reason), no text about the text, no comparison with another framework or
+  toolkit.
+- **Use the common word.** Where a common term exists - user, animation,
+  key - use it; [the glossary](docs/design/glossary.md) maps StateUI's own
+  words. Spell American English in names, files and words alike - color,
+  behavior, center, gray, license; `cancelled` keeps Swift's spelling.
+- **Name a source by its file name alone.** A file holds one element and its
+  name is unique in its module, so a comment, a note or a test names
+  `WinUITextualView.swift`, never its folder.
+
+A comment inside a Gallery listing region (`// listing: <name>` ...
+`// listing: end`) is written for the reader the Gallery page shows it to, and
+is not counted. [The design notes](docs/design/README.md#the-golden-rule) hold
+the rule as the test reads it.
+
 ## Test
 
 Run the suite owned by the area while iterating, then every suite before

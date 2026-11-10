@@ -111,6 +111,9 @@ final class AndroidRenderer {
         let previous = shared
         let sceneStands = previous?.runtime.tree.root?.children.contains { $0.type == .scene } == true
         previous?.runtime.tree.root?.leave()
+        // What the renderer before laid in its root leaves with its tree: the same root, at a new density, holds the
+        // new window alone.
+        if let previous { Java.call(previous.root.reference, JavaAPI.removeAllViews) }
 
         let renderer = AndroidRenderer(context: context, root: root, density: density)
         shared = renderer
@@ -335,14 +338,16 @@ final class AndroidRenderer {
             for split in window.splitViews { (split.native as? AndroidElement)?.groundSidebar() }
         }
         if let (_, arrangement) = changes.arrangement {
-            Java.call(root.reference, JavaAPI.removeAllViews)
-            shownOverlays = []
-            if let page = arrangement?.android.view {
+            // The arrangement shown before leaves alone; the new one stands under the overlays and the sheets.
+            if let leaving = shownArrangement { Java.call(root.reference, JavaAPI.removeView, .object(leaving.reference)) }
+            shownArrangement = arrangement?.android.view
+            if let page = shownArrangement {
                 page.forgetPlace()
-                Java.call(root.reference, JavaAPI.addView, .object(page.reference), .int(-1), .int(-1))
+                Java.call(root.reference, JavaAPI.addViewAt, .object(page.reference), .int(0))
             }
         }
-        let rose = changes.sheets.map { modals.present($0) } ?? false
+        if let sheets = changes.sheets { modals.present(sheets) }
+        if let sheetOverlays = changes.sheetOverlays { modals.lay(sheetOverlays) }
         modals.standAtTheirSizes()
         standUnderTheWindowsInsets()
         showStatusWords()
@@ -352,23 +357,25 @@ final class AndroidRenderer {
             (page.native as? AndroidElement)?.showTopEdge()
         }
 
-        // The overlays lie over everything, the first lowest, lifted over a page that rose after them; they take no
-        // touch beside what they hold, which goes on to the page under them.
+        // The window's overlays lie over its arrangement and under its sheets, the first lowest; they take no touch
+        // beside what they hold, which goes on to the page under them.
         let overlays = presentation.overlays.compactMap(\.android.view)
         if !overlays.elementsEqual(shownOverlays, by: ===) {
             for leaving in shownOverlays { Java.call(root.reference, JavaAPI.removeView, .object(leaving.reference)) }
-            for overlay in overlays {
+            let first: Int32 = shownArrangement == nil ? 0 : 1
+            for (place, overlay) in overlays.enumerated() {
                 overlay.forgetPlace()
-                Java.call(root.reference, JavaAPI.addView, .object(overlay.reference), .int(-1), .int(-1))
+                Java.call(root.reference, JavaAPI.addViewAt, .object(overlay.reference), .int(first + Int32(place)))
             }
             shownOverlays = overlays
-        } else if rose {
-            for overlay in overlays { Java.call(overlay.reference, JavaAPI.bringToFront) }
         }
     }
 
     /// The overlays' views the root holds now, the first lowest, let go of as the window stops showing them.
     private var shownOverlays: [AndroidView] = []
+
+    /// The view of the arrangement the window shows, standing first in the root.
+    private var shownArrangement: AndroidView?
 
     /// What stands over the activity's root on each edge, in points: the system's bars and a cutout, and the keyboard
     /// at the bottom - Android draws the root edge to edge.

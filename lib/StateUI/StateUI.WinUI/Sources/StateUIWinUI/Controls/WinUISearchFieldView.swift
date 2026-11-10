@@ -12,7 +12,6 @@ import CStateUIWinUI
 @MainActor
 final class WinUISearchFieldView: WinUITextInputView {
     private var readOnly = false
-    private var textCase = TextCase.none
     private var alignment = TextAlignment.start
     private var traits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
 

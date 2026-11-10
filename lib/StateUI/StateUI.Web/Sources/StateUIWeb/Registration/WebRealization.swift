@@ -16,15 +16,16 @@ enum WebRealization {
     /// no map of its own, and a map needs a provider and its key.
     static let byApplication: [any ElementContract.Type] = [MapContract.self, MarkerContract.self]
 
-    /// What the host's own records say, member by member, before what its registry says: what it realizes through
-    /// the host layer's pages and chrome, outside the registry, and what a page never asks of the browser's window.
     /// Why no element is pulled to refresh here.
     private static let noPull = "The DOM offers no pull to refresh of a part of a page - a browser's own pull "
         + "reloads the whole page: a page refreshes by a command."
 
+    /// What the host's own records say, member by member, before what its registry says: what it realizes through
+    /// the host layer's pages and chrome, outside the registry, and what a page never asks of the browser's window.
     static let records: [HostRecord] = [
         .complete(BottomBarContract.scrollEdge),
         // MARK: Tiers - a member every wearer realizes alike
+        .complete(LanguageElementContract.language),
         .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
         .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),
         .notPlanned(RefreshElementContract.refreshRequested, reason: Self.noPull),
@@ -90,7 +91,6 @@ enum WebRealization {
         .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
-        .complete(PageContract.subtitle),
         .complete(PresentedElementContract.isPresented, on: PopoverContract.self),
         .complete(PresentedElementContract.isPresentedChanged, on: PopoverContract.self),
         .complete(SplitViewContract.showsSidebar),

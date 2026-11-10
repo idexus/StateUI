@@ -21,6 +21,23 @@ final class MapFramingTests: XCTestCase {
         XCTAssertEqual(tall, wide)
     }
 
+    /// A map shows a region whose middle stands on the globe and whose reach is a number above nought: a longitude
+    /// taken round, a reach past a quarter of the way round held there; the rest it does not show.
+    func testAMapShowsARegionOnTheGlobeAlone() {
+        func region(_ latitude: Double, _ longitude: Double, _ radius: Double) -> MapRegion {
+            MapRegion(center: Location(latitude: latitude, longitude: longitude), radiusMeters: radius)
+        }
+        XCTAssertEqual(MapFraming.shown(region(52, 21, 5_000)), region(52, 21, 5_000))
+        XCTAssertEqual(MapFraming.shown(region(90, -180, 5_000)), region(90, -180, 5_000), "a pole, the date line")
+        XCTAssertEqual(MapFraming.shown(region(0, 400, 5_000)), region(0, 40, 5_000), "taken round")
+        XCTAssertEqual(MapFraming.shown(region(0, -540, 5_000)), region(0, -180, 5_000))
+        XCTAssertEqual(MapFraming.shown(region(0, 0, .infinity)), region(0, 0, MapFraming.farthest))
+        for shown in [region(100, 0, 1), region(-90.5, 0, 1), region(.nan, 0, 1), region(0, .infinity, 1),
+                      region(0, 0, .nan), region(0, 0, 0), region(0, 0, -1)] {
+            XCTAssertNil(MapFraming.shown(shown), "\(shown)")
+        }
+    }
+
     /// A region framed and read back is the region: the side it asks for, shown, gives its radius again.
     func testARegionFramedReadsBackAsItself() {
         let region = MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2_000)

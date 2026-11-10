@@ -1,0 +1,39 @@
+# revision 1.1
+Button.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Canvas.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Capsule.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+CheckBox.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+ColorPicker.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+DatePicker.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Ellipse.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Fill.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Grid.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+HStack.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Image.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+ItemsView.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Line.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Link.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Map.language: 🧩
+MotionLayout.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Path.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Picker.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Polygon.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Polyline.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+ProgressBar.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Rectangle.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+ScrollView.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+SearchField.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Separator.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Slider.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Space.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Spinner.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Stepper.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Switch.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Text.language: ☑️ Pango sets a text's words by it - their breaks, hyphens and the typeface a script falls back to; GTK gives no other widget a language of its own.
+TextEditor.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+TextField.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+TimePicker.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+VStack.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+WebView.language: – GTK gives a widget no language of its own: Orca reads it in the system's.
+Window.language: ☑️ Pango sets a text's words by it - their breaks, hyphens and the typeface a script falls back to; GTK gives no other widget a language of its own.
+ZStack.language: – GTK gives a widget no language of its own: Orca reads it in the system's.

@@ -101,6 +101,9 @@
     /// What a control a host composes says of its own parts - a stepper's step down and up - in the system's language.
     public static var controlWords: ControlWords { LibraryWords.inSystemLanguage.control }
 
+    /// What a file a host names itself is called, in the system's language.
+    public static var fileWords: FileWords { LibraryWords.inSystemLanguage.file }
+
     /// Replaces the standard locale report.
     public static func setLocaleInfo(_ info: HostLocaleInfo) {
         let locale = StandardEnvironment.locale

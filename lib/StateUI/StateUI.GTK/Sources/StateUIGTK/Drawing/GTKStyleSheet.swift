@@ -39,7 +39,7 @@ enum GTKStyleSheet {
     /// The class giving a widget `insets` of room between its edge and its content, each side where it stands.
     static func padding(_ insets: InsetSides) -> String {
         let sides = [insets.top, insets.right, insets.bottom, insets.left].map { max(0, $0.isFinite ? $0 : 0) }
-        let name = "stateui-padding-" + sides.map { css($0).replacing(".", with: "_") }.joined(separator: "-")
+        let name = "stateui-padding-" + sides.map(named).joined(separator: "-")
         let room = sides.map { css($0) + "px" }.joined(separator: " ")
         // A menu button's and a split button's room is their buttons', which hold the words: a split button's arrow
         // keeps the theme's room across.
@@ -114,9 +114,10 @@ enum GTKStyleSheet {
         }
     }
 
-    /// A number as a class's name writes it: a point as an underscore, a minus as `m`.
+    /// A number as a class's name writes it: a point as an underscore, a minus as `m`, an exponent's plus as `p` -
+    /// a name a selector takes.
     private static func named(_ number: Double) -> String {
-        css(number).replacing(".", with: "_").replacing("-", with: "m")
+        css(number).replacing(".", with: "_").replacing("-", with: "m").replacing("+", with: "p")
     }
 
     /// The class drawing a button's box: its fill - a little fainter under the pointer and fainter again pressed,
@@ -132,14 +133,14 @@ enum GTKStyleSheet {
             face += "background: \(css(fill)); box-shadow: none; "
         }
         if let stroke, let lineWidth {
-            name += "-s" + hex(stroke) + "-w" + css(lineWidth).replacing(".", with: "_")
+            name += "-s" + hex(stroke) + "-w" + named(lineWidth)
             face += "border: \(css(lineWidth))px solid \(css(stroke)); "
         }
         if let shape {
             let part: String
             (part, corners) = switch shape {
             case .rectangle: ("0", "0")
-            case .roundedRectangle(let radius): (css(radius).replacing(".", with: "_"), css(radius) + "px")
+            case .roundedRectangle(let radius): (named(radius), css(radius) + "px")
             // GTK cuts corners wider than the box down alike, to half its shorter side: a capsule at any size.
             case .capsule: ("capsule", "9999px")
             // A share of the box's own sides, across and down: an oval.
@@ -257,7 +258,7 @@ enum GTKStyleSheet {
         let (size, weight) = look.gtkStanding
         // In typographic points where the words scale, which the desktop's text scale applies to; in pixels where not.
         if let size = size ?? (look.scales ? nil : GTKEnvironment.fontSize), size > 0 {
-            name += "-s" + css(size).replacing(".", with: "_") + (look.scales ? "" : "x")
+            name += "-s" + named(size) + (look.scales ? "" : "x")
             body += look.scales ? "font-size: \(css(TextLook.typographic(size)))pt; " : "font-size: \(css(size))px; "
         }
         if let weight {
@@ -329,8 +330,8 @@ enum GTKStyleSheet {
         }.joined()
     }
 
-    /// A number as CSS writes it: whole without a point.
+    /// A number as CSS writes it: whole without a point, where it is a whole number Int holds.
     private static func css(_ number: Double) -> String {
-        number == number.rounded() ? String(Int(number)) : String(number)
+        Int(exactly: number).map(String.init) ?? String(number)
     }
 }

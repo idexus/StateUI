@@ -64,7 +64,7 @@ extension MountedElement {
         var (child, each) = (self, parent)
         while let element = each, element.type != .window, element.type != .sheet {
             if element.type == .splitView {
-                return (element, element.arrangedChildren.first === child ? .sidebar : .detail)
+                return (element, element.children.first === child ? .sidebar : .detail)
             }
             (child, each) = (element, element.parent)
         }
@@ -116,6 +116,13 @@ extension MountedElement {
         (barMaterial.painted, barValue(.barForegroundColor))
     }
 
+    /// The bar's colors where a journey carrying them lands - what a host painting its bar only at rest shows, never
+    /// a color on its way.
+    /// Design: docs/design/platforms/gtk/motion.md#what-moves
+    public var restingBarColors: (background: HostValue?, foreground: HostValue?) {
+        (HostMaterial(barValue(.barBackground, atRest: true)).painted, barValue(.barForegroundColor, atRest: true))
+    }
+
     /// What this element's bar is made of, the nearest declared on its path; empty for the platform's own.
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     public var barMaterial: HostMaterial {
@@ -145,28 +152,24 @@ extension MountedElement {
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     public var tabViewsShown: [MountedElement] {
         var shown: [MountedElement] = type == .tabView ? [self] : []
-        for child in children where NodeType.pageTypes.contains(child.type) { shown += child.tabViewsShown }
+        for child in arrangedChildren where NodeType.pageTypes.contains(child.type) { shown += child.tabViewsShown }
         return shown
     }
 
-    /// The line under this page's title on its bar: its own subtitle; nil where it says none, or an empty one.
-    /// Design: docs/design/host/pages.md#a-pages-title-area
-    public var barSubtitle: String? {
-        value(PageContract.subtitle.token)?.string.flatMap { $0.isEmpty ? nil : $0 }
-    }
-
     /// What this page's bar says where it names the application - a sidebar's page's: its title, else the
-    /// application's `applicationName`; the line under it; and its picture.
+    /// application's `applicationName`, and its picture.
     /// Design: docs/design/host/pages.md#a-pages-title-area
     public func titleArea(applicationName: String) -> WindowChrome.TitleArea {
         let title = barTitle(applicationName: applicationName)
         return WindowChrome.TitleArea(
-            title: title.isEmpty ? nil : title, subtitle: barSubtitle, icon: HostPicture(value(.icon)))
+            title: title.isEmpty ? nil : title, icon: HostPicture(value(.icon)))
     }
 
     /// `member` of the bar: this element's own where it declares one, else the nearest arrangement's whose bar it
-    /// wears - around it, and a sidebar's own split view.
-    public func barValue(_ member: Prop) -> HostValue? {
-        ([self] + barArrangements.reversed()).lazy.compactMap { $0.value(member) }.first
+    /// wears - around it, and a sidebar's own split view; where a journey carrying it lands, `atRest`.
+    public func barValue(_ member: Prop, atRest: Bool = false) -> HostValue? {
+        ([self] + barArrangements.reversed()).lazy.compactMap { element in
+            (atRest ? element.destination(member) : nil) ?? element.value(member)
+        }.first
     }
 }

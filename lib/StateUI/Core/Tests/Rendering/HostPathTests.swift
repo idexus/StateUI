@@ -47,6 +47,21 @@ final class HostPathTests: XCTestCase {
         ])
     }
 
+    /// An arc's two flags are one digit each, so a path written without spaces - as minified icons are - reads the
+    /// flags and the end apart.
+    func testArcFlagsWrittenTogetherAreReadOneDigitEach() throws {
+        XCTAssertEqual(try XCTUnwrap(HostPath(svg: "M0 0a1 1 0 011 1")).commands, [
+            .move(.zero),
+            .arc(radiusX: 1, radiusY: 1, rotation: 0, largeArc: false, sweep: true, end: Point(1, 1)),
+        ])
+        XCTAssertEqual(try XCTUnwrap(HostPath(svg: "M0 0A5 5 0 1110 10,5 5 0 0,0 0 0")).commands, [
+            .move(.zero),
+            .arc(radiusX: 5, radiusY: 5, rotation: 0, largeArc: true, sweep: true, end: Point(10, 10)),
+            .arc(radiusX: 5, radiusY: 5, rotation: 0, largeArc: false, sweep: false, end: .zero),
+        ])
+        XCTAssertNil(HostPath(svg: "M0 0a1 1 0 211 1"), "a flag is 0 or 1")
+    }
+
     func testMalformedOrNonFinitePathIsRejectedAsAWhole() {
         XCTAssertNil(HostPath(svg: "M 0 0 L 10"))
         XCTAssertNil(HostPath(svg: "M 0 0 A 10 10 0 2 0 20 20"))

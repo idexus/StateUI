@@ -39,7 +39,7 @@ private struct StyledBarApplication: Application {
 
     var body: some Scene {
         WindowGroup {
-            Text("Notes").title("Notes").toolbar { ToolbarButton("Save") }
+            Text("Notes").pageTitle("Notes").toolbar { ToolbarButton("Save") }
         }
     }
 }

@@ -24,8 +24,9 @@ MenuBar 4
 MenuItem 4
 Window 13
 Scene 4
-Overlay 5
+Overlay 6
 BarElement 15
+android BarElement 2
 NavigationStack 3
 uikit WebView 2
 android WebView 3
@@ -39,9 +40,9 @@ FontElement 5
 winui PageElement 2
 DatePicker 6
 TimePicker 6
-Picker 6
+Picker 8
 Image 3
-Page 9
+Page 10
 PageElement 6
 View 23
 VisualElement 28
@@ -82,7 +83,7 @@ CheckBox 3
 Ellipse 2
 Grid 2
 HStack 5
-ItemsView 5
+ItemsView 6
 Line 3
 Map 4
 Path 2
@@ -93,7 +94,7 @@ VStack 3
 WebView 4
 ZStack 2
 Popover 6
-TextualElement 3
+TextualElement 4
 Link 3
 TextAndIconElement 2
 BottomBar 5
@@ -109,3 +110,4 @@ ToolbarLabel 3
 ContentModeElement 2
 RangeElement 2
 HoverElement 2
+PresentedElement 2

@@ -21,11 +21,14 @@ enum AppKitRealization {
     static let ownSteps = "VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - "
         + "which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps."
 
-    /// Every record, the tiers' first.
     /// Why no element is pulled to refresh here.
     private static let noPull = "AppKit offers no pull to refresh: a Mac application refreshes by a command - a "
         + "menu item, a toolbar button, ⌘R."
 
+    /// What the language of a branch reaches on AppKit.
+    private static let wordsAlone = "A text's words carry it for VoiceOver; AppKit gives no other view a language of its own."
+
+    /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         .complete(BottomBarContract.scrollEdge),
         // MARK: Tiers - a member every wearer realizes alike
@@ -74,6 +77,9 @@ enum AppKitRealization {
         .partial(ViewContract.panTouchCount,
             missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete(VisualElementContract.layoutDirection),
+        .partial(LanguageElementContract.language, on: TextContract.self, missing: Self.wordsAlone),
+        .partial(LanguageElementContract.language, on: WindowContract.self, missing: Self.wordsAlone),
+        .notPlanned(LanguageElementContract.language, reason: "AppKit gives a view no language of its own: VoiceOver reads it in the system's."),
         .complete(StyledElementContract.style, on: VisualElementContract.self),
         .notPlanned(FontElementContract.isFontAutoScalingEnabled,
             reason: "macOS gives an application no text size of the user's to follow."),
@@ -164,7 +170,6 @@ enum AppKitRealization {
         .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
-        .complete(PageContract.subtitle),
         // A page is no `VisualElement`: it wears `PageElement` alone, so the
         // tier's record about a background does not reach it.
         .complete(BackgroundElementContract.background, on: PageElementContract.self),

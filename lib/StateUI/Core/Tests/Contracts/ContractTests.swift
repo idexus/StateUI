@@ -176,7 +176,7 @@ final class ContractTests: XCTestCase {
         }
 
         let samples: [any HostRepresentable & Equatable] = [
-            true, 3, 0.5, "text", Name("Card"),
+            true, 3, 0.5, "text", Name("Card"), LocaleTag("sr-Latn-RS"),
             Color.tomato, Color(light: .white, dark: .black),
             Brush.solidColor(.gold),
             Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]),

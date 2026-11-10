@@ -3,7 +3,7 @@
 
 import UIKit
 import UniformTypeIdentifiers
-@_spi(Host) import StateUI
+@_spi(Host) @testable import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIUIKit
 import XCTest
@@ -12,12 +12,13 @@ import XCTest
 private struct Saving: View {
     @Environment(\.window) private var window
     @State private var answer = "-"
+    var name = "Note"
 
     var body: some View {
         VStack {
             Button("Save").onClicked(policy: .ignoreWhileRunning) {
                 let text = FileType("Text", extensions: ["txt"])
-                answer = try await window.saveFile(Array("Kept".utf8), name: "Note", types: [text])?.name ?? "nothing"
+                answer = try await window.saveFile(Array("Kept".utf8), name: name, types: [text])?.name ?? "nothing"
             }
             Text(answer)
         }
@@ -60,6 +61,28 @@ final class UIKitFileDialogTests: XCTestCase {
         XCTAssertEqual(host.views(UIKitTextView.self).last?.attributedText?.string, "UIKitFileDialogTests.txt")
         XCTAssertEqual(try String(contentsOf: place, encoding: .utf8), "Kept")
         XCTAssertFalse(FileManager.default.fileExists(atPath: exported.path), "the file exported goes once saved")
+    }
+
+    /// A save the application names nothing exports a file named as the library names one, in the system's language,
+    /// ending in its first kind's extension.
+    @MainActor
+    func testASaveNamedNothingExportsAFileNamedInTheSystemsLanguage() throws {
+        let locale = StandardEnvironment.locale
+        let before = HostLocaleInfo(
+            language: locale.language, timeZone: locale.timeZone,
+            uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
+            isMetric: locale.isMetric, writingDirection: locale.writingDirection, languages: locale.languages)
+        defer { HostBoundary.setLocaleInfo(before) }
+        HostBoundary.setLocaleInfo(HostLocaleInfo(
+            language: "pl-PL", timeZone: before.timeZone, uses24HourClock: true,
+            firstDayOfWeek: before.firstDayOfWeek, isMetric: true, writingDirection: .leftToRight))
+        let host = UIKitRenderer.running { Saving(name: "") }
+        defer { host.finish() }
+        host.views(UIKitButtonView.self).first?.sendActions(for: .primaryActionTriggered)
+        host.settle { host.fileToolkit.showing?.picker?.presentingViewController != nil }
+
+        XCTAssertEqual(try XCTUnwrap(host.fileToolkit.showing?.exported).lastPathComponent, "Bez tytułu.txt")
+        host.fileToolkit.showing?.chooseForTesting([])
     }
 
     @MainActor

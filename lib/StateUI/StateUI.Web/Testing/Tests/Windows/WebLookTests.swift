@@ -180,7 +180,7 @@ final class WebLookTests: XCTestCase {
         defer { WebBrowser.ask([("density", .number(1))]) }
         let host = WebRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Text("Root").title("Toolbar and menus").toolbar {
+                Text("Root").pageTitle("Toolbar and menus").toolbar {
                     ToolbarGroup {
                         ToolbarButton("Save")
                         ToolbarButton("Add")
@@ -239,9 +239,9 @@ final class WebLookTests: XCTestCase {
         defer { WebBrowser.ask([("density", .number(1))]) }
         let host = WebRenderer.running {
             SplitView {
-                Text("Samples").title("Gallery")
+                Text("Samples").pageTitle("Gallery")
             } detail: {
-                Text("Shortcut").title("Keyboard shortcut").toolbar {
+                Text("Shortcut").pageTitle("Keyboard shortcut").toolbar {
                     ToolbarGroup {
                         ToolbarButton("Mark")
                         ToolbarButton("Code")
@@ -274,7 +274,7 @@ final class WebLookTests: XCTestCase {
         let host = WebRenderer.running {
             TabView([0, 1]) { tab in
                 VStack { Button("Reset") }
-                    .title("Tab \(tab)")
+                    .pageTitle("Tab \(tab)")
                     .toolbar { ToolbarButton("Share") }
             }
         }
@@ -296,7 +296,7 @@ final class WebLookTests: XCTestCase {
         defer { WebBrowser.ask([("hover", .words(""))]) }
         let host = WebRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Text("Root").title("Notes").toolbar { ToolbarButton("Save") }
+                Text("Root").pageTitle("Notes").toolbar { ToolbarButton("Save") }
             } destination: { _ in Text("Pushed") }
         }
         let save = "[...document.querySelectorAll('.stateui-window > .stateui-bar button')]"
@@ -327,7 +327,7 @@ final class WebLookTests: XCTestCase {
         let style = State(wrappedValue: ToolbarStyle.glass)
         let host = WebRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Text("Root").title("Notes").toolbar {
+                Text("Root").pageTitle("Notes").toolbar {
                     ToolbarGroup {
                         ToolbarButton("Add")
                         ToolbarButton("Edit")
@@ -371,7 +371,7 @@ final class WebLookTests: XCTestCase {
         let style = State(wrappedValue: ToolbarStyle.glass)
         let host = WebRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Text("Root").title("Notes").toolbar {
+                Text("Root").pageTitle("Notes").toolbar {
                     ToolbarGroup {
                         ToolbarButton("Add")
                         ToolbarButton("Edit").isEnabled(false)
@@ -419,7 +419,7 @@ final class WebLookTests: XCTestCase {
     func testASettingStandingOnKeepsItsTintUnderThePointer() throws {
         let host = WebRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Text("Root").title("Notes").toolbar { ToolbarToggle("Pin", isOn: true) }
+                Text("Root").pageTitle("Notes").toolbar { ToolbarToggle("Pin", isOn: true) }
             } destination: { _ in Text("Pushed") }
             .toolbarStyle(.glass)
         }
@@ -450,7 +450,7 @@ final class WebLookTests: XCTestCase {
     func testABarButtonSayingItsRoomIsAsTallAsItsWordsAndRoom() throws {
         let host = WebRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Text("Root").title("Notes").toolbar {
+                Text("Root").pageTitle("Notes").toolbar {
                     ToolbarButton("Save").padding(horizontal: 10, vertical: 4)
                     ToolbarButton("Sort")
                 }
@@ -472,9 +472,9 @@ final class WebLookTests: XCTestCase {
     func testTheApplicationsNameStandsAtTheStartOverTheSidebar() throws {
         let host = WebRenderer.running {
             SplitView {
-                Text("Samples").title("Gallery")
+                Text("Samples").pageTitle("Gallery")
             } detail: {
-                Text("Detail").title("Page")
+                Text("Detail").pageTitle("Page")
             }
             .showsSidebar(State(wrappedValue: true).projectedValue)
         }
@@ -490,14 +490,14 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(start, 20, accuracy: 1, "in line with a row's content")
     }
 
-    /// The application's mark - the sidebar's page's picture - stands before its name over the sidebar, as tall as
-    /// its name and the line under it and as wide as its picture is at that height.
+    /// The application's mark - the sidebar's page's picture - stands before its name over the sidebar, 32 high and
+    /// as wide as its picture is at that height.
     func testTheApplicationsMarkStandsBeforeItsNameOverTheSidebar() throws {
         let host = WebRenderer.running {
             SplitView {
-                Text("Samples").title("Gallery").subtitle("Every sample").pageIcon("test_dot.png")
+                Text("Samples").pageTitle("Gallery").pageIcon("test_dot.png")
             } detail: {
-                Text("Detail").title("Page")
+                Text("Detail").pageTitle("Page")
             }
             .showsSidebar(State(wrappedValue: true).projectedValue)
         }
@@ -524,7 +524,7 @@ final class WebLookTests: XCTestCase {
         let clear = State(wrappedValue: true)
         let host = WebRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Grid { ScrollView { Text("rows").height(2000) }.id("rows") }.ignoresSafeArea(.all).title("Clear")
+                Grid { ScrollView { Text("rows").height(2000) }.id("rows") }.ignoresSafeArea(.all).pageTitle("Clear")
             } destination: { _ in Text("Pushed") }
             .barBackground(clear.wrappedValue ? .transparent : .white)
         }
@@ -560,7 +560,7 @@ final class WebLookTests: XCTestCase {
         let edge = State(wrappedValue: ScrollEdge.hard)
         let host = WebRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Grid { ScrollView { Text("rows").height(2000) }.id("rows") }.ignoresSafeArea(.all).title("Edge")
+                Grid { ScrollView { Text("rows").height(2000) }.id("rows") }.ignoresSafeArea(.all).pageTitle("Edge")
             } destination: { _ in Text("Pushed") }
             .barBackground(.transparent)
             .barScrollEdge(edge.wrappedValue)
@@ -589,7 +589,7 @@ final class WebLookTests: XCTestCase {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     Grid { ScrollView { Text("rows").height(2000) }.id("rows") }
                         .ignoresSafeArea(under.wrappedValue ? .all : [])
-                        .title("Sheet")
+                        .pageTitle("Sheet")
                 } destination: { _ in Text("Next") }
                 .barBackground(.transparent)
             }
@@ -770,8 +770,8 @@ final class WebLookTests: XCTestCase {
     /// own scheme - the window's bar's and a strip of tabs' alike, as the host layer's rule says.
     func testWordsOnALightBandStandDark() throws {
         let host = WebRenderer.running {
-            TabView([0, 1]) { tab in Text("Tab \(tab)").title("Tab \(tab)") }
-                .title("Light")
+            TabView([0, 1]) { tab in Text("Tab \(tab)").pageTitle("Tab \(tab)") }
+                .pageTitle("Light")
                 .barBackground(.white)
         }
         host.settle { (try? self.look(".stateui-tab-strip > button", "color")) != nil }
@@ -798,9 +798,9 @@ final class WebLookTests: XCTestCase {
         let shows = State(wrappedValue: true)
         let host = WebRenderer.running {
             SplitView {
-                Text("Folders").title("Library")
+                Text("Folders").pageTitle("Library")
             } detail: {
-                Text("Books").title("All books")
+                Text("Books").pageTitle("All books")
             }
             .showsSidebar(shows.projectedValue)
             .toolbar { ToolbarButton("Add").placement(.sidebar) }
@@ -823,9 +823,9 @@ final class WebLookTests: XCTestCase {
         let shows = State(wrappedValue: true)
         let host = WebRenderer.running {
             SplitView {
-                Text("Folders").title("Library")
+                Text("Folders").pageTitle("Library")
             } detail: {
-                Text("Books").title("All books")
+                Text("Books").pageTitle("All books")
             }
             .showsSidebar(shows.projectedValue)
         }

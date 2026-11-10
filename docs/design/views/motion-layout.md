@@ -89,7 +89,12 @@ answers as it can: one placement a view, in the items' order - fewer stand
 the rest at the top left, more let the extra go - and every number finite: a
 division by nothing or an infinity stands as a placement at the top left
 holds that number, its bounds at nought and its opacity at one. Each is said
-once (`complain`), and no host is handed a number it cannot place.
+once (`complain`), and no host is handed a number it cannot place. What a
+host tells the run is taken the same way: a hand's move or speed, two
+fingers' degrees and a held view's place that is no finite number is
+nought, a scale that is none or no larger than nought is one, and a wheel's
+notches of no number step nothing - the parameters the arithmetic is handed
+stay numbers.
 
 ## A view in its holder
 

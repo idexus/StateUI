@@ -91,6 +91,7 @@ class WinUIView {
         stateui_winui_set_opacity(handle, writtenOpacity)
         stateui_winui_set_z_index(handle, writtenZIndex)
         stateui_winui_set_flow_direction(handle, writtenRightToLeft)
+        if let language { stateui_winui_set_language(handle, language.identifier) }
         if offered != .none { stateui_winui_offer_drag(handle, number, offered.words, offered.takesWords, offered.takesFiles) }
         writtenTip = nil
         writeTransform()
@@ -186,6 +187,18 @@ class WinUIView {
         stateui_winui_set_flow_direction(handle, writtenRightToLeft)
     }
 
+    /// The language the view says its words, and those of the views in it, are written in; nil where it holds its
+    /// parent's.
+    private(set) var language: LocaleTag?
+
+    /// Says the view's words are written in `language`, which WinUI hands to what stands in it; nil holds its
+    /// parent's.
+    func setLanguage(_ language: LocaleTag?) {
+        guard language != self.language else { return }
+        self.language = language
+        stateui_winui_set_language(handle, language?.identifier)
+    }
+
     /// Where the view is drawn among its layout's children, written only where it differs.
     func setZIndex(_ z: Int32) {
         guard z != writtenZIndex else { return }
@@ -247,6 +260,18 @@ class WinUIView {
         return size
     }
 
+    /// A distance as XAML's layout holds it: as it is, or none where no 32-bit pixel holds it - XAML counts in floats
+    /// and refuses a place past them, as GTK's views stand empty past their pixels.
+    /// Design: docs/design/host/layout.md#finite-distances
+    static func held(_ distance: Double) -> Double {
+        GeometryArithmetic.pixels(distance) == nil ? 0 : distance
+    }
+
+    /// `place` as XAML's layout holds it, each part alone (`held`).
+    static func held(_ place: Rect) -> Rect {
+        Rect(x: held(place.x), y: held(place.y), width: held(place.width), height: held(place.height))
+    }
+
     /// The element's size for the room offered, in DIPs; nil offers any.
     /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
     func measure(width: Double?, height: Double?) -> LayoutSize {
@@ -270,7 +295,8 @@ class WinUIView {
                 _ = measure(width: width, height: nil)
                 layout.standsAt = width
             }
-            stateui_winui_arrange(handle, place.x, place.y, place.width, place.height)
+            let held = Self.held(place)
+            stateui_winui_arrange(handle, held.x, held.y, held.width, held.height)
         } else {
             placingLayout?.invalidateArrange()
         }

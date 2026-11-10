@@ -14,6 +14,10 @@ final class WebSheet {
     let bar = WebWindowBar()
     private let room = WebLayoutView(arrangement: .single)
 
+    /// What the sheet lays over its page, each layer over the dialog whole, the first lowest; a touch beside what
+    /// they hold goes on to the page.
+    private let overlays = WebLayoutView(arrangement: .layers)
+
     /// The view the sheet shows.
     let page: WebDOMView
 
@@ -24,8 +28,13 @@ final class WebSheet {
         self.page = page
         dialog.attribute("class", "stateui-sheet")
         room.attribute("class", "stateui-sheet-room")
+        overlays.attribute("class", "stateui-overlays")
+        overlays.style("position", "absolute")
+        overlays.style("inset", "0")
+        overlays.setLetsInputThrough(true)
         WebRelay.insert(bar.node, into: dialog.node, at: 0)
         WebRelay.insert(room.node, into: dialog.node, at: 1)
+        WebRelay.insert(overlays.node, into: dialog.node, at: 2)
         room.setItems([(page, { LayoutValues() })])
         bar.onClose = { [weak self] in self?.onClosedByUser() }
         dialog.hear(.dismiss) { [weak self] in self?.onClosedByUser() }
@@ -35,6 +44,12 @@ final class WebSheet {
     func present() {
         WebRelay.insert(dialog.node, into: WebRelay.body, at: 0)
         WebRelay.showModal(dialog.node)
+    }
+
+    /// Lays `layers` over the page, the first lowest.
+    /// Design: docs/design/platforms/web/pages.md#overlays
+    func showOverlays(_ layers: [WebDOMView]) {
+        overlays.setItems(layers.map { ($0, { LayoutValues() }) })
     }
 
     /// Stands the sheet as large as its page where it `fits`, at the dialog's standard size otherwise (`SheetSize`).
@@ -64,8 +79,10 @@ final class WebSheet {
     func close() {
         WebRelay.closeModal(dialog.node)
         room.setItems([])
+        overlays.setItems([])
         bar.release()
         room.release()
+        overlays.release()
         dialog.release()
     }
 }

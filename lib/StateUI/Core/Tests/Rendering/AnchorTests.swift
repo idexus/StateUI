@@ -47,7 +47,7 @@ private struct TitledBranches: View {
 
     var body: some View {
         Group {
-            if wide.wrappedValue { Text("Wide").title("Wide") } else { Text("Narrow").title("Narrow") }
+            if wide.wrappedValue { Text("Wide").pageTitle("Wide") } else { Text("Narrow").pageTitle("Narrow") }
         }
         .onChanged(wide.wrappedValue) {}
     }

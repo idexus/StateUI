@@ -70,7 +70,9 @@ public enum WindowContract: ElementContract {
     public static let y = ElementProperty<Self, Double>("y", layer: .structure)
 
     /// The tiers it wears.
-    public static let tiers: [any Tier.Type] = [SessionElementContract.self, BackgroundElementContract.self]
+    public static let tiers: [any Tier.Type] = [
+        SessionElementContract.self, BackgroundElementContract.self, LanguageElementContract.self,
+    ]
 
     /// The element's own members.
     public static let members: [any ContractMember] = [created, destroying, floatsOnTop, height, hidesWhenInactive, isMaximizable, isMinimizable, maximumHeight, maximumWidth, minimumHeight, minimumWidth, title, width, windowKind, windowValue, x, y]

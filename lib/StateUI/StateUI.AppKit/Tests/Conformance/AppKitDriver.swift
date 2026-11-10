@@ -242,7 +242,10 @@ final class AppKitDriver: HostDriver {
         if property == .holdDuration, let hold = (element.native as? AppKitElement)?.holdRecognizer {
             return .number(hold.minimumPressDuration * 1000)
         }
-        if property == PageContract.subtitle.token, element.type == .page { return try subtitleHolds(element) }
+        if property == .language, let words = (element.native as? AppKitElement)?.view as? AppKitTextView {
+            // The language a text says over its words for VoiceOver - none to say it over where it holds none.
+            return words.language.map { LocaleTag($0).propValue }
+        }
         if property == .barBackground { return try barHolds(element) }
         if property == .barForegroundColor { return try barWordsColor(element) }
         if property == .icon, let button = (element.native as? AppKitElement)?.view as? AppKitButtonView {

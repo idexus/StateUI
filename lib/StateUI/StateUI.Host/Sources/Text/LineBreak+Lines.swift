@@ -17,9 +17,9 @@
     }
 
     /// The most lines the words stand on under `maximum`: one for a break that keeps one line, else `maximum` -
-    /// nil, no bound, where it is none or no more than nothing.
+    /// nil, no bound, where it is none, no more than nothing, or more than a toolkit's 32-bit count holds.
     public func lines(maximum: Int?) -> Int? {
-        wraps ? maximum.flatMap { $0 > 0 ? $0 : nil } : 1
+        wraps ? maximum.flatMap { $0 > 0 && $0 <= Int(Int32.max) ? $0 : nil } : 1
     }
 
     /// Whether the last line shown ends with an ellipsis: words that wrap under a limit of lines do, so the reader

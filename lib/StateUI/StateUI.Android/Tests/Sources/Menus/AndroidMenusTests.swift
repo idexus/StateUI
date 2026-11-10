@@ -12,6 +12,7 @@ final class AndroidMenusTests: XCTestCase {
         [
             ("testAContextMenuIsWrittenAsTheUserAsksAndItsItemsRun", testAContextMenuIsWrittenAsTheUserAsksAndItsItemsRun),
             ("testAViewWhoseMenuGoesOffersNone", testAViewWhoseMenuGoesOffersNone),
+            ("testAViewWhoseHoldAndMenuGoTakesNoLongPress", testAViewWhoseHoldAndMenuGoTakesNoLongPress),
             ("testEveryRowOfAShownMenuShowsItsWords", testEveryRowOfAShownMenuShowsItsWords),
         ]
     }
@@ -63,6 +64,40 @@ final class AndroidMenusTests: XCTestCase {
             let menu = TestMenus.empty()
             label.menuOpening(menu.reference)
             XCTAssertEqual(TestMenus.describe(menu), "")
+        }
+    }
+
+    /// A view held, then given a menu, then neither - whichever went first - takes no long press: it is a text again.
+    func testAViewWhoseHoldAndMenuGoTakesNoLongPress() throws {
+        try onMainActor {
+            let holds = State(wrappedValue: true)
+            let offers = State(wrappedValue: false)
+            let host = AndroidRenderer.running {
+                switch (holds.wrappedValue, offers.wrappedValue) {
+                case (true, false): return Text("Row").onHeld {}
+                case (true, true): return Text("Row").onHeld {}.contextMenu { MenuItem("Duplicate") }
+                case (false, true): return Text("Row").contextMenu { MenuItem("Duplicate") }
+                case (false, false): return Text("Row")
+                }
+            }
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
+            for (held, offered) in [(true, true), (false, true), (false, false)] {
+                (holds.wrappedValue, offers.wrappedValue) = (held, offered)
+                host.runtime.pump.turn()
+                XCTAssertTrue(host.views(AndroidTextView.self).first === label, "the same view")
+                XCTAssertEqual(Java.callBool(label.reference, JavaAPI.isLongClickable), held || offered,
+                    "held \(held), a menu \(offered)")
+            }
+
+            (holds.wrappedValue, offers.wrappedValue) = (false, true)
+            host.runtime.pump.turn()
+            (holds.wrappedValue, offers.wrappedValue) = (true, true)
+            host.runtime.pump.turn()
+            (holds.wrappedValue, offers.wrappedValue) = (true, false)
+            host.runtime.pump.turn()
+            (holds.wrappedValue, offers.wrappedValue) = (false, false)
+            host.runtime.pump.turn()
+            XCTAssertFalse(Java.callBool(label.reference, JavaAPI.isLongClickable), "the menu first, then the hold")
         }
     }
 

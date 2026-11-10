@@ -58,6 +58,7 @@ final class AndroidElement: NativeElement {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         if !wasDescribed, type == .page { paintBackground() }
         applyProperties(changed: changed)
+        speakLanguage(changed: changed)
         if let view, let host { element.applyDrawnChildren(to: view, through: AndroidRegistrations.registry, in: host.runtime) }
         configureGestures()
         view?.setFocusChanged(element.handler(.isFocusedChanged) == nil ? nil : { [weak self] focused in

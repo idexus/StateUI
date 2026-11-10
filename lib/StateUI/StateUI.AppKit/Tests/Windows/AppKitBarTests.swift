@@ -45,7 +45,6 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertTrue(window.titlebarAccessoryViewControllers.contains(accessory))
         XCTAssertFalse(controller.toolbarForTesting.toolbar.items.contains { $0.view === cluster })
         XCTAssertEqual(cluster.titleForTesting, "Notes")
-        XCTAssertEqual(cluster.subtitleForTesting, "Personal")
         XCTAssertEqual(cluster.titleColorForTesting, .labelColor)
         XCTAssertNotNil(cluster.imageForTesting)
         XCTAssertTrue(window.styleMask.contains(.fullSizeContentView))
@@ -55,16 +54,15 @@ final class AppKitBarTests: XCTestCase {
     }
 
     /// With nothing said any more - each value arriving as nothing - the window keeps the plain native chrome:
-    /// no accessory, no line under the title, the system's background. A sidebar's page saying nothing names no
+    /// no accessory, the system's background. A sidebar's page saying nothing names no
     /// application: a Mac window names none of itself.
     @MainActor
     func testTakingTheBarAwayLeavesThePlainNativeWindowChrome() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.finish() }
 
-        renderer.applyForTesting(flyoutTree(bar(), menu: menu(), line: "Today"))
-        renderer.applyForTesting(flyoutTree(
-            bar().mapValues { _ in .nothing }, menu: menu().mapValues { _ in .nothing }, line: nil))
+        renderer.applyForTesting(flyoutTree(bar(), menu: menu()))
+        renderer.applyForTesting(flyoutTree(bar().mapValues { _ in .nothing }, menu: menu().mapValues { _ in .nothing }))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let window = try XCTUnwrap(controller.window)
@@ -72,7 +70,6 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertNil(controller.titleAccessoryForTesting)
         XCTAssertTrue(window.titlebarAccessoryViewControllers.isEmpty)
         XCTAssertEqual(window.title, "Page")
-        XCTAssertEqual(window.subtitle, "", "no line under the title")
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
         XCTAssertFalse(window.titlebarAppearsTransparent)
         XCTAssertNil((window.contentView as? AppKitWindowContentView)?.barBrush.color)
@@ -97,29 +94,25 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' color paints the bars alone")
     }
 
-    /// The title area follows what the sidebar's page says, in the same toolbar and accessory; the line under the
-    /// title follows the page naming the window, as the window's own subtitle.
+    /// The title area follows what the sidebar's page says, in the same toolbar and accessory.
     @MainActor
     func testTheTitleAreaUpdatesInPlace() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.finish() }
 
-        renderer.applyForTesting(flyoutTree(bar(), menu: menu(title: "Notes", subtitle: "Personal"), line: "Today"))
+        renderer.applyForTesting(flyoutTree(bar(), menu: menu(title: "Notes")))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let window = try XCTUnwrap(controller.window)
         let toolbar = try XCTUnwrap(window.toolbar)
         let accessory = try XCTUnwrap(controller.titleAccessoryForTesting)
 
-        XCTAssertEqual(window.subtitle, "Today")
-        renderer.applyForTesting(flyoutTree(bar(), menu: menu(title: "Archive", subtitle: "Shared"), line: "Yesterday"))
+        renderer.applyForTesting(flyoutTree(bar(), menu: menu(title: "Archive")))
 
         XCTAssertTrue(window.toolbar === toolbar)
         XCTAssertTrue(controller.titleAccessoryForTesting === accessory)
         XCTAssertEqual(window.title, "Page")
-        XCTAssertEqual(window.subtitle, "Yesterday")
         XCTAssertEqual(controller.titleClusterForTesting.titleForTesting, "Archive")
-        XCTAssertEqual(controller.titleClusterForTesting.subtitleForTesting, "Shared")
     }
 
     /// A stack declaring the bar keeps the page's content inside the native content layout, and a bar declared later
@@ -151,7 +144,7 @@ final class AppKitBarTests: XCTestCase {
         let under = State(wrappedValue: false)
         let renderer = AppKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).id("content").title("Under")
+                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).id("content").pageTitle("Under")
             } destination: { _ in Text("Next") }
         }
         defer { renderer.finish() }
@@ -178,7 +171,7 @@ final class AppKitBarTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue).id("scroll") }
                     .ignoresSafeArea(.all)
-                    .title("Rows")
+                    .pageTitle("Rows")
             } destination: { _ in Text("Next") }
         }
         defer { renderer.finish() }
@@ -214,7 +207,7 @@ final class AppKitBarTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue).id("scroll") }
                     .ignoresSafeArea(.all)
-                    .title("Rows")
+                    .pageTitle("Rows")
             } destination: { _ in Text("Next") }
             .barScrollEdge(edge.wrappedValue)
         }
@@ -308,14 +301,14 @@ private extension AppKitBarTests {
         return bar
     }
 
-    /// What a sidebar's page says of itself: its title, the line under it and its picture.
-    func menu(title: String = "Notes", subtitle: String = "Personal") -> [Prop: HostValue] {
-        [PageElementContract.title.token: .string(title), PageContract.subtitle.token: .string(subtitle), .icon: .string("notes.png")]
+    /// What a sidebar's page says of itself: its title and its picture.
+    func menu(title: String = "Notes") -> [Prop: HostValue] {
+        [PageElementContract.title.token: .string(title), .icon: .string("notes.png")]
     }
 
     /// A window whose page is a split view declaring `bar`: a menu saying `menu` of itself beside a stack over a long
-    /// scrolling page, whose line is `line`.
-    func flyoutTree(_ bar: [Prop: HostValue], menu said: [Prop: HostValue] = [:], line: String? = nil) -> HostPatch {
+    /// scrolling page.
+    func flyoutTree(_ bar: [Prop: HostValue], menu said: [Prop: HostValue] = [:]) -> HostPatch {
         let rows = (0..<30).map { index -> HostPatch in
             var row = HostPatch(id: .manual("row-\(index)"), type: .text)
             row.properties[.text] = .string("Row \(index)")
@@ -328,7 +321,6 @@ private extension AppKitBarTests {
         scroll.children = .arranged([stack])
         var page = HostPatch(id: .manual("page"), type: .page)
         page.properties[PageElementContract.title.token] = .string("Page")
-        page.properties[PageContract.subtitle.token] = line.map { .string($0) } ?? .nothing
         page.children = .arranged([scroll])
         var navigation = HostPatch(id: .manual("navigation"), type: .navigationStack)
         navigation.children = .arranged([page])

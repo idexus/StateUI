@@ -177,7 +177,7 @@
         ConformanceCase("Page.theVisiblePagesTitleNamesItsWindow", proves: [
             Covered(PageElementContract.title, on: "Page"),
         ]) { s in
-            s.start { VStack { Text("Page") }.title("Notes") }
+            s.start { VStack { Text("Page") }.pageTitle("Notes") }
 
             try s.settle { try s.held(WindowContract.title, on: s.element(ofType: WindowContract.nodeType)) == "Notes" }
             s.expect(try s.held(WindowContract.title, on: s.element(ofType: WindowContract.nodeType)), "Notes")
@@ -196,7 +196,7 @@
                     Text("Page")
                     Button("Rename").onClicked { title.wrappedValue = "Drafts" }.id("rename")
                 }
-                .title(title.projectedValue)
+                .pageTitle(title.projectedValue)
             }
             let window = try s.element(ofType: WindowContract.nodeType)
             try s.settle { try s.held(WindowContract.title, on: window) == "Notes" }
@@ -258,7 +258,7 @@ enum Presented {
             return written.worn(by: TabView([0]) { _ in VStack { Beside([Text("Inner")] + others) } })
         default:
             let words = VStack { Beside([Text("Page")] + others) }
-            if let title = value as? String, member.name == PageElementContract.title.name { return words.title(title) }
+            if let title = value as? String, member.name == PageElementContract.title.name { return words.pageTitle(title) }
             if let icon = value as? ImageSource, member.name == IconElementContract.icon.name { return words.pageIcon(icon) }
             return words
         }

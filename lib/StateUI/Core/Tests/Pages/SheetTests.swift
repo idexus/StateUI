@@ -19,7 +19,7 @@ private struct Presenting: View {
     var body: some View {
         Button("Edit")
             .sheet(isPresented: editing) {
-                Text("Editor").title("Editor")
+                Text("Editor").pageTitle("Editor")
             }
     }
 }
@@ -31,7 +31,7 @@ private struct PresentingANote: View {
     var body: some View {
         Text("Notes")
             .sheet(item: note) { note in
-                Text(note.name).title(note.name)
+                Text(note.name).pageTitle(note.name)
             }
     }
 }

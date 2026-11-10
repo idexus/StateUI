@@ -24,7 +24,11 @@ final class StillClock: FrameClock {
 /// A native half with nothing native behind it.
 @MainActor
 final class NoView: NativeElement {
-    let presentsView = true
+    let presentsView: Bool
+
+    init(presentsView: Bool = true) {
+        self.presentsView = presentsView
+    }
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { false }
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}

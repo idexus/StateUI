@@ -58,6 +58,33 @@
                 s.expect(places[3].x, places[0].x, within: 0.5, "the fourth under the first")
                 s.expect(places[0].width, width, within: 0.5)
             },
+            ConformanceCase("aGridWhoseWidthChangesLaysItsItemsInTheColumnsItNowHolds", proves: [
+                Covered(ItemsViewContract.itemsLayout),
+            ]) { s in
+                let wide = State(wrappedValue: false)
+                s.start {
+                    VStack {
+                        numbers().itemsLayout(.grid(minimumItemWidth: 90, spacing: 10))
+                            .width(wide.wrappedValue ? 300 : 200).height(400).id("list")
+                    }
+                }
+                s.settle { (try? item(3, in: s)) != nil }
+                // A toolkit counting whole pixels shares what is left among its columns: a pixel each way.
+                let (width, pixel) = ((300.0 - 2 * 10) / 3, 1.0)
+                wide.wrappedValue = true
+                s.settle {
+                    guard let places = try? (0...3).map({ try s.place(of: item($0, in: s)) }) else { return false }
+                    return places[2].y == places[0].y && places.allSatisfy { abs($0.width - width) <= pixel }
+                        && abs(places[2].x - places[0].x - 2 * (width + 10)) <= pixel
+                }
+                let places = try (0...3).map { try s.place(of: item($0, in: s)) }
+
+                s.expect(places[2].y, places[0].y, within: 0.5, "three columns now")
+                s.expect(places[1].x, places[0].x + width + 10, within: pixel, "sharing the new width, ten apart")
+                s.expect(places[2].x, places[0].x + 2 * (width + 10), within: pixel)
+                s.expect(places[3].x, places[0].x, within: 0.5, "the fourth under the first")
+                for place in places { s.expect(place.width, width, within: pixel, "a column's width") }
+            },
             ConformanceCase("aChoiceTheUserMakesLandsOnTheState", proves: [
                 Covered(ItemsViewContract.selectionMode), Covered(ItemsViewContract.selectedItems),
                 Covered(ItemsViewContract.selectedItemsChanged),

@@ -17,9 +17,6 @@
     /// leaves the title naming the window to the system alone.
     public var showsTitle = true
 
-    /// The line under the title: the subtitle of the page that names the window; nil for none.
-    public var subtitle: String?
-
     /// The stack whose top page the way back takes, and the way back's words.
     public var back: (stack: MountedElement, title: String)?
 
@@ -72,9 +69,9 @@
         title = arrangement?.titledPage?.value(PageElementContract.title.token)?.string
             ?? window.value(WindowContract.title.token)?.string
         showsTitle = arrangement?.titledPage?.value(.showsTitle)?.bool != false
-        subtitle = arrangement?.titledPage?.barSubtitle
         back = arrangement?.visibleBackStack.map { stack in
-            (stack, stack.children[stack.children.count - 2].value(.backButtonTitle)?.string ?? window.tree?.core.chromeWords.back ?? "")
+            (stack, stack.arrangedChildren.dropLast().last?.value(.backButtonTitle)?.string
+                ?? window.tree?.core.chromeWords.back ?? "")
         }
         if let page { actions = page.chromeActions }
         if let sidebar = arrangement?.sidebarPage { sidebarActions = sidebar.chromeActions }
@@ -91,26 +88,22 @@
         showsSidebarToggle = splitView?.offersSidebarToggle ?? false
     }
 
-    /// What names the application in the chrome: a title, the line under it and a picture by name.
+    /// What names the application in the chrome: a title and a picture by name.
     public struct TitleArea: Equatable, Sendable {
         /// The title; nil where the bar says none.
         public let title: String?
 
-        /// The line under the title; nil for none.
-        public let subtitle: String?
-
         /// The picture beside the title; nil for none.
         public let icon: HostPicture?
 
-        /// An area saying `title`, `subtitle` and `icon`.
-        public init(title: String?, subtitle: String?, icon: HostPicture?) {
+        /// An area saying `title` and `icon`.
+        public init(title: String?, icon: HostPicture?) {
             self.title = title
-            self.subtitle = subtitle
             self.icon = icon
         }
 
         /// Whether the area says nothing.
-        public var isEmpty: Bool { title == nil && subtitle == nil && icon == nil }
+        public var isEmpty: Bool { title == nil && icon == nil }
     }
 
     /// Whether the chrome shows what an element of `type` moves on a frame in `changed`: a window's frame, an
@@ -121,10 +114,10 @@
 
     private static let followed: Set<NodeType> = [.window, .navigationStack, .tabView, .splitView]
 
-    /// What of a page the chrome shows - its title, the line under it and its picture, its way back, its bar and the
-    /// back button's words: a change to one shows the chrome again, from a state too.
+    /// What of a page the chrome shows - its title and its picture, its way back, its bar and the back button's
+    /// words: a change to one shows the chrome again, from a state too.
     public static let pageValues: Set<Prop> = [
-        PageElementContract.title.token, PageContract.subtitle.token, .icon, .showsBackButton, .showsCloseButton, .backButtonTitle, .showsNavigationBar,
-        .showsTitle,
+        PageElementContract.title.token, .icon, .showsBackButton, .showsCloseButton, .backButtonTitle,
+        .showsNavigationBar, .showsTitle,
     ]
 }

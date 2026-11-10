@@ -4,9 +4,13 @@
 <!-- The page a Web head runs in: .scripts/Web/page.sh writes the application's names in place of the marks, the
      application's own scripts - its head's Page folder - in place of the scripts mark, each loaded before the
      application starts, and the Page folder's head.html, with the page's title, in place of the head mark. -->
-<html lang="en">
+<html>
 <head>
 <meta charset="utf-8">
+<script>
+  // The page is written in the browser's language until the application says its own on its views.
+  document.documentElement.lang = navigator.language;
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
   // Safari on iOS zooms the page into a field it gives the keyboard to, losing where the user was: no native field
@@ -39,7 +43,7 @@
 </head>
 <body>
 <!-- What the page shows while the application loads: its name, a ring turning and how much of it has come. -->
-<div class="stateui-loading" id="stateui-loading" role="progressbar" aria-label="Loading {{application}}">
+<div class="stateui-loading" id="stateui-loading" role="progressbar" aria-label="{{application}}">
   <div class="stateui-loading-name">{{application}}</div>
   <div class="stateui-activity" data-running></div>
   <progress class="stateui-loading-bar" max="1" value="0"></progress>

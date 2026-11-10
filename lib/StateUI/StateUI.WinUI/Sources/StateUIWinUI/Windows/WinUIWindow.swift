@@ -19,7 +19,7 @@ final class WinUIWindow {
     /// The view the window shows.
     private(set) var content: WinUIView?
 
-    /// What the window lays over its page and its sheets.
+    /// What the window lays over its page, under its sheets.
     private(set) var overlays: [WinUIView] = []
 
     /// The window's chrome, its menu bar, and the row a window's tabs stand in.
@@ -186,8 +186,8 @@ final class WinUIWindow {
         stateui_winui_window_pop_sheet(handle)
     }
 
-    /// Lays `views` over the page and its sheets, where the page stands, the first lowest - a click beside what they
-    /// hold goes on to them; none takes the layer away.
+    /// Lays `views` over the page, where it stands, and under its sheets, the first lowest - a click beside what they
+    /// hold goes on to the page; none takes the layer away.
     /// Design: docs/design/platforms/winui/pages.md#the-windows-overlays
     func showOverlays(_ views: [WinUIView]) {
         overlays = views

@@ -66,8 +66,7 @@ private struct EveryPropertyPage: View {
                 .isEnabled(true)
             }
             // The page's own.
-            .title("Everything")
-            .subtitle("All of it")
+            .pageTitle("Everything")
             .showsTitle(false)
             .pageIcon(ImageSource("tab.png"))
             .pageBackground(.whiteSmoke)
@@ -114,8 +113,7 @@ private struct KnobPage: View {
 
     var body: some View {
         VStack { Button("dress").onClicked { on = true } }
-            .title(on ? "On" : "Off")
-            .subtitle(on ? "Lit" : "Dark")
+            .pageTitle(on ? "On" : "Off")
             .showsTitle(on)
             .pageIcon(ImageSource(on ? "on.png" : "off.png"))
             .pageBackground(on ? .red : .whiteSmoke)
@@ -185,7 +183,7 @@ private struct Named: View {
     let name: String
 
     var body: some View {
-        Text(name).title(name)
+        Text(name).pageTitle(name)
     }
 }
 
@@ -201,7 +199,7 @@ private struct Renaming: View {
 
     var body: some View {
         builds.count += 1
-        return Button("rename").onClicked { name = "Renamed" }.title(name)
+        return Button("rename").onClicked { name = "Renamed" }.pageTitle(name)
     }
 }
 
@@ -212,14 +210,14 @@ private struct Following: View {
 
     var body: some View {
         builds.count += 1
-        return Text("following").title(name).backButtonTitle(name)
+        return Text("following").pageTitle(name).backButtonTitle(name)
     }
 }
 
 /// A view saying a title of its page deeper than the view the page shows.
 private struct Deep: View {
     var body: some View {
-        VStack { Text("deep").title("Deep") }
+        VStack { Text("deep").pageTitle("Deep") }
     }
 }
 
@@ -264,7 +262,7 @@ final class PageTests: XCTestCase {
 
     /// What is written ON a composed view stands over what its body says, the way every modifier on one does.
     func testWhatIsWrittenOnAViewStandsOverItsBody() {
-        let page = Renders().render(Node.page(Named(name: "Home").title("Away").pageIcon("away.png")))
+        let page = Renders().render(Node.page(Named(name: "Home").pageTitle("Away").pageIcon("away.png")))
 
         XCTAssertEqual(page.props["PageElement.title"], .string("Away"))
         XCTAssertEqual(page.props[.icon], .string("away.png"))
@@ -339,8 +337,8 @@ final class PageTests: XCTestCase {
     /// what the parent builds it with is on the page in the next message.
     func testAPlainViewOnAPageFollowsItsParent() {
         let renders = Renders()
-        renders.render(Node.page(Text("one").title("one")))
-        let second = renders.render(Node.page(Text("two").title("two")))
+        renders.render(Node.page(Text("one").pageTitle("one")))
+        let second = renders.render(Node.page(Text("two").pageTitle("two")))
 
         XCTAssertEqual(second.children.first?.props[.text], .string("two"))
         XCTAssertEqual(second.props["PageElement.title"], .string("two"))
@@ -395,7 +393,7 @@ final class PageTests: XCTestCase {
     func testAnArrangementTakesItsTitleAndIcon() {
         let path = State<[Int]>([])
         let stack = NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }
-            .title("Home")
+            .pageTitle("Home")
             .pageIcon("house.png")
             .showsNavigationBar(false)
 
@@ -560,7 +558,7 @@ final class PageTests: XCTestCase {
 
         let page = Self.arrived(EveryPropertyPage()).props["PageElement.title"]
         let arrangement = Renders().render(Node.page(
-            NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }.title("Everything")))
+            NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }.pageTitle("Everything")))
             .props["PageElement.title"]
 
         XCTAssertEqual(page, .string("Everything"))
@@ -671,7 +669,7 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(page.props, [
             "backButtonTitle": .string("Back"), "background": Color(hex: 0xF5F5F5).propValue,
             "showsBackButton": .bool(false), "showsNavigationBar": .bool(false), "icon": .string("tab.png"),
-            "PageElement.title": .string("Everything"), "Page.subtitle": .string("All of it"), "showsTitle": .bool(false),
+            "PageElement.title": .string("Everything"), "showsTitle": .bool(false),
             "showsCloseButton": .bool(false),
         ])
         XCTAssertEqual(page.eventNames, HostPatch.pageEvents)

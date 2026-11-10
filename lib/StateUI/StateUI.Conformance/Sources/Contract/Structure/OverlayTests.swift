@@ -53,6 +53,49 @@
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("home's")) == true }
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("home's")), true, "back with its page")
             },
+            ConformanceCase("aSheetsOverlayStandsOverItsSheet", proves: [
+                Covered(OverlayContract.self),
+            ], needs: [Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
+                s.start {
+                    Rectangle()
+                        .fill(.red)
+                        .sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                            Rectangle().fill(.blue).id("sheet")
+                                .overlays { notice() }
+                        }
+                }
+                s.settle { (try? s.element("notice")) != nil }
+                let notice = try s.element("notice")
+                try s.settle { try s.isShown("sheet") && s.reaches(notice, at: Point(40, 20)) }
+                s.expect(try s.isShown("sheet"), true, "the sheet shows")
+                s.expect(try s.reaches(notice, at: Point(40, 20)), true, "its overlay takes a press over it")
+            },
+            ConformanceCase("aWindowsOverlayStandsUnderItsSheets", proves: [
+                Covered(OverlayContract.self),
+            ], needs: [Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
+                let shows = State(wrappedValue: true)
+                s.start {
+                    Rectangle()
+                        .fill(.red)
+                        .sheet(isPresented: shows.projectedValue) { Rectangle().fill(.blue).id("sheet") }
+                        .overlays { Rectangle().fill(.green).id("cover") }
+                }
+                s.settle { (try? s.element("sheet")) != nil && (try? s.element("cover")) != nil }
+                try s.settle { try s.isShown("sheet") && s.isShown("cover") }
+                // Wherever the platform stands its sheet, an overlay over the whole window covers its middle.
+                let sheet = try s.element("sheet")
+                let middle = { (element: MountedElement) throws -> Point in
+                    let place = try s.place(of: element)
+                    return Point(place.width / 2, place.height / 2)
+                }
+                try s.settle { try s.reaches(sheet, at: middle(sheet)) }
+                s.expect(try s.reaches(sheet, at: middle(sheet)), true, "the sheet over the window's overlay takes the press")
+
+                shows.wrappedValue = false
+                let cover = try s.element("cover")
+                try s.settle { try s.reaches(cover, at: middle(cover)) }
+                s.expect(try s.reaches(cover, at: middle(cover)), true, "the sheet gone, the overlay takes it")
+            },
             ConformanceCase("anOverlayDeclaredFurtherInStandsOverThoseAround", proves: [
                 Covered(OverlayContract.self),
             ]) { s in
@@ -76,6 +119,11 @@
             },
         ]
     }
+}
+
+/// A notice in the middle of what it is laid over.
+@MainActor private func notice() -> some View {
+    Text("Notice").width(80).height(40).horizontalAlignment(.center).verticalAlignment(.center).id("notice")
 }
 
 /// A page that declares a notice over its window while a state says so.

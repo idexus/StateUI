@@ -258,6 +258,7 @@ extension GTKDriver {
         case .verticalTextAlignment: return Self.alignment(gtk_label_get_yalign(label)).propValue
         case .isSelectable: return (gtk_label_get_selectable(label) != 0).propValue
         case .tracking: return run.holds(property) ?? 0.0.propValue
+        case LanguageElementContract.language.token: return .some(run.holds(property))
         case .lineHeight, .textDecorations, .fontSize, .fontWeight, .fontAttributes, .fontFamily, .textColor:
             if let held = run.holds(property) { return held }
             return wordsHolds(property, widget)
@@ -477,6 +478,11 @@ private struct PangoRun {
             return attributes.propValue
         case .textColor: return color(PANGO_ATTR_FOREGROUND, PANGO_ATTR_FOREGROUND_ALPHA)?.propValue
         case .background: return color(PANGO_ATTR_BACKGROUND, PANGO_ATTR_BACKGROUND_ALPHA).map { Material.color($0).propValue }
+        case LanguageElementContract.language.token:
+            return first(PANGO_ATTR_LANGUAGE).map {
+                let language = $0.withMemoryRebound(to: PangoAttrLanguage.self, capacity: 1) { $0.pointee.value }
+                return LocaleTag(String(cString: pango_language_to_string(language))).propValue
+            }
         case .tracking:
             return first(PANGO_ATTR_LETTER_SPACING).map { (Double(Self.number($0)) / Double(PANGO_SCALE)).propValue }
         case .lineHeight:

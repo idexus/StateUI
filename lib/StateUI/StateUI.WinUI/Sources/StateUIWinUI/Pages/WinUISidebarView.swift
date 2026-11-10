@@ -48,7 +48,7 @@ final class WinUISidebarView: WinUIView {
     }
 
     /// Shows the sidebar's part of the bar on the pane's head: `leading`, `trailing` and `overflow`.
-    func showActions(leading: [[WinUIToolbarAction]], trailing: [[WinUIToolbarAction]], overflow: [WinUIToolbarAction]) {
+    func showActions(leading: [[WinUIToolbarAction]], trailing: [[WinUIToolbarAction]], overflow: [[WinUIToolbarAction]]) {
         menuActions = actions.show(leading: leading, trailing: trailing, overflow: overflow, on: handle)
     }
 

@@ -32,9 +32,9 @@ final class WinUIWindowController {
     /// Design: docs/design/platforms/winui/pages.md#a-pages-heading
     private func head(_ page: MountedElement?) {
         let view = page?.winUI.view as? WinUILayoutView
-        if headed !== view { headed?.setHeading(nil, line: nil) }
+        if headed !== view { headed?.setHeading(nil) }
         headed = view
-        view?.setHeading(page?.value(PageElementContract.title.token)?.string.flatMap { $0.isEmpty ? nil : $0 }, line: page?.barSubtitle)
+        view?.setHeading(page?.value(PageElementContract.title.token)?.string.flatMap { $0.isEmpty ? nil : $0 })
     }
 
     init(_ element: MountedElement) {
@@ -53,6 +53,10 @@ final class WinUIWindowController {
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
         showSheets(presentation.sheets, in: runtime)
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.winUI.view)) }
+        for (page, sheet) in sheets {
+            let overlays = presentation.sheetOverlays.first { $0.sheet === page }?.overlays ?? []
+            sheet.showOverlays(overlays.compactMap(\.winUI.view))
+        }
         // The pages losing their bottom bar let go of it before the one shown takes it: one view stands in one place.
         for page in element.pages.sorted(by: { $0.chromeBottomBar == nil && $1.chromeBottomBar != nil }) {
             let holder = page.winUI.view as? WinUIPageView
@@ -80,7 +84,10 @@ final class WinUIWindowController {
     /// Design: docs/design/platforms/winui/pages.md#sheets
     private func showSheets(_ pages: [MountedElement], in runtime: HostRuntime) {
         let change = SheetChange(from: sheets, to: pages) { $0.element === $1 }
-        for _ in change.leaving { window.popSheet() }
+        for (_, sheet) in change.leaving {
+            sheet.letGoOfItsPage()
+            window.popSheet()
+        }
         sheets.removeLast(sheets.count - change.kept)
         for (page, sheet) in sheets { show(page, on: sheet, in: runtime) }
         for page in change.coming {
@@ -110,7 +117,7 @@ final class WinUIWindowController {
             },
             leading: chrome.actions.start.map { $0.map(Self.action) },
             trailing: chrome.actions.end.map { $0.map(Self.action) },
-            overflow: chrome.actions.overflow.map(Self.action),
+            overflow: chrome.actions.overflowSections.map { $0.map(Self.action) },
             close: page.offersClose
                 ? { [weak element, weak page] in
                     if let element, let page { runtime.goBack(.dismissSheets([page]), in: element) }
@@ -146,7 +153,6 @@ final class WinUIWindowController {
         chrome.title = composed.title ?? ""
         chrome.titleArea = composed.titleArea
         chrome.showsTitle = composed.showsTitle
-        chrome.subtitle = composed.subtitle
         chrome.back = composed.back.map { back in
             WinUIToolbarAction(title: back.title, isEnabled: true, perform: { [weak element, weak stack = back.stack] in
                 if let element, let stack { runtime.goBack(.pop(stack), in: element) }
@@ -161,13 +167,13 @@ final class WinUIWindowController {
         chrome.center = composed.center?.winUI.view
         chrome.leading = composed.actions.start.map { $0.map(Self.action) }
         chrome.trailing = composed.actions.end.map { $0.map(Self.action) }
-        chrome.overflow = composed.actions.overflow.map(Self.action)
+        chrome.overflow = composed.actions.overflowSections.map { $0.map(Self.action) }
         // The sidebar's part stands on the head of its pane, as a Windows application's navigation pane holds its
         // commands.
         (composed.splitView?.winUI.view as? WinUISplitView)?.sidebar.showActions(
             leading: composed.sidebarActions.start.map { $0.map(Self.action) },
             trailing: composed.sidebarActions.end.map { $0.map(Self.action) },
-            overflow: composed.sidebarActions.overflow.map(Self.action))
+            overflow: composed.sidebarActions.overflowSections.map { $0.map(Self.action) })
         chrome.background = composed.background
         chrome.material = composed.material
         chrome.foreground = composed.foreground

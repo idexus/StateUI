@@ -55,6 +55,8 @@ private struct HostPathTokenizer {
     func tokens() -> [HostPathToken]? {
         var result: [HostPathToken] = []
         var index = 0
+        var arc = false
+        var argument = 0
 
         while index < characters.count {
             let character = characters[index]
@@ -65,6 +67,17 @@ private struct HostPathTokenizer {
 
             if character.isLetter {
                 result.append(.command(character))
+                arc = character == "A" || character == "a"
+                argument = 0
+                index += 1
+                continue
+            }
+
+            // An arc's two flags are one digit each, written apart from what follows or not.
+            if arc, argument % 7 == 3 || argument % 7 == 4 {
+                guard character == "0" || character == "1" else { return nil }
+                result.append(.number(character == "1" ? 1 : 0))
+                argument += 1
                 index += 1
                 continue
             }
@@ -105,6 +118,7 @@ private struct HostPathTokenizer {
                 return nil
             }
             result.append(.number(value))
+            argument += 1
         }
 
         return result

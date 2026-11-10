@@ -233,6 +233,9 @@
     /// What a control a host composes says of its own parts, in the system's language.
     public var controlWords: ControlWords { HostBoundary.controlWords }
 
+    /// What a file a host names itself is called, in the system's language.
+    public var fileWords: FileWords { HostBoundary.fileWords }
+
     /// What a menu bar a host keeps says of its own menus and entries, in the system's language.
     public var menuWords: MenuWords { HostBoundary.menuWords }
 

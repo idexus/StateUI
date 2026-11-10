@@ -3,6 +3,60 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
+## 0.8.3 - 2026-11-09
+
+### Breaking changes
+
+- **A page's title is `.pageTitle(_:)`.** `.title(_:)` written on the view a page shows is `.pageTitle(_:)`, as
+  `.pageIcon(_:)` and `.pageBackground(_:)` are: `SettingsPage().pageTitle("Settings")`. A map marker keeps its
+  `.title(_:)`.
+- **A page says no subtitle.** The line under a page's title is no longer offered: `View.subtitle(_:)` and
+  `PageContract.subtitle` are gone, and a page says what it needs in its title or in its content. A map marker keeps
+  its `subtitle`.
+- **A sheet stands over the window's overlays.** Overlays declared on a window's page stand over every page it shows
+  and under its sheets, on every platform; overlays declared on a sheet's page stand over that sheet, which on iOS,
+  GTK and the Web they did not. An overlay meant to cover a sheet is declared on the sheet's page.
+
+### New
+
+- **A branch is written in its localization's language.** A `Localization` given with `.environment(_:)` says the
+  language it speaks on its branch: a screen reader reads the words there in it and the platform sets them by its
+  rules - every view on iOS, Windows and the Web, a text's words on the Mac, Android and GTK. The Web page says the
+  browser's language until the application says its own. A host reads it as `LanguageElementContract.language`.
+- What a host writes for the user itself - a split button's arrow, a map pin's details button, a save named nothing -
+  speaks the user's language.
+
+### Fixed
+
+- Numbers: a number that is none - NaN or infinite - is no value to a view, and a number past what a toolkit counts
+  no longer ends the process: a range's ends, a line limit, a prompt's bound, a grid's tracks, a day outside the
+  years 1 to 9999, a font weight, a wheel, a hand, a map region off the globe, a stepped number on the Web, and sizes
+  and spacing on GTK and WinUI.
+- Pages and sheets: a sheet stays as the window is arranged anew; a sheet shown again shows its page on GTK and WinUI;
+  the way back is named by the page beneath it; a page saying no title stays named on GTK; each group behind a bar's
+  More is a section of its menu; a page's scroller keeps clear of the system bars as its axes change.
+- A view whose root may change: a key reaches what it holds, the chrome reads its bars and tabs, a list item offers
+  its swipe actions, and a sheet shows the arrangement it holds.
+- Input: on Android a view with no hold or menu takes no long press; the keypad's Enter presses Return on Android and
+  GTK; on the Web and WinUI a field turns into its case what is typed however the words come - a paste, an input
+  method; a button whose role is taken away wears plain words again.
+- State and time: a scene value holding a map keyed by a key type comes back as it went; a ticker ticks no further
+  than its limit; a state's move arrives even when the last control carrying it leaves before the move begins; a new
+  application starts without the theme and accent of the one before; the Apple hosts read the time on the Gregorian
+  calendar whatever calendar the user reads; reading the time throws, rather than ending the process, where a host
+  answers no number.
+- Drawing, web views and maps: an arc's flags written together are read; a web view keeps the user's page as its
+  host is told the whole tree again; a script answering NaN or a date no longer ends the application.
+- Hosts: a picture keeps its size as Android's display density changes, and a window made again at the new density
+  stands alone in its root; GTK paints a journey's style where it lands rather than adding to its style sheet every
+  frame.
+
+### Tooling
+
+- CONTRIBUTING says how comments and design notes are written: under a quarter of a file's lines, with a reason, a
+  trap or a rule in `docs/design` behind a `Design:` reference.
+- The Gallery's window overlay sample opens a sheet with a notice of its own.
+
 ## 0.8.2 - 2026-11-08
 
 ### Breaking changes

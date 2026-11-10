@@ -312,7 +312,7 @@ Application -> Scene -> windows -> a view
 
 Each structural protocol has one composition property. A window shows a view,
 which stands on a page - an arrangement is the page itself - and says what
-that page is by modifier: its values with `.title`, `.pageIcon`,
+that page is by modifier: its values with `.pageTitle`, `.pageIcon`,
 `.pageBackground`, `.showsNavigationBar`, `.showsTitle`, `.showsBackButton`
 and `.backButtonTitle`; its phases with `.onAppearing`, `.onDisappearing`,
 `.onNavigatedTo`, `.onNavigatingFrom` and `.onNavigatedFrom`; and what stands
@@ -335,7 +335,7 @@ struct HandbookApp: Application {
 struct HandbookPage: View {
     var body: some View {
         Text("Hello from StateUI")
-            .title("StateUI")
+            .pageTitle("StateUI")
     }
 }
 ```

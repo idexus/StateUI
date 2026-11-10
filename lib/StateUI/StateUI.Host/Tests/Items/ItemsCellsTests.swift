@@ -85,8 +85,10 @@ private struct ActionsApplication: Application {
 
 private struct ActionsPage: View {
     var body: some View {
-        ItemsView(["mail", "plain"]) { item in
-            if item == "mail" {
+        ItemsView(["mail", "plain", "pinned"]) { item in
+            if item == "pinned" {
+                Flipping(word: item).onChanged(item) {}.contextMenu { MenuItem("Unpin").onClicked {} }
+            } else if item == "mail" {
                 Text(item).contextMenu {
                     MenuItem("Archive").onClicked {}
                     MenuSeparator()
@@ -98,6 +100,15 @@ private struct ActionsPage: View {
                 Text(item)
             }
         }
+    }
+}
+
+/// A view building one root or another, which a watch written on it anchors.
+private struct Flipping: View {
+    let word: String
+
+    var body: some View {
+        if word.isEmpty { Text("-") } else { Text(word) }
     }
 }
 
@@ -390,6 +401,20 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertEqual(actions.map(\.title), ["Archive", "Delete"])
         XCTAssertEqual(actions.map(\.isDestructive), [false, true])
         XCTAssertEqual(cells.actions(of: "plain").count, 0)
+    }
+
+    /// An item whose view stands in an anchor offers the actions of that view's context menu.
+    func testAnAnchoredItemOffersItsViewsActions() throws {
+        ActionsApplication.register()
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let cells = ItemsCells(try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), in: runtime)
+        cells.takeEntries()
+        cells.hold("pinned", in: Cell())
+
+        XCTAssertEqual(cells.item("pinned")?.type, .anchor, "the item's view stands in an anchor")
+        XCTAssertEqual(cells.actions(of: "pinned").map(\.title), ["Unpin"])
     }
 
     func testOnlyTheCellHoldingAnEntryLetsItGo() {

@@ -14,7 +14,10 @@ class a value, which a value on its way would add to the sheet every frame
 and parse it whole each time: every widget's background, room and accent
 but a layout's (`GTKTransitionSurface.classPainted`), a button's box, the
 words of a field, a picker and a date, the bars' colors; and a window's
-place and size, which the desktop keeps. Those arrive at once. A layout and
+place and size, which the desktop keeps. Those arrive at once - a state
+carried on a journey to one of them as well: its registration reads it where
+the journey lands (`Registry.apply(_:to:presenting:atRest:)`), and the bars
+their resting colors (`restingBarColors`). A layout and
 a page arrangement draw their own box in their snapshot
 (`GTKTransitionSurface.drawsItsOwnBox`), which moves frame by frame.
 

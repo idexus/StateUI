@@ -99,6 +99,21 @@ final class KeyPressesTests: XCTestCase {
         XCTAssertNil(KeyPresses.target(of: .upArrow, modifiers: [], focused: nil, front: page), "the field holds nothing")
     }
 
+    /// With nothing holding the keyboard, the content an anchor holds on the page in front hears: the view a composed
+    /// view shows, which takes what is written on the composed view.
+    func testThePagesContentAnAnchorHoldsHears() throws {
+        var anchor = element("anchor", .anchor, takes: [])
+        anchor.children = .arranged([element("board", .vStack, takes: [.escape]), element("sheet", .sheet, takes: [])])
+        var page = element("page", .page, takes: [])
+        page.children = .arranged([anchor])
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(page, complete: true)
+        let front = try XCTUnwrap(runtime.tree.root)
+
+        XCTAssertEqual(KeyPresses.target(of: .escape, modifiers: [], focused: nil, front: front)?.id, .manual("board"))
+        XCTAssertEqual(KeyPresses.taken(focused: nil, front: front), [.escape])
+    }
+
     func testADisabledViewTakesNoKey() throws {
         let (_, page) = try page()
         XCTAssertNil(KeyPresses.target(of: .return, modifiers: [], focused: named("off", in: page), front: page))

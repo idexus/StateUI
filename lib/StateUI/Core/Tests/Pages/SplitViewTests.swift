@@ -27,7 +27,7 @@ private struct MenuPage: View {
                 menu = false
             }
         }
-        .title("Sections")
+        .pageTitle("Sections")
     }
 }
 
@@ -38,7 +38,7 @@ private struct DetailPage: View {
 
     var body: some View {
         AnyView(node: label(section))
-            .title(section)
+            .pageTitle(section)
     }
 }
 
@@ -142,7 +142,7 @@ final class SplitViewTests: XCTestCase {
             } destination: { depth in
                 DetailPage(section: "level \(depth)")
             }
-            .title("Diary")
+            .pageTitle("Diary")
             .barBackground(Color(hex: 0x512BD4))
         }
         .showsSidebar(menu.projectedValue)

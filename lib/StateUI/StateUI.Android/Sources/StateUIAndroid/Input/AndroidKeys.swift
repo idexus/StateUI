@@ -16,6 +16,8 @@ enum AndroidKeys {
         let key: Key
         if let named = named.first(where: { $0.value == code })?.key {
             key = Key(named)
+        } else if code == keypadEnter {
+            key = .return
         } else if character > 0, let scalar = UnicodeScalar(UInt32(character)) {
             key = Key(Character(scalar))
         } else {
@@ -42,6 +44,9 @@ enum AndroidKeys {
         default: return nil
         }
     }
+
+    /// `KEYCODE_NUMPAD_ENTER`: the keypad's Enter, which presses what Return does.
+    private static let keypadEnter: Int32 = 160
 
     /// `KeyEvent`'s code for each key writing no character.
     private static let named: [NamedKey: Int32] = [

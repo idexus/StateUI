@@ -72,6 +72,13 @@
         return ends ? name : name + "." + first
     }
 
+    /// The name a host that writes a save's file itself gives it: the one the save suggests, else `untitled` - the
+    /// library's word for a file named nothing - ending in the first type's extension.
+    /// Design: docs/design/host/runtime.md#files
+    public func name(untitled: String) -> String {
+        name.isEmpty ? Self.name(untitled, types: types) : name
+    }
+
     /// The act's answer: the files an open chose, or the file a save wrote - nothing where it was cancelled.
     public func answer(_ files: [ChosenFile]) -> [HostValue] {
         kind == .save ? [files.first.propValue] : [files.propValue]

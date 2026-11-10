@@ -41,6 +41,25 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A page that says no title still stands named - libadwaita asks every page for the name its back button and
+    /// assistive technology read: the application's, where it has one.
+    func testAPageSayingNoTitleStandsNamed() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                    TitledPage(title: "Root")
+                } destination: { _ in
+                    Text("Untitled")
+                }
+            }
+            let navigation = try XCTUnwrap(host.views(GTKNavigationView.self).first)
+            XCTAssertEqual(navigation.visiblePageTitle?.isEmpty, false, "the chrome named the page nothing")
+        }
+        XCTAssertEqual(GTKNavigationView.name(ofPage: "Detail", application: "Notes"), "Detail")
+        XCTAssertEqual(GTKNavigationView.name(ofPage: "", application: "Notes"), "Notes")
+        XCTAssertEqual(GTKNavigationView.name(ofPage: "", application: ""), " ")
+    }
+
     /// A push: the root navigates from and disappears, then the pushed page appears and is navigated to; a pop the
     /// other way - every phase rendered before the next is heard.
     func testAPushAndAPopAreHeardByThePagesInOrder() {
@@ -124,7 +143,7 @@ final class GTKPagesTests: XCTestCase {
                         Button("Other")
                     }
                     .menuBar { Menu("Edit") { MenuItem("Find") }.joins(.edit) }
-                    .title("Notes")
+                    .pageTitle("Notes")
                 } destination: { _ in
                     Text("Note")
                 }
@@ -174,7 +193,7 @@ final class GTKPagesTests: XCTestCase {
                             if more.wrappedValue { ToolbarButton("Sooner").placement(at: .overflow) }
                         }
                         .menuBar { Menu("File") { MenuItem("Open") } }
-                        .title("Notes")
+                        .pageTitle("Notes")
                 } destination: { _ in
                     Text("Note")
                 }
@@ -185,6 +204,40 @@ final class GTKPagesTests: XCTestCase {
             let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
             XCTAssertEqual(frame.overflowButtons.count, 2)
             XCTAssertEqual(gtk_widget_get_last_child(frame.endBox), frame.mainMenu?.button, "the main menu stands last")
+        }
+    }
+
+    /// Groups placed behind a bar's More are sections of its menu, a line between two - on the header bar and on
+    /// the bar at the page's foot.
+    func testGroupsBehindTheOverflowAreSectionsOfItsMenu() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Text("Notes")
+                        .toolbar {
+                            ToolbarGroup {
+                                ToolbarButton("Rename")
+                                ToolbarButton("Move")
+                            }
+                            .placement(at: .overflow)
+                            ToolbarButton("Delete").placement(at: .overflow)
+                        }
+                        .toolbar(.bottom) {
+                            ToolbarButton("Share").placement(at: .overflow)
+                            ToolbarButton("Print").placement(at: .overflow)
+                        }
+                        .pageTitle("Notes")
+                } destination: { _ in
+                    Text("Note")
+                }
+            }
+            let rows = { (list: GTKWidget) in
+                GTKTestHost.children(of: list).map { String(cString: gtk_widget_get_css_name($0)) == "separator" ? "-" : "item" }
+            }
+
+            let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
+            XCTAssertEqual(rows(frame.overflowListForTesting), ["item", "item", "-", "item"])
+            XCTAssertEqual(rows(try XCTUnwrap(frame.footBar).moreListForTesting), ["item", "-", "item"])
         }
     }
 
@@ -365,7 +418,7 @@ final class GTKPagesTests: XCTestCase {
         try onUIThread {
             let tabs = State(wrappedValue: ["A", "C"])
             let host = GTKRenderer.running {
-                TabView(tabs.wrappedValue) { name in TitledPage(title: name).title(name) }
+                TabView(tabs.wrappedValue) { name in TitledPage(title: name).pageTitle(name) }
             }
             let view = try XCTUnwrap(host.views(GTKTabView.self).first)
             let titles = { Self.switcherTitles(view) }
@@ -404,7 +457,7 @@ final class GTKPagesTests: XCTestCase {
                         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                             TitledPage(title: "Inbox")
                         } destination: { _ in TitledPage(title: "Message") }
-                        .title("Mail")
+                        .pageTitle("Mail")
                     } else {
                         TitledPage(title: "Settings")
                     }
@@ -439,7 +492,7 @@ final class GTKPagesTests: XCTestCase {
                             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                                 TitledPage(title: "Inbox")
                             } destination: { _ in TitledPage(title: "Message") }
-                            .title("Mail")
+                            .pageTitle("Mail")
                         } else {
                             TitledPage(title: "Settings")
                         }
@@ -478,7 +531,7 @@ final class GTKPagesTests: XCTestCase {
                             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                                 TitledPage(title: "Inbox")
                             } destination: { _ in TitledPage(title: "Message") }
-                            .title("Mail")
+                            .pageTitle("Mail")
                         } else {
                             TitledPage(title: "Settings")
                         }
@@ -594,7 +647,8 @@ final class GTKPagesTests: XCTestCase {
     }
 
     /// A sheet beneath another given another page comes over it, as a page presented anew: the sheets from the
-    /// change up leave and come again, so the last shown is the one on top.
+    /// change up leave and come again, so the last shown is the one on top - each holding its page, which a sheet
+    /// leaving lets go of at once.
     func testASheetGivenAnotherPageComesOverTheOthers() throws {
         try onUIThread {
             let (note, shows) = (State<Int?>(wrappedValue: 1), State(wrappedValue: false))
@@ -616,6 +670,11 @@ final class GTKPagesTests: XCTestCase {
             let window = controller.window.widget.of(AdwApplicationWindow.self)
             XCTAssertTrue(adw_application_window_get_visible_dialog(window) == controller.sheets[1].sheet.dialog,
                           "the last shown on top")
+            for (_, sheet) in controller.sheets {
+                XCTAssertTrue(
+                    gtk_widget_is_ancestor(sheet.page.widget, sheet.dialog.of(GtkWidget.self)) != 0,
+                    "a sheet come again shows its page")
+            }
         }
     }
 
@@ -769,7 +828,7 @@ struct TitledPage: View {
     var body: some View {
         Text(title)
             .toolbar { actions }
-            .title(title)
+            .pageTitle(title)
             .showsNavigationBar(!hidesBar)
             .showsBackButton(!hidesBack)
             .loggingPhases(log, as: title)
@@ -784,7 +843,7 @@ private struct SearchingPage: View {
         let query = $query
         return Text("Results")
             .titleView { TextField(query).placeholder("Search") }
-            .title("Search")
+            .pageTitle("Search")
     }
 }
 
@@ -848,7 +907,7 @@ private struct SheetedPage: View {
 private struct CrowdedBarPage: View {
     var body: some View {
         Text("Crowded")
-            .title("Crowded")
+            .pageTitle("Crowded")
             .toolbar {
                 ToolbarGroup {
                     ToolbarButton("Save")

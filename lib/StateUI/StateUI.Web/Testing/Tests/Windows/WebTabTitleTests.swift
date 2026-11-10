@@ -18,7 +18,7 @@ final class WebTabTitleTests: XCTestCase {
         try nameSite("StateUI")
         defer { forgetSite() }
 
-        XCTAssertEqual(try tab { Text("Welcome").title("Home") }, "Home - StateUI")
+        XCTAssertEqual(try tab { Text("Welcome").pageTitle("Home") }, "Home - StateUI")
     }
 
     func testAPageWithoutATitleOrTheSitesOwnNamesTheTabAsTheSite() throws {
@@ -26,11 +26,11 @@ final class WebTabTitleTests: XCTestCase {
         defer { forgetSite() }
 
         XCTAssertEqual(try tab { Text("Welcome") }, "StateUI")
-        XCTAssertEqual(try tab { Text("Welcome").title("StateUI") }, "StateUI")
+        XCTAssertEqual(try tab { Text("Welcome").pageTitle("StateUI") }, "StateUI")
     }
 
     func testWithoutASiteNameTheTabIsThePagesTitle() throws {
-        XCTAssertEqual(try tab { Text("Welcome").title("Home") }, "Home")
+        XCTAssertEqual(try tab { Text("Welcome").pageTitle("Home") }, "Home")
     }
 
     // MARK: - Support

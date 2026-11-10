@@ -83,7 +83,7 @@ enum DemoTab: Hashable {
 
     /// What the tab is called.
     ///
-    /// The same words the tab's page gives its `title`, so the list this
+    /// The same words the tab's page gives its `pageTitle`, so the list this
     /// demonstration prints and the platform's own tab strip can be read against
     /// each other - which is the whole of the measurement.
     var caption: String {

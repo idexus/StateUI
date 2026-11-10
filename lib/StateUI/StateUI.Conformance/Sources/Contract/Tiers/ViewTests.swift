@@ -124,7 +124,7 @@
                     }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
-                    .title("Corner")
+                    .pageTitle("Corner")
                 } destination: { _ in Text("Below") }
             }
 

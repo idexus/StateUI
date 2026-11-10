@@ -188,9 +188,12 @@ extension GTKRenderer {
         for controller in windows { controller.window.close() }
     }
 
-    /// Applies `patch` as one whole message, as a render does, and stands the root in the test's window.
+    /// Applies `patch` as one message, as a render does - complete where it describes another root than the one
+    /// standing, a change of that root otherwise - and stands the root in the test's window.
     func apply(_ patch: HostPatch) {
-        runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) { runtime.tree.apply($0, complete: true) }
+        runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) {
+            runtime.tree.apply($0, complete: !runtime.tree.holdsRoot(of: $0))
+        }
         let root = (runtime.tree.root?.native as? GTKElement)?.view
         guard GTKTestHost.window.content !== root else { return }
         GTKTestHost.window.show(root)

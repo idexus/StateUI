@@ -63,6 +63,7 @@ final class GTKWindowController {
             }
         }
         if let pages = changes.sheets { showSheets(pages, in: runtime) }
+        if changes.sheets != nil || changes.sheetOverlays != nil { laySheetOverlays() }
         fitSheets()
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.gtk.view)) }
     }
@@ -94,6 +95,15 @@ final class GTKWindowController {
             sheet.stand(on: page.overlaidGround)
             sheet.present(over: window)
             sheets.append((page, sheet))
+        }
+    }
+
+    /// Lays each sheet's own overlays over it, a sheet shown anew included.
+    /// Design: docs/design/platforms/gtk/pages.md#the-windows-overlays
+    private func laySheetOverlays() {
+        for (page, sheet) in sheets {
+            let overlays = presentation.sheetOverlays.first { $0.sheet === page }?.overlays ?? []
+            sheet.showOverlays(overlays.compactMap(\.gtk.view))
         }
     }
 

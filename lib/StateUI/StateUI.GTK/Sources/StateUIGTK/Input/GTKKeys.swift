@@ -26,6 +26,8 @@ enum GTKKeys {
             key = Key(known)
         } else if keyval == backTab {
             key = .tab
+        } else if keyval == keypadEnter {
+            key = .return
         } else if let scalar = UnicodeScalar(gdk_keyval_to_unicode(keyval)), scalar.value > 0 {
             key = Key(Character(scalar))
         } else {
@@ -54,6 +56,9 @@ enum GTKKeys {
 
     /// What GDK calls Tab held with Shift.
     private static let backTab: guint = 0xfe20
+
+    /// What GDK calls the keypad's Enter, which presses what Return does.
+    private static let keypadEnter: guint = 0xff8d
 
     /// GDK's key value for each key writing no character.
     private static let named: [NamedKey: guint] = [

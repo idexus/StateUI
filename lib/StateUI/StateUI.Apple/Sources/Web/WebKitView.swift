@@ -106,7 +106,8 @@ public final class WebKitView: WKWebView, WKNavigationDelegate {
 
     /// The value WebKit hands back, written as JSON; nil for none.
     static func json(_ value: Any?) -> String? {
-        guard let value, !(value is NSNull) else { return nil }
+        // What JSON cannot say - not a number, a date - raises rather than throws: it is asked first.
+        guard let value, !(value is NSNull), JSONSerialization.isValidJSONObject([value]) else { return nil }
         return (try? JSONSerialization.data(withJSONObject: value, options: .fragmentsAllowed))
             .flatMap { String(data: $0, encoding: .utf8) }
     }

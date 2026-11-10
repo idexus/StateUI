@@ -29,7 +29,7 @@ final class BarFitTests: XCTestCase {
         XCTAssertEqual(BarFit.standing(groups: 0) { _ in false }, .init(groups: 0, title: .between))
     }
 
-    /// Behind More stand the items of each group that left the bar, each group apart, then those placed there.
+    /// Behind More stand the items of each group that left the bar, then of each placed there, each group apart.
     func testTheGroupsThatLeftStandBehindMoreAheadOfThosePlacedThere() throws {
         let runtime = HostRuntime.still()
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
@@ -39,9 +39,11 @@ final class BarFitTests: XCTestCase {
         let said = { (entries: [MenuEntry]) in entries.map { $0.kind == .separator ? "-" : $0.element.map { "\($0.id)" } ?? "?" } }
 
         XCTAssertEqual(
-            said(BarFit.behind(left: [[items[0], items[1]], [items[2]]], placed: [items[3]])),
+            said(BarFit.behind(left: [[items[0], items[1]], [items[2]]], placed: [[items[3]]])),
             ["manual(\"a\")", "manual(\"b\")", "-", "manual(\"c\")", "-", "manual(\"d\")"])
-        XCTAssertEqual(said(BarFit.behind(left: [], placed: [items[3]])), ["manual(\"d\")"], "none left: as placed")
-        XCTAssertEqual(said(BarFit.behind(left: [[items[0]]], placed: [])), ["manual(\"a\")"], "none placed")
+        XCTAssertEqual(
+            said(BarFit.behind(left: [], placed: [[items[2]], [items[3]]])), ["manual(\"c\")", "-", "manual(\"d\")"],
+            "none left: each group placed a section")
+        XCTAssertEqual(said(BarFit.behind(left: [[items[0]]], placed: [[]])), ["manual(\"a\")"], "none placed")
     }
 }

@@ -184,4 +184,12 @@ public final class ApplicationSession {
         styles = nil
         motion = .standard
     }
+
+    /// Takes back what an application asked of the platform - its theme and its accent - so the next one starts
+    /// where the platform stands: a host told otherwise is told so.
+    /// Design: docs/design/core/render.md#a-new-application
+    func takeBackRequests() {
+        colorScheme = nil
+        accentColor = nil
+    }
 }

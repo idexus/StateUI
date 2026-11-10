@@ -338,9 +338,9 @@ struct SettingsButton: View {
                 NavigationStack($path) {
                     Button("Account")
                         .onClicked { path.append("Account") }
-                        .title("Settings")
+                        .pageTitle("Settings")
                 } destination: { name in
-                    Text(name).title(name)
+                    Text(name).pageTitle(name)
                 }
             }
     }
@@ -360,7 +360,7 @@ struct SignUpSheet: View {
         NavigationStack($path) {
             Button("Finish")
                 .onClicked { shown = false }
-                .title("Sign up")
+                .pageTitle("Sign up")
                 .showsCloseButton(false)
         } destination: { step in
             Text("Step \(step)")
@@ -467,17 +467,19 @@ struct LibraryPage: View {
 ```
 
 Declared on a window's page, the overlays stand over every page the window
-shows and every sheet over it, and live as long as the window; declared on a
-page, they stand while that page is shown and go with it - a page pushed over
-it takes them away, and going back brings them again. Those declared further
-in stand over those declared around them, and `.zIndex` reorders the views of
-one declaration. Each view has the window's whole area and stands where its
-alignments put it. A click beside it goes on to what is under it. A docked
-inspector stands over every overlay.
+shows, under its sheets, and live as long as the window; declared on a page,
+they stand while that page is shown and go with it - a page pushed over it
+takes them away, and going back brings them again. Declared on a sheet's
+page, they stand over that sheet and go with it. Those declared further in
+stand over those declared around them, and `.zIndex` reorders the views of
+one declaration. Each view has the whole area of the window or the sheet
+and stands where its alignments put it. A click beside it goes on to what
+is under it. A docked inspector stands over the window's overlays, under
+its sheets.
 
 ## Page titles and navigation furniture
 
-A view shown as a page says what its page is by modifier - `.title("Notes")`
+A view shown as a page says what its page is by modifier - `.pageTitle("Notes")`
 ([What a view says of its page](application-and-sessions.md#what-a-view-says-of-its-page)).
 An arrangement is a page already, and takes its title and icon the same way:
 
@@ -501,7 +503,7 @@ NavigationStack($settingsPath) {
 } destination: { route in
     SettingsDestination(route: route)
 }
-.title("Settings")
+.pageTitle("Settings")
 .pageIcon("settings.png")
 ```
 
@@ -627,9 +629,9 @@ struct Library: View {
 
     var body: some View {
         SplitView {
-            Text("Folders").title("Library")
+            Text("Folders").pageTitle("Library")
         } detail: {
-            Text("Books").title("All books")
+            Text("Books").pageTitle("All books")
         }
         .showsSidebar($showsFolders)
         .toolbar {
@@ -877,7 +879,7 @@ struct Conversation: View {
             }
         }
         .ignoresSafeArea(.all)
-        .title("Conversation")
+        .pageTitle("Conversation")
         .bottomBar {
             HStack {
                 TextEditor($draft)

@@ -19,7 +19,7 @@ private struct Greeting: View {
             TextField($name).maximumLength(5)
             Button("Clicked \(count)").onClicked { count += 1 }
         }
-        .title("Greeting")
+        .pageTitle("Greeting")
     }
 }
 

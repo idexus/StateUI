@@ -371,7 +371,6 @@ extension WebDriver {
             + "e.dispatchEvent(new Event('change', { bubbles: true }))", on: e)
     }
 
-    /// The element of the bar of the window `element` stands in.
     /// The bar of the sheet `element` stands in.
     func sheetBar(over element: MountedElement) throws -> Int32 {
         let page = element.enclosing(type: .sheet)?.children.first
@@ -380,6 +379,7 @@ extension WebDriver {
         return sheet.sheet.bar.node
     }
 
+    /// The element of the bar of the window `element` stands in.
     func bar(over element: MountedElement) throws -> Int32 {
         guard let bar = renderer?.roster.controllers.first?.window.bar else { throw DriverCannot("find the window's bar") }
         return bar.node

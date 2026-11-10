@@ -3,8 +3,8 @@
 
 /// The look of the bar over what an arrangement shows. It belongs to the
 /// arrangement and looks the same whichever page shows; what the bar says -
-/// a title, the line under it, a view in its place, its actions - each page
-/// says of itself, `.subtitle(folder.name)`.
+/// a title, a view in its place, its actions - each page says of itself,
+/// `.pageTitle(folder.name)`.
 ///
 /// Declared on a window's page, it is the whole window's bar; an arrangement
 /// further in stands in its place, one value at a time, while it is shown:

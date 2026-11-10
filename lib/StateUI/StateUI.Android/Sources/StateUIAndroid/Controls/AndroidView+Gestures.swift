@@ -169,7 +169,6 @@ extension AndroidView {
         return press.isDragging
     }
 
-    /// How far a finger moves before it is a drag, as Android measures it, in points at `density`.
     /// A run of taps as Android measures its double tap: its timeout, and its slop in points.
     private static func doubleTap(density: Double) -> TapRun {
         let timeout = Java.callStaticInt(JavaAPI.viewConfiguration, JavaAPI.doubleTapTimeout)
@@ -182,6 +181,7 @@ extension AndroidView {
         return TapRun(interval: .milliseconds(Int(timeout)), slop: slop)
     }
 
+    /// How far a finger moves before it is a drag, as Android measures it, in points at `density`.
     private static func touchSlop(density: Double) -> Double {
         Java.frame {
             guard let configuration = Java.callStaticObject(

@@ -150,7 +150,10 @@ Registering an application starts a new tree: the previous tree is forgotten
 (handlers, engines, root reads), the application session is reset, one scene
 waits for the platform's first window, and the next render describes the
 whole of the new application - every element arriving, which is what
-`.onCreated` is told.
+`.onCreated` is told. What the application before asked of the platform - its
+theme, its accent - is taken back once that one's teardown is over, since an
+act inside it is refused: the host is told to follow the platform again, and
+the new application asking the same is heard.
 
 The application itself is made at its first need - the first render - never
 as it registers: a head registers it before the host starts, and what its

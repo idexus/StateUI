@@ -23,7 +23,7 @@
 ///                         .placement(at: .overflow)
 ///                         .onClicked { delete() }
 ///                 }
-///                 .title("Notes")
+///                 .pageTitle("Notes")
 ///         }
 ///     }
 ///

@@ -88,7 +88,6 @@ final class HostContractTests: XCTestCase {
         XCTAssertTrue(document.contains("| ✅ | "), "platform contract does not define completion in its legend")
     }
 
-    /// The names the library's contracts declare members of one kind under.
     /// The names of the library's members of `kind` that are each one member's: a name two contracts declare has
     /// no token of its own in Tokens.swift - each place reading it names its member.
     private static func names(of kind: MemberFacts.Kind) -> Set<String> {

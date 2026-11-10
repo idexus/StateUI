@@ -211,7 +211,7 @@ struct FilesPage: View {
             LanguageSettings()
         }
         .spacing(12)
-        .title(res.title)
+        .pageTitle(res.title)
     }
 }
 
@@ -474,6 +474,19 @@ is not built again for nothing. The pair under the report shows one
 document in two languages side by side, in two equal columns, so each wraps
 its text within half the width on a phone.
 
+## The language the words are written in
+
+A `Localization` says the language it speaks on the branch it is given to,
+and every view in that branch is written in it: a screen reader reads the
+report above in Polish while it reads the page around it in the interface's
+language, and the words are set by the language's rules - where a line
+breaks, how a word hyphenates, the typeface a script falls back to. A change
+of language reaches the views that hold it, not the body that gives the
+localization. Where no localization stands, the platform's own language
+stands. How far each platform carries it - every view on iOS, the Web and
+Windows, a text's words on the Mac, Android and GTK - the
+[LanguageElement](../controls/tiers/LanguageElement.md) page says.
+
 ## Messages and plural forms
 
 A `Message` is a field like any other. Each language says the whole sentence
@@ -582,12 +595,10 @@ host. The user's ordered languages, which `\.locale.languages` holds, every
 native host reads from its platform - the preferred languages on Apple's,
 GLib's locale names, Android's locale list, the profile's languages on
 Windows - so a localization following the system reaches the first language
-its catalog speaks. Two things belong to the hosts and are still to come:
-
-- the language of a branch's text, for a screen reader's pronunciation,
-  hyphenation and the glyphs of Han characters;
-- the formats and zone of native date and time pickers, which write their own
-  months.
+its catalog speaks, and each host gives its toolkit the language a branch's
+words are written in ([The language the words are written in](#the-language-the-words-are-written-in)).
+One thing belongs to the hosts and is still to come: the formats and zone of
+native date and time pickers, which write their own months.
 
 ## Related contracts
 

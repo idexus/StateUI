@@ -255,7 +255,9 @@ measured with no room given, the proportional tracks share the least
 remainder whose shares hold every child spanning one - its lack over the
 shares it spans - so the grid placed at its natural size, or wider, holds
 every child at the width it was measured for. A share of nothing still counts
-as a sliver, so no division is by zero, and asks for no room.
+as a sliver, so no division is by zero, and asks for no room. A track whose
+length or share is a number that is none - NaN, infinite - stands as one the
+grid does not define, one share: an infinite share left the others NaN.
 
 The trap is a natural size taken track by track: two shares of 95 beside three
 of 300 make a remainder of 395, which placement shares as 158 and 237, and the

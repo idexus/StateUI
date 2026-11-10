@@ -67,8 +67,7 @@ extension UIKitDriver {
             // The edge the page the arrangement shows has its scroller draw under the bar at its top.
             return ((element.visiblePage?.native as? UIKitElement)?.controller as? UIKitPageController)?.topEdge.propValue
         }
-        if [.barBackground, .barForegroundColor].contains(property)
-            || property == PageContract.subtitle.token && element.type == .page {
+        if [.barBackground, .barForegroundColor].contains(property) {
             return Self.barHolds(property, of: element)
         }
         guard NodeType.pageTypes.contains(element.type), let controller = (element.native as? UIKitElement)?.controller
@@ -130,7 +129,6 @@ extension UIKitDriver {
             return item.standardAppearance.flatMap { material(of: $0, asked: element.barMaterial.painted) }
         case .barForegroundColor:
             return (item.standardAppearance?.titleTextAttributes[.foregroundColor] as? UIColor).map { color($0).propValue }
-        case PageContract.subtitle.token: return item.subtitle.map { .string($0) }
         default: return nil
         }
     }
@@ -267,7 +265,6 @@ extension UIKitDriver {
         return top
     }
 
-    /// The bar's button whose action is `action`; nil for one behind an overflow.
     /// The menu a button on the bars the window shows opens, by its identifier.
     func barMenu(identified identifier: UIMenu.Identifier) -> UIMenu? {
         guard let window = renderer?.roster.windows.first?.1.window else { return nil }
@@ -280,6 +277,7 @@ extension UIKitDriver {
         return window.rootViewController.flatMap(search)
     }
 
+    /// The bar's button whose action is `action`; nil for one behind an overflow.
     private func barButton(answering action: UIAction) -> UIBarButtonItem? {
         guard let window = renderer?.roster.windows.first?.1.window else { return nil }
         func search(_ controller: UIViewController) -> UIBarButtonItem? {
@@ -304,7 +302,7 @@ extension UIKitDriver {
         func search(_ controller: UIViewController) {
             for item in Self.barItems(of: controller) {
                 if let action = item.primaryAction { found.append((action, item.isEnabled)) }
-                for case let entry as UIAction in item.menu?.children ?? [] {
+                for case let entry as UIAction in Self.overflowEntries(of: item.menu) {
                     found.append((entry, !entry.attributes.contains(.disabled)))
                 }
             }

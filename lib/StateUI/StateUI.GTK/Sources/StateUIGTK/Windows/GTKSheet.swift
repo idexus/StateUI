@@ -19,6 +19,12 @@ final class GTKSheet {
     /// The frame a tabbed view stands in on the sheet; nil for a page or another arrangement.
     let frame: GTKPageFrame?
 
+    /// The layers the page and its overlays stand in on the dialog.
+    private let layers: GTKWidget
+
+    /// What the sheet lays over its page.
+    private(set) var overlays: [GTKView] = []
+
     /// What the sheet does when the user closes it - Escape, its close button.
     var onClosedByUser: (() -> Void)?
 
@@ -53,8 +59,11 @@ final class GTKSheet {
         frame = framed ? GTKPageFrame(page: page) : nil
         dialog = adw_dialog_new()!
         g_object_ref_sink(UnsafeMutableRawPointer(dialog))
+        layers = gtk_overlay_new()!
+        g_object_ref_sink(layers)
         number = Self.shown.reserve()
-        adw_dialog_set_child(dialog, frame?.widget ?? page.widget)
+        gtk_overlay_set_child(layers.opaque, frame?.widget ?? page.widget)
+        adw_dialog_set_child(dialog, layers)
         connectSignal(UnsafeMutableRawPointer(dialog), "closed", number: number) { _, data in
             MainActor.assumeIsolated { GTKSheet.shown.take(viewNumber(data))?.closedByDialog() }
         }
@@ -64,8 +73,10 @@ final class GTKSheet {
         g_signal_handlers_disconnect_matched(
             UnsafeMutableRawPointer(dialog), STATEUI_SIGNAL_MATCH_DATA, 0, 0, nil, nil,
             UnsafeMutableRawPointer(bitPattern: Int(number)))
+        letGo()
         adw_dialog_set_child(dialog, nil)
         g_object_unref(UnsafeMutableRawPointer(dialog))
+        g_object_unref(layers)
     }
 
     /// Shows the sheet over `window`, over the sheets shown there before it.
@@ -89,17 +100,34 @@ final class GTKSheet {
         groundClass = wanted
     }
 
+    /// Lays `views` over the page, the first lowest; none takes them away.
+    /// Design: docs/design/platforms/gtk/pages.md#the-windows-overlays
+    func showOverlays(_ views: [GTKView]) {
+        guard !views.elementsEqual(overlays, by: ===) else { return }
+        for leaving in overlays { gtk_overlay_remove_overlay(layers.opaque, leaving.widget) }
+        overlays = views
+        for view in views { gtk_overlay_add_overlay(layers.opaque, view.widget) }
+    }
+
+    /// Lets go of the page and its overlays: a widget stands in one parent.
+    private func letGo() {
+        showOverlays([])
+        gtk_overlay_set_child(layers.opaque, nil)
+    }
+
     /// The sheet's title, which the dialog says to assistive technology and which a page's frame shows.
     func setTitle(_ title: String) {
         adw_dialog_set_title(dialog, title)
     }
 
-    /// Closes the sheet as the program does: nobody hears it as the user's.
+    /// Closes the sheet as the program does: nobody hears it as the user's, and its page is let go of at once - the
+    /// same page may come again on a sheet of its own before this one goes, and a widget stands in one parent.
     func close() {
         guard !isClosed else { return }
         isClosed = true
         Self.shown.release(number)
         adw_dialog_force_close(dialog)
+        letGo()
     }
 
     /// The dialog closed: the user's close, where the program did not close it.

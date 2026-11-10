@@ -37,16 +37,15 @@ final class WinUITitleBarView: WinUIView {
         // The bar's own theme: dark for light words on a dark bar.
         let theme: ColorScheme? = chrome.background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light }
         // A title area stands in the title's place, as an application names itself on WinUI's title bar; else the
-        // page's title and the line under it.
+        // page's title.
         let area = chrome.titleArea
         let icon = WinUIStrings.lines(WinUIPictures.lines(area?.icon))
         let title = area?.title ?? (chrome.showsTitle ? chrome.title : "")
-        let line = area.map(\.subtitle) ?? (chrome.showsTitle ? chrome.subtitle : nil)
         // A gradient over the bar's box, in the ground's place.
         let gradient = HostBrush(chrome.background).isGradient ? WinUIBrush(chrome.background) : .none
         gradient.withRelayBrush(over: LayoutSize(width: 0, height: 0)) { painted in
             stateui_winui_title_bar_set(
-                handle, title, line ?? "", icon, chrome.back != nil, chrome.sidebarToggle != nil, ground.kind,
+                handle, title, icon, chrome.back != nil, chrome.sidebarToggle != nil, ground.kind,
                 ground.argb, ground.opacity, ground.tintOpacity, painted, foreground != nil, foreground ?? 0,
                 theme?.rawValue ?? 0)
         }

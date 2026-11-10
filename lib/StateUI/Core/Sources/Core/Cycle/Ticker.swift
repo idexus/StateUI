@@ -125,14 +125,15 @@ public final class Ticker {
         storedTick = onTick
     }
 
-    /// Starts counting, or does nothing if it is already counting. Returns at once;
-    /// the first tick is an interval away, and a ticker at its limit starts over from
-    /// no ticks.
+    /// Starts counting, or does nothing if it is already counting or its limit is
+    /// nought. Returns at once; the first tick is an interval away, and a ticker at
+    /// its limit starts over from no ticks.
     public func start() {
         // Already running: not an error, and nothing to report.
         guard !isRunning else { return }
 
         if finished { ticks = 0 }
+        guard !finished else { return }
 
         isRunning = true
         run += 1
@@ -173,6 +174,12 @@ public final class Ticker {
         // before it runs, so the tick itself can start the next round.
         // Design: docs/design/core/cycle.md#the-ticker
         guard isRunning, run == mine else { return false }
+
+        // A limit written down to the count while it ran ends it with no tick more.
+        guard !finished else {
+            isRunning = false
+            return false
+        }
 
         ticks += 1
 

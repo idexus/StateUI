@@ -35,13 +35,14 @@ extension AppKitRenderer {
         runtime.tree.root?.all(id: id).compactMap { ($0.native as? AppKitElement)?.view } ?? []
     }
 
-    /// Applies `patch` as one whole message, as a render does, and shows what it changed - then raises what the
+    /// Applies `patch` as one message, as a render does - complete where it describes another root than the one
+    /// standing, a change of that root otherwise - and shows what it changed - then raises what the
     /// handlers it named were told, in their turn. The core's own render is taken and set aside first, so no turn
     /// renders the core's tree over the test's.
     func applyForTesting(_ patch: HostPatch) {
         if runtime.intake.baseline == 0 { _ = runtime.core.render(baseline: 0) }
         runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) {
-            runtime.tree.apply($0, complete: true)
+            runtime.tree.apply($0, complete: !runtime.tree.holdsRoot(of: $0))
         }
         presentRendered(touchedChrome: runtime.tree.takeChromeTouched())
         runtime.pump.turn()

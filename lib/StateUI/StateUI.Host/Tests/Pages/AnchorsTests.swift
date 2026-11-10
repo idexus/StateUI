@@ -70,6 +70,56 @@ final class AnchorsTests: XCTestCase {
         XCTAssertEqual(tabs.visiblePage?.id, .manual("root"))
     }
 
+    /// Tabs an anchor holds are among the tabs an arrangement shows.
+    func testTabsAnAnchorHoldsAreShown() throws {
+        let (_, window) = try mounted(node("window", .window, [
+            node("split", .splitView, [
+                node("sidebar", .page), node("anchor", .anchor, [node("tabs", .tabView, [node("first", .page)])]),
+            ]),
+        ]))
+
+        XCTAssertEqual(try XCTUnwrap(window.first(id: .manual("split"))).tabViewsShown.map(\.id), [.manual("tabs")])
+    }
+
+    /// A sidebar an anchor holds is the sidebar: its bar is the sidebar's part.
+    func testASidebarAnAnchorHoldsIsTheSidebar() throws {
+        let (_, window) = try mounted(node("window", .window, [
+            node("split", .splitView, [node("anchor", .anchor, [node("sidebar", .page)]), node("detail", .page)]),
+        ]))
+
+        XCTAssertEqual(try XCTUnwrap(window.first(id: .manual("sidebar"))).splitBarPart?.part, .sidebar)
+        XCTAssertEqual(try XCTUnwrap(window.first(id: .manual("detail"))).splitBarPart?.part, .detail)
+    }
+
+    /// What stands on a chosen tab an anchor holds stands in sight: its shortcut acts.
+    func testWhatStandsOnAChosenTabAnAnchorHoldsIsInSight() throws {
+        let save = node("save", .button, [], [.keyboardShortcut: KeyboardShortcut("s", modifiers: [.primary]).propValue])
+        let (_, window) = try mounted(node("window", .window, [
+            node("tabs", .tabView, [node("anchor", .anchor, [node("first", .page, [save])]), node("second", .page)]),
+        ]))
+
+        XCTAssertTrue(try XCTUnwrap(window.first(id: .manual("save"))).standsInSight)
+        XCTAssertEqual(
+            KeyboardShortcuts.target(of: KeyboardShortcut("s", modifiers: [.primary]), under: window)?.id, .manual("save"))
+    }
+
+    /// A stack's page an anchor holds names the way back from the page above it with its own words.
+    func testAPageAnAnchorHoldsNamesTheWayBackAboveIt() throws {
+        let (runtime, window) = try mounted(node("window", .window, [
+            node("stack", .navigationStack, [
+                node("anchor", .anchor, [
+                    node("inbox", .page, [], [.backButtonTitle: .string("Inbox")]), node("sheet", .sheet),
+                ]),
+                node("message", .page),
+            ]),
+        ]))
+
+        let shown = WindowPresentation().show(window, in: runtime.lifecycle)
+        let chrome = WindowChrome(window: window, arrangement: shown.arrangement?.shown)
+        XCTAssertEqual(chrome.back?.stack.id, .manual("stack"))
+        XCTAssertEqual(chrome.back?.title, "Inbox")
+    }
+
     /// A popover shown on an anchor whose view is made anew - a branch flipped - is tried again after the render, to
     /// stand by the new view.
     func testAPopoverShownOnAnAnchorWhoseViewFlipsIsTriedAgain() throws {

@@ -94,7 +94,7 @@ private struct QueryPage: View {
     var body: some View {
         Text(query)
             .titleView { SearchField($query).placeholder("Type here") }
-            .title("Results: \(query)")
+            .pageTitle("Results: \(query)")
     }
 }
 
@@ -105,7 +105,7 @@ private struct TitledPage: View {
 
     var body: some View {
         let counter = AnyView(Counter())
-        return titled ? AnyView(counter.title("Named")) : counter
+        return titled ? AnyView(counter.pageTitle("Named")) : counter
     }
 }
 

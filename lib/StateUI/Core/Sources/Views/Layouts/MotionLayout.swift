@@ -617,8 +617,9 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             element.destroying.append { run.states.settles.orphan() }
             element.destroying.append { run.states.drags.orphan() }
             if run.moves {
+                // What the host tells as no number moves nothing.
                 element.addHandler(MotionLayoutContract.translationUpdated) { gesture, moved, velocity in
-                    run.translationUpdated(gesture, moved: moved, velocity: velocity)
+                    run.translationUpdated(gesture, moved: moved.told, velocity: velocity.told)
                 }
                 element.addHandler(MotionLayoutContract.wheelStepped) { notches in run.stepped(notches) }
             }
@@ -631,13 +632,15 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             element.describe(MotionLayoutContract.rotates, rotates ? true : nil)
             if magnifies || rotates {
                 element.addHandler(MotionLayoutContract.pinchRotationUpdated) { gesture, scale, degrees, velocity in
-                    run.pinch(gesture, scale: scale, degrees: degrees, velocity: velocity)
+                    run.pinch(
+                        gesture, scale: scale.isFinite && scale > 0 ? scale : 1, degrees: degrees.isFinite ? degrees : 0,
+                        velocity: velocity.told)
                 }
             }
             element.describe(MotionLayoutContract.itemDrag, run.itemStart)
             if run.itemStart != nil {
                 element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still in
-                    run.item(gesture, at: at, velocity: velocity, still: still)
+                    run.item(gesture, at: at.told, velocity: velocity.told, still: still.isFinite ? still : 0)
                 }
             }
         }
@@ -845,4 +848,9 @@ struct LayoutShown<Parameters: LayoutParameters>: Equatable {
 
     /// Whether the run stood at rest the last frame.
     var resting = true
+}
+
+private extension Point {
+    /// The point a host told, each coordinate that is no finite number nought.
+    var told: Point { Point(x.isFinite ? x : 0, y.isFinite ? y : 0) }
 }

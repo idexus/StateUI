@@ -60,6 +60,7 @@ enum JavaAPI {
         choreographer, "postFrameCallback", "(Landroid/view/Choreographer$FrameCallback;)V")
     static let removeAllViews = Java.method(viewGroup, "removeAllViews", "()V")
     static let addView = Java.method(viewGroup, "addView", "(Landroid/view/View;II)V")
+    static let addViewAt = Java.method(viewGroup, "addView", "(Landroid/view/View;I)V")
     static let removeView = Java.method(viewGroup, "removeView", "(Landroid/view/View;)V")
     static let bringToFront = Java.method(view, "bringToFront", "()V")
     static let setClipChildren = Java.method(viewGroup, "setClipChildren", "(Z)V")
@@ -150,6 +151,8 @@ enum JavaAPI {
     static let setGravity = Java.method(textView, "setGravity", "(I)V")
     static let getGravity = Java.method(textView, "getGravity", "()I")
     static let setLetterSpacing = Java.method(textView, "setLetterSpacing", "(F)V")
+    static let setTextLocale = Java.method(textView, "setTextLocale", "(Ljava/util/Locale;)V")
+    static let getTextLocale = Java.method(textView, "getTextLocale", "()Ljava/util/Locale;")
     static let setLineSpacing = Java.method(textView, "setLineSpacing", "(FF)V")
     static let getPaintFlags = Java.method(textView, "getPaintFlags", "()I")
     static let getLinkTextColors = Java.method(textView, "getLinkTextColors", "()Landroid/content/res/ColorStateList;")
@@ -443,6 +446,13 @@ enum JavaAPI {
     static let string = Java.findClass("java/lang/String")
     static let toString = Java.method(object, "toString", "()Ljava/lang/String;")
 
+    // MARK: - java.util
+
+    static let locale = Java.findClass("java/util/Locale")
+    static let localeForLanguageTag = Java.staticMethod(locale, "forLanguageTag", "(Ljava/lang/String;)Ljava/util/Locale;")
+    static let defaultLocale = Java.staticMethod(locale, "getDefault", "()Ljava/util/Locale;")
+    static let toLanguageTag = Java.method(locale, "toLanguageTag", "()Ljava/lang/String;")
+
     // MARK: - The host's own classes
 
     static let viewGroupHost = Java.findClass("stateui/android/StateUIViewGroup")
@@ -521,7 +531,7 @@ enum JavaAPI {
 
     static let bar = Java.findClass("stateui/android/StateUIBar")
     static let newBar = Java.method(bar, "<init>", "(Landroid/content/Context;JI)V")
-    static let showBar = Java.method(bar, "show", "(Ljava/lang/String;Ljava/lang/String;I)V")
+    static let showBar = Java.method(bar, "show", "(Ljava/lang/String;I)V")
     static let setBarNavigation = Java.method(bar, "setNavigation", "(IILjava/lang/String;)V")
     static let setBarTitleView = Java.method(bar, "setTitleView", "(Landroid/view/View;)V")
     static let setBarMark = Java.method(bar, "setMark", "(Landroid/graphics/Bitmap;)V")

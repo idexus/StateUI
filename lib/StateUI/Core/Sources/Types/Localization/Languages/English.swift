@@ -27,10 +27,11 @@ extension LibraryWords {
         edit: EditWords(
             undo: "Undo", redo: "Redo", cut: "Cut", copy: "Copy", paste: "Paste", delete: "Delete",
             selectAll: "Select All"),
-        control: ControlWords(decrease: "Decrease", increase: "Increase"),
+        control: ControlWords(decrease: "Decrease", increase: "Increase", details: "Details"),
         menu: MenuWords(
             file: "File", newWindow: "New Window", edit: "Edit", window: "Window", minimize: "Minimize",
-            bringAllToFront: "Bring All to Front", quit: "Quit"))
+            bringAllToFront: "Bring All to Front", quit: "Quit"),
+        file: FileWords(untitled: "Untitled"))
 }
 
 extension RegionConventions {

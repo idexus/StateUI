@@ -73,9 +73,9 @@ final class WinUIItemsViewTests: XCTestCase {
             let host = WinUIRenderer.running {
                 TabView([0, 1]) { number in
                     if number == 0 {
-                        ItemsView(0..<50) { Text("\($0)") }.title("List")
+                        ItemsView(0..<50) { Text("\($0)") }.pageTitle("List")
                     } else {
-                        Text("Other").title("Other")
+                        Text("Other").pageTitle("Other")
                     }
                 }
                 .selection(tab.projectedValue)
