@@ -10,7 +10,7 @@ struct ButtonSample: SampleContent, ExampleContent {
     static let id = "button"
     static let title = "Button"
     static let summary = "A tappable button wired to a click, with an outlined "
-        + "one, a disabled one and one whose long words wrap below it."
+        + "one, a disabled one and one whose words wrap."
 
     // listing: ButtonSample
     var body: some View {
