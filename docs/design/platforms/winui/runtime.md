@@ -117,7 +117,11 @@ pixels, so each DIP is the window's DPI over 96 of them - known before
 anything is laid out, where the root's rasterization scale is not. The size
 is set as the whole window's, the content's asked for plus the frame around
 it as it stands: `ResizeClient` would add the title bar's height again, which
-the content already covers.
+the content already covers. The host turns each DIP into whole pixels by the
+host layer's rule (`GeometryArithmetic.pixels`); a place, a size or a bound
+32-bit pixels cannot hold - or that the work area's corner or the frame
+around the content would take past them - is not asked, and the window
+stands as it was: asked past them, it fell to its least size.
 
 The bounds are the presenter's preferred least and greatest size. The
 traits ([a window's traits](../../host/tree.md#a-windows-traits)) are the

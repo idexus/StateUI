@@ -60,6 +60,20 @@ final class WinUIRendererTests: XCTestCase {
         }
     }
 
+    /// A window asked a size Windows' 32-bit pixels cannot hold keeps the size it stands at - it fell to its least.
+    func testAWindowAskedASizePastWindowsPixelsKeepsItsOwn() throws {
+        try onUIThread {
+            let wide = State(wrappedValue: false)
+            let host = WinUIRenderer.running { WidePage(wide: wide.wrappedValue) }
+            wide.wrappedValue = true
+            for _ in 0..<10 { host.step() }
+            var frame = [Double](repeating: 0, count: 13)
+            stateui_winui_window_frame(try XCTUnwrap(host.window).handle, &frame)
+            XCTAssertEqual(frame[2], WinUITestHost.room.width, accuracy: 0.5)
+            XCTAssertEqual(frame[3], WinUITestHost.room.height, accuracy: 0.5)
+        }
+    }
+
     /// The proof of the host's spine: the click reaches the handler, the state it wrote renders, and the patch
     /// reaches WinUI.
     func testAClickRendersWhatItsHandlerChanged() throws {
@@ -161,6 +175,21 @@ final class WinUIRendererTests: XCTestCase {
             XCTAssertEqual(
                 host.views(WinUITextView.self).map(\.text),
                 ["Windows desktop", dark ? "dark" : "light", "languages first"])
+        }
+    }
+}
+
+/// A page asking its window for a size past any screen's pixels once `wide`.
+private struct WidePage: View {
+    let wide: Bool
+    @Environment(\.window) private var window
+
+    var body: some View {
+        let (window, wide) = (self.window, self.wide)
+        return Text("Wide").onChanged(wide) {
+            guard wide else { return }
+            window.width = 1e12
+            window.height = 1e12
         }
     }
 }

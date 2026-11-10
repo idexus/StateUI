@@ -518,13 +518,16 @@ void stateui_winui_window_set_shown(StateUIObjectRef window, bool shown);
 /// Minimizes or restores the window as its buttons do: `ShowWindow` with `command`. What a test does.
 void stateui_winui_window_show_as_user(StateUIObjectRef window, int32_t command);
 
-/// Moves or sizes the window where `has` says, each alone: `values` are x and y from the corner of the screen's work
-/// area and the width and height of its content, in DIPs.
-void stateui_winui_window_set_frame(StateUIObjectRef window, bool const *has, double const *values);
+/// How many pixels a DIP is in the window, known before its content is laid out.
+double stateui_winui_window_scale(StateUIObjectRef window);
 
-/// The least and the greatest size of the window's content in DIPs: least width, least height, greatest width,
+/// Moves or sizes the window where `has` says, each alone: `pixels` are x and y from the corner of the screen's work
+/// area and the width and height of its content. One that would stand the window outside 32-bit pixels is not asked.
+void stateui_winui_window_set_frame(StateUIObjectRef window, bool const *has, int32_t const *pixels);
+
+/// The least and the greatest size of the window's content in pixels: least width, least height, greatest width,
 /// greatest height, 0 for none.
-void stateui_winui_window_set_limits(StateUIObjectRef window, double const *limits);
+void stateui_winui_window_set_limits(StateUIObjectRef window, int32_t const *limits);
 
 /// What the window is: whether the user may maximize and minimize it, and whether it floats over the application's
 /// other windows.
