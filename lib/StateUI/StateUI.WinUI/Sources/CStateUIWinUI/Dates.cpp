@@ -36,21 +36,20 @@ namespace {
         return calendar.GetDateTime();
     }
 
-    /// The day `moment` falls on in the user's calendar: year, month and day.
-    void dayOf(DateTime moment, int32_t *parts) {
-        globalization::Calendar calendar;
-        calendar.ChangeCalendarSystem(globalization::CalendarIdentifiers::Gregorian());
-        calendar.SetDateTime(moment);
-        parts[0] = calendar.Year();
-        parts[1] = calendar.Month();
-        parts[2] = calendar.Day();
-    }
-
     /// The user's own pattern for a short or a long day.
     winrt::hstring dayPattern(bool longForm) {
         globalization::DateTimeFormatting::DateTimeFormatter formatter(longForm ? L"longdate" : L"shortdate");
         return formatter.Patterns().GetAt(0);
     }
+}
+
+void stateui::dayOf(DateTime moment, int32_t *parts) {
+    globalization::Calendar calendar;
+    calendar.ChangeCalendarSystem(globalization::CalendarIdentifiers::Gregorian());
+    calendar.SetDateTime(moment);
+    parts[0] = calendar.Year();
+    parts[1] = calendar.Month();
+    parts[2] = calendar.Day();
 }
 
 extern "C" StateUIObjectRef stateui_winui_date_make(int64_t view) {

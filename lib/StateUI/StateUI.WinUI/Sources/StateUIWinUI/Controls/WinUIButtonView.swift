@@ -117,7 +117,8 @@ final class WinUIButtonView: WinUIView {
         show()
     }
 
-    /// Writes what the button shows: all of it where its shape changed, else the words in their place.
+    /// Writes what the button shows: all of it where its shape changed, else the words in their place; a caption
+    /// breaking otherwise is measured again.
     private func show() {
         let inSight = self.inSight
         written = inSight
@@ -127,19 +128,23 @@ final class WinUIButtonView: WinUIView {
             stateui_winui_button_set_words(handle, inSight)
             return
         }
+        let breaksAnew = shown != nil && next.lineBreak != shown?.lineBreak
         shown = next
         bounded = nil
         stateui_winui_button_set_content(
             handle, inSight, WinUIStrings.lines(next.icon), next.position.rawValue, next.spacing ?? -1,
             next.aspect.rawValue, next.lineBreak?.wraps ?? false, next.lineBreak?.truncates ?? false)
+        if breaksAnew { measureAgain() }
     }
 
     /// A picture alone stands at its own size, whatever the room offered: the box filling the button with it would
-    /// grow to any room it is measured in.
+    /// grow to any room it is measured in. A caption that never wraps keeps its natural size, as a label's does.
     /// Design: docs/design/platforms/winui/controls.md#a-button
+    /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
     override func measure(width: Double?, height: Double?) -> LayoutSize {
-        guard let shown, !shown.hasWords, !shown.icon.isEmpty else { return super.measure(width: width, height: height) }
-        return super.measure(width: nil, height: nil)
+        if let shown, !shown.hasWords, !shown.icon.isEmpty { return super.measure(width: nil, height: nil) }
+        if shown?.lineBreak?.wraps == true { return super.measure(width: width, height: height) }
+        return super.measure(width: nil, height: height)
     }
 
     /// A picture beside the words stands no taller than the button's place leaves it.

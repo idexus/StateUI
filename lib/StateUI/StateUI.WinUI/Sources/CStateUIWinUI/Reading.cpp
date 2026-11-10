@@ -91,12 +91,12 @@ namespace {
                number(radius.BottomLeft);
     }
 
+    /// The day `time` falls on, read as the picker's days are written (`dayOf`).
     std::string day(winrt::Windows::Foundation::DateTime const &time) {
-        auto seconds = winrt::clock::to_time_t(time);
-        std::tm parts{};
-        gmtime_s(&parts, &seconds);
+        int32_t parts[3];
+        dayOf(time, parts);
         char words[16];
-        std::snprintf(words, sizeof words, "%04d-%02d-%02d", parts.tm_year + 1900, parts.tm_mon + 1, parts.tm_mday);
+        std::snprintf(words, sizeof words, "%04d-%02d-%02d", parts[0], parts[1], parts[2]);
         return words;
     }
 
