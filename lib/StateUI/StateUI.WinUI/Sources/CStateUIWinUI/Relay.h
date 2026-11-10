@@ -175,6 +175,9 @@ namespace stateui {
     /// WinUI's input scope the relay numbers `scope` (`WinUIInputScope`): the on-screen keyboard a field brings up.
     xaml::Input::InputScope inputScope(int32_t scope);
 
+    /// The day `moment` falls on in the user's calendar - year, month and day - as a date picker's days are written.
+    void dayOf(winrt::Windows::Foundation::DateTime moment, int32_t *parts);
+
     /// Keeps what the screen reader was told, which a test reads back (`stateui_winui_announced`).
     void announced(std::string const &words);
 
