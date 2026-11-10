@@ -284,6 +284,18 @@ final class GTKTabViewTests: XCTestCase {
         }
     }
 
+    /// A tab asked for past every whole number a host holds - a number past `Int` - names none: the first shows.
+    func testATabPastEveryWholeNumberNamesNone() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                TabView(["one", "two"]) { name in TitledPage(title: name == "one" ? "One" : "Two") }
+                    .setValue(TabViewContract.selectedTab, Int.max)
+            }
+            let tabs = try XCTUnwrap(host.views(GTKTabView.self).first)
+            XCTAssertEqual(tabs.shownIndex, 0)
+        }
+    }
+
     /// A tabbed view pushed on a stack is a page of it, in a frame holding its switcher beneath the header bar, which
     /// - and the window - keeps the title of the page beneath.
     func testATabViewPushedOnAStackStandsInAFrame() throws {
