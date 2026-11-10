@@ -12,7 +12,7 @@
 ///     SplitView {
 ///         MenuPage()
 ///     } detail: {
-///         NavigationStack($path) { … }
+///         NavigationStack($path) { … } destination: { route in … }
 ///             .barBackground(.cornflowerBlue)
 ///     }
 ///     .showsSidebar($showsMenu)

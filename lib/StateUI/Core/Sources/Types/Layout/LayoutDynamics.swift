@@ -4,7 +4,7 @@
 /// What a motion layout's views move by between where its arithmetic puts them and where they are shown: each view a
 /// body on a spring to its place.
 ///
-///     MotionLayout(cards, id: \.name) { CardFace($0) } placements: { room, parameters in … }
+///     MotionLayout(cards, id: \.name, parameters: $turn) { CardFace($0) } placements: { room, turn in … }
 ///         .dynamics(.spring(response: .milliseconds(420), damping: 0.8))
 ///
 /// A view whose place a change moves - a card joining, the run arranged anew - sets out from where it was shown

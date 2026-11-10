@@ -3,9 +3,9 @@
 
 /// How one view of a motion layout moves as a body of its layout's world (`LayoutDynamics`).
 ///
-///     MotionLayout(cards, id: \.name) { card in
+///     MotionLayout(cards, id: \.name, parameters: $turn) { card in
 ///         CardFace(card).layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.6))
-///     } placements: { room, parameters in … }
+///     } placements: { room, turn in … }
 ///
 /// Design: docs/design/views/motion-layout.md#bodies
 public struct LayoutBody: Equatable, Sendable {
