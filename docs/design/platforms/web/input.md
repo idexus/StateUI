@@ -76,7 +76,8 @@ it is captured, so its moves reach it wherever they go until it lets go. One
 pointer is a press dragged by the host layer's rule (`DragRecognition`), past
 four points for a mouse or a pen and ten for a finger, measured on the page -
 the view it moves moves under it. A press dragged is no tap: its click is not
-heard as one.
+heard as one. A view that stops hearing them gives the page its touch and its
+selection back - the selection its own words keep - and captures no pointer.
 
 Two fingers are a pinch: its scale each step is how far apart they stand
 against the step before (`PinchStep`), where their middle is in the view; a

@@ -169,6 +169,35 @@ final class WebPointerTests: XCTestCase {
         XCTAssertEqual(opened.count, 1, "let go over it: it opens, once")
     }
 
+    /// A view that stops hearing a press dragged gives the page its touch and its selection back: a pan of two
+    /// fingers leaves one finger's to the page, which scrolls under it, and its words stand as a label's - which
+    /// selects nothing where it does not say so.
+    func testAViewThatStopsHearingADragGivesThePageItsTouchBack() throws {
+        WebRenderer.shared?.finish()
+        let fingers = State(wrappedValue: 1)
+        let host = WebRenderer.running {
+            VStack {
+                Text("Row").width(200).height(40).onPanUpdated(touchCount: fingers.wrappedValue) { _ in }.id("row")
+                Text("Plain").id("plain")
+            }
+        }
+        host.step()
+        func node(_ id: String) throws -> Int32 {
+            try XCTUnwrap((host.runtime.tree.root?.first(id: .manual(id))?.native as? WebElement)?.view).node
+        }
+        func styled(_ id: String) throws -> String {
+            try WebBrowser.evaluate("((s) => s.touchAction + '|' + s.userSelect)(getComputedStyle(e))", on: node(id)) ?? ""
+        }
+        XCTAssertEqual(try styled("plain"), "auto|none", "a label selects nothing it does not say")
+        XCTAssertEqual(try styled("row"), "none|none", "a press dragged is the view's")
+
+        fingers.wrappedValue = 2
+        for _ in 0..<3 { host.step() }
+
+        XCTAssertEqual(try styled("row"), "auto|none", "the touch the page's again, the words a label's")
+        host.finish()
+    }
+
     /// A view let go of while it is pressed takes off what its press hung on the page: the scroll it waits on to be
     /// taken by one.
     func testAViewLetGoOfWhilePressedLeavesNothingOnThePage() throws {

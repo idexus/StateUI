@@ -247,6 +247,28 @@ class WebDOMView {
         styles[name]
     }
 
+    /// Whether the user selects the view's words, as the view says it - a text's "text" or "none"; nil for the
+    /// page's own.
+    var ownSelection: String? {
+        didSet { showSelection() }
+    }
+
+    /// The touch the page keeps over the view while the hand is the view's - a press dragged, two fingers, a layout's
+    /// hand - which selects nothing then; nil where the hand is the page's.
+    /// Design: docs/design/platforms/web/input.md#a-press-dragged-and-a-pinch
+    var handTouch: String? {
+        didSet {
+            style("touch-action", handTouch)
+            showSelection()
+        }
+    }
+
+    private func showSelection() {
+        let selection = handTouch == nil ? ownSelection : "none"
+        style("user-select", selection)
+        style("-webkit-user-select", selection)
+    }
+
     /// What the element is drawn over, under its whole box: a color, or a brush's first color; nil for the
     /// browser's own. A field's box is its field, the picture the page's look draws in it kept.
     /// Design: docs/design/platforms/web/look.md#a-views-background
