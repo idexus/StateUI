@@ -659,9 +659,11 @@ never against a stored copy
   every member has its case (`ContractCompletenessTests`).
   ([Conformance](../design/host/conformance.md))
 - **The Gallery's suite** compiles every `swift` block of the handbook
-  (`DocumentationExamplesTests`) and proves at compile time the roads the public
-  API closes - no member by token, no view where a run stands, a scene made
-  of windows and an application of scenes (`ContractRoadsTests`).
+  (`DocumentationExamplesTests`) and every example of the libraries' `///`
+  documentation (`DocCommentExamplesTests`), and proves at compile time the
+  roads the public API closes - no member by token, no view where a run
+  stands, a scene made of windows and an application of scenes
+  (`ContractRoadsTests`).
 
 ## Changing the core
 

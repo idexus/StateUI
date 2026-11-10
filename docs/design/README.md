@@ -22,6 +22,33 @@ run of spaces or hyphens one hyphen. `DesignNotesTests` checks that every
 reference resolves, and holds the golden rule for every directory that meets
 it.
 
+## The examples of a doc comment
+
+An example in `///` documentation is code indented four spaces after a blank
+`///` line, as Markdown reads it; a line indented so right after words goes
+on with them. It names the library as it stands, which the Gallery's suite
+holds (`DocCommentExamplesTests`) in two ways.
+
+An example of a library the suite's build holds - StateUI, StateUITesting -
+is compiled: a function's body, or a file where it declares an extension or
+a type a file holds. It leans on what its page declares - a state, a page,
+the application's window kinds and keys - so it is compiled beside a prelude
+of those, declared as an application declares them (`DocCommentPrelude`), and
+fails only on what says the library changed: a member gone or out of reach,
+an argument it no longer takes or now needs, a call nothing matches. Every
+other error is the example's context, and a stale name behind a receiver
+nothing declares goes unseen; a name an example leans on that the prelude
+does not hold, and that fails as a change would, goes into the prelude.
+
+An example the suite cannot compile is held to the library's recorded
+surface (`lib/StateUI/exports/api`): a fragment - modifiers starting with `.`,
+with no view before them - calls only modifiers some type declares, with
+labels one of them takes; an example of a host's facade or a backend, whose
+module this build does not hold, calls each type its surface declares only
+by members recorded there, its arguments' labels filling one of them - a
+parameter left out where it has a default, a pack or a variadic filled by
+any number, the first trailing closure by any label.
+
 ## The notes
 
 - [Architecture](architecture.md): the packages, one change end to end, and

@@ -263,8 +263,11 @@ final class DocumentationExamplesTests: XCTestCase {
     }
 
     /// Compiles one file as far as the compiler's own diagnostics go - through definite initialization, which a
-    /// type-check alone never reaches; the compiler's output where it failed, nil where it passed.
-    nonisolated static func compile(_ file: URL, module: URL, sdk: String?, warningsAsErrors: Bool = false) -> String? {
+    /// type-check alone never reaches; the compiler's output where it failed - its first `errorLines` errors - nil
+    /// where it passed.
+    nonisolated static func compile(
+        _ file: URL, module: URL, sdk: String?, warningsAsErrors: Bool = false, errorLines: Int = 6
+    ) -> String? {
         let sil = file.deletingPathExtension().appendingPathExtension("sil")
         var arguments = ["-emit-sil", "-o", sil.path, "-parse-as-library", "-I", module.path, file.path]
         if warningsAsErrors { arguments.append("-warnings-as-errors") }
@@ -314,7 +317,7 @@ final class DocumentationExamplesTests: XCTestCase {
         return output
             .split(separator: "\n")
             .filter { $0.contains("error:") }
-            .prefix(6)
+            .prefix(errorLines)
             .joined(separator: "\n")
     }
 

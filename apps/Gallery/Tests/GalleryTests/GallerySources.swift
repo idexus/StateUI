@@ -11,11 +11,18 @@ enum GallerySources {
         .deletingLastPathComponent()    // Tests
         .deletingLastPathComponent()    // Gallery
 
-    /// The text files under `folder` of the Gallery's package, by their path in it, line ends as `\n`. A path is
-    /// written with `/` on every system - Windows walks a folder with `\` - so what is written from it is the same
-    /// on each.
-    static func files(under folder: String, extensions: Set<String>) throws -> [(path: String, text: String)] {
-        let root = gallery.appendingPathComponent(folder)
+    /// The repository the Gallery stands in.
+    static let repository = gallery
+        .deletingLastPathComponent()    // apps
+        .deletingLastPathComponent()    // the repository
+
+    /// The text files under `folder` of `base` - the Gallery's package unless said - by their path in it, line ends
+    /// as `\n`. A path is written with `/` on every system - Windows walks a folder with `\` - so what is written
+    /// from it is the same on each.
+    static func files(
+        under folder: String, extensions: Set<String>, in base: URL = gallery
+    ) throws -> [(path: String, text: String)] {
+        let root = base.appendingPathComponent(folder)
         guard let walk = FileManager.default.enumerator(atPath: root.path) else { return [] }
 
         return try walk.compactMap { ($0 as? String)?.replacingOccurrences(of: "\\", with: "/") }
