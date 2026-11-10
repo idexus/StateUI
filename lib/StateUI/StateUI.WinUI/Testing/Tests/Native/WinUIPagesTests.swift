@@ -235,6 +235,17 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// A tab asked for past every whole number a host holds - a number past `Int` - names none: the first shows.
+    func testATabPastEveryWholeNumberNamesNone() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                TabView([0, 1]) { number in Text("Tab \(number)") }.setValue(TabViewContract.selectedTab, Int.max)
+            }
+            let tabbed = try XCTUnwrap(host.views(WinUITabView.self).first)
+            XCTAssertEqual(tabbed.shownIndex, 0)
+        }
+    }
+
     /// A tab's picture stands as tall as the theme's tab icons and as wide as its shape makes it - an SVG too, which
     /// tells WinUI a size of thousands of pixels: nothing in the tab's template bounds its icon.
     func testATabsPictureStandsAsTallAsTheThemesTabIcons() throws {
