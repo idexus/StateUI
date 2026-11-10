@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#include <winrt/Windows.Globalization.h>
 #include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include <winrt/Windows.UI.h>
 #include <winrt/Windows.UI.Text.h>
@@ -91,12 +92,13 @@ namespace {
                number(radius.BottomLeft);
     }
 
+    /// The day `time` falls on in the user's calendar, as the picker writes it.
     std::string day(winrt::Windows::Foundation::DateTime const &time) {
-        auto seconds = winrt::clock::to_time_t(time);
-        std::tm parts{};
-        gmtime_s(&parts, &seconds);
+        winrt::Windows::Globalization::Calendar calendar;
+        calendar.ChangeCalendarSystem(winrt::Windows::Globalization::CalendarIdentifiers::Gregorian());
+        calendar.SetDateTime(time);
         char words[16];
-        std::snprintf(words, sizeof words, "%04d-%02d-%02d", parts.tm_year + 1900, parts.tm_mon + 1, parts.tm_mday);
+        std::snprintf(words, sizeof words, "%04d-%02d-%02d", calendar.Year(), calendar.Month(), calendar.Day());
         return words;
     }
 
