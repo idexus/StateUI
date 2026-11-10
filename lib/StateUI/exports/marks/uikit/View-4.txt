@@ -1,4 +1,4 @@
-# revision 23.1
+# revision 24.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
 Button.filesDropped: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
 Button.tapped: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
@@ -137,4 +137,5 @@ WebView.panXChannel: ✓ pan on WebView: the view's listening handed the recogni
 ZStack.frameChanged: ✅
 ZStack.horizontalAlignment: ✅
 ZStack.pinchUpdated: ✓ pinch on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.tapped: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.verticalAlignment: ✅

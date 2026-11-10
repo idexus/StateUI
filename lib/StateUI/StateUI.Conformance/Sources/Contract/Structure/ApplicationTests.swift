@@ -143,6 +143,12 @@
                 try s.perform(.answer(.cancel), on: window)
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, ["Ada", "nothing"], "the words typed, then nothing for the cancel")
+
+                try s.perform(.activate, on: s.element("ask"))
+                try s.settle { try s.question() != nil }
+                try s.perform(.answer(.accept, typing: ""), on: window)
+                s.settle { said.values.count == 3 }
+                s.expect(said.values.last, "", "an empty field accepted is empty words, not the cancel's nothing")
             },
             ConformanceCase("questionsWaitTheirTurn", proves: [
                 Covered(ApplicationContract.alert), Covered(ApplicationContract.confirm),

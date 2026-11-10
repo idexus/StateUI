@@ -44,12 +44,12 @@ Picker 8
 Image 3
 Page 10
 PageElement 6
-View 23
+View 24
 VisualElement 28
 Shape 6
 BorderElement 14
 TextInput 9
-Application 14
+Application 15
 TextSpan 5
 Separator 4
 Canvas 4

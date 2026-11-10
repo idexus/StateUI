@@ -6,7 +6,7 @@
 
 /// `ViewContract` on a host: where a view stands in its parent - its margin, its alignment, its area in a layered
 /// stack, its cell in a grid - as the frame it reports says, StateUI's arithmetic alike on every host; and what it
-/// hears of the user's hand - taps counted, a press held, a pan carrying its states and ending as a swipe, a pinch, the pointer
+/// hears of the user's hand - taps counted, a press shown in its pressed look and held, a pan carrying its states and ending as a swipe, a pinch, the pointer
 /// coming, moving, pressing and going, a drag and a drop; each case made for every element wearing the tier. And
 /// where a view stands in its window as a scroller's or a list's scroll moves it, and from the safe area at its page's
 /// corner; and how a view of a motion layout moves as a body following its place.
@@ -20,7 +20,41 @@
                 tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
-        } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner, onAFirstBaseline]
+        } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner, onAFirstBaseline, showsItsPress]
+    }
+
+    /// A view answering a tap is pressed as a button is: the look its visual state gives a pressed view stands while
+    /// the press holds, and letting go gives its own back.
+    @MainActor
+    static var showsItsPress: ConformanceCase {
+        ConformanceCase("ZStack.aPressShowsItsPressedLookWhileItHolds", proves: [
+            Covered(ViewContract.tapped, on: "ZStack"),
+        ], needs: [Covered(BackgroundElementContract.background, on: "ZStack")]) { s in
+            s.start {
+                VStack {
+                    ZStack { Text("Row") }
+                        .width(80)
+                        .height(40)
+                        .background(.steelBlue)
+                        .visualState(.pressed) { $0.background(.firebrick) }
+                        .onTapped {}
+                        .id("row")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            let row = try s.element("row")
+            let background = { try s.held(BackgroundElementContract.background, on: row) }
+            try s.settle { try background() == .color(.steelBlue) }
+
+            try s.perform(.pressDown(at: Point(40, 20)), on: row)
+            try s.settle { try background() == .color(.firebrick) }
+            s.expect(try background(), .color(.firebrick), "its pressed look while the press holds")
+
+            try s.perform(.lift(at: Point(40, 20)), on: row)
+            try s.settle { try background() == .color(.steelBlue) }
+            s.expect(try background(), .color(.steelBlue), "its own look again")
+        }
     }
 
     /// A scroll moves where a view stands in its window, though nothing lays it out anew: its place in its parent
