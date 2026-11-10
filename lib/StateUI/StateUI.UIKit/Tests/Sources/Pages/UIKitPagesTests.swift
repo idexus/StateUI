@@ -486,6 +486,18 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(tab.wrappedValue, 6)
     }
 
+    /// A tab asked for past every whole number a host holds - a number past `Int` - names none: the first shows.
+    @MainActor
+    func testATabPastEveryWholeNumberNamesNone() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            TabView([0, 1]) { Text("\($0)").pageTitle("Tab \($0)") }.setValue(TabViewContract.selectedTab, Int.max)
+        }
+        defer { host.finish() }
+        let element = host.runtime.tree.root.flatMap { Self.first(.tabView, in: $0) }
+        let tabs = try XCTUnwrap((element?.native as? UIKitElement)?.controller as? UIKitTabBarController)
+        XCTAssertEqual(tabs.selectedIndex, 0)
+    }
+
     /// A tab bar wears the words' color of the bar on its path as it changes - written on the stack it stands in, so
     /// the tabbed view itself changes nothing - in every layout it lays its tabs in.
     @MainActor

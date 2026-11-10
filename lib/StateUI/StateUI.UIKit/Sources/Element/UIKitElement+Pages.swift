@@ -154,7 +154,7 @@ extension UIKitElement {
                 arranged.compactMap { tab in
                     tab.controller.map { ($0, tab.value(PageElementContract.title.token)?.string ?? "", HostPicture(tab.value(.icon))) }
                 },
-                requested: value(.selectedTab)?.number.map { Int($0) })
+                requested: element.whole(.selectedTab))
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
             tabs.onBarResized = { [weak self] in self?.paintBarsGradientAgain() }
         case .splitView:
