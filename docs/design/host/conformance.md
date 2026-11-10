@@ -136,7 +136,9 @@ A case's requests go to the HTTP server its driver names (`served()`, and
 `held()` counting the requests it holds). A native host's driver names the
 suite's own, on the machine's loopback, which the conformance package gives
 every driver; the Web's names its page's own, which the browser's runner
-answers. Both are requirements of the protocol, so a driver's own is the one
+answers. Node's parser takes no method it does not know, so the runner
+answers a custom method from the request's own line, where the parser
+gives it up. Both are requirements of the protocol, so a driver's own is the one
 a case reaches: a method a driver adds outside the protocol is never called
 through it.
 

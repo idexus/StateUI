@@ -49,7 +49,7 @@ VisualElement 28
 Shape 6
 BorderElement 14
 TextInput 9
-Application 15
+Application 16
 TextSpan 5
 Separator 4
 Canvas 4

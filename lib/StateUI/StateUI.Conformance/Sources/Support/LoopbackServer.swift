@@ -8,9 +8,10 @@ import WinSDK
 #endif
 
 /// The HTTP server the request cases send to, on this machine's loopback, beside the UI thread, a thread a
-/// connection: it answers a request with the status 201, `X-Method` naming the request's method, `X-Asked` saying
-/// what the request's own `X-Asked` said, and the request's body (`HostDriver.served()`); a request for `/held` it
-/// holds - five seconds, or until its client closes the connection, which it counts (`HostDriver.held()`).
+/// connection: it answers a request with the status 201 - 404 for `/missing` - `X-Method` naming the request's
+/// method, `X-Asked` and `X-Cookie` saying what the request's own `X-Asked` and `Cookie` said, and the request's body
+/// (`HostDriver.served()`); `/session` sets a cookie; a request for `/held` it holds - five seconds, or until its
+/// client closes the connection, which it counts (`HostDriver.held()`).
 final class LoopbackServer: Sendable {
     /// The server, started at its first use; nil where the platform opens no socket.
     static let shared: LoopbackServer? = LoopbackServer()
@@ -192,8 +193,11 @@ final class LoopbackServer: Sendable {
             }
         }
         let body = Array(received[end..<min(received.count, end + bodyLength)])
-        let response = Array(("HTTP/1.1 201 Created\r\nX-Method: \(method)\r\n"
-            + "X-Asked: \(header("x-asked", in: head) ?? "")\r\nContent-Type: text/plain\r\n"
+        let status = path.hasSuffix("/missing") ? "404 Not Found" : "201 Created"
+        let session = path.hasSuffix("/session") ? "Set-Cookie: stateui-session=kept; Path=/\r\n" : ""
+        let response = Array(("HTTP/1.1 \(status)\r\nX-Method: \(method)\r\n"
+            + "X-Asked: \(header("x-asked", in: head) ?? "")\r\nX-Cookie: \(header("cookie", in: head) ?? "")\r\n"
+            + session + "Content-Type: text/plain\r\n"
             + "Content-Length: \(body.count)\r\nConnection: close\r\n\r\n").utf8) + body
         var sent = 0
         while sent < response.count {

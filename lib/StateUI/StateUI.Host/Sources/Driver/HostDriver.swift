@@ -111,8 +111,9 @@
     func accent() throws -> Color
 
     /// The address of an HTTP server the driver stands up on this machine, no scheme left out: it answers every
-    /// request with the status 201, the header `X-Method` naming the request's method, `X-Asked` saying what the
-    /// request's own `X-Asked` said, and the request's body.
+    /// request with the status 201 - 404 for `/missing` - the header `X-Method` naming the request's method,
+    /// `X-Asked` and `X-Cookie` saying what the request's own `X-Asked` and `Cookie` said, and the request's body;
+    /// `/session` sets the cookie `stateui-session=kept`.
     /// Design: docs/design/host/conformance.md#the-driver
     func served() throws -> String
 

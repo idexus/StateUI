@@ -347,6 +347,57 @@
                 s.settle { !said.values.isEmpty }
                 s.expect(said.values, ["201 POST kept Kept words"], "the status, the headers both ways and the body")
             },
+            ConformanceCase("anyStatusIsTheServersAnswer", proves: [
+                Covered(ApplicationContract.sendRequest),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+                let address = try s.served()
+                let said = Received<String>()
+                s.start {
+                    WithSessions { _, application in
+                        VStack {
+                            Button("Send").onClicked(policy: .ignoreWhileRunning) {
+                                let missing = try await application.send(HTTPRequest(address + "/missing"))
+                                said.values.append(String(missing.status))
+                                do {
+                                    let read = try await application.send(
+                                        HTTPRequest(address + "/records", method: HTTPMethod("ReadRecord")))
+                                    said.values.append(read.header("X-Method") ?? "-")
+                                } catch {
+                                    said.values.append("refused")
+                                }
+                            }.id("send")
+                        }
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("send"))
+                s.settle { said.values.count == 2 }
+                s.expect(said.values.first, "404", "a 404 is the server's word, no failure")
+                s.expect(["ReadRecord", "refused"].contains(said.values.last ?? ""), true,
+                         "a custom method sent as written, or refused by the platform: \(said.values.last ?? "nothing")")
+            },
+            ConformanceCase("aSessionTheServerOpensHoldsForTheRequestsAfterIt", proves: [
+                Covered(ApplicationContract.sendRequest),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+                let address = try s.served()
+                let said = Received<String>()
+                s.start {
+                    WithSessions { _, application in
+                        VStack {
+                            Button("Sign in").onClicked(policy: .ignoreWhileRunning) {
+                                _ = try await application.send(HTTPRequest(address + "/session"))
+                                let next = try await application.send(HTTPRequest(address + "/notes"))
+                                said.values.append(next.header("X-Cookie") ?? "-")
+                            }.id("send")
+                        }
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("send"))
+                s.settle { !said.values.isEmpty }
+                s.expect(said.values.first?.contains("stateui-session=kept"), true,
+                         "the cookie the server set, sent with the request after it: \(said.values.first ?? "nothing")")
+            },
             ConformanceCase("aRequestEndsWithItsRun", proves: [
                 Covered(ApplicationContract.cancelCall),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ApplicationContract.sendRequest)]) { s in
