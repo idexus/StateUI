@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `TabViewContract` on a host: the tab the binding names shows; the user's choice lands on the binding, the
-/// program's is shown.
+/// `TabViewContract` on a host: the tab the binding names shows; the user's choice lands on the binding and tells
+/// the pages they appear and disappear, the program's is shown.
 @_spi(Host) public enum TabViewTests: ConformanceFamily {
     public static let name = "TabView"
 
@@ -65,6 +65,22 @@
                 try s.perform(.activate, on: s.element("next0"))
                 try s.settle { try s.held(TabViewContract.selectedTab, on: tabs) == 1 }
                 s.expect(try s.held(TabViewContract.selectedTab, on: tabs), 1)
+            },
+            ConformanceCase("aTabTheUserChoosesTellsItsPagesTheyAppearAndDisappear", proves: [
+                Covered(TabViewContract.self),
+            ], needs: [
+                Covered(TabViewContract.selectedTabChanged), Covered(PageContract.appearing),
+                Covered(PageContract.disappearing),
+            ]) { s in
+                let log = Received<String>()
+                s.start { TabView([0, 1]) { tab in Text("Tab \(tab)").loggingPhases(log, as: "tab\(tab)") } }
+                let tabs = try s.element(ofType: TabViewContract.nodeType)
+                s.settle { log.values.contains("tab0 appearing") }
+                log.values = []
+
+                try s.perform(.choose(1), on: tabs)
+                s.settle { log.values.contains("tab1 appearing") && log.values.contains("tab0 disappearing") }
+                s.expect(log.values.sorted(), ["tab0 disappearing", "tab1 appearing"], "no navigation phase for a tab")
             },
         ]
     }

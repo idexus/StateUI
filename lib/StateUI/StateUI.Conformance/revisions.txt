@@ -90,7 +90,7 @@ Map 4
 Path 2
 Polygon 3
 ProgressBar 3
-TabView 2
+TabView 3
 VStack 3
 WebView 4
 ZStack 2
