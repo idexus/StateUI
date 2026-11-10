@@ -33,4 +33,25 @@ final class GTKCanvasViewTests: XCTestCase {
             XCTAssertFalse(inked(from: 100), "nothing at the right")
         }
     }
+
+    /// Words in a box wider than Pango measures - a width an author writes for words never to wrap - stand at its
+    /// left, the box cut to the canvas.
+    func testWordsInABoxWiderThanPangoMeasuresStand() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                Canvas {
+                    Draw.textColor(.red)
+                    Draw.text("Words", x: 0, y: 0, width: 3_000_000, height: 20)
+                }
+                .width(200).height(20)
+            }
+            let canvas = try XCTUnwrap(host.views(GTKCanvasView.self).first)
+            let points = stride(from: 2.0, to: 20, by: 2).flatMap { y in
+                stride(from: 0.0, to: 100, by: 1).map { ($0, y) }
+            }
+            host.settle { canvas.pixels(at: points).contains { $0 >> 24 > 0 } }
+
+            XCTAssertTrue(canvas.pixels(at: points).contains { $0 >> 24 > 0 }, "the words at the left")
+        }
+    }
 }
