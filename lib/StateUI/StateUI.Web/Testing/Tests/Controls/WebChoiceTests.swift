@@ -41,6 +41,30 @@ final class WebChoiceTests: XCTestCase {
 
         XCTAssertEqual(try WebBrowser.evaluate(count, on: 0), "Parcels: 3")
     }
+
+    /// A picker the tree disables, offered as segments or radio buttons, takes no choice on any value - values it
+    /// offers once disabled too.
+    func testADisabledPickersValuesStayDisabledAsTheyChange() throws {
+        WebRenderer.shared?.finish()
+        let more = State(wrappedValue: false)
+        let size = State(wrappedValue: "M")
+        let host = WebRenderer.running {
+            let sizes = more.wrappedValue ? ["S", "M", "L", "XL"] : ["S", "M", "L"]
+            VStack {
+                Picker(sizes, selection: size.projectedValue).presentation(.segmented).isEnabled(false)
+                Picker(sizes, selection: size.projectedValue).presentation(.radio).isEnabled(false)
+            }
+        }
+        host.step()
+        let enabled = "[...document.querySelectorAll('.stateui-segment, .stateui-radio input')].filter((e) => !e.disabled).length"
+
+        more.wrappedValue = true
+        host.settle { (try? WebBrowser.number("document.querySelectorAll('.stateui-segment').length", on: 0)) == 4 }
+
+        XCTAssertEqual(try WebBrowser.number("document.querySelectorAll('.stateui-radio input').length", on: 0), 4)
+        XCTAssertEqual(try WebBrowser.number(enabled, on: 0), 0, "a value the user can choose")
+        host.finish()
+    }
 }
 
 /// A filter a summary chooses.
