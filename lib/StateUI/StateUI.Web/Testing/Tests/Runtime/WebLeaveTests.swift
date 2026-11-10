@@ -275,6 +275,34 @@ final class WebLeaveTests: XCTestCase {
         host.finish()
     }
 
+    /// A page's scroller that stops being its page's - a view beside it come - and is again, as the view goes, is
+    /// listened to as before by the bars over and under it, each told the page changed.
+    func testAScrollerThatIsThePagesAgainIsListenedToOnce() async throws {
+        WebRenderer.shared?.finish()
+        let beside = State(wrappedValue: false)
+        let host = WebRenderer.running {
+            VStack {
+                ScrollView { Text("Rows") }
+                if beside.wrappedValue { Text("Beside") }
+            }
+            .toolbar(.bottom) { ToolbarButton(beside.wrappedValue ? "Save all" : "Save").onClicked {} }
+        }
+        func settle() async { for _ in 0..<6 { host.step(); await Task.yield() } }
+        await settle()
+
+        var counts: [Int] = []
+        for _ in 0..<3 {
+            beside.wrappedValue = true
+            await settle()
+            beside.wrappedValue = false
+            await settle()
+            counts.append(WebRelay.listenerCount)
+        }
+
+        XCTAssertEqual(Set(counts).count, 1, "listeners after each return: \(counts)")
+        host.finish()
+    }
+
     /// A window closed lets go of every view it made, its bar's with the page's.
     func testAClosedWindowLetsGoOfEveryViewItMade() throws {
         WebRenderer.shared?.finish()

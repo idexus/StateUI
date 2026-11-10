@@ -30,9 +30,10 @@ class WebDOMView {
     private var offered = DragAndDrop.none
     private var dragListener: Int32?
 
-    /// What runs as the element's size changes, every one: its box drawn again, its drawing, its frame read, a
-    /// scroller's waiting offset moved to.
-    private var sizeFollowers: [@MainActor () -> Void] = []
+    /// What runs as the element's size changes, every one, by the number it is followed under: its box drawn again,
+    /// its drawing, its frame read, a scroller's waiting offset moved to, a bar's edge.
+    private var sizeFollowers: [(number: Int, action: @MainActor () -> Void)] = []
+    private var followedSizes = 0
 
     /// The CSS properties this view's element holds, by name, so a value is sent only when it changes.
     private var styles: [String: String] = [:]
@@ -154,16 +155,24 @@ class WebDOMView {
         WebRelay.offerDrag(node, offered, listener)
     }
 
-    /// Runs `action` whenever the element's size changes: one observer of the page's carries every follower, and
-    /// goes with the element.
+    /// Runs `action` whenever the element's size changes, until `stopFollowingSize` with the number it answers: one
+    /// observer of the page's carries every follower, and goes with the element.
     /// Design: docs/design/platforms/web/layout.md#where-a-view-stands
-    func followSize(_ action: @escaping @MainActor () -> Void) {
-        if sizeFollowers.isEmpty {
+    @discardableResult
+    func followSize(_ action: @escaping @MainActor () -> Void) -> Int {
+        if followedSizes == 0 {
             WebRelay.observeSize(node, held(WebRelay.listener { [weak self] in
-                for follower in self?.sizeFollowers ?? [] { follower() }
+                for follower in self?.sizeFollowers ?? [] { follower.action() }
             }))
         }
-        sizeFollowers.append(action)
+        followedSizes += 1
+        sizeFollowers.append((followedSizes, action))
+        return followedSizes
+    }
+
+    /// Stops running what `followSize` answered `number` for.
+    func stopFollowingSize(_ number: Int) {
+        sizeFollowers.removeAll { $0.number == number }
     }
 
     /// A listener the element lets go of as it leaves.
