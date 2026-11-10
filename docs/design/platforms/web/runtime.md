@@ -48,7 +48,11 @@ imports, and the system interface, WASI, which a Swift program asks of its
 machine. The relay keeps every DOM element Swift makes under a number - one
 let go of is no element's again, so what still names it, an act that waited,
 reaches nothing rather than an element made after it - and
-words cross as UTF-8 and their length in bytes. It decides nothing of
+words cross as UTF-8 and their length in bytes. Words and bytes are read
+from the module's memory while the call lasts: once it returns, the memory
+they stood in is the program's again - a short string's own, on the stack -
+so what the relay keeps for later, the words a live region says after a
+pause or a file's contents, it reads or copies at once. It decides nothing of
 StateUI's: it makes, places and changes elements as Swift says, calls Swift
 back when one hears an event, and keeps the keyboard's way through a strip of
 tabs and a menu, and a field's focus under a pressed button, as the page's
