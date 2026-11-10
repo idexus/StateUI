@@ -80,6 +80,7 @@ extension AppKitRegistrations {
                     lineWidth: lineWidth,
                     shape: BoxArithmetic.outline(values[BorderElementContract.shape]?.propValue),
                     lineBreakMode: breaking,
+                    wraps: values[LineBreakElementContract.lineBreak]?.wraps == true,
                     enabled: values[EnabledElementContract.isEnabled] ?? true)
             }
             // AppKit's own key equivalent - the one stated, else the role's - pressing the button while its window is

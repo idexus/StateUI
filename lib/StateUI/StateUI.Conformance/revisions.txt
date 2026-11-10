@@ -56,6 +56,7 @@ Canvas 4
 Rectangle 3
 Stepper 7
 KeyboardElement 7
+LineBreakElement 2
 LineHeightElement 2
 TextAlignmentElement 2
 Text 5

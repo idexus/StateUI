@@ -11,6 +11,28 @@ import XCTest
 
 @MainActor
 final class AppKitButtonViewTests: XCTestCase {
+    /// A caption the tree wraps stands as many lines tall as its words take at a narrower width, a width stated on
+    /// the button notwithstanding; a caption on one line keeps the push button's height.
+    /// Design: docs/design/platforms/appkit/views.md#a-buttons-wrapped-caption
+    @MainActor
+    func testAWrappedCaptionStandsAsTallAsItsLines() {
+        func button(wraps: Bool) -> AppKitButtonView {
+            let button = AppKitButtonView(frame: NSRect(x: 0, y: 0, width: 100, height: 24))
+            button.apply(
+                text: "Words enough to break across more than one line", image: nil, imagePosition: .noImage,
+                imageScaling: .scaleNone, font: .systemFont(ofSize: 13), textColor: .controlTextColor, tracking: 0,
+                backgroundColor: nil, strokeColor: nil, lineWidth: 0, shape: .rectangle,
+                lineBreakMode: wraps ? .byWordWrapping : .byClipping, wraps: wraps, enabled: true)
+            button.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            return button
+        }
+        let one = button(wraps: false).fittingContentSize(width: 100)
+        let wrapped = button(wraps: true).fittingContentSize(width: 100)
+
+        XCTAssertEqual(wrapped.width, 100)
+        XCTAssertGreaterThan(wrapped.height, one.height * 2, "the wrapped caption over its lines")
+    }
+
     @MainActor
     func testTextAndImageUseOneNativeButtonSurface() {
         let button = AppKitButtonView(frame: NSRect(x: 0, y: 0, width: 120, height: 32))
@@ -28,7 +50,7 @@ final class AppKitButtonViewTests: XCTestCase {
             strokeColor: .systemBlue,
             lineWidth: 2,
             shape: .roundedRectangle(6),
-            lineBreakMode: .byTruncatingTail,
+            lineBreakMode: .byTruncatingTail, wraps: false,
             enabled: false)
 
         XCTAssertEqual(button.title, "Save")
@@ -52,7 +74,7 @@ final class AppKitButtonViewTests: XCTestCase {
                 text: "Log out", image: NSImage(size: NSSize(width: 16, height: 16)), imagePosition: position,
                 imageScaling: .scaleProportionallyDown, font: .systemFont(ofSize: 13), textColor: .labelColor,
                 tracking: 0, backgroundColor: nil, strokeColor: nil, lineWidth: 0, shape: .rectangle,
-                lineBreakMode: .byTruncatingTail, enabled: true)
+                lineBreakMode: .byTruncatingTail, wraps: false, enabled: true)
             let cell = try XCTUnwrap(button.cell as? NSButtonCell)
             let image = cell.imageRect(forBounds: button.bounds)
             let words = cell.titleRect(forBounds: button.bounds)
@@ -77,7 +99,7 @@ final class AppKitButtonViewTests: XCTestCase {
             strokeColor: nil,
             lineWidth: 1,
             shape: .rectangle,
-            lineBreakMode: .byClipping,
+            lineBreakMode: .byClipping, wraps: false,
             enabled: true)
 
         XCTAssertEqual(button.title, "")
@@ -123,7 +145,7 @@ final class AppKitButtonViewTests: XCTestCase {
             text: "Save", image: nil, imagePosition: .noImage, imageScaling: .scaleNone,
             font: .systemFont(ofSize: 13), textColor: .labelColor, tracking: 0, backgroundColor: .systemBlue,
             strokeColor: nil,
-            lineWidth: 0, shape: .rectangle, lineBreakMode: .byTruncatingTail, enabled: true)
+            lineWidth: 0, shape: .rectangle, lineBreakMode: .byTruncatingTail, wraps: false, enabled: true)
         let alpha = { Double(button.layer?.backgroundColor?.alpha ?? 0) }
         let crossing = { (type: NSEvent.EventType) in
             try XCTUnwrap(NSEvent.enterExitEvent(

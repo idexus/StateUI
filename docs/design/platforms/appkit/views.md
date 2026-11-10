@@ -203,6 +203,16 @@ flexible push button's, which is as tall as it is placed: the push button's
 keeps one height, and a square button of a picture would stand as a short
 wide one.
 
+## A button's wrapped caption
+
+A caption that wraps stands as many lines tall as its words take at the width
+the layout offers. AppKit measures a button by its one line, so a caption that
+wraps and is wider than the offer is measured at it in the flexible push
+button's cell, its padding and its menu's arrow kept
+(`AppKitWidthConstrainedMeasuring`); placed taller, the button stands in that
+bezel ([a button's padding](#a-buttons-padding)). The push button's own bezel
+holds one line.
+
 ## A button's role
 
 A role draws where the tree draws nothing of its own ([a button's

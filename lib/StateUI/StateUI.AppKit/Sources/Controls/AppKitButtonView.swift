@@ -42,6 +42,10 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
     private var formerWords: NSAttributedString?
     private var shownWords: NSAttributedString?
 
+    /// Whether the tree says the caption wraps, which stands it on as many lines as the width offered takes.
+    /// Design: docs/design/platforms/appkit/views.md#a-buttons-wrapped-caption
+    private(set) var captionWraps = false
+
     /// The size of new words the button holds back while its box grows to hold them, its former ones shown; nil
     /// shows the tree's and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
     var heldWords: LayoutSize? {
@@ -115,12 +119,17 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         lineWidth: Double,
         shape: ContainerShape,
         lineBreakMode: NSLineBreakMode,
+        wraps: Bool,
         enabled: Bool
     ) {
         self.image = Self.picture(image, in: textColor)
         self.font = font
         isEnabled = enabled
         cell?.lineBreakMode = lineBreakMode
+        if captionWraps != wraps {
+            captionWraps = wraps
+            invalidateMeasurements()
+        }
         let former = words
         words = NSAttributedString(
             string: text, attributes: [.font: font, .foregroundColor: textColor, .kern: tracking])
