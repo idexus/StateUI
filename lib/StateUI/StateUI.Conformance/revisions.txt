@@ -112,3 +112,4 @@ ContentModeElement 2
 RangeElement 2
 HoverElement 2
 PresentedElement 2
+Anchor 2
