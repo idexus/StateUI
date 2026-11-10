@@ -391,7 +391,8 @@ VStack {
 ```
 
 Gradient points are fractions of the painted bounds. Offsets run from zero at
-the start to one at the end. A radial gradient supplies a fractional center
+the start to one at the end, and each stop stands at its own offset, whatever
+order the stops are written in. A radial gradient supplies a fractional center
 and radius. Theme-aware colors inside gradient stops resolve with the element
 that uses the brush.
 
