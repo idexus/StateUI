@@ -29,8 +29,9 @@
     case radial(center: Point, radius: Double, stops: [Stop])
 
     /// The brush the tree's `value` describes: a bare color is one color; a gradient's stops stand between 0
-    /// and 1, its geometry what it gives - top to bottom, or from the middle to the edge, where it gives none; a
-    /// gradient of one stop is its color, of none nothing.
+    /// and 1 in the order of their offsets - one at no number nowhere - its geometry what it gives - top to bottom,
+    /// or from the middle to the edge, where it gives none; a gradient of one stop is its color, of none nothing.
+    /// Design: docs/design/types/brushes.md#stops-in-order
     public init(_ value: HostValue?) {
         if let value, value.color != nil {
             self = .solid(value)
@@ -48,9 +49,10 @@
         var stops: [Stop] = []
         var index = 2
         while index + 1 < parts.count, let offset = parts[index].number, parts[index + 1].color != nil {
-            stops.append(Stop(offset: min(max(offset, 0), 1), color: parts[index + 1]))
+            if !offset.isNaN { stops.append(Stop(offset: min(max(offset, 0), 1), color: parts[index + 1])) }
             index += 2
         }
+        stops = stops.enumerated().sorted { ($0.element.offset, $0.offset) < ($1.element.offset, $1.offset) }.map(\.element)
         guard stops.count > 1 else {
             self = stops.first.map { .solid($0.color) } ?? .none
             return

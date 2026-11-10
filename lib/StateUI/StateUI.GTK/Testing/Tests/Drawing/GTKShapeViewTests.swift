@@ -90,6 +90,21 @@ final class GTKShapeViewTests: XCTestCase {
         XCTAssertGreaterThan(colors[1] & 0xFF, 0xE0, "blue at the end")
     }
 
+    /// A gradient's stops stand in the order of their offsets, whatever order they are written in: written from the
+    /// last, it is red at its start and blue at its end.
+    func testAGradientsStopsStandInTheOrderOfTheirOffsets() throws {
+        let colors = try drawn(width: 100, height: 20, at: [(1, 10), (99, 10)]) {
+            Rectangle()
+                .fill(.linearGradient(
+                    [GradientStop(Color(hex: 0x0000FF), 1), GradientStop(Color(hex: 0xFF0000), 0)],
+                    from: Point(0, 0), to: Point(1, 0)))
+                .width(100)
+                .height(20)
+        }
+        XCTAssertGreaterThan(colors[0] >> 16 & 0xFF, 0xE0, "red at the start")
+        XCTAssertGreaterThan(colors[1] & 0xFF, 0xE0, "blue at the end")
+    }
+
     /// A geometry that fills its room at its own size - placed where it stands, its placement the identity - is
     /// drawn.
     func testAGeometryAtItsOwnSizeIsDrawn() throws {

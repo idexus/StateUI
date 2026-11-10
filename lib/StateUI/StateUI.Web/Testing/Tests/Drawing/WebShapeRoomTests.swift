@@ -50,6 +50,28 @@ final class WebShapeRoomTests: XCTestCase {
         XCTAssertGreaterThan(right[2], right[0], "blue at the right edge: \(right)")
     }
 
+    /// A gradient's stops stand in the order of their offsets, whatever order they are written in: written from the
+    /// last, it is red at its left edge and blue at its right.
+    func testAGradientsStopsStandInTheOrderOfTheirOffsets() throws {
+        let across = Brush.linearGradient(
+            [GradientStop(.blue, 1), GradientStop(.red, 0)], from: Point(0, 0.5), to: Point(1, 0.5))
+        let host = WebRenderer.running {
+            VStack { Rectangle().fill(across).width(100).height(100) }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+        }
+        host.step()
+        let shape = try XCTUnwrap(host.views(WebShapeView.self).first)
+        let box = (try WebBrowser.evaluate("stateui.box(e).join(',')", on: shape.node) ?? "")
+            .split(separator: ",").compactMap { Double($0) }
+        XCTAssertEqual(box.count, 4)
+        guard box.count == 4 else { return }
+
+        let left = pixel(x: box[0] + 5, y: box[1] + 50), right = pixel(x: box[0] + 95, y: box[1] + 50)
+        XCTAssertGreaterThan(left[0], left[2], "red at the left edge: \(left)")
+        XCTAssertGreaterThan(right[2], right[0], "blue at the right edge: \(right)")
+    }
+
     /// A figure made of a blur is cut to the figure, the filter's blur with it: over a page of one color, the corner of
     /// an oval's box - outside the oval - shows that color unchanged.
     func testAFigureMadeOfABlurIsCutToItsFigure() throws {
