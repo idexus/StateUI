@@ -12,7 +12,8 @@ public enum CoordinateSpace: Sendable {
     case parent
 
     /// The same rectangle with its origin converted to the window, ancestor
-    /// offsets and scroll positions accounted for.
+    /// offsets and scroll positions accounted for - and no transform, the
+    /// view's or a layout's above it.
     case global
 
     /// Measured from where content can safely sit - past the status bar, the

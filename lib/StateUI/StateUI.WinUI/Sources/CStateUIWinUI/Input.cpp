@@ -623,8 +623,7 @@ extern "C" bool stateui_winui_reaches(StateUIObjectRef handle, double x, double 
         // An element standing in no window reaches nothing.
         auto root = element.XamlRoot();
         if (!root) return false;
-        auto point = element.TransformToVisual(nullptr).TransformPoint(
-            Point(static_cast<float>(x), static_cast<float>(y)));
+        Point point{static_cast<float>(x), static_cast<float>(y)};
         // What the window holds at the point, the top first: the click is the top one's, or an element's it stands in.
         for (auto const &hit : xaml::Media::VisualTreeHelper::FindElementsInHostCoordinates(point, root.Content())) {
             for (xaml::DependencyObject at = hit; at; at = xaml::Media::VisualTreeHelper::GetParent(at))

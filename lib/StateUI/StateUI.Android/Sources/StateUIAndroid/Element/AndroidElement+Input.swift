@@ -44,6 +44,17 @@ extension AndroidElement {
 
 }
 
+extension AndroidElement {
+    /// Where the top left corner of the view's laid-out rectangle stands in its window, no transform in it.
+    /// Design: docs/design/host/runtime.md#a-corner-in-the-window
+    var windowCorner: Point? {
+        element.cornerInWindow(
+            toolkit: { ($0.native as? AndroidElement)?.view?.cornerInWindow },
+            place: { ($0.native as? AndroidElement)?.view.map { Point(x: $0.standingFrame.x, y: $0.standingFrame.y) } },
+            scrolled: { (($0.native as? AndroidElement)?.view as? AndroidScrollView)?.standingOffset ?? .zero })
+    }
+}
+
 extension AndroidElement: FrameReporter {
     /// Says where the element stands, where that changed (`MountedElement.reportFrame`): its place in its parent as
     /// Android holds it, its corner in the window, and that corner from the page's - under its stack's bar - or the
@@ -55,7 +66,8 @@ extension AndroidElement: FrameReporter {
         let page = element.enclosing(type: .page)?.android.view
         element.reportFrame(
             MountedElement.frameNumbers(
-                place: view.standingFrame, corner: view.cornerInWindow, content: page?.cornerInWindow ?? host.safeAreaOrigin),
+                place: view.standingFrame, corner: windowCorner ?? view.cornerInWindow,
+                content: page?.cornerInWindow ?? host.safeAreaOrigin),
             in: host.runtime)
         if let split = view as? AndroidSplitView { element.reportSidebarOverlays(split.overlays, in: host.runtime) }
     }

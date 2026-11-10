@@ -422,17 +422,16 @@ final class GTKDriver: HostDriver {
     /// Whether a press at `point` reaches `element`: what GTK picks there in the window - through everything laid
     /// over it - is its view or stands in it.
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
-        guard let view = (element.native as? GTKElement)?.view else {
+        guard let native = element.native as? GTKElement, let view = native.view else {
             throw DriverCannot("read what reaches \(element.type.name)")
         }
         // A widget standing in no window reaches nothing.
         guard let root = gtk_widget_get_root(view.widget) else { return false }
         renderer?.layOut()
         let window = UnsafeMutableRawPointer(root).assumingMemoryBound(to: GtkWidget.self)
-        var from = graphene_point_t(x: Float(point.x), y: Float(point.y))
-        var at = graphene_point_t()
-        guard gtk_widget_compute_point(view.widget, window, &from, &at) != 0,
-              let picked = gtk_widget_pick(window, Double(at.x), Double(at.y), GTK_PICK_DEFAULT)
+        // The point is of the element's laid-out rectangle, no transform in it.
+        guard let corner = native.windowCorner,
+              let picked = gtk_widget_pick(window, corner.x + point.x, corner.y + point.y, GTK_PICK_DEFAULT)
         else { return false }
         return picked == view.widget || gtk_widget_is_ancestor(picked, view.widget) != 0
     }

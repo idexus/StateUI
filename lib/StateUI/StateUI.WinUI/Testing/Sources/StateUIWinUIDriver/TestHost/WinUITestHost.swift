@@ -270,10 +270,11 @@ extension WinUIView {
         stateui_winui_hits(handle, x, y)
     }
 
-    /// Whether a click at (`x`, `y`), in DIPs of the view, would reach it or what stands in it through everything
-    /// its window shows over it.
+    /// Whether a click at (`x`, `y`), in DIPs from the view's corner in its window, would reach it or what stands in
+    /// it through everything its window shows over it.
     func reaches(_ x: Double, _ y: Double) -> Bool {
-        stateui_winui_reaches(handle, x, y)
+        let corner = origin
+        return stateui_winui_reaches(handle, corner.x + x, corner.y + y)
     }
 
     /// Where `child`'s view is drawn among this view's children: its depth, then its place - the higher drawn

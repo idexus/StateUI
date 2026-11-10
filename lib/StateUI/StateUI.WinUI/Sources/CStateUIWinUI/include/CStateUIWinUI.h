@@ -1359,8 +1359,8 @@ bool stateui_winui_press(StateUIObjectRef element);
 /// Whether a click at (x, y) DIPs of `element` would reach the element itself.
 bool stateui_winui_hits(StateUIObjectRef element, double x, double y);
 
-/// Whether a click at (x, y) DIPs of `element` would reach it, or what stands in it, through everything its window
-/// shows over it - what a test reads.
+/// Whether a click at (x, y) DIPs of the window's content would reach `element`, or what stands in it, through
+/// everything its window shows over it - what a test reads.
 bool stateui_winui_reaches(StateUIObjectRef element, double x, double y);
 
 /// Where `child` - or the element it stands in among `panel`'s children - is drawn in `panel`: its `Canvas.ZIndex`

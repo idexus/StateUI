@@ -1,4 +1,4 @@
-# revision 28.2
+# revision 29.2
 Button.opacity: ✅
 Button.pivotX: ✅
 Canvas.accessibilityLabel: ✅
@@ -40,30 +40,32 @@ Polyline.pivotX: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.scaleY: ✅
 Rectangle.accessibilityHeading: ✅
-ScrollView.ignoresInput: ✅
-ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
-SearchField.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-SearchField.translationY: ✅
+ScrollView.height: ✅
+ScrollView.pivotY: ✅
+ScrollView.width: ✅
+SearchField.accessibilityLabel: ✅
+SearchField.scaleY: ✅
 Separator.accessibilityHint: ✅
 Separator.translationX: ✅
-Slider.accessibilityPresence: ✅
-Space.scale: ✅
-Space.zIndex: ✅
+Slider.accessibilityHeading: ✅
+Space.ignoresInput: ✅
+Space.rotationX: ✓ read rotationX of Space: the host's own tip, checked against the projection it laid on the element
 Spinner.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Spinner.accessibilityActions: – UI Automation offers no action of an application's own words.
-Stepper.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Switch.height: ✅
-Switch.pivotY: ✅
-Switch.width: ✅
+Stepper.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+Switch.isVisible: ✅
+Switch.layoutDirection: ✅
 Text.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-TextEditor.accessibilityHint: ✅
-TextEditor.translationX: ✅
-TextField.accessibilityPresence: ✅
-TimePicker.frame: ✅
-TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
-VStack.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-VStack.accessibilityActions: – UI Automation offers no action of an application's own words.
-WebView.isVisible: ✅
-WebView.layoutDirection: ✓ read layoutDirection of WebView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ZStack.accessibilityHeading: ✅
-ZStack.scaleX: ✅
+TextEditor.accessibilityHeading: ✅
+TextEditor.scaleX: ✅
+TextField.tooltip: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.rotation: ✅
+VStack.accessibilityRole: ✅
+VStack.translationY: ✅
+WebView.accessibilityPresence: ✅
+ZStack.frame: ✅
+ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element

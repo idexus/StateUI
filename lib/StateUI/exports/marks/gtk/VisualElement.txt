@@ -1,4 +1,4 @@
-# revision 28.1
+# revision 29.1
 Button.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
@@ -695,11 +695,11 @@ Rectangle.pivotY: ✓ read pivotY of Rectangle: the host's own transform: GTK re
 Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.scale: ✓ read scale of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.scale: ✅
 Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.tooltip: ✅
-Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.translationX: ✅
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.width: ✅
 Rectangle.zIndex: ✅

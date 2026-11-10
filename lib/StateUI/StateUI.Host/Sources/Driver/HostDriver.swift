@@ -83,8 +83,9 @@
     /// Whether `element` holds the keyboard.
     func focused(_ element: MountedElement) throws -> Bool
 
-    /// Whether a press at `point`, in the element's own coordinates, reaches `element` or what stands in it, through
-    /// everything its window shows over it.
+    /// Whether a press at `point` of the element's laid-out rectangle - from the top left corner its layout placed
+    /// it at, no transform in it - reaches `element` or what stands in it, through everything its window shows over
+    /// it: a view drawn away is reached where it is drawn.
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool
 
     /// The children of `layout` in the order its toolkit draws them, back to front, as its native view holds them.

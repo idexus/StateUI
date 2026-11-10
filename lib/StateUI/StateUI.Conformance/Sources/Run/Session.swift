@@ -202,7 +202,8 @@
         return try driven { try driver.focused(element) }
     }
 
-    /// Whether a press at `point` of `element` reaches it, or what stands in it.
+    /// Whether a press at `point` of `element`'s laid-out rectangle, no transform in it, reaches it or what stands
+    /// in it.
     public func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
         note("read what reaches \(element.type.name)", element: element.type.name)
         return try driven { try driver.reaches(element, at: point) }

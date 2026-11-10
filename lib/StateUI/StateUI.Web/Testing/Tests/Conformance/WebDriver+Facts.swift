@@ -19,11 +19,11 @@ extension WebDriver {
 
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
         let view = try self.view(of: element, reading: .frame)
-        let x = point.x + view.reach, y = point.y + view.reach
-        return try WebBrowser.truth("""
-            ((box) => ((hit) => !!hit && e.contains(hit))(document.elementFromPoint(box.x + \(x), box.y + \(y))))\
-            (e.getBoundingClientRect())
-            """, on: view.node)
+        // The point is of the element's laid-out rectangle, no transform in it.
+        guard let corner = (element.native as? WebElement)?.windowCorner else { return false }
+        let (x, y) = (corner.x + point.x, corner.y + point.y)
+        return try WebBrowser.truth(
+            "((hit) => !!hit && e.contains(hit))(document.elementFromPoint(\(x), \(y)))", on: view.node)
     }
 
     /// The layout's children by where the page paints each one's node among the layout node's children: by its

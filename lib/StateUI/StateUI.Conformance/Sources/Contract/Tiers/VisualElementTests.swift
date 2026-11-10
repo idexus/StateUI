@@ -50,7 +50,72 @@
                 ? [disablingItsBranch(element), directingItsChild(element)] : []
             let boxed: [ConformanceCase] = boxes.contains(element) ? [blurredOrGlass(element)] : []
             let material: [ConformanceCase] = element == "VStack" ? [followsAMaterial] : []
-            return held + answered + laidOut + boxed + boxFilled(element) + material
+            let transformed: [ConformanceCase] = element == "Rectangle"
+                ? [placedUnderATransform, reachedWhereDrawn] : []
+            return held + answered + laidOut + boxed + boxFilled(element) + material + transformed
+        }
+    }
+
+    /// A transform moves what is drawn, never the frame: a rectangle moved and sized, and one in a moved layout, say
+    /// where their layouts placed them - in their parent, and in the window at their layout's corner.
+    @MainActor
+    static var placedUnderATransform: ConformanceCase {
+        ConformanceCase("Rectangle.aTransformMovesWhatIsDrawnNotItsFrame", proves: [
+            Covered(VisualElementContract.translationX, on: "Rectangle"),
+            Covered(VisualElementContract.scale, on: "Rectangle"),
+        ], needs: [Covered(ViewContract.frameChanged, on: "Rectangle")]) { s in
+            let outer = Received<[Double]>(), moved = Received<[Double]>()
+            let held = Received<[Double]>(), inner = Received<[Double]>()
+            s.start {
+                VStack {
+                    Rectangle().fill(.red).width(40).height(20).translationX(50).scale(2)
+                        .onEvent(ViewContract.frameChanged) { moved.values.append($0) }
+                    VStack {
+                        Rectangle().fill(.blue).width(40).height(20)
+                            .onEvent(ViewContract.frameChanged) { inner.values.append($0) }
+                    }
+                    .translationX(30)
+                    .onEvent(ViewContract.frameChanged) { held.values.append($0) }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+                .onEvent(ViewContract.frameChanged) { outer.values.append($0) }
+            }
+            s.settle { [outer, moved, held, inner].allSatisfy { !$0.values.isEmpty } }
+            s.turn()
+            // A report's corner in the window: its fifth and sixth numbers.
+            @MainActor func corner(_ heard: Received<[Double]>) -> [Double] {
+                heard.values.last.map { [$0[4], $0[5]] } ?? []
+            }
+            let layout = corner(outer), place = held.values.last.map(FrameReport.place) ?? []
+
+            s.expect(moved.values.last.map(FrameReport.place), [0, 0, 40, 20], "where placed in its parent, as large")
+            s.expect(corner(moved), layout, "in the window at its layout's corner")
+            let unmoved = layout.count == 2 && place.count == 4 ? [layout[0] + place[0], layout[1] + place[1]] : []
+            s.expect(corner(inner), unmoved, "in a moved layout, where that layout stands in the window unmoved")
+        }
+    }
+
+    /// A view drawn away from where its layout placed it takes a press where it is drawn, and none where it was placed
+    /// and nothing is drawn: a point read of its laid-out rectangle, no transform in it.
+    @MainActor
+    static var reachedWhereDrawn: ConformanceCase {
+        ConformanceCase("Rectangle.takesAPressWhereItIsDrawn", proves: [
+            Covered(VisualElementContract.translationX, on: "Rectangle"),
+        ]) { s in
+            s.start {
+                VStack {
+                    Rectangle().fill(.red).width(40).height(20).translationX(60).horizontalAlignment(.start).id("moved")
+                }
+                .width(200)
+                .height(100)
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            let moved = try s.element("moved")
+            try s.settle { try s.reaches(moved, at: Point(80, 10)) }
+            s.expect(try s.reaches(moved, at: Point(80, 10)), true, "where it is drawn")
+            s.expect(try s.reaches(moved, at: Point(20, 10)), false, "where it was placed and nothing is drawn")
         }
     }
 

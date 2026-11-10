@@ -240,11 +240,17 @@ class GTKView {
         return naturalBaseline >= 0 ? Double(naturalBaseline) : nil
     }
 
-    /// Where the view stands, in logical pixels: its frame in its parent, its place in the window, and that place
-    /// from the top left of its page's content, beneath the page's header bar; nil while it stands in no window
-    /// or no layout has placed it yet.
+    /// Where the view's top left corner stands in its window as GTK computes it, the transforms on it and above it
+    /// in; nil while it stands in no window.
+    var cornerAsDrawn: Point? {
+        gtk_widget_get_root(widget).map { Self.origin(of: widget, in: GTKWidget($0)) }
+    }
+
+    /// Where the view stands, in logical pixels: its frame in its parent, its laid-out `corner` in the window - GTK's
+    /// own where none is given - and that corner from the top left of its page's content, beneath the page's header
+    /// bar; nil while it stands in no window or no layout has placed it yet.
     /// Design: docs/design/platforms/gtk/layout.md#where-a-view-stands
-    func frameReport() -> [Double]? {
+    func frameReport(corner: Point?) -> [Double]? {
         guard let root = gtk_widget_get_root(widget).map(GTKWidget.init), isLaidOut else { return nil }
         var page = Point(x: 0, y: 0)
         var ancestor = gtk_widget_get_parent(widget)
@@ -256,7 +262,8 @@ class GTKView {
             }
             ancestor = gtk_widget_get_parent(each)
         }
-        return MountedElement.frameNumbers(place: placedFrame, corner: Self.origin(of: widget, in: root), content: page)
+        return MountedElement.frameNumbers(
+            place: placedFrame, corner: corner ?? Self.origin(of: widget, in: root), content: page)
     }
 
     /// Whether a layout has placed the view: StateUI's, or GTK's allocation giving it a size.

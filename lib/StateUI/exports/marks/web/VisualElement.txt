@@ -1,4 +1,4 @@
-# revision 28.1
+# revision 29.1
 Button.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Button.accessibilityActions: – ARIA offers no action of an application's own words.
 Button.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
@@ -695,11 +695,11 @@ Rectangle.pivotY: ✓ read pivotY of Rectangle: the host's own transform: the pa
 Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Rectangle.scale: ✓ read scale of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Rectangle.scale: ✅
 Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.tooltip: ✅
-Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Rectangle.translationX: ✅
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.width: ✅
 Rectangle.zIndex: ✅

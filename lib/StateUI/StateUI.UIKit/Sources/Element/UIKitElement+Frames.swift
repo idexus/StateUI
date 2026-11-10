@@ -32,10 +32,32 @@ extension UIKitElement: FrameReporter {
         guard let view, let window = view.window,
               MountedElement.isLaidOut(placed: isPlaced, width: view.bounds.width, height: view.bounds.height)
         else { return nil }
-        let corner = view.convert(view.bounds, to: window).origin
         let safe = Self.safeCorner(of: view, in: window)
         return MountedElement.frameNumbers(
-            place: placedFrame, corner: Point(x: corner.x, y: corner.y), content: Point(x: safe.x, y: safe.y))
+            place: placedFrame, corner: windowCorner ?? .zero, content: Point(x: safe.x, y: safe.y))
+    }
+
+    /// Where the top left corner of the view's laid-out rectangle stands in its window, no transform in it.
+    /// Design: docs/design/host/runtime.md#a-corner-in-the-window
+    var windowCorner: Point? {
+        element.cornerInWindow(
+            toolkit: { ($0.native as? UIKitElement)?.cornerAsDrawn },
+            place: { ($0.native as? UIKitElement).map { Point(x: $0.placedFrame.x, y: $0.placedFrame.y) } },
+            scrolled: { ($0.native as? UIKitElement)?.scrolled ?? .zero })
+    }
+
+    /// Where the view's top left corner stands in its window as UIKit converts it, the transforms on it and above it
+    /// in; nil for a view in no window.
+    private var cornerAsDrawn: Point? {
+        guard let view, let window = view.window else { return nil }
+        let corner = view.convert(view.bounds, to: window).origin
+        return Point(x: corner.x, y: corner.y)
+    }
+
+    /// How far a scroller's content has moved: its scroller's offset; none for any other view.
+    private var scrolled: Point {
+        guard let offset = (view as? UIKitScrollView)?.scroller.contentOffset else { return Point(x: 0, y: 0) }
+        return Point(x: offset.x, y: offset.y)
     }
 
     /// The corner of the safe area `view`'s page stands in, in `window`; the window's own where no page holds it.

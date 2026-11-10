@@ -260,7 +260,7 @@ final class AndroidDriver: HostDriver {
     /// Whether a press at `point` of the view reaches it or what stands in it, by the rule Android's layouts hand a
     /// touch by (`StateUIViewGroup.reaches`): from the window's root, the frontmost view under it at each level.
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
-        guard let renderer, let view = (element.native as? AndroidElement)?.view else {
+        guard let renderer, let native = element.native as? AndroidElement, let view = native.view else {
             throw DriverCannot("read what reaches \(element.type.name)")
         }
         layOut()
@@ -268,7 +268,8 @@ final class AndroidDriver: HostDriver {
         Java.call(renderer.root.reference, JavaAPI.getLocationInWindow, .object(window))
         let origin = window.map(Java.intsOf) ?? [0, 0]
         Java.release(local: window)
-        let corner = view.cornerInWindow
+        // The point is of the element's laid-out rectangle, no transform in it.
+        let corner = native.windowCorner ?? view.cornerInWindow
         let x = Float((corner.x + point.x) * view.density) - Float(origin[0])
         let y = Float((corner.y + point.y) * view.density) - Float(origin[1])
         return Java.callStaticBool(

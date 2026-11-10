@@ -1,4 +1,4 @@
-# revision 28.1
+# revision 29.1
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
 Button.minimumHeight: ✅
@@ -32,26 +32,22 @@ Polygon.pivotY: ✓ read pivotY of Polygon: the host's own transform, checked ag
 Polyline.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 ProgressBar.accessibilityRole: ✅
 Rectangle.frame: ✅
-ScrollView.isVisible: ✅
-ScrollView.scale: ✓ read scale of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.layoutDirection: ✅
+Rectangle.scale: ✅
+Rectangle.translationX: ✅
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.accessibilityPresence: ✅
 Separator.accessibilityValue: ✅
-Slider.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-Space.accessibilityLabel: ✅
+Slider.accessibilityValue: – AppKit's slider says its own number to assistive technology, over any value given.
+Space.zIndex: ✅
 Spinner.accessibilityLabel: ✅
-Stepper.maximumHeight: ✅
-Stepper.maximumWidth: ✅
-Stepper.minimumHeight: ✅
-Stepper.minimumWidth: ✅
-Stepper.translationX: ✓ read translationX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.rotationX: ✓ read rotationX of Switch: the host's own transform, checked against the layer it composed itself
+Stepper.opacity: ✅
+Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself
 Text.accessibilityAdjusted: ✅
-TextEditor.accessibilityPresence: ✅
-TextField.accessibilityActionPerformed: ✅
-TextField.accessibilityActions: ✅
-TimePicker.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-VStack.height: ✅
-VStack.scaleY: ✓ read scaleY of VStack: the host's own transform, checked against the layer it composed itself
-VStack.width: ✅
-WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+TextEditor.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+TextField.accessibilityRole: ✅
+TimePicker.frame: ✅
+VStack.isVisible: ✅
+VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
+WebView.layoutDirection: ✅
+ZStack.accessibilityAdjusted: ✅

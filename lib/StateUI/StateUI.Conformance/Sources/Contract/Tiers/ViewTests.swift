@@ -22,7 +22,8 @@
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
         } + [
-            scrolledInItsWindow, scrolledInAList, atItsPagesCorner, onAFirstBaseline, showsItsPress, pressedByAScreenReader,
+            scrolledInItsWindow, scrolledInAList, atItsPagesCorner, onAFirstBaseline, showsItsPress,
+            pressedByAScreenReader,
         ]
     }
 

@@ -43,9 +43,13 @@ extension WinUIDriver {
     }
 
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
-        guard let view = (element.native as? WinUIElement)?.view else { throw DriverCannot("read what reaches \(element.type.name)") }
+        guard let native = element.native as? WinUIElement, let view = native.view else {
+            throw DriverCannot("read what reaches \(element.type.name)")
+        }
         renderer?.layOut()
-        return view.reaches(point.x, point.y)
+        // The point is of the element's laid-out rectangle, no transform in it.
+        let corner = native.windowCorner ?? view.origin
+        return stateui_winui_reaches(view.handle, corner.x + point.x, corner.y + point.y)
     }
 
     /// The layout's children by where each one's view is drawn in its panel: by `Canvas.ZIndex`, then its place

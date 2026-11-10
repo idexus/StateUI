@@ -342,10 +342,10 @@ class WinUIView {
         return Point(x: corner[0], y: corner[1])
     }
 
-    /// Where the view stands, in DIPs: its frame in its parent, its place in the window, and that place from
-    /// `safeArea`, the safe area's top left in the window.
-    func frameReport(safeArea: Point) -> [Double] {
-        MountedElement.frameNumbers(place: placedFrame, corner: origin, content: safeArea)
+    /// Where the view stands, in DIPs: its frame in its parent, its laid-out `corner` in the window, and that corner
+    /// from `safeArea`, the safe area's top left in the window.
+    func frameReport(corner: Point, safeArea: Point) -> [Double] {
+        MountedElement.frameNumbers(place: placedFrame, corner: corner, content: safeArea)
     }
 
     /// Where WinUI laid the element out in its parent, in DIPs.
