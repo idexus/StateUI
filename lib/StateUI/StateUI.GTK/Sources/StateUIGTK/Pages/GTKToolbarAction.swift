@@ -93,8 +93,6 @@ struct GTKPageChrome {
     /// Whether the header bar shows the title; the window keeps it for the system all the same.
     var showsTitle = true
 
-    /// The line under the title; nil for none.
-    var subtitle: String?
     var titleView: GTKView?
 
     /// A tabbed view's switcher, which stands in a bar of its own beneath the header bar; nil for none.
@@ -110,10 +108,11 @@ struct GTKPageChrome {
     /// The edge the header bar shows while the page's rows go on past its foot.
     var barScrollEdge = ScrollEdge.automatic
 
-    /// The groups of actions at the bar's start and at its end, each in reading order.
+    /// The groups of actions at the bar's start and at its end, each in reading order, and behind its More, each a
+    /// section of its menu.
     var leading: [[GTKToolbarAction]] = []
     var trailing: [[GTKToolbarAction]] = []
-    var overflow: [GTKToolbarAction] = []
+    var overflow: [[GTKToolbarAction]] = []
 
     /// The actions of the bar at the page's foot (`.toolbar(.bottom)`), as the header bar's stand.
     var foot = GTKFootActions()
@@ -136,12 +135,13 @@ struct GTKPageChrome {
     var sidebar: (shows: Bool, toggle: () -> Void)?
 }
 
-/// The actions of a page's bar at its foot: its groups at its start and at its end, and those behind its More.
+/// The actions of a page's bar at its foot: its groups at its start and at its end, and those behind its More, each a
+/// section of its menu.
 @MainActor
 struct GTKFootActions {
     var leading: [[GTKToolbarAction]] = []
     var trailing: [[GTKToolbarAction]] = []
-    var overflow: [GTKToolbarAction] = []
+    var overflow: [[GTKToolbarAction]] = []
 
     /// Whether it holds no action.
     var isEmpty: Bool { leading.isEmpty && trailing.isEmpty && overflow.isEmpty }
@@ -153,6 +153,6 @@ struct GTKFootActions {
                 pair.0.count == pair.1.count && zip(pair.0, pair.1).allSatisfy { $0.draws(like: $1) }
             }
         }
-        return groups(leading, other.leading) && groups(trailing, other.trailing) && groups([overflow], [other.overflow])
+        return groups(leading, other.leading) && groups(trailing, other.trailing) && groups(overflow, other.overflow)
     }
 }

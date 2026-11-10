@@ -13,6 +13,7 @@ final class AndroidInputTests: XCTestCase {
             ("testATapReachesItsHandlerAndLeavesWithIt", testATapReachesItsHandlerAndLeavesWithIt),
             ("testALayoutThatIgnoresInputLetsTheTouchThroughToWhatIsBehind", testALayoutThatIgnoresInputLetsTheTouchThroughToWhatIsBehind),
             ("testAFieldSaysWhenItTakesTheFocusAndLosesIt", testAFieldSaysWhenItTakesTheFocusAndLosesIt),
+            ("testTheKeypadsEnterPressesWhatReturnDoes", testTheKeypadsEnterPressesWhatReturnDoes),
         ]
     }
 
@@ -89,6 +90,20 @@ extension AndroidInputTests {
             XCTAssertTrue(Java.callBool(try XCTUnwrap(fields.last).reference, TestJava.requestFocus))
             host.runtime.pump.turn()
             XCTAssertFalse(focused.wrappedValue)
+        }
+    }
+
+    /// The keypad's Enter presses what Return does, as every platform's Enter does: a button Return presses.
+    func testTheKeypadsEnterPressesWhatReturnDoes() {
+        onMainActor {
+            let heard = Received<String>()
+            let host = AndroidRenderer.running {
+                Button("Send").keyboardShortcut(.return, modifiers: []).onClicked { heard.values.append("send") }
+            }
+            // KEYCODE_NUMPAD_ENTER, writing a new line.
+            XCTAssertTrue(host.pressed(code: 160, character: 10, meta: 0), "the shortcut took the key")
+            host.runtime.pump.turn()
+            XCTAssertEqual(heard.values, ["send"])
         }
     }
 }

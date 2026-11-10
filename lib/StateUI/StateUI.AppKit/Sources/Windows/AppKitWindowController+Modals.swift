@@ -29,6 +29,13 @@ extension AppKitWindowController {
         }
     }
 
+    /// What the sheet `sheet` lays over itself, the first lowest: a sheet's own overlays stand in its window.
+    /// Design: docs/design/host/pages.md#the-overlays-of-a-window
+    func overlays(ofSheet sheet: MountedElement) -> [AppKitLayoutItem] {
+        let declared = presentation.sheetOverlays.first { $0.sheet === sheet }?.overlays ?? []
+        return declared.compactMap { $0.children.first?.appKit.layoutItem }
+    }
+
     /// The user took `modal` away - its close button, Escape: its sheet's state is told it closed, and the sheet goes
     /// as the tree follows.
     /// Design: docs/design/host/pages.md#the-way-back

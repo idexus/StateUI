@@ -13,13 +13,16 @@ import XCTest
 /// The gallery walked sample by sample, the live counts read back on each group's page.
 @MainActor
 final class LeakWalkTests: XCTestCase {
-    /// EVERY SAMPLE, VISITED AND LEFT, LEAVES NOTHING ALIVE: the rendered elements, the runs, the native halves and
-    /// the state channels stand where they stood on the group's page before the visit.
-    func testEverySampleLeftLeavesNothingAlive() async throws {
+    /// EVERY SAMPLE, VISITED AND LEFT, LEAVES NOTHING ALIVE AND HANDS THE LIBRARY NOTHING IT CANNOT USE: the rendered
+    /// elements, the runs, the native halves and the state channels stand where they stood on the group's page before
+    /// the visit, and the library says nothing during it (`Complaints`) - a sample's code is what an application
+    /// writes. Each complaint is said once a process, so it is caught on the visit that first says it.
+    func testEverySampleVisitedLeavesNothingAliveAndIsSaidNothingOf() async throws {
         let walk = Walk()
         var visited = 0
         var unopened: [String] = []
         var outlived: [String] = []
+        var complained: [String] = []
 
         for group in Catalog(nav: Navigation(), style: SessionStyle(), bar: WindowBarState(), log: WindowLog()).groups {
             try walk.tap(handle("menu", group.title))
@@ -27,6 +30,7 @@ final class LeakWalkTests: XCTestCase {
             let base = walk.alive
 
             for sample in group.samples {
+                let said = Said.shared.everySaid.count
                 try walk.tap(handle("row", sample.title))
                 await walk.settle()
                 if walk.alive.elements <= base.elements { unopened.append("\(group.route)/\(sample.id)") }
@@ -35,12 +39,15 @@ final class LeakWalkTests: XCTestCase {
                 visited += 1
                 let after = walk.alive
                 if after != base { outlived.append("\(group.route)/\(sample.id): \(base) -> \(after)") }
+                let heard = Said.shared.everySaid.dropFirst(said)
+                if !heard.isEmpty { complained.append("\(group.route)/\(sample.id): \(heard.joined(separator: " / "))") }
             }
         }
 
         XCTAssertGreaterThan(visited, 100, "the walk reached the gallery's samples")
         XCTAssertEqual(unopened, [], "a tap on these rows opened no page")
         XCTAssertEqual(outlived, [], "a sample left something alive behind it")
+        XCTAssertEqual(complained, [], "a sample handed the library what it cannot use")
     }
 }
 

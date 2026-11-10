@@ -28,12 +28,12 @@ final class WinUITextView: WinUITextualView {
         }
     }
 
-    /// Where the words stand across the label's height.
     /// Whether the user can select the words and copy them.
     func setSelectable(_ selectable: Bool) {
         stateui_winui_text_set_selectable(handle, selectable)
     }
 
+    /// Where the words stand down the label's height.
     func setVerticalAlignment(_ alignment: TextAlignment) {
         stateui_winui_text_set_vertical(handle, alignment.rawValue)
     }
@@ -65,7 +65,7 @@ final class WinUITextView: WinUITextualView {
                         tabularDigits: look.attributes.contains(.monospacedDigits),
                         underline: look.decorations.contains(.underline),
                         strikethrough: look.decorations.contains(.strikethrough), family: families[index],
-                        spacing: Int32((spacing * 1000).rounded()))
+                        spacing: Self.thousandths(ofAnEm: spacing))
                 }
                 stateui_winui_text_set_runs(handle, words, Int32(words.count))
             }

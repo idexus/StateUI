@@ -92,8 +92,8 @@ final class GTKImageView: GTKPanelView {
         guard wanted.width > 0, wanted.height > 0, PictureArithmetic.drawsAgain(drawn: drawn, for: wanted) else { return }
 
         let keepsProportions: gboolean = aspect == .stretch ? 0 : 1
-        guard let pixbuf = gdk_pixbuf_new_from_file_at_scale(
-            path, Int32(wanted.width), Int32(wanted.height), keepsProportions, nil)
+        guard let width = Int32(exactly: wanted.width), let height = Int32(exactly: wanted.height),
+              let pixbuf = gdk_pixbuf_new_from_file_at_scale(path, width, height, keepsProportions, nil)
         else { return }
         // The pixbuf's own pixels, eight bits a channel, its alpha straight where it has one.
         let pixels = gdk_pixbuf_read_pixel_bytes(pixbuf)
@@ -140,8 +140,8 @@ final class GTKImageView: GTKPanelView {
         guard place.width > 0, place.height > 0 else { return }
         let theme = gtk_icon_theme_get_for_display(gtk_widget_get_display(widget))
         let scale = max(gtk_widget_get_scale_factor(widget), 1)
-        let side = Int32(min(place.width, place.height).rounded(.up))
-        guard let paintable = gtk_icon_theme_lookup_icon(
+        guard let side = GeometryArithmetic.pixels(min(place.width, place.height), rounding: .up),
+              let paintable = gtk_icon_theme_lookup_icon(
             theme, icon.name(in: theme), nil, side, scale, GTK_TEXT_DIR_NONE, GtkIconLookupFlags(rawValue: 0))
         else { return }
         defer { g_object_unref(UnsafeMutableRawPointer(paintable)) }

@@ -142,6 +142,7 @@ extension NodeType {
     static let fillRule = PointsShapeContract.fillRule.token
     static let floatsOnTop = WindowContract.floatsOnTop.token
     static let layoutDirection = VisualElementContract.layoutDirection.token
+    static let language = LanguageElementContract.language.token
     static let letsInputThrough = LayoutContract.letsInputThrough.token
     static let fontAttributes = FontElementContract.fontAttributes.token
     static let fontWeight = FontElementContract.fontWeight.token
@@ -201,6 +202,7 @@ extension NodeType {
     static let showsMenuArrow = ButtonMenuElementContract.showsMenuArrow.token
     static let lineHeight = LineHeightElementContract.lineHeight.token
     static let location = MarkerContract.location.token
+    static let subtitle = MarkerContract.subtitle.token
     static let margin = ViewContract.margin.token
     static let maximumLength = TextInputContract.maximumLength.token
     static let maximumLines = TextContract.maximumLines.token

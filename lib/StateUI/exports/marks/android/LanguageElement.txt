@@ -1,0 +1,39 @@
+# revision 1.1
+Button.language: ☑️ Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.
+Canvas.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Capsule.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+CheckBox.language: ☑️ Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.
+ColorPicker.language: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+DatePicker.language: ☑️ Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.
+Ellipse.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Fill.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Grid.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+HStack.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Image.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+ItemsView.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Line.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Link.language: ☑️ Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.
+Map.language: 🧩
+MotionLayout.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Path.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Picker.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Polygon.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Polyline.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+ProgressBar.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Rectangle.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+ScrollView.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+SearchField.language: ☑️ Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.
+Separator.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Slider.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Space.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Spinner.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Stepper.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Switch.language: ☑️ Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.
+Text.language: ☑️ Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.
+TextEditor.language: ☑️ Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.
+TextField.language: ☑️ Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.
+TimePicker.language: ☑️ Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.
+VStack.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+WebView.language: – Android gives a view no language of its own: TalkBack reads it in the system's.
+Window.language: ☑️ Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.
+ZStack.language: – Android gives a view no language of its own: TalkBack reads it in the system's.

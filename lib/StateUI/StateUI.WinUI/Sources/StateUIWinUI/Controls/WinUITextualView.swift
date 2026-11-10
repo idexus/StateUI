@@ -84,10 +84,15 @@ class WinUITextualView: WinUIView {
             handle, decorations?.contains(.underline) == true, decorations?.contains(.strikethrough) == true)
     }
 
+    /// `ems` in the thousandths WinUI spaces letters by: none where its 32 bits cannot hold them.
+    static func thousandths(ofAnEm ems: Double) -> Int32 {
+        GeometryArithmetic.pixels(ems, density: 1000) ?? 0
+    }
+
     /// WinUI spaces letters in thousandths of an em and lines in DIPs: both measured against the font's size.
     private func writeSpacing() {
         let size = look.size ?? Self.platformFontSize
-        let thousandths = Int32((look.letterSpacing(inEmsOf: size) * 1000).rounded())
+        let thousandths = Self.thousandths(ofAnEm: look.letterSpacing(inEmsOf: size))
         let line = look.lineHeight.map { $0 * size * Self.lineHeightOfFont } ?? 0
         stateui_winui_text_set_spacing(handle, thousandths, line)
     }

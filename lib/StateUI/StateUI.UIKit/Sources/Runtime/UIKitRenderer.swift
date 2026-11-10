@@ -207,8 +207,6 @@ final class UIKitRenderer {
         runtime.pump.turn()
     }
 
-    /// A scene iOS let go of - in the background, to come back - takes its window with it; the StateUI window
-    /// stands until its session comes back or the user closes it, and the theme is followed on a scene iOS holds.
     /// The system asked the application to open `addresses` in `scene`: each reaches a window by the host layer's
     /// rule - the scene's own where it stands and hears links.
     /// Design: docs/design/platforms/uikit/runtime.md#a-link-opened
@@ -217,6 +215,8 @@ final class UIKitRenderer {
         for address in addresses { runtime.openLink(address, in: window) }
     }
 
+    /// A scene iOS let go of - in the background, to come back - takes its window with it; the StateUI window
+    /// stands until its session comes back or the user closes it, and the theme is followed on a scene iOS holds.
     func disconnect(_ scene: UIWindowScene) {
         roster.windows.first { $0.1.window?.windowScene === scene }?.1.sceneLeft()
         environment.stopFollowingTheme(of: scene)

@@ -240,7 +240,10 @@
     /// it that can be chosen, in order - a line and a submenu left out, as a swipe shows neither.
     /// Design: docs/design/host/items.md#an-items-actions
     public func actions(of identity: String) -> [MenuEntry] {
-        guard let menu = item(identity)?.children.first(where: { $0.type == .contextMenu }) else { return [] }
+        // The menu stands on the item's view, inside its anchor where one holds it.
+        guard let menu = item(identity)?.placed?.children.first(where: { $0.type == .contextMenu }) else {
+            return []
+        }
         return MenuEntry.entries(of: menu).filter { $0.kind == .item && $0.isEnabled }
     }
 

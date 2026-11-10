@@ -481,6 +481,7 @@ swift.conformance LaneKind: Swift.Sendable
 swift.conformance LaneValue: StateUI.StateValue
 swift.conformance LaneValue: Swift.Equatable
 swift.conformance LaneValue: Swift.Sendable
+swift.conformance LanguageElementContract: StateUI.Contract
 swift.conformance Layout: StateUI.AutomationElement
 swift.conformance Layout: StateUI.BorderElement
 swift.conformance Layout: StateUI.Element
@@ -550,6 +551,7 @@ swift.conformance Link: StateUI.VisualElement
 swift.conformance Link: StateUI.VisualElementProperties
 swift.conformance LinkContract: StateUI.Contract
 swift.conformance LinkContract: StateUI.ElementContract
+swift.conformance LocaleTag: StateUI.HostRepresentable
 swift.conformance Location: StateUI.HostRepresentable
 swift.conformance Map: StateUI.AutomationElement
 swift.conformance Map: StateUI.Element
@@ -1596,6 +1598,7 @@ swift.init LineCap.init(rawValue:): init?(rawValue: Int32)
 swift.init LineJoin.init(carried:): init?(carried: StateCarried)
 swift.init LineJoin.init(propValue:): init?(propValue: PropValue)
 swift.init LineJoin.init(rawValue:): init?(rawValue: Int32)
+swift.init LocaleTag.init(propValue:): init?(propValue: PropValue)
 swift.init Location.init(propValue:): init?(propValue: PropValue)
 swift.init MapKind.init(carried:): init?(carried: StateCarried)
 swift.init MapKind.init(propValue:): init?(propValue: PropValue)
@@ -2422,6 +2425,7 @@ swift.property LineJoin.carried: var carried: StateCarried { get }
 swift.property LineJoin.propValue: var propValue: PropValue { get }
 swift.property Link.node: @MainActor var node: Node
 swift.property Link.nodes: @MainActor var nodes: [Node] { get }
+swift.property LocaleTag.propValue: var propValue: PropValue { get }
 swift.property Location.propValue: var propValue: PropValue { get }
 swift.property Map.node: @MainActor var node: Node
 swift.property Map.nodes: @MainActor var nodes: [Node] { get }
@@ -2770,6 +2774,8 @@ swift.type.method LineCap.list(from:): static func list(from value: PropValue) -
 swift.type.method LineCap.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method LineJoin.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method LineJoin.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method LocaleTag.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method LocaleTag.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method Location.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Location.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method MapKind.list(from:): static func list(from value: PropValue) -> [Self]?
@@ -3057,6 +3063,8 @@ swift.type.property ItemsViewContract.tiers: static var tiers: [any Tier.Type] {
 swift.type.property KeyboardElementContract.members: static let members: [any ContractMember]
 swift.type.property KeyboardElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property LaneValue.laneKind: static var laneKind: LaneKind { get }
+swift.type.property LanguageElementContract.members: static let members: [any ContractMember]
+swift.type.property LanguageElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property LayoutContract.members: static let members: [any ContractMember]
 swift.type.property LayoutContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property LayoutContract.tiers: static var tiers: [any Tier.Type] { get }

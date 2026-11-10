@@ -9,33 +9,20 @@ extension View {
     /// What the page is called: the bar's title while it is on top, a tab's caption, and the window's title where a
     /// platform takes one from the page.
     ///
-    ///     SettingsPage().title("Settings")
-    public func title(_ value: String) -> Modified {
+    ///     SettingsPage().pageTitle("Settings")
+    public func pageTitle(_ value: String) -> Modified {
         pageSays { $0.setValue(PageElementContract.title, value) }
     }
 
     /// The page's title from a state, `$x`: the host follows it, and no view is rebuilt for it.
-    public func title(_ state: Binding<String>) -> Modified {
+    public func pageTitle(_ state: Binding<String>) -> Modified {
         pageSays { $0.words(PageElementContract.title, by: state) }
-    }
-
-    /// The line under the page's title, wherever its title shows: the current document or section. An empty one is
-    /// none.
-    ///
-    ///     NotesPage().title("Notes").subtitle(folder.name)
-    public func subtitle(_ value: String) -> Modified {
-        pageSays { $0.setValue(PageContract.subtitle, value) }
-    }
-
-    /// The line under the page's title from a state, `$x`: the host follows it, and no view is rebuilt for it.
-    public func subtitle(_ state: Binding<String>) -> Modified {
-        pageSays { $0.words(PageContract.subtitle, by: state) }
     }
 
     /// The picture that stands for the page: a tab's icon, and the mark beside the title of a sidebar's page, which
     /// names the application.
     ///
-    ///     NotesPage().title("Notes").pageIcon("notes.png")
+    ///     NotesPage().pageTitle("Notes").pageIcon("notes.png")
     public func pageIcon(_ value: ImageSource) -> Modified {
         pageSays { $0.setValue(IconElementContract.icon, value) }
     }
@@ -80,7 +67,7 @@ extension View {
     /// Whether the page shows its title - false for a page whose own content names it: the title still names the
     /// window and the way back, and stands on no bar and over no content.
     ///
-    ///     HomePage().title("Home").showsTitle(false)
+    ///     HomePage().pageTitle("Home").showsTitle(false)
     public func showsTitle(_ value: Bool) -> Modified {
         pageSays { $0.setValue(PageContract.showsTitle, value) }
     }
@@ -105,7 +92,7 @@ extension View {
     /// for a page the user must finish rather than leave. Escape and the system's way back close the sheet all the
     /// same.
     ///
-    ///     SettingsForm().title("Settings").showsCloseButton(false)
+    ///     SettingsForm().pageTitle("Settings").showsCloseButton(false)
     public func showsCloseButton(_ value: Bool) -> Modified {
         pageSays { $0.setValue(PageContract.showsCloseButton, value) }
     }

@@ -119,6 +119,31 @@ final class TextRulesTests: XCTestCase {
                        [.regular, .regular, .regular, .regular, .medium, .medium, .semibold, .semibold, .bold, .bold])
     }
 
+    /// A weight the host reads as no number is the regular one, and never stops the application.
+    func testAWeightOfNoNumberIsRegular() {
+        XCTAssertEqual(FontWeight(nearest: .nan), .regular)
+        XCTAssertEqual(FontWeight(nearest: .infinity), .bold)
+        XCTAssertEqual(FontWeight(nearest: -.infinity), .regular)
+    }
+
+    /// A number that is none - NaN, infinite - is no value to any host reading an element: a label's look reads no
+    /// size, no line height and no space between its letters, which a toolkit's whole units cannot hold.
+    func testANumberThatIsNoneIsNoValueOfAnElement() throws {
+        let runtime = HostRuntime.still()
+        var text = HostPatch(id: .manual("text"), type: .text)
+        text.properties = [
+            .tracking: .number(.nan), .fontSize: .number(.infinity), .lineHeight: .number(-.infinity),
+            .opacity: .number(.nan),
+        ]
+        runtime.tree.apply(text, complete: true)
+        let element = try XCTUnwrap(runtime.tree.root)
+
+        XCTAssertNil(element.value(.opacity))
+        XCTAssertEqual(element.textLook.letterSpacing, 0)
+        XCTAssertNil(element.textLook.size)
+        XCTAssertNil(element.textLook.lineHeight)
+    }
+
     /// Words follow the user's text size unless the tree says not: a run scales only where neither it nor its label
     /// says no.
     func testWordsScaleWithTheUsersTextSizeUnlessTheTreeSaysNot() {
@@ -140,13 +165,16 @@ final class TextRulesTests: XCTestCase {
         XCTAssertFalse(LineBreak.tailTruncation.endsWithEllipsis(maximum: 2), "its own ellipsis, on its one line")
     }
 
-    /// A break that does not wrap keeps one line; wrapped words stand on the lines allowed, none where none are.
+    /// A break that does not wrap keeps one line; wrapped words stand on the lines allowed, none where none are or
+    /// more than a toolkit counts.
     func testABreakAllowsItsLines() {
         XCTAssertEqual(LineBreak.tailTruncation.lines(maximum: 3), 1)
         XCTAssertEqual(LineBreak.noWrap.lines(maximum: nil), 1)
         XCTAssertEqual(LineBreak.wordWrap.lines(maximum: 3), 3)
         XCTAssertNil(LineBreak.characterWrap.lines(maximum: 0))
         XCTAssertNil(LineBreak.wordWrap.lines(maximum: nil))
+        XCTAssertNil(LineBreak.wordWrap.lines(maximum: Int(Int32.max) + 1), "more lines than a toolkit counts: no bound")
+        XCTAssertEqual(LineBreak.wordWrap.lines(maximum: Int(Int32.max)), Int(Int32.max))
         XCTAssertTrue(LineBreak.middleTruncation.truncates)
         XCTAssertFalse(LineBreak.wordWrap.truncates)
     }

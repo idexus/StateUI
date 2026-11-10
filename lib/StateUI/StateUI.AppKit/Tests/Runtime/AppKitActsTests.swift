@@ -5,6 +5,7 @@
 import AppKit
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
+@_spi(Host) import StateUIApple
 @testable import StateUIAppKit
 import XCTest
 
@@ -21,6 +22,29 @@ final class AppKitActsTests: XCTestCase {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
             renderer.runtime.pump.turn()
         }
+    }
+
+    /// The wall clock the host reads is the civil one - the Gregorian calendar's day in the user's zone - whatever
+    /// calendar the user reads days in.
+    @MainActor
+    func testTheLocalTimeIsTheGregorianDayInTheUsersZone() {
+        let renderer = AppKitRenderer.running { Text("Clock") }
+        defer { renderer.finish() }
+        var gregorian = Calendar(identifier: .gregorian)
+        gregorian.timeZone = .current
+        let read = renderer.actToolkit.localTime()
+        let now = gregorian.dateComponents([.year, .month, .day], from: Date())
+        XCTAssertEqual([read.year, read.month, read.day], [now.year, now.month, now.day])
+    }
+
+    /// The civil clock at an instant is the Gregorian day and time in the zone asked.
+    func testTheCivilClockIsTheGregorianDayInTheZoneAsked() throws {
+        let instant = try XCTUnwrap(ISO8601DateFormatter().date(from: "2026-11-09T12:30:15Z"))
+        let tokyo = try XCTUnwrap(TimeZone(identifier: "Asia/Tokyo"))
+        XCTAssertEqual(
+            SystemFacts.localTime(at: instant, in: tokyo),
+            LocalTime(year: 2026, month: 11, day: 9, hour: 21, minute: 30, second: 15, millisecond: 0))
+        XCTAssertEqual(SystemFacts.utcOffset(of: "Asia/Tokyo", on: CalendarDate(year: 2026, month: 11, day: 9)), 540)
     }
 
     /// `focus` puts the keyboard on the aimed field and answers that it took

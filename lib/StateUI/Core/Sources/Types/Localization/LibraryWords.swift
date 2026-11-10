@@ -22,6 +22,9 @@ struct LibraryWords: LocalizedResources {
     /// What a menu bar a host keeps says of its own menus and entries.
     let menu: MenuWords
 
+    /// What a file a host names itself is called.
+    let file: FileWords
+
     /// What a question says on its own buttons.
     var question: QuestionWords { QuestionWords(accept: ok, cancel: cancel) }
 
@@ -119,13 +122,23 @@ struct LibraryWords: LocalizedResources {
 }
 
 /// What a control a host composes itself, where its platform has none, says of its own parts to a screen reader - a
-/// stepper's step down and step up - in the system's language.
+/// stepper's step down and step up, a map pin's button to its details - in the system's language.
 @_spi(Host) public struct ControlWords: Equatable, Sendable {
     /// A step down.
     public let decrease: String
 
     /// A step up.
     public let increase: String
+
+    /// The button opening what a pin tells of its place.
+    public let details: String
+}
+
+/// What a file a host names itself is called, where the application names it nothing - a save written to a file
+/// before the user places it.
+@_spi(Host) public struct FileWords: Equatable, Sendable {
+    /// A file named nothing.
+    public let untitled: String
 }
 
 /// The languages StateUI says its own words in, each by its tag.

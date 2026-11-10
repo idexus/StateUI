@@ -611,6 +611,10 @@ void stateui_winui_set_z_index(StateUIObjectRef element, int32_t z);
 /// left to right.
 void stateui_winui_set_flow_direction(StateUIObjectRef element, bool rightToLeft);
 
+/// The language the element's words are written in, a BCP 47 tag, which what stands in it inherits; NULL for its
+/// parent's.
+void stateui_winui_set_language(StateUIObjectRef element, char const *tag);
+
 /// Tips the element as it is drawn after its transform: `matrix` the sixteen numbers of a 4 x 4 matrix, row by
 /// row, applied to a point (x, y, 0, 1) of the element and divided by the fourth; null for no tip.
 void stateui_winui_set_projection(StateUIObjectRef element, const double *matrix);
@@ -831,9 +835,16 @@ void stateui_winui_sheet_set_ground(StateUIObjectRef sheet, StateUIGround kind, 
 void stateui_winui_window_push_sheet(StateUIObjectRef window, StateUIObjectRef sheet);
 void stateui_winui_window_pop_sheet(StateUIObjectRef window);
 
-/// Lays `overlays` over the window's page and its sheets, where the page stands, the first lowest; a click beside
-/// what they hold goes on to them. None takes the layer away.
+/// Takes the page off the sheet's card, which may stand on another sheet before this one goes.
+void stateui_winui_sheet_let_go(StateUIObjectRef sheet);
+
+/// Lays `overlays` over the window's page, where it stands, and under its sheets, the first lowest; a click beside
+/// what they hold goes on to the page. None takes the layer away.
 void stateui_winui_window_set_overlays(StateUIObjectRef window, StateUIObjectRef const *overlays, int32_t count);
+
+/// Lays `overlays` over the sheet's page, on its card, the first lowest; a click beside what they hold goes on to the
+/// page. None takes the layer away.
+void stateui_winui_sheet_set_overlays(StateUIObjectRef sheet, StateUIObjectRef const *overlays, int32_t count);
 
 /// How many sheets a window shows - what a test reads.
 int32_t stateui_winui_window_sheets(StateUIObjectRef window);
@@ -1201,7 +1212,7 @@ StateUIObjectRef stateui_winui_title_bar_make(int64_t view);
 /// `opacity` of what is behind it and its tint `tintOpacity` - or on `gradient` where it is a line's or a point's;
 /// `foreground` is the color of the words on a bar the tree paints, its title's and its actions' alike; the bar
 /// stands in `theme`, a `StateUIColorScheme` - dark for light words on a dark bar - its buttons and commands with it.
-void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char const *subtitle, char const *icon,
+void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char const *icon,
                                  bool back, bool paneToggle, StateUIGround ground, uint32_t argb, float opacity,
                                  float tintOpacity, StateUIBrush gradient, bool hasForeground, uint32_t foreground,
                                  int32_t theme);

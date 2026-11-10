@@ -50,7 +50,7 @@
     public func destination<Owner: WornContract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>
     ) -> Value? {
-        guard let value = heading(member.token) ?? read(member.token) else { return nil }
+        guard let value = heading(member.token) ?? read(member.token), Self.holdsNumbers(value, member) else { return nil }
         return Value(propValue: value)
     }
 
@@ -76,7 +76,7 @@
     /// - Parameter member: the property, written with its contract.
     @MainActor
     public subscript<Owner: WornContract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Value? {
-        guard let value = read(member.token) else { return nil }
+        guard let value = read(member.token), Self.holdsNumbers(value, member) else { return nil }
 
         guard let typed = Value(propValue: value) else {
             complain("`\(member.name)` reached \(Realized.name) as \(MemberValues.describe([value])), "
@@ -85,6 +85,16 @@
         }
 
         return typed
+    }
+
+    /// Whether every number `value` holds is one - NaN or an infinity is none, which is said once.
+    /// Design: docs/design/core/contracts.md#a-number-that-is-none
+    @MainActor
+    private static func holdsNumbers<Owner: WornContract, Value>(_ value: HostValue, _ member: ElementProperty<Owner, Value>) -> Bool {
+        guard value.holdsNonFiniteNumber else { return true }
+        complain("`\(member.name)` reached \(Realized.name) as \(MemberValues.describe([value])), which is no number: "
+            + "the view read no value for it.")
+        return false
     }
 
     /// Whether the patch changed a member - the gate for a value a view must not write

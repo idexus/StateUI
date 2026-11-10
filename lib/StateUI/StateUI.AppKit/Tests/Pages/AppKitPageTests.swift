@@ -1091,6 +1091,42 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertTrue(earlier.isBordered)
     }
 
+    /// Groups placed behind a bar's More are sections of its menu, a line between two - on the window's bar and on
+    /// the bar at the page's foot.
+    @MainActor
+    func testGroupsBehindTheOverflowAreSectionsOfItsMenu() throws {
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").pageTitle("Files")
+                    .toolbar {
+                        ToolbarGroup {
+                            ToolbarButton("Rename")
+                            ToolbarButton("Move")
+                        }
+                        .placement(at: .overflow)
+                        ToolbarButton("Delete").placement(at: .overflow)
+                    }
+                    .toolbar(.bottom) {
+                        ToolbarButton("Share").placement(at: .overflow)
+                        ToolbarButton("Print").placement(at: .overflow)
+                    }
+            } destination: { _ in Text("Pushed") }
+        }
+        defer { renderer.finish() }
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let said = { (items: [NSMenuItem]) in items.map { $0.isSeparatorItem ? "-" : $0.title } }
+
+        let more = try XCTUnwrap(
+            controller.toolbarForTesting.itemForTesting(AppKitWindowToolbar.overflow) as? NSMenuToolbarItem)
+        XCTAssertEqual(said(more.menu.items), ["Rename", "Move", "-", "Delete"])
+        func footBar(_ view: NSView) -> AppKitBottomToolbar? {
+            if let bar = view as? AppKitBottomBarView, bar.showsAnything { return bar.toolbar }
+            return view.subviews.lazy.compactMap(footBar).first
+        }
+        let foot = try XCTUnwrap(controller.window?.contentView.flatMap(footBar))
+        XCTAssertEqual(said(foot.overflowMenuForTesting.items), ["Share", "-", "Print"])
+    }
+
     @MainActor
     func testVisiblePageBuildsNativeNestedMenuItems() throws {
         let renderer = testRenderer(
@@ -1190,9 +1226,9 @@ final class AppKitPageTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             Text("Beneath").sheet(isPresented: shows.projectedValue) {
                 NavigationStack(path.projectedValue) {
-                    Text("Root").title("Root")
+                    Text("Root").pageTitle("Root")
                 } destination: { number in
-                    Text("Page \(number)").title("Pushed").id("pushed")
+                    Text("Page \(number)").pageTitle("Pushed").id("pushed")
                 }
             }
         }
@@ -1219,6 +1255,23 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertFalse(shows.wrappedValue, "the sheet closed")
     }
 
+    /// A stack a composed view's anchor holds in a sheet is the sheet's page: its root shows in the sheet's window,
+    /// which it names.
+    @MainActor
+    func testAStackAnAnchorHoldsInASheetShows() throws {
+        let path = State(wrappedValue: [Int]())
+        let renderer = AppKitRenderer.running {
+            Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                AnchoredStack(path: path.projectedValue, compact: true).onChanged(true) {}
+            }
+        }
+        defer { renderer.finish() }
+        let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modalsForTesting.first)
+        XCTAssertEqual(sheet.window?.title, "Root")
+        let root = try XCTUnwrap(renderer.viewForTesting(id: .manual("root")))
+        XCTAssertTrue(root.window === sheet.window && !root.isHiddenOrHasHiddenAncestor, "the root shows in the sheet")
+    }
+
     /// A sheet's bar crowded with its page's actions keeps its close button last: the groups that do not fit go
     /// behind the bar's More, ahead of what stands there anyway, and AppKit hides nothing behind a chevron of its own.
     @MainActor
@@ -1227,7 +1280,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             Text("Beneath").sheet(isPresented: shows.projectedValue) {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                    Text("Root").title("A draft with a long title").toolbar {
+                    Text("Root").pageTitle("A draft with a long title").toolbar {
                         ToolbarButton("Undo").placement(at: .start)
                         ToolbarButton("Save")
                         ToolbarButton("Add")
@@ -1262,9 +1315,9 @@ final class AppKitPageTests: XCTestCase {
     func testTheSidebarsPartPutsWhatHasNoRoomBehindItsMore() throws {
         let renderer = AppKitRenderer.running {
             SplitView {
-                Text("Folders").title("Library")
+                Text("Folders").pageTitle("Library")
             } detail: {
-                Text("Books").title("All books")
+                Text("Books").pageTitle("All books")
             }
             .showsSidebar(State(wrappedValue: true).projectedValue)
             .toolbar {
@@ -1475,4 +1528,18 @@ private extension HostChildrenUpdate {
     }
 }
 
+
+/// One stack or another, as a composed view builds it.
+private struct AnchoredStack: View {
+    let path: Binding<[Int]>
+    let compact: Bool
+
+    var body: some View {
+        if compact {
+            NavigationStack(path) { Text("Root").pageTitle("Root").id("root") } destination: { _ in Text("Next") }
+        } else {
+            NavigationStack(path) { Text("Wide").pageTitle("Wide") } destination: { _ in Text("Next") }
+        }
+    }
+}
 #endif

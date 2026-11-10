@@ -7154,7 +7154,7 @@ enum Listings {
                     // A tab's caption and picture are what its page says, and this
                     // tab's page is the stack rather than the page inside it - so
                     // they are written on the stack.
-                    .title("Stack")
+                    .pageTitle("Stack")
                     .pageIcon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 
                 case .second:
@@ -7495,7 +7495,7 @@ enum Listings {
                     }
                 }
                 .ignoresSafeArea(.all)
-                .title("StateUI")
+                .pageTitle("StateUI")
                 .pageIcon(Self.mark)
                 // The line about what this is stands at the menu's foot, and the rows
                 // scroll under it.
@@ -11612,7 +11612,7 @@ enum Listings {
                         } destination: { number in
                             Text("Message \(number)").padding(24).galleryPage("Message \(number)")
                         }
-                        .title("Inbox")
+                        .pageTitle("Inbox")
                         .pageIcon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
 
                     case .drafts:
@@ -11632,7 +11632,7 @@ enum Listings {
                         } destination: { number in
                             Text("Draft \(number)").padding(24).galleryPage("Draft \(number)")
                         }
-                        .title("Drafts")
+                        .pageTitle("Drafts")
                         .pageIcon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
                     }
                 }
@@ -12308,7 +12308,7 @@ enum Listings {
 
                     Text(favorite ? "A favorite" : "Not a favorite")
 
-                    Text("Press Save, Add and the star; Sort and Save's arrow open menus; Clear is in the overflow.")
+                    Text("Press Save, Add and the star; Sort and Save's arrow open menus; More holds two sections.")
 
                     SectionTitle("Where the actions stand")
 
@@ -12332,7 +12332,8 @@ enum Listings {
                 }
                 // The page's actions, declared where their state lives: they follow
                 // it as the body builds - `saved` decides whether Clear can be pressed,
-                // `addWords` Add's words, the four switches where the group stands.
+                // `recent` whether Duplicate and Forget last can, `addWords` Add's
+                // words, the four switches where the group stands.
                 .toolbar {
                     ToolbarGroup {
                         // Its click its own, its menu apart: from an arrow of its
@@ -12378,6 +12379,24 @@ enum Listings {
                         .icon(
                             ImageSource(light: "menu_star.png", dark: "menu_star_dark.png"),
                             on: ImageSource(light: "menu_star_on.png", dark: "menu_star_on_dark.png"))
+
+                    // Behind More, each group a section of its menu: these two
+                    // together, Clear apart.
+                    ToolbarGroup {
+                        ToolbarButton("Duplicate")
+                            .id("duplicate")
+                            .isEnabled(!recent.isEmpty)
+                            .onClicked {
+                                added += 1
+                                recent.append("copy\(added).txt")
+                            }
+
+                        ToolbarButton("Forget last")
+                            .id("forgetLast")
+                            .isEnabled(!recent.isEmpty)
+                            .onClicked { recent.removeLast() }
+                    }
+                    .placement(at: .overflow)
 
                     ToolbarButton("Clear")
                         .id("clear")
@@ -12934,12 +12953,9 @@ enum Listings {
         """#,
         "WindowBarSample": #"""
         // Sources/Samples/Windows/WindowBarSample.swift
-        /// What the gallery's window says on its bar, written by the sample and declared by the window and the sample's page.
+        /// What the gallery's window says on its bar, written by the sample and declared by the window.
         @MainActor
         final class WindowBarState {
-            /// The line under the sample page's title.
-            @State var subtitle = ""
-
             /// Whether the window's bar carries "Surprise me" on every page.
             @State var showsSurprise = false
         }
@@ -12948,14 +12964,7 @@ enum Listings {
         let bar: WindowBarState
 
         var body: some View {
-            VStack {
-                TextField(bar.$subtitle)
-                    .placeholder("Window subtitle")
-
-                Switch("Surprise me on every page", isOn: bar.$showsSurprise)
-            }
-            // The line under the page's title, wherever its title shows.
-            .subtitle(bar.$subtitle)
+            Switch("Surprise me on every page", isOn: bar.$showsSurprise)
         }
         """#,
         "WindowLog": #"""
@@ -13015,16 +13024,24 @@ enum Listings {
         /// Whether this page's own notice stands over the window.
         @State private var onThisPage = false
 
+        /// Whether the sheet laying a notice of its own shows.
+        @State private var sheetShown = false
+
         var body: some View {
             VStack {
                 switchRow(nav.$windowNotice, "Over every page", id: "window.overlay")
                 switchRow($onThisPage, "Over this page", id: "window.overlay.page")
+                Button("Open a sheet")
+                    .onClicked { sheetShown = true }
             }
             .overlays {
                 if onThisPage {
                     WindowNotice(words: "Over this page", shown: $onThisPage)
                         .verticalAlignment(.end)
                 }
+            }
+            .sheet(isPresented: $sheetShown) {
+                NoticedSheet()
             }
         }
 
@@ -13033,7 +13050,23 @@ enum Listings {
             Switch(words, isOn: value)
         }
 
-        /// A notice laid over the window: a line with its own way out, at the top unless it says otherwise.
+        /// A sheet laying a notice of its own over itself, over the window's notices.
+        struct NoticedSheet: View {
+            @State private var noticed = true
+
+            var body: some View {
+                Switch("Over this sheet", isOn: $noticed)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
+                    .overlays {
+                        if noticed {
+                            WindowNotice(words: "Over this sheet", shown: $noticed)
+                        }
+                    }
+            }
+        }
+
+        /// A notice laid over the window or a sheet: a line with its own way out, at the top unless it says otherwise.
         struct WindowNotice: View {
             let words: String
 

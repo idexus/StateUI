@@ -26,7 +26,6 @@ extension AppKitWindowController {
         let bar = AppKitBrush(chrome.background)
         let foreground = chrome.foreground.flatMap(nsColor)
         window.title = chrome.title ?? element.appKit.core.applicationName
-        window.subtitle = chrome.subtitle ?? ""
         // The bars' edge is shown as the rooms lay out, the band under the toolbar with them.
         if chrome.barScrollEdge != shownBarScrollEdge {
             shownBarScrollEdge = chrome.barScrollEdge
@@ -56,7 +55,7 @@ extension AppKitWindowController {
             showsSidebarToggle: chrome.showsSidebarToggle,
             sidebarLeadingActions: chrome.sidebarActions.start.map { $0.map(Self.action) },
             sidebarActions: chrome.sidebarActions.end.map { $0.map(Self.action) },
-            sidebarOverflow: chrome.sidebarActions.overflow.map(Self.action),
+            sidebarOverflow: chrome.sidebarActions.overflowSections.map { $0.map(Self.action) },
             back: chrome.back.map { back in
                 AppKitToolbarAction(
                     identifier: AppKitWindowToolbar.back, title: back.title,
@@ -70,7 +69,7 @@ extension AppKitWindowController {
             leadingActions: chrome.actions.start.map { $0.map(Self.action) },
             center: chrome.center?.appKit.view,
             actions: chrome.actions.end.map { $0.map(Self.action) },
-            overflow: chrome.actions.overflow.map(Self.action),
+            overflow: chrome.actions.overflowSections.map { $0.map(Self.action) },
             words: words))
         split?.onSidebarResized = { [weak self] in self?.toolbar.fitAgain() }
         synchronizeBar(window, brush: bar, split: split)
@@ -223,7 +222,6 @@ extension AppKitWindowController {
 
         titleCluster.apply(
             title: area.title ?? "",
-            subtitle: area.subtitle ?? "",
             image: area.icon.flatMap { host?.image($0) },
             foreground: foreground)
         // AppKit gives a trailing accessory the toolbar row's height and

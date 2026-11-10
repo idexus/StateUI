@@ -73,7 +73,6 @@ final class AndroidTextFieldView: AndroidTextualView {
         traits.inputType(password: isPassword, multiLine: kind == .editor)
     }
 
-    /// What the field's keyboard and its checking of the words do; the words and their weight stay.
     // MARK: - Its box
 
     /// The field's ground and the outline and shape the tree gives it: drawn as a shape in place of the theme's
@@ -119,6 +118,7 @@ final class AndroidTextFieldView: AndroidTextualView {
         drawnBox == nil ? nil : (box.stroke, BoxArithmetic.outlineWidth(stroke: box.stroke, width: box.width), box.shape)
     }
 
+    /// What the field's keyboard and its checking of the words do; the words and their weight stay.
     func setTraits(_ traits: InputTraits) {
         guard traits != self.traits else { return }
 

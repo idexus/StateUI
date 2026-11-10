@@ -50,7 +50,7 @@ extension AndroidDriver {
         return asked
     }
 
-    /// Whether the stack a page stands on shows its bar over it, the line under its title, and the way back there -
+    /// Whether the stack a page stands on shows its bar over it, its title, and the way back there -
     /// Android's toolbar as it stands while that page is on top; nil where the page stands on no stack.
     static func pageBarHolds(_ property: Prop, of page: MountedElement) -> HostValue? {
         guard let stack = page.parent, stack.type == .navigationStack,
@@ -61,10 +61,6 @@ extension AndroidDriver {
             return Java.callStaticBool(testBars, barShown, .object(bar.reference)).propValue
         case .showsTitle:
             return Java.callStaticBool(testBars, barTitled, .object(bar.reference)).propValue
-        case PageContract.subtitle.token:
-            return Java.frame {
-                Java.callStaticObject(testBars, barSubtitle, .object(bar.reference)).map { .string(Java.text($0)) }
-            }
         case .showsBackButton:
             let words = Java.frame {
                 Java.callStaticObject(testBars, barNavigation, .object(bar.reference)).map { Java.text($0) }
@@ -101,8 +97,6 @@ extension AndroidDriver {
         return Java.callStaticBool(testBars, barPressNavigation, .object(bar.reference))
     }
     private static let barTitled = Java.staticMethod(testBars, "titled", "(Landroid/widget/Toolbar;)Z")
-    private static let barSubtitle = Java.staticMethod(
-        testBars, "subtitle", "(Landroid/widget/Toolbar;)Ljava/lang/String;")
     private static let barBackground = Java.staticMethod(testBars, "background", "(Landroid/widget/Toolbar;)I")
     private static let barBackgroundAt = Java.staticMethod(testBars, "backgroundAt", "(Landroid/widget/Toolbar;FF)I")
     private static let barForeground = Java.staticMethod(testBars, "foreground", "(Landroid/widget/Toolbar;)I")

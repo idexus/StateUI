@@ -470,14 +470,13 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
 }
 
 extern "C" void stateui_winui_title_bar_set(
-    StateUIObjectRef handle, char const *title, char const *subtitle, char const *icon, bool back, bool paneToggle,
+    StateUIObjectRef handle, char const *title, char const *icon, bool back, bool paneToggle,
     StateUIGround kind, uint32_t argb, float opacity, float tintOpacity, StateUIBrush gradient, bool hasForeground,
     uint32_t foreground, int32_t theme
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
         if (bar.Title() != text(title)) bar.Title(text(title));
-        if (bar.Subtitle() != text(subtitle)) bar.Subtitle(text(subtitle));
         if (sourceFile(bar.IconSource()) != pictureName(icon)) bar.IconSource(pictureIconSource(icon));
         bar.IsBackButtonVisible(back);
         bar.IsPaneToggleButtonVisible(paneToggle);
@@ -565,8 +564,11 @@ void stateui::setActions(
     }
     controls::StackPanel row{nullptr};
     for (int32_t index = 0; index < count; ++index) {
-        // Behind "more", a setting is WinUI's two-state button, checked while on; an action, its button.
+        // Behind "more", a setting is WinUI's two-state button, checked while on; an action, its button - each group
+        // a section of the menu, a line between one and the next.
         if (groups[index] < 0) {
+            if (index > 0 && groups[index - 1] < 0 && groups[index - 1] != groups[index])
+                trailing.SecondaryCommands().Append(controls::AppBarSeparator());
             controls::ICommandBarElement button{nullptr};
             if (states[index] >= 0) {
                 controls::AppBarToggleButton toggle;

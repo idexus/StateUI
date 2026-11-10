@@ -157,6 +157,10 @@
     private(set) var languageDirection: LayoutDirection?
     private var patchReducesMotion: Bool?
 
+    /// Whether the message being applied is complete: an element it keeps holds only what it names.
+    /// Design: docs/design/host/patches.md#a-complete-message
+    private(set) var appliesCompleteMessage = false
+
     /// What the message being applied costs, while an inspector records or the tally is written; nil otherwise.
     var tally: RenderTally?
 
@@ -185,13 +189,16 @@
         if diagnostics.inspects { _ = core.takeInspectionLog() }
     }
 
-    /// Applies a message's root `patch`, at one time for the whole message; a new root when `complete`.
-    /// While an inspector records, it is told what the apply cost; the diagnostic text hears of it too.
+    /// Applies a message's root `patch`, at one time for the whole message. A `complete` message makes a new root
+    /// where it names another, and every element it keeps holds only what it names. While an inspector records, it is
+    /// told what the apply cost; the diagnostic text hears of it too.
     /// Design: docs/design/host/patches.md#what-a-message-costs
     public func apply(_ patch: HostPatch, complete: Bool) {
         let previousPatchTime = patchTime
         let previousPatchReducesMotion = patchReducesMotion
         let previousTally = tally
+        let previousComplete = appliesCompleteMessage
+        appliesCompleteMessage = complete
         if patchTime == nil { patchTime = now() }
         if patchReducesMotion == nil { patchReducesMotion = reducesMotion() }
         let inspecting = core.inspecting
@@ -206,9 +213,10 @@
             patchTime = previousPatchTime
             patchReducesMotion = previousPatchReducesMotion
             tally = previousTally
+            appliesCompleteMessage = previousComplete
         }
 
-        if let root, root.id == patch.id, root.type == patch.type, !patch.replace {
+        if let root, holdsRoot(of: patch), !patch.replace {
             root.apply(patch)
         } else if root == nil || complete || patch.replace {
             root?.leave()
@@ -217,6 +225,12 @@
             intake.drifted("a sparse message describes a root '\(patch.id)' the tree does not hold")
         }
         if let root { KeyboardShortcuts.complainOfRepeats(in: root, after: patch) }
+    }
+
+    /// Whether the root standing is the element `patch` describes, which a message can change; a message describing
+    /// another can only be complete.
+    public func holdsRoot(of patch: HostPatch) -> Bool {
+        root.map { $0.id == patch.id && $0.type == patch.type } ?? false
     }
 
     /// `popover` waits for its window, which its host makes once the render stands.
@@ -269,12 +283,14 @@
         if element.type == .sheet { sheets[element.mount] = Held(element: element) }
     }
 
-    /// The pages `window`'s sheets present, in the order they showed: a sheet's page is made as it shows.
+    /// The pages `window`'s sheets present, in the order they showed: a sheet's page is made as it shows - the
+    /// arrangement an anchor there holds standing in its place.
     /// Design: docs/design/host/tree.md#a-window-shown
     public func presentedSheets(in window: MountedElement) -> [MountedElement] {
         sheets.values.compactMap(\.element)
             .compactMap { $0.enclosing(type: .window) === window ? $0.children.first : nil }
             .sorted { $0.mount < $1.mount }
+            .compactMap(\.placed)
     }
 
     /// `element` presents `states` now rather than `before`, the states its bound properties take a frame's values

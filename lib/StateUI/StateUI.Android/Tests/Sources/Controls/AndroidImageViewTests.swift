@@ -126,8 +126,9 @@ final class AndroidImageViewTests: XCTestCase {
         onMainActor {
             let side = Int32((24 * AndroidRenderer.density).rounded())
             for icon in Icon.allCases {
-                let mask = AndroidPictures.take(.icon(icon), sample: 1)
-                defer { AndroidPictures.letGo(.icon(icon), sample: 1) }
+                let held = AndroidPictures.take(.icon(icon), sample: 1)
+                let mask = held?.bitmap
+                defer { if let held { AndroidPictures.letGo(held) } }
                 guard let mask else {
                     XCTFail("no \(icon.androidDrawable) among the application's drawables")
                     continue

@@ -343,7 +343,10 @@ loops, no closures held across them), and tells the native half in another
 tablet browser's stack - far less than a desktop's - overflows a WebAssembly
 Gallery before its first frame where one function does all of a level's
 work, in the differ as in the mount; `MountStackTests` holds a level under
-eight kilobytes. A WebAssembly start that fails takes the loading screen away, so
+eight kilobytes, under the thread sanitizer too. A patch is a large value:
+one made from it - a complete message's patch completed with what the
+element no longer names - is made in `received`, whose frame is gone before
+the children are, never as a local of `apply`. A WebAssembly start that fails takes the loading screen away, so
 its reason stands on the page rather than a load with no end, and ends the
 program with 1, so a test's runner waiting for it hears it failed.
 
@@ -797,6 +800,20 @@ keeps the user's and says it did not. The accent the core resolves
 the platform reports - so a platform's later report leaves the application's
 in force. The core hands on a pair's half in force, again as the theme turns.
 
+## The language a branch is written in
+
+An element holds the language the core says on it or on the nearest element
+above it (`spokenLanguage`); none where no element says one, and the
+platform's own stands. A toolkit that keeps a language per view and hands it
+to no view inside - UIKit's `accessibilityLanguage`, a Mac text's words - is
+given `spokenLanguage` on every view, and again on `followingLanguage` as an
+element's own changes: the element and everything under it saying none of
+its own. A toolkit that hands a view's language to the views inside - the
+Web's `lang`, WinUI's `Language` - is given `languageOnItsView`: an element's
+own; the one it holds where that comes through an element with no view (a
+window, a sheet), or where its view stands apart from the views above it (a
+popover's, a sheet's page); none where its view's parent holds it already.
+
 ## The application's phase
 
 A toolkit tells what each window does - whether it is minimized, and whether
@@ -927,7 +944,10 @@ A file dialog is read from its act alike on every host (`HostFileDialog`):
 one file to open, several, or a place to save, the kinds it offers, a
 save's contents and its name. A save's name ends in an extension of its
 kinds: where it ends in none, the first kind's first is added - unless it
-is empty, which the platform names. A platform that takes the kind a save
+is empty, which the platform names. A host that writes a save's file itself
+before the user places it names an empty one by the library's word for a
+file named nothing, in the system's language (`name(untitled:)`,
+`FileWords.untitled`), its extension added alike. A platform that takes the kind a save
 writes as one extension reads it from the name, else from the first kind
 (`savedExtension`). A dialog that filters by extension
 alone shows every kind's, in order, each once. A file dialog waits its turn
@@ -1085,7 +1105,10 @@ take the keys and the checking alone.
 
 A value a control holds inside a range - a slider's, a stepper's, a progress
 bar's - follows one arithmetic on every host (`ValueArithmetic`): the range's
-ends stand in order whichever the tree gave first, and where it gives none
+ends stand in order whichever the tree gave first, each within half the reach
+of a 32-bit float - so the span is a number to every toolkit: UIKit's slider
+counts in floats, and a slider whose span is none draws its thumb at NaN,
+which stops the application - and where it gives none
 they are the control's kind's - from 0 to a slider's 1, a share, or a
 stepper's 100, a count (`ValueArithmetic.ends`, which every host's
 registration reads through `ElementValues.ends`); a value past an end stands
@@ -1126,8 +1149,9 @@ lands; at rest, its value itself. The destination comes with the journey
 
 A picker holds a day and a time by one arithmetic on every host
 (`CalendarArithmetic`): a day not in the Gregorian calendar - February 31st,
-a thirteenth month - is refused, and the picker goes on showing the day it
-had; a day past the range stands at its end, the range's ends in order
+a thirteenth month, a year outside 1 to 9999, which every toolkit's calendar
+holds - is refused, and the picker goes on showing the day it had; a zone's
+distance from UTC asked on such a day fails with the day (`HostActs.noDay`); a day past the range stands at its end, the range's ends in order
 whichever the tree gave first; and a time is its hours, minutes and seconds
 added up from midnight around the day, so 25:99 shows as 02:39.
 

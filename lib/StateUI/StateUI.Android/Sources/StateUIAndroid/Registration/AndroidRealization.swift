@@ -30,6 +30,8 @@ enum AndroidRealization {
     static let records: [HostRecord] = [
         .complete(BottomBarContract.scrollEdge),
         // MARK: Tiers - a member every wearer realizes alike
+        .notPlanned(LanguageElementContract.language,
+            reason: "Android gives a view no language of its own: TalkBack reads it in the system's."),
         .partial(FilledShapeContract.fill, missing: "Android blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it."),
         .partial(BackgroundElementContract.background, on: VisualElementContract.self,
             missing: "Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it."),
@@ -37,7 +39,7 @@ enum AndroidRealization {
         .complete(BarElementContract.barScrollEdge),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The toolbar's actions keep Android's own look."),
         .partial(BarElementContract.barForegroundColor,
-            missing: "The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words."),
+            missing: "The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words."),
         .complete(ShortcutElementContract.keyboardShortcut, on: ButtonContract.self),
         .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),
         .partial(ButtonMenuElementContract.menuKind, on: ToolbarButtonContract.self,
@@ -114,7 +116,6 @@ enum AndroidRealization {
         .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
-        .complete(PageContract.subtitle),
         .complete(PresentedElementContract.isPresented, on: PopoverContract.self),
         .complete(PresentedElementContract.isPresentedChanged, on: PopoverContract.self),
         .complete(PageContract.navigatedFrom),
@@ -208,13 +209,25 @@ enum AndroidRealization {
         .complete(MotionLayoutContract.pans),
         .complete(MotionLayoutContract.rotates),
         .complete(MotionLayoutContract.pinchRotationUpdated),
-    ] + windowRoom + HostRecord.motionLayout
+    ] + windowRoom + wordsInTheirLanguage + HostRecord.motionLayout
         + BarItemLook.notPlanned(reason: "A toolbar's actions stand in Android's own look.")
 
     /// What Android leaves out of a blur.
     private static let ownPress = "The control takes its own press - a drawing, a scroll, a thumb, its buttons: "
         + "Android tells no long click of it."
     private static let blursNothing = "Android blurs nothing behind a view: a blur or glass shows its color."
+
+    /// The elements showing words, which Android sets by the language they are written in.
+    private static let wordsInTheirLanguage: [HostRecord] = {
+        let missing = "Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; "
+            + "TalkBack and the keyboard keep the system's language."
+        let showingWords: [any Contract.Type] = [
+            TextContract.self, ButtonContract.self, LinkContract.self, TextFieldContract.self, SearchFieldContract.self,
+            TextEditorContract.self, DatePickerContract.self, TimePickerContract.self, CheckBoxContract.self,
+            SwitchContract.self, WindowContract.self,
+        ]
+        return showingWords.map { .partial(LanguageElementContract.language, on: $0, missing: missing) }
+    }()
 
     /// The window's place and size, which Android gives an activity itself.
     private static let windowRoom: [HostRecord] = {

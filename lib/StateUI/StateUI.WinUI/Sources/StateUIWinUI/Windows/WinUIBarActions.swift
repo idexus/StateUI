@@ -23,15 +23,16 @@ struct WinUIBarActions {
     private var drawnLeading: Int32 = 0
 
     /// Draws `leading`, `trailing` and `overflow` on the bar `handle` where they differ from what it shows: what each
-    /// entry of their menus does, in order (`WinUIView.menuActions`).
+    /// entry of their menus does, in order (`WinUIView.menuActions`). Each group's place is its index on the bar,
+    /// and behind "more" below nought, a section of its own each.
     mutating func show(
-        leading: [[WinUIToolbarAction]], trailing: [[WinUIToolbarAction]], overflow: [WinUIToolbarAction],
+        leading: [[WinUIToolbarAction]], trailing: [[WinUIToolbarAction]], overflow: [[WinUIToolbarAction]],
         on handle: StateUIObjectRef
     ) -> [() -> Void] {
         let groups = leading + trailing
-        let actions = groups.flatMap { $0 } + overflow
+        let actions = (groups + overflow).flatMap { $0 }
         let places = groups.enumerated().flatMap { place, group in group.map { _ in Int32(place) } }
-            + overflow.map { _ in -1 }
+            + overflow.enumerated().flatMap { section, group in group.map { _ in Int32(-1 - section) } }
         let leadingGroups = Int32(leading.count)
         if actions.count != drawn.count || places != drawnPlaces || leadingGroups != drawnLeading
             || !zip(actions, drawn).allSatisfy({ $0.draws(like: $1) }) {

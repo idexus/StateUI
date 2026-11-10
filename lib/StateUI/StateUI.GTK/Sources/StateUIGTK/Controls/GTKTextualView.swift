@@ -48,6 +48,16 @@ class GTKTextualView: GTKView {
         String(cString: gtk_label_get_text(widget.opaque))
     }
 
+    /// The language the words are written in, which Pango sets them by; nil for the system's.
+    private(set) var language: LocaleTag?
+
+    /// Sets the words by the rules of `language`; nil, the system's.
+    func setLanguage(_ language: LocaleTag?) {
+        guard language != self.language else { return }
+        self.language = language
+        writeLook()
+    }
+
     /// Changes how the words look.
     func setLook(_ change: (inout TextLook) -> Void) {
         change(&look)
@@ -66,6 +76,9 @@ class GTKTextualView: GTKView {
             }
         } else {
             look.insert(into: list)
+        }
+        if let language, let pango = pango_language_from_string(language.identifier) {
+            pango_attr_list_insert(list, pango_attr_language_new(pango))
         }
         gtk_label_set_attributes(widget.opaque, list)
         pango_attr_list_unref(list)
@@ -107,12 +120,12 @@ class GTKTextualView: GTKView {
         gtk_label_set_justify(widget.opaque, justification)
     }
 
-    /// Where the words stand down the label's height.
     /// Whether the user can select the words and copy them.
     func setSelectable(_ selectable: Bool) {
         gtk_label_set_selectable(widget.opaque, selectable ? 1 : 0)
     }
 
+    /// Where the words stand down the label's height.
     func setAlignment(vertical: TextAlignment) {
         gtk_label_set_yalign(widget.opaque, vertical == .start ? 0 : vertical == .center ? 0.5 : 1)
     }

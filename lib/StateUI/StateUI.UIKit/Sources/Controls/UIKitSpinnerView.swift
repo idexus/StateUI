@@ -6,7 +6,7 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// An Spinner: UIKit's own, turning while the work runs and standing still, shown, while it does not.
+/// A Spinner: UIKit's own, turning while the work runs and standing still, shown, while it does not.
 @MainActor
 final class UIKitSpinnerView: UIActivityIndicatorView {
     init() {

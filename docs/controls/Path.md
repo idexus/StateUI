@@ -12,7 +12,7 @@ Path("M 0,40 L 20,0 L 40,40 Z")
 
 Layer: `stateUI`. StateUI decides its geometry, its arrangement or its composition - in the core or the shared host layer - and a host draws what was decided.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md) · [FilledShape](tiers/FilledShape.md) · [CorneredShape](tiers/CorneredShape.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [ContentModeElement](tiers/ContentModeElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md) · [FilledShape](tiers/FilledShape.md) · [CorneredShape](tiers/CorneredShape.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [ContentModeElement](tiers/ContentModeElement.md) · [LanguageElement](tiers/LanguageElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -31,13 +31,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (85)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>46 ✅ · 3 ☑️ · 36 ✓</td><td>custom <code>NSView</code> drawing <code>NSBezierPath</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>44 ✅ · 4 ☑️ · 36 ✓ · 1 –</td><td>custom <code>UIView</code> masked by a <code>CAShapeLayer</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>67 ✅ · 6 ☑️ · 10 ✓ · 1 –</td><td>custom <code>View</code> drawing <code>Path</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>61 ✅ · 2 ☑️ · 15 ✓ · 7 –</td><td><code>Shapes.Path</code> in a custom <code>Grid</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>52 ✅ · 5 ☑️ · 22 ✓ · 6 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>59 ✅ · 2 ☑️ · 21 ✓ · 3 –</td><td>inline SVG <code>&lt;path&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (86)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>46 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td>custom <code>NSView</code> drawing <code>NSBezierPath</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>45 ✅ · 4 ☑️ · 36 ✓ · 1 –</td><td>custom <code>UIView</code> masked by a <code>CAShapeLayer</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>67 ✅ · 6 ☑️ · 10 ✓ · 2 –</td><td>custom <code>View</code> drawing <code>Path</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>62 ✅ · 2 ☑️ · 15 ✓ · 7 –</td><td><code>Shapes.Path</code> in a custom <code>Grid</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>52 ✅ · 5 ☑️ · 22 ✓ · 7 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 21 ✓ · 3 –</td><td>inline SVG <code>&lt;path&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/PathContract.swift`.
@@ -270,4 +270,14 @@ How what an element draws fills the room it was given: a picture, a shape.
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>contentMode</code></td><td>property</td><td><code>ContentMode</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [LanguageElement](tiers/LanguageElement.md)
+
+The language a branch of the interface is written in: the one a screen reader speaks its words in, and whose rules set them - where they break, how they hyphenate.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>language</code></td><td>property</td><td><code>LocaleTag</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: AppKit gives a view no language of its own: VoiceOver reads it in the system's.<br>Android Views: Android gives a view no language of its own: TalkBack reads it in the system's.<br>GTK 4: GTK gives a widget no language of its own: Orca reads it in the system's.</td></tr></tbody>
 </table>

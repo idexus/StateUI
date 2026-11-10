@@ -136,6 +136,8 @@ public final class Renderer {
     ///   forgotten and the host has told what the device is.
     public func setApplication(_ application: @escaping @autoclosure () -> any Application) {
         _ = clearApplication(expected: applicationRegistration)
+        // After the teardown, whose acts are refused: the host hears what the one before asked no more.
+        StandardEnvironment.application.takeBackRequests()
         applicationRegistration += 1
         applicationEnd = nil
         making = application

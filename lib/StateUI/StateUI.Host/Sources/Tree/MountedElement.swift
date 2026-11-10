@@ -182,6 +182,18 @@
         if childrenChanged { showsAnew() }
     }
 
+    /// `patch`, of a complete message, as this element takes it: a property, a handler or a tie it does not name is
+    /// one the element no longer has.
+    /// Design: docs/design/host/patches.md#a-complete-message
+    private func completed(_ patch: HostPatch) -> HostPatch {
+        var whole = patch
+        whole.clearedProperties = Set(patch.clearedProperties)
+            .union(properties.keys.filter { patch.properties[$0] == nil }).sorted()
+        if patch.events == nil, !events.isEmpty { whole.events = .replace([:]) }
+        if patch.driven == nil, !driven.isEmpty { whole.driven = .replace([:]) }
+        return whole
+    }
+
     /// What applying a patch carries from before the children to after them: when a scene began, the pages shown,
     /// the properties that changed and the values they stood at.
     private final class Applying {
@@ -208,6 +220,8 @@
     /// The patch's own values taken: its properties, events, driven states and motion, before its children.
     @inline(never)
     private func received(_ patch: HostPatch, tree: MountedTree) -> Applying {
+        // Design: docs/design/host/runtime.md#the-mounts-stack
+        let patch = tree.appliesCompleteMessage ? completed(patch) : patch
         if let key = patch.menuKey { menuKey = key }
         let sceneBegan: ContinuousClock.Instant? = tree.tally != nil && patch.type == .scene ? .now : nil
         tree.tally?.nodes += 1
@@ -215,11 +229,14 @@
         let previouslyShown = isPagePresented ? shownChildren : []
         let heardPull = hearsPull
         let readFrameBefore = frameReaders
+        // A complete message names what stands as well as what changed: only what it names otherwise is a change.
+        // Design: docs/design/host/patches.md#a-complete-message
+        let complete = tree.appliesCompleteMessage
         var changed = Set(patch.clearedProperties)
-        changed.formUnion(patch.properties.keys)
+        changed.formUnion(patch.properties.keys.filter { !complete || properties[$0] != patch.properties[$0] })
         if case .replace(let replacement) = patch.driven {
-            changed.formUnion(driven.keys)
-            changed.formUnion(replacement.keys)
+            let named = Set(driven.keys).union(replacement.keys)
+            changed.formUnion(named.filter { !complete || driven[$0] != replacement[$0] })
         }
 
         // Nothing of an element being made runs to be cut short: it receives what it animates and what a state drives,
@@ -268,6 +285,9 @@
             self.motion = motion
             // The application says its motion once; every layout that says none animates under it.
             if type == .application { tree.layoutMotion.applicationMotion = motion.motion }
+        } else if tree.appliesCompleteMessage {
+            // A complete message that says no motion says the inherited one.
+            self.motion = nil
         }
 
         if case .unchanged = patch.children { childrenChanged = false } else { childrenChanged = true }
@@ -698,7 +718,9 @@
             windowChrome: WindowChrome.follows(type, changed: changed))
     }
 
-    /// The value `property` presents: a running animation's, else the described or bound one.
+    /// The value `property` presents: a running animation's, else the described or bound one - none where it is a
+    /// number that is none.
+    /// Design: docs/design/core/contracts.md#a-number-that-is-none
     public func value(_ property: Prop) -> HostValue? {
         let shown: HostValue?
         if driven[property].map({ $0.mode != .in }) == true {
@@ -706,7 +728,8 @@
         } else {
             shown = tree?.presentedPropertyValue(mount: mount, property: property) ?? resolvedValue(property)
         }
-        return GeometryArithmetic.value(shown, for: property)
+        guard let value = GeometryArithmetic.value(shown, for: property), !value.holdsNonFiniteNumber else { return nil }
+        return value
     }
 
     /// The text value of `property`.

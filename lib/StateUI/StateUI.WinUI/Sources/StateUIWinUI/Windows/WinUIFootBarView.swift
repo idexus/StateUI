@@ -25,7 +25,7 @@ final class WinUIFootBarView: WinUIView {
         let action = WinUIWindowController.action
         menuActions = actions.show(
             leading: chosen.start.map { $0.map(action) }, trailing: chosen.end.map { $0.map(action) },
-            overflow: chosen.overflow.map(action), on: handle)
+            overflow: chosen.overflowSections.map { $0.map(action) }, on: handle)
         invalidateMeasure()
     }
 

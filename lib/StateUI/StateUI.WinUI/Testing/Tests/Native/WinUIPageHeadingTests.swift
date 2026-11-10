@@ -11,19 +11,18 @@ import XCTest
 
 final class WinUIPageHeadingTests: XCTestCase {
     /// Where the window's chrome names the application - over a split view's sidebar - the page that names the window
-    /// is headed by its title and the line under it, its content under the heading; the page pushed over it takes the
-    /// heading.
+    /// is headed by its title, its content under the heading; the page pushed over it takes the heading.
     func testAPageIsHeadedByItsTitleWhereTheChromeNamesTheApplication() throws {
         try onUIThread {
             let path = State(wrappedValue: [Int]())
             let host = WinUIRenderer.running {
                 SplitView {
-                    Text("Menu").title("StateUI")
+                    Text("Menu").pageTitle("StateUI")
                 } detail: {
                     NavigationStack(path.projectedValue) {
-                        Text("Home words").title("Home")
+                        Text("Home words").pageTitle("Home")
                     } destination: { _ in
-                        Text("Sample words").title("Button menu").subtitle("Menus")
+                        Text("Sample words").pageTitle("Button menu")
                     }
                 }
                 .showsSidebar(State(wrappedValue: true).projectedValue)
@@ -34,8 +33,6 @@ final class WinUIPageHeadingTests: XCTestCase {
             path.wrappedValue = [1]
             host.settle { Self.headings(host) == ["Button menu"] }
             XCTAssertEqual(Self.headings(host), ["Button menu"], "the page shown heads alone")
-            let headed = try XCTUnwrap(host.views(WinUILayoutView.self).first { $0.heading != nil }?.heading)
-            XCTAssertEqual(headed.line.text, "Menus", "the line under its title")
 
             let sample = { host.views(WinUITextView.self).first { $0.text == "Sample words" }?.placed }
             host.settle { sample() != nil }
@@ -53,12 +50,12 @@ final class WinUIPageHeadingTests: XCTestCase {
             let path = State(wrappedValue: [Int]())
             let host = WinUIRenderer.running {
                 SplitView {
-                    Text("Menu").title("StateUI")
+                    Text("Menu").pageTitle("StateUI")
                 } detail: {
                     NavigationStack(path.projectedValue) {
-                        Text("Home words").title("Home")
+                        Text("Home words").pageTitle("Home")
                     } destination: { _ in
-                        TabView([1, 2]) { number in Text("Example words").title("Example \(number)") }.title("Items")
+                        TabView([1, 2]) { number in Text("Example words").pageTitle("Example \(number)") }.pageTitle("Items")
                     }
                 }
                 .showsSidebar(State(wrappedValue: true).projectedValue)
@@ -85,12 +82,12 @@ final class WinUIPageHeadingTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running {
                 SplitView {
-                    Text("Menu").title("StateUI")
+                    Text("Menu").pageTitle("StateUI")
                 } detail: {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        Text("Home words").title("Home").showsTitle(false)
+                        Text("Home words").pageTitle("Home").showsTitle(false)
                     } destination: { _ in
-                        Text("Sample words").title("Button menu")
+                        Text("Sample words").pageTitle("Button menu")
                     }
                 }
                 .showsSidebar(State(wrappedValue: true).projectedValue)
@@ -105,9 +102,9 @@ final class WinUIPageHeadingTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                    Text("Home words").title("Home")
+                    Text("Home words").pageTitle("Home")
                 } destination: { _ in
-                    Text("Sample words").title("Button menu")
+                    Text("Sample words").pageTitle("Button menu")
                 }
             }
             host.settle { host.window.map { _ in true } ?? false }

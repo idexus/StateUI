@@ -20,11 +20,11 @@ enum AndroidPictures {
     /// An icon's side, in points: Android's icon size.
     private static let iconSide = 24.0
 
-    /// A file's path in the assets, the density it was drawn at, and its size in pixels at the display's.
+    /// A file's path in the assets, the density it was drawn at, and its own size in pixels.
     private struct Asset {
         let path: String
         let density: Int32
-        let size: (width: Int32, height: Int32)
+        let pixels: (width: Int32, height: Int32)
     }
 
     /// A bitmap read, and how many views show it.
@@ -33,10 +33,17 @@ enum AndroidPictures {
         var holders: Int
     }
 
-    /// A picture read at one pixel in `sample` across and down.
-    private struct Reading: Hashable {
+    /// A picture read at one pixel in `sample` across and down, scaled to the display's density then.
+    struct Reading: Hashable {
         let picture: HostPicture
         let sample: Int32
+        let density: Int32
+    }
+
+    /// A picture a view holds: its bitmap, and the reading the view lets go of.
+    struct Held {
+        let reading: Reading
+        let bitmap: JavaObject
     }
 
     /// Where a picture's encoded pixels are read from: a file in the assets, or the bytes themselves.
@@ -70,7 +77,7 @@ enum AndroidPictures {
     /// a point. An icon stands at Android's icon size.
     static func size(of picture: HostPicture) -> (width: Int32, height: Int32)? {
         switch picture {
-        case .file(let name): asset(named: name)?.size
+        case .file(let name): asset(named: name).map { scaled($0.pixels, from: $0.density) }
         case .icon: (iconPixels, iconPixels)
         case .bytes(let bytes): bounds(.bytes(bytes)).map { scaled($0, from: onePixelAPoint) }
         }
@@ -104,30 +111,30 @@ enum AndroidPictures {
         }
     }
 
-    /// `picture` read at one pixel in `sample`, held for one more view until it lets go; nil for no picture.
-    static func take(_ picture: HostPicture, sample: Int32) -> JavaObject? {
-        let reading = Reading(picture: picture, sample: sample)
+    /// `picture` read at one pixel in `sample` at the display's density now, held for one more view until it lets
+    /// go; nil for no picture.
+    static func take(_ picture: HostPicture, sample: Int32) -> Held? {
+        let reading = Reading(picture: picture, sample: sample, density: displayDensity)
         if let held = kept[reading] {
             kept[reading]?.holders = held.holders + 1
-            return held.bitmap
+            return Held(reading: reading, bitmap: held.bitmap)
         }
         guard let bitmap = decode(picture, sample: sample) else { return nil }
 
         kept[reading] = Kept(bitmap: bitmap, holders: 1)
-        return bitmap
+        return Held(reading: reading, bitmap: bitmap)
     }
 
-    /// One view no longer shows `picture` read at `sample`; the last to let go lets the bitmap go.
-    static func letGo(_ picture: HostPicture, sample: Int32) {
-        let reading = Reading(picture: picture, sample: sample)
-        guard let held = kept[reading] else { return }
+    /// One view no longer shows the picture it took; the last to let go of a reading lets its bitmap go.
+    static func letGo(_ held: Held) {
+        guard let kept = kept[held.reading] else { return }
 
-        if held.holders > 1 { kept[reading]?.holders = held.holders - 1 } else { kept[reading] = nil }
+        if kept.holders > 1 { self.kept[held.reading]?.holders = kept.holders - 1 } else { self.kept[held.reading] = nil }
     }
 
     /// `picture` whole, for a bar's or a tab's icon, which the host keeps for as long as it runs.
     static func bitmap(_ picture: HostPicture) -> JavaObject? {
-        take(picture, sample: 1)
+        take(picture, sample: 1)?.bitmap
     }
 
     /// An icon's side in pixels at the display's density.
@@ -165,7 +172,7 @@ enum AndroidPictures {
             files.contains(drawn.file) ? ("images/\(drawn.file)", Int32(drawn.scale) * onePixelAPoint) : nil
         }.first
         let asset = found.flatMap { found in
-            bounds(.asset(found.path)).map { Asset(path: found.path, density: found.density, size: scaled($0, from: found.density)) }
+            bounds(.asset(found.path)).map { Asset(path: found.path, density: found.density, pixels: $0) }
         }
         if asset == nil { AndroidRenderer.log.error("no picture named \(name) in the application's images") }
 

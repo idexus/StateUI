@@ -35,7 +35,7 @@ struct FontsPage: View {
         }
         .spacing(10)
         .padding(16)
-        .title("Fonts")
+        .pageTitle("Fonts")
         .onCreated {
             window.title = "Fonts"
             window.width = 320

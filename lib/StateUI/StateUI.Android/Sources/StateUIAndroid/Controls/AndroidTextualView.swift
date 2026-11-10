@@ -33,6 +33,23 @@ class AndroidTextualView: AndroidView {
         Java.release(local: string)
     }
 
+    /// The language the words are written in, which Android sets them by - their breaks, their hyphens, the typeface
+    /// a script falls back to; nil for the system's.
+    private(set) var language: LocaleTag?
+
+    /// Sets the words by the rules of `language`; nil, the system's.
+    func setLanguage(_ language: LocaleTag?) {
+        guard language != self.language else { return }
+        self.language = language
+        let tag = language.flatMap { Java.string($0.identifier) }
+        let locale = language == nil
+            ? Java.callStaticObject(JavaAPI.locale, JavaAPI.defaultLocale)
+            : Java.callStaticObject(JavaAPI.locale, JavaAPI.localeForLanguageTag, .object(tag))
+        if let locale { Java.call(reference, JavaAPI.setTextLocale, .object(locale)) }
+        Java.release(local: locale)
+        Java.release(local: tag)
+    }
+
     /// The words the view shows now, read back.
     var text: String {
         guard let sequence = Java.callObject(reference, JavaAPI.getText) else { return "" }
@@ -127,6 +144,8 @@ class AndroidTextualView: AndroidView {
 
     /// The words' color; nil puts back the platform's (`plainWordColors`).
     func setTextColor(_ color: HostValue?) {
+        // The platform's colors are read before the first written over them - a role's included.
+        _ = madeWith
         writtenTextColor = color
         if let argb = color.flatMap(Self.argb) {
             let colors = Java.callStaticObject(

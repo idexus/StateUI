@@ -12,6 +12,8 @@ final class AndroidButtonViewTests: XCTestCase {
     static var allTests: [(String, (AndroidButtonViewTests) -> () throws -> Void)] {
         [
             ("testAButtonIsAsBigAsItsWordsAndItsRoom", testAButtonIsAsBigAsItsWordsAndItsRoom),
+            ("testAButtonNoLongerARoleWearsThePlainWords", testAButtonNoLongerARoleWearsThePlainWords),
+            ("testAWideButtonWhosePaddingGoesStandsAsItsTwin", testAWideButtonWhosePaddingGoesStandsAsItsTwin),
             ("testALongPressOpensASplitButtonsMenuThoughItCanBeDragged", testALongPressOpensASplitButtonsMenuThoughItCanBeDragged),
             ("testAnIconAloneFitsTheRoomInsideThePadding", testAnIconAloneFitsTheRoomInsideThePadding),
             ("testAnIconBesideWordsStandsWhereItsPositionSays", testAnIconBesideWordsStandsWhereItsPositionSays),
@@ -469,6 +471,65 @@ final class AndroidButtonViewTests: XCTestCase {
             XCTAssertEqual(words[0], error, "the theme's error color")
             XCTAssertEqual(words[1].map { UInt32(bitPattern: $0) & 0xFF_FFFF }, 0x00_00FF, "the tree's color wins")
             XCTAssertNotEqual(words[2], error)
+        }
+    }
+
+    /// A button whose role goes - the window's main action, a destructive one - wears the plain words again, as one
+    /// that never had a role does.
+    func testAButtonNoLongerARoleWearsThePlainWords() throws {
+        for role in [ButtonRole.primary, .destructive] {
+            try onMainActor {
+                let given = State(wrappedValue: true)
+                let host = AndroidRenderer.running {
+                    VStack {
+                        if given.wrappedValue { Button("Save").role(role).id("save") } else { Button("Save").id("save") }
+                        Button("Plain").id("plain")
+                    }
+                }
+                host.layOut()
+                @MainActor func words(_ id: String) throws -> Int32? {
+                    let button = try XCTUnwrap(host.view(id: .manual(id)) as? AndroidButtonView)
+                    return Java.frame {
+                        Java.callObject(button.reference, JavaAPI.getTextColors).map { Java.callInt($0, TestJava.getDefaultColor) }
+                    }
+                }
+                XCTAssertNotEqual(try words("save"), try words("plain"), "\(role)'s own words")
+
+                given.wrappedValue = false
+                host.runtime.pump.turn()
+                XCTAssertEqual(try words("save"), try words("plain"), "\(role) gone")
+            }
+        }
+    }
+
+    /// A wide button whose padding the tree gives and takes back stands as its twin that never had one: the padding
+    /// it goes back to is the platform's, not the room it added beside its icon.
+    func testAWideButtonWhosePaddingGoesStandsAsItsTwin() throws {
+        try onMainActor {
+            let padded = State(wrappedValue: false)
+            let host = AndroidRenderer.running {
+                VStack {
+                    if padded.wrappedValue {
+                        Button("Log out").icon("test_wide.png").width(300).horizontalAlignment(.start).padding(4)
+                            .id("changing")
+                    } else {
+                        Button("Log out").icon("test_wide.png").width(300).horizontalAlignment(.start).id("changing")
+                    }
+                    Button("Log out").icon("test_wide.png").width(300).horizontalAlignment(.start).id("twin")
+                }
+            }
+            host.layOut()
+            for given in [true, false] {
+                padded.wrappedValue = given
+                host.runtime.pump.turn()
+                host.layOut()
+            }
+            @MainActor func padding(_ id: String) throws -> [Int32] {
+                let button = try XCTUnwrap(host.view(id: .manual(id)))
+                return [JavaAPI.getPaddingLeft, JavaAPI.getPaddingTop, JavaAPI.getPaddingRight, JavaAPI.getPaddingBottom]
+                    .map { Java.callInt(button.reference, $0) }
+            }
+            XCTAssertEqual(try padding("changing"), try padding("twin"))
         }
     }
 }

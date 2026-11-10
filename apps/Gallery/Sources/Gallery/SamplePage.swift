@@ -30,7 +30,7 @@ struct SamplePage: View {
             TabView(sample.tabs) { tab in
                 SampleTabPage(sample: sample, tab: tab, nav: nav)
             }
-            .title(sample.title)
+            .pageTitle(sample.title)
         }
     }
 

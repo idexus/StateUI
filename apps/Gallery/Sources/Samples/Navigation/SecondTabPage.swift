@@ -3,7 +3,7 @@ import StateUI
 /// The other tab: a plain page, and the one that writes the selection.
 ///
 /// A tab is nothing but a page in a list, so this one says its own caption
-/// and its own picture by modifier, `title` and `icon`.
+/// and its own picture by modifier, `pageTitle` and `pageIcon`.
 /// Its button is `nav.tab = .stack`: the selection is a binding of the
 /// gallery's own type, so moving the tabs from code is an assignment.
 struct SecondTabPage: View {

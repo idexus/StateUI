@@ -43,7 +43,7 @@ final class GTKWindow {
     /// The layers the window's content and its overlays stand in.
     private let layers: GTKWidget
 
-    /// What the window lays over everything it shows; empty for nothing.
+    /// What the window lays over its page, under its sheets; empty for nothing.
     private(set) var overlays: [GTKView] = []
 
     private var presented = false
@@ -206,15 +206,18 @@ final class GTKWindow {
         guard frame.width != nil || frame.height != nil else { return }
         var current: (width: Int32, height: Int32) = (0, 0)
         gtk_window_get_default_size(widget.of(GtkWindow.self), &current.width, &current.height)
+        // A size GTK's 32-bit pixels cannot hold leaves the window's own.
         gtk_window_set_default_size(
-            widget.of(GtkWindow.self), frame.width.map { Int32($0) } ?? current.width,
-            frame.height.map { Int32($0) } ?? current.height)
+            widget.of(GtkWindow.self), frame.width.flatMap { GeometryArithmetic.pixels($0, rounding: .down) } ?? current.width,
+            frame.height.flatMap { GeometryArithmetic.pixels($0, rounding: .down) } ?? current.height)
     }
 
     /// How small the user may make the window; GNOME's smallest where the element says none. GTK bounds no window
     /// from above.
     func bound(_ bounds: WindowBounds) {
-        gtk_widget_set_size_request(widget, Int32(bounds.minimumWidth ?? 360), Int32(bounds.minimumHeight ?? 294))
+        gtk_widget_set_size_request(
+            widget, bounds.minimumWidth.flatMap { GeometryArithmetic.pixels($0, rounding: .down) } ?? 360,
+            bounds.minimumHeight.flatMap { GeometryArithmetic.pixels($0, rounding: .down) } ?? 294)
     }
 
     /// Hides the window while its scene hides it, and shows it again.
@@ -240,7 +243,7 @@ final class GTKWindow {
         setContent(pageFrame?.widget)
     }
 
-    /// Lays `views` over everything the window shows, where the page stands, the first lowest; none takes them away.
+    /// Lays `views` over the page, where it stands, and under the sheets, the first lowest; none takes them away.
     /// Design: docs/design/platforms/gtk/pages.md#the-windows-overlays
     func showOverlays(_ views: [GTKView]) {
         guard !views.elementsEqual(overlays, by: ===) else { return }

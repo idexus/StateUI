@@ -76,12 +76,19 @@ extension UIKitDriver {
         }
     }
 
+    /// The entries of a menu behind a bar's overflow, its sections' run together: a submenu stands as one.
+    static func overflowEntries(of menu: UIMenu?) -> [UIMenuElement] {
+        (menu?.children ?? []).flatMap { entry in
+            (entry as? UIMenu).map { $0.options.contains(.displayInline) ? $0.children : [$0] } ?? [entry]
+        }
+    }
+
     /// The entries of the menu `item` opens behind a bar's overflow, each said by its element.
     private static func entries(of item: UIBarButtonItem, on page: MountedElement) -> [String] {
         var root = page
         while let parent = root.parent { root = parent }
         let elements = toolbarItems(in: root)
-        return (item.menu?.children ?? []).compactMap { entry in
+        return overflowEntries(of: item.menu).compactMap { entry in
             guard let action = entry as? UIAction,
                   let element = elements.first(where: { ($0.native as? UIKitElement)?.actionIdentifier == action.identifier })
             else { return nil }
@@ -153,13 +160,13 @@ extension UIKitDriver {
             field: field)
     }
 
-    /// The file dialog UIKit's document picker shows now: one that opens or one that exports.
     /// What the activity sheet the window presents offers: its words, then its address on a line of its own.
     func shared(over element: MountedElement) throws -> String? {
         guard let sheet = renderer?.actToolkit.sharing, sheet.controller != nil else { return nil }
         return sheet.shared.together
     }
 
+    /// The file dialog UIKit's document picker shows now: one that opens or one that exports.
     func fileDialog(over element: MountedElement) throws -> FileDialog? {
         guard let shown = renderer?.fileToolkit.showing, shown.picker != nil else { return nil }
         return shown.dialog.kind == .save ? .save : .open

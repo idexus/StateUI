@@ -38,7 +38,7 @@ final class BarCapsuleTests: XCTestCase {
 private struct ToolbarApplication: Application {
     var body: some Scene {
         WindowGroup {
-            Text("Notes").title("Notes").toolbar {
+            Text("Notes").pageTitle("Notes").toolbar {
                 ToolbarGroup { ToolbarButton("Save") }
                 ToolbarButton("Sort")
             }

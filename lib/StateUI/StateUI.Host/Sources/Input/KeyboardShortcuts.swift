@@ -142,7 +142,7 @@
             // A sheet stands over its window wherever the view presenting it stands: the top one is in sight.
             if parent.type == .sheet {
                 guard let window = parent.enclosing(type: .window) else { return false }
-                return tree?.presentedSheets(in: window).last === child
+                return tree?.presentedSheets(in: window).last === child.placed
             }
             guard parent.standsShown else { return false }
             // A slot of an arrangement - a bar, a menu - stands with the arrangement, whichever page it shows.
@@ -152,7 +152,7 @@
             }
             switch parent.type {
             case .navigationStack: if parent.children.last !== child { return false }
-            case .tabView: if let chosen = parent.selectedTab, chosen !== child { return false }
+            case .tabView: if let chosen = parent.selectedTab, chosen !== child.placed { return false }
             default: break
             }
             child = parent

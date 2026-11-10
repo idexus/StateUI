@@ -260,8 +260,10 @@ class WebLayoutView: WebDOMView {
         }
         switch arrangement {
         case .grid:
-            view.style("grid-row", "\(values.row + 1) / span \(max(1, values.rowSpan))")
-            view.style("grid-column", "\(values.column + 1) / span \(max(1, values.columnSpan))")
+            // The cell the host layer gives every grid (`GridArithmetic.cell`), its lines counted from one.
+            let cell = GridArithmetic.cell(of: values)
+            view.style("grid-row", "\(cell.row + 1) / span \(cell.rowSpan)")
+            view.style("grid-column", "\(cell.column + 1) / span \(cell.columnSpan)")
         case .layers:
             placeInArea(view, values.area)
         default:
@@ -341,12 +343,11 @@ class WebLayoutView: WebDOMView {
         children[1].setOpacity(opacity)
     }
 
-    /// The grid's tracks: those it defines, then one share for each further one its children reach.
+    /// The grid's tracks as the host layer gives them (`GridArithmetic.tracks`): those it defines, then one share for
+    /// each further one its children reach.
     private func writeTracks() {
-        let values = readValues.indices.map(values(at:))
-        let rowCount = max(rows.count, values.map { $0.row + max(1, $0.rowSpan) }.max() ?? 0)
-        let columnCount = max(columns.count, values.map { $0.column + max(1, $0.columnSpan) }.max() ?? 0)
-        style("grid-template-rows", WebCSS.tracks(rows, count: rowCount))
-        style("grid-template-columns", WebCSS.tracks(columns, count: columnCount))
+        let tracks = GridArithmetic.tracks(reaching: readValues.indices.map(values(at:)), rows: rows, columns: columns)
+        style("grid-template-rows", WebCSS.tracks(tracks.rows))
+        style("grid-template-columns", WebCSS.tracks(tracks.columns))
     }
 }

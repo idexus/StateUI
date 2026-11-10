@@ -382,9 +382,8 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing, U
         return true
     }
 
-    // MARK: - For the tests
+    // MARK: - The layout
 
-    /// The items UIKit holds selected, in the order they show.
     /// The layout `layout` says, over the cells' entries, a list's item swiping to its actions.
     private func madeLayout(_ layout: ItemsLayout) -> UICollectionViewCompositionalLayout {
         UIKitItemsLayout.make(
@@ -412,6 +411,9 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing, U
         source.indexPath(for: identity).flatMap(swipeActions(at:))
     }
 
+    // MARK: - For the tests
+
+    /// The items UIKit holds selected, in the order they show.
     var selectedForTesting: [String] {
         let chosen = Set((collection.indexPathsForSelectedItems ?? []).compactMap { source.itemIdentifier(for: $0) })
         return cells.identities.filter(chosen.contains)

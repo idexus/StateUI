@@ -44,14 +44,13 @@ extension GTKElement {
             chrome.tabs = (view as? GTKTabView)?.switcher
             chrome.showsBar = value(.showsNavigationBar)?.bool != false
             chrome.offersBack = value(.showsBackButton)?.bool != false
-            (chrome.barBackground, chrome.barForeground) = element.barColors
+            (chrome.barBackground, chrome.barForeground) = element.restingBarColors
             return chrome
         }
 
         var chrome = GTKPageChrome()
         chrome.title = element.barTitle(applicationName: host?.runtime.core.applicationName ?? "")
         chrome.showsTitle = value(.showsTitle)?.bool != false
-        chrome.subtitle = element.barSubtitle
         chrome.titleView = element.chromeTitleView?.gtk.view
         chrome.bottomBar = element.chromeBottomBar?.gtk.view
         chrome.bottomBarEdge = element.chromeBottomBarEdge
@@ -60,16 +59,16 @@ extension GTKElement {
         chrome.showsBar = value(.showsNavigationBar)?.bool != false
         chrome.offersBack = value(.showsBackButton)?.bool != false
         chrome.offersClose = element.enclosing(type: .sheet) == nil || element.offersItsSheetsClose
-        (chrome.barBackground, chrome.barForeground) = element.barColors
+        (chrome.barBackground, chrome.barForeground) = element.restingBarColors
 
         let actions = element.chromeActions
         chrome.leading = actions.start.map { $0.map(GTKToolbarAction.init) }
         chrome.trailing = actions.end.map { $0.map(GTKToolbarAction.init) }
-        chrome.overflow = actions.overflow.map(GTKToolbarAction.init)
+        chrome.overflow = actions.overflowSections.map { $0.map(GTKToolbarAction.init) }
         let foot = element.chromeBottomActions
         chrome.foot = GTKFootActions(
             leading: foot.start.map { $0.map(GTKToolbarAction.init) }, trailing: foot.end.map { $0.map(GTKToolbarAction.init) },
-            overflow: foot.overflow.map(GTKToolbarAction.init))
+            overflow: foot.overflowSections.map { $0.map(GTKToolbarAction.init) })
         // GNOME keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
         chrome.mainMenu = element.chromeMenus
             .editing(CoreLink().editWords, redo: KeyboardShortcut("z", modifiers: [.primary, .shift])).menus

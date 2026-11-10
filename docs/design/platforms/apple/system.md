@@ -19,3 +19,12 @@ What differs is each platform's own and stays in its host: the device and its
 screen, the battery - a Mac's power source, a phone's device - and the theme
 and the accent, which AppKit reads from the application's appearance and
 UIKit from a scene's traits.
+
+## The clock
+
+The wall clock is read on the civil calendar - the Gregorian, in the user's
+zone - whatever calendar the user reads days in, as every host answers
+`currentTime`: Foundation's current calendar may be the Japanese or the
+Buddhist one, whose year is another number (`SystemFacts.localTime`). A
+zone's distance from UTC is read at noon on the day asked, on the same
+calendar (`SystemFacts.utcOffset`).

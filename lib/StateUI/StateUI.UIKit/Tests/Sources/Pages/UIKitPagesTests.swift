@@ -20,7 +20,7 @@ final class UIKitPagesTests: XCTestCase {
             NavigationStack(path.projectedValue) {
                 TitledPage(title: "Items and Cards")
             } destination: { _ in
-                TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
+                TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.pageTitle("ItemsView")
             }
         }
         defer { host.finish() }
@@ -305,6 +305,44 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(more.title, CoreLink().chromeWords.more)
     }
 
+    /// Groups placed behind a bar's More are sections of its menu, a line between two - on the bar over the page and
+    /// on the bar at its foot.
+    @MainActor
+    func testGroupsBehindTheOverflowAreSectionsOfItsMenu() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root")
+                    .toolbar {
+                        ToolbarGroup {
+                            ToolbarButton("Rename")
+                            ToolbarButton("Move")
+                        }
+                        .placement(at: .overflow)
+                        ToolbarButton("Delete").placement(at: .overflow)
+                    }
+                    .toolbar(.bottom) {
+                        ToolbarButton("Share").placement(at: .overflow)
+                        ToolbarButton("Print").placement(at: .overflow)
+                    }
+            } destination: { _ in Text("Pushed") }
+        }
+        defer { host.finish() }
+        let controller = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller }
+        host.settle {
+            controller().map { !$0.navigationItem.trailingItemGroups.isEmpty && !($0.toolbarItems ?? []).isEmpty } ?? false
+        }
+        let sections = { (menu: UIMenu?) in
+            (menu?.children ?? []).map { entry in
+                (entry as? UIMenu).map { $0.options.contains(.displayInline) ? $0.children.map(\.title) : [] } ?? []
+            }
+        }
+
+        let top = try XCTUnwrap(controller()?.navigationItem.trailingItemGroups.flatMap(\.barButtonItems).first { $0.menu != nil })
+        XCTAssertEqual(sections(top.menu), [["Rename", "Move"], ["Delete"]])
+        let foot = try XCTUnwrap(controller()?.toolbarItems?.first { $0.identifier == UIKitPageToolbar.moreIdentifier })
+        XCTAssertEqual(sections(foot.menu), [["Share"], ["Print"]])
+    }
+
     /// A bar's buttons - an action, and one holding a menu - let go of their elements as the bar drops them: the action
     /// UIKit was handed, which the element keeps, holds neither the element nor its menu's entries.
     @MainActor
@@ -377,7 +415,7 @@ final class UIKitPagesTests: XCTestCase {
         let dark = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Text("Root").title(title.wrappedValue).toolbar {
+                Text("Root").pageTitle(title.wrappedValue).toolbar {
                     ToolbarButton("Save").accessibilityIdentifier("save")
                 }
             } destination: { _ in Text("Pushed") }
@@ -432,7 +470,7 @@ final class UIKitPagesTests: XCTestCase {
     func testATabChosenFromTheMoreListIsChosen() throws {
         let tab = State(wrappedValue: 0)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            TabView(0..<7) { number in Text("Tab \(number)").title("Tab \(number)") }.selection(tab.projectedValue)
+            TabView(0..<7) { number in Text("Tab \(number)").pageTitle("Tab \(number)") }.selection(tab.projectedValue)
         }
         defer { host.finish() }
         let element = host.runtime.tree.root.flatMap { Self.first(.tabView, in: $0) }
@@ -455,7 +493,7 @@ final class UIKitPagesTests: XCTestCase {
         let white = State(wrappedValue: false)
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                TabView([0, 1]) { Text("\($0)").title("Tab \($0)") }
+                TabView([0, 1]) { Text("\($0)").pageTitle("Tab \($0)") }
             } destination: { _ in Text("Pushed") }
                 .barForegroundColor(white.wrappedValue ? .white : .black)
         }
@@ -533,7 +571,7 @@ final class UIKitPagesTests: XCTestCase {
         let under = State(wrappedValue: false)
         let host = UIKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).title("Under the bar")
+                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).pageTitle("Under the bar")
             } destination: { _ in Text("Next") }
         }
         defer { host.finish() }
@@ -559,7 +597,7 @@ final class UIKitPagesTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue) }
                     .ignoresSafeArea(.all)
-                    .title("Rows")
+                    .pageTitle("Rows")
             } destination: { _ in Text("Next") }
         }
         defer { host.finish() }
@@ -653,7 +691,7 @@ private struct TitledPage: View {
     let title: String
 
     var body: some View {
-        Text(title).title(title)
+        Text(title).pageTitle(title)
     }
 }
 

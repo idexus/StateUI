@@ -77,7 +77,7 @@ struct AppKitWindowChrome {
     /// The groups standing in the sidebar's part, at its start and at its end, and those behind its own overflow.
     var sidebarLeadingActions: [[AppKitToolbarAction]] = []
     var sidebarActions: [[AppKitToolbarAction]] = []
-    var sidebarOverflow: [AppKitToolbarAction] = []
+    var sidebarOverflow: [[AppKitToolbarAction]] = []
 
     /// How many groups stand in the sidebar's part.
     var sidebarGroups: Int { sidebarLeadingActions.count + sidebarActions.count }
@@ -86,7 +86,8 @@ struct AppKitWindowChrome {
     var leadingActions: [[AppKitToolbarAction]] = []
     var center: NSView?
     var actions: [[AppKitToolbarAction]] = []
-    var overflow: [AppKitToolbarAction] = []
+    /// The groups behind the overflow, each a section of its menu.
+    var overflow: [[AppKitToolbarAction]] = []
     /// The button closing the sheet a stack's bar stands in, at the trailing edge.
     var close: AppKitToolbarAction?
 
@@ -189,7 +190,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     /// Design: docs/design/platforms/appkit/runtime.md#the-toolbar
     private func layFittingTheSidebar(_ chrome: AppKitWindowChrome) {
         guard chrome.sidebarGroups > 0 else {
-            return lay(chrome, behindMore: [chrome.overflow], sidebarBehind: [chrome.sidebarOverflow])
+            return lay(chrome, behindMore: chrome.overflow, sidebarBehind: chrome.sidebarOverflow)
         }
         let standing = BarFit.standing(groups: chrome.sidebarGroups) { trial in
             lay(chrome, keepingInTheSidebar: trial.groups)
@@ -204,7 +205,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         kept.sidebarLeadingActions = Array(chrome.sidebarLeadingActions.prefix(count))
         kept.sidebarActions = Array(chrome.sidebarActions.prefix(max(0, count - chrome.sidebarLeadingActions.count)))
         let left = Array((chrome.sidebarLeadingActions + chrome.sidebarActions).dropFirst(count))
-        lay(kept, behindMore: [chrome.overflow], sidebarBehind: BarFit.groupsBehind(left: left, placed: chrome.sidebarOverflow))
+        lay(kept, behindMore: chrome.overflow, sidebarBehind: BarFit.groupsBehind(left: left, placed: chrome.sidebarOverflow))
     }
 
     /// Whether every item of the sidebar's part stands in sight; true where the bar stands in no window.
@@ -555,15 +556,13 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     }
 }
 
-/// The application's title area: its mark, name and the line under it,
+/// The application's title area: its mark and name,
 /// standing at the trailing edge of the window's title bar in the system's
 /// colors, or in the bar's foreground over a painted band.
 @MainActor
 final class AppKitTitleAreaView: NSStackView {
     private let iconView = NSImageView()
     private let titleLabel = NSTextField(labelWithString: "")
-    private let subtitleLabel = NSTextField(labelWithString: "")
-    private let textStack = NSStackView()
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -583,18 +582,9 @@ final class AppKitTitleAreaView: NSStackView {
         titleLabel.font = .systemFont(ofSize: NSFont.systemFontSize, weight: .semibold)
         titleLabel.textColor = .labelColor
         titleLabel.lineBreakMode = .byTruncatingTail
-        subtitleLabel.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
-        subtitleLabel.textColor = .secondaryLabelColor
-        subtitleLabel.lineBreakMode = .byTruncatingTail
-
-        textStack.orientation = .vertical
-        textStack.alignment = .leading
-        textStack.spacing = 0
-        textStack.addArrangedSubview(titleLabel)
-        textStack.addArrangedSubview(subtitleLabel)
 
         addArrangedSubview(iconView)
-        addArrangedSubview(textStack)
+        addArrangedSubview(titleLabel)
     }
 
     @available(*, unavailable)
@@ -602,19 +592,15 @@ final class AppKitTitleAreaView: NSStackView {
         fatalError("AppKitTitleAreaView is created in code")
     }
 
-    func apply(title: String, subtitle: String, image: NSImage?, foreground: NSColor?) {
+    func apply(title: String, image: NSImage?, foreground: NSColor?) {
         titleLabel.textColor = foreground ?? .labelColor
-        subtitleLabel.textColor = foreground?.withAlphaComponent(0.8) ?? .secondaryLabelColor
         titleLabel.stringValue = title
         titleLabel.isHidden = title.isEmpty
-        subtitleLabel.stringValue = subtitle
-        subtitleLabel.isHidden = subtitle.isEmpty
         iconView.image = image
         iconView.isHidden = image == nil
     }
 
     var titleForTesting: String { titleLabel.stringValue }
-    var subtitleForTesting: String { subtitleLabel.stringValue }
     var titleColorForTesting: NSColor? { titleLabel.textColor }
     var imageForTesting: NSImage? { iconView.image }
 }

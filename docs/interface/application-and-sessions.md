@@ -620,8 +620,7 @@ What the page is, the view it shows says by modifier:
 
 | Modifier | Meaning |
 | --- | --- |
-| `.title` | navigation title, and the caption where the page is an item of something else |
-| `.subtitle` | the line under the page's title, wherever its title shows - the current document or section |
+| `.pageTitle` | navigation title, and the caption where the page is an item of something else |
 | `.pageIcon` | the page's representative image: a tab's icon, and a sidebar page's mark where it names the application |
 | `.pageBackground` | what the whole page is made of behind what it shows - a color, a gradient, a blur or glass - also where the view does not reach; on an arrangement, what each of its pages that says none stands on |
 | `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
@@ -642,7 +641,7 @@ the `body` of the view written there - through a modifier, a `Group`, or an
 `if` choosing between an arrangement and another view, an `AnyView` - stands
 on a page. Anywhere else - inside a `VStack`, inside a page's content - an
 arrangement is left out and said once. It fills where it stands, so
-it keeps only what its contract declares, and takes its own `.title` and
+it keeps only what its contract declares, and takes its own `.pageTitle` and
 `.pageIcon`, for where it is an item of something else, such as a tab, and
 `.pageBackground`, the ground of each of its pages that says none.
 
@@ -683,7 +682,7 @@ struct EditorPage: View {
                     .isEnabled(dirty)
                     .onClicked { save() }
             }
-            .title(dirty ? "Draft - Edited" : "Draft")
+            .pageTitle(dirty ? "Draft - Edited" : "Draft")
     }
 
     private func save() { dirty = false }
@@ -728,12 +727,11 @@ struct NotesPage: View {
     var body: some View {
         SplitView {
             Text("Folders")
-                .title("Notes")
+                .pageTitle("Notes")
                 .pageIcon("notes.png")
         } detail: {
             Text("Notes in \(folder)")
-                .title(folder)
-                .subtitle("Updated today")
+                .pageTitle(folder)
         }
         .showsSidebar($showsFolders)
         .barBackground(.cornflowerBlue)
@@ -749,8 +747,7 @@ struct NotesPage: View {
 }
 ```
 
-A page's bar shows its title and the line under it, `.subtitle`, and nothing
-climbs from around the page. `barBackground` - a color, a gradient, a blur or
+A page's bar shows its title, and nothing climbs from around the page. `barBackground` - a color, a gradient, a blur or
 glass - and `barForegroundColor` make the bar and what stands on it, each taken
 from the nearest arrangement
 on the visible path that declares it, so a stack further in paints its own bar
@@ -762,14 +759,13 @@ with `.placement`, and a view in the title's place with `.titleView`
 ([Toolbars](navigation-and-presentation.md#toolbars)).
 
 A split view's sidebar page names the application where the platform's chrome
-does: its title - the application's name where it says none - the line under
-it, and its picture as the application's mark. WinUI shows them in its title
-bar's title, subtitle and icon, and heads the detail's page with its own title
-and line; the sidebar's own bar shows them on Android, and its title and line
-on iPadOS, GNOME and the Web. A Mac window names no application of itself:
-AppKit shows at the trailing edge of the title bar only what the sidebar's page
-says, and a page's line as the window's subtitle. The visible page's title
-still names the window to the system.
+does: its title - the application's name where it says none - and its picture
+as the application's mark. WinUI shows them in its title bar's title and icon,
+and heads the detail's page with its own title; the sidebar's own bar shows
+them on Android, and its title on iPadOS, GNOME and the Web. A Mac window names
+no application of itself: AppKit shows at the trailing edge of the title bar
+only what the sidebar's page says. The visible page's title still names the
+window to the system.
 [BarElement](../controls/tiers/BarElement.md) lists each value, and the page
 of each arrangement wearing it says what each host does with it.
 

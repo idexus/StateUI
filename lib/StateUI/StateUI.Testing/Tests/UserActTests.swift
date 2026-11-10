@@ -43,6 +43,15 @@ final class UserActTests: XCTestCase {
         }
     }
 
+    /// A field bounded past any count of letters takes every word typed into it.
+    func testAFieldBoundedPastEveryLengthTakesTheWords() async throws {
+        let window = try await TestWindow(motion: .none) { BoundlessPage() }
+        let field = try window.element("boundless.field")
+
+        try await field.perform(.type("Ada"))
+        XCTAssertEqual(try field.value(TextElementContract.text), "Ada")
+    }
+
     /// A stepper takes a step of its own within its range - to a hundred until told otherwise - and none past an
     /// end, a failure saying why.
     func testAStepperStepsWithinItsRange() async throws {
@@ -207,5 +216,14 @@ private struct FocusPage: View {
             TextField("").isFocused(into: $second).accessibilityIdentifier("focus.second")
             Text("\(first) \(second)").accessibilityIdentifier("focus.shown")
         }
+    }
+}
+
+/// A field whose bound no count of letters reaches.
+private struct BoundlessPage: View {
+    @State private var name = ""
+
+    var body: some View {
+        VStack { TextField($name).maximumLength(.max).accessibilityIdentifier("boundless.field") }
     }
 }

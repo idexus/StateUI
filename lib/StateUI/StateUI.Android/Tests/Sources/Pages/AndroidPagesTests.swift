@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import CStateUIAndroid
 @testable import StateUIAndroid
 import StateUIConformance
 import XCTest
@@ -33,6 +34,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testTheRowMarksTheTabShown", testTheRowMarksTheTabShown),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
+            ("testGroupsBehindTheOverflowAreSectionsOfItsMenu", testGroupsBehindTheOverflowAreSectionsOfItsMenu),
             ("testALeadingGroupStandsFirstAmongTheActions", testALeadingGroupStandsFirstAmongTheActions),
             ("testTheBarsActionsStandInItsWordsColor", testTheBarsActionsStandInItsWordsColor),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
@@ -45,6 +47,9 @@ final class AndroidPagesTests: XCTestCase {
             ("testARootDrawnEdgeToEdgeHearsTheStatusBar", testARootDrawnEdgeToEdgeHearsTheStatusBar),
             ("testAStacksBarReachesUnderTheStatusBar", testAStacksBarReachesUnderTheStatusBar),
             ("testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear", testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear),
+            ("testAPagesScrollerKeepsTheBarsClearAsItsAxesChange", testAPagesScrollerKeepsTheBarsClearAsItsAxesChange),
+            ("testASheetStaysAsTheArrangementUnderItChanges", testASheetStaysAsTheArrangementUnderItChanges),
+            ("testASheetStaysAsTheWindowIsArrangedAnew", testASheetStaysAsTheWindowIsArrangedAnew),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
             ("testAnArrangementTheWindowShowsInsteadAppears", testAnArrangementTheWindowShowsInsteadAppears),
             ("testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough", testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough),
@@ -139,7 +144,7 @@ final class AndroidPagesTests: XCTestCase {
                 NavigationStack(path.projectedValue) {
                     TitledPage(title: "Items and Cards")
                 } destination: { _ in
-                    TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
+                    TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.pageTitle("ItemsView")
                 }
             }
             host.layOut()
@@ -724,6 +729,29 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertEqual(heard.values, ["save", "delete"])
         }
     }
+
+    /// Groups placed behind the bar's overflow are sections of its menu: each a group of Android's menu, a line
+    /// between two.
+    func testGroupsBehindTheOverflowAreSectionsOfItsMenu() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Text("Notes").pageTitle("Notes").toolbar {
+                        ToolbarGroup {
+                            ToolbarButton("Rename")
+                            ToolbarButton("Move")
+                        }
+                        .placement(at: .overflow)
+                        ToolbarButton("Delete").placement(at: .overflow)
+                    }
+                } destination: { _ in Text("Note") }
+            }
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+
+            let menu = JavaObject(try XCTUnwrap(Java.callObject(navigation.bar.reference, TestMenus.getMenu)))
+            XCTAssertEqual(TestMenus.describe(menu), "Rename, Move | Delete")
+        }
+    }
 }
 
 extension AndroidPagesTests {
@@ -1029,7 +1057,7 @@ extension AndroidPagesTests {
         try onMainActor {
             let host = AndroidRenderer.running(reducesMotion: true) {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                    ZStack {}.id("content").title("Under the bar")
+                    ZStack {}.id("content").pageTitle("Under the bar")
                 } destination: { _ in Text("Next") }
             }
             host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
@@ -1056,6 +1084,88 @@ extension AndroidPagesTests {
             let scroll = try XCTUnwrap(host.views(AndroidScrollView.self).first?.scrollers.first)
             XCTAssertEqual(Java.callInt(scroll.reference, TestJava.getPaddingTop), 48)
             XCTAssertEqual(Java.callInt(scroll.reference, TestJava.getPaddingBottom), 96)
+        }
+    }
+
+    /// A page's scroller keeps the bars clear as its axes change: the scrollers made for the new axes keep them too.
+    func testAPagesScrollerKeepsTheBarsClearAsItsAxesChange() throws {
+        try onMainActor {
+            let both = State(wrappedValue: false)
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                Grid {
+                    ScrollView { Text("rows").height(2000).width(2000) }
+                        .axes(both.wrappedValue ? .all : .vertical)
+                }
+                .ignoresSafeArea(.all)
+            }
+            host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
+            host.layOut()
+            both.wrappedValue = true
+            host.runtime.pump.turn()
+            host.layOut()
+            let scrollers = try XCTUnwrap(host.views(AndroidScrollView.self).first?.scrollers)
+            XCTAssertEqual(scrollers.count, 2, "one down, one across")
+            let down = try XCTUnwrap(scrollers.first)
+            XCTAssertEqual(Java.callInt(down.reference, TestJava.getPaddingTop), 48)
+            XCTAssertEqual(Java.callInt(down.reference, TestJava.getPaddingBottom), 96)
+        }
+    }
+
+    /// Whether `view` stands in `ancestor`, through its parents.
+    @MainActor private static func standsIn(_ ancestor: jobject, _ view: jobject) -> Bool {
+        let getParent = Java.method(JavaAPI.view, "getParent", "()Landroid/view/ViewParent;")
+        var each = Java.callObject(view, getParent)
+        while let parent = each {
+            if Java.jni.IsSameObject(Java.env, parent, ancestor) != 0 { return true }
+            each = Java.callObject(parent, getParent)
+        }
+        return false
+    }
+
+    /// A sheet stays over the window as the arrangement under it changes - the view presenting it showing another:
+    /// the new arrangement stands in the window, under the sheet.
+    func testASheetStaysAsTheArrangementUnderItChanges() throws {
+        try onMainActor {
+            let (swapped, presented) = (State(wrappedValue: false), State(wrappedValue: true))
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                Swapping(swapped: swapped.wrappedValue)
+                    .sheet(isPresented: presented.projectedValue) { Text("Sheet").id("sheet") }
+            }
+            host.layOut()
+            let sheet = try XCTUnwrap(host.view(id: .manual("sheet")))
+            XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 2, "the page and the sheet")
+
+            swapped.wrappedValue = true
+            host.runtime.pump.turn()
+            host.layOut()
+            XCTAssertNotNil(host.view(id: .manual("after")), "the new arrangement")
+            XCTAssertTrue(host.view(id: .manual("sheet")) === sheet, "the same sheet")
+            XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 2, "the new page and the sheet")
+            XCTAssertTrue(Self.standsIn(host.root.reference, sheet.outermost), "the sheet still stands in the window")
+        }
+    }
+
+    /// A sheet stays over the window as the window is arranged anew under it - a branch choosing another stack, the
+    /// sheet written on the branch: the new stack stands in the window, and the sheet still over it.
+    func testASheetStaysAsTheWindowIsArrangedAnew() throws {
+        try onMainActor {
+            let (stacked, presented) = (State(wrappedValue: false), State(wrappedValue: true))
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                Arranging(stacked: stacked.wrappedValue)
+                    .sheet(isPresented: presented.projectedValue) { Text("Sheet").id("sheet") }
+            }
+            host.layOut()
+            let sheet = try XCTUnwrap(host.view(id: .manual("sheet")))
+            XCTAssertTrue(Self.standsIn(host.root.reference, sheet.outermost), "the sheet stands in the window")
+
+            stacked.wrappedValue = true
+            host.runtime.pump.turn()
+            host.layOut()
+            let stack = try XCTUnwrap(host.view(id: .manual("stacked")), "the stack")
+            XCTAssertTrue(Self.standsIn(host.root.reference, stack.outermost), "the stack stands in the window")
+            let shown = try XCTUnwrap(host.view(id: .manual("sheet")), "the sheet")
+            XCTAssertTrue(shown === sheet, "the same sheet")
+            XCTAssertTrue(Self.standsIn(host.root.reference, shown.outermost), "the sheet still stands in the window")
         }
     }
 
@@ -1108,8 +1218,8 @@ extension AndroidPagesTests {
         }
     }
 
-    /// The inspector docked in the window is its overlay: over the page and over a page presented after it,
-    /// taking no touch beside its panel, and gone once the inspector closes.
+    /// The inspector docked in the window is its overlay: over the page and under a sheet presented over it, as
+    /// every overlay of the window, taking no touch beside its panel, and gone once the inspector closes.
     func testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough() throws {
         try onMainActor {
             let (first, second) = (State(wrappedValue: false), State(wrappedValue: false))
@@ -1133,7 +1243,8 @@ extension AndroidPagesTests {
             first.wrappedValue = true
             host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 3)
-            XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), 2, "under the sheet")
+            XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), 1,
+                           "the window's, under the sheet that rose over it")
 
             session.debugInspector = nil
             host.runtime.pump.turn()
@@ -1152,7 +1263,7 @@ private struct FurnishedPage: View {
     var body: some View {
         VStack { Text(title) }
             .padding(8)
-            .title(title)
+            .pageTitle(title)
             .pageBackground(.blue)
             .showsBackButton(showsBackButton)
             .showsNavigationBar(showsNavigationBar)
@@ -1167,7 +1278,7 @@ private struct SearchingPage: View {
         let query = $query
         return Text("Results")
             .titleView { SearchField(query).placeholder("Search") }
-            .title("Search")
+            .pageTitle("Search")
     }
 }
 
@@ -1182,6 +1293,30 @@ private func sheetsPage(
             TitledPage(title: "Sheet 1", log: log)
                 .sheet(isPresented: second.projectedValue) { TitledPage(title: "Sheet 2", log: log) }
         }
+}
+
+/// A window arranged as one stack, or as another once stacked.
+private struct Arranging: View {
+    let stacked: Bool
+    @State private var path: [Int] = []
+    @State private var other: [Int] = []
+
+    var body: some View {
+        if stacked {
+            NavigationStack($path) { Text("Stacked").id("stacked") } destination: { _ in Text("Next") }
+        } else {
+            NavigationStack($other) { Text("Plain").id("plain") } destination: { _ in Text("Next") }
+        }
+    }
+}
+
+/// An arrangement of one kind, or of another once swapped.
+private struct Swapping: View {
+    let swapped: Bool
+
+    var body: some View {
+        if swapped { ZStack { Text("After").id("after") } } else { VStack { Text("Before").id("before") } }
+    }
 }
 
 /// A page that tells its window as it comes.
@@ -1232,7 +1367,7 @@ private struct TitledPage: View {
     var actions: [ToolbarButton] = []
 
     var body: some View {
-        let words = Text(title).toolbar { actions }.title(title)
+        let words = Text(title).toolbar { actions }.pageTitle(title)
         return (icon.map { words.pageIcon($0) } ?? words).loggingPhases(log, as: title)
     }
 }

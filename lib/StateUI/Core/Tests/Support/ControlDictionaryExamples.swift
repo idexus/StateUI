@@ -313,7 +313,7 @@ extension ControlDictionary {
             struct NotePage: View {
                 var body: some View {
                     Text("Nothing written yet.")
-                        .title("Note")
+                        .pageTitle("Note")
                         .showsBackButton(true)
                 }
             }
@@ -492,7 +492,7 @@ extension ControlDictionary {
                 let name: String
 
                 var body: some View {
-                    Text("Nothing in \(name)").title(name)
+                    Text("Nothing in \(name)").pageTitle(name)
                 }
             }
 
@@ -784,6 +784,26 @@ extension ControlDictionary {
                 .contentMode(.fit)
             """#),
 
+        (LanguageElementContract.self, #"""
+            enum Language: LocaleTag, CaseIterable {
+                case english = "en"
+                case polish = "pl"
+            }
+
+            enum Catalog: LocalizationCatalog {
+                static let defaultLanguage = Language.english
+            }
+
+            struct LetterPage: View {
+                @State private var localization = Localization(Catalog.self, language: .polish)
+
+                var body: some View {
+                    Text("Dzień dobry")
+                        .environment(localization)
+                }
+            }
+            """#),
+
         (TintElementContract.self, #"""
             @State var on = true
 
@@ -1021,7 +1041,7 @@ extension ControlDictionary {
             } destination: { section in
                 Text(section)
             }
-            .title("Settings")
+            .pageTitle("Settings")
             .pageIcon("settings.png")
             """#),
     ]

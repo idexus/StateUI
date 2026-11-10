@@ -51,7 +51,12 @@ extension GTKElement {
             return
         }
 
-        let taken = GTKRegistrations.registry.apply(changed, to: view, presenting: element)
+        // What GTK paints only at rest - a class a value - takes where a journey lands, never a rule a frame.
+        // Design: docs/design/platforms/gtk/motion.md#what-moves
+        let type = self.type
+        let taken = GTKRegistrations.registry.apply(changed, to: view, presenting: element) {
+            !GTKTransitionSurface.presents($0, on: type)
+        }
 
         let own = changed.subtracting(taken)
         for property in own {
@@ -62,7 +67,9 @@ extension GTKElement {
             case .isVisible: view.setShown(isShown)
             case .tooltip: view.setTooltip(element.string(.tooltip))
             // GTK blurs nothing behind a widget: a blur's or glass's color stands in, its tint over it.
-            case .background: view.setBackground(HostMaterial(element.drawnBackground).painted)
+            case .background:
+                let resting = GTKTransitionSurface.presents(.background, on: type) ? nil : element.destination(.background)
+                view.setBackground(HostMaterial(resting ?? element.drawnBackground).painted)
             default: break
             }
         }

@@ -13,7 +13,8 @@ import UIKit
 struct UIKitPageToolbar {
     var leadingActions: [[UIKitBarAction]] = []
     var actions: [[UIKitBarAction]] = []
-    var overflow: [UIKitBarAction] = []
+    /// The groups behind the overflow, each a section of its menu.
+    var overflow: [[UIKitBarAction]] = []
 
     /// What the space between the bar's edges, and its More button, are identified by.
     static let betweenIdentifier = "stateui.toolbar.between"
@@ -21,7 +22,7 @@ struct UIKitPageToolbar {
 
     /// What the bar's items say, the leading groups, the trailing and the overflow.
     var itemsSaid: [[UIKitBarAction.Said]] {
-        leadingActions.map { $0.map(\.said) } + [[]] + actions.map { $0.map(\.said) } + [overflow.map(\.said)]
+        leadingActions.map { $0.map(\.said) } + [[]] + actions.map { $0.map(\.said) } + [[]] + overflow.map { $0.map(\.said) }
     }
 
     /// Puts it on `controller`'s toolbar items, made again only where they say something else than `standing` says;
@@ -32,7 +33,7 @@ struct UIKitPageToolbar {
         let groups = { (groups: [[UIKitBarAction]]) in groups.map { $0.map { $0.barItem(tint: nil) } } }
         let more = UIBarButtonItem(
             title: CoreLink().chromeWords.more, image: UIImage(systemName: "ellipsis.circle"), primaryAction: nil,
-            menu: UIMenu(children: overflow.map(\.overflowEntry)))
+            menu: UIKitBarAction.overflowMenu(overflow))
         more.identifier = Self.moreIdentifier
         // Each group its own background - apart by a fixed space - the leading ones before the space between the
         // edges, the rest after it; the space and the More button stand as the same items from page to page.

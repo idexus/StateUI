@@ -540,3 +540,12 @@ own properties, and the keys its template reads in each of its states -
 `TextControlBorderBrush`, under the pointer, focused and disabled - so the
 outline stands whatever the field is doing. A search box's template hands its
 box what the search box is given.
+
+## The language of the words
+
+A view says the language its branch is written in as its `Language`, which
+Narrator speaks its words in and WinUI sets them by; WinUI hands it to what
+stands in the view, so a view says it only where it does not hold it from the
+view it stands in: its own, the first views of a window, and what stands
+apart from the page - a sheet's page in its `ContentDialog`, a popover's in
+its `Flyout`. None said, WinUI's own stands.

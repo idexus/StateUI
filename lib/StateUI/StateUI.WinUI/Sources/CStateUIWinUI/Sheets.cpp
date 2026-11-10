@@ -36,9 +36,9 @@ namespace {
         controls::Grid sheets;
         sheets.Tag(winrt::box_value(L"sheets"));
         controls::Grid::SetRowSpan(sheets, 4);
-        // Over every row by its own depth, not by its place among the root's children: a page stood in a row since
-        // goes on the end, and stood over a sheet.
-        controls::Canvas::SetZIndex(sheets, 1);
+        // Over every row and the window's overlays by its own depth, not by its place among the root's children: a
+        // page stood in a row since goes on the end, and stood over a sheet.
+        controls::Canvas::SetZIndex(sheets, 2);
         media::Animation::TransitionCollection transitions;
         transitions.Append(media::Animation::PopupThemeTransition());
         sheets.ChildrenTransitions(transitions);
@@ -260,6 +260,25 @@ extern "C" void stateui_winui_window_push_sheet(StateUIObjectRef handle, StateUI
             if (auto focusable = first.try_as<xaml::UIElement>()) focusable.Focus(xaml::FocusState::Programmatic);
     } catch (...) {
         report("presenting a sheet");
+    }
+}
+
+extern "C" void stateui_winui_sheet_set_overlays(StateUIObjectRef handle, StateUIObjectRef const *overlays, int32_t count) {
+    try {
+        // Where the page stands on the card, over it.
+        auto card = borrow<controls::Grid>(handle).Children().GetAt(1).as<controls::Border>();
+        layOverlays(card.Child().as<controls::Grid>(), 1, 1, overlays, count);
+    } catch (...) {
+        report("laying the overlays over a sheet");
+    }
+}
+
+extern "C" void stateui_winui_sheet_let_go(StateUIObjectRef handle) {
+    try {
+        auto card = borrow<controls::Grid>(handle).Children().GetAt(1).as<controls::Border>();
+        standInRow(card.Child().as<controls::Grid>(), 1, nullptr);
+    } catch (...) {
+        report("letting a sheet's page go");
     }
 }
 

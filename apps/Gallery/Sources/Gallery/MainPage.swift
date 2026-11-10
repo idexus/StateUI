@@ -260,7 +260,7 @@ struct MainPage: View {
                 // A tab's caption and picture are what its page says, and this
                 // tab's page is the stack rather than the page inside it - so
                 // they are written on the stack.
-                .title("Stack")
+                .pageTitle("Stack")
                 .pageIcon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 
             case .second:

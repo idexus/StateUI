@@ -338,3 +338,13 @@ color and the theme's. Its `<img>` shows a drawing of nothing 24 points
 square, which gives the icon its size. A picture from bytes is a `data:` URL,
 its type read from its own first bytes (`WebPictureData`).
 
+## The language of the words
+
+A view says the language its branch is written in as its `lang`, which a
+screen reader speaks its words in and the browser sets them by - `hyphens`,
+quotation marks, a field's spell check. The browser hands `lang` to the
+elements inside, so a view says it only where it does not hold it from the
+view it stands in: its own, under a window, or where it stands apart in the
+page's body - a sheet's page, a popover. The page itself is written in the
+browser's language (`navigator.language` on `<html>`), and the loading ring is
+named by the application's name alone.

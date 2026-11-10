@@ -93,14 +93,11 @@
             pushedHolds(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle($1) },
             pushedHolds(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar($1) },
             // A title to show: a page with none shows nothing either way.
-            pushedHolds(PageContract.showsTitle, false, then: true) { $0.title("Notes").showsTitle($1) },
-            // A title to stand under.
-            pushedHolds(PageContract.subtitle, "Inbox", then: "Sent") { $0.title("Notes").subtitle($1) },
+            pushedHolds(PageContract.showsTitle, false, then: true) { $0.pageTitle("Notes").showsTitle($1) },
             pushedFollows(PageContract.showsBackButton, false, then: true) { $0.showsBackButton($1) },
             pushedFollows(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle($1) },
             pushedFollows(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar($1) },
-            pushedFollows(PageContract.showsTitle, false, then: true) { $0.title("Notes").showsTitle($1) },
-            pushedFollows(PageContract.subtitle, "Inbox", then: "Sent") { $0.title("Notes").subtitle($1) },
+            pushedFollows(PageContract.showsTitle, false, then: true) { $0.pageTitle("Notes").showsTitle($1) },
             sheetsStackHolds(PageContract.showsCloseButton, false, then: true) { $0.showsCloseButton($1) },
             closesItsSheet,
         ]
@@ -141,7 +138,7 @@
             s.start {
                 Text("Beneath").sheet(isPresented: shows.projectedValue) {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        Text("In the sheet").title("Sheet")
+                        Text("In the sheet").pageTitle("Sheet")
                     } destination: { _ in
                         Text("Next")
                     }
@@ -247,6 +244,6 @@ struct PhasePage: View {
 
     var body: some View {
         let (title, log) = (self.title, self.log)
-        return Text(title).title(title).loggingPhases(log, as: title)
+        return Text(title).pageTitle(title).loggingPhases(log, as: title)
     }
 }

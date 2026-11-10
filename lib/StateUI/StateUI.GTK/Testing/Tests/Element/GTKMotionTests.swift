@@ -77,6 +77,67 @@ final class GTKMotionTests: XCTestCase {
         }
     }
 
+    /// A state carried on a journey to a control's background, room or words' size writes the host's style sheet no
+    /// rule a frame: a class on its way would be a rule a frame, the sheet parsed whole each time.
+    func testAJourneyToAControlsBoxAddsNoRuleAFrame() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let fill = State(wrappedValue: Color(red: 255, green: 0, blue: 0))
+            let room = State(wrappedValue: Insets(0))
+            let size = State(wrappedValue: 12.0)
+            let host = GTKRenderer.running(clock: clock) {
+                VStack {
+                    Text("moving").background(fill.projectedValue).padding(room.projectedValue).fontSize(size.projectedValue)
+                    Button("Go").onClicked {
+                        let motion = Motion.eased(.milliseconds(200), curve: .linear)
+                        _ = fill.projectedValue.journey.move(to: Color(red: 0, green: 0, blue: 255), motion)
+                        _ = room.projectedValue.journey.move(to: Insets(24), motion)
+                        _ = size.projectedValue.journey.move(to: 24, motion)
+                    }
+                }
+            }
+            let rules = GTKStyleSheet.ruleCount
+
+            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            for now in stride(from: 16.0, through: 240, by: 16) {
+                clock.now = now
+                host.frame()
+            }
+
+            XCTAssertLessThanOrEqual(GTKStyleSheet.ruleCount, rules + 3, "a rule for each value where it lands")
+        }
+    }
+
+    /// A state carried on a journey to a bar's color writes the host's style sheet no rule a frame.
+    func testAJourneyToABarsColorAddsNoRuleAFrame() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let bar = State(wrappedValue: Color(red: 255, green: 0, blue: 0))
+            let host = GTKRenderer.running(clock: clock) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Button("Go")
+                        .onClicked {
+                            _ = bar.projectedValue.journey.move(
+                                to: Color(red: 0, green: 0, blue: 255), .eased(.milliseconds(200), curve: .linear))
+                        }
+                        .pageTitle("Notes")
+                } destination: { _ in
+                    Text("Note")
+                }
+                .barBackground(bar.projectedValue)
+            }
+            let rules = GTKStyleSheet.ruleCount
+
+            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            for now in stride(from: 16.0, through: 240, by: 16) {
+                clock.now = now
+                host.frame()
+            }
+
+            XCTAssertLessThanOrEqual(GTKStyleSheet.ruleCount, rules + 1, "a rule for the color where it lands")
+        }
+    }
+
     func testLessMotionPutsThePropertyAtItsValueAtOnce() throws {
         try onUIThread {
             let host = GTKRenderer.bare(clock: TestClock(), reducesMotion: true)

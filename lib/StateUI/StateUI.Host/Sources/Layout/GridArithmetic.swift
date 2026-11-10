@@ -13,7 +13,7 @@
         of items: [Child], rows: [GridLength], columns: [GridLength],
         rowSpacing: Double, columnSpacing: Double, padding: Insets, width offered: Double? = nil
     ) -> LayoutSize {
-        let (rowCount, columnCount) = counts(items, rows: rows, columns: columns)
+        let (rowCount, columnCount) = counts(items.map(\.values), rows: rows, columns: columns)
         let columnDefinitions = completed(columns, count: columnCount)
         var columnSizes = trackSizes(
             items, definitions: columnDefinitions, count: columnCount,
@@ -57,7 +57,7 @@
         rowSpacing: Double, columnSpacing: Double, padding: Insets, in bounds: Rect
     ) -> [Rect?] {
         let content = bounds.inset(padding)
-        let (rowCount, columnCount) = counts(items, rows: rows, columns: columns)
+        let (rowCount, columnCount) = counts(items.map(\.values), rows: rows, columns: columns)
         let columnSizes = trackSizes(
             items, definitions: completed(columns, count: columnCount), count: columnCount,
             available: content.width, spacing: columnSpacing, vertical: false)
@@ -102,12 +102,21 @@
         }
     }
 
+    /// The grid's rows and columns, each defined: those its definitions give and its children reach (`cell`), one
+    /// share where it says none (`completed`) - what a host lays out a native grid by.
+    /// Design: docs/design/host/layout.md#grids
+    public static func tracks(
+        reaching values: [LayoutValues], rows: [GridLength], columns: [GridLength]
+    ) -> (rows: [GridLength], columns: [GridLength]) {
+        let (rowCount, columnCount) = counts(values, rows: rows, columns: columns)
+        return (completed(rows, count: rowCount), completed(columns, count: columnCount))
+    }
+
     /// How many rows and columns the grid has: its definitions, or as many as its children reach - one at least.
-    @MainActor
-    private static func counts<Child: LayoutChild>(
-        _ items: [Child], rows: [GridLength], columns: [GridLength]
+    private static func counts(
+        _ values: [LayoutValues], rows: [GridLength], columns: [GridLength]
     ) -> (rows: Int, columns: Int) {
-        let cells = items.map { cell(of: $0.values) }
+        let cells = values.map(cell(of:))
         return (max(rows.count, cells.map { $0.row + $0.rowSpan }.max() ?? 1, 1),
                 max(columns.count, cells.map { $0.column + $0.columnSpan }.max() ?? 1, 1))
     }
@@ -118,16 +127,24 @@
     /// The cell a child stands in, within a grid: a row or a column before the first is the first, a span of none
     /// is one, and nothing reaches past the most tracks - so measuring and placing read one cell.
     /// Design: docs/design/host/layout.md#grids
-    static func cell(of values: LayoutValues) -> (row: Int, column: Int, rowSpan: Int, columnSpan: Int) {
+    public static func cell(of values: LayoutValues) -> (row: Int, column: Int, rowSpan: Int, columnSpan: Int) {
         let row = min(max(values.row, 0), mostTracks - 1)
         let column = min(max(values.column, 0), mostTracks - 1)
         return (row, column, min(max(values.rowSpan, 1), mostTracks - row),
                 min(max(values.columnSpan, 1), mostTracks - column))
     }
 
-    /// `definitions`, with a proportional track of one share for every track they do not define.
+    /// `definitions`, with a proportional track of one share for every track they do not define - a length or a
+    /// share that is no finite number defining none.
+    /// Design: docs/design/host/layout.md#tracks
     private static func completed(_ definitions: [GridLength], count: Int) -> [GridLength] {
-        definitions + Array(repeating: .proportional(1), count: max(0, count - definitions.count))
+        let defined = definitions.map { definition -> GridLength in
+            switch definition {
+            case .fixed(let amount), .proportional(let amount): amount.isFinite ? definition : .proportional(1)
+            case .automatic: definition
+            }
+        }
+        return defined + Array(repeating: .proportional(1), count: max(0, count - definitions.count))
     }
 
     /// Each track's size: fixed as stated, automatic as its children ask, proportional by share. A child spanning

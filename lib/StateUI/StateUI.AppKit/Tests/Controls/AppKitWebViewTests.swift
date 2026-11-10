@@ -124,6 +124,25 @@ final class AppKitWebViewTests: XCTestCase {
         }
     }
 
+    /// A script's answer JSON cannot say - not a number, a date - reads as nothing and never stops the application;
+    /// words and numbers read as JSON writes them.
+    func testAScriptsAnswerThatIsNoJSONReadsAsNothing() throws {
+        try Self.withPage { web, heard in
+            web.show(.html("<html><body>PAGE</body></html>", baseAddress: nil), userAgent: nil)
+            try Self.wait(until: { !heard.arrived.isEmpty && !web.isLoading }, stage: "the page")
+
+            var answers: [String: String?] = [:]
+            for script in ["0/0", "new Date(0)", "'words'", "1.5"] {
+                web.evaluate(script) { answers[script] = .some($0) }
+            }
+            try Self.wait(until: { answers.count == 4 }, stage: "the answers")
+            XCTAssertEqual(answers["0/0"], .some(nil))
+            XCTAssertEqual(answers["new Date(0)"], .some(nil))
+            XCTAssertEqual(answers["'words'"], "words")
+            XCTAssertEqual(answers["1.5"], "1.5")
+        }
+    }
+
     private static func withPage(_ body: @MainActor (WebKitView, Heard) throws -> Void) rethrows {
         _ = NSApplication.shared
         let web = WebKitView()

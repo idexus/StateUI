@@ -123,6 +123,30 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertTrue(stack.subviews[1] === first)
     }
 
+    /// A stack's spacing that is no number places its children apart by none: AppKit stops the application over a
+    /// frame at NaN.
+    @MainActor
+    func testAStacksSpacingOfNoNumberStandsItsChildrenOnScreen() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                HStack {
+                    Text("Left")
+                    Text("Right")
+                }
+                .spacing(.nan)
+                Text("Below")
+            }
+            .spacing(.nan)
+        }
+        defer { renderer.finish() }
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        window.layoutIfNeeded()
+
+        let frames = renderer.nativeViews(AppKitTextView.self).map(\.frame)
+        XCTAssertEqual(frames.count, 3)
+        XCTAssertTrue(frames.allSatisfy { $0.minX.isFinite && $0.minY.isFinite }, "\(frames)")
+    }
+
     @MainActor
     func testHStackGivesAPaddedTextItsCompleteNativeTextWidth() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)

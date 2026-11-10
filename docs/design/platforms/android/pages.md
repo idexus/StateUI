@@ -110,7 +110,7 @@ is (`AndroidColumnView`), and the split view's one bar stands in two parts
 over them ([a page's actions](../../host/pages.md#a-pages-actions)). The
 sidebar's shows the title area the sidebar's page names the application with
 (`titleArea(applicationName:)`) - its title, else the application's name,
-the line under it and its picture as the mark before them - in the colors its
+and its picture as the mark before it - in the colors its
 path declares, the sidebar's toggle in Android's menu glyph, which hides the
 sidebar, and the actions of the sidebar's part after it - Android's toolbar
 stands its menu of actions last. A detail
@@ -245,12 +245,16 @@ it is attached.
 
 ## The window's overlays
 
-What a window lays over everything it shows - the overlays the pages on its
-visible path declare, then the inspector docked in it - stand in the
-activity's root as its top children, the first lowest, over the page and over
-every sheet: a page that rises after them lifts them
-over itself again. Each is laid out over the whole root, and takes no touch
-of its own, as no StateUI layout on Android does: a touch beside what it
-holds goes on to the page under it. The host holds the overlays by their
-mounted elements, as it does the arrangement, and takes their views out of
-the root and lays them again when the list it is told changes.
+What a window lays over its pages - the overlays the pages on its visible
+path declare, then the inspector docked in it - stand in the activity's root
+just over its arrangement, the first lowest, so every sheet's holder, added
+after them, stands over them. What a sheet's own page declares stands in
+that sheet's holder, or on its card, over the page, and within the window's
+insets where the holder fills the window. Each is laid out over the whole of
+what holds it, and takes no touch of its own, as no StateUI layout on Android
+does: a touch beside what it holds goes on to the page under it. The host
+holds the overlays by their mounted elements, as it does the arrangement,
+and takes their views out and lays them again when the list it is told
+changes. The arrangement stands first in the root: a window arranged anew
+takes out only the one shown before and stands the new one first, under its
+overlays and its sheets, which stay where they stand.

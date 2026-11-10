@@ -27,7 +27,9 @@ clearing the current reload source. A navigation started natively takes
 over from the authored source and keeps native reload and history. The
 host keeps navigation identities, not the navigation objects themselves.
 A script's value is written as JSON and answers as text by the host layer's
-rule.
+rule. A value JSON cannot say - not a number, a date - answers nothing:
+Foundation raises on it rather than throwing, so its validity is asked
+first, and a script never stops the application.
 
 macOS's WebKit also declares a legacy `WebNavigationKind` and `WebHistory`, so
 the shared code names StateUI's and the host layer's in full

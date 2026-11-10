@@ -21,10 +21,10 @@ extension TextLook {
     func insert(into list: OpaquePointer, from start: UInt32 = 0, to end: UInt32 = UInt32.max) {
         var made: [UnsafeMutablePointer<PangoAttribute>] = []
         let (size, weight) = gtkStanding
-        if let size = size ?? (scales ? nil : GTKEnvironment.fontSize), size > 0 {
-            made.append(scales
-                ? pango_attr_size_new(Int32((Self.typographic(size) * Double(PANGO_SCALE)).rounded()))
-                : pango_attr_size_new_absolute(Int32((size * Double(PANGO_SCALE)).rounded())))
+        // Pango counts in whole units of a 1024th: a size or a spacing it cannot hold stands as none.
+        if let size = size ?? (scales ? nil : GTKEnvironment.fontSize), size > 0,
+           let units = GeometryArithmetic.pixels(scales ? Self.typographic(size) : size, density: Double(PANGO_SCALE)) {
+            made.append(scales ? pango_attr_size_new(units) : pango_attr_size_new_absolute(units))
         }
         if let weight { made.append(pango_attr_weight_new(PangoWeight(rawValue: UInt32(weight)))) }
         if attributes.contains(.italic) || attributesGiven {
@@ -42,8 +42,8 @@ extension TextLook {
             let (red, green, blue, alpha) = Self.channels(background)
             made += [pango_attr_background_new(red, green, blue), pango_attr_background_alpha_new(alpha)]
         }
-        if letterSpacing != 0 {
-            made.append(pango_attr_letter_spacing_new(Int32((letterSpacing * Double(PANGO_SCALE)).rounded())))
+        if letterSpacing != 0, let units = GeometryArithmetic.pixels(letterSpacing, density: Double(PANGO_SCALE)) {
+            made.append(pango_attr_letter_spacing_new(units))
         }
         if let lineHeight, lineHeight > 0 { made.append(pango_attr_line_height_new(lineHeight)) }
         if decorations.contains(.underline) { made.append(pango_attr_underline_new(PANGO_UNDERLINE_SINGLE)) }

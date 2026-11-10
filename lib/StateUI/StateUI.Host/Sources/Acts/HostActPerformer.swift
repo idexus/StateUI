@@ -64,6 +64,7 @@
             reply(call, HostActs.currentTime(toolkit.localTime()))
         case .utcOffset:
             let (zone, day) = HostActs.utcOffsetQuestion(call)
+            if let day, !CalendarArithmetic.exists(day) { return fail(call, HostActs.noDay(day).reason) }
             guard let minutes = toolkit.utcOffset(of: zone, on: day) else {
                 return fail(call, HostActs.unknownZone(zone).reason)
             }

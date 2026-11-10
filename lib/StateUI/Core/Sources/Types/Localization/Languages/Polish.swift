@@ -36,10 +36,11 @@ extension LibraryWords {
         edit: EditWords(
             undo: "Cofnij", redo: "Ponów", cut: "Wytnij", copy: "Kopiuj", paste: "Wklej", delete: "Usuń",
             selectAll: "Zaznacz wszystko"),
-        control: ControlWords(decrease: "Zmniejsz", increase: "Zwiększ"),
+        control: ControlWords(decrease: "Zmniejsz", increase: "Zwiększ", details: "Szczegóły"),
         menu: MenuWords(
             file: "Plik", newWindow: "Nowe okno", edit: "Edycja", window: "Okno", minimize: "Minimalizuj",
-            bringAllToFront: "Wszystko na wierzch", quit: "Zakończ"))
+            bringAllToFront: "Wszystko na wierzch", quit: "Zakończ"),
+        file: FileWords(untitled: "Bez tytułu"))
 }
 
 extension RegionConventions {

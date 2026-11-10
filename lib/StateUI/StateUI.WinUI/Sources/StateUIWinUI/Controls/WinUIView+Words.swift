@@ -45,7 +45,7 @@ extension WinUIView {
         var look = TextLook()
         look.letterSpacing = points
         let ems = look.letterSpacing(inEmsOf: size ?? WinUITextualView.platformFontSize)
-        stateui_winui_set_character_spacing(handle, Int32((ems * 1000).rounded()))
+        stateui_winui_set_character_spacing(handle, WinUITextualView.thousandths(ofAnEm: ems))
     }
 
     /// The words' color; nil puts back the platform's.
@@ -59,7 +59,8 @@ extension WinUIView {
     /// Design: docs/design/host/layout.md#right-to-left
     func setPadding(_ padding: Insets?) {
         let room = padding ?? Insets(0)
-        stateui_winui_set_padding(handle, padding != nil, room.start, room.top, room.end, room.bottom)
+        stateui_winui_set_padding(
+            handle, padding != nil, Self.held(room.start), Self.held(room.top), Self.held(room.end), Self.held(room.bottom))
     }
 
     /// How the words look, as WinUI holds it.

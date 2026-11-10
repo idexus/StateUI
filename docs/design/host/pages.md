@@ -208,9 +208,15 @@ replacement are that view's; the element placing it is the one around the
 anchor (`placingParent`). The same list is an arrangement's pages, so a
 window, a stack, a tab or a split view holding an anchor shows the
 arrangement or page it holds, and every walk down the page path goes through
-it. A walk up the path steps through an anchor as through a stack. What the
-anchor presents - a sheet, a popover - stands by the view it shows
-(`presenter`).
+it. A walk up the path steps through an anchor as through a stack: the page
+an arrangement shows is the anchor's child, while the arrangement's own child
+is the anchor, so a walk comparing the two compares what stands in the
+anchor's place (`placed`). A list's item is found the same way - its context
+menu stands on the view the anchor holds - and the content of a page is its
+first arranged child, where a key walks out from with nothing holding the
+keyboard. A menu's entries and a bar's items are elements, which their
+builders take by type, so no anchor stands among them. What the anchor
+presents - a sheet, a popover - stands by the view it shows (`presenter`).
 
 ## Slots
 
@@ -270,7 +276,11 @@ overflow - the groups stand by their `order`, then the outer at the edge -
 first at the start and in the overflow, last at the end - by how far out their
 declarer stands, the split view's furthest, a page's by its depth in the page's
 tree (`ChromeActions`), then as declared. Each group behind the overflow is a
-section of it (`overflowSections`). A bar that draws no groups takes the
+section of it (`overflowSections`), as is each group that left the bar for want
+of room (`BarFit.groupsBehind`): a line stands between two - AppKit's separator
+item, a menu UIKit shows inline, a group of Android's menu, WinUI's
+`AppBarSeparator` among the secondary commands, GTK's separator, the Web's. An
+item standing alone is a section of one. A bar that draws no groups takes the
 trailing actions in reading order (`primary`).
 
 A group declared for the bar at the page's foot (`barEdge`, `.toolbar(.bottom)`)
@@ -395,13 +405,10 @@ material itself is `barMaterial`, for a host whose bars blur.
 
 ## A page's title area
 
-A page says what its bar says of it, and nothing climbs the path: its title,
-the line under it (`barSubtitle`, an empty one none) and its picture. The line
-stands under the title wherever a bar shows the title - the chrome's line is
-the page naming the window's (`WindowChrome.subtitle`). A split view's
-sidebar's page names the application (`titleArea(applicationName:)`): its
-title, else the application's name ([a sidebar's
-title](#a-sidebars-title)), its line and its picture as the application's
+A page says what its bar says of it, and nothing climbs the path: its title
+and its picture. A split view's sidebar's page names the application
+(`titleArea(applicationName:)`): its title, else the application's name ([a
+sidebar's title](#a-sidebars-title)), and its picture as the application's
 mark. A host shows that title area where its platform's chrome names the
 application over the sidebar - a desktop's title bar, the sidebar's own bar
 (`WindowChrome.titleArea`, none where the window shows no split view).
@@ -417,13 +424,17 @@ frame moving it - the host paints each tabbed view its arrangements show
 
 ## The overlays of a window
 
-A window lays over what it shows the overlays declared along each page it
-shows (`WindowPresentation.overlays`): the arrangement's visible path, the
-outer under the inner, then each sheet's in turn, then the window's own - the
-library's docked inspector - over every other. Each is one layer holding the
-views declared together. A page that stops being shown - a page pushed over
-it, a tab chosen away - takes its overlays with it; nothing is restored,
-because nothing was overwritten.
+A window lays over its pages the overlays declared along the arrangement's
+visible path (`WindowPresentation.overlays`), the outer under the inner, then
+the window's own - the library's docked inspector - over them; all of them
+stand under the window's sheets. Each sheet lays over itself the overlays
+declared along its own visible path (`WindowPresentation.sheetOverlays`), a
+pair for every sheet in order, so a sheet's notice stands over that sheet and
+a sheet over the window's notices. The host lays a sheet's in the sheet's own
+surface - its dialog, card or window - as it lays the window's in the
+window. Each is one layer holding the views declared together. A page that
+stops being shown - a page pushed over it, a tab chosen away - takes its
+overlays with it; nothing is restored, because nothing was overwritten.
 
 ## A popover
 
@@ -466,9 +477,8 @@ words the page beneath gives, else "Back"; the actions the visible page's
 path declares (`chromeActions`) - none where the page hides its bar - each
 showing its words beside its picture where it says so and always where it
 has none (`showsActionWords`); the title view the path declares in the
-title's place (`chromeTitleView`); the line under the title and the title
-area its sidebar's page names the application with ([a page's title
-area](#a-pages-title-area)); the bars' colors the path declares ([the bar a
+title's place (`chromeTitleView`); the title area its sidebar's page names
+the application with ([a page's title area](#a-pages-title-area)); the bars' colors the path declares ([the bar a
 path declares](#the-bar-a-path-declares)); the menus
 its path declares
 (`chromeMenus`); and the split view the window shows (`splitView`), with its
@@ -477,8 +487,7 @@ bar in two parts stands over the split view either way. A host lays these out
 in its own chrome. A page saying it shows no title (`showsTitle`) still names the window to the system and
 the way back from the page above it; the chrome shows none for it. A host whose pages each stand under a header bar of their
 own takes the same parts page by page: a page's actions (`chromeActions`),
-its title view (`chromeTitleView`), its bar's colors and the line under its
-title (`barSubtitle`).
+its title view (`chromeTitleView`) and its bar's colors.
 
 A stack shows its bar over what stands on it once (`showsTheStacksBar`): over
 a page that keeps its bar, and over tabs or a split view only where the page

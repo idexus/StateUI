@@ -112,7 +112,7 @@ extension LayoutTests {
                     Rectangle()
                         .fill(.red)
                 }
-                .title("Under")
+                .pageTitle("Under")
             }
 
             // A phone's bars, where the host's test window stands under none.

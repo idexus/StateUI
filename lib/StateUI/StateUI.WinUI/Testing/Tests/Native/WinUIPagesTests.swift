@@ -63,7 +63,7 @@ final class WinUIPagesTests: XCTestCase {
             let open = State(wrappedValue: true)
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
                 SplitView {
-                    Text("Menu words").title("Menu")
+                    Text("Menu words").pageTitle("Menu")
                 } detail: {
                     ScrollView { VStack { HStack { Text("row") } } }
                 }
@@ -96,7 +96,7 @@ final class WinUIPagesTests: XCTestCase {
             let open = State(wrappedValue: true)
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
                 SplitView {
-                    Text("Menu words").title("Menu")
+                    Text("Menu words").pageTitle("Menu")
                 } detail: {
                     Text("Detail words")
                 }
@@ -121,7 +121,7 @@ final class WinUIPagesTests: XCTestCase {
             let open = State(wrappedValue: false)
             let host = WinUIRenderer.running {
                 SplitView {
-                    Text("Menu words").title("Menu")
+                    Text("Menu words").pageTitle("Menu")
                 } detail: {
                     Text("Detail words")
                 }
@@ -242,9 +242,9 @@ final class WinUIPagesTests: XCTestCase {
             let host = WinUIRenderer.running {
                 TabView([0, 1]) { tab in
                     if tab == 0 {
-                        Text("Wide").title("Wide").pageIcon("test_wide.png")
+                        Text("Wide").pageTitle("Wide").pageIcon("test_wide.png")
                     } else {
-                        Text("Plain").title("Plain")
+                        Text("Plain").pageTitle("Plain")
                     }
                 }
             }
@@ -264,7 +264,7 @@ final class WinUIPagesTests: XCTestCase {
                 NavigationStack(path.projectedValue) {
                     TitledPage(title: "Items and Cards")
                 } destination: { _ in
-                    TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
+                    TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.pageTitle("ItemsView")
                 }
             }
             let window = try XCTUnwrap(host.window)
@@ -475,7 +475,7 @@ final class WinUIPagesTests: XCTestCase {
             let host = WinUIRenderer.running {
                 Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        Text("Draft").title("Draft").id("draft").toolbar {
+                        Text("Draft").pageTitle("Draft").id("draft").toolbar {
                             ToolbarButton("Undo").placement(at: .start).onClicked { undone.wrappedValue += 1 }
                             ToolbarGroup {
                                 ToolbarButton("Save")
@@ -573,7 +573,7 @@ final class WinUIPagesTests: XCTestCase {
     func testAPictureAloneStandsAsNarrowAsACompactCommand() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                Text("Notes").title("Notes").toolbar {
+                Text("Notes").pageTitle("Notes").toolbar {
                     ToolbarButton("Add").icon("test_wide.png")
                     ToolbarButton("Scan").icon("test_wide.png").showsText(true)
                 }
@@ -585,11 +585,39 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// Groups placed behind "more" are sections of its menu, a line between two - on the title bar and on the bar at
+    /// the page's foot.
+    func testGroupsBehindTheOverflowAreSectionsOfItsMenu() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Text("Notes").pageTitle("Notes")
+                    .toolbar {
+                        ToolbarGroup {
+                            ToolbarButton("Rename")
+                            ToolbarButton("Move")
+                        }
+                        .placement(at: .overflow)
+                        ToolbarButton("Delete").placement(at: .overflow)
+                    }
+                    .toolbar(.bottom) {
+                        ToolbarButton("Share").placement(at: .overflow)
+                        ToolbarButton("Print").placement(at: .overflow)
+                    }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "bar") != "||" }
+            XCTAssertEqual(Self.words(bar, "bar"), "||0,1 2")
+            let page = try XCTUnwrap(host.runtime.tree.root?.first(type: .page))
+            let foot = try XCTUnwrap(((page.native as? WinUIElement)?.view as? WinUIPageView)?.toolbar)
+            XCTAssertEqual(Self.words(foot, "footBar"), "||0 1")
+        }
+    }
+
     /// Groups stand apart by room alone: the bar draws no line between them, as a Windows application's toolbar.
     func testGroupsStandApartByRoomAlone() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                Text("Notes").title("Notes").toolbar {
+                Text("Notes").pageTitle("Notes").toolbar {
                     ToolbarGroup {
                         ToolbarButton("Save")
                         ToolbarButton("Add")
@@ -610,7 +638,7 @@ final class WinUIPagesTests: XCTestCase {
     func testADeclaredGroupStandsOnACapsule() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                Text("Notes").title("Notes").toolbar {
+                Text("Notes").pageTitle("Notes").toolbar {
                     ToolbarGroup {
                         ToolbarButton("Save").icon("test_wide.png")
                         ToolbarButton("Add").icon("test_wide.png")
@@ -636,7 +664,7 @@ final class WinUIPagesTests: XCTestCase {
     func testAMenusButtonOnTheBarRestsAsTheBarsOthers() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                Text("Notes").title("Notes").toolbar {
+                Text("Notes").pageTitle("Notes").toolbar {
                     ToolbarButton("Save").onClicked {}.menu(.split) { MenuItem("Save a copy") }
                     ToolbarButton("Sort").menu { MenuItem("A to Z") }
                 }
@@ -870,7 +898,7 @@ private struct TitledPage: View {
     var body: some View {
         Text(title)
             .toolbar { actions }
-            .title(title)
+            .pageTitle(title)
             .showsNavigationBar(!hidesBar)
             .loggingPhases(log, as: title)
     }

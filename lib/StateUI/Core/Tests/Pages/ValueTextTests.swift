@@ -27,6 +27,17 @@ final class ValueTextTests: XCTestCase {
         XCTAssertEqual(back.extra, "more")
     }
 
+    /// A map keyed by a type that says itself as a key comes back as it went, written as its keys; one keyed by
+    /// anything else, as its pairs.
+    func testAMapComesBackWhateverItsKeys() throws {
+        let named: [Side: Int] = [.left: 1, .right: 2]
+        XCTAssertEqual(ValueText.read([Side: Int].self, from: try ValueText.write(named)), named)
+        XCTAssertEqual(try ValueText.write(named), #"{"left":1,"right":2}"#)
+
+        let paired: [Inner: Int] = [Inner(tag: "a"): 1, Inner(tag: "b"): 2]
+        XCTAssertEqual(ValueText.read([Inner: Int].self, from: try ValueText.write(paired)), paired)
+    }
+
     /// Equal values are written as one text: an object's members by their keys, whatever order its own
     /// `encode(to:)` - a dictionary's, by its hash - hands them over in.
     func testEqualValuesAreWrittenAsOneText() throws {
@@ -104,12 +115,17 @@ final class ValueTextTests: XCTestCase {
     }
 }
 
-private struct Inner: Codable, Equatable {
+private struct Inner: Codable, Hashable {
     let tag: String
 }
 
 private enum Choice: String, Codable {
     case first, second
+}
+
+/// A key that says itself as a key's word.
+private enum Side: String, Codable, CodingKeyRepresentable {
+    case left, right
 }
 
 private struct Shapes: Codable, Equatable {

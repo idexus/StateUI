@@ -51,13 +51,14 @@ enum WebCSS {
         }
     }
 
-    /// A number written with `decimals` places after the point, as a stepper shows it.
+    /// A number written with `decimals` places after the point, as a stepper shows it - one its places take past
+    /// whole numbers as any number beyond room.
     static func number(_ value: Double, decimals: Int) -> String {
         guard value.isFinite else { return "0" }
         let places = max(0, min(decimals, 6))
         var scale = 1.0
         for _ in 0..<places { scale *= 10 }
-        let scaled = Int64((abs(value) * scale).rounded())
+        guard let scaled = Int64(exactly: (abs(value) * scale).rounded()) else { return number(value) }
         let whole = scaled / Int64(scale)
         let sign = value < 0 && scaled != 0 ? "-" : ""
         guard places > 0 else { return sign + String(whole) }
@@ -65,12 +66,12 @@ enum WebCSS {
         return sign + String(whole) + "." + String(repeating: "0", count: places - fraction.count) + fraction
     }
 
-    /// A length in pixels; nil for none.
     /// A size in points as the browser's text size counts it: a sixteenth of a rem each.
     static func rems(_ value: Double) -> String {
         number(max(0, value) / 16) + "rem"
     }
 
+    /// A length in pixels; nil for none.
     static func pixels(_ value: Double?) -> String? {
         value.map { number(max(0, $0)) + "px" }
     }
@@ -80,10 +81,9 @@ enum WebCSS {
         number(value) + "px"
     }
 
-    /// A grid's `count` tracks: those defined, then a share each.
-    static func tracks(_ defined: [GridLength], count: Int) -> String? {
-        guard count > 0 else { return nil }
-        return (0..<count).map { $0 < defined.count ? track(defined[$0]) : "minmax(0, 1fr)" }.joined(separator: " ")
+    /// A grid's tracks, each as CSS writes it.
+    static func tracks(_ tracks: [GridLength]) -> String? {
+        tracks.isEmpty ? nil : tracks.map(track).joined(separator: " ")
     }
 
     /// One track: as large as its largest child, a length, or a share of the room the others leave - a share of

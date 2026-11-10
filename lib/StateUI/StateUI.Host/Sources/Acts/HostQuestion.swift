@@ -51,7 +51,8 @@
     /// A prompt's placeholder.
     public let placeholder: String?
 
-    /// The most characters a prompt takes; nil for no bound.
+    /// The most characters a prompt takes; nil for no bound - none given, none above nought, or more than a
+    /// toolkit's 32-bit count holds.
     public let maximumLength: Int?
 
     /// What a prompt's words are for.
@@ -96,7 +97,7 @@
         }
         placeholder = kind == .prompt ? text(4) : nil
         maximumLength = kind == .prompt && arguments.count > 5
-            ? Int(propValue: arguments[5]).flatMap { $0 > 0 ? $0 : nil } : nil
+            ? Int(propValue: arguments[5]).flatMap { $0 > 0 && $0 <= Int(Int32.max) ? $0 : nil } : nil
         purpose = kind == .prompt && arguments.count > 6 ? InputPurpose(propValue: arguments[6]) ?? .automatic : .automatic
         words = kind == .prompt ? text(7) ?? "" : ""
     }

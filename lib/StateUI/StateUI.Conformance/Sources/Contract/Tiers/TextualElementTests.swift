@@ -13,7 +13,10 @@
 
     /// Every case written for the contract: its own members, and a tier's its family takes up.
     @MainActor static var written: [ConformanceCase] {
-        Specimens.wearing(TextualElementContract.self).flatMap { element in [words(element), cased(element)] }
+        let fields = Set(Specimens.wearing(TextInputContract.self))
+        return Specimens.wearing(TextualElementContract.self).flatMap { element in
+            [words(element), cased(element)] + (fields.contains(element) ? [typedInItsCase(element)] : [])
+        }
     }
 
     /// An element shows the words the tree gives it, and the words the tree changes them to.
@@ -49,6 +52,25 @@
                 ])
             }
             s.expect(try s.held(TextElementContract.text, on: s.specimen(element)), "MIXED WORDS")
+        }
+    }
+
+    /// A field turns what the user types into the case the tree asks for, and reports it so.
+    @MainActor
+    static func typedInItsCase(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).turnsWhatIsTypedIntoItsCase", proves: [
+            Covered(TextualElementContract.textCase, on: element),
+        ], needs: [Covered(TextElementContract.text, on: element)]) { s in
+            let words = State(wrappedValue: "")
+            s.start {
+                VStack { TextInputTests.field(element, words, [Write(TextualElementContract.textCase, TextCase.uppercase)]) }
+            }
+            let view = try s.element("field")
+
+            try s.perform(.type("Ada"), on: view)
+            s.settle { words.wrappedValue == "ADA" }
+            s.expect(words.wrappedValue, "ADA", "reported in its case")
+            s.expect(try s.held(TextElementContract.text, on: view), "ADA", "shown in its case")
         }
     }
 }

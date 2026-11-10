@@ -78,21 +78,26 @@ final class GTKNavigationView: GTKLayoutView {
         return true
     }
 
-    /// A page in a frame, in a navigation page of its own, named as the tree names it or, until it does, after the
-    /// application - libadwaita asks every page for a title.
+    /// A page in a frame, in a navigation page of its own, named as the tree names it (`name(ofPage:)`).
     private func entry(for page: GTKView, at index: Int) -> (frame: GTKPageFrame, page: GTKWidget) {
         let frame = GTKPageFrame(page: page)
-        let given = titles.indices.contains(index) ? titles[index] : ""
-        let title = given.isEmpty ? g_get_application_name().map { String(cString: $0) } ?? " " : given
-        let native = adw_navigation_page_new(frame.widget, title)!.of(GtkWidget.self)
+        let native = adw_navigation_page_new(
+            frame.widget, Self.name(ofPage: titles.indices.contains(index) ? titles[index] : ""))!.of(GtkWidget.self)
         g_object_ref_sink(native)
         return (frame, native)
+    }
+
+    /// The name libadwaita holds for a page titled `title`: the title, else the application's name, else a space -
+    /// libadwaita asks every page for one.
+    static func name(ofPage title: String, application: String? = nil) -> String {
+        let application = application ?? g_get_application_name().map { String(cString: $0) } ?? ""
+        return !title.isEmpty ? title : !application.isEmpty ? application : " "
     }
 
     /// Names a page, for its header bar and for assistive technology, and says whether the user may take it away.
     func describe(_ frame: GTKPageFrame, title: String, canPop: Bool) {
         guard let native = stack.first(where: { $0.frame === frame })?.page else { return }
-        adw_navigation_page_set_title(native.of(AdwNavigationPage.self), title)
+        adw_navigation_page_set_title(native.of(AdwNavigationPage.self), Self.name(ofPage: title))
         adw_navigation_page_set_can_pop(native.of(AdwNavigationPage.self), canPop ? 1 : 0)
     }
 

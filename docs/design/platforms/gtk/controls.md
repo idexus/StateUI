@@ -404,3 +404,11 @@ A field, a search field or an editor the tree outlines or shapes (`stroke`,
 `lineWidth`, `shape`) wears it as a box class of the host's style sheet - the
 same as a button's, its border and its corners, a capsule's ends whole - over
 the theme's frame; with neither it keeps the theme's.
+
+## The language of the words
+
+GTK gives a widget no language of its own. A text's words are set by the
+language its branch is written in - Pango's language over the whole label -
+which decides where they break, how they hyphenate and the typeface a script
+falls back to. The language is `.partial` on a text and a window, whose texts
+hold it, and `.notPlanned` on every other element.

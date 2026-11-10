@@ -74,7 +74,41 @@
             takesTheUsersChoice(as: .segmented),
             offersItsValues(as: .radio),
             takesTheUsersChoice(as: .radio),
-        ]
+        ] + PickerPresentation.allCases.map(keepsItsValue(as:))
+    }
+
+    /// A picker offered as `presentation` whose values change their order keeps the value it holds, at its new
+    /// place, and tells nobody.
+    @MainActor static func keepsItsValue(as presentation: PickerPresentation) -> ConformanceCase {
+        ConformanceCase("\(presentation)KeepsItsValueAsItsValuesChangeTheirOrder", proves: [
+            Covered(PickerContract.presentation), Covered(PickerContract.options), Covered(PickerContract.selectedIndex),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+            let reversed = State(wrappedValue: false)
+            let size = State(wrappedValue: "S")
+            let heard = Received<String>()
+            s.start {
+                VStack {
+                    Picker(reversed.wrappedValue ? ["L", "M", "S"] : ["S", "M", "L"], selection: size.projectedValue)
+                        .onSelectionChanged { heard.values.append(size.wrappedValue) }
+                        .presentation(presentation)
+                        .id("picker")
+                    Button("Reverse").onClicked { reversed.wrappedValue = true }.id("reverse")
+                }
+            }
+            let picker = try s.element("picker")
+            s.expect(try s.held(PickerContract.selectedIndex, on: picker), 0)
+
+            try s.perform(.activate, on: s.element("reverse"))
+            try s.settle {
+                try s.held(PickerContract.options, on: picker) == ["L", "M", "S"]
+                    && s.held(PickerContract.selectedIndex, on: picker) == 2
+            }
+            s.expect(try s.held(PickerContract.options, on: picker), ["L", "M", "S"])
+            s.expect(try s.held(PickerContract.selectedIndex, on: picker), 2, "the same value at its new place")
+            s.expect(size.wrappedValue, "S", "the state holds it still")
+            s.turn()
+            s.expect(heard.values, [], "and nobody heard a choice")
+        }
     }
 
     /// A picker offered as `presentation` offers its values and shows the one chosen, and the one the program chooses.

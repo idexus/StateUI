@@ -110,7 +110,6 @@ final class KeyboardShortcutsTests: XCTestCase {
         XCTAssertEqual(KeyboardShortcuts.stated(under: root, typing: true), [escape, save], "Return is the field's")
     }
 
-    /// A page beneath a stack's top is out of sight: its shortcuts reach nothing.
     /// A bar item written on an arrangement stands with it - in the arrangement's slots, not among its pages - and
     /// its shortcut reaches it, as the chrome shows it.
     func testAnArrangementsBarItemsShortcutReachesIt() throws {
@@ -126,6 +125,7 @@ final class KeyboardShortcutsTests: XCTestCase {
         XCTAssertEqual(KeyboardShortcuts.target(of: save, under: root)?.id, .manual("account"))
     }
 
+    /// A page beneath a stack's top is out of sight: its shortcuts reach nothing.
     func testAPageBeneathTheTopIsOutOfSight() throws {
         var below = HostPatch(id: .manual("below"), type: .page)
         below.children = .arranged([element("hidden", .button, save)])

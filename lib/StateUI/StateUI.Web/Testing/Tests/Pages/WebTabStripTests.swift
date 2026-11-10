@@ -20,7 +20,7 @@ private struct ShadedTabs: View {
 
     var body: some View {
         let words: Color = shade.dark ? .white : .black
-        let tabs = TabView([0, 1]) { Text("\($0)").title("Tab \($0)") }
+        let tabs = TabView([0, 1]) { Text("\($0)").pageTitle("Tab \($0)") }
         if onTheStack {
             NavigationStack(shade.$path) { tabs } destination: { Text("\($0)") }.barForegroundColor(words)
         } else {

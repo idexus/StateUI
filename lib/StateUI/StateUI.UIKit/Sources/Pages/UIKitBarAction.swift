@@ -117,6 +117,11 @@ struct UIKitBarAction {
         menu.map { UIKitMenus.menu($0.inOverflow, title: title) } ?? menuAction
     }
 
+    /// The menu behind a bar's overflow: each group a section of it, a line between two.
+    static func overflowMenu(_ sections: [[UIKitBarAction]]) -> UIMenu {
+        UIMenu(children: sections.map { UIMenu(options: .displayInline, children: $0.map(\.overflowEntry)) })
+    }
+
     /// An entry of a menu. Its handler takes `perform` alone: the element keeps the action, which would keep the element
     /// and its menu's entries taking the whole action.
     var menuAction: UIAction {

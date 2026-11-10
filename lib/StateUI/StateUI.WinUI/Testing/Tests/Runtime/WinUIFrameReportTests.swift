@@ -67,7 +67,7 @@ final class WinUIFrameReportTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
                 SplitView {
-                    Text("Menu").title("Menu")
+                    Text("Menu").pageTitle("Menu")
                 } detail: {
                     MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                         Rectangle()

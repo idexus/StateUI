@@ -88,8 +88,18 @@ final class WebWindowController {
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.web.view) }
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.web.view)) }
         if let pages = changes.sheets { showSheets(pages) }
+        if changes.sheets != nil || changes.sheetOverlays != nil { laySheetOverlays() }
         for page in element.pages { page.web.showBottomBar() }
         adaptSidebar()
+    }
+
+    /// Lays each sheet's own overlays over it, a sheet shown anew included.
+    /// Design: docs/design/platforms/web/pages.md#overlays
+    private func laySheetOverlays() {
+        for (page, sheet) in sheets {
+            let overlays = presentation.sheetOverlays.first { $0.sheet === page }?.overlays ?? []
+            sheet.showOverlays(overlays.compactMap(\.web.view))
+        }
     }
 
     /// The split view shown is given its first room, where it has not had one.

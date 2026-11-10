@@ -305,7 +305,7 @@ final class GTKDriver: HostDriver {
             return Self.sheetGround(of: sheet.sheet.dialog.of(GtkWidget.self)).map { StandIns.material(painted: $0).propValue }
         }
         if [.menuItem, .menuToggle].contains(element.type) { return try menuItemHolds(property, element) }
-        if [.barBackground, .barForegroundColor].contains(property) || property == PageContract.subtitle.token && element.type == .page {
+        if [.barBackground, .barForegroundColor].contains(property) {
             return try barHolds(property, element)
         }
         if let value = backendHolds(property, on: element) { return value }
@@ -420,9 +420,11 @@ final class GTKDriver: HostDriver {
     /// Whether a press at `point` reaches `element`: what GTK picks there in the window - through everything laid
     /// over it - is its view or stands in it.
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
-        guard let view = (element.native as? GTKElement)?.view, let root = gtk_widget_get_root(view.widget) else {
+        guard let view = (element.native as? GTKElement)?.view else {
             throw DriverCannot("read what reaches \(element.type.name)")
         }
+        // A widget standing in no window reaches nothing.
+        guard let root = gtk_widget_get_root(view.widget) else { return false }
         renderer?.layOut()
         let window = UnsafeMutableRawPointer(root).assumingMemoryBound(to: GtkWidget.self)
         var from = graphene_point_t(x: Float(point.x), y: Float(point.y))

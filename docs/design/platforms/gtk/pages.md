@@ -36,9 +36,8 @@ of it go once the slide is over.
 The chrome is composed by one function from what the window shows, after
 every render, and written on the header bar of each page shown:
 
-- the page's title, at the middle of its bar, with the line under it the
-  page says (`barSubtitle`) - libadwaita's window title holds both - or its
-  title view in its place, where an application puts its search. A header
+- the page's title, at the middle of its bar - libadwaita's window title
+  holds it - or its title view in its place, where an application puts its search. A header
   bar names its page - a sidebar's page that says no title, the
   application - and shows no application's mark;
 - the groups of actions its page declares, composed by the host layer
@@ -276,14 +275,18 @@ nobody's, and the popover comes up again by the new view after the render.
 
 ## The window's overlays
 
-What a window lays over everything it shows - the overlays the pages on its
-visible path declare, then the inspector docked in it - are overlays of the
+What a window lays over its pages - the overlays the pages on its visible
+path declare, then the inspector docked in it - are overlays of the
 `GtkOverlay` the window's content stands in, the first lowest: over the
 whole window, header bars included, which the inspector's own layout leaves
-free where it docks at a side. Each holds a layout that lets input through,
-so a click beside what it holds goes on to the page under it
-([listening](input.md#listening)). The window takes the overlays out and
-lays them again when the list it is told changes.
+free where it docks at a side. A sheet's `AdwDialog` stands over the
+window's content, so its overlays stand under every sheet. What a sheet's
+own page declares stands in a `GtkOverlay` of the sheet's, the dialog's
+child, over its page. Each holds a layout that lets input through, so a
+click beside what it holds goes on to the page under it
+([listening](input.md#listening)). The window and the sheet take the
+overlays out and lay them again when the list they are told changes; a
+sheet closing lets go of its page and its overlays.
 
 ## A page's phases
 

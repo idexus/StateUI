@@ -3,6 +3,8 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The arrow of a button holding a menu: a mark pointing down after its words, the whole button opening the menu; or
 /// a split button's arrow, a part of its own at the trailing edge, set off by a line, opening the menu itself.
@@ -89,7 +91,7 @@ struct AppKitButtonArrow {
             imagePosition = .imageOnly
             // AppKit presents a button through its cell.
             cell?.setAccessibilityRole(.menuButton)
-            cell?.setAccessibilityLabel("More")
+            cell?.setAccessibilityLabel(CoreLink().chromeWords.more)
             target = self
             action = #selector(pressed(_:))
         }

@@ -45,13 +45,13 @@ for - a tab chosen, the sidebar shown:
 - the page's title view stands at the chrome's center, where an application
   puts its search;
 - the title area a split view's sidebar page names the application with -
-  its title, else the application's name, the line under it and its picture
-  as the mark ([a page's title area](../../host/pages.md#a-pages-title-area))
-  - stands in the chrome's title, subtitle and icon, as WinUI 3 Gallery names
+  its title, else the application's name, and its picture as the mark ([a
+  page's title area](../../host/pages.md#a-pages-title-area)) - stands in the
+  chrome's title and icon, as WinUI 3 Gallery names
   itself on its title bar, while the visible page's title still names the
   window to the system - the taskbar, Alt+Tab; its picture is read from the
   application's pictures by its address. With no split view the chrome's
-  title and subtitle are the page's title and the line under it; and
+  title is the page's title; and
   the bars' material paints the chrome - a color, a gradient over its box as
   WinUI's gradient brushes take one, in fractions of the box - a point's an
   ellipse, as the chrome's size is not the host's to know - or a blur as the
@@ -166,10 +166,10 @@ layer says the path changed
 ## A page's heading
 
 Where the window's chrome names the application - over a split view's
-sidebar - the page that would name the window is headed by its own title and
-the line under it, as Windows' own applications head a page under a title bar
-naming the application: a row across the top of the page's room in WinUI's
-title style, the line in its body style, 24 DIPs from its top and sides, the
+sidebar - the page that would name the window is headed by its own title, as
+Windows' own applications head a page under a title bar naming the
+application: a row across the top of the page's room in WinUI's title style,
+24 DIPs from its top and sides, the
 page's content under it - a tab view
 naming the window by its own title is headed over its tabs, which then stand
 in its own row under the heading rather than across the window over it: the
@@ -332,7 +332,7 @@ no head (`bringsABar`). The veil takes every click meant for
 what is beneath, and the keyboard goes round inside the top card.
 
 The sheets stand in one layer of the window's root over its rows by their own
-depth (`Canvas.ZIndex` 1, the overlays' 2), never by their place among the
+depth (`Canvas.ZIndex` 2, the window's overlays' 1), never by their place among the
 root's children. The trap: a page stood in a row is put on the end of them,
 so a window arranged anew after a first sheet - a sidebar beside a stack
 once signed in - would stand over every sheet presented after it, the veil
@@ -364,14 +364,17 @@ program's own `Hide` is heard by nobody.
 
 ## The window's overlays
 
-What a window lays over everything it shows - the overlays the pages on its
-visible path declare, then the inspector docked in it - stands where the page
-stands, beneath the chrome, over the page and over every sheet, whichever
-came first, the first lowest. None has a background of its own, so a click
-beside what one holds goes on to the page or the sheet under it. They and the
-sheets are layers of the window, not the content of a row: the chrome and the
-menu bar standing again, as a page's menus come and go, leave both where they
-are. The window takes the overlays' layer out when it is told none.
+What a window lays over its pages - the overlays the pages on its visible
+path declare, then the inspector docked in it - stands where the page
+stands, beneath the chrome, over the page and under every sheet, the first
+lowest. What a sheet's own page declares stands on that sheet's card, over
+its page and under its head. One relay lays both (`layOverlays`): a layer of
+its own over a row of its grid. None has a background of its own, so a click
+beside what one holds goes on to the page under it. The layers are not the
+content of a row: the chrome and the menu bar standing again, as a page's
+menus come and go, and a sheet's page shown anew, leave them where they are.
+The layer goes when it is told none, and a sheet going lets go of its
+overlays with its page.
 
 ## Menus
 

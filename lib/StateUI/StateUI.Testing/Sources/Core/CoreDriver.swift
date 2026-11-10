@@ -86,7 +86,7 @@ final class CoreDriver: HostDriver {
             }
             let held = InputWords.held(
                 words, in: element.value(.textCase)?.enumeration.flatMap(TextCase.init(rawValue:)),
-                toBound: element.number(.maximumLength).map(Int.init), composing: false)
+                toBound: element.whole(.maximumLength), composing: false)
             element.reportUserChange(.text, .textChanged, .string(held ?? words), in: runtime)
         case .submit:
             element.send(.submitted, [], in: runtime)

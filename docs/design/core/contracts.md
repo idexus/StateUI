@@ -113,6 +113,16 @@ once. The one leniency is at the end: an optional value there may be left out
 and reads as nil, which is how a host says it has none - a pointer position the
 platform does not know.
 
+### A number that is none
+
+A view reads no value for a member whose number is none - NaN, or infinite,
+alone or among a run's (`ElementValues`, `PropValue.holdsNonFiniteNumber`),
+and says so once: its own stands, as for a member not described. The host
+layer reads an element's values alike (`MountedElement.value`), past a
+padding's or a margin's sides, which stand at nought one by one. A toolkit takes no such number into its geometry -
+AppKit stops the application over a frame at NaN, and a slider drawn from an
+infinite end places its thumb at NaN - and no value of a contract means one.
+
 ## Tokens
 
 `NodeType`, `Prop`, `Event` and `Act` are tokens: structs holding a key - a

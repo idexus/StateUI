@@ -78,7 +78,7 @@ final class UIKitFrameReportTests: XCTestCase {
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
-                .title("Top")
+                .pageTitle("Top")
             } destination: { _ in Text("Below") }
         }
         defer { host.finish() }

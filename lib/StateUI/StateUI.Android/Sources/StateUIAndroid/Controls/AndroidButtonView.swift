@@ -245,7 +245,7 @@ final class AndroidButtonView: AndroidTextualView {
             letGoOfIcon()
             icon.source = source
             icon.size = source.flatMap(AndroidPictures.size(of:))
-            icon.picture = source.flatMap { AndroidPictures.take($0, sample: 1) }
+            icon.held = source.flatMap { AndroidPictures.take($0, sample: 1) }
         }
         icon.position = position
         icon.spacing = spacing
@@ -444,8 +444,8 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// Lets go of the icon's picture.
     private func letGoOfIcon() {
-        if let source = icon.source, icon.picture != nil { AndroidPictures.letGo(source, sample: 1) }
-        icon.picture = nil
+        if let held = icon.held { AndroidPictures.letGo(held) }
+        icon.held = nil
     }
 
     /// What a button draws itself with.
@@ -463,7 +463,10 @@ final class AndroidButtonView: AndroidTextualView {
         var position: IconPosition = .start
         var spacing: Double?
         var aspect: ContentMode = .fit
-        var picture: JavaObject?
+        var held: AndroidPictures.Held?
+
+        /// The picture's bitmap, while the button holds one.
+        var picture: JavaObject? { held?.bitmap }
 
         /// What an icon shows as: its picture, where, and its size alone in pixels.
         struct Shown: Equatable {

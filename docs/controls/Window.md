@@ -24,7 +24,7 @@ struct MainPage: View {
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [BackgroundElement](tiers/BackgroundElement.md) · [SessionElement](tiers/SessionElement.md)
+Inherits: [BackgroundElement](tiers/BackgroundElement.md) · [SessionElement](tiers/SessionElement.md) · [LanguageElement](tiers/LanguageElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -43,13 +43,13 @@ Inherits: [BackgroundElement](tiers/BackgroundElement.md) · [SessionElement](ti
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (21)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>13 ✅ · 1 ☑️ · 6 ✓</td><td><code>NSWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>2 ✅ · 1 ☑️ · 4 ✓ · 8 –</td><td><code>UIWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>2 ✅ · 1 ☑️ · 4 ✓ · 12 –</td><td><code>Activity</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>20 ✅ · 1 ☑️</td><td><code>Window</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>7 ✅ · 2 ☑️ · 5 ✓ · 7 –</td><td><code>AdwApplicationWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>2 ✅ · 1 ☑️ · 4 ✓ · 14 –</td><td>fixed <code>&lt;div&gt;</code> over the browser window</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (22)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>13 ✅ · 2 ☑️ · 6 ✓</td><td><code>NSWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 8 –</td><td><code>UIWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>2 ✅ · 2 ☑️ · 4 ✓ · 12 –</td><td><code>Activity</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>21 ✅ · 1 ☑️</td><td><code>Window</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>7 ✅ · 3 ☑️ · 5 ✓ · 7 –</td><td><code>AdwApplicationWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 14 –</td><td>fixed <code>&lt;div&gt;</code> over the browser window</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContract.swift`.
@@ -114,4 +114,14 @@ What a scene and a window report of the user's attention: coming to the front, l
 <tr><td colspan="9">AppKit: only through the host's own: switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: only through the host's own: switchAway on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: switchAway on Window: the host told the activity's phase, no activity moved<br>GTK 4: only through the host's own: switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows<br>Web: only through the host's own: switchAway on Window: the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>stopped</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: minimize on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: only through the host's own: minimize on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: minimize on Window: the host told the activity's phase, no activity moved<br>GTK 4: A Wayland desktop tells no window it was minimized, nor brought back.<br>Web: only through the host's own: minimize on Window: the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab</td></tr></tbody>
+</table>
+
+## From [LanguageElement](tiers/LanguageElement.md)
+
+The language a branch of the interface is written in: the one a screen reader speaks its words in, and whose rules set them - where they break, how they hyphenate.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>language</code></td><td>property</td><td><code>LocaleTag</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: A text's words carry it for VoiceOver; AppKit gives no other view a language of its own.<br>Android Views: Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.<br>GTK 4: Pango sets a text's words by it - their breaks, hyphens and the typeface a script falls back to; GTK gives no other widget a language of its own.</td></tr></tbody>
 </table>

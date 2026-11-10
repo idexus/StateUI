@@ -80,8 +80,13 @@ class WinUITextInputView: WinUIView {
             handle, readOnly, traits.checksSpelling, traits.predicts, WinUIInputScope(traits).rawValue)
     }
 
-    /// The case typing takes: WinUI puts each letter typed in it.
+    /// The case the field holds its words in: WinUI puts each letter typed from the keyboard in it, and the host
+    /// layer's rule the words that come any other way (`typed`).
+    var textCase = TextCase.none
+
+    /// The case typing takes.
     func setCasing(_ textCase: TextCase) {
+        self.textCase = textCase
         stateui_winui_field_set_casing(handle, textCase.rawValue)
     }
 
@@ -98,13 +103,13 @@ class WinUITextInputView: WinUIView {
         stateui_winui_field_select(handle, Int32(clamping: units.start), Int32(clamping: units.length))
     }
 
-    /// The words changed: kept within `maximumLength` - whole while an input method is `composing` them - then
-    /// handed on; a program's own write says nothing. The box puts them in its case itself.
+    /// The words changed: kept in the field's case within `maximumLength` - as typed while an input method is
+    /// `composing` them (`InputWords.held`) - then handed on; a program's own write says nothing.
     func typed(_ text: String, composing: Bool) {
         guard !ProgramWrite.isWriting else { return }
 
         var kept = Self.lines(text)
-        if let cut = InputWords.held(kept, in: nil, toBound: maximumLength, composing: composing) {
+        if let cut = InputWords.held(kept, in: textCase, toBound: maximumLength, composing: composing) {
             kept = cut
             ProgramWrite.perform { setText(cut) }
         }

@@ -554,6 +554,21 @@ final class GalleryViewTests: XCTestCase {
         _ = HostBoundary.cycle(now: turned, reducesMotion: false)
     }
 
+    /// A HAND OF NO NUMBER - the host saying it moved by not a number, or endlessly - moves nothing and never stops
+    /// the application.
+    func testAHandOfNoNumberMovesNothing() throws {
+        let renders = Renders()
+        let shown = State(0)
+        func tree() -> Node { gallery(5).position(shown.projectedValue).node }
+        _ = laid(renders, tree)
+
+        hand(renders, tree, .began)
+        hand(renders, tree, .changed, moved: Point(.nan, .nan))
+        hand(renders, tree, .changed, moved: Point(.infinity, 0))
+        hand(renders, tree, .ended, velocity: Point(.nan, .infinity))
+        XCTAssertEqual(shown.wrappedValue, 0)
+    }
+
     /// The hand NAMES the card it passes: as it crosses halfway between two
     /// cards the position is the nearer one, a move between two names nothing
     /// new, and a card the run cannot reach is not one it names.
@@ -804,7 +819,6 @@ final class GalleryViewTests: XCTestCase {
         await gate.endEveryRun()
     }
 
-    /// And a gallery nobody asked for a tap lays no target at all.
     /// A gallery the user may not swipe still answers a tap on the card in front: nothing scrolls, so the
     /// target stands where the card does.
     func testAGalleryNobodyMaySwipeAnswersATapOnItsCardInFront() throws {
@@ -814,6 +828,7 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertNotNil(tappable(in: shown.whole), "the gallery laid no target")
     }
 
+    /// A gallery nobody asked for a tap lays no target at all.
     func testAGalleryNobodyAskedForATapAnswersNone() throws {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(5).node }).whole

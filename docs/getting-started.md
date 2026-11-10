@@ -134,7 +134,7 @@ struct MainPage: View {
         }
         .spacing(12)
         .padding(24)
-        .title("Notes")
+        .pageTitle("Notes")
     }
 }
 ```

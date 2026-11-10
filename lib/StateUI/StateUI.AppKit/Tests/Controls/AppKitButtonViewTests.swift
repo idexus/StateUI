@@ -371,6 +371,29 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertEqual(heard.values, ["save"], "the click its own")
     }
 
+    /// A split button's arrow says to assistive technology what the library's words say of the menu behind it, in
+    /// the system's language.
+    @MainActor
+    func testASplitButtonsArrowIsNamedInTheSystemsLanguage() throws {
+        let locale = StandardEnvironment.locale
+        let before = HostLocaleInfo(
+            language: locale.language, timeZone: locale.timeZone,
+            uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
+            isMetric: locale.isMetric, writingDirection: locale.writingDirection, languages: locale.languages)
+        defer { HostBoundary.setLocaleInfo(before) }
+        HostBoundary.setLocaleInfo(HostLocaleInfo(
+            language: "pl-PL", timeZone: before.timeZone, uses24HourClock: true,
+            firstDayOfWeek: before.firstDayOfWeek, isMetric: true, writingDirection: .leftToRight))
+        let renderer = AppKitRenderer.running {
+            HStack { Button("Save").onClicked {}.menu { MenuItem("Save as") } }
+        }
+        defer { renderer.finish() }
+
+        let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
+        let part = try XCTUnwrap(button.subviews.compactMap { $0 as? NSButton }.first)
+        XCTAssertEqual(part.cell?.accessibilityLabel(), "Więcej")
+    }
+
     /// A split button draws its words in the middle of the room before its arrow part, styled or AppKit's own.
     @MainActor
     func testASplitButtonsWordsStandInTheMiddleBeforeItsArrow() throws {

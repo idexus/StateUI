@@ -8,7 +8,7 @@ import AppKit
 
 /// The bar at a page's foot (`.toolbar(.bottom)`): a strip of AppKit's accessory bar controls, its leading groups at
 /// its start and the rest at its end, a More button opening the menu of those placed in the overflow - each group's
-/// items close together, the groups apart.
+/// items close together, the groups apart, behind More each a section.
 /// Design: docs/design/platforms/appkit/runtime.md#the-bar-at-the-foot
 @MainActor
 final class AppKitBottomToolbar: NSView {
@@ -19,7 +19,7 @@ final class AppKitBottomToolbar: NSView {
     private let trailing = NSStackView()
 
     /// The actions as the strip last drew them: the leading groups, the trailing, the overflow.
-    private var shown: (leading: [[AppKitToolbarAction]], trailing: [[AppKitToolbarAction]], overflow: [AppKitToolbarAction])
+    private var shown: (leading: [[AppKitToolbarAction]], trailing: [[AppKitToolbarAction]], overflow: [[AppKitToolbarAction]])
         = ([], [], [])
 
     /// What each control performs, by its identifier; taken again at every showing.
@@ -53,10 +53,9 @@ final class AppKitBottomToolbar: NSView {
     /// Shows `actions`, its controls made again only where they draw otherwise.
     func show(_ actions: ChromeActions) {
         let make = { (groups: [[MountedElement]]) in groups.map { $0.map(AppKitWindowController.action) } }
-        let next = (leading: make(actions.start), trailing: make(actions.end),
-                    overflow: actions.overflow.map(AppKitWindowController.action))
+        let next = (leading: make(actions.start), trailing: make(actions.end), overflow: make(actions.overflowSections))
         self.actions = Dictionary(
-            (next.leading + next.trailing + [next.overflow]).joined().map { (Self.identifier($0), $0) },
+            (next.leading + next.trailing + next.overflow).joined().map { (Self.identifier($0), $0) },
             uniquingKeysWith: { first, _ in first })
         let same = { (one: [[AppKitToolbarAction]], other: [[AppKitToolbarAction]]) in
             one.count == other.count && zip(one, other).allSatisfy { pair in
@@ -64,7 +63,7 @@ final class AppKitBottomToolbar: NSView {
             }
         }
         guard !same(next.leading, shown.leading) || !same(next.trailing, shown.trailing)
-            || !same([next.overflow], [shown.overflow])
+            || !same(next.overflow, shown.overflow)
         else { return }
         shown = next
         leading.setViews(next.leading.map(group), in: .leading)
@@ -138,17 +137,23 @@ final class AppKitBottomToolbar: NSView {
     }
 
     /// The overflow's menu: each action an item, a line between two groups' sections.
-    private func fillOverflow(_ overflow: [AppKitToolbarAction]) {
+    private func fillOverflow(_ overflow: [[AppKitToolbarAction]]) {
         overflowMenu.removeAllItems()
-        for action in overflow {
-            let item = NSMenuItem(title: action.title, action: #selector(choose(_:)), keyEquivalent: "")
-            item.target = self
-            item.identifier = Self.identifier(action)
-            item.image = action.image
-            item.isEnabled = action.isEnabled && !action.isLabel
-            item.state = action.isOn == true ? .on : .off
-            overflowMenu.addItem(item)
+        for (index, group) in overflow.enumerated() {
+            if index > 0 { overflowMenu.addItem(.separator()) }
+            for action in group { overflowMenu.addItem(overflowItem(action)) }
         }
+    }
+
+    /// The overflow's item for `action`.
+    private func overflowItem(_ action: AppKitToolbarAction) -> NSMenuItem {
+        let item = NSMenuItem(title: action.title, action: #selector(choose(_:)), keyEquivalent: "")
+        item.target = self
+        item.identifier = Self.identifier(action)
+        item.image = action.image
+        item.isEnabled = action.isEnabled && !action.isLabel
+        item.state = action.isOn == true ? .on : .off
+        return item
     }
 
     @objc private func choose(_ sender: NSUserInterfaceItemIdentification) {
@@ -200,6 +205,9 @@ final class AppKitBottomToolbar: NSView {
         return controls.first { $0.identifier?.rawValue == identifier }
             ?? overflowMenu.items.first { $0.identifier?.rawValue == identifier }
     }
+
+    /// The menu the More button opens.
+    var overflowMenuForTesting: NSMenu { overflowMenu }
 
     /// Chooses the overflow's item `item`, as the user does.
     func chooseForTesting(_ item: NSMenuItem) {

@@ -25,6 +25,27 @@ final class WebLayoutViewTests: XCTestCase {
         XCTAssertEqual(WebPage.children(of: layout.node), [b.node, a.node], "a child no longer held leaves")
     }
 
+    /// A grid's cells and tracks are the host layer's (`GridArithmetic`): a cell no grid has stands in the nearest
+    /// there is - past the most tracks in the last, before the first in the first - and a track of no number is one
+    /// share.
+    func testAGridsCellsAndTracksAreTheHostLayers() {
+        let grid = WebLayoutView(arrangement: .grid)
+        let (far, before) = (WebTextView(), WebTextView())
+        defer { for view in [grid, far, before] { view.release() } }
+        var farCell = LayoutValues()
+        (farCell.row, farCell.rowSpan) = (Int.max, Int.max)
+        var beforeCell = LayoutValues()
+        beforeCell.column = -3
+
+        grid.setTracks(rows: [], columns: [.proportional(.infinity), .fixed(.nan)])
+        grid.setItems([(far, { farCell }), (before, { beforeCell })])
+
+        XCTAssertEqual(WebPage.style(of: far.node, "grid-row"), "1000 / span 1")
+        XCTAssertEqual(WebPage.style(of: before.node, "grid-column"), "1 / span 1")
+        XCTAssertEqual(WebPage.style(of: grid.node, "grid-template-columns"), "minmax(0, 1fr) minmax(0, 1fr)")
+        XCTAssertEqual(WebPage.style(of: grid.node, "grid-template-rows").components(separatedBy: "minmax(").count - 1, 1000)
+    }
+
     /// A ROW SHORT OF ROOM TAKES IT FROM ITS WORDS: the browser shrinks a label by its natural width, as the host
     /// layer's rule does on every other host, down to nothing; a button keeps its own width, and a column shrinks
     /// none.

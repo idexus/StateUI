@@ -111,7 +111,7 @@ private struct BarAndPage: View {
             Button("Count").onClicked { counted += 1 }
             Button("Say").onClicked { said += 1 }
         }
-        .title("Page")
+        .pageTitle("Page")
         .toolbar { ToolbarButton("Said \(said)").onClicked {} }
     }
 }

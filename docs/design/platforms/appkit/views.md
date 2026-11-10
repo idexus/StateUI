@@ -301,3 +301,12 @@ descriptor; italic is AppKit's italic trait, and digits of one width the
 number-spacing feature in its descriptor (`kMonospacedNumbersSelector`). A weight is AppKit's
 `NSFont.Weight`, and a font's weight reads back from its descriptor's traits.
 A Mac gives an application no text size of the user's to follow.
+
+## The language of the words
+
+AppKit gives a view no language of its own: VoiceOver reads it in the
+system's language. A text's words carry one - `.accessibilityLanguage` over
+the whole string, which VoiceOver speaks them in - so a text holds the
+language its branch is written in on its words (`AppKitTextView.language`),
+and a window's language reaches the texts under it. Every other element says
+none (`.notPlanned`); a text and a window are `.partial`.
