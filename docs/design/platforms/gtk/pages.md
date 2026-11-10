@@ -272,6 +272,10 @@ mapped but not yet laid out, it would never show. A view that goes lets go
 of the popovers standing by it - one whose view a flipped branch made anew -
 as GTK keeps no parent it lost; the host layer hears their closing as
 nobody's, and the popover comes up again by the new view after the render.
+An anchor's widget not mapped - hidden, or in a window not yet shown - is
+waited on through its `map` signal, and the popover holds that widget while
+it waits: the old view's widget can go before the popover moves to the new
+view, and ending the wait disconnects the handler on a widget still alive.
 
 ## The window's overlays
 
