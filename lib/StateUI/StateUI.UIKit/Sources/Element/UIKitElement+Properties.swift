@@ -125,6 +125,10 @@ extension UIKitElement {
         accessibilityKindSaid = words.role != nil
         if words.value != nil || accessibilityValueSaid { target.accessibilityValue = words.value }
         accessibilityValueSaid = words.value != nil
+        if let authoring = target as? UIKitAccessibilityAuthoring {
+            authoring.authored.kind = words.role.map(Self.accessibilityTrait)
+            authoring.authored.value = words.value
+        }
         applyReaderActions(words, to: target)
     }
 
@@ -173,9 +177,17 @@ extension UIView {
         accessibilityLabel = words.label
         accessibilityHint = words.hint
         if words.headingLevel > 0 { accessibilityTraits.insert(.header) } else { accessibilityTraits.remove(.header) }
-        accessibilityElementsHidden = words.presence == .hiddenWithContents
-            || (words.presence == .hidden && holdingNoChildren)
-        isAccessibilityElement = words.isElement(standing: standing)
+        let hidesItsElements = words.presence == .hiddenWithContents || (words.presence == .hidden && holdingNoChildren)
+        let isElement = words.isElement(standing: standing)
+        accessibilityElementsHidden = hidesItsElements
+        isAccessibilityElement = isElement
+        if let authoring = self as? UIKitAccessibilityAuthoring {
+            authoring.authored.label = words.label
+            authoring.authored.hint = words.hint
+            authoring.authored.isHeading = words.headingLevel > 0
+            authoring.authored.isElement = isElement
+            authoring.authored.hidesItsElements = hidesItsElements
+        }
     }
 }
 

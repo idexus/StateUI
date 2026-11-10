@@ -152,6 +152,17 @@ thing to the user, though UIKit offers VoiceOver the parts inside it: hidden,
 it hides them too. A layout hidden from VoiceOver keeps its children met; only
 a layout hidden with its children hides them.
 
+UIKit's accessibility bundles - loaded in an application wherever VoiceOver
+runs - answer for UIKit's own controls over what is set on them: a color
+well names itself "Color" as a button, a switch says "0" or "1". The controls
+StateUI makes are subclasses of its own (`UIKitColorPickerView`,
+`UIKitSwitchControl`), which keep what the tree says
+(`UIKitAuthoredAccessibility`) and answer it before UIKit's own; what the
+tree leaves unsaid is UIKit's. A date's or a time's picker is a container of
+its parts under VoiceOver: met through them, it is met. The host's suite runs
+as VoiceOver does, the simulator's application accessibility on
+(`test-uikit.sh`), so what it proves is what a VoiceOver user meets.
+
 ## A web view
 
 A WebView is WebKit's own web view, the one Apple's hosts share

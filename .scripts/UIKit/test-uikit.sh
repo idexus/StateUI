@@ -31,12 +31,12 @@ read -r kind device _ <<< "$(uikit_destination "${1:-}")"
 [[ -n "$kind" ]] || exit 1
 [[ "$kind" == simulator ]] || { echo "ERROR: the host's suite runs on a simulator - $1 is a device"; exit 1; }
 
-# A macOS accessibility client reading the Simulator - the Accessibility
-# Inspector, an AX script - turns the simulator's application accessibility
-# on, and UIKit's accessibility bundles then answer for its controls in its
-# place: the suite runs with it off, as a simulator starts.
+# The suite stands as VoiceOver does: the simulator's application accessibility
+# on, so UIKit's accessibility bundles answer for its controls as they do for
+# a VoiceOver user, whatever ran before - an accessibility client reading the
+# Simulator, a case pressing as a screen reader presses.
 for key in ApplicationAccessibilityEnabled AccessibilityEnabled; do
-  xcrun simctl spawn "$device" defaults write com.apple.Accessibility "$key" -bool false
+  xcrun simctl spawn "$device" defaults write com.apple.Accessibility "$key" -bool true
 done
 
 # XCTest is the simulator platform's own, read where it stands.
