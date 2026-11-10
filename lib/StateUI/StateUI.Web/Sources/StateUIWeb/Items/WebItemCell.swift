@@ -27,8 +27,11 @@ final class WebItemCell: WebLayoutView, ItemsHolding {
         attribute("class", "stateui-item")
     }
 
-    /// Whether the list runs across, so a cell keeps its width rather than its height while it holds nothing.
-    var across = false
+    /// Whether the list runs across, so a cell keeps its width rather than its height while it holds nothing; the
+    /// room kept along the other way goes as the list turns.
+    var across = false {
+        didSet { if across != oldValue { style(oldValue ? "min-width" : "min-height", nil) } }
+    }
 
     func hold(_ identity: String, _ item: MountedElement?) {
         self.identity = identity

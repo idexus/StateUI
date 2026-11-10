@@ -83,7 +83,6 @@ final class WebItemsView: WebDOMView {
         byNode = Dictionary(uniqueKeysWithValues: order.map { ($0.node, $0) })
         near = near.filter { kept[$0] != nil }
         for (index, cell) in order.enumerated() {
-            cell.across = shape.isAcross
             WebRelay.insert(cell.node, into: content.node, at: index)
             cell.attribute("data-part", cells.isItem(cell.entry) ? nil : "")
             cell.attribute("role", cells.isItem(cell.entry) ? (mode == .none ? "listitem" : "option") : "presentation")
@@ -92,6 +91,7 @@ final class WebItemsView: WebDOMView {
 
     private func makeCell(_ identity: String) -> WebItemCell {
         let cell = WebItemCell(identity)
+        cell.across = shape.isAcross
         // A press on an item taps it as a button takes one (`ButtonPress`); a click no pointer made taps at once.
         cell.hearPress { [weak self, weak cell] phase, at, size, byFinger in
             guard let self, let cell else { return }
@@ -132,6 +132,7 @@ final class WebItemsView: WebDOMView {
     /// The layout as CSS: a column, a row, or a grid of as many columns as fit the narrowest width.
     private func lay(_ layout: ItemsLayout) {
         shape = layout
+        for cell in order { cell.across = layout.isAcross }
         switch layout {
         case .list(let spacing):
             attribute("data-layout", "list")
