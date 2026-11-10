@@ -247,6 +247,34 @@ final class WebLeaveTests: XCTestCase {
         host.finish()
     }
 
+    /// A page the bar stands over again, a page pushed over it taken off, is listened to as before: the bar follows
+    /// its scroller once however often it returns.
+    func testAPageShownAgainUnderTheBarIsListenedToOnce() async throws {
+        WebRenderer.shared?.finish()
+        let path = State(wrappedValue: [Int]())
+        let host = WebRenderer.running {
+            NavigationStack(path.projectedValue) {
+                ScrollView { Text("Root") }
+            } destination: { _ in
+                ScrollView { Text("Pushed") }
+            }
+        }
+        func settle() async { for _ in 0..<6 { host.step(); await Task.yield() } }
+        await settle()
+
+        var counts: [Int] = []
+        for _ in 0..<3 {
+            path.wrappedValue = [1]
+            await settle()
+            path.wrappedValue = []
+            await settle()
+            counts.append(WebRelay.listenerCount)
+        }
+
+        XCTAssertEqual(Set(counts).count, 1, "listeners after each visit: \(counts)")
+        host.finish()
+    }
+
     /// A window closed lets go of every view it made, its bar's with the page's.
     func testAClosedWindowLetsGoOfEveryViewItMade() throws {
         WebRenderer.shared?.finish()
