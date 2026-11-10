@@ -7,6 +7,7 @@
 
 #include "Relay.h"
 
+#include <memory>
 #include <unordered_map>
 
 #include <winrt/Windows.ApplicationModel.DataTransfer.h>
@@ -20,14 +21,33 @@ namespace transfer = winrt::Windows::ApplicationModel::DataTransfer;
 namespace storage = winrt::Windows::Storage;
 
 namespace {
-    /// What a view offers and takes of a drag, and the element its handlers hang on - another stands in a password
-    /// field's place.
+    /// How many views' handlers hang on their elements now.
+    int32_t hangs = 0;
+
+    /// The handlers a view hangs on its element, taken off as they go: its offer gone, or moved to another element.
+    struct Hung {
+        winrt::weak_ref<xaml::UIElement> on;
+        xaml::UIElement::DragStarting_revoker starting;
+        xaml::UIElement::DropCompleted_revoker completed;
+        xaml::UIElement::DragEnter_revoker entered;
+        xaml::UIElement::DragOver_revoker over;
+        xaml::UIElement::DragLeave_revoker left;
+        xaml::UIElement::Drop_revoker dropped;
+
+        Hung() { ++hangs; }
+        ~Hung() { --hangs; }
+        Hung(Hung const &) = delete;
+        Hung &operator=(Hung const &) = delete;
+    };
+
+    /// What a view offers and takes of a drag, and its handlers on the element they hang on - another stands in a
+    /// password field's place.
     struct Offered {
         winrt::hstring words;
         bool draggable = false;
         bool takesWords = false;
         bool takesFiles = false;
-        winrt::weak_ref<xaml::UIElement> hungOn;
+        std::unique_ptr<Hung> hung;
     };
 
     std::unordered_map<int64_t, Offered> offered;
@@ -58,9 +78,11 @@ namespace {
         });
     }
 
-    /// Hangs every handler once.
-    void hang(xaml::UIElement const &element, int64_t view) {
-        element.DragStarting(guarded("handling DragStarting",
+    /// Hangs every handler on `element`, once.
+    std::unique_ptr<Hung> hang(xaml::UIElement const &element, int64_t view) {
+        auto hung = std::make_unique<Hung>();
+        hung->on = winrt::make_weak(element);
+        hung->starting = element.DragStarting(winrt::auto_revoke, guarded("handling DragStarting",
             [view](xaml::UIElement const &, xaml::DragStartingEventArgs const &args) {
             auto *entry = offer(view);
             if (!entry || !entry->draggable) return;
@@ -68,7 +90,7 @@ namespace {
             args.Data().RequestedOperation(transfer::DataPackageOperation::Copy);
             tell(view, StateUIDragHeardStarted);
         }));
-        element.DropCompleted(guarded("handling DropCompleted",
+        hung->completed = element.DropCompleted(winrt::auto_revoke, guarded("handling DropCompleted",
             [view](xaml::UIElement const &, xaml::DropCompletedEventArgs const &) {
             if (auto *entry = offer(view); entry && entry->draggable) tell(view, StateUIDragHeardEnded);
         }));
@@ -79,13 +101,13 @@ namespace {
             args.Handled(true);
             tell(view, StateUIDragHeardOver);
         };
-        element.DragEnter(guarded("handling DragEnter", over));
-        element.DragOver(guarded("handling DragOver", over));
-        element.DragLeave(guarded("handling DragLeave", [view](IInspectable const &, xaml::DragEventArgs const &args) {
+        hung->entered = element.DragEnter(winrt::auto_revoke, guarded("handling DragEnter", over));
+        hung->over = element.DragOver(winrt::auto_revoke, guarded("handling DragOver", over));
+        hung->left = element.DragLeave(winrt::auto_revoke, guarded("handling DragLeave", [view](IInspectable const &, xaml::DragEventArgs const &args) {
             auto *entry = offer(view);
             if (entry && taken(*entry, args.DataView())) tell(view, StateUIDragHeardLeft);
         }));
-        element.Drop(guarded("handling Drop", [view](IInspectable const &, xaml::DragEventArgs const &args) {
+        hung->dropped = element.Drop(winrt::auto_revoke, guarded("handling Drop", [view](IInspectable const &, xaml::DragEventArgs const &args) {
             auto *entry = offer(view);
             auto data = args.DataView();
             if (!entry || !taken(*entry, data)) return;
@@ -113,6 +135,7 @@ namespace {
                 runOnUIThread([view, words] { tell(view, StateUIDragHeardDropped, words); });
             }));
         }));
+        return hung;
     }
 }
 
@@ -122,7 +145,7 @@ extern "C" void stateui_winui_offer_drag(
         auto element = as<xaml::UIElement>(handle);
         element.CanDrag(words != nullptr);
         element.AllowDrop(takesWords || takesFiles);
-        // A view offering nothing - one that left among them - is forgotten; its handlers find nothing of it.
+        // A view offering nothing - one that left among them - is forgotten, its handlers taken off its element.
         if (!words && !takesWords && !takesFiles) {
             offered.erase(view);
             return;
@@ -132,10 +155,7 @@ extern "C" void stateui_winui_offer_drag(
         entry.words = words ? winrt::to_hstring(words) : winrt::hstring{};
         entry.takesWords = takesWords;
         entry.takesFiles = takesFiles;
-        if (entry.hungOn.get() != element) {
-            hang(element, view);
-            entry.hungOn = winrt::make_weak(element);
-        }
+        if (!entry.hung || entry.hung->on.get() != element) entry.hung = hang(element, view);
     } catch (...) {
         report("offering a drag");
     }
@@ -148,6 +168,15 @@ extern "C" void stateui_winui_drag_read(StateUIObjectRef handle, bool *canDrag, 
         *allowsDrop = element.AllowDrop();
     } catch (...) {
         report("reading a drag");
+    }
+}
+
+extern "C" int32_t stateui_winui_drag_hangs() {
+    try {
+        return hangs;
+    } catch (...) {
+        report("counting the drags' handlers");
+        return 0;
     }
 }
 

@@ -1386,6 +1386,9 @@ void stateui_winui_drag_read(StateUIObjectRef element, bool *canDrag, bool *allo
 /// How many views the relay holds a drag offer of - what a test counts to see every one let go.
 int32_t stateui_winui_drag_offers(void);
 
+/// How many views' drag handlers hang on their elements now - what a test counts to see each hung once.
+int32_t stateui_winui_drag_hangs(void);
+
 
 /// How many views listen for the user's input - what a test counts to see every one stop.
 int32_t stateui_winui_listeners(void);

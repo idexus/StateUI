@@ -109,6 +109,31 @@ final class WinUITextFieldViewTests: XCTestCase {
         }
     }
 
+    /// A view whose drag goes and comes again hangs its handlers on its element once - a drag, a drop told once -
+    /// and takes them off as it leaves.
+    func testADragComingAgainHangsItsHandlersOnce() {
+        onUIThread {
+            let (shown, draggable) = (State(wrappedValue: true), State(wrappedValue: true))
+            let hung = stateui_winui_drag_hangs()
+            let host = WinUIRenderer.running {
+                VStack {
+                    if shown.wrappedValue { Text("Words").dragText("Alpha").isDraggable(draggable.wrappedValue) }
+                }
+            }
+            XCTAssertEqual(stateui_winui_drag_hangs() - hung, 1, "the first offer")
+
+            draggable.wrappedValue = false
+            host.runtime.pump.turn()
+            draggable.wrappedValue = true
+            host.runtime.pump.turn()
+            XCTAssertEqual(stateui_winui_drag_hangs() - hung, 1, "the offer come again")
+
+            shown.wrappedValue = false
+            host.settle { host.views(WinUITextView.self).isEmpty }
+            XCTAssertEqual(stateui_winui_drag_hangs() - hung, 0, "taken off as the view left")
+        }
+    }
+
     /// Whether `view`'s element can be dragged, and whether it takes drops.
     @MainActor
     private static func drags(_ view: WinUIView) -> [Bool] {
