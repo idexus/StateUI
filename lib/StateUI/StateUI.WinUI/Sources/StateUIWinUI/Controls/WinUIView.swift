@@ -231,6 +231,14 @@ class WinUIView {
         stateui_winui_invalidate_measure(handle)
     }
 
+    /// Measures the view again and has the layout placing it forget its sizes: a change of how the view is measured,
+    /// which WinUI's own measure does not show - words coming to wrap after a line measured at no width.
+    /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
+    func measureAgain() {
+        invalidateMeasure()
+        placingLayout?.invalidateMeasurements()
+    }
+
     /// The sizes the view measured at each width since its content last changed: an arrangement asks them again,
     /// as WinUI measuring a control again inside one marks its layout for another pass.
     /// Design: docs/design/platforms/winui/layout.md#measured-every-pass

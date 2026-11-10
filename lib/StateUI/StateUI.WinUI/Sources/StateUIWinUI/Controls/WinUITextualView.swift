@@ -58,10 +58,7 @@ class WinUITextualView: WinUIView {
         stateui_winui_text_set_lines(
             handle, breaking.wraps, Int32(breaking.lines(maximum: maximum) ?? 0),
             breaking.truncates || breaking.endsWithEllipsis(maximum: maximum))
-        if changed {
-            invalidateMeasure()
-            placingLayout?.invalidateMeasurements()
-        }
+        if changed { measureAgain() }
     }
 
     /// Where the words stand across the label.

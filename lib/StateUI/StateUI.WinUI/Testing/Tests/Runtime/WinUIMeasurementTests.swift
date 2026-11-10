@@ -76,4 +76,29 @@ final class WinUIMeasurementTests: XCTestCase {
             XCTAssertEqual(narrower.width, natural.width, "a button's line that never wraps keeps its size")
         }
     }
+
+    /// A button's caption that comes to wrap is measured again: measured at no width while it stood on one line,
+    /// it shows WinUI no change of its own, and the button stands as tall as its wrapped lines.
+    /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
+    func testAButtonsCaptionThatComesToWrapIsMeasuredAgain() throws {
+        try onUIThread {
+            let wraps = State(wrappedValue: false)
+            let host = WinUIRenderer.running {
+                VStack {
+                    Button("Words enough to break across more than one line")
+                        .lineBreak(wraps.wrappedValue ? .wordWrap : .noWrap)
+                        .width(100)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            host.layOut()
+            let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            let one = button.frame.height
+
+            wraps.wrappedValue = true
+            host.settle { button.frame.height > one * 1.5 }
+            XCTAssertGreaterThan(button.frame.height, one * 1.5, "its caption wraps over lines")
+        }
+    }
 }

@@ -117,7 +117,8 @@ final class WinUIButtonView: WinUIView {
         show()
     }
 
-    /// Writes what the button shows: all of it where its shape changed, else the words in their place.
+    /// Writes what the button shows: all of it where its shape changed, else the words in their place; a caption
+    /// breaking otherwise is measured again.
     private func show() {
         let inSight = self.inSight
         written = inSight
@@ -127,11 +128,13 @@ final class WinUIButtonView: WinUIView {
             stateui_winui_button_set_words(handle, inSight)
             return
         }
+        let breaksAnew = shown != nil && next.lineBreak != shown?.lineBreak
         shown = next
         bounded = nil
         stateui_winui_button_set_content(
             handle, inSight, WinUIStrings.lines(next.icon), next.position.rawValue, next.spacing ?? -1,
             next.aspect.rawValue, next.lineBreak?.wraps ?? false, next.lineBreak?.truncates ?? false)
+        if breaksAnew { measureAgain() }
     }
 
     /// A picture alone stands at its own size, whatever the room offered: the box filling the button with it would
