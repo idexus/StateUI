@@ -84,8 +84,12 @@ final class WebElement: NativeElement {
         }
         configureLayoutMotion()
         if !still { arrangeChildren() }
-        // A page stands against its safe area again as it or its content says another way (`standInTheSafeArea`).
-        if !still { standInTheSafeArea() }
+        // A page stands against its safe area again as it or its content says another way (`standInTheSafeArea`), and
+        // as a view it seeks its scroller through changes: the scroller may be another.
+        if !still {
+            standInTheSafeArea()
+            element.roomSeekingScroller?.web.standInTheSafeArea()
+        }
         if changed.contains(.ignoresSafeArea) { element.parent?.web.standInTheSafeArea() }
         listenForTheUser()
         offerContextMenu()

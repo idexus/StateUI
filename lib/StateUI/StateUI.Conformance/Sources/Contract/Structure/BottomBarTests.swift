@@ -6,8 +6,8 @@
 
 /// `BottomBarContract` on a host: the view a page declares at its foot stands there as tall as it lays out, the page's
 /// content clear above it and growing smaller as it grows; a scroller let under it at its end stays at its end, one
-/// elsewhere where it is - a list's as a ScrollView's, its last item brought to rest clear above it; the edge it shows
-/// over what scrolls under it is the one its view says.
+/// elsewhere where it is - a list's as a ScrollView's, its last item brought to rest clear above it, a list that
+/// becomes the page's scroller too; the edge it shows over what scrolls under it is the one its view says.
 @_spi(Host) public enum BottomBarTests: ConformanceFamily {
     public static let name = "BottomBar"
 
@@ -129,6 +129,38 @@
                 s.settle { (try? item(0, in: s)) != nil }
                 let (list, bar) = (try s.place(of: s.element("list")), try s.place(of: s.element("go")))
                 s.expect(list.y + list.height >= bar.y - 0.5, true, "the list reaches its bar: \(list), \(bar)")
+
+                try s.perform(.activate, on: s.element("go"))
+                let foot = { (try? s.place(of: item(59, in: s))).map { $0.y + $0.height } }
+                s.settle { foot().map { abs($0 - bar.y) < 1 } ?? false }
+                s.expect(foot().map { abs($0 - bar.y) < 1 }, true, "the last item at rest on the bar: \(String(describing: foot())), \(bar)")
+            },
+            ConformanceCase("aListThatBecomesThePagesScrollerBringsItsLastItemClearAboveIt", proves: [
+                Covered(BottomBarContract.self),
+            ], needs: [Covered(ItemsViewContract.scrollTo), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+                let aim = Aim(ItemsView<Int>.self)
+                let noted = State(wrappedValue: true)
+                s.start(reducesMotion: true) {
+                    Grid {
+                        if noted.wrappedValue { Text("Note").id("note") }
+                        ItemsView(0..<60) { Text("Item \($0)").padding(12) }
+                            .aim(aim)
+                            .gridRow(1)
+                            .id("list")
+                    }
+                    .rows(.automatic(count: 1), .proportional(1))
+                    .ignoresSafeArea(.all)
+                    .pageTitle("Foot")
+                    .bottomBar {
+                        Button("To the end").onClicked(policy: .ignoreWhileRunning) { try await aim.scroll(to: 59, anchor: .end) }
+                            .id("go")
+                    }
+                }
+                s.settle { (try? item(0, in: s)) != nil }
+                // The note goes: the list, the page's content alone, is the page's scroller.
+                noted.wrappedValue = false
+                s.settle { (try? s.element("note")) == nil }
+                let bar = try s.place(of: s.element("go"))
 
                 try s.perform(.activate, on: s.element("go"))
                 let foot = { (try? s.place(of: item(59, in: s))).map { $0.y + $0.height } }

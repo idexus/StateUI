@@ -98,7 +98,7 @@ Popover 6
 TextualElement 4
 Link 3
 TextAndIconElement 2
-BottomBar 5
+BottomBar 6
 appkit MotionLayout 2
 gtk MotionLayout 2
 web MotionLayout 2

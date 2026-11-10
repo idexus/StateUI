@@ -144,8 +144,11 @@ sides. A page stands its content clear of what is left by its own padding -
 what stands in it then has nothing over that edge (`data-pads`) - but on an
 edge where the content lets itself under (`SafeAreaArithmetic.under`), where
 the content's scroller takes that padding instead, its rows scrolling under
-the bar's material, the first and the last clear of it. The overlays stand
-clear of all of it. A view's frame is told from the corner below the bar
+the bar's material, the first and the last clear of it. The page stands so
+again as it changes, and as a view it seeks its scroller through changes - its
+content, or a view a layout on the way holds alone (`roomSeekingScroller`):
+another view may be its scroller then. The overlays stand clear of all of
+it. A view's frame is told from the corner below the bar
 (`WebRenderer.contentBox`), where the room's safe area starts.
 
 ## The color under the window

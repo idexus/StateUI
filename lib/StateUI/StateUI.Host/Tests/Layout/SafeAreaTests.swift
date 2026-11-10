@@ -78,9 +78,35 @@ final class SafeAreaTests: XCTestCase {
         }
     }
 
-    /// A stack holding a `scroller` for the first name and text for the rest.
-    private static func layout(_ names: [String], scroller: NodeType) -> HostPatch {
-        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+    /// A room seeks its scroller through its content and each view down from it a layout holds alone - views whose
+    /// children may change the scroller - and through no view beside another, nor the scroller's own.
+    @MainActor
+    func testARoomSeeksItsScrollerThroughTheViewsALayoutHoldsAlone() throws {
+        let runtime = HostRuntime.still()
+        let inner = Self.layout(["rows", "foot"], scroller: .itemsView, id: "inner")
+        var outer = HostPatch(id: .manual("outer"), type: .vStack)
+        outer.children = .arranged([inner])
+        var page = HostPatch(id: .manual("page"), type: .page)
+        page.children = .arranged([outer])
+        runtime.tree.apply(page, complete: true)
+        let room = try XCTUnwrap(runtime.tree.root)
+        let seeking = { (name: String) in room.first(id: .manual(name))?.roomSeekingScroller }
+
+        XCTAssertTrue(seeking("outer") === room, "the room's content")
+        XCTAssertTrue(seeking("inner") === room, "a layout its content holds alone")
+        XCTAssertNil(seeking("rows"), "a view beside another")
+        XCTAssertNil(room.roomSeekingScroller, "the room, which no room holds")
+
+        outer.children = .arranged([Self.layout(["rows"], scroller: .itemsView)])
+        page.children = .arranged([outer])
+        runtime.tree.apply(page, complete: true)
+        XCTAssertTrue(seeking("stack") === room, "the scroller's layout")
+        XCTAssertNil(seeking("rows"), "the scroller, whose children change no scroller")
+    }
+
+    /// A stack named `id` holding a `scroller` for the first name and text for the rest.
+    private static func layout(_ names: [String], scroller: NodeType, id: String = "stack") -> HostPatch {
+        var stack = HostPatch(id: .manual(id), type: .vStack)
         stack.children = .arranged(names.enumerated().map { index, name in
             HostPatch(id: .manual(name), type: index == 0 ? scroller : .text)
         })
