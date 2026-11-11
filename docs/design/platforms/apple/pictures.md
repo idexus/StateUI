@@ -12,10 +12,17 @@ handed it again finds the same image and nothing changed, however much the
 cache let go meanwhile. Of the pictures nothing shows, the latest asked for
 are kept besides, so a page shown again reads and decodes nothing; their
 pixels stay within the host layer's budget (`PictureArithmetic.keptPixels`,
-forty million), and past it the one asked for longest ago goes first. The
-system may let go of them sooner, under memory pressure. A picture costs the
-pixels it holds: a bitmap its own, a glyph those of its picture, a drawing
-or a symbol none.
+forty million), and past it the one asked for longest ago goes first; one
+holding more than the whole budget is not kept, and lets nothing go. A
+picture costs the pixels it holds: a bitmap its own, a glyph those of its
+picture, a drawing or a symbol none.
+
+The cache decides alone what it keeps, so the same pictures asked for in the
+same order keep the same ones on every machine. The renderer lets go of
+everything it kept when the system says memory runs short
+(`letGoOfKeptWhenMemoryRunsShort`, libdispatch's memory pressure source),
+and at no other time; a cache no renderer made, as a test makes one, keeps
+by its budget alone.
 
 The budget holds the largest page of pictures the Gallery shows - its home
 page, nineteen cards, some 38 million pixels as UIKit decodes them - so going

@@ -11,14 +11,25 @@ import Foundation
 /// Design: docs/design/platforms/apple/pictures.md#the-pictures-made
 @_spi(Host) @MainActor
 public final class PictureCache<Image: AnyObject> {
-    private let kept = NSCache<PictureCacheKey, Image>()
+    /// A picture kept besides those shown: the pixels it holds, and when it was last asked for.
+    private struct Kept {
+        let image: Image
+        let pixels: Int
+        var asked: Int
+    }
+
+    private var kept: [PictureCacheKey: Kept] = [:]
+    private var keptPixels = 0
+    private var asked = 0
+    private let budget: Int
     private let shown = NSMapTable<PictureCacheKey, Image>.strongToWeakObjects()
     private let pixels: (Image) -> Int
+    private var memoryPressure: DispatchSourceMemoryPressure?
 
     /// A cache keeping, of the pictures nothing shows, the latest asked for holding at most `budget` pixels together;
-    /// `pixels` tells how many a picture holds.
+    /// `pixels` tells how many a picture holds. It lets go of them only as its budget says, or as it is told.
     public init(budget: Int = PictureArithmetic.keptPixels, pixels: @escaping (Image) -> Int) {
-        kept.totalCostLimit = budget
+        self.budget = budget
         self.pixels = pixels
     }
 
@@ -26,19 +37,55 @@ public final class PictureCache<Image: AnyObject> {
     /// asked for, and again only once nothing shows it and the budget let it go; nil where `make` makes none.
     public func image(_ picture: HostPicture, height: Double? = nil, make: () -> Image?) -> Image? {
         let key = PictureCacheKey(picture, height: height)
-        if let found = kept.object(forKey: key) ?? shown.object(forKey: key) {
-            kept.setObject(found, forKey: key, cost: pixels(found))
+        asked += 1
+        if let found = kept[key] {
+            kept[key]?.asked = asked
+            return found.image
+        }
+        if let found = shown.object(forKey: key) {
+            keep(found, as: key)
             return found
         }
         guard let made = make() else { return nil }
-        kept.setObject(made, forKey: key, cost: pixels(made))
+        keep(made, as: key)
         shown.setObject(made, forKey: key)
         return made
     }
 
-    /// Lets go of every picture kept that nothing shows, as the system does under memory pressure.
+    /// Lets go of every picture kept that nothing shows.
     public func letGoOfKept() {
-        kept.removeAllObjects()
+        kept.removeAll()
+        keptPixels = 0
+    }
+
+    /// From now on lets go of every picture kept that nothing shows whenever the system says memory runs short.
+    public func letGoOfKeptWhenMemoryRunsShort() {
+        guard memoryPressure == nil else { return }
+        let source = DispatchSource.makeMemoryPressureSource(eventMask: [.warning, .critical], queue: .main)
+        source.setEventHandler { [weak self] in MainActor.assumeIsolated { self?.letGoOfKept() } }
+        source.activate()
+        memoryPressure = source
+    }
+
+    /// Whether it hears the system say memory runs short.
+    public var hearsMemoryPressure: Bool { memoryPressure != nil }
+
+    /// Keeps `image`, letting go of the ones asked for longest ago until the kept hold no more than the budget; one
+    /// holding more than the whole budget is not kept.
+    /// Design: docs/design/platforms/apple/pictures.md#the-pictures-made
+    private func keep(_ image: Image, as key: PictureCacheKey) {
+        let cost = pixels(image)
+        guard cost <= budget else { return }
+        kept[key] = Kept(image: image, pixels: cost, asked: asked)
+        keptPixels += cost
+        while keptPixels > budget, let oldest = kept.min(by: { $0.value.asked < $1.value.asked }) {
+            keptPixels -= oldest.value.pixels
+            kept[oldest.key] = nil
+        }
+    }
+
+    isolated deinit {
+        memoryPressure?.cancel()
     }
 }
 

@@ -124,8 +124,8 @@ final class UIKitImageViewTests: XCTestCase {
         }
     }
 
-    /// A picture something still shows is the same picture asked for again, even after the cache let it go under
-    /// memory pressure: a view handed it again finds nothing changed.
+    /// A picture something still shows is the same picture asked for again, even after the cache let go of what it
+    /// kept, as it does when the system says memory runs short: a view handed it again finds nothing changed.
     @MainActor
     func testAPictureStillShownOutlastsTheCache() throws {
         let dot = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).pngData { context in
@@ -139,6 +139,12 @@ final class UIKitImageViewTests: XCTestCase {
 
         XCTAssertTrue(UIKitRenderer.image(picture) === shown, "made again while shown")
         XCTAssertTrue(UIKitRenderer.glyph(picture, height: 20) === glyph, "its glyph made again while shown")
+    }
+
+    /// The renderer's pictures hear the system say memory runs short.
+    @MainActor
+    func testTheRenderersPicturesHearMemoryRunShort() {
+        XCTAssertTrue(UIKitRenderer.pictures.hearsMemoryPressure)
     }
 }
 

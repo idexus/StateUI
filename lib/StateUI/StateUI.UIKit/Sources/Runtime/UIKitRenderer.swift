@@ -393,8 +393,12 @@ final class UIKitRenderer {
     }
 
     /// The pictures made, and their glyphs at each height: each found again while a view shows it, the latest asked
-    /// for kept within the host layer's budget.
-    static let pictures = PictureCache<UIImage>(pixels: { $0.cgImage.map { $0.width * $0.height } ?? 0 })
+    /// for kept within the host layer's budget until the system says memory runs short.
+    static let pictures: PictureCache<UIImage> = {
+        let pictures = PictureCache<UIImage>(pixels: { $0.cgImage.map { $0.width * $0.height } ?? 0 })
+        pictures.letGoOfKeptWhenMemoryRunsShort()
+        return pictures
+    }()
 
     /// The picture as a bar or a tab shows it: `height` points tall and as wide as its shape makes it
     /// (`PictureArithmetic.glyph`) - its own pixels, drawn smaller; a symbol as UIKit sizes it there.
