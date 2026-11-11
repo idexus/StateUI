@@ -164,14 +164,18 @@ no native value a driver could read, so its cases read the colors it shows:
 a dashed outline has gaps along a run of points where a solid one has none,
 dashes shifted by their phase stand where the gaps stood, squared ends cover
 more of a run of short dashes than flat ones, and a mitred corner reaches a
-point just inside its outer side that a bevel, or a mitre past its limit,
-leaves bare. A figure's points stand set in from its room, so a corner's
-outer side is drawn inside it; a rectangle and an ellipse are set in by half
-their outline on every host. A line and an ellipse have no corner: their
-joins are never had there. A layout's box and a button's are read the same
-way - filled inside, outlined at the edge, an oval leaving the corners bare -
-but a button's own face may stand inside its outline, so there "nothing
-inside" means nothing of the outline's color.
+point just inside its outer side that a bevel leaves bare. A mitre past its
+limit is cut off however its platform cuts it - across the corner, or at the
+reach the limit allows, as WinUI's XAML does - so its case reads a point
+past that reach, on an outline sixteen wide: by more than a pixel at any
+scale, as a screen at 125% stands four fifths of a point to a pixel. A
+figure's points stand set in from its room, so a corner's outer side is
+drawn inside it; a rectangle and an ellipse are set in by half their outline
+on every host. A line and an ellipse have no corner: their joins are never
+had there. A layout's box and a button's are read the same way - filled
+inside, outlined at the edge, an oval leaving the corners bare - but a
+button's own face may stand inside its outline, so there "nothing inside"
+means nothing of the outline's color.
 
 ## A session
 

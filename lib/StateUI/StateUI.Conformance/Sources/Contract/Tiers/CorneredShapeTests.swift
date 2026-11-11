@@ -47,7 +47,8 @@
         }
     }
 
-    /// A mitred corner is cut across where its point would reach past the limit the tree sets.
+    /// A mitred corner is cut off where its point would reach past the limit the tree sets: nothing stands past the
+    /// reach the limit allows, however a platform cuts it - across the corner, or at that reach.
     @MainActor
     static func limited(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).limitsItsMitresAsTheTreeSays", proves: [
@@ -55,12 +56,12 @@
         ], needs: [Covered(CorneredShapeContract.lineJoin, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let limited = State(wrappedValue: false)
             s.start {
-                Specimens.page(element, ShapeTests.outlined(element, width: 8) + [
+                Specimens.page(element, ShapeTests.outlined(element, width: 16) + [
                     Write(CorneredShapeContract.lineJoin, LineJoin.miter),
                     Write(CorneredShapeContract.miterLimit, limited.wrappedValue ? 1.0 : 10.0),
                 ], beside: [Button("Limit").onClicked { limited.wrappedValue = true }.id("change")])
             }
-            let tip = Self.cornerTip(element)
+            let tip = Self.pastTheLimit(element)
             let shape = try s.specimen(element)
             try s.settle { try s.shows(.red, on: shape, at: tip) }
             s.expect(try s.color(of: shape, at: tip), shows: .red, "a right angle's mitre within ten")
@@ -74,5 +75,12 @@
     /// A point just inside the outer side of a corner, eight wide, that a mitre covers and a bevel leaves bare.
     static func cornerTip(_ element: String) -> Point {
         element == "Rectangle" ? Point(0, 0) : Point(35, 5)
+    }
+
+    /// A point inside the outer side of a corner, sixteen wide, that a mitre covers and a limit of one leaves bare: past
+    /// the reach the limit allows by more than a pixel at any scale.
+    /// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colors
+    static func pastTheLimit(_ element: String) -> Point {
+        element == "Rectangle" ? Point(0, 0) : Point(38.5, 1.5)
     }
 }
