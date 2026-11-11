@@ -121,6 +121,12 @@
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarButton("Save")).id(dressing.id)] }
             } destination: { _ in Text("Pushed") }
+        case "ToolbarLabel":
+            return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                DeclaringPage(beside: others, key: "\(worn)", labels: {
+                    [dressing.wear(ToolbarLabel("Saved")).id(dressing.id)]
+                })
+            } destination: { _ in Text("Pushed") }
         case "ToolbarGroup":
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage(beside: others, key: "\(worn)", groups: {

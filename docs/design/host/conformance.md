@@ -291,3 +291,23 @@ gesture with a closure of its own, and a closure that holds its view keeps
 it: a bare control never builds one. The walk marks nothing; an element a
 toolkit itself never lets go stands outside it in that host's test, with its
 reason.
+
+## Every case of a closed vocabulary
+
+A case proves a member by the values that show its effect - a button's main
+action and its way out - so a case of a vocabulary no case writes never
+reaches a host, and a host's table missing it stops the application only
+where an application writes that case. Every host's own suite runs one
+shared walk instead (`ClosedVocabularies.untaken(on:)`): each member whose
+value crosses as a number of a [closed vocabulary](../types/vocabularies.md)
+is written, case after case and then none, to every element the host
+realizes that wears it - one page an element, its specimen standing where a
+tier's case stands it. The cases are what the member's own type reads back
+from each number; a flag set reads every number, so it is written none,
+each of its first eight bits alone, and those eight. Each case leaves the
+host going on: the specimen in the tree, nothing new in the host's log, and
+the words after it standing in the window at the end. An element an author
+writes only through a modifier of its own - a page's icon, a bottom bar's
+edge, a marker's kind - stands on a page of its own, which writes the
+members it knows; for any other it stands no specimen, and the walk says
+so. The walk marks nothing.
