@@ -27,12 +27,12 @@
                                 .id("bar")
                         }
                 }
-                try s.settle { try s.place(of: s.element("bar")).height == 40 }
+                try s.settle { try standsTall(s.place(of: s.element("bar")), 40) }
                 let (content, bar) = (try s.place(of: s.element("content")), try s.place(of: s.element("bar")))
                 s.expect(content.y + content.height <= bar.y + 0.5, true, "the content above the bar: \(content), \(bar)")
 
                 tall.wrappedValue = 100
-                try s.settle { try s.place(of: s.element("bar")).height == 100 }
+                try s.settle { try standsTall(s.place(of: s.element("bar")), 100) }
                 let (grown, taller) = (try s.place(of: s.element("content")), try s.place(of: s.element("bar")))
                 s.expect(grown.y + grown.height <= taller.y + 0.5, true, "above it still: \(grown), \(taller)")
                 s.expect(abs(content.height - grown.height - 60) < 1, true,
@@ -68,7 +68,7 @@
                 offset.wrappedValue = Point(0, 100)
                 try s.settle { try standing() == 100 }
                 tall.wrappedValue = 70
-                try s.settle { try s.place(of: s.element("bar")).height == 70 }
+                try s.settle { try standsTall(s.place(of: s.element("bar")), 70) }
                 s.expect(try standing(), 100, "one short of its end where it was")
 
                 offset.wrappedValue = Point(0, 10_000)
@@ -104,7 +104,7 @@
                 try s.settle { try resting() }
 
                 tall.wrappedValue = 100
-                try s.settle { try s.place(of: s.element("go")).height == 100 }
+                try s.settle { try standsTall(s.place(of: s.element("go")), 100) }
                 try s.settle { try resting() }
                 s.expect(try resting(), true,
                          "the last item on the grown bar: \(String(describing: foot())), \(try s.place(of: s.element("go")))")
@@ -182,16 +182,16 @@
                             .id("bar")
                     }
                 }
-                try s.settle { try s.place(of: s.element("bar")).height == 40 }
-                s.expect(try s.place(of: s.element("bar")).height, 40, "under the root")
+                try s.settle { try standsTall(s.place(of: s.element("bar")), 40) }
+                s.expect(try s.place(of: s.element("bar")).height, 40, within: 1, "under the root")
 
                 path.wrappedValue = [1]
-                try s.settle { try s.isShown("pushed") && s.place(of: s.element("bar")).height == 40 }
-                s.expect(try s.place(of: s.element("bar")).height, 40, "under the page pushed")
+                try s.settle { try s.isShown("pushed") && standsTall(s.place(of: s.element("bar")), 40) }
+                s.expect(try s.place(of: s.element("bar")).height, 40, within: 1, "under the page pushed")
 
                 path.wrappedValue = []
-                try s.settle { try !s.isShown("pushed") && s.place(of: s.element("bar")).height == 40 }
-                s.expect(try s.place(of: s.element("bar")).height, 40, "under the root again")
+                try s.settle { try !s.isShown("pushed") && standsTall(s.place(of: s.element("bar")), 40) }
+                s.expect(try s.place(of: s.element("bar")).height, 40, within: 1, "under the root again")
             },
             ConformanceCase("aBottomBarsScrollEdgeHoldsWhatItsViewSays", proves: [Covered(BottomBarContract.scrollEdge)]) { s in
                 let edge = State(wrappedValue: ScrollEdge.hard)
@@ -233,4 +233,12 @@
         guard items.indices.contains(position) else { throw StateUIError.noItem("\(position)") }
         return try session.item(items[position], of: list)
     }
+}
+
+/// Whether `place` stands `height` tall to a point: a toolkit lays its views out on whole pixels, at 125% four fifths of
+/// a point each.
+/// Design: docs/design/host/conformance.md#what-a-case-asserts
+@MainActor
+private func standsTall(_ place: Rect, _ height: Double) -> Bool {
+    abs(place.height - height) < 1
 }

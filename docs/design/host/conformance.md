@@ -23,7 +23,10 @@ native widget's pixels, its font, its kind, where the toolkit puts its own
 parts: those belong to the host's own tests, beside the native API they
 prove. What StateUI decides itself a case reads as an effect: the place its
 layout gives a view, and the colors of what it draws, which hold no native
-value to read ([a drawing read by its colors](#a-drawing-read-by-its-colors)).
+value to read ([a drawing read by its colors](#a-drawing-read-by-its-colors)). A
+toolkit lays its views out on whole pixels - at 125% a pixel is four fifths
+of a point - so a case compares a size or a place it reads within a point,
+never exactly: a third of 280 points stands at 92.8 there.
 
 ## A case
 

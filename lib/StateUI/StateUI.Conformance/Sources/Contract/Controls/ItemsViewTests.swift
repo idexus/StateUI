@@ -50,13 +50,14 @@
                 }
                 s.settle { (try? item(3, in: s)) != nil }
                 let places = try (0...3).map { try s.place(of: item($0, in: s)) }
+                // A third of the width is no whole number of pixels: the toolkit stands each column on whole ones.
                 let width = (300.0 - 2 * 10) / 3
 
                 s.expect(places[1].y, places[0].y, within: 0.5, "three columns")
                 s.expect(places[2].y, places[0].y, within: 0.5, "three columns")
-                s.expect(places[1].x, places[0].x + width + 10, within: 0.5, "sharing the width, ten apart")
+                s.expect(places[1].x, places[0].x + width + 10, within: 1, "sharing the width, ten apart")
                 s.expect(places[3].x, places[0].x, within: 0.5, "the fourth under the first")
-                s.expect(places[0].width, width, within: 0.5)
+                s.expect(places[0].width, width, within: 1)
             },
             ConformanceCase("aGridWhoseWidthChangesLaysItsItemsInTheColumnsItNowHolds", proves: [
                 Covered(ItemsViewContract.itemsLayout),
