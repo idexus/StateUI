@@ -58,6 +58,27 @@ final class WinUITextInputViewTests: XCTestCase {
         }
     }
 
+    /// An editor that does not grow stands a line tall whatever it holds - as tall as an empty one that grows - and
+    /// WinUI lays it out as tall as it is placed, on the window's pixels at any scale.
+    func testAnEditorThatDoesNotGrowStandsALineTall() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    TextEditor(State(wrappedValue: "").projectedValue).growsWithText(true).width(300)
+                    TextEditor(State(wrappedValue: "One\nTwo\nThree").projectedValue).width(300)
+                }
+            }
+            host.layOut()
+
+            let editors = host.views(WinUITextEditorView.self)
+            XCTAssertEqual(editors.count, 2)
+            let (line, held) = try (XCTUnwrap(editors.first), XCTUnwrap(editors.last))
+            XCTAssertGreaterThan(line.placedFrame.height, 0, "an empty editor stands a line tall")
+            XCTAssertEqual(held.placedFrame.height, line.placedFrame.height, accuracy: 0.01, "placed a line tall")
+            XCTAssertEqual(held.laidOutFrame.height, held.placedFrame.height, accuracy: 0.01, "laid out as placed")
+        }
+    }
+
     private static func isRed(_ argb: UInt32) -> Bool {
         (argb >> 16) & 0xFF > 150 && (argb >> 8) & 0xFF < 100 && argb & 0xFF < 100
     }

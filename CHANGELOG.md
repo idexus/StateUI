@@ -15,7 +15,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - Input: on Windows a press whose view went mid-press no longer keeps the mouse from every other view, and a view
   whose drag is offered again hears each drop once; on the Web a view let go of while pressed leaves nothing
   listening on the page, and a view that stops hearing a drag gives the page its touch and its selection back.
-- Text: on the Web a text's words are selected only where the application says so.
+- Text: on the Web a text's words are selected only where the application says so; on Windows a text editor that
+  does not grow stands a whole line tall at every scale, with no scroll bar over its one line.
 - Controls: on the Web a button given the ordinary role (`.normal`) no longer ends the application; a disabled picker
   offered as segments or radio buttons keeps the values it offers later disabled, and a picture changed to one the
   application does not have takes no room.

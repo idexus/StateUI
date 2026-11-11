@@ -382,9 +382,19 @@ A field submits when Enter goes down in it; the key's release reaches nothing.
 A TextEditor is a `TextBox` of several lines whose Enter starts a new line and
 submits nothing, its words wrapped and scrolled inside it. Growing with its
 words, it is measured with the room below it open and takes the height they
-take, WinUI telling its layout as they change; not growing, it is measured
-with none and keeps a line's height, whatever it holds - the height the
-layout gives it is the room it scrolls in.
+take, WinUI telling its layout as they change; not growing, it keeps a
+line's height, whatever it holds - the height the layout gives it is the
+room it scrolls in.
+
+A line's height is what an empty `TextBox` standing as the editor does - its
+style, font, padding, border and least height - measures on the editor's
+window: the relay keeps one for each editor that does not grow. The theme's
+least height alone, 32, is a pixel short of a line at 125%, where the line's
+19.2 points and the box's border and padding take 32.8, and the editor would
+show a scroll bar over its one line. Off the tree a box takes no style of its
+own and measures its least height alone, so it is given WinUI's own,
+`DefaultTextBoxStyle`, the key WinUI's styles are based on; on the editor's
+`XamlRoot` it lays out on that window's pixels.
 
 ## A search field
 

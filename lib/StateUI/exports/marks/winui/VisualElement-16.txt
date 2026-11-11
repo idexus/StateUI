@@ -1,4 +1,4 @@
-# revision 29.2
+# revision 29.3
 Button.ignoresInput: ✅
 Button.rotationX: ✓ read rotationX of Button: the host's own tip, checked against the projection it laid on the element
 Canvas.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.

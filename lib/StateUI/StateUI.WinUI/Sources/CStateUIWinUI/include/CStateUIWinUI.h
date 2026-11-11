@@ -1015,6 +1015,13 @@ void stateui_winui_value_move(StateUIObjectRef control, double value);
 StateUIObjectRef stateui_winui_field_make(int64_t view);
 StateUIObjectRef stateui_winui_password_make(int64_t view);
 StateUIObjectRef stateui_winui_editor_make(int64_t view);
+
+/// An empty TextBox to measure an editor's line by; released with `stateui_winui_release`.
+StateUIObjectRef stateui_winui_editor_line_make(void);
+
+/// The height of one line of `editor` at `width`: `line`, empty and standing as the editor does - its style, font,
+/// padding, border and least height - as WinUI measures it on the editor's window.
+double stateui_winui_editor_line_height(StateUIObjectRef editor, StateUIObjectRef line, double width);
 StateUIObjectRef stateui_winui_search_make(int64_t view);
 void stateui_winui_field_set_text(StateUIObjectRef field, char const *utf8);
 void stateui_winui_field_set_placeholder(StateUIObjectRef field, char const *utf8);

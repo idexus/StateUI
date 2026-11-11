@@ -149,6 +149,47 @@ extern "C" StateUIObjectRef stateui_winui_editor_make(int64_t view) {
     }
 }
 
+extern "C" StateUIObjectRef stateui_winui_editor_line_make(void) {
+    try {
+        controls::TextBox line;
+        line.AcceptsReturn(true);
+        line.TextWrapping(xaml::TextWrapping::Wrap);
+        // Off the tree a box takes no style of its own: it is given WinUI's, by its public key.
+        // Design: docs/design/platforms/winui/controls.md#an-editor
+        auto resources = xaml::Application::Current().Resources();
+        auto key = winrt::box_value(L"DefaultTextBoxStyle");
+        if (resources.HasKey(key)) line.Style(resources.Lookup(key).as<xaml::Style>());
+        return detach(line);
+    } catch (...) {
+        report("making an editor's line");
+        return nullptr;
+    }
+}
+
+extern "C" double stateui_winui_editor_line_height(StateUIObjectRef editor, StateUIObjectRef line, double width) {
+    try {
+        auto words = as<controls::TextBox>(editor);
+        auto empty = as<controls::TextBox>(line);
+        if (auto root = words.XamlRoot(); root && !empty.XamlRoot()) empty.XamlRoot(root);
+        if (auto style = words.Style(); style && empty.Style() != style) empty.Style(style);
+        empty.FontFamily(words.FontFamily());
+        empty.FontSize(words.FontSize());
+        empty.FontWeight(words.FontWeight());
+        empty.FontStyle(words.FontStyle());
+        empty.FontStretch(words.FontStretch());
+        empty.CharacterSpacing(words.CharacterSpacing());
+        empty.Padding(words.Padding());
+        empty.BorderThickness(words.BorderThickness());
+        empty.MinHeight(words.MinHeight());
+        empty.ApplyTemplate();
+        empty.Measure({static_cast<float>(width), INFINITY});
+        return empty.DesiredSize().Height;
+    } catch (...) {
+        report("measuring an editor's line");
+        return 0;
+    }
+}
+
 extern "C" StateUIObjectRef stateui_winui_search_make(int64_t view) {
     try {
         controls::AutoSuggestBox search;

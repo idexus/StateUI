@@ -20,7 +20,24 @@ final class WinUITextEditorView: WinUITextInputView {
     }
 
     /// Growing, the height its words take; not growing, one line's, whatever it holds.
+    /// Design: docs/design/platforms/winui/controls.md#an-editor
     override func measure(width: Double?, height: Double?) -> LayoutSize {
-        super.measure(width: width, height: growsWithText ? height : 0)
+        guard !growsWithText else { return super.measure(width: width, height: height) }
+        let own = super.measure(width: width, height: 0)
+        return LayoutSize(width: own.width, height: lineHeight(width: width ?? .infinity))
+    }
+
+    /// The empty TextBox WinUI measures the editor's line by, once it was first measured.
+    private var line: StateUIObjectRef?
+
+    /// The height of one of the editor's lines at `width`, as WinUI measures it on the editor's window.
+    private func lineHeight(width: Double) -> Double {
+        guard let line = line ?? stateui_winui_editor_line_make() else { return 0 }
+        self.line = line
+        return stateui_winui_editor_line_height(handle, line, width)
+    }
+
+    isolated deinit {
+        line.map { stateui_winui_release($0) }
     }
 }

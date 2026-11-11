@@ -63,7 +63,7 @@ Text 5
 TextColorElement 4
 TintElement 3
 ContextMenu 4
-winui VisualElement 2
+winui VisualElement 3
 winui Layout 2
 gtk Layout 2
 TextField 6
@@ -114,3 +114,4 @@ HoverElement 2
 PresentedElement 2
 Anchor 2
 CorneredShape 2
+winui TextEditor 2
