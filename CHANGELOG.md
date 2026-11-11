@@ -31,6 +31,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the plus key is named as assistive technology reads it.
 - Hosts: on GTK a popover waiting for its hidden anchor and the frame clock hold what they use; Windows keeps no
   record of what an application told the screen reader or launched.
+- Pictures: on the Mac and iOS a picture larger than the whole budget of pictures kept no longer pushes every other
+  one out, and what is kept follows that budget alone until the system says memory runs short.
 
 ### Tooling
 
@@ -38,6 +40,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   (`DocCommentExamplesTests`).
 - A host's driver opens a view's context menu as the user asks for it and reads the menu shown (`UserAct.openMenu`,
   `HostDriver.shownMenu(over:)`), and the UIKit suite runs as VoiceOver does, UIKit's accessibility answering.
+- Every host's suite writes every case of every closed vocabulary to every element wearing it and holds the host to
+  taking each (`ClosedVocabularies`); Android walks it in parts a phone takes.
 
 ## 0.8.3 - 2026-11-09
 
