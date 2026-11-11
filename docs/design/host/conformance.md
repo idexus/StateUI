@@ -310,4 +310,6 @@ the words after it standing in the window at the end. An element an author
 writes only through a modifier of its own - a page's icon, a bottom bar's
 edge, a marker's kind - stands on a page of its own, which writes the
 members it knows; for any other it stands no specimen, and the walk says
-so. The walk marks nothing.
+so. A host whose UI thread may run a message only so long walks it in parts
+(`untaken(on:part:)`), every n-th of the elements it realizes. The walk marks
+nothing.

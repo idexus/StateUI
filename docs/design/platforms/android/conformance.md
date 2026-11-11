@@ -56,7 +56,10 @@ the CPH2363 ends one whose window stands while a message runs ten seconds
 that message done. So the runner runs the suite one item in each message of
 the UI thread: each test alone, and a conformance family of more cases than an
 item takes in parts, each part a message; a family's verdicts are gathered
-until its last part writes them, one file a family.
+until its last part writes them, one file a family. The walk of every case of
+every closed vocabulary runs in parts too, each test of
+`AndroidVocabularyTests` every twenty-fourth of the elements: whole, it takes some
+forty seconds.
 
 ## What the driver reads
 
