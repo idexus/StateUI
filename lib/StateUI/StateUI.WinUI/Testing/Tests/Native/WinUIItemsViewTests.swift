@@ -41,6 +41,23 @@ final class WinUIItemsViewTests: XCTestCase {
         }
     }
 
+    /// A list of items alike is as long as its items once laid out: no cell is measured in a room the list never
+    /// stood in, which WinUI's estimate of its extent would keep - at any scale.
+    func testAListOfItemsAlikeIsAsLongAsItsItems() throws {
+        try onUIThread {
+            let driver = WinUIDriver()
+            defer { driver.close() }
+            _ = driver.start(clock: nil, reducesMotion: true) {
+                ItemsView(0..<1_000) { Text("Item \($0)").padding(12) }.height(300)
+            }
+            let host = try XCTUnwrap(driver.renderer)
+            let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
+            host.settle { list.standing.reach.y > 0 }
+            let item = try XCTUnwrap(host.views(WinUITextView.self).first).laidOutFrame.height
+            XCTAssertEqual(list.standing.reach.y + 300, 1_000 * item, accuracy: 0.01, "as long as its items")
+        }
+    }
+
     /// Narrator reads a row by its container's name alone: each row is named by what its item says, and named again
     /// as that changes.
     func testARowIsNamedByWhatItsItemSays() throws {

@@ -45,11 +45,24 @@ again after the one before was let go.
 
 ## A cell before its entry
 
-A cell keeps, before its entry is measured, the room the host layer says
-(`ItemsCells.estimatedExtent`): a row's 44 points down a list and a grid, an
-item's 100 points across a row. Measured of nothing, every cell would fit in
-view at once and the collection would ask for every entry; an estimate too
-narrow across would make a row ask for more entries than it shows. A cell
+A cell keeps, before its entry is measured, the room the list's items last
+took along it - their height down a list and a grid, their width across a
+row - and before any item was measured the room the host layer says
+(`ItemsCells.estimatedExtent`): a row's 44 points down, an item's 100 points
+across. Measured of nothing, every cell would fit in view at once and the
+collection would ask for every entry; an estimate too narrow across would
+make a row ask for more entries than it shows.
+
+A collection that reuses its cells gives a cell another entry as it scrolls,
+and the tree builds that entry a render later. A cell answering then
+anything but what the items take changes its size under the collection's
+estimate of its extent, which moves the view under the collection's own
+scroll: at 125% on WinUI, a row of 43 points answering 44 lost a scroll to
+the list's end. So a cell the host measures answers through
+`ItemsCells.contentSize`, which keeps the room an item - not a header or a
+footer - measured, on its own axis. UIKit's and AppKit's layouts keep the
+estimate for an entry not yet measured, and the Web's cells, each its own
+entry's, keep the room their entry took. A cell
 shows its entry anew (`ItemsHolding.showsAnew`) only where it is another
 entry, or where its view and the entry disagree on whether there is a
 subtree to show.

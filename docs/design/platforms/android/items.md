@@ -49,9 +49,10 @@ same through the group it stands in.
 
 A cell is the relay's `StateUIItemCell`, a StateUI layout the recycler
 measures and places, holding the entry's subtree as a page holds its child.
-A cell whose entry is still on its way keeps the room of a row: measured of
-nothing, every cell would fit in view at once and the recycler would ask
-for every entry. An entry whose size changes is measured again by the cell
+A cell whose entry is still on its way keeps the room the list's items last
+took ([a cell before its entry](../../host/items.md#a-cell-before-its-entry)):
+measured of nothing, every cell would fit in view at once and the recycler
+would ask for every entry. An entry whose size changes is measured again by the cell
 holding it; the list's own size never follows its items.
 
 The recycler's pool keeps every cell it is given. A cell it dropped would

@@ -84,7 +84,7 @@ CheckBox 3
 Ellipse 2
 Grid 2
 HStack 5
-ItemsView 6
+ItemsView 7
 Line 3
 Map 4
 Path 2
@@ -98,7 +98,7 @@ Popover 6
 TextualElement 4
 Link 3
 TextAndIconElement 2
-BottomBar 6
+BottomBar 7
 appkit MotionLayout 2
 gtk MotionLayout 2
 web MotionLayout 2

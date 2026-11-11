@@ -117,11 +117,11 @@ final class WinUIItemsView: WinUILayoutView, WinUIPageScroller {
         LayoutSize(width: width ?? 0, height: 0)
     }
 
-    /// Measures WinUI's list in the room it stands in, none before it stands anywhere: its scroller's viewport is the
-    /// room it is measured in.
+    /// Measures WinUI's list in the room it stands in, and not before it stands anywhere: its scroller's viewport is
+    /// the room it is measured in, and a room of none would measure a cell no wider than nothing.
     /// Design: docs/design/platforms/winui/items.md#its-room
     override func measure(width: Double, height: Double) -> LayoutSize {
-        _ = list.measure(width: list.placed?.width ?? 0, height: list.placed?.height ?? 0)
+        if let placed = list.placed { _ = list.measure(width: placed.width, height: placed.height) }
         return super.measure(width: width, height: height)
     }
 

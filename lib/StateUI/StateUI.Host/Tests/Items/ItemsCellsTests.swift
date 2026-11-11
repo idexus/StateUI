@@ -162,6 +162,36 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertEqual(ItemsCells.estimatedExtent(across: true), 100)
     }
 
+    /// A cell before its entry keeps the room the list's items last took along it - the estimate before any - so a
+    /// cell given another entry answers as the one before it did; a header's room is not an item's, nor one axis's
+    /// the other's.
+    func testACellBeforeItsEntryKeepsTheRoomTheItemsTook() throws {
+        Changing.items = Array(0..<10)
+        Changing.header = "Header"
+        ChangingApplication.register()
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let cells = ItemsCells(try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), in: runtime)
+        cells.takeEntries()
+        let (cell, heading) = (Cell(), Cell())
+        let header = try XCTUnwrap(cells.identities.first { !cells.isItem($0) })
+        func waiting(across: Bool = false) -> LayoutSize {
+            cells.contentSize(of: Cell(), across: across, width: 300, showing: false) { LayoutSize(width: 1, height: 1) }
+        }
+        func shows(_ holding: Cell, _ identity: String, _ size: LayoutSize) {
+            holding.hold(identity, nil)
+            XCTAssertEqual(cells.contentSize(of: holding, across: false, width: 300, showing: true) { size }, size)
+        }
+
+        XCTAssertEqual(waiting(), LayoutSize(width: 300, height: 44), "the estimate before any item")
+        shows(cell, token(3, in: cells), LayoutSize(width: 300, height: 43.2))
+        XCTAssertEqual(waiting(), LayoutSize(width: 300, height: 43.2), "the room the items last took")
+        shows(heading, header, LayoutSize(width: 300, height: 120))
+        XCTAssertEqual(waiting(), LayoutSize(width: 300, height: 43.2), "a header's room is not an item's")
+        XCTAssertEqual(waiting(across: true), LayoutSize(width: 100, height: 0), "across, its own estimate")
+    }
+
     /// A size changing inside an entry is measured again from there up to the entry, whose cell measures it - the
     /// list's own size never follows its items; outside a list every layout up to the root measures again.
     func testMeasuringAgainStopsAtTheEntryACellMeasures() throws {

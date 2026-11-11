@@ -336,6 +336,7 @@ final class GTKItemsView: GTKLayoutView, GTKPageScroller {
         guard let row, !released else { return }
         let cell = GTKItemCell()
         cell.row = OpaquePointer(row)
+        cell.cells = cells
         cell.across = shape.isAcross
         made[OpaquePointer(row)] = cell
         gtk_list_item_set_child(OpaquePointer(row), cell.widget)
