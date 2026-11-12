@@ -12205,6 +12205,19 @@ enum Listings {
                 Button("Move the highlight")
                     .onClicked { highlighted = (highlighted + 1) % words.count }
 
+                // A run takes what its label wears unless it says otherwise:
+                // no decorations and no tracking, said, stand against the
+                // label's underline and spacing.
+                Text("")
+                    .textDecorations(.underline)
+                    .tracking(3)
+                    .spans {
+                        TextSpan("spaced and underlined, ")
+                        TextSpan("then plain")
+                            .textDecorations([])
+                            .tracking(0)
+                    }
+
                 // `text` and `spans` are MUTUALLY EXCLUSIVE: a label
                 // given both shows the runs.
                 Text("this text never appears")

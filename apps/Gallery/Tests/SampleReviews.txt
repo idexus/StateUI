@@ -137,7 +137,7 @@ TaskSleepSample.swift 3c00920154133b8b
 TextEditorSample.swift 9cc806f939101a0a
 TextFieldSample.swift 33277239a8090847
 TextSample.swift 96027a4daae86bbf
-TextSpanSample.swift d8a6a8c6c203ffa9
+TextSpanSample.swift c5230670446e84a7
 TextStyleSample.swift 492fb505d2e2275f
 TickerSample.swift ecca16670e47a404
 TimePickerSample.swift d379ec1a41803822
