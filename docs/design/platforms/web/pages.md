@@ -152,6 +152,22 @@ another view may be its scroller then. The overlays stand clear of all of
 it. A view's frame is told from the corner below the bar
 (`WebRenderer.contentBox`), where the room's safe area starts.
 
+## The keyboard
+
+A phone's browser lays its keyboard over the page and leaves the page's own
+viewport as it was, showing less of it: the visible part
+(`visualViewport`) ends where the keyboard begins. The relay tells the host
+each time the visible part moves or changes its size, and the host reads the
+keyboard from it (`WebScreenKeyboard`): how far the page's viewport reaches
+past the foot of its visible part, at its own scale - nought while the page is
+zoomed in, which shows less of it with no keyboard, and nought where the
+browser makes the page itself shorter for the keyboard. The host writes it as
+`--stateui-keyboard`, and the foot of the safe area is the higher of the
+system's own and the keyboard (`--stateui-over-bottom`, the rule of
+`SafeAreaArithmetic.bottom`): a page stands clear of the keyboard, its bottom
+bar on it, and content that ignores the foot of the safe area runs under it,
+as on every host. A phone's sheet from the bottom keeps clear of it too.
+
 ## The color under the window
 
 The page under the window wears the window's color, where the window is one

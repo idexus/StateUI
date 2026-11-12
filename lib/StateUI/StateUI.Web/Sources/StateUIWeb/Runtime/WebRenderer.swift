@@ -108,6 +108,14 @@ final class WebRenderer {
         }
         pageListeners.append(links)
         WebRelay.listenForLinks(links)
+        // A phone's keyboard over the page stands in the foot of its safe area.
+        // Design: docs/design/platforms/web/pages.md#the-keyboard
+        let viewport = WebRelay.listener { [weak self] in
+            let told = WebRelay.viewport
+            self?.viewportMoved(layout: told.layout, top: told.top, visible: told.visible, scale: told.scale)
+        }
+        pageListeners.append(viewport)
+        WebRelay.listenToViewport(viewport)
         runtime.start(
             realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
             register: WebRealization.register,
@@ -197,6 +205,19 @@ final class WebRenderer {
     func pageChanged(_ state: (shown: Bool, focused: Bool)) {
         guard let window = roster.windows.first?.element else { return }
         runtime.windowStateChanged(window, minimized: !state.shown, activated: state.shown && state.focused)
+    }
+
+    /// How far a phone's keyboard stands over the page's foot now, in CSS pixels.
+    private(set) var keyboard = 0.0
+
+    /// The visible part of the page moved, as the browser tells it - the page's viewport `layout` high, the part of it
+    /// visible from `top`, `visible` high, at `scale`: the foot of the safe area keeps clear of the keyboard it leaves.
+    /// Design: docs/design/platforms/web/pages.md#the-keyboard
+    func viewportMoved(layout: Double, top: Double, visible: Double, scale: Double) {
+        let height = WebScreenKeyboard.height(layout: layout, top: top, visible: visible, scale: scale)
+        guard height != keyboard else { return }
+        keyboard = height
+        WebRelay.useKeyboard(height)
     }
 
     /// Writes the window's chrome again from what it shows now.

@@ -137,8 +137,9 @@ it, so a case of the safe area proves on each host what a user meets there.
 The keyboard docked at a window's foot (`standUnderKeyboard`), which no test
 can raise at a height it knows: a host is told it as its platform tells
 where the keyboard goes - Android among the window's insets, UIKit by its
-own notice of the keyboard's frame - and a platform showing no keyboard on
-its screen says so, which the case does not apply to.
+own notice of the keyboard's frame, the Web by the visible part of the page
+a phone's browser leaves - and a platform showing no keyboard on its screen
+says so, which the case does not apply to.
 
 A case's requests go to the HTTP server its driver names (`served()`, and
 `held()` counting the requests it holds). A native host's driver names the

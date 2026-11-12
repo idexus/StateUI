@@ -91,12 +91,13 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 .stateui-loading-bar:indeterminate::-moz-progress-bar { background: transparent; }
 @keyframes stateui-sweep { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 
-/* What stands over the window on each edge - a phone's status bar, notch and home indicator: the window's bar reaches
-   under the top, and each page keeps clear of what is left, as its content says (pages.md#the-safe-area). */
+/* What stands over the window on each edge - a phone's status bar, notch and home indicator, and at the foot the
+   keyboard where it stands higher (--stateui-keyboard, the host's): the window's bar reaches under the top, and each
+   page keeps clear of what is left, as its content says (pages.md#the-safe-area, #the-keyboard). */
 :root {
   --stateui-over-top: env(safe-area-inset-top, 0px);
   --stateui-over-left: env(safe-area-inset-left, 0px);
-  --stateui-over-bottom: env(safe-area-inset-bottom, 0px);
+  --stateui-over-bottom: max(env(safe-area-inset-bottom, 0px), var(--stateui-keyboard, 0px));
   --stateui-over-right: env(safe-area-inset-right, 0px);
 }
 /* The window's bar is a material over the top of its room, as the platforms' glass bars are: the room runs under it,
@@ -541,7 +542,7 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 @media (max-width: 600px) {
   .stateui-sheet {
     --stateui-over-left: env(safe-area-inset-left, 0px);
-    --stateui-over-bottom: env(safe-area-inset-bottom, 0px);
+    --stateui-over-bottom: max(env(safe-area-inset-bottom, 0px), var(--stateui-keyboard, 0px));
     --stateui-over-right: env(safe-area-inset-right, 0px);
   }
   .stateui-sheet, .stateui-sheet[data-fits] {

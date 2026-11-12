@@ -613,6 +613,23 @@ enum WebRelay {
     /// The screen's smallest width where its user points by touch; 0 where by a mouse or a pen.
     static var touchScreen: Double { stateui_web_touch_screen() }
 
+    /// The visible part of the page against the page's own viewport: the viewport's height, the visible part's top in
+    /// it, its height and its scale (`WebScreenKeyboard`).
+    static var viewport: (layout: Double, top: Double, visible: Double, scale: Double) {
+        (stateui_web_viewport_part(0), stateui_web_viewport_part(1), stateui_web_viewport_part(2),
+         stateui_web_viewport_part(3))
+    }
+
+    /// Calls `listener` whenever the visible part of the page moves or changes its size.
+    static func listenToViewport(_ listener: Int32) {
+        stateui_web_listen_viewport(listener)
+    }
+
+    /// Has the foot of the page's safe area keep clear of a keyboard `height` CSS pixels tall.
+    static func useKeyboard(_ height: Double) {
+        stateui_web_use_keyboard(height)
+    }
+
     /// Whether the user asked for less motion.
     static var reducesMotion: Bool { stateui_web_reduces_motion() != 0 }
 

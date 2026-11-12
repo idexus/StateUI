@@ -283,7 +283,11 @@ cannot reach. A file dialog is the relay's, held on the test's page and
 answered from the test's own files, what the page would launch is the relay's
 record, a drag between views is the DOM's drag events the driver dispatches,
 and a window's phases are the notices the driver gives - a member proven
-through them is the host's own, ✓, whatever element the act is done on.
+through them is the host's own, ✓, whatever element the act is done on. A
+keyboard a case stands the page under is told the host as a phone's browser
+tells it - the visible part of the page that much shorter than the page's
+viewport, at its own scale (`WebRenderer.viewportMoved`) - and a case that
+told of one leaves none to the next.
 
 XCTest's own loop runs on Swift's cooperative executor and awaits MainActor
 between its tests. Once a host runs, MainActor's executor is the UI thread's,

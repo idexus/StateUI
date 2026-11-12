@@ -251,6 +251,14 @@ STATEUI_WEB(listen_density) void stateui_web_listen_density(int32_t listener);
 /// The smallest width of the screen in CSS pixels where its user points by touch; 0 where by a mouse or a pen.
 STATEUI_WEB(touch_screen) double stateui_web_touch_screen(void);
 
+/// The visible part of the page against the page's own viewport, `part` by part: 0 the viewport's height, 1 the
+/// visible part's top in it, 2 its height, 3 its scale; `listen_viewport` calls `listener` as the visible part moves.
+STATEUI_WEB(viewport_part) double stateui_web_viewport_part(int32_t part);
+STATEUI_WEB(listen_viewport) void stateui_web_listen_viewport(int32_t listener);
+
+/// Has the foot of the page's safe area keep clear of a keyboard `height` CSS pixels tall.
+STATEUI_WEB(use_keyboard) void stateui_web_use_keyboard(double height);
+
 /// Whether the user asked for less motion.
 STATEUI_WEB(reduces_motion) int32_t stateui_web_reduces_motion(void);
 
