@@ -206,7 +206,7 @@ extension Differ {
                     changed: self.changed,
                     written: self.written,
                     everything: describeAll,
-                    element: id)
+                    place: PathNumber(place: standing))
 
                 pass.frame = built
                 bodies.append(stateful.viewType.name)
@@ -258,7 +258,7 @@ extension Differ {
         // The container's own content runs here, inside this element's read scope and
         // build frame: the reader of a state is the closure that read it.
         // Design: docs/design/core/identity-and-diffing.md#containers-run-their-own-content
-        let within = pass.frame ?? bareFrame(for: rendered, builds: pass.builds, element: id)
+        let within = pass.frame ?? bareFrame(for: rendered, builds: pass.builds)
         pass.within = within
 
         // A container built again for what its own closure read: an inspector names the
@@ -389,7 +389,7 @@ extension Differ {
 
     /// The frame a bare container's content runs under: the view the walk is in,
     /// with this element's own count and reads.
-    private func bareFrame(for rendered: RenderedNode?, builds: Int, element: ElementID) -> BuildScope.Frame? {
+    private func bareFrame(for rendered: RenderedNode?, builds: Int) -> BuildScope.Frame? {
         guard let view = bodies.last ?? rendered?.view else { return nil }
 
         return BuildScope.Frame(
@@ -399,7 +399,7 @@ extension Differ {
             changed: changed,
             written: written,
             everything: describeAll,
-            element: element)
+            place: PathNumber(place: standing))
     }
 
     /// Whether two elements are alike by their composed views: each one's type and the branch its content root

@@ -37,8 +37,8 @@ enum BuildScope {
         /// Whether this render describes the whole tree.
         let everything: Bool
 
-        /// The element being built.
-        let element: ElementID
+        /// Where the element being built stands: the keys from the root down to it.
+        let place: PathNumber
     }
 
     /// The build under way; written and read only by the thread that renders.

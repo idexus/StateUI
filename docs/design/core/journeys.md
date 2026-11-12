@@ -235,8 +235,10 @@ nil`, so the derived state stays the same object.
 
 ```text
   derived state   known to the first source's storage under a key spelled
-                  nowhere (DerivationKey): the element being built and the
-                  call's file, line and column (PathNumber), the identities of
+                  nowhere (DerivationKey): where the element being built
+                  stands - the keys from the root down to it, as a name is
+                  distinct among siblings alone - and the call's file, line
+                  and column (PathNumber), the identities of
                   the ForEach rows it stands in - values, compared as values -
                   and which time that line ran in the build; held by that
                   element as it holds its readings: one state per use across

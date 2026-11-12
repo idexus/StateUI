@@ -108,6 +108,34 @@ private final class SeenByFactor {
     }
 }
 
+/// A view converting one source by its factor - placed under two parents by one local id.
+private struct Scaled: View {
+    let source: Binding<Double>
+    let factor: Double
+    let seen: SeenByFactor
+
+    var body: some View {
+        let scaled = source.convert({ $0 * factor }, back: { $0 / factor })
+        let _ = seen.note(factor, scaled)
+        return Slider(scaled).maximum(100)
+    }
+}
+
+/// A parent for each factor, each holding a `Scaled` named `same`.
+private struct TwoParents: View {
+    let source: Binding<Double>
+    let factors: State<[Double]>
+    let seen: SeenByFactor
+
+    var body: some View {
+        VStack {
+            ForEach(factors.wrappedValue) { factor in
+                VStack { Scaled(source: source, factor: factor, seen: seen).id("same") }.id(factor)
+            }
+        }
+    }
+}
+
 /// One helper making a converted slider, called twice in one body.
 private struct HelperTwice: View {
     let source: Binding<Double>
@@ -206,6 +234,24 @@ final class ConversionTests: XCTestCase {
         XCTAssertEqual(Set(numbers).count, 2, "two calls, two derived states")
         Renderer.shared.board.cycle(now: 0, reducesMotion: false)
         XCTAssertEqual(numbers.map { destination(of: $0) }, [5, 50])
+    }
+
+    /// TWO VIEWS NAMED ALIKE UNDER TWO PARENTS KEEP TWO CONVERSIONS: a name is distinct among siblings alone, so
+    /// the conversion's place is the whole way down to its element - kept across the parents' reorder.
+    func testViewsNamedAlikeUnderTwoParentsKeepTwoConversions() throws {
+        let (source, factors, seen) = (State(0.5), State([10.0, 20.0]), SeenByFactor())
+        let renders = Renders()
+        let patch = renders.render(TwoParents(source: source.projectedValue, factors: factors, seen: seen).node)
+        let numbers = try patch.subtree.filter { $0.type == .slider }.map { try XCTUnwrap($0.driven?[.value]?.state) }
+
+        XCTAssertEqual(Set(numbers).count, 2, "two places, two derived states")
+        Renderer.shared.board.cycle(now: 0, reducesMotion: false)
+        XCTAssertEqual(numbers.map { destination(of: $0) }, [5, 10])
+
+        let before = seen.storages
+        factors.wrappedValue = [20, 10]
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+        XCTAssertEqual(seen.storages, before, "each parent kept its derived state as the parents changed places")
     }
 
     /// The journey a converted slider walks, read off its image.
