@@ -542,6 +542,16 @@ stand, and tells it as a change, so a change to the choice standing is no
 user's. Only a `ComboBox` has a list to open, a placeholder and choices across
 it.
 
+## A row that left
+
+A row of segments or tabs is a `SelectorBar`, and assistive technology holds
+the items it read for as long as it likes. Choosing through an item whose row
+has left the window - its automation peer's `Select` - sets WinUI's UI thread
+looping for ever, and the application stops answering. So a row whose element
+leaves takes every item off itself (`stateui_winui_choices_let_go`, from the
+picker's and the tab row's `detach`): an item held after that belongs to no
+row, and choosing it does nothing.
+
 ## A field's outline
 
 A field the tree outlines (`stroke`, `lineWidth`) wears it as its border, and

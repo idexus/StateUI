@@ -32,7 +32,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - Accessibility: on iOS, under VoiceOver, a color picker and a switch say what the application says of them - name,
   kind, value, whether VoiceOver meets them - where UIKit's own words stood; on the Web words made at run time and
   told to the screen reader are said as asked, a list the user chooses in names its items options, and a shortcut on
-  the plus key is named as assistive technology reads it.
+  the plus key is named as assistive technology reads it. On Windows assistive technology choosing a segment or a tab
+  of a row that has left no longer stops the application answering.
 - Hosts: on GTK a popover waiting for its hidden anchor and the frame clock hold what they use; Windows keeps no
   record of what an application told the screen reader or launched.
 - Pictures: on the Mac and iOS a picture larger than the whole budget of pictures kept no longer pushes every other

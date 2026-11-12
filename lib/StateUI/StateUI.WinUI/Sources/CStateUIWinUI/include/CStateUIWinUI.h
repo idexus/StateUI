@@ -907,6 +907,10 @@ int32_t stateui_winui_menus_items(StateUIObjectRef element, char const *what, ch
 StateUIObjectRef stateui_winui_picker_make(int64_t view, int32_t kind);
 void stateui_winui_picker_set_options(StateUIObjectRef picker, char const *const *options, int32_t count);
 void stateui_winui_picker_set(StateUIObjectRef picker, int32_t selected, bool writeSelected, char const *title);
+
+/// Takes every item off a row of segments or tabs - a SelectorBar - as its element leaves: assistive technology still
+/// holding one of them chooses an item of no row. Nothing for any other control.
+void stateui_winui_choices_let_go(StateUIObjectRef element);
 void stateui_winui_picker_set_alignment(StateUIObjectRef picker, int32_t alignment);
 void stateui_winui_picker_set_open(StateUIObjectRef picker, bool open);
 bool stateui_winui_picker_is_open(StateUIObjectRef picker);
@@ -1377,6 +1381,13 @@ void stateui_winui_double_tap(double *tap);
 
 /// Presses `element` as assistive technology does, through its automation peer; whether it could be pressed.
 bool stateui_winui_press(StateUIObjectRef element);
+
+/// The automation peer of a segment row's segment at `index`, held as assistive technology holds what it read - what
+/// a test takes; released with `stateui_winui_release`, null where there is none.
+StateUIObjectRef stateui_winui_segment_peer(StateUIObjectRef element, int32_t index);
+
+/// Chooses through `peer`'s selection pattern, as assistive technology does; whether it offers one.
+bool stateui_winui_peer_select(StateUIObjectRef peer);
 
 /// Whether a click at (x, y) DIPs of `element` would reach the element itself.
 bool stateui_winui_hits(StateUIObjectRef element, double x, double y);

@@ -43,5 +43,6 @@ final class WinUITabsView: WinUIView {
     override func detach() {
         super.detach()
         onChosen = nil
+        stateui_winui_choices_let_go(handle)
     }
 }

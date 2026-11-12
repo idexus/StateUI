@@ -611,6 +611,31 @@ extern "C" bool stateui_winui_press(StateUIObjectRef handle) {
     }
 }
 
+extern "C" StateUIObjectRef stateui_winui_segment_peer(StateUIObjectRef handle, int32_t index) {
+    try {
+        auto items = as<controls::SelectorBar>(handle).Items();
+        if (index < 0 || index >= static_cast<int32_t>(items.Size())) return nullptr;
+        auto peer = peers::FrameworkElementAutomationPeer::CreatePeerForElement(items.GetAt(index));
+        return peer ? detach(peer) : nullptr;
+    } catch (...) {
+        report("taking a segment's automation peer");
+        return nullptr;
+    }
+}
+
+extern "C" bool stateui_winui_peer_select(StateUIObjectRef handle) {
+    try {
+        auto pattern = as<peers::AutomationPeer>(handle).GetPattern(peers::PatternInterface::SelectionItem);
+        auto item = pattern ? pattern.try_as<provider::ISelectionItemProvider>() : nullptr;
+        if (!item) return false;
+        item.Select();
+        return true;
+    } catch (...) {
+        report("choosing through an automation peer");
+        return false;
+    }
+}
+
 extern "C" bool stateui_winui_hits(StateUIObjectRef handle, double x, double y) {
     try {
         auto element = as<xaml::UIElement>(handle);

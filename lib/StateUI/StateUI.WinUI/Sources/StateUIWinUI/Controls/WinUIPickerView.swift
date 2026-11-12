@@ -78,5 +78,6 @@ final class WinUIPickerView: WinUIView {
         onChosen = nil
         onOpened = nil
         onClosed = nil
+        stateui_winui_choices_let_go(handle)
     }
 }
