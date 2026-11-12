@@ -273,7 +273,12 @@ repository's - `Page/google-maps-key.js`, which git keeps out, sets
 StateUI.googleMapsKey = "your key";
 ```
 
-Without a key the map draws no tiles, and the Gallery says so under it.
+Without a key Google marks the map for development only, and the Gallery says
+so under it.
+
+Google's API keeps every map it makes for as long as the page lives, so a map
+is made once and reused: a `<gallery-map>` that leaves the page hands its map,
+bare of its markers and layers, to the next one.
 
 ### Acts and events
 

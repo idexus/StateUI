@@ -40,6 +40,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   record of what an application told the screen reader or launched.
 - Pictures: on the Mac and iOS a picture larger than the whole budget of pictures kept no longer pushes every other
   one out, and what is kept follows that budget alone until the system says memory runs short.
+- Gallery: on the Web the Map sample makes Google's map once and hands it on, as Google asks maps to be reused, so
+  shown again it leaves no map behind.
 
 ### Tooling
 
