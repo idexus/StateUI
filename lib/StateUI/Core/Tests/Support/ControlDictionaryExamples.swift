@@ -168,7 +168,7 @@ extension ControlDictionary {
         (TextContract.self, #"""
             Text("A description long enough to wrap onto a second line, and stop there.")
                 .maximumLines(2)
-                .lineBreak(.tailTruncation)
+                .lineBreak(.wordWrap)
                 .verticalTextAlignment(.center)
                 .height(80)
             """#),
@@ -927,7 +927,7 @@ extension ControlDictionary {
 
         (IconElementContract.self, #"""
             Button("Share")
-                .icon("square.and.arrow.up")
+                .icon(.icon(.share))
             """#),
 
         (FocusElementContract.self, #"""
@@ -940,11 +940,13 @@ extension ControlDictionary {
         (RefreshElementContract.self, #"""
             @State var refreshing = false
             @State var rows = ["First"]
+            @State var fetched = 0
 
             ItemsView(rows) { Text($0) }
                 .isRefreshing($refreshing)
                 .onRefreshRequested {
-                    rows.insert("Fresh", at: 0)
+                    fetched += 1
+                    rows.insert("Fresh \(fetched)", at: 0)
                     refreshing = false
                 }
             """#),

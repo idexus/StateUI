@@ -7,7 +7,7 @@ A read-only piece of text.
 ```swift
 Text("A description long enough to wrap onto a second line, and stop there.")
     .maximumLines(2)
-    .lineBreak(.tailTruncation)
+    .lineBreak(.wordWrap)
     .verticalTextAlignment(.center)
     .height(80)
 ```
