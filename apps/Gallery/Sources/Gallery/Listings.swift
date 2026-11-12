@@ -5508,6 +5508,9 @@ enum Listings {
         """#,
         "ImageSample": #"""
         // Sources/Samples/Media/ImageSample.swift
+        /// Whether the picture with frames runs them.
+        @State private var animates = true
+
         var body: some View {
             VStack {
                 HStack {
@@ -5584,6 +5587,20 @@ enum Listings {
                         .height(32)
 
                     Text("one per theme - switch the system between light and dark")
+                        .verticalAlignment(.center)
+                }
+
+                SectionTitle("A picture with frames")
+
+                // A GIF runs its frames while `isAnimating` says so, and stands on
+                // the one it reached while it does not.
+                HStack {
+                    Image("dots_turning.gif")
+                        .isAnimating($animates)
+                        .width(48)
+                        .height(48)
+
+                    Switch("Animating", isOn: $animates)
                         .verticalAlignment(.center)
                 }
             }

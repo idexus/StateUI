@@ -7,6 +7,9 @@ struct ImageSample: SampleContent, ExampleContent {
     static let summary = "A picture from the app's resources, asked for by name."
 
     // listing: ImageSample
+    /// Whether the picture with frames runs them.
+    @State private var animates = true
+
     var body: some View {
         VStack {
             HStack {
@@ -106,6 +109,23 @@ struct ImageSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
             }
             .spacing(12)
+
+            SectionTitle("A picture with frames")
+
+            // A GIF runs its frames while `isAnimating` says so, and stands on
+            // the one it reached while it does not.
+            HStack {
+                Image("dots_turning.gif")
+                    .isAnimating($animates)
+                    .width(48)
+                    .height(48)
+                    .accessibilityIdentifier("image.turning")
+
+                Switch("Animating", isOn: $animates)
+                    .accessibilityIdentifier("image.animates")
+                    .verticalAlignment(.center)
+            }
+            .spacing(12)
         }
         .spacing(12)
     }
@@ -135,10 +155,11 @@ struct ImageSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("`.isAnimating(true)` runs a picture that HAS frames - a GIF, an "
-                + "animated WebP - and does nothing at all to a still one, which is why "
-                + "no example above uses it: the gallery ships no animated artwork. It is "
-                + "a property rather than an act, so a paused animation is a state the "
-                + "tree describes and a rebuild cannot lose.")
+                + "animated WebP - and does nothing at all to a still one. It is a property "
+                + "rather than an act, so a paused animation is a state the tree describes "
+                + "and a rebuild cannot lose. A host that cannot start and stop a picture's "
+                + "frames shows the GIF as its platform shows one - still, or running whatever "
+                + "the switch says - and the platform contract marks where.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

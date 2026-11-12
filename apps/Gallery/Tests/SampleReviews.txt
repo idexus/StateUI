@@ -58,7 +58,7 @@ HostTimeSample.swift 22a8291fdd7fe7a1
 IconButtonSample.swift a4ebe7201bac278c
 IconSample.swift b1a186070a9f38de
 IdentitySample.swift 1027b1b9006f8239
-ImageSample.swift 798ac3475ce4ff0a
+ImageSample.swift 2b5a694263608f07
 InteropActsSample.swift 43ab44a50a60a46e
 InteropControlSample.swift 29f4505d5cc2a603
 InteropEventsSample.swift 3fe212d8d1fdf591
