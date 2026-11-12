@@ -118,8 +118,7 @@ enum UIKitRealization {
         .complete(MotionLayoutContract.rotates),
         .complete(MotionLayoutContract.pinchRotationUpdated),
         .partial(EnabledElementContract.isEnabled, on: MenuContract.self, missing: "UIKit holds no menu out of reach itself: each of its entries is."),
-        .partial(LayoutContract.ignoresSafeArea, missing: "The safe area holds no keyboard: a page stands under it "
-            + "whatever edges it ignores."),
+        .complete(LayoutContract.ignoresSafeArea),
         .partial(ViewContract.panTouchCount,
             missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete(TextElementContract.text, on: MenuContract.self),

@@ -154,8 +154,28 @@ final class UIKitDriver: HostDriver {
 
     /// Ends the host the driver started last.
     func close() {
+        if keyboardTold { try? standUnderKeyboard(height: 0) }
         renderer?.finish()
         renderer = nil
+    }
+
+    /// Whether the driver told of a keyboard since none: the next case finds it gone.
+    private var keyboardTold = false
+
+    /// The keyboard docked at the screen's foot, told the host as UIKit tells where the keyboard goes - its frame in
+    /// the screen's coordinates, at once; below the screen for none.
+    /// Design: docs/design/platforms/uikit/conformance.md#a-keyboard
+    func standUnderKeyboard(height: Double) throws {
+        guard let screen = renderer?.roster.windows.first?.1.window?.screen else {
+            throw DriverCannot("stand the window under a keyboard: no window shows")
+        }
+        let foot = screen.bounds.maxY - (height > 0 ? height : 0)
+        let frame = CGRect(x: 0, y: foot, width: screen.bounds.width, height: max(height, 1))
+        NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: nil, userInfo: [
+            UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: frame),
+            UIResponder.keyboardAnimationDurationUserInfoKey: 0.0,
+        ])
+        keyboardTold = height > 0
     }
 
     /// `element` dragged onto the view of id `target` - across the one of id `across` first - as UIKit's

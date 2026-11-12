@@ -127,13 +127,18 @@ application is its first launch: the driver forgets what the host's stores
 keep, and a start after it in the same case is the next launch, which finds
 them.
 
-One report a driver makes as the platform would rather than reads: the
-platform's bars over a window's edges (`standUnderSystemBars`). A host whose
+Two reports a driver makes as the platform would rather than reads. The
+platform's bars over a window's edges (`standUnderSystemBars`): a host whose
 test window stands under none - Android's instrumented window - is told a
 phone's status bar and gesture bar as its toolkit tells them, through the
 host's own report of the window's insets; a host whose window has its own
 (UIKit's) or whose platform stands nothing over a window's content leaves
 it, so a case of the safe area proves on each host what a user meets there.
+The keyboard docked at a window's foot (`standUnderKeyboard`), which no test
+can raise at a height it knows: a host is told it as its platform tells
+where the keyboard goes - Android among the window's insets, UIKit by its
+own notice of the keyboard's frame - and a platform showing no keyboard on
+its screen says so, which the case does not apply to.
 
 A case's requests go to the HTTP server its driver names (`served()`, and
 `held()` counting the requests it holds). A native host's driver names the

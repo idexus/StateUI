@@ -6,14 +6,14 @@
 
 /// `LayoutContract` on a host: a layout cuts what it holds to its outline where it clips and not otherwise, lets a
 /// press through where nothing it holds stands where it says so, and standing a page whole runs under what stands over
-/// the page where it ignores the safe area - each case made for every layout.
+/// the page where it ignores the safe area - the keyboard among it - each case made for every layout.
 @_spi(Host) public enum LayoutTests: ConformanceFamily {
     public static let name = "Layout"
 
     public static var cases: [ConformanceCase] {
         Specimens.wearing(LayoutContract.self).flatMap { element in
             [
-                clipped(element), throughIt(element), underTheBars(element),
+                clipped(element), throughIt(element), underTheBars(element), clearOfTheKeyboard(element),
                 Aspects.holds(LayoutContract.clipsContent, on: element, false, then: true),
                 Aspects.holds(LayoutContract.letsInputThrough, on: element, false, then: true),
             ]
@@ -137,6 +137,52 @@ extension LayoutTests {
             edges.wrappedValue = []
             s.settle { room() == clear }
             s.expect(room(), clear, "and clear of it again")
+        }
+    }
+}
+
+extension LayoutTests {
+    /// A layout standing a page whole stands clear of the keyboard docked at the window's foot - its foot as far above
+    /// the window's as the keyboard is tall - runs under it where the tree says it ignores the bottom of the safe
+    /// area, and stands as it stood once the keyboard goes.
+    @MainActor
+    static func clearOfTheKeyboard(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).standsClearOfTheKeyboardOrUnderItWhereItIgnoresTheSafeArea", proves: [
+            Covered(LayoutContract.ignoresSafeArea, on: element),
+        ]) { s in
+            let edges = State<SafeAreaEdges>(wrappedValue: [])
+            let frames = Received<[Double]>()
+            s.start {
+                Holding.layout(element, ignores: edges.wrappedValue, heard: { frames.values.append($0) }) {
+                    Rectangle()
+                        .fill(.red)
+                }
+            }
+
+            // The foot of its room in the window.
+            let foot = { () -> Double? in
+                frames.values.last.map { FrameReport.inWindow($0)[1] + FrameReport.size($0)[1] }
+            }
+            s.settle { foot() != nil }
+            let alone = foot() ?? 0
+
+            let keyboard = 300.0
+            try s.standUnderKeyboard(height: keyboard)
+            s.settle { (foot() ?? alone) < alone }
+            let clear = foot() ?? alone
+
+            edges.wrappedValue = [.bottom]
+            s.settle { (foot() ?? clear) > clear }
+            let under = foot() ?? clear
+            s.expect(abs(under - clear - keyboard) < 1, true, "clear of the keyboard by its height, \(under - clear) under it")
+
+            edges.wrappedValue = []
+            s.settle { foot() == clear }
+            s.expect(foot(), clear, "and clear of it again")
+
+            try s.standUnderKeyboard(height: 0)
+            s.settle { foot() == alone }
+            s.expect(foot(), alone, "and where it stood once the keyboard goes")
         }
     }
 }

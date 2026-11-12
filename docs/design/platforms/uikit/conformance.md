@@ -70,6 +70,15 @@ none of - a shape's figure placed and moved into its path, a layout's outline
 held as a path, where StateUI's layout places the children, what StateUI
 measures - does not apply here, its effect proven by another case.
 
+## A keyboard
+
+A keyboard a case stands the window under (`standUnderKeyboard`) is UIKit's
+own notice of where the keyboard goes, posted with the frame it goes to in
+the screen's coordinates and no animation, which the host hears as it hears
+the system's keyboard (`UIKitKeyboardPlace`); none is a frame below the
+screen. A case that told of one leaves none to the next: closing, the driver
+tells the keyboard gone.
+
 ## What goes past UIKit
 
 UIKit lets a test send no touch and moves no scene, so the driver hands some

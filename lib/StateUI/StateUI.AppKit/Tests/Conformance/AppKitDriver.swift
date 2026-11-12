@@ -28,6 +28,7 @@ final class AppKitDriver: HostDriver {
                 "an editor's growing is StateUI's measuring, which no property of AppKit's holds; its frames prove it",
             "read shape of a box shorter than its radius":
                 "AppKit's layer holds the radius it draws, at most half the box's shorter side; the box's drawing proves its shape",
+            "stand the window under a keyboard": "a Mac shows no keyboard on its screen",
         ]
         for field in ["TextField", "SearchField", "TextEditor"] {
             none["read maximumLength of \(field)"] =

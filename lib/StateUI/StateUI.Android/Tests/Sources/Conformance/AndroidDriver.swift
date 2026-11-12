@@ -156,6 +156,7 @@ final class AndroidDriver: HostDriver {
     func close() {
         renderer?.finish()
         renderer = nil
+        told = (0, 0, 0)
     }
 
     func step() {
@@ -206,13 +207,28 @@ final class AndroidDriver: HostDriver {
         }
     }
 
+    /// What the driver told stands over the window, in points: the system's bars at its top and its foot, and the
+    /// keyboard; nothing for each new host.
+    private var told = (top: 0.0, bottom: 0.0, keyboard: 0.0)
+
     /// A phone's status bar and gesture bar over the window, told the host as Android reports a window's insets.
     func standUnderSystemBars(top: Double, bottom: Double) {
+        (told.top, told.bottom) = (top, bottom)
+        tellInsets()
+    }
+
+    /// The keyboard docked at the window's foot, told the host as Android reports it among a window's insets.
+    func standUnderKeyboard(height: Double) {
+        told.keyboard = height
+        tellInsets()
+    }
+
+    /// Tells the host what the driver says stands over the window, in pixels, as Android reports a window's insets.
+    private func tellInsets() {
         guard let renderer else { return }
-        let density = renderer.density
+        func pixels(_ points: Double) -> Int32 { Int32((points * renderer.density).rounded()) }
         renderer.insetsChanged(
-            left: 0, top: Int32((top * density).rounded()), right: 0, bottom: Int32((bottom * density).rounded()),
-            keyboard: 0)
+            left: 0, top: pixels(told.top), right: 0, bottom: pixels(told.bottom), keyboard: pixels(told.keyboard))
     }
 
     /// The night mode the activity's configuration stands in: the application's where it holds one.

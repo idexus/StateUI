@@ -19,7 +19,7 @@ final class WebDriver: HostDriver {
     /// What the page holds none of: what StateUI's layout places and measures, each proven by its effect in another
     /// case.
     private static func none() -> [String: String] {
-        var none: [String: String] = [:]
+        var none = ["stand the window under a keyboard": "the browser the suite runs in shows no keyboard on its screen"]
         for stack in ["HStack", "VStack"] {
             none["read spacing of \(stack)"] = "the page places a stack's children where StateUI's layout says; their frames prove it"
         }

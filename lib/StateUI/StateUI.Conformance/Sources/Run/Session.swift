@@ -249,6 +249,13 @@
         driver.step()
     }
 
+    /// The platform's keyboard docked at the window's foot, `height` points tall - nought for none - as the platform
+    /// tells the host where it goes (`HostDriver.standUnderKeyboard`).
+    public func standUnderKeyboard(height: Double) throws {
+        try driven { try driver.standUnderKeyboard(height: height) }
+        driver.step()
+    }
+
     /// The theme the platform shows the application in now.
     public func theme() throws -> ColorScheme {
         note("read the theme the application shows in")

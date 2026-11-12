@@ -108,6 +108,10 @@
     /// whose platform stands nothing over a window's content, leaves it.
     func standUnderSystemBars(top: Double, bottom: Double)
 
+    /// The platform's keyboard docked at the window's foot, `height` points tall - nought for none - told to the host
+    /// as its platform tells where the keyboard goes; a platform showing no keyboard on its screen says so.
+    func standUnderKeyboard(height: Double) throws
+
     /// The accent the platform draws the application's controls in now.
     func accent() throws -> Color
 
@@ -244,6 +248,11 @@ extension HostDriver {
 
     /// Nothing: the window stands under no bars.
     public func standUnderSystemBars(top: Double, bottom: Double) {}
+
+    /// None told: the driver has no path for it yet.
+    public func standUnderKeyboard(height: Double) throws {
+        throw DriverCannot("stand the window under a keyboard")
+    }
 
     /// None read: the driver has no path for it yet.
     public func theme() throws -> ColorScheme {

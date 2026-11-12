@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (88)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>49 ✅ · 2 ☑️ · 35 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>44 ✅ · 4 ☑️ · 38 ✓ · 1 –</td><td>custom <code>UIView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>45 ✅ · 3 ☑️ · 38 ✓ · 1 –</td><td>custom <code>UIView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>69 ✅ · 5 ☑️ · 12 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 2 ☑️ · 27 ✓ · 5 –</td><td>custom <code>Panel</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 3 ☑️ · 24 ✓ · 8 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
@@ -197,8 +197,8 @@ What every layout has: the edges it runs under what stands over its page on, and
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>ignoresSafeArea</code></td><td>property</td><td><code>SafeAreaEdges</code></td><td>adaptive</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: The safe area holds no keyboard: a page stands under it whatever edges it ignores.<br>WinUI 3: A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.<br>GTK 4: A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>ignoresSafeArea</code></td><td>property</td><td><code>SafeAreaEdges</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">WinUI 3: A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.<br>GTK 4: A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>clipsContent</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>letsInputThrough</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read letsInputThrough of HStack - AppKit's driver has no path for it yet<br>UIKit: cannot read letsInputThrough of HStack - UIKit's driver has no path for it yet<br>WinUI 3: not realized</td></tr></tbody>

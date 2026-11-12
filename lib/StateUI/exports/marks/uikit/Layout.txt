@@ -1,16 +1,16 @@
-# revision 3.1
+# revision 4.1
 Grid.clipsContent: ✅
-Grid.ignoresSafeArea: ☑️ The safe area holds no keyboard: a page stands under it whatever edges it ignores.
+Grid.ignoresSafeArea: ✅
 Grid.letsInputThrough: ◐ cannot read letsInputThrough of Grid - UIKit's driver has no path for it yet
 HStack.clipsContent: ✅
-HStack.ignoresSafeArea: ☑️ The safe area holds no keyboard: a page stands under it whatever edges it ignores.
+HStack.ignoresSafeArea: ✅
 HStack.letsInputThrough: ◐ cannot read letsInputThrough of HStack - UIKit's driver has no path for it yet
 MotionLayout.clipsContent: ✅
-MotionLayout.ignoresSafeArea: ☑️ The safe area holds no keyboard: a page stands under it whatever edges it ignores.
+MotionLayout.ignoresSafeArea: ✅
 MotionLayout.letsInputThrough: ◐ cannot read letsInputThrough of MotionLayout - UIKit's driver has no path for it yet
 VStack.clipsContent: ✅
-VStack.ignoresSafeArea: ☑️ The safe area holds no keyboard: a page stands under it whatever edges it ignores.
+VStack.ignoresSafeArea: ✅
 VStack.letsInputThrough: ◐ cannot read letsInputThrough of VStack - UIKit's driver has no path for it yet
 ZStack.clipsContent: ✅
-ZStack.ignoresSafeArea: ☑️ The safe area holds no keyboard: a page stands under it whatever edges it ignores.
+ZStack.ignoresSafeArea: ✅
 ZStack.letsInputThrough: ◐ cannot read letsInputThrough of ZStack - UIKit's driver has no path for it yet
