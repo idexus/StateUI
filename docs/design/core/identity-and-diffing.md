@@ -572,8 +572,9 @@ under an element that left.
 ## Engines on an element
 
 An element's engines are registered under numbers it keeps, so a render hands
-the newest closure - this render's captures - to the engine that already has a
-number. A different count is a different set of engines and starts over, as
+the newest closure - this render's captures - and its priority to the engine
+that already has a number, which moves in the board's order where the priority
+changed, ties still by number. A different count is a different set of engines and starts over, as
 with watches. The engines a conversion needs are armed beside the author's
 own, ahead of them, in property order: every conversion of its chain, the one
 nearest the sources first, each once however many properties share it ([a

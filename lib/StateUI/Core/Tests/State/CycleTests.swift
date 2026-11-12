@@ -63,6 +63,20 @@ private struct Ordered: View {
     }
 }
 
+/// Two engines on one view, `a` written first, each at the priority it is handed.
+private struct Prioritized: View {
+    @State var value = 0.0
+    let a: Double
+    let b: Double
+    let ran: Ran
+
+    var body: some View {
+        Text("prioritized")
+            .engine(following: $value, priority: a) { cycle in ran.note("a", cycle) }
+            .engine(following: $value, priority: b) { cycle in ran.note("b", cycle) }
+    }
+}
+
 /// An engine that READS two `@State`s and names neither in `following:`.
 /// Being read wakes nothing: what an engine is woken by is a write to a
 /// state it FOLLOWS, and nothing else.
@@ -574,6 +588,23 @@ final class CycleTests: XCTestCase {
         board.cycle(now: 16, reducesMotion: false)
 
         XCTAssertEqual(ran.order, ["early", "late"])
+    }
+
+    /// A render that changes only an engine's priority moves it in the order, ties going by the order they were
+    /// written - the order is the last render's, as its closures are.
+    func testARenderChangingAPriorityMovesTheEngine() {
+        let ran = Ran()
+        let renders = Renders()
+        func cycle(_ a: Double, _ b: Double, at now: Double) -> [String] {
+            ran.order = []
+            renders.render(Prioritized(a: a, b: b, ran: ran).node)
+            board.cycle(now: now, reducesMotion: false)
+            return ran.order
+        }
+
+        XCTAssertEqual(cycle(0, 1, at: 0), ["a", "b"])
+        XCTAssertEqual(cycle(2, 1, at: 16), ["b", "a"], "a's priority moved it after b")
+        XCTAssertEqual(cycle(1, 1, at: 32), ["a", "b"], "a tie goes by the order written")
     }
 
     /// An engine whose states have not moved does not run - which is what makes

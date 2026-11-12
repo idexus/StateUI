@@ -13,7 +13,8 @@ extension Differ {
             var kept = true
 
             for (id, engine) in zip(previous, declared) {
-                kept = Renderer.shared.board.rearm(id, following: engine.follows, with: engine.run) && kept
+                kept = Renderer.shared.board.rearm(
+                    id, priority: engine.priority, following: engine.follows, with: engine.run) && kept
             }
 
             // Unless the board forgot them, as after a session claimed afresh: then they

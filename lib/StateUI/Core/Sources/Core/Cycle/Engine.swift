@@ -82,8 +82,8 @@ struct EngineEntry {
     /// What the differ registered it under, which is also its tie-break.
     let id: Int
 
-    /// Where it comes in the order, ascending; ties by `id`.
-    let priority: Double
+    /// Where it comes in the order, ascending; ties by `id` - the last render's.
+    var priority: Double
 
     /// The arithmetic - rewritten by each render that describes the view, with that
     /// render's captures.
