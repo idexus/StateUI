@@ -667,6 +667,26 @@ extension StateTests {
             "and the next window runs from the reading that was taken")
     }
 
+    /// A reading booked for its window's end is not taken once its element let it go: the booking holds nothing of
+    /// the reading, which goes with its element.
+    func testALateReadingIsNotTakenOnceItsElementLeft() {
+        let storage = HostStorage(StateImage.bytes(of: JourneyLanes(0.0).carried))
+        let target = State(0.0)
+        var taken = 0
+        weak var gone: Sampling?
+        do {
+            let reading = storage.sample(into: ObjectIdentifier(target.storage), every: 50) { taken += 1 }
+            gone = reading
+            storage.sampleTaken()
+            storage.sampleTaken()
+            XCTAssertEqual(taken, 1, "one reading at once, one booked for the window's end")
+        }
+
+        XCTAssertNil(gone, "the booking held the reading its element let go")
+        drain(until: { false }, within: 0.2)
+        XCTAssertEqual(taken, 1, "the reading booked was taken after its element left")
+    }
+
     /// One value's readings are taken in the order they were asked for, every time - never by the hash of the
     /// states they are read into.
     func testAValuesReadingsAreTakenInTheOrderAsked() {

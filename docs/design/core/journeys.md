@@ -201,7 +201,9 @@ read by two views into two states at two rates, taken in the order asked.
 A reading whose window has not passed books one for the end of it, so the last
 frame of an animation arrives. It stops by itself: a take copies only what
 changed, and the host stops sending when the channel stops moving. The booked
-reading sleeps with `Task.sleep`; nothing here uses a run-loop timer.
+reading sleeps with `Task.sleep`; nothing here uses a run-loop timer. The sleep
+knows the reading weakly: one whose element left while it slept is gone when it
+wakes, and nothing is taken.
 
 The window has to survive the render the reading's own write asks for. That
 render walks the very view that asked for the reading; made afresh there, the

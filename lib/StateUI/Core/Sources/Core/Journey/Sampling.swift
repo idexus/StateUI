@@ -44,10 +44,12 @@ final class Sampling {
     }
 
     /// Takes the reading booked for `deadline` when it comes - by `Task.sleep`, not a run-loop timer
-    /// (Ticker.swift), in a task of the library's own.
+    /// (Ticker.swift), in a task of the library's own, which knows the reading weakly: one whose element left
+    /// goes with it, untaken.
     func takeLate(at deadline: ContinuousClock.Instant) {
-        libraryTask { [self] in
+        libraryTask { [weak self] in
             try? await Task.sleep(until: deadline)
+            guard let self else { return }
 
             took()
             take()
