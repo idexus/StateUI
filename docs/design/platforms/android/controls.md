@@ -103,8 +103,9 @@ first characters that fit and writes them back, as the program, when typing
 goes past the bound.
 
 A password field is a field whose input type hides what is typed. Android
-resets the typeface when the input type changes, so the field puts its weight
-back after it.
+resets the typeface whenever a password's input type is set, so the field puts
+its weight back after it - made read only or editable again too, which sets
+its input type again.
 
 A text field, a search field and a text editor are one `EditText` of three
 kinds. A search field is a field whose keyboard's return key is captioned for
