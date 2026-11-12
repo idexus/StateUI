@@ -34,6 +34,24 @@ final class KeptValuesTextTests: XCTestCase {
         XCTAssertEqual(KeptValuesText(kept.text).value(named: "kept.name", as: .string), .string("a\tb\nc\\d\re"))
     }
 
+    /// Keys and words come back whole whatever follows what is escaped - a combining mark, a joiner, a line's end
+    /// written as two characters - each read as the code points it is, not as the characters they make.
+    func testWordsComeBackWholeWhateverFollowsAnEscape() {
+        let marks = ["", "\u{0301}", "\u{200D}\u{1F469}", "\u{FE0F}"]
+        let escapes = ["\t", "\n", "\r", "\\", "\r\n"]
+        var kept = KeptValuesText("")
+        var expected: [String: String] = [:]
+        for (index, (escape, mark)) in escapes.flatMap({ escape in marks.map { (escape, $0) } }).enumerated() {
+            let name = "kept.\(index)\(escape)\(mark)"
+            let words = "a\(escape)\(mark)b\(mark)\(escape)"
+            XCTAssertTrue(kept.keep([.name(name), .string(words)]))
+            expected[name] = words
+        }
+
+        XCTAssertEqual(kept.text.unicodeScalars.filter { $0 == "\n" }.count, expected.count, "one line a key")
+        XCTAssertEqual(KeptValuesText(kept.text).words, expected)
+    }
+
     /// A value of a kind no key keeps is not kept; a line that is no key and words is passed over.
     func testWhatIsNoKeptValueIsLeftOut() {
         var kept = KeptValuesText("stray line\nkept.count\t4\n")

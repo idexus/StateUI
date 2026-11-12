@@ -12,6 +12,17 @@ final class KeptScenesTests: XCTestCase {
         OpenScenes.shared.reset()
     }
 
+    /// A kept word and a window's value with a combining mark after a line's end or a tab read back whole.
+    func testTextWithAMarkAfterAnEscapeReadsBackWhole() {
+        let scenes = KeptScenes(scenes: [
+            KeptScenes.Scene(
+                values: ["draft": .string("a\n\u{0301}b\r\n")],
+                windows: [KeptScenes.Window(kind: "note", value: "x\t\u{0301}y")]),
+        ])
+
+        XCTAssertEqual(KeptScenes(scenes.text), scenes)
+    }
+
     /// The text reads back the scenes it was written from - each kind of value, a window of the group with no name,
     /// one of a kind with a value and one without, words holding a tab or a line's end - and the same scenes write the
     /// same text, their values by key.

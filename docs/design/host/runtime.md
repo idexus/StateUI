@@ -1027,7 +1027,8 @@ application's context, which outlives every activity.
 A host whose platform keeps no store an application can use keeps them in a
 file of its own, and one codec says what the file holds (`KeptValuesText`): a
 line a key, its name and its words apart by a tab - a tab, a line's end and a
-backslash in either escaped - the keys in order, so the same values write the
+backslash in either escaped, code point by code point, so a combining mark
+after one stays apart from its escape - the keys in order, so the same values write the
 same file. Where the file stands and how it is read and written is the
 host's. The Web keeps the codec's text whole, under one key, in the browser's
 storage for its site.
