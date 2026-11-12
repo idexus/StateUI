@@ -36,6 +36,19 @@ private struct SheetAndQuestion: View {
     }
 }
 
+/// A page whose button shares words, then asks a question once the sharing is answered.
+private struct ShareThenAsk: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        Button("Share")
+            .onClicked(policy: .ignoreWhileRunning) {
+                _ = try await window.share(text: "Words")
+                _ = try await window.confirm("Again?", message: "After the share", accept: "Yes", cancel: "No")
+            }
+    }
+}
+
 /// Pages a window presents over its page, as UIKit presents them.
 @MainActor
 final class UIKitSheetsTests: XCTestCase {
@@ -61,6 +74,29 @@ final class UIKitSheetsTests: XCTestCase {
         XCTAssertFalse(first is UIAlertController, "the first sheet over the page")
         XCTAssertNotNil(second?.viewIfLoaded?.window, "the second over the first")
         XCTAssertFalse(second is UIAlertController)
+    }
+
+    /// A share sheet ended by its user - shared or not, as UIKit's own completion says - lets what comes after it
+    /// pass over the window: the question asked next stands.
+    @MainActor
+    func testWhatComesAfterAShareSheetStands() throws {
+        for shared in [true, false] {
+            let host = UIKitRenderer.running(reducesMotion: false) { ShareThenAsk() }
+            defer { host.finish() }
+
+            host.views(UIKitButtonView.self).first?.sendActions(for: .primaryActionTriggered)
+            // The first share sheet a run shows comes slowly, an iPad's as a popover slowest.
+            let stands = { host.actToolkit.sharing?.controller?.viewIfLoaded?.window != nil }
+            for _ in 0..<4 where !stands() { host.settle(until: stands) }
+            XCTAssertTrue(stands(), "the share sheet stands")
+            // What UIKit does as the user ends the sheet: it goes, and its own completion says how it ended.
+            let sheet = try XCTUnwrap(host.actToolkit.sharing?.controller)
+            sheet.dismiss(animated: false)
+            sheet.completionWithItemsHandler?(nil, shared, nil, nil)
+            host.settle { host.actToolkit.showing?.alert.viewIfLoaded?.window != nil }
+
+            XCTAssertNotNil(host.actToolkit.showing?.alert.viewIfLoaded?.window, "shared: \(shared), the question stands")
+        }
     }
 
     /// A window whose scene iOS let go of and brought back shows its sheets again, and the next sheet asked for

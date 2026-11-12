@@ -20,6 +20,9 @@ final class UIKitShareSheet {
 
     private var answer: ((Result<Bool, ActFailure>) -> Void)?
 
+    /// The window's root it passes over, told once the sheet has its answer.
+    private weak var root: UIKitRootViewController?
+
     init(_ shared: HostShare) {
         self.shared = shared
     }
@@ -38,6 +41,7 @@ final class UIKitShareSheet {
             popover.permittedArrowDirections = []
         }
         self.controller = controller
+        self.root = root
         root.pass(controller)
     }
 
@@ -47,10 +51,11 @@ final class UIKitShareSheet {
         finish(shared)
     }
 
-    /// Tells whether the user shared, once.
+    /// Tells whether the user shared, once, and lets the root present what waits after the sheet.
     private func finish(_ shared: Bool) {
         answer?(.success(shared))
         answer = nil
+        if let controller { root?.passed(controller) }
     }
 }
 #endif
