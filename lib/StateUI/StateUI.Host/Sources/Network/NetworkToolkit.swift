@@ -31,7 +31,7 @@ extension NetworkToolkit {
     /// The method's name, with its case preserved.
     public let method: String
 
-    /// The headers, names and values, sorted by name.
+    /// The headers, names and values, in the order they were given.
     public let headers: [HostHeader]
 
     /// What the request carries.
