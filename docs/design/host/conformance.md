@@ -314,8 +314,10 @@ realizes that wears it - one page an element, its specimen standing where a
 tier's case stands it. The cases are what the member's own type reads back
 from each number; a flag set reads every number, so it is written none,
 each of its first eight bits alone, and those eight. Each case leaves the
-host going on: the specimen in the tree, nothing new in the host's log, and
-the words after it standing in the window at the end. An element an author
+host going on: the specimen in the tree, nothing new in the host's log - the
+lines it wrote since its page started (`HostDriver.logged`), each page's
+counted from its own start - and the words after it standing in the window
+at the end. An element an author
 writes only through a modifier of its own - a page's icon, a bottom bar's
 edge, a marker's kind - stands on a page of its own, which writes the
 members it knows; for any other it stands no specimen, and the walk says

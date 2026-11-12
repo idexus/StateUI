@@ -54,10 +54,11 @@
         _ cases: [VocabularyCase], on element: String, by driver: any HostDriver
     ) throws -> [String] {
         let step = State(wrappedValue: 0)
-        var heard = (try? driver.logged())?.count ?? 0
         let tree = driver.start(clock: nil, reducesMotion: false) {
             page(element, step.wrappedValue < cases.count ? cases[step.wrappedValue] : nil)
         }
+        // The log is what this host wrote since it started (`HostDriver.logged`): every line of it is this page's.
+        var heard = 0
         var untaken: [String] = []
         for written in 0...cases.count {
             if written > 0 { step.wrappedValue = written }
