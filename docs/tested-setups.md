@@ -80,7 +80,7 @@ Last verified 2026-10-05.
 | --- | --- |
 | Machine | a Parallels virtual machine on Apple silicon: ARM64, 4 cores, 16 GB |
 | System | Windows 11 Pro 25H2 (build 26200.9457) |
-| Display scale | 125% (`AppliedDPI` 120), where the whole conformance suite passed on 2026-11-11; 200% before it |
+| Display scale | 200% (`AppliedDPI` 192), where the whole conformance suite and the host's own suite passed on 2026-11-12; at 125% (`AppliedDPI` 120) the whole conformance suite passed on 2026-11-11 |
 | Swift | the swift.org toolchain `swift-6.4.0-RELEASE` (Asserts), ARM64, with its Embedded Python 3.10.1 for LLDB |
 | C++ | Visual Studio Community 2026 18.10.2, MSVC 14.51, the ARM64 C++ tools |
 | Windows SDK | 10.0.26100 |
