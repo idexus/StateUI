@@ -3201,7 +3201,7 @@ enum Listings {
             }
         }
         """#,
-        "EngineSample": #"""
+        "EngineClock": #"""
         // Sources/Samples/Driven/EngineSample.swift
         /// The reading as it stood when Lap was last pressed - ORDINARY state, so
         /// the same reading that costs nothing driven costs a render here.
@@ -3282,6 +3282,45 @@ enum Listings {
         private func button(_ caption: String, _ act: @escaping @MainActor () throws -> Void) -> Button {
             Button(caption)
                 .onClicked(act)
+        }
+        """#,
+        "EngineOrder": #"""
+        // Sources/Samples/Driven/EngineSample.swift
+        /// How many times Tap was pressed - followed by both engines, read by no view.
+        @State private var taps = 0
+
+        /// The count the first engine keeps - its own, read by no view.
+        @State private var count = 0
+
+        /// What each engine says - driven words, written without a render.
+        @State private var counted = "Counted 0"
+        @State private var seen = "Words saw 0"
+
+        /// Whether the words' engine runs before the count's. A render reads it,
+        /// and each render hands both engines their priorities again.
+        @State private var wordsFirst = false
+
+        var body: some View {
+            VStack {
+                Text($counted)
+
+                Text($seen)
+
+                Switch("Words first", isOn: $wordsFirst)
+
+                Button("Tap")
+                    .onClicked { taps += 1 }
+            }
+            // Counts the taps.
+            .engine(following: $taps, priority: 0) { _ in
+                count = taps
+                counted = "Counted \(count)"
+            }
+            // Says what the count is when it runs: after the count's engine, this
+            // tap's; before it, the last one's.
+            .engine(following: $taps, priority: wordsFirst ? -1 : 1) { _ in
+                seen = "Words saw \(count)"
+            }
         }
         """#,
         "EnvironmentSample": #"""
