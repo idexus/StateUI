@@ -271,7 +271,10 @@ A scroller or a list offers the platform's pull where it hears it - a handler
 of `refreshRequested`, or a state `isRefreshing` the pull writes into - unless
 it says `isRefreshEnabled(false)`: its view is given that offer as
 `isRefreshEnabled` (`MountedElement.presented`), told again whenever what
-hears the pull changes, whatever road the handler came by. The pull is a
+hears the pull changes, whatever road the handler came by. A view the tree
+disables, or one in a branch it disables, offers none - a disabled view takes
+no input, and a platform's pull wrapper heeds its own switch alone - and is
+told the offer again as its enablement turns (`followingEnablement`). The pull is a
 user's change with nothing to carry to the handler
 (`MountedElement.reportRefreshRequested`): `isRefreshing` true onto the state
 carrying it, then `refreshRequested`. The spinner the platform shows as the

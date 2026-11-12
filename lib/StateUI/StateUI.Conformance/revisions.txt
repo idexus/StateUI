@@ -45,6 +45,7 @@ Image 4
 Page 10
 PageElement 6
 View 26
+RefreshElement 2
 VisualElement 30
 Shape 6
 BorderElement 14

@@ -386,6 +386,7 @@
         // ground, a `background` it never wrote; untouched, it presents nothing.
         var presenting = changed
         if !described, parent?.isEffectivelyEnabled == false { presenting.insert(.isEnabled) }
+        if presenting.contains(.isEnabled) { presenting.formUnion(followingEnablement) }
         if !described, type == .page, value(.background) == nil, pageBackground != nil { presenting.insert(.background) }
         if !applying.untouched { native.applied(changed: presenting, wasDescribed: described) }
         described = true
