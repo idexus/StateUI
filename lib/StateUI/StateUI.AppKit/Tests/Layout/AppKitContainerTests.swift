@@ -10,12 +10,12 @@ import XCTest
 
 @MainActor
 final class AppKitContainerTests: XCTestCase {
-    /// An oval scroller draws no outline: a rectangular border under its oval mask would show only as slivers
-    /// where the oval meets its bounds.
+    /// An oval scroller draws its outline along the oval, not as its layer's border: a rectangular border under its
+    /// oval mask would show only as slivers where the oval meets its bounds.
     func testAnOvalScrollerDrawsNoOutline() {
         let scroll = AppKitScrollView(frame: NSRect(x: 0, y: 0, width: 100, height: 60))
         scroll.setBox(stroke: Color.red.propValue, lineWidth: 2, shape: ContainerShape.ellipse.propValue)
-        XCTAssertEqual(scroll.layer?.borderWidth ?? 0, 0, "an oval draws an outline")
+        XCTAssertEqual(scroll.layer?.borderWidth ?? 0, 0, "an oval draws its layer's rectangular border")
 
         scroll.setBox(stroke: Color.red.propValue, lineWidth: 2, shape: ContainerShape.rectangle.propValue)
         XCTAssertEqual(scroll.layer?.borderWidth, 2, "a rectangle draws its outline")

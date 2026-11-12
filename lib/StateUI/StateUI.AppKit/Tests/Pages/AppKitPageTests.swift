@@ -105,9 +105,8 @@ final class AppKitPageTests: XCTestCase {
     }
 
     /// A written bar color paints the band the title bar and toolbar cover
-    /// above the page, and the title bar lets it show. The window wears it as
-    /// its background too, and a color taken away gives the material and the
-    /// window's own background back.
+    /// above the page, and the title bar lets it show; the window's own
+    /// background stands, and a color taken away gives the material back.
     @MainActor
     func testAWrittenBarColorPaintsTheBandAboveThePage() throws {
         let renderer = testRenderer(

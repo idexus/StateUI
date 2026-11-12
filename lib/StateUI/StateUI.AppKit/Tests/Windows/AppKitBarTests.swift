@@ -75,8 +75,8 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertNil((window.contentView as? AppKitWindowContentView)?.barBrush.color)
     }
 
-    /// A declared bar color paints the band the title bar and toolbar cover and the window's background, and the
-    /// title area takes the declared foreground there.
+    /// A declared bar color paints the band the title bar and toolbar cover - the window's own background standing -
+    /// and the title area takes the declared foreground there.
     @MainActor
     func testADeclaredBarColorPaintsTheBandAndColorsTheTitleArea() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
