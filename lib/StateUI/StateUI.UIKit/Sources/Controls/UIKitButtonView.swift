@@ -22,7 +22,14 @@ final class UIKitButtonView: UIButton {
 
     /// The arrow of a button holding a menu: a split button's at its trailing edge set off by a line, opening the
     /// menu; a mark after the words of a button whose tap opens it. Nil for a plain button.
-    private var arrow: Arrow?
+    private var arrow: Arrow? {
+        didSet { arrow?.button.isEnabled = isEnabled }
+    }
+
+    /// Whether the button takes the user's touch - a split button's arrow with it, as a screen reader hears it too.
+    override var isEnabled: Bool {
+        didSet { arrow?.button.isEnabled = isEnabled }
+    }
 
     /// An arrow pointing down, a button of UIKit's own, and the line setting a split button's apart.
     private struct Arrow {
