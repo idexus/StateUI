@@ -12419,8 +12419,7 @@ enum Listings {
 
                     Text(favorite ? "A favorite" : "Not a favorite")
 
-                    Text("Press Save, Add and the star; Sort and Save's arrow open menus; More holds two sections. "
-                        + "At the foot, Save's arrow holds Save as, and the bar's overflow Export.")
+                    Text("Press Save, Add and the star; Sort and Save's arrow open menus; More holds two sections.")
 
                     SectionTitle("Where the actions stand")
 

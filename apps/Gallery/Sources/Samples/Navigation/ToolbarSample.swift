@@ -68,8 +68,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .fontSize(13)
                     .textColor(Palette.subtle)
 
-                Text("Press Save, Add and the star; Sort and Save's arrow open menus; More holds two sections. "
-                    + "At the foot, Save's arrow holds Save as, and the bar's overflow Export.")
+                Text("Press Save, Add and the star; Sort and Save's arrow open menus; More holds two sections.")
                     .fontSize(12)
                     .textColor(Palette.subtle)
 
@@ -301,7 +300,9 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("The bar at the foot is `.toolbar(.bottom)`: a phone's bottom toolbar, a desktop's thin "
-                + "status bar. Its `ToolbarLabel` counts the recent files, and its Save saves as the top one does.")
+                + "status bar. Its `ToolbarLabel` counts the recent files, and its Save saves as the top one does: "
+                + "a click its own, its arrow a menu holding Save as, a submenu. Export stands in the bar's "
+                + "overflow, its menu a submenu there.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
