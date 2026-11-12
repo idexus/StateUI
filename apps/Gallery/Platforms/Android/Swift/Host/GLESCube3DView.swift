@@ -25,9 +25,14 @@ final class GLESCube3DView: AndroidControl {
         didSet { if color != oldValue { draw() } }
     }
 
-    /// Whether it turns. Stopped, it holds the angle it had.
+    /// Whether it turns. Stopped, it holds the angle it had, and turns on from there once it spins again: its
+    /// first frame then counts no time.
     var isSpinning = true {
-        didSet { if isSpinning != oldValue { Java.call(view.reference, Self.setSpinning, .bool(isSpinning)) } }
+        didSet {
+            guard isSpinning != oldValue else { return }
+            lastFrame = 0
+            Java.call(view.reference, Self.setSpinning, .bool(isSpinning))
+        }
     }
 
     private let number: Int64
