@@ -223,9 +223,9 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("Add, insert, remove, reverse or spread the cards while the deck stands - or while it "
-                + "still turns. Nothing here animates a card: a change of the layout's description "
-                + "where its parameters stand travels under its `.parameterMotion`, each card from where it "
-                + "was shown to where the new arithmetic puts it.")
+                + "still turns. Nothing here animates a card: after a change of the layout's description "
+                + "each card goes from where it was shown to where the new arithmetic puts it on the "
+                + "layout's `.dynamics`, while `.parameterMotion` moves the parameters - the turn between cards.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

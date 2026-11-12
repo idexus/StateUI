@@ -21,7 +21,7 @@ ButtonMenuSample.swift cee5bf33f56e8bb7
 ButtonRoleSample.swift 3e904d0aa8e02d9c
 ButtonSample.swift 4bf410b3eb5f6336
 CanvasSample.swift b31634f0ee2057b2
-ChangingDeckSample.swift aa1d2426381d76e8
+ChangingDeckSample.swift 7e97e11b83cd5f02
 CheckBoxSample.swift 59e11010b2651d72
 ChoosingItemsSample.swift 85105c1d71a4884c
 ClipboardSample.swift a210a3c26540a05e
@@ -57,7 +57,7 @@ HomeScreenSample.swift f289960bc846bd6b
 HostTimeSample.swift 22a8291fdd7fe7a1
 IconButtonSample.swift 3becb5bca84feb1e
 IconSample.swift b1a186070a9f38de
-IdentitySample.swift c04f03fc953533f1
+IdentitySample.swift 1027b1b9006f8239
 ImageSample.swift 798ac3475ce4ff0a
 InteropActsSample.swift 43ab44a50a60a46e
 InteropControlSample.swift 29f4505d5cc2a603
@@ -100,7 +100,7 @@ PlatformSupportSample.swift 6403f0592307424a
 PointerSample.swift 3306b3b76379bc70
 PollSample.swift 76ecb0076e0aa5e7
 PopoverSample.swift 3771c51f127730d8
-PositionDotsSample.swift 85b6d17adabdccb8
+PositionDotsSample.swift a571a2cea1e97bb2
 ProgressBarSample.swift 37bc1e09a569cf35
 PropertyReadsSample.swift e16e08fd0fa40d8a
 ReaderSample.swift ceca8c7001a22ce6

@@ -142,8 +142,9 @@ struct PositionDotsSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Nothing about it is the user's to change, so `position` has no binding "
-                + "overload - it is told to it.")
+            Text("Nothing about it is the user's to change: `position` is told to it, as a "
+                + "value or as a state's binding, `$page`, which the row only reads - built "
+                + "again as it changes.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

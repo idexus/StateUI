@@ -5391,7 +5391,8 @@ enum Listings {
         }
 
         /// One row, with something worth keeping in it: what is typed lives in the
-        /// control, not in the tree.
+        /// row's own state, and its native field keeps the focus and the caret - all
+        /// of it staying with the row as rows come and go around it.
         private struct IdentityRow: View {
             let item: String
             @Binding var items: [String]
