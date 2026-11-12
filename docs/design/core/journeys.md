@@ -39,6 +39,7 @@ places, and a control handed the state mid-animation joins it where it is.
   kind 2  eased:  millis, curve (Easing's number)
   kind 3  spring: response millis, damping
   kind 4  custom  - an engine on this side animates the value
+  kind 5  glide:  longest millis - on from the speed it was handed
 ```
 
 `.none` and `.inherited` cross as themselves rather than as an eased law of no

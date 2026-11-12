@@ -208,9 +208,9 @@ the arithmetic is handed each frame where the parameters stand - never the
 destination at once, which would make a ring jump. Under the hand, the hand's
 axis is where the hand holds it.
 
-The parameters lent are a state, `$turn`: a binding worked out from others has no
-image to wear, so its parameters would jump where they are sent, and the layout says
-so once. The engine follows the parameters themselves, so a new one wakes the arithmetic and
+The parameters lent are a state, `$turn`, or a conversion of one - a second
+state the host carries (core/journeys.md#conversions), its destination walked as
+any state's. The engine follows the parameters themselves, so a new one wakes the arithmetic and
 builds nothing; a change of room moves no parameters.
 
 ## Where a motion set out
@@ -624,12 +624,12 @@ its own: on the snap nearest where its throw would end, or, with no snaps,
 there itself inside its range - and only its own hand moves it there, a
 settle of another leaving it where the program put it. The axes the hand or
 the fingers let go at once are each NAMED where they rest before any goes
-on, and the parameters are sent on no journey: a journey of all the parameters would
-have the host walk an axis the hand held - which nothing named while it held
-it, an axis with no snaps - from where the host last had it, the value
-snapped meanwhile left to the host's walk, so the axis let go would leap
-back to where the hand took it and come again (a pan let go across, its
-down axis, on every host).
+on, then go on together as one journey of the parameters on the host's
+channel (`letGo(together:)`): its value written first where the hands left
+the run, so no axis leaps back to where the host last had it, each axis
+setting out at its hand's speed, under one law - a throw's where one is
+thrown, else the approach of the longest way, which the others arrive within
+([coming onto a target](#coming-onto-a-target)).
 
 Under the hand only the hand's axes are named - each on the nearest of its
 snaps - so an axis the hand does not move never jumps as the hand passes.

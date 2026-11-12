@@ -94,8 +94,8 @@ and this table maps the two.
 
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
-| motion (`Motion`) | animation timing | how a change animates: an eased curve over a duration, a spring, or none |
-| law, motion law | timing function | the curve or spring that gives a value at a time (`HostMotionLaw`) |
+| motion (`Motion`) | animation timing | how a change animates: an eased curve over a duration, a spring, a glide, or none |
+| law, motion law | timing function | the curve, spring or glide that gives a value at a time (`HostMotionLaw`) |
 | journey (`$x.journey`) | animated value | a state's value with its destination, speed and timing |
 | animation (`Animation`) | animation | one running animation of one value |
 | animator (`Animator`), advance | animator, advance a frame | the one place a runtime advances every animation |

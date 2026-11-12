@@ -176,8 +176,8 @@ and stand in the folder of the topic they serve, usually the type's own.
                     warning
   Core/Carried      what a carried value is: StateValue and its image,    state, cycle
                     the attachments, HostStorage's three copies
-  Core/Journey      Journey and its lanes, the law on the image, the two  journeys
-                    motion laws, readings, conversions, .multi
+  Core/Journey      Journey and its lanes, the law on the image, the      journeys
+                    three motion laws, readings, conversions, .multi
   Core/Cycle        the board, engines, the ticker                        cycle
   Core/Render       the renderer, with its cycle, act queue and dispatch; render, acts,
                     read scopes, debugInfo()                              invalidation

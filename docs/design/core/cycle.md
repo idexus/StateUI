@@ -289,9 +289,11 @@ that imports Foundation.
                              `@State` - with no stop written for it
 ```
 
-Its values are not separate `@State`s because they change together: a tick
-moves the count, the last one clears the running flag, and `start`, `stop` and
-`reset` answer the count and the flag of one moment.
+Its values are separate `@State`s - the interval, the limit, the count and the
+running flag - so a body reading the count is built again by a tick, and one
+reading the flag alone only as the ticker starts or stops. A tick moves the
+count, the last one clears the flag too, and `start`, `stop` and `reset` write
+both in one turn, so a reader sees the count and the flag of one moment.
 
 A lap that took longer than a whole interval would leave the deadline so far
 behind that the missed laps all come due at once, so the next deadline is
