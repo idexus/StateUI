@@ -304,12 +304,10 @@ public final class TestMenus {
         for (int index = 0; index < menu.size(); index++) {
             MenuItem item = menu.getItem(index);
             if (!item.isVisible()) continue;
-            String title = String.valueOf(item.getTitle());
+            // The view of the bar an item stands as takes the item's id: words alike tell two items apart nowhere.
             TextView action = null;
             for (TextView each : actions) {
-                if (title.equals(String.valueOf(each.getText())) || title.equals(String.valueOf(each.getContentDescription()))) {
-                    action = each;
-                }
+                if (each.getId() == item.getItemId()) action = each;
             }
             lines.append(item.getItemId()).append(' ').append(item.getGroupId()).append(' ')
                     .append(action != null ? 1 : 0).append(' ').append(action != null && action.getText().length() > 0 ? 1 : 0)

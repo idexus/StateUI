@@ -148,6 +148,21 @@ enum TestMenus {
         Java.frame { Java.callStaticObject(owner, barActions, .object(bar.reference)).map { Java.text($0) } ?? "" }
     }
 
+    /// The bar's entries as Android lays them out, a line each in its menu's order: id, group, on the bar, words
+    /// shown, enabled.
+    static func laidOut(_ bar: AndroidView) -> [String] {
+        let menu = JavaObject(Java.callObject(bar.reference, getMenu)!)
+        let said = withExtendedLifetime(menu) {
+            Java.frame {
+                Java.callStaticObject(owner, barLaidOut, .object(bar.reference), .object(menu.reference)).map { Java.text($0) }
+            }
+        } ?? ""
+        return said.split(separator: "\n").map(String.init)
+    }
+
+    private static let barLaidOut = Java.staticMethod(
+        owner, "laidOut", "(Landroid/view/ViewGroup;Landroid/view/Menu;)Ljava/lang/String;")
+
     /// The color the bar's title stands in and its overflow's picture is drawn in.
     static func foreground(of bar: AndroidView) -> String {
         Java.frame { Java.callStaticObject(owner, barForeground, .object(bar.reference)).map { Java.text($0) } ?? "" }

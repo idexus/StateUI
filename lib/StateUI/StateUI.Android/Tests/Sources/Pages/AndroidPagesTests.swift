@@ -38,6 +38,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testALeadingGroupStandsFirstAmongTheActions", testALeadingGroupStandsFirstAmongTheActions),
             ("testTheBarsActionsStandInItsWordsColor", testTheBarsActionsStandInItsWordsColor),
             ("testABarGivenNoForegroundStandsInTheThemesAgain", testABarGivenNoForegroundStandsInTheThemesAgain),
+            ("testActionsCaptionedAlikeStandWhereEachIsPlaced", testActionsCaptionedAlikeStandWhereEachIsPlaced),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
             ("testAStackAndItsPagesSayHowTheBarAndThePageLook", testAStackAndItsPagesSayHowTheBarAndThePageLook),
             ("testTabsOfStacksOnAStackStandUnderOneBar", testTabsOfStacksOnAStackStandUnderOneBar),
@@ -827,6 +828,27 @@ extension AndroidPagesTests {
             none.foreground = nil
             bar.show(none)
             XCTAssertEqual(TestMenus.foreground(of: bar), theme, "the theme's again")
+        }
+    }
+
+    /// Two actions captioned alike, one on the bar and one behind its overflow, are read where each stands: by the
+    /// item each view of the bar stands for, never by its words.
+    func testActionsCaptionedAlikeStandWhereEachIsPlaced() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Notes", actions: [
+                        ToolbarButton("Same"), ToolbarButton("Same").placement(at: .overflow),
+                    ])
+                } destination: { _ in
+                    TitledPage(title: "Note")
+                }
+            }
+            host.layOut()
+            let bar = try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar
+            let onBar = TestMenus.laidOut(bar).map { $0.split(separator: " ").dropFirst(2).first.map(String.init) }
+
+            XCTAssertEqual(onBar, ["1", "0"], "the first on the bar, the second behind its overflow")
         }
     }
 
