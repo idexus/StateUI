@@ -25,6 +25,14 @@ struct SwatchPage: View {
                 .fontWeight(.bold)
                 .horizontalAlignment(.center)
 
+            // The number through a conversion: a step onto a swatch another
+            // window shows is refused on its way back, and the stepper stands
+            // where it was - one window per swatch, whichever road writes it.
+            Stepper($number.convert { Double($0) } back: { Int($0) })
+                .minimum(1)
+                .horizontalAlignment(.center)
+                .accessibilityIdentifier("swatch.step")
+
             HStack {
                 Button("Next")
                     .onClicked { number += 1 }
