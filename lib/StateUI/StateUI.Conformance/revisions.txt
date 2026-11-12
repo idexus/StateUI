@@ -47,7 +47,7 @@ PageElement 6
 BackgroundElement 2
 View 28
 RefreshElement 2
-VisualElement 30
+VisualElement 31
 Shape 6
 BorderElement 14
 TextInput 10

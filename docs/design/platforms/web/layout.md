@@ -35,7 +35,9 @@ width and height, their least and most, and its alignment across its slot -
 in a grid's cell along both axes. Start, center and end are CSS's start,
 center and end; a filling child stretches, unless a stated or a most size
 stops it short of its slot, when it stands in the middle, as the host layer
-places it. The least size a control's look gives it - a button's, a
+places it - one its most stops takes the slot's length within its margin as
+its width or height, which its most bounds: CSS's middle is a box's own size,
+which would stand a filling shape at nothing. The least size a control's look gives it - a button's, a
 field's, a slider's - is its own size, and yields where the tree states a
 size or a most, where the child fills its slot and in an area: CSS's least
 wins over a stated size, so a button stated 30 high stood 36. A label in a

@@ -18,7 +18,7 @@
     @MainActor static var written: [ConformanceCase] {
         Specimens.wearing(VisualElementContract.self).flatMap { element -> [ConformanceCase] in
             let held: [ConformanceCase] = [
-                shown(element), opacity(element), enabled(element), sized(element), bounded(element),
+                shown(element), opacity(element), enabled(element), sized(element), bounded(element), toItsMost(element),
                 reachable(element), framed(element), styled(element), layered(element),
                 headed(element),
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
@@ -534,6 +534,49 @@
             }
             s.expect(narrowed.values.last.map(FrameReport.size), [60, 50], "no wider than its maximum, no lower than its minimum")
             s.expect(widened.values.last.map(FrameReport.size), [50, 60], "no narrower than its minimum, no taller than its maximum")
+        }
+    }
+
+    /// A view filling its slot stops at its most in the slot's middle: across a stack 200 wide, down a grid's cell
+    /// 100 high - filling as told, whatever it does unsaid (a link stands at its words).
+    @MainActor
+    static func toItsMost(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).fillsItsSlotUpToItsMost", proves: [
+            Covered(VisualElementContract.maximumWidth, on: element),
+            Covered(VisualElementContract.maximumHeight, on: element),
+        ], needs: [
+            Covered(ViewContract.frameChanged, on: element), Covered(ViewContract.horizontalAlignment, on: element),
+            Covered(ViewContract.verticalAlignment, on: element),
+        ]) { s in
+            let across = Received<[Double]>()
+            let down = Received<[Double]>()
+            let fill: [any Worn] = [
+                Write(ViewContract.horizontalAlignment, Alignment.fill), Write(ViewContract.verticalAlignment, Alignment.fill),
+            ]
+            s.start {
+                VStack {
+                    VStack {
+                        ViewTests.reporting(element, across, fill + [
+                            Write(VisualElementContract.maximumWidth, 60), Write(VisualElementContract.height, 30),
+                        ], id: "across")
+                    }
+                    .width(200)
+                    Grid {
+                        ViewTests.reporting(element, down, fill + [
+                            Write(VisualElementContract.maximumHeight, 40), Write(VisualElementContract.width, 50),
+                        ], id: "down")
+                    }
+                    .columns(.fixed(100))
+                    .rows(.fixed(100))
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+
+            let places = { (across.values.last.map(FrameReport.place), down.values.last.map(FrameReport.place)) }
+            s.settle { places().0 == [70, 0, 60, 30] && places().1 == [25, 30, 50, 40] }
+            s.expect(places().0, [70, 0, 60, 30], "across a stack 200 wide: 60 in its middle")
+            s.expect(places().1, [25, 30, 50, 40], "down a cell 100 high: 40 in its middle")
         }
     }
 

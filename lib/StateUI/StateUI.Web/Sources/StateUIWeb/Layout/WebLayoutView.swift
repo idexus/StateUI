@@ -237,13 +237,19 @@ class WebLayoutView: WebDOMView {
         let boundDown = arrangement != .stack(.vertical) && !scrolls.down ? area?.height ?? "100%" : nil
         view.style("max-width", WebCSS.most(values.maximumWidth, within: boundAcross))
         view.style("max-height", WebCSS.most(values.maximumHeight, within: boundDown))
-        // A filling child in an area - where the browser stretches a control no narrower than its own size - takes
-        // the area's length, which its most bounds, in its middle.
-        // Design: docs/design/platforms/web/layout.md#a-childs-area
-        let fillsItsArea = (
-            across: values.horizontal == 3 && values.width == nil, down: values.vertical == 3 && values.height == nil)
-        view.style("width", WebCSS.pixels(values.width) ?? (fillsItsArea.across ? area?.width : nil))
-        view.style("height", WebCSS.pixels(values.height) ?? (fillsItsArea.down ? area?.height : nil))
+        // A filling child takes its slot's length where the browser would not stretch it there - in an area, which
+        // stretches a control no narrower than its own size, and where its most stops it short, which CSS centers at
+        // the child's own size - its most bounding it, in the slot's middle.
+        // Design: docs/design/platforms/web/layout.md#a-childs-place
+        let slot = { (bound: String?, margin: Double, area: String?) -> String? in
+            area ?? (bound == "100%" && margin != 0 ? "calc(100% - \(WebCSS.signedPixels(margin)))" : bound)
+        }
+        let slotAcross = values.horizontal == 3 && values.width == nil && (area != nil || values.maximumWidth != nil)
+            ? slot(boundAcross, values.margin.start + values.margin.end, area?.width) : nil
+        let slotDown = values.vertical == 3 && values.height == nil && (area != nil || values.maximumHeight != nil)
+            ? slot(boundDown, values.margin.top + values.margin.bottom, area?.height) : nil
+        view.style("width", WebCSS.pixels(values.width) ?? slotAcross)
+        view.style("height", WebCSS.pixels(values.height) ?? slotDown)
         let stopsAcross = values.width != nil || values.maximumWidth != nil
         let stopsDown = values.height != nil || values.maximumHeight != nil
         let across = WebCSS.alignment(values.horizontal, stops: stopsAcross)
