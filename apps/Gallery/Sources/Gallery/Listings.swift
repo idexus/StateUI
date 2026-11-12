@@ -11020,6 +11020,14 @@ enum Listings {
                         .height(24)
                         .minimumWidth(160))
 
+                // A floor above the ceiling: the floor wins, and the words wrap
+                // at the width they stand at - as tall as their lines there.
+                row("minimumWidth(240), maximumWidth(120)",
+                    Text("A floor above the ceiling wins, and the words wrap at it.")
+                        .minimumWidth(240)
+                        .maximumWidth(120)
+                        .horizontalAlignment(.start))
+
                 // The pair is the point: both ask for 80 high, and only the one
                 // without a ceiling on it is allowed to have it.
                 row("height(80), then the same with maximumHeight(32)",

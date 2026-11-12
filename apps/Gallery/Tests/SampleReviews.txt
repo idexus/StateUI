@@ -120,7 +120,7 @@ ShapesSample.swift da1878eaf2de52e6
 ShareSample.swift 61060e30815dd8e7
 SheetsSample.swift 982b656861dea4a0
 ShortcutSample.swift 4a136baa75f88f0e
-SizingSample.swift 505216705d5b9909
+SizingSample.swift 57d44e7bb9407782
 SliderSample.swift e2b8f22f39c0543f
 SpinnerSample.swift aa8dfb307e3ef91f
 SplitViewSample.swift fdbee0ff44976127
