@@ -1091,6 +1091,44 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertTrue(earlier.isBordered)
     }
 
+    /// A menu on the bar at the page's foot opens as it does on the window's: its click opening it where its button
+    /// has none of its own, a split button's beside it, and one behind More a submenu of the entries it shows there.
+    @MainActor
+    func testAMenuOnTheFootBarOpensAsOnTheWindowsBar() throws {
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").pageTitle("Files")
+                    .toolbar(.bottom) {
+                        ToolbarButton("Sort").menu { MenuItem("A to Z").onClicked {} }
+                        ToolbarButton("Save").onClicked {}.menu(.split) { MenuItem("Save as").onClicked {} }
+                        ToolbarButton("Share").menu { MenuItem("Mail").onClicked {} }.placement(at: .overflow)
+                    }
+            } destination: { _ in Text("Pushed") }
+        }
+        defer { renderer.finish() }
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        func footBar(_ view: NSView) -> AppKitBottomToolbar? {
+            if let bar = view as? AppKitBottomBarView, bar.showsAnything { return bar.toolbar }
+            return view.subviews.lazy.compactMap(footBar).first
+        }
+        let foot = try XCTUnwrap(controller.window?.contentView.flatMap(footBar))
+        func control(_ title: String) -> NSView? {
+            func search(_ view: NSView) -> NSView? {
+                if let button = view as? NSComboButton, button.toolTip == title { return button }
+                if let button = view as? NSButton, button.toolTip == title { return button }
+                return view.subviews.lazy.compactMap(search).first
+            }
+            return search(foot)
+        }
+
+        let sort = try XCTUnwrap(control("Sort") as? NSComboButton, "a click opening a menu")
+        XCTAssertEqual(sort.style, .unified)
+        XCTAssertEqual(sort.menu.items.map(\.title), ["A to Z"])
+        XCTAssertEqual((control("Save") as? NSComboButton)?.style, .split)
+        let share = try XCTUnwrap(foot.overflowMenuForTesting.items.first { $0.title == "Share" })
+        XCTAssertEqual(share.submenu?.items.map(\.title), ["Mail"], "behind More, a submenu")
+    }
+
     /// Groups placed behind a bar's More are sections of its menu, a line between two - on the window's bar and on
     /// the bar at the page's foot.
     @MainActor

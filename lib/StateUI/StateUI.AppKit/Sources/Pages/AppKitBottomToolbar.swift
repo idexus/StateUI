@@ -81,8 +81,9 @@ final class AppKitBottomToolbar: NSView {
         return stack
     }
 
-    /// The control standing for `action`: words for a label, a button for an action or a setting, one opening its
-    /// menu where it holds one.
+    /// The control standing for `action`: words for a label, a button for an action or a setting, AppKit's menu button
+    /// where it holds a menu - its click opening the menu where the button has none of its own, else the arrow beside
+    /// it, as on the window's bar.
     private func control(_ action: AppKitToolbarAction) -> NSView {
         let identifier = Self.identifier(action)
         if action.isLabel {
@@ -90,7 +91,7 @@ final class AppKitBottomToolbar: NSView {
             label.identifier = identifier
             return label
         }
-        if let menu = action.menu, menu.opening != .click {
+        if let menu = action.menu {
             let menuShown = NSMenu()
             menuShown.autoenablesItems = false
             AppKitMenus.items(menu.entries).forEach { item in
@@ -101,7 +102,7 @@ final class AppKitBottomToolbar: NSView {
                 title: action.image == nil ? action.title : "", menu: menuShown, target: self,
                 action: #selector(choose(_:)))
             button.image = action.image
-            button.style = .split
+            button.style = menu.opening == .click ? .unified : .split
             button.controlSize = .small
             button.identifier = identifier
             button.isEnabled = action.isEnabled
@@ -145,7 +146,7 @@ final class AppKitBottomToolbar: NSView {
         }
     }
 
-    /// The overflow's item for `action`.
+    /// The overflow's item for `action`: one opening a menu a submenu of the entries it shows there.
     private func overflowItem(_ action: AppKitToolbarAction) -> NSMenuItem {
         let item = NSMenuItem(title: action.title, action: #selector(choose(_:)), keyEquivalent: "")
         item.target = self
@@ -153,6 +154,10 @@ final class AppKitBottomToolbar: NSView {
         item.image = action.image
         item.isEnabled = action.isEnabled && !action.isLabel
         item.state = action.isOn == true ? .on : .off
+        if let menu = action.menu {
+            (item.target, item.action) = (nil, nil)
+            item.submenu = menu.overflowSubmenu(titled: action.title)
+        }
         return item
     }
 

@@ -176,8 +176,10 @@ edge while rows do. The strip's leading groups stand at its start and the
 rest at its end, each group's controls close together and the groups apart;
 an action or a setting is an `NSButton` of the accessory bar's bezel, small,
 a setting a push-on push-off button; a button holding a menu an
-`NSComboButton`, split, or a button popping its menu where its click opens
-it; behind the overflow a More button pops a menu of the rest. Words
+`NSComboButton` - unified where its click opens the menu, else split, the
+arrow beside it opening it; behind the overflow a More button pops a menu of
+the rest, an action holding a menu a submenu of the entries it shows there,
+as on the window's toolbar (`AppKitToolbarMenu.overflowSubmenu`). Words
 (`ToolbarLabel`) are a small label in the secondary color of words, its
 picture before it - the same view a word item on the window's toolbar
 holds. The strip is made again only where an action draws otherwise, and
