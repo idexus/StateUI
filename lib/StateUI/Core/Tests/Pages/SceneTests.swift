@@ -71,6 +71,7 @@ private struct Retargeting: View {
         VStack {
             Text("Document \(number)")
             Button("seven").onClicked { number = 7 }
+            Slider($number.convert({ Double($0) }, back: { Int($0.rounded()) })).maximum(100)
         }
     }
 }
@@ -805,6 +806,35 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(try scene("1").windows.compactMap(\.value), [42, 7] as [AnyHashable])
         XCTAssertEqual(try scene("1").windows.compactMap(\.text), ["42", "7"])
         XCTAssertEqual(texts(in: whole).filter { $0.hasPrefix("Document") }, ["Document 42", "Document 7"])
+    }
+
+    /// A window's value reported through a conversion - a slider over it - is refused alike where another window
+    /// is open for it: the window stays about its own value, and the slider goes back to it.
+    func testAWindowsValueReportedThroughAConversionIsRefusedAlike() async throws {
+        Renderer.shared.clearStates()
+        let renders = Renders()
+        renders.render(tree())
+        let first = await refusal { try await self.application.openWindow(.document, value: 42) }
+        let second = await refusal { try await self.application.openWindow(.document, value: 7) }
+        XCTAssertNil(first)
+        XCTAssertNil(second)
+        let opened = renders.renderFromScratch(tree())
+        let document = try XCTUnwrap(opened.subtree.first { $0.props[.windowValue] == .string("42") })
+        let number = try XCTUnwrap(document.subtree.first { $0.type == .slider }?.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        // The window for 42 reports 7 - the value the window beside it is open for.
+        dragged(number, to: 7)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+        let whole = renders.renderFromScratch(tree())
+
+        XCTAssertTrue(hasComplained("is open for the value 7 already"))
+        XCTAssertEqual(try scene("1").windows.compactMap(\.value), [42, 7] as [AnyHashable])
+        XCTAssertEqual(texts(in: whole).filter { $0.hasPrefix("Document") }, ["Document 42", "Document 7"])
+        XCTAssertEqual(standing(number, as: JourneyLanes<Double>.self)?.destination, 42,
+                       "the slider goes back to its window's value")
     }
 
     /// A window's session kept past its scene's end refuses its acts once the scene's record is gone too: it is a

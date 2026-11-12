@@ -583,6 +583,59 @@ final class ConversionTests: XCTestCase {
         XCTAssertEqual(volume.wrappedValue, 0.4, accuracy: 1e-12, "a report still comes back")
     }
 
+    /// A REPORT THE SOURCE REFUSES LANDS NOWHERE: the way back asks the source, as every road a value comes in by
+    /// does, and the derived state goes back to what the source holds.
+    func testAReportTheSourceRefusesLandsNowhere() throws {
+        let volume = State(wrappedValue: 0.5)
+        volume.storage.refuses = { $0 > 0.6 ? "\($0) is too loud" : nil }
+        let renders = Renders()
+        let patch = renders.render(
+            Slider(volume.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 })).maximum(100).node)
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        dragged(number, to: 80)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(volume.wrappedValue, 0.5, "the refused report landed nowhere")
+        XCTAssertTrue(hasComplained("0.8 is too loud"))
+        XCTAssertEqual(destination(of: number), 50, "the thumb goes back to what the source holds")
+
+        _ = board.dirty()
+        dragged(number, to: 40)
+        board.cycle(now: 48, reducesMotion: false)
+        XCTAssertEqual(volume.wrappedValue, 0.4, accuracy: 1e-12, "a report the source takes still lands")
+    }
+
+    /// A report into two sources lands on both or on neither: one refusing its part, the other keeps its own.
+    func testAReportOneOfTwoSourcesRefusesLandsOnNeither() throws {
+        let hours = State(wrappedValue: 1.0)
+        let minutes = State(wrappedValue: 30.0)
+        hours.storage.refuses = { $0 >= 2 ? "\($0) hours is too long" : nil }
+        let renders = Renders()
+        let patch = renders.render(
+            Slider(
+                Binding<Double>.multi(hours.projectedValue, minutes.projectedValue)
+                    .convert({ h, m in h * 60 + m },
+                             back: { total in ((total / 60).rounded(.down), total.truncatingRemainder(dividingBy: 60)) }))
+            .maximum(600)
+            .node)
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        dragged(number, to: 125)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(hours.wrappedValue, 1)
+        XCTAssertEqual(minutes.wrappedValue, 30, "the source that takes its part keeps its own all the same")
+        XCTAssertTrue(hasComplained("2.0 hours is too long"))
+        XCTAssertEqual(destination(of: number), 90, "the thumb goes back to what the sources hold")
+    }
+
     /// A report into a two-source conversion lands on both sources.
     func testAReportComesBackIntoBothSources() throws {
         let hours = State(wrappedValue: 1.0)

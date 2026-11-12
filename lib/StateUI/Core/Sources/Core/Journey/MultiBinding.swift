@@ -312,7 +312,11 @@ extension MultiBinding {
                   let derived
             else { return }
 
+            // A report lands on both sources or on neither: the derived state goes back to what they hold.
             let (one, two) = back(derived.value)
+            guard first.admits(one), second.admits(two) else {
+                return derived.settle(transform(first.value, second.value), asking: true)
+            }
             first.settle(one, asking: true)
             second.settle(two, asking: true)
             first.conversion?.back?()

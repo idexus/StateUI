@@ -227,7 +227,8 @@ value: what the application writes goes forward and stays as written - `v =
 0.123` through a slider converting by hundredths stays 0.123, the control
 showing 12 - as the application's writes never come back as the user's.
 The way back is meant as the inverse; where it is not exactly - a rounding, a
-clamp - a report lands on the source as the round trip makes it. It is written
+clamp - a report lands on the source as the round trip makes it, and one the
+source refuses lands nowhere (state.md#kept-state). It is written
 in the same call, `convert(_:back:)`, typed `(Out) -> Value`: a way back
 answering another type does not compile, and one call declares the conversion
 whole - a way back that comes and goes stays one call, `back: editing ? { … } :

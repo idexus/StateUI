@@ -225,7 +225,11 @@ extension Binding where Value: StateValue {
             conversion.declareBack { [weak derived] in
                 guard let source = reach(), let derived else { return }
 
-                source.settle(back(derived.value), asking: true)
+                // A report the source refuses lands nowhere: the derived state goes back to what the source holds.
+                let value = back(derived.value)
+                guard source.admits(value) else { return derived.settle(transform(source.value), asking: true) }
+
+                source.settle(value, asking: true)
                 // A source that is a link of a chain carries the report on to its own sources.
                 source.conversion?.back?()
             }
