@@ -435,8 +435,9 @@ A touch reaches the view in front and those around it alone, as on every
 platform: a layout (`StateUIViewGroup`) hands a touch down to the frontmost
 child under it - in the order it draws them - and, where that child takes
 none, to its own handling, never to a child behind it, which Android's own
-dispatch would offer it to next. A child hidden or clear is passed by, and
-so is a plain view answering no tap - a split view's shade, a column's edge -
+dispatch would offer it to next. A child hidden, clear or scaled to nothing -
+whose matrix turns no point back - is passed by, and so is a plain view
+answering no tap - a split view's shade, a column's edge -
 which only draws. Where the touch lands on no child, the layout's own area
 has it, unless it lets input through (`letsInputThrough`): then it is as if
 the layout were not there, and the touch goes on to whatever stands behind

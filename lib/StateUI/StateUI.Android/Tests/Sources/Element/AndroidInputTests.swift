@@ -12,6 +12,7 @@ final class AndroidInputTests: XCTestCase {
         [
             ("testATapReachesItsHandlerAndLeavesWithIt", testATapReachesItsHandlerAndLeavesWithIt),
             ("testALayoutThatIgnoresInputLetsTheTouchThroughToWhatIsBehind", testALayoutThatIgnoresInputLetsTheTouchThroughToWhatIsBehind),
+            ("testAViewScaledToNothingTakesNoTouch", testAViewScaledToNothingTakesNoTouch),
             ("testAFieldSaysWhenItTakesTheFocusAndLosesIt", testAFieldSaysWhenItTakesTheFocusAndLosesIt),
             ("testTheKeypadsEnterPressesWhatReturnDoes", testTheKeypadsEnterPressesWhatReturnDoes),
         ]
@@ -70,6 +71,34 @@ final class AndroidInputTests: XCTestCase {
 }
 
 extension AndroidInputTests {
+    /// A card scaled to nothing over a button is drawn nowhere and takes no touch: the finger reaches the button.
+    /// At its size, the card takes it.
+    func testAViewScaledToNothingTakesNoTouch() throws {
+        try onMainActor {
+            for (scale, cardTakes) in [(0.0, false), (1.0, true)] {
+                let host = AndroidRenderer.running {
+                    Grid {
+                        Button("behind").onClicked {}
+                        ZStack { Text("over") }.onTapped {}.scale(scale)
+                    }
+                    .width(200)
+                    .height(100)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                host.layOut()
+                let page = try XCTUnwrap(host.views(AndroidSingleChildView.self).first)
+                let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+                let card = try XCTUnwrap(host.views(AndroidZStackView.self).first)
+
+                page.touch(0, x: 20, y: 20)
+                XCTAssertEqual(Java.callBool(button.reference, TestJava.isPressed), !cardTakes, "the button at \(scale)")
+                XCTAssertEqual(Java.callBool(card.reference, TestJava.isPressed), cardTakes, "the card at \(scale)")
+                page.touch(3, x: 20, y: 20)
+            }
+        }
+    }
+
     /// A field takes the keyboard's focus and says so; another taking it, it says it lost it.
     func testAFieldSaysWhenItTakesTheFocusAndLosesIt() throws {
         try onMainActor {

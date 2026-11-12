@@ -196,8 +196,9 @@ class StateUIViewGroup extends ViewGroup {
             View child = group.getChildAt(index);
             if (child.getVisibility() != VISIBLE) continue;
             float[] point = {x + group.getScrollX() - child.getLeft(), y + group.getScrollY() - child.getTop()};
+            // A view scaled to nothing is drawn nowhere: its matrix turns no point back.
             if (!child.getMatrix().isIdentity()) {
-                child.getMatrix().invert(inverse);
+                if (!child.getMatrix().invert(inverse)) continue;
                 inverse.mapPoints(point);
             }
             if (point[0] < 0 || point[1] < 0 || point[0] >= child.getWidth() || point[1] >= child.getHeight()) continue;
@@ -219,8 +220,8 @@ class StateUIViewGroup extends ViewGroup {
 
     /**
      * The child drawn frontmost under `x`, `y` of the layout that a touch there lands on; null for none. A child
-     * hidden, clear or ignoring input is passed by, and so is a plain view answering no tap - a shade, an edge -
-     * which only draws.
+     * hidden, clear, scaled to nothing or ignoring input is passed by, and so is a plain view answering no tap - a
+     * shade, an edge - which only draws.
      */
     private View frontChildUnder(float x, float y) {
         int count = getChildCount();
@@ -233,7 +234,7 @@ class StateUIViewGroup extends ViewGroup {
             point[0] = x + getScrollX() - child.getLeft();
             point[1] = y + getScrollY() - child.getTop();
             if (!child.getMatrix().isIdentity()) {
-                child.getMatrix().invert(inverse);
+                if (!child.getMatrix().invert(inverse)) continue;
                 inverse.mapPoints(point);
             }
             if (point[0] < 0 || point[1] < 0 || point[0] >= child.getWidth() || point[1] >= child.getHeight()) continue;
@@ -243,14 +244,12 @@ class StateUIViewGroup extends ViewGroup {
         return null;
     }
 
-    /** Hands `event` to `child` in its own coordinates; whether it takes it. */
+    /** Hands `event` to `child` in its own coordinates; whether it takes it - none where it is drawn nowhere. */
     private boolean toChild(View child, MotionEvent event) {
+        if (!child.getMatrix().isIdentity() && !child.getMatrix().invert(inverse)) return false;
         MotionEvent local = MotionEvent.obtain(event);
         local.offsetLocation(getScrollX() - child.getLeft(), getScrollY() - child.getTop());
-        if (!child.getMatrix().isIdentity()) {
-            child.getMatrix().invert(inverse);
-            local.transform(inverse);
-        }
+        if (!child.getMatrix().isIdentity()) local.transform(inverse);
         boolean taken = child.dispatchTouchEvent(local);
         local.recycle();
         return taken;
