@@ -48,7 +48,7 @@ FilesSample.swift 2a39c84d37c9d924
 FillSample.swift 0139e896092e6483
 FoundationProbeSample.swift fcf69f5bc9919555
 GalleryViewSample.swift 67c5cb1392de5d14
-GateSample.swift c1d53f44dbcedcc1
+GateSample.swift ff8b54aaadb027ca
 GeometryReaderSample.swift 766407c1e2e50a95
 GridSample.swift 9c95bd0181e0d392
 HTTPRequestSample.swift bf26141a6d52f7d9

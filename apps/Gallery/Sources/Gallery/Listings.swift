@@ -8747,6 +8747,7 @@ enum Listings {
         @State private var cancelled = Tally()
         @State private var waited = Tally()
         @State private var unheld = Tally()
+        @State private var stubborn = Tally()
 
         var body: some View {
             VStack {
@@ -8766,6 +8767,16 @@ enum Listings {
                         cancelled.started += 1
                         try await Task.sleep(for: .milliseconds(1500))
                         cancelled.finished += 1
+                    }
+
+                // Work that keeps going through a cancel - it swallows the sleep's
+                // error - comes to its end all the same, and what it writes then
+                // is refused: only the last press finishes.
+                row("Cancel previous, keep working", stubborn)
+                    .onClicked(policy: .cancelPrevious) {
+                        stubborn.started += 1
+                        try? await Task.sleep(for: .milliseconds(1500))
+                        stubborn.finished += 1
                     }
 
                 row("Wait for previous", waited)

@@ -17,7 +17,7 @@ struct GateSample: SampleContent {
     }
 }
 
-/// Four buttons, each through a gate of its own.
+/// Five buttons, each through a gate of its own.
 private struct OwnGates: ExampleContent {
     // listing: OwnGates
     /// How many runs began, and how many came to their end.
@@ -30,6 +30,7 @@ private struct OwnGates: ExampleContent {
     @State private var cancelled = Tally()
     @State private var waited = Tally()
     @State private var unheld = Tally()
+    @State private var stubborn = Tally()
 
     var body: some View {
         VStack {
@@ -53,6 +54,17 @@ private struct OwnGates: ExampleContent {
                     cancelled.finished += 1
                 }
                 .accessibilityIdentifier("gate.cancel")
+
+            // Work that keeps going through a cancel - it swallows the sleep's
+            // error - comes to its end all the same, and what it writes then
+            // is refused: only the last press finishes.
+            row("Cancel previous, keep working", stubborn)
+                .onClicked(policy: .cancelPrevious) {
+                    stubborn.started += 1
+                    try? await Task.sleep(for: .milliseconds(1500))
+                    stubborn.finished += 1
+                }
+                .accessibilityIdentifier("gate.cancel.stubborn")
 
             row("Wait for previous", waited)
                 .onClicked(policy: .waitForPrevious) {
@@ -94,8 +106,10 @@ private struct OwnGates: ExampleContent {
 
             Text("A cancelled run changes nothing afterwards: its task is cancelled, so "
                 + "the sleep ends it, and anything it wrote, posted or asked of the host "
-                + "after it was cancelled would be refused. A handler with no `await` "
-                + "runs whole inside the press and needs no policy.")
+                + "after it was cancelled is refused. Keep working shows the refusal: its "
+                + "work swallows the cancel and runs on to its end, and its tally still "
+                + "finishes once. A handler with no `await` runs whole inside the press and "
+                + "needs no policy.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
