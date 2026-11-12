@@ -803,6 +803,43 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(Motion.none.resolved(against: .standard), .none)
     }
 
+    /// Every spring a motion admits answers numbers: at every moment each lane's value and speed are finite, and by
+    /// the longest a spring animates it has landed - whatever the damping, however slow or snappy.
+    func testEverySpringAMotionAdmitsAnswersNumbers() {
+        let dampings = [0.05, 0.5, 0.999_999_9, 1, 1.000_000_1, 2, 10, 1e3, 1e6, 1e10, 1e100, 1e200, 1e307,
+                        Double.greatestFiniteMagnitude]
+        let responses: [Duration] = [.milliseconds(1), .milliseconds(300), .seconds(10)]
+        var wrong: [String] = []
+        for damping in dampings {
+            for response in responses {
+                let motion = Motion.spring(response: response, damping: damping)
+                for elapsed in [0, 16, 250, 1_000, 9_999, HostMotionLaw.longest] {
+                    let sample = HostMotionLaw.sample(
+                        motion, elapsed: elapsed, from: [0, 100], destination: [100, -50], velocity: [2_000, 0])
+                    if !(sample.value + sample.velocity).allSatisfy(\.isFinite) {
+                        wrong.append("\(damping) \(response) at \(elapsed): \(sample.value) \(sample.velocity)")
+                    }
+                    if elapsed == HostMotionLaw.longest, !sample.rested || sample.value != [100, -50] {
+                        wrong.append("\(damping) \(response) has not landed by the longest")
+                    }
+                }
+            }
+        }
+        XCTAssertEqual(wrong, [])
+    }
+
+    /// An overdamped spring creeps towards its destination, the more slowly the more it is damped, and never
+    /// past it.
+    func testAnOverdampedSpringCreepsMoreSlowlyTheMoreItIsDamped() {
+        let reached = [2.0, 10, 1e3, 1e8].map { damping in
+            HostMotionLaw.sample(
+                .spring(response: .milliseconds(300), damping: damping), elapsed: 300, from: [0], destination: [100],
+                velocity: [0]).value[0]
+        }
+        XCTAssertEqual(reached, reached.sorted(by: >), "\(reached)")
+        XCTAssertTrue(reached.allSatisfy { $0 > 0 && $0 < 100 }, "\(reached)")
+    }
+
     /// A spring's damping is bought deliberately and never given away: half a
     /// card's worth of wobble is what a user reads as a mistake.
     func testASpringDoesNotOvershootUnlessItIsAskedTo() {

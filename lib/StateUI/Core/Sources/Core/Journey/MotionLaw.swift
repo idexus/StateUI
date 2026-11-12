@@ -96,6 +96,8 @@ import StateUIFoundation
         case .inherited, .none, .custom:
             sample = landed(destination)
         }
+        // A sample that came out no number - arithmetic past what a double holds - lands, for every reader alike.
+        guard (sample.value + sample.velocity).allSatisfy(\.isFinite) else { return landed(destination) }
         return HostMotionSample(
             value: sample.value, velocity: sample.velocity.map { $0 * 1_000 }, rested: sample.rested)
     }
@@ -212,10 +214,12 @@ import StateUIFoundation
                     (-damping * frequency * ((a * cosine) + (b * sine)))
                         + (damped * ((b * cosine) - (a * sine))))
             } else {
-                let root = frequency * sqrt((damping * damping) - 1)
-                let first = -(frequency * damping) + root
-                let second = -(frequency * damping) - root
-                let c1 = (initialSpeed - (second * displacement)) / (first - second)
+                // The two rates written so neither the damping's square nor their difference loses the number:
+                // the slow one as the fast one's reciprocal, the constants over the fast one.
+                let spread = damping * sqrt(1 - (1 / damping) / damping)
+                let first = -frequency / (damping + spread)
+                let second = -frequency * (damping + spread)
+                let c1 = (displacement - (initialSpeed / second)) / (1 - (first / second))
                 let c2 = displacement - c1
                 remaining = (c1 * exp(first * elapsed)) + (c2 * exp(second * elapsed))
                 derivative = (c1 * first * exp(first * elapsed))
