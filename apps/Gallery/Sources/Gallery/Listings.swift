@@ -8760,6 +8760,11 @@ enum Listings {
         /// sample was taken. An ordinary state, so an ordinary get reads it.
         @State private var shown = 1.0
 
+        /// Whether the view taking the samples stands, and how many it has taken.
+        /// Once it leaves, no sample comes - not even one already booked.
+        @State private var sampling = true
+        @State private var taken = 0
+
         var body: some View {
             // One walked value, shown three ways.
             VStack {
@@ -8782,13 +8787,21 @@ enum Listings {
                 }
 
                 // A READING, ten times a second, into an ordinary state. Same
-                // number, at most ten builds a second.
-                VStack {
-                    DebugInfoLabel()
+                // number, at most ten builds a second - while the view asking
+                // for it stands.
+                if sampling {
+                    VStack {
+                        DebugInfoLabel()
 
-                    Text("at \(Int(shown * 100))%")
+                        Text("at \(Int(shown * 100))%")
+                    }
+                    .samples($fade, into: $shown, .every(.milliseconds(100)))
                 }
-                .samples($fade, into: $shown, .every(.milliseconds(100)))
+
+                Text("\(taken) samples taken")
+                    .onChanged(shown) { taken += 1 }
+
+                Switch("Sample", isOn: $sampling)
 
                 Rectangle()
                     .fill(Palette.accent)

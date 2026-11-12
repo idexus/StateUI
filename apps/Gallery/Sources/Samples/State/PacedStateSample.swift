@@ -15,6 +15,11 @@ struct PacedStateSample: SampleContent, ExampleContent {
     /// sample was taken. An ordinary state, so an ordinary get reads it.
     @State private var shown = 1.0
 
+    /// Whether the view taking the samples stands, and how many it has taken.
+    /// Once it leaves, no sample comes - not even one already booked.
+    @State private var sampling = true
+    @State private var taken = 0
+
     var body: some View {
         // One walked value, shown three ways.
         VStack {
@@ -45,17 +50,27 @@ struct PacedStateSample: SampleContent, ExampleContent {
             .background(Palette.well)
 
             // A READING, ten times a second, into an ordinary state. Same
-            // number, at most ten builds a second.
-            VStack {
-                DebugInfoLabel()
+            // number, at most ten builds a second - while the view asking
+            // for it stands.
+            if sampling {
+                VStack {
+                    DebugInfoLabel()
 
-                Text("at \(Int(shown * 100))%")
-                    .fontSize(17)
+                    Text("at \(Int(shown * 100))%")
+                        .fontSize(17)
+                }
+                .spacing(4)
+                .padding(14)
+                .background(Palette.well)
+                .samples($fade, into: $shown, .every(.milliseconds(100)))
             }
-            .spacing(4)
-            .padding(14)
-            .background(Palette.well)
-            .samples($fade, into: $shown, .every(.milliseconds(100)))
+
+            Text("\(taken) samples taken")
+                .accessibilityIdentifier("paced.taken")
+                .onChanged(shown) { taken += 1 }
+
+            Switch("Sample", isOn: $sampling)
+                .accessibilityIdentifier("paced.sampling")
 
             Rectangle()
                 .fill(Palette.accent)
@@ -87,6 +102,13 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 + "whole two seconds, the second counts up once a frame, the third about "
                 + "ten times a second. One value, three ways of showing it, and the "
                 + "difference between them is the whole of what this page is about.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Press Fade and turn Sample off before the box lands: the samples taken "
+                + "stop at once. A reading belongs to the view asking for it, and one "
+                + "already booked for the next tenth of a second never comes once that "
+                + "view has gone.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
