@@ -9449,6 +9449,24 @@ enum Listings {
                     .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
 
+                // Each item's own mark - its letter, or a picture - the current
+                // one whole and the others faded, the position from the state
+                // itself: the row is built again as it moves.
+                PositionDots(Self.steps) { step in
+                    Text(String(step.prefix(1)))
+                        .fontWeight(.bold)
+                }
+                .position($step)
+                .horizontalAlignment(.center)
+
+                PositionDots(Self.steps) { _ in
+                    Image(ImageSource(light: "menu_star.png", dark: "menu_star_dark.png"))
+                        .width(14)
+                        .height(14)
+                }
+                .position($step)
+                .horizontalAlignment(.center)
+
                 HStack {
                     Button("Back")
                         .isEnabled(step > 0)

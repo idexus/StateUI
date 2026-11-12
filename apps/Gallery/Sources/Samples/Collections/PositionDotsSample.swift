@@ -41,6 +41,25 @@ struct PositionDotsSample: SampleContent, ExampleContent {
                 .currentDotColor(Palette.accent)
                 .horizontalAlignment(.center)
 
+            // Each item's own mark - its letter, or a picture - the current
+            // one whole and the others faded, the position from the state
+            // itself: the row is built again as it moves.
+            PositionDots(Self.steps) { step in
+                Text(String(step.prefix(1)))
+                    .fontSize(13)
+                    .fontWeight(.bold)
+            }
+            .position($step)
+            .horizontalAlignment(.center)
+
+            PositionDots(Self.steps) { _ in
+                Image(ImageSource(light: "menu_star.png", dark: "menu_star_dark.png"))
+                    .width(14)
+                    .height(14)
+            }
+            .position($step)
+            .horizontalAlignment(.center)
+
             HStack {
                 Button("Back")
                     .isEnabled(step > 0)
@@ -145,6 +164,12 @@ struct PositionDotsSample: SampleContent, ExampleContent {
             Text("Nothing about it is the user's to change: `position` is told to it, as a "
                 + "value or as a state's binding, `$page`, which the row only reads - built "
                 + "again as it changes.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Given the items, a row draws each one's own mark - a letter, a picture - "
+                + "in place of a dot, and takes its count from them: the current mark stands "
+                + "whole, the others faded.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
