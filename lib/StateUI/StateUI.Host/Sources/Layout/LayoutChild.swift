@@ -183,7 +183,7 @@
     public func size(offering width: Double?, measure: () -> LayoutSize) -> LayoutSize {
         if let kept = sizes.first(where: { $0.width == width }) { return kept.size }
         if holdsWhenWider, let width, let natural = sizes.first(where: { $0.width == nil })?.size,
-           width >= natural.width {
+           Self.holds(natural, in: width) {
             return natural
         }
 
@@ -191,6 +191,13 @@
         if sizes.count == Self.capacity { sizes.removeFirst() }
         sizes.append((width, measured))
         return measured
+    }
+
+    /// Whether words that took `natural` offered no width stand the same offered `width`: in a room at least that
+    /// wide no line breaks earlier.
+    /// Design: docs/design/host/layout.md#words-in-a-wider-room
+    public static func holds(_ natural: LayoutSize, in width: Double) -> Bool {
+        width >= natural.width
     }
 
     /// Forgets every kept size.

@@ -43,6 +43,7 @@ final class WinUITextView: WinUITextualView {
     func setRuns(_ runs: [TextRun]?) {
         // Shown without runs before, the label's own words stand already.
         guard runs != nil || self.runs != nil else { return }
+        forgetNaturalSize()
         self.runs = runs
         guard let runs else { return super.setText(ownText) }
 

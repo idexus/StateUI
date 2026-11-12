@@ -258,6 +258,7 @@ enum WinUICallbacks {
                 guard let address else { return }
                 let opened = String(cString: address)
                 MainActor.assumeIsolated { WinUIRenderer.shared?.openLinks([opened]) }
-            })
+            },
+            layoutDidNotSettle: { Complaints.say(LayoutComplaint.didNotSettle(on: "Windows")) })
     }
 }

@@ -49,6 +49,35 @@ extern "C" void stateui_winui_replace(StateUIObjectRef handle, StateUIObjectRef 
     }
 }
 
+namespace {
+    /// A panel measured again each time it is placed, at another size each time: a layout that never settles.
+    struct UnsettledPanel : controls::PanelT<UnsettledPanel> {
+        bool tall = false;
+
+        Size MeasureOverride(Size) {
+            tall = !tall;
+            return Size(10, tall ? 40.0f : 20.0f);
+        }
+
+        Size ArrangeOverride(Size final) {
+            InvalidateMeasure();
+            return final;
+        }
+    };
+}
+
+extern "C" void stateui_winui_unsettle(StateUIObjectRef within) {
+    try {
+        // Over the window, where WinUI lays it out itself: a StateUI panel places only the children it holds.
+        controls::Primitives::Popup popup;
+        popup.XamlRoot(as<xaml::UIElement>(within).XamlRoot());
+        popup.Child(winrt::make<UnsettledPanel>());
+        popup.IsOpen(true);
+    } catch (...) {
+        report("standing a view that never settles");
+    }
+}
+
 extern "C" void stateui_winui_measure(StateUIObjectRef handle, double width, double height, double *size) {
     try {
         auto element = as<xaml::UIElement>(handle);

@@ -28,14 +28,36 @@ class WinUITextualView: WinUIView {
         super.init { _ in stateui_winui_text_make() }
     }
 
-    /// A line that never wraps keeps its natural size; wrapped words take the room offered.
+    /// The words' natural size, as WinUI last measured them at no width; nil once anything they stand in changed.
+    private var natural: LayoutSize?
+
+    /// A line that never wraps keeps its natural size; wrapped words take the room offered, and keep their natural
+    /// size - the layout's own measure at no width - in a room at least that wide, WinUI not asked again there
+    /// (`MeasurementCache.holds`).
     /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
     override func measure(width: Double?, height: Double?) -> LayoutSize {
-        super.measure(width: breaks.wraps ? width : nil, height: height)
+        guard breaks.wraps, let width else {
+            let size = super.measure(width: nil, height: height)
+            natural = size
+            return size
+        }
+        if let natural, MeasurementCache.holds(natural, in: width) { return natural }
+        return super.measure(width: width, height: height)
+    }
+
+    override func invalidateMeasure() {
+        forgetNaturalSize()
+        super.invalidateMeasure()
+    }
+
+    /// Forgets the words' natural size: what they are, or how they stand, changed.
+    func forgetNaturalSize() {
+        natural = nil
     }
 
     /// The words shown.
     func setText(_ text: String) {
+        forgetNaturalSize()
         stateui_winui_text_set_text(handle, text)
     }
 
@@ -46,6 +68,7 @@ class WinUITextualView: WinUIView {
 
     /// The font a look gives, remembering its size for the spacing measured against it.
     func setTextFont(_ look: TextLook) {
+        forgetNaturalSize()
         self.look.size = setFont(look).flatMap { $0 > 0 ? $0 : nil }
         writeSpacing()
     }
@@ -53,6 +76,7 @@ class WinUITextualView: WinUIView {
     /// How the words break - wrapped, on one line, or cut short - and the most lines; nil for any
     /// (`LineBreak.lines`): wrapped words held to some lines end the last with an ellipsis.
     func setLines(breaking: LineBreak, maximum: Int?) {
+        forgetNaturalSize()
         let changed = breaks != breaking
         breaks = breaking
         stateui_winui_text_set_lines(
@@ -68,18 +92,21 @@ class WinUITextualView: WinUIView {
 
     /// The space between the letters, in DIPs.
     func setLetterSpacing(_ points: Double) {
+        forgetNaturalSize()
         look.letterSpacing = points
         writeSpacing()
     }
 
     /// The height of a line, as a multiple of the font's own; nil for the font's.
     func setLineHeight(_ multiple: Double?) {
+        forgetNaturalSize()
         look.lineHeight = multiple.flatMap { $0 > 0 ? $0 : nil }
         writeSpacing()
     }
 
     /// A line under the words, or through them.
     func setDecorations(_ decorations: TextDecorations?) {
+        forgetNaturalSize()
         stateui_winui_text_set_decorations(
             handle, decorations?.contains(.underline) == true, decorations?.contains(.strikethrough) == true)
     }

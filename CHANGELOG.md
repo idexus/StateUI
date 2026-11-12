@@ -26,7 +26,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   scroller each time it is the page's again. On Windows at a scale of 125% a list scrolled to an item as it is made
   stands it there, and a list at its end stays there as a bar beside it grows: a cell no longer changes its size as
   its entry comes, on Windows, GTK and Android alike, and a Windows list is no longer measured before it stands
-  anywhere.
+  anywhere. On Windows at 125% a layout no longer runs for ever and ends the application - wrapped words given
+  their own width back keep their line - and a layout WinUI gives up on is said as a complaint while the
+  application goes on.
 - Drawing: a gradient's stops stand at their own offsets whatever order they are written in, on every platform; on
   Windows a path's curve after a close begins a figure of its own.
 - Accessibility: on iOS, under VoiceOver, a color picker and a switch say what the application says of them - name,

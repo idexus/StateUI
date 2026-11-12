@@ -36,7 +36,19 @@ namespace stateui {
         /// The application: WinUI's control resources and their type information, with no XAML file.
         /// Design: docs/design/platforms/winui/runtime.md#an-application-with-no-xaml
         struct StateUIApplication : xaml::ApplicationT<StateUIApplication, xaml::Markup::IXamlMetadataProvider> {
-            explicit StateUIApplication(bool embedded) : embedded(embedded) {}
+            explicit StateUIApplication(bool embedded) : embedded(embedded) {
+                // A layout WinUI gives up on ends the process unless it is handled: it is told, and the application
+                // goes on. Design: docs/design/platforms/winui/layout.md#a-layout-that-does-not-settle
+                UnhandledException(guarded("handling UnhandledException",
+                    [](IInspectable const &, xaml::UnhandledExceptionEventArgs const &args) {
+                    if (args.Exception().value != layoutCycle) return;
+                    args.Handled(true);
+                    if (callbacks.layoutDidNotSettle) callbacks.layoutDidNotSettle();
+                }));
+            }
+
+            /// WinUI's word for a layout that did not settle in its passes: `E_LAYOUTCYCLE`.
+            static constexpr int32_t layoutCycle = static_cast<int32_t>(0x802B0014);
 
             void OnLaunched(xaml::LaunchActivatedEventArgs const &) {
                 try {

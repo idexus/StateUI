@@ -462,6 +462,10 @@ typedef struct {
     /// Windows asked the application to open a link - a scheme it registered - at its start or later, a second
     /// start handing it over: its address, in UTF-8.
     void (*linkOpened)(char const *address);
+
+    /// WinUI gave up laying a window out - a layout cycle, which would end the process - and the pass ended where it
+    /// stood.
+    void (*layoutDidNotSettle)(void);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -1019,6 +1023,10 @@ void stateui_winui_value_move(StateUIObjectRef control, double value);
 StateUIObjectRef stateui_winui_field_make(int64_t view);
 StateUIObjectRef stateui_winui_password_make(int64_t view);
 StateUIObjectRef stateui_winui_editor_make(int64_t view);
+
+/// What a test stands over the window `within` stands in: a view whose layout never settles - measured again each
+/// time it is placed, at another size each time - which WinUI gives up on with a layout cycle.
+void stateui_winui_unsettle(StateUIObjectRef within);
 
 /// An empty TextBox to measure an editor's line by; released with `stateui_winui_release`.
 StateUIObjectRef stateui_winui_editor_line_make(void);
