@@ -454,7 +454,7 @@ extern "C" bool stateui_winui_image_set(
         auto picture = asked(listed.c_str());
 
         // An icon is a FontIcon at its own size, fitted to the room by a box; what assistive technology met of the
-        // picture before is the icon's.
+        // picture before - an image, or the icon the box held - is the new icon's.
         // Design: docs/design/platforms/winui/controls.md#icons
         auto shown = frame.Child().as<xaml::UIElement>();
         if (picture.glyph) {
@@ -462,7 +462,8 @@ extern "C" bool stateui_winui_image_set(
             controls::Viewbox box;
             box.Stretch(stretch);
             box.Child(icon);
-            if (!shown.try_as<controls::Viewbox>()) takeOver(shown, icon);
+            auto held = shown.try_as<controls::Viewbox>();
+            takeOver(held ? held.Child() : shown, icon);
             frame.Child(box);
             size[0] = size[1] = icon.FontSize();
             return true;

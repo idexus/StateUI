@@ -464,7 +464,8 @@ An Image stands its picture in a border: an `Image` for a file or bytes, or
 for an icon a `FontIcon` in a `Viewbox`, which fits it to the room by the
 aspect; an icon's own size is the font's, 20 DIPs. Assistive technology
 meets the image or the icon, and what it was told of one stays with the
-other as the picture turns. Bytes are read from memory into a bitmap, whose
+next as the picture turns - into an image, another icon, or the same icon
+fitted anew, each a new glyph in a new box. Bytes are read from memory into a bitmap, whose
 size is known once WinUI has read it, as a file's is.
 
 ## A web view
