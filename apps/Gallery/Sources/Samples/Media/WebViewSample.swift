@@ -132,7 +132,7 @@ private struct WrittenInPlacePart: ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("`source(html:)` shows HTML written in place, without the network. Web "
+        Text("`WebView(html:)` shows HTML written in place, without the network. Web "
             + "content scrolls itself, which is why this page holds still and the view "
             + "fills the height the window gives it.")
             .fontSize(12)

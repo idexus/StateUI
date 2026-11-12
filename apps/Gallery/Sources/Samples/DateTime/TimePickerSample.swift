@@ -73,11 +73,10 @@ struct TimePickerSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`TimePicker()` says nothing about a time, so `.time` is what puts one "
-                + "in the field - the form a `Style<TimePicker>` or a picker built "
-                + "elsewhere has to use. Nothing comes back on its own either: the "
-                + "`alarm = time` in `onTimeChanged` is exactly the write the binding "
-                + "above makes for you, which is why both fields move together.")
+            Text("`TimePicker(alarm)` takes the time as a plain value, so it only shows "
+                + "it, and nothing comes back on its own: the `alarm = time` in "
+                + "`onTimeChanged` is exactly the write `TimePicker($alarm)` above makes "
+                + "for you, which is why both fields move together.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
