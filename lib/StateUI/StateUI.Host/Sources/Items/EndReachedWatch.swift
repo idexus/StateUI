@@ -15,8 +15,10 @@
         armed = true
     }
 
-    /// Whether the end is reached now, for a list of `count` items whose last in view stands at `last`.
+    /// Whether the end is reached now, for a list of `count` items whose last in view stands at `last` - below
+    /// nought where none is in view, which reaches nothing and leaves the watch as it stood.
     public mutating func reached(count: Int, last: Int, within: Int) -> Bool {
+        guard last >= 0 else { return false }
         guard count > 0, last >= count - 1 - max(within, 0) else {
             armed = true
             return false
