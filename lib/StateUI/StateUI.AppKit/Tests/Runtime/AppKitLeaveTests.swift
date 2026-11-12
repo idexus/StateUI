@@ -74,13 +74,61 @@ final class AppKitLeaveTests: XCTestCase {
             let root = try XCTUnwrap(target.window?.contentView as? AppKitWindowContentView)
             let drops = try XCTUnwrap(root.drops)
             let carried = AppKitDrops.Carried(words: "words")
+            root.layoutSubtreeIfNeeded()
             let middle = target.convert(NSPoint(x: target.bounds.midX, y: target.bounds.midY), to: nil)
-            _ = drops.entered(at: middle, carrying: carried, in: root)
+            XCTAssertEqual(drops.entered(at: middle, carrying: carried, in: root), .copy, "the drag is over the target")
             drops.exited()
             _ = drops.entered(at: middle, carrying: carried, in: root)
-            _ = drops.dropped(carried)
+            XCTAssertTrue(drops.dropped(carried))
             renderer.nativeViews(AppKitButtonView.self).first?.clickForTesting()
             renderer.runtime.pump.turn()
+        }
+
+        XCTAssertEqual(AppKitElement.liveViewCount, before - 1, "the target's view outlived its element")
+    }
+
+    /// A view taking drops that leaves while a drag is over it is let go of, and the drag's end - leaving the
+    /// window, let go, moved on - tells the element gone nothing.
+    @MainActor
+    func testATargetLeavingUnderADragIsLetGoOfWhenTheDragLeaves() throws {
+        try targetLeavesUnderADrag { drops, _, _, _ in drops.exited() }
+    }
+
+    @MainActor
+    func testATargetLeavingUnderADragIsLetGoOfWhenTheDragIsLetGo() throws {
+        try targetLeavesUnderADrag { drops, _, _, carried in XCTAssertFalse(drops.dropped(carried)) }
+    }
+
+    @MainActor
+    func testATargetLeavingUnderADragIsLetGoOfWhenTheDragMoves() throws {
+        try targetLeavesUnderADrag { drops, root, at, carried in
+            XCTAssertEqual(drops.moved(to: at, carrying: carried, in: root), [])
+            drops.exited()
+        }
+    }
+
+    /// A drag comes over DropPage's target, the target leaves, and `end` ends the drag: the renderer alive, its
+    /// view is let go of.
+    @MainActor
+    private func targetLeavesUnderADrag(
+        _ end: (AppKitDrops, AppKitWindowContentView, NSPoint, AppKitDrops.Carried) -> Void
+    ) throws {
+        let renderer = autoreleasepool { AppKitRenderer.running { DropPage() } }
+        defer { renderer.finish() }
+        let before = AppKitElement.liveViewCount
+
+        try autoreleasepool {
+            let target = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
+            let root = try XCTUnwrap(target.window?.contentView as? AppKitWindowContentView)
+            let drops = try XCTUnwrap(root.drops)
+            let carried = AppKitDrops.Carried(words: "words")
+            root.layoutSubtreeIfNeeded()
+            let middle = target.convert(NSPoint(x: target.bounds.midX, y: target.bounds.midY), to: nil)
+            XCTAssertEqual(drops.entered(at: middle, carrying: carried, in: root), .copy, "the drag is over the target")
+            renderer.nativeViews(AppKitButtonView.self).first?.clickForTesting()
+            renderer.runtime.pump.turn()
+            XCTAssertEqual(renderer.nativeViews(AppKitTextView.self).count, 0)
+            end(drops, root, middle, carried)
         }
 
         XCTAssertEqual(AppKitElement.liveViewCount, before - 1, "the target's view outlived its element")

@@ -18,9 +18,14 @@ final class AppKitDrops {
         var files: [URL] = []
     }
 
+    /// An element taking drops as a drag knows it: weakly, so one leaving under the drag is let go of.
+    private struct Taker {
+        weak var element: AppKitElement?
+    }
+
     /// The elements whose views take drops, by their view: read as a drag comes, let go as it ends.
     private let takers: () -> [ObjectIdentifier: AppKitElement]
-    private var targets: [ObjectIdentifier: AppKitElement] = [:]
+    private var targets: [ObjectIdentifier: Taker] = [:]
     private weak var over: AppKitElement?
 
     init(takers: @escaping () -> [ObjectIdentifier: AppKitElement]) {
@@ -29,7 +34,7 @@ final class AppKitDrops {
 
     /// A drag came over the window at `location`, in the window, carrying `carried`.
     func entered(at location: NSPoint, carrying carried: Carried, in root: NSView) -> NSDragOperation {
-        targets = takers()
+        targets = takers().mapValues(Taker.init)
         return moved(to: location, carrying: carried, in: root)
     }
 
@@ -70,7 +75,7 @@ final class AppKitDrops {
     private func taker(at location: NSPoint, of carried: Carried, in root: NSView) -> AppKitElement? {
         var view = root.hitTest(root.superview?.convert(location, from: nil) ?? location)
         while let each = view, each !== root.superview {
-            if let element = targets[ObjectIdentifier(each)] {
+            if let element = targets[ObjectIdentifier(each)]?.element {
                 let taking = element.element.dragAndDrop
                 if (!carried.files.isEmpty && taking.takesFiles) || (carried.words != nil && taking.takesWords) {
                     return element

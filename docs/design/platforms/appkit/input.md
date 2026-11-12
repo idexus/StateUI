@@ -196,7 +196,8 @@ control is AppKit's own class. The window's root takes every drag that
 carries words - the content view a window and a sheet stand on alike - and
 finds the view under it as AppKit finds a destination: its hit test, then that view's
 ancestors, among the views whose elements take drops, read as the drag
-comes. The view under the drag hears it come and go, and the drop with its
+comes and known weakly while it lasts: one leaving under the drag is let go
+of, and the drag's end tells it nothing. The view under the drag hears it come and go, and the drop with its
 words; the host layer's rule makes over once and no leave after a drop. The
 root takes files dragged from the system too: a drag holding file addresses
 finds a view taking files, and its drop hands over each file's path.
