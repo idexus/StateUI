@@ -162,7 +162,9 @@ enum WebCSS {
     static func spacing(_ look: TextLook) -> [(String, String?)] {
         let lines = [(TextDecorations.underline, "underline"), (.strikethrough, "line-through")]
             .filter { look.decorations.contains($0.0) }.map(\.1)
-        return [("letter-spacing", letterSpacing(look.letterSpacing)),
+        // Given none, a run says none, so it does not take its label's through the cascade.
+        let spacing = look.letterSpacingGiven ? signedPixels(look.letterSpacing) : letterSpacing(look.letterSpacing)
+        return [("letter-spacing", spacing),
                 ("line-height", look.lineHeight.map(number)),
                 ("text-decoration-line", lines.isEmpty ? nil : lines.joined(separator: " "))]
     }

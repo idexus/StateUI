@@ -57,7 +57,11 @@ A Text holding spans shows its runs in place of its own words, each a `<span>`
 of its own look (`MountedElement.textRuns`). A run says only what it says
 itself - its font, its color, the space between its letters, its lines'
 height, its decorations, what stands behind it - and takes the rest from the
-text around it, as the page's styles inherit. A span is kept for each run by
+text around it, as the page's styles inherit - a space between its letters
+of none said as `0px`, so it takes no other through the cascade. A line under a
+node is drawn under all it holds and no span can take it away, so while runs
+show, the text's own lines stand on each run that says none of its own, and
+none on the text's node. A span is kept for each run by
 its place: every span's words are written again as the runs change, and of its
 look only what changed.
 

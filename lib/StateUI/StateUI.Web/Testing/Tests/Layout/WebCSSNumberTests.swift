@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUIHost
 @testable import StateUIWeb
 import XCTest
 
@@ -43,5 +44,15 @@ final class WebCSSNumberTests: XCTestCase {
         XCTAssertEqual(WebCSS.number(12.5, decimals: 2), "12.50")
         XCTAssertEqual(WebCSS.number(1e20, decimals: 0), WebCSS.number(1e20))
         XCTAssertEqual(WebCSS.number(-1e17, decimals: 2), WebCSS.number(-1e17))
+    }
+
+    /// A run given no space between its letters says none, so it stands so in a label that gives some; a run given
+    /// nothing says nothing, and takes its label's.
+    func testARunGivenNoSpacingSaysNone() {
+        var given = TextLook()
+        given.letterSpacingGiven = true
+        let spacing = { (look: TextLook) in WebCSS.spacing(look).first { $0.0 == "letter-spacing" }?.1 }
+        XCTAssertEqual(spacing(given), "0px")
+        XCTAssertNil(spacing(TextLook()))
     }
 }
