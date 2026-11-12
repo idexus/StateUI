@@ -10,7 +10,8 @@ enum GalleryLink {
         guard let place = parts.lastIndex(where: { $0 == "sample" || $0.hasSuffix("#sample") }),
               place + 1 < parts.count
         else { return nil }
-        let id = parts[place + 1].prefix { $0.isLetter || $0.isNumber }
+        // The id whole, as far as a query or a fragment after it.
+        let id = parts[place + 1].prefix { $0 != "?" && $0 != "#" }
         return id.isEmpty ? nil : String(id)
     }
 
