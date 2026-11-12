@@ -65,8 +65,9 @@ final class CoreDriver: HostDriver {
     }
 
     func perform(_ act: StateUIHost.UserAct, on element: MountedElement) throws {
-        // As the user: nothing on a disabled view, no words into a read-only field, words as the field holds them;
-        // a step, a day, a time and a color as the control offers them, by the host layer's rules.
+        // As the user: nothing on a disabled view, an act only on a view offering it, no words into a read-only
+        // field, words as the field holds them; a thumb within its range, a step, a day, a time and a color as the
+        // control offers them, by the host layer's rules.
         // Design: docs/design/host/testing.md#a-window-with-no-toolkit
         guard let runtime else { throw DriverCannot(act, on: element) }
         guard element.isEffectivelyEnabled else { throw DriverCannot("\(act) on \(element.type.name)", because: "it is disabled") }
@@ -77,10 +78,10 @@ final class CoreDriver: HostDriver {
             guard element.hear(.tap(run: 1), in: runtime) else { throw DriverCannot(act, on: element) }
         case .tap(let count):
             for run in 1...max(count, 1) { element.hear(.tap(run: run), in: runtime) }
-        case .toggle:
+        case .toggle where Wearing.element(element.type, wears: ToggleElementContract.self) != false:
             let on = element.value(.isOn)?.bool ?? false
             element.reportUserChange(.isOn, .toggled, .bool(!on), in: runtime)
-        case .type(let words):
+        case .type(let words) where Wearing.element(element.type, wears: TextInputContract.self) != false:
             guard element.value(.isReadOnly)?.bool != true else {
                 throw DriverCannot("\(act) on \(element.type.name)", because: "it is read-only")
             }
@@ -88,10 +89,10 @@ final class CoreDriver: HostDriver {
                 words, in: element.value(.textCase)?.enumeration.flatMap(TextCase.init(rawValue:)),
                 toBound: element.whole(.maximumLength), composing: false)
             element.reportUserChange(.text, .textChanged, .string(held ?? words), in: runtime)
-        case .submit:
+        case .submit where Wearing.element(element.type, wears: SubmitElementContract.self) != false:
             element.send(.submitted, [], in: runtime)
-        case .slide(let value):
-            element.reportUserChange(.value, .valueChanged, .number(value), in: runtime)
+        case .slide(let value) where element.type == .slider:
+            try slide(to: value, on: element, in: runtime)
         case .choose(let place):
             element.reportUserChange(.selectedIndex, .selectedIndexChanged, place.propValue, in: runtime)
         case .step(let up) where element.type == .stepper:
@@ -136,6 +137,20 @@ final class CoreDriver: HostDriver {
     /// None held: the window stands up no server.
     func held() throws -> (taken: Int, stopped: Int) {
         throw DriverCannot("count the requests held")
+    }
+
+    /// A slider's thumb let go at `value`: past an end it stands at that end, and a value that is no number no thumb
+    /// reaches.
+    private func slide(to value: Double, on element: MountedElement, in runtime: HostRuntime) throws {
+        guard value.isFinite else {
+            throw DriverCannot("slide on \(element.type.name)", because: "its thumb reaches no such value")
+        }
+        let given = ValueArithmetic.ends(
+            of: element.type, minimum: element.number(RangeElementContract.minimum.token),
+            maximum: element.number(RangeElementContract.maximum.token))
+        let ends = ValueArithmetic.range(given.minimum, given.maximum)
+        let reached = ValueArithmetic.clamped(value, lower: ends.lower, upper: ends.upper)
+        element.reportUserChange(RangeElementContract.value.token, .valueChanged, .number(reached), in: runtime)
     }
 
     /// One step of a stepper, as its buttons take it: none where its way is at the range's end.

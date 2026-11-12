@@ -74,10 +74,12 @@ is what that work begins. Work the act began that is still under way after
 ten seconds fails the act, saying how many runs stand. `motion: .none`
 shows every change at once. The window
 acts as the user can: an act on a disabled view, words typed into a
-read-only field, a step past a stepper's range, a day its calendar leaves out
-or a choice the picker does not offer fails and says why; words typed are
-held as the field holds them - in its case, within its bound - and a color
-picked keeps its opacity only where the picker chooses it.
+read-only field, a step past a stepper's range, a slide to no number, a day
+its calendar leaves out or a choice the picker does not offer fails and says
+why, as does an act the view does not take - a toggle of a label; words typed
+are held as the field holds them - in its case, within its bound - a slider
+let go past an end stands at that end, and a color picked keeps its opacity
+only where the picker chooses it.
 
 `value(_:)` reads a contract member - `TextElementContract.text`,
 `ToggleElementContract.isOn`, `VisualElementContract.accessibilityValue` - as the
