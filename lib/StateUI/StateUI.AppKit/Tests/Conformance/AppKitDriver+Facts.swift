@@ -184,7 +184,10 @@ extension AppKitDriver {
 
     /// The question AppKit's alert shows now, as it shows it.
     func question(over element: MountedElement) throws -> Question? {
-        guard let shown = renderer?.actToolkit.showing?.shownForTesting else { return nil }
+        guard let showing = renderer?.actToolkit.showing else { return nil }
+        // A question stands as a sheet on the window that asked it: over another window, none.
+        if element.type == .window, showing.window !== (try? window(of: element)) { return nil }
+        let shown = showing.shownForTesting
         return Question(title: shown.title, message: shown.message, buttons: shown.buttons, field: shown.field)
     }
 

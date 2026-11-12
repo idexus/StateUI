@@ -230,6 +230,12 @@
         return try driven { try driver.question(over: root) }
     }
 
+    /// The question the window `window` shows now; nil where it shows none - whatever another window shows.
+    public func question(over window: MountedElement) throws -> Question? {
+        note("read a question over a window")
+        return try driven { try driver.question(over: window) }
+    }
+
     /// What the platform's screen reader was told to say, in order.
     public func announced() throws -> [String] {
         note("read what the screen reader said")

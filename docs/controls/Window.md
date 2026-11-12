@@ -48,7 +48,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 8 –</td><td><code>UIWindow</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>2 ✅ · 2 ☑️ · 4 ✓ · 12 –</td><td><code>Activity</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>21 ✅ · 1 ☑️</td><td><code>Window</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>7 ✅ · 3 ☑️ · 5 ✓ · 7 –</td><td><code>AdwApplicationWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 3 ☑️ · 4 ✓ · 7 –</td><td><code>AdwApplicationWindow</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 14 –</td><td>fixed <code>&lt;div&gt;</code> over the browser window</td></tr></tbody>
 </table>
 
@@ -82,8 +82,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContrac
 <tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>width</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td></tr>
 <tr><td colspan="9">UIKit: iPadOS sizes its windows itself - the user drags a corner: a UIKit scene asks for no size.<br>Android Views: Android sizes an activity's window itself - the user drags its edge: an activity asks for no size.<br>Web: A page sizes no browser window: the user does, and the page fills it.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>windowKind</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✓</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✓</td><td align="center">–</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: read windowKind of Window: the host's restoration record<br>UIKit, Android Views: not realized<br>GTK 4: only through the host's own: read windowKind of Window: the scenes the host keeps for the next start<br>Web: A page is one window: it opens none of a kind.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>windowKind</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✓</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: answer on Window: the host's response called, no alert shown<br>UIKit, Android Views: not realized<br>Web: A page is one window: it opens none of a kind.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>windowValue</code></td><td>property</td><td><code>String</code></td><td>structure</td><td align="center">✓</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✓</td><td align="center">–</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: read windowValue of Window: the host's restoration record<br>UIKit, Android Views: not realized<br>GTK 4: only through the host's own: read windowValue of Window: the scenes the host keeps for the next start<br>Web: A page is one window: it opens none for a value.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>x</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td></tr>

@@ -453,26 +453,26 @@ extension WinUIDriver {
         case ("title", _): return .string(try title(of: element))
         case ("icon", _): return try tabIcon(of: element).map { Self.picture($0, named: element) }
         case ("showsNavigationBar", _):
-            let bar = try window().titleBar
+            let bar = try window(of: element).titleBar
             let back = try read(bar, "back") == "1"
             let actions = try read(bar, "actions") != "||"
             return (back || actions).propValue
         // The window's title bar shows the page's title in its place, else the page's heading does.
         case ("showsTitle", _):
             let heading = renderer?.views(WinUILayoutView.self).contains { $0.heading != nil } ?? false
-            return try (heading || !read(window().titleBar, "title").isEmpty).propValue
+            return try (heading || !read(window(of: element).titleBar, "title").isEmpty).propValue
         // The window's title bar offers the way back of the page it shows.
-        case ("showsBackButton", _): return (try read(window().titleBar, "back") == "1").propValue
+        case ("showsBackButton", _): return (try read(window(of: element).titleBar, "back") == "1").propValue
         // The head of the card of the sheet its stack stands in offers the close button.
         case ("showsCloseButton", _): return (try read(sheet(of: element), "close") == "1").propValue
         // The bar an element stands under: its sheet's head, in one, else the window's title bar.
         case ("barBackground", _), ("barForegroundColor", _):
-            let bar: WinUIView = element.enclosing(type: .sheet) != nil ? try sheet(of: element) : try window().titleBar
+            let bar: WinUIView = element.enclosing(type: .sheet) != nil ? try sheet(of: element) : try window(of: element).titleBar
             // The bar's ground: a color, or the in-app acrylic a blur is.
             if name == "barBackground" { return Self.ground(try read(bar, "background")) }
             return try Self.color(read(bar, "foreground")).map { $0.propValue }
         case ("showsSidebar", let split as WinUISplitView): return (try read(split.sidebar, "paneOpen") == "1").propValue
-        case ("showsSidebarToggle", _): return (try read(window().titleBar, "paneToggle") == "1").propValue
+        case ("showsSidebarToggle", _): return (try read(window(of: element).titleBar, "paneToggle") == "1").propValue
         case ("sidebarOverlays", let split as WinUISplitView):
             return (try read(split.sidebar, "paneBeside") == "0").propValue
         case ("sidebarBackground", let split as WinUISplitView): return Self.ground(try read(split.sidebar, "paneBackground"))
@@ -481,7 +481,7 @@ extension WinUIDriver {
         case ("background", let page?) where element.type == .page:
             return try Self.color(read(page, "box.fill")).map { $0.propValue }
         case ("selectedTab", let tabs as WinUITabView):
-            let row: WinUIView = try tabs.tabsShownByWindow ? window().tabRow : tabs
+            let row: WinUIView = try tabs.showsOwnRow ? tabs.row : window(of: element).tabRow
             return Int(try read(row, "selected"))?.propValue
         default: return nil
         }
@@ -489,7 +489,7 @@ extension WinUIDriver {
 
     /// The title shown for a page or an arrangement: its tab's, where a tabbed view presents it, else the window's.
     private func title(of element: MountedElement) throws -> String {
-        guard let (row, index) = try tab(of: element) else { return try read(window().titleBar, "title") }
+        guard let (row, index) = try tab(of: element) else { return try read(window(of: element).titleBar, "title") }
         let titles = try read(row, "tabs").split(separator: ";", omittingEmptySubsequences: false)
         return titles.indices.contains(index) ? String(titles[index]) : ""
     }
@@ -510,7 +510,7 @@ extension WinUIDriver {
               let index = tabbed.children.firstIndex(where: { $0 === page }),
               let tabs = (tabbed.native as? WinUIElement)?.view as? WinUITabView
         else { return nil }
-        return (try tabs.tabsShownByWindow ? window().tabRow : tabs.row, index)
+        return (try tabs.showsOwnRow ? tabs.row : window(of: element).tabRow, index)
     }
 
     /// A span's run of its label's words.

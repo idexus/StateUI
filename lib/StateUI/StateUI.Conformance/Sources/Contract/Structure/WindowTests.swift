@@ -68,6 +68,30 @@
                 s.expect(try s.held(WindowContract.windowKind, on: note), Name(NotesApplication.note.name))
                 s.expect(try s.held(WindowContract.windowValue, on: note), "7")
             },
+            ConformanceCase("aWindowOfAKindIsAskedOverItself", proves: [
+                Covered(WindowContract.windowKind),
+            ], needs: [
+                Covered(ApplicationContract.confirm),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
+            ]) { s in
+                let said = Received<Bool>()
+                try s.start(application: { AskingApplication(said: said) })
+                let first = try s.element(ofType: WindowContract.nodeType)
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                guard let draft = s.elements(ofType: WindowContract.nodeType).first(where: { $0 !== first }) else {
+                    return s.fail("no second window")
+                }
+
+                s.expect(try s.element("ask again").enclosing(type: .window) === draft, true, "its button in the draft's window")
+                try s.perform(.activate, on: s.element("ask again"))
+                try s.settle { try s.question(over: draft) != nil }
+                s.expect(try s.question(over: draft)?.title, "Close draft?", "over the draft's window, which asked")
+                s.expect(try s.question(over: first)?.title, nil, "none over the first")
+                try s.perform(.answer(.accept), on: draft)
+                s.settle { !said.values.isEmpty }
+                s.expect(said.values, [true], "the draft's window answered")
+            },
             ConformanceCase("aWindowThePlatformKeepsComesBackForItsValue", proves: [
                 Covered(WindowContract.windowValue),
             ]) { s in

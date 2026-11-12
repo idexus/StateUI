@@ -22,7 +22,7 @@ ToolbarGroup 10
 TitleView 3
 MenuBar 4
 MenuItem 4
-Window 14
+Window 15
 Scene 4
 Overlay 6
 BarElement 15
@@ -91,7 +91,7 @@ Map 4
 Path 2
 Polygon 3
 ProgressBar 3
-TabView 3
+TabView 4
 VStack 3
 WebView 4
 ZStack 3

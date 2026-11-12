@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Window: ✅
 Window.created: ✅
 Window.destroying: ✅
@@ -13,7 +13,7 @@ Window.minimumHeight: ✅
 Window.minimumWidth: ✅
 Window.title: ✅
 Window.width: ✅
-Window.windowKind: ✓ read windowKind of Window: the host's restoration record
+Window.windowKind: ✓ answer on Window: the host's response called, no alert shown
 Window.windowValue: ✓ read windowValue of Window: the host's restoration record
 Window.x: ✅
 Window.y: ✅

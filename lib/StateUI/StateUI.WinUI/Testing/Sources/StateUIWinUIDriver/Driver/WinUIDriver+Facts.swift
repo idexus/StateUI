@@ -18,7 +18,7 @@ extension WinUIDriver {
     }
 
     func menu(of element: MountedElement) throws -> String {
-        if element.type == .window { return try window().menuBar.menus }
+        if element.type == .window { return try window(of: element).menuBar.menus }
         guard let view = (element.native as? WinUIElement)?.view else { throw DriverCannot("read the menu of \(element.type.name)") }
         return view.menus
     }
@@ -73,13 +73,21 @@ extension WinUIDriver {
     }
 
     func question(over element: MountedElement) throws -> Question? {
-        guard let content = try window().content else { return nil }
-        return asked(over: content.handle).map { asked in
-            Question(
+        for content in contents(asked: element) {
+            guard let asked = asked(over: content.handle) else { continue }
+            return Question(
                 title: asked.title, message: asked.message,
                 buttons: ([asked.accept, asked.cancel] + asked.choices).filter { !$0.isEmpty },
                 field: asked.field)
         }
+        return nil
+    }
+
+    /// The contents a question over `element` may stand on: its window's, or every window's for an element standing
+    /// in none - the application.
+    func contents(asked element: MountedElement) -> [WinUIView] {
+        if let own = try? window(of: element) { return own.content.map { [$0] } ?? [] }
+        return renderer?.windows.compactMap { $0.window.content } ?? []
     }
 
     /// The theme the user's window shows in now.

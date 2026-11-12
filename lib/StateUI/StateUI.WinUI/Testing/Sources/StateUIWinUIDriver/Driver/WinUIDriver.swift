@@ -149,7 +149,7 @@ final class WinUIDriver: HostDriver {
             // WinUI's own `ShowAt`, as the element's context request opens its menu.
             guard stateui_winui_menu_open(view.handle) else { throw DriverCannot(act, on: element) }
         case (.toggle, let toggle as WinUIToggleView): toggle.toggle()
-        case (.toggle, _) where element.type == .splitView: try window().titleBar.chose(-2)
+        case (.toggle, _) where element.type == .splitView: try window(of: element).titleBar.chose(-2)
         case (.slide(let value), let slider as WinUISliderView): slider.move(to: value)
         case (.step(let up), let stepper as WinUIStepperView): stateui_winui_stepper_step_as_user(stepper.handle, up)
         case (.enterWords(let words), let stepper as WinUIStepperView):
@@ -255,8 +255,8 @@ final class WinUIDriver: HostDriver {
             }
             stateui_winui_refresh_request(refresh.handle)
         case (.focus, let view?): _ = stateui_winui_focus(view.handle, true)
-        case (.goBack, _) where element.type == .navigationStack: try window().titleBar.chose(-1)
-        case (.goBack, _) where element.type == .window: try window().titleBar.chose(-3)
+        case (.goBack, _) where element.type == .navigationStack: try window(of: element).titleBar.chose(-1)
+        case (.goBack, _) where element.type == .window: try window(of: element).titleBar.chose(-3)
         case (.close, let popover as WinUIPopoverView):
             // As a click beside it: the flyout hidden while it is wanted, which tells its closing.
             guard let flyout = popover.flyout else { throw DriverCannot(act, on: element) }
@@ -278,7 +278,7 @@ final class WinUIDriver: HostDriver {
                 WinUICallbacks.table.windowStateChanged(window.window.number, false, false)
             }
             try state(of: element, minimized: false, activated: true)
-        case (.answer(let button, let words), _): try answer(button, typing: words)
+        case (.answer(let button, let words), _): try answer(button, typing: words, over: element)
         case (.answerFiles(let names), _): try answerFiles(names)
         case (.answerShare(let shared), _):
             guard renderer?.actToolkit.sharing != nil else { throw DriverCannot("answer a share sheet: none shows") }
@@ -302,12 +302,6 @@ final class WinUIDriver: HostDriver {
         }
         let (corner, size) = (view.origin, view.laidOutFrame)
         return Rect(x: corner.x, y: corner.y, width: size.width, height: size.height)
-    }
-
-    /// The window the host shows its page in.
-    func window() throws -> WinUIWindow {
-        guard let window = renderer?.window else { throw DriverCannot("find the window") }
-        return window
     }
 
     /// The sheet `element` stands in, on its window.
@@ -358,7 +352,7 @@ final class WinUIDriver: HostDriver {
             return
         }
         if [.toolbarButton, .toolbarToggle].contains(element.type), let index = try actionPlace(of: element) {
-            try window().titleBar.chose(index)
+            try window(of: element).titleBar.chose(index)
             return
         }
         throw DriverCannot(.activate, on: element)
@@ -394,7 +388,7 @@ final class WinUIDriver: HostDriver {
         guard let tabs = (element.native as? WinUIElement)?.view as? WinUITabView else {
             throw DriverCannot(.choose(place), on: element)
         }
-        let row: WinUIView = tabs.tabsShownByWindow ? try window().tabRow : tabs.row
+        let row: WinUIView = tabs.showsOwnRow ? tabs.row : try window(of: element).tabRow
         stateui_winui_tabs_choose_as_user(row.handle, Int32(place))
     }
 
@@ -412,8 +406,11 @@ final class WinUIDriver: HostDriver {
 
     /// Answers the question showing as the user does, by its button doing `button`, its field first holding
     /// `words`: a dialog takes a press once WinUI has shown it whole, so the press is tried until it lands.
-    private func answer(_ button: QuestionButton, typing words: String?) throws {
-        guard let content = try window().content else { throw DriverCannot("answer a question with no window") }
+    private func answer(_ button: QuestionButton, typing words: String?, over element: MountedElement) throws {
+        let contents = contents(asked: element)
+        guard let content = contents.first(where: { asked(over: $0.handle) != nil }) ?? contents.first else {
+            throw DriverCannot("answer a question with no window")
+        }
         // The relay's buttons: 0 the accepting one, 1 the cancel, 2 and on a choice's actions.
         let pressed: Int32 = switch button {
         case .accept: 0

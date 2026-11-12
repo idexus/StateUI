@@ -1,4 +1,4 @@
-# revision 14.1
+# revision 15.1
 Window: ✅
 Window.created: ✅
 Window.destroying: ✅
@@ -13,7 +13,7 @@ Window.minimumHeight: ✅
 Window.minimumWidth: ✅
 Window.title: ✅
 Window.width: ✅
-Window.windowKind: ✓ read windowKind of Window: the scenes the host keeps for the next start
+Window.windowKind: ✅
 Window.windowValue: ✓ read windowValue of Window: the scenes the host keeps for the next start
 Window.x: – GNOME places its windows itself: GTK 4 asks no place of the desktop.
 Window.y: – GNOME places its windows itself: GTK 4 asks no place of the desktop.
