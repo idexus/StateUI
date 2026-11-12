@@ -19,6 +19,7 @@ final class AppKitQuestion {
 
     let alert = NSAlert()
     private let field = AppKitWordsField(string: "")
+    private let bounding: AppKitPromptBound
     private var answer: ((HostQuestion.Given) -> Void)?
 
     /// Each button's caption and what pressing it answers, in the order AppKit shows them.
@@ -27,6 +28,7 @@ final class AppKitQuestion {
     init(_ question: HostQuestion, in window: NSWindow) {
         self.question = question
         self.window = window
+        bounding = AppKitPromptBound(question.maximumLength)
         buttons = question.buttons
         alert.messageText = question.title ?? ""
         alert.informativeText = question.message ?? ""
@@ -43,6 +45,7 @@ final class AppKitQuestion {
             field.traits = question.traits
             field.isAutomaticTextCompletionEnabled = question.traits.predicts
             field.frame = NSRect(x: 0, y: 0, width: 240, height: 24)
+            field.delegate = bounding
             alert.accessoryView = field
         }
     }
@@ -83,6 +86,30 @@ final class AppKitQuestion {
             respond(response)
         }
         return true
+    }
+}
+
+/// A prompt's field holding no more than its bound as the user types - in characters as the user sees them, by the
+/// host layer's rule (`InputWords.held`) - as the words it answers with are.
+/// Design: docs/design/platforms/appkit/runtime.md#questions-for-the-user
+@MainActor
+private final class AppKitPromptBound: NSObject, NSTextFieldDelegate {
+    /// How many characters the field holds; nil for no bound.
+    let bound: Int?
+
+    init(_ bound: Int?) {
+        self.bound = bound
+    }
+
+    func controlTextDidChange(_ notification: Notification) {
+        guard let field = notification.object as? NSTextField else { return }
+        let editor = field.currentEditor() as? NSTextView
+        guard let held = InputWords.held(
+            field.stringValue, in: nil, toBound: bound, composing: editor?.hasMarkedText() == true)
+        else { return }
+        field.stringValue = held
+        editor?.string = held
+        editor?.selectedRange = NSRange(location: held.utf16.count, length: 0)
     }
 }
 

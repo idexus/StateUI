@@ -257,7 +257,9 @@ top of its sheets - or the window the user is looking at where the act names
 none, one at a time (`QuestionQueue`): a confirmation's and a prompt's accepting
 button first, a choice's actions, its dangerous one marked, then its cancel.
 A choice answers the place of the action pressed, nothing for its cancel; a
-prompt its field's words, cut to their bound. A host that shows no window holds the
+prompt its field's words, which hold no more than their bound as the user
+types - in characters as the user sees them, by the host layer's rule
+(`InputWords.held`), as a text field's do. A host that shows no window holds the
 alert unshown, answered as a press answers it.
 
 ## Files
