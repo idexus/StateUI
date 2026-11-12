@@ -377,7 +377,8 @@ sanitizer cannot see through a `Mutex` and reports every guarded access.
 A host's workflow holds every conformance verdict to its marks and never
 writes them: a family whose verdicts changed fails there, and its marks are
 written again on that platform's machine. The Web's workflow runs the host's
-own tests alone; its marks are written on a Mac by
+own tests in Node and every conformance family in a headless browser; its
+marks are written on a Mac by
 `STATEUI_UPDATE_EXPORTS=1 .scripts/Web/test-web.sh --browser`.
 
 ### Conformance and marks

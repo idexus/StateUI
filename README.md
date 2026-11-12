@@ -232,8 +232,8 @@ under Thread Sanitizer. Each host has a workflow of its own
 that runs its suite with every verdict held: **AppKit**, **UIKit** on an
 iPhone and an iPad simulator, **Android** built on macOS and run on an
 emulator, **WinUI** on Windows and **GTK** on Linux. **Web** runs the host's
-own suite on macOS, in Node and in a headless browser; its conformance
-families join it once the Web's verdicts hold no failure.
+own suite on macOS, in Node, and in a headless browser every conformance
+family with it.
 
 ## License
 
