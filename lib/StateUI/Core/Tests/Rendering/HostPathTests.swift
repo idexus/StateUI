@@ -69,6 +69,19 @@ final class HostPathTests: XCTestCase {
         XCTAssertNil(HostPath(svg: "M 0 0 X 1 1"))
     }
 
+    /// A path that ends on a command before its numbers, or inside a command's group, is rejected as a whole.
+    func testACommandWithoutItsNumbersRejectsThePath() {
+        for command in "MmLlHhVvCcSsQqTtAa" {
+            XCTAssertNil(HostPath(svg: "\(command)"), "\(command)")
+            XCTAssertNil(HostPath(svg: "M0 0 \(command)"), "\(command)")
+            XCTAssertNil(HostPath(svg: "M0 0 z \(command)"), "\(command)")
+        }
+        for incomplete in ["M0", "M0 0 L1", "M0 0 H1 V", "M0 0 C1 1 2 2 3", "M0 0 S1 1 2", "M0 0 Q1 1",
+                           "M0 0 T1", "M0 0 A1 1 0 0 1 2", "M0 0 L1 1 2"] {
+            XCTAssertNil(HostPath(svg: incomplete), incomplete)
+        }
+    }
+
     /// A half turn of a circle is two quarter-turn curves that end exactly where the arc does, the first at
     /// the circle's side; every other command passes as it is.
     func testAnArcIsDrawnAsQuarterTurnCurves() throws {
