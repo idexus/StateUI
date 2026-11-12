@@ -151,6 +151,49 @@ final class WebLeaveTests: XCTestCase {
         }
     }
 
+    /// A menu open under the bar goes with what it opened under: the item leaving, or the whole page - its bar's
+    /// More and an item's own menu alike - leaves no popover on the page.
+    func testAMenuOpenOnTheBarGoesWithWhatOpenedIt() throws {
+        for (opens, leaves) in [("Sort", "item"), ("Sort", "page"), ("More", "page")] {
+            WebRenderer.shared?.finish()
+            let (item, path) = (State(wrappedValue: true), State(wrappedValue: [1]))
+            let host = WebRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    Text("Bars").toolbar {
+                        if item.wrappedValue {
+                            ToolbarButton("Sort").menu { MenuItem("A to Z").onClicked {} }
+                        }
+                        if opens == "More" { ToolbarButton("Clear").onClicked {}.placement(at: .overflow) }
+                    }
+                }
+            }
+            for _ in 0..<5 {
+                host.step()
+                WebBrowser.pause()
+            }
+            let button = opens == "More" ? "button[aria-label=\"More\"]" : "button[aria-label=\"\(opens)\"]"
+            let shown = "[...document.querySelectorAll('.stateui-bar \(button)')].find((b) => getComputedStyle(b).display !== 'none')"
+            _ = try WebBrowser.evaluate("(\(shown).click(), '')", on: 0)
+            for _ in 0..<3 {
+                host.step()
+                WebBrowser.pause()
+            }
+            let open = "document.querySelectorAll('.stateui-menu').length"
+            XCTAssertEqual(try WebBrowser.evaluate(open, on: 0), "1", "\(opens) open")
+
+            if leaves == "item" { item.wrappedValue = false } else { path.wrappedValue = [] }
+            for _ in 0..<5 {
+                host.step()
+                WebBrowser.pause()
+            }
+
+            XCTAssertEqual(try WebBrowser.evaluate(open, on: 0), "0", "\(opens)'s menu as the \(leaves) left")
+            host.finish()
+        }
+    }
+
     /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window stands out of
     /// sight, and stands again as the browser shows the page - a window going away would not.
     func testAPageTheBrowserKeepsIsHiddenNotGone() async throws {

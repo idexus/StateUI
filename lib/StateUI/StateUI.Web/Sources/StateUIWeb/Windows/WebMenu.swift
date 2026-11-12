@@ -6,7 +6,8 @@
 
 /// A menu as the page shows one: the host layer's walk of its entries (`MenuEntry`) as a popover over everything -
 /// an item a button, a separator a line, a submenu a button opening its own popover beside it - which a click beside
-/// it or Escape takes down, as does choosing an item, which then hears it chosen.
+/// it or Escape takes down, as does choosing an item, which then hears it chosen, and any element an entry stands
+/// for leaving.
 /// Design: docs/design/platforms/web/pages.md#menus
 @MainActor
 final class WebMenu {
@@ -57,6 +58,8 @@ final class WebMenu {
             line.attribute("role", "separator")
             place(line)
         case .item:
+            // The menu goes as the element an entry stands for leaves: no entry acts for an element gone.
+            (entry.element?.native as? WebElement)?.menuShown = self
             let button = item(entry)
             button.listen("click") { [weak self] in
                 guard let self, entry.isEnabled else { return }
