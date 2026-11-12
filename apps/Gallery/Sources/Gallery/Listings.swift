@@ -10958,6 +10958,30 @@ enum Listings {
             }
         }
         """#,
+        "ShortList": #"""
+        // Sources/Samples/Collections/LoadingItemsSample.swift
+        @State private var shown = false
+        @State private var asked = 0
+
+        var body: some View {
+            VStack {
+                HStack {
+                    Switch("Show the list", isOn: $shown)
+
+                    Text("asked \(asked) times")
+                        .verticalAlignment(.center)
+                }
+
+                // Three items, all within five of the end - but while the list
+                // has no room, it shows none of them, and no end is reached.
+                ItemsView(0..<3) { number in
+                    Text("Item \(number + 1)")
+                }
+                .onEndReached(within: 5) { asked += 1 }
+                .height(shown ? 160 : 0)
+            }
+        }
+        """#,
         "ShortcutKeys": #"""
         // Sources/Samples/BasicInput/ShortcutSample.swift
         @State private var saved = 0

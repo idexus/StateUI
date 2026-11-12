@@ -76,7 +76,7 @@ LightTableSample.swift 157141b6d66155cd
 LinkSample.swift cc33621097f3922b
 LinksSample.swift b2d6ace242ac6f8c
 LivingLayoutSample.swift 39d1689d28cf8cc2
-LoadingItemsSample.swift d137ae58c27e7004
+LoadingItemsSample.swift d2272cd7a5da23bc
 LocaleInfoSample.swift feb36c49b5e60da9
 LocalizationSample.swift 81563e37d3bb7500
 MainQueueSample.swift 142b7947497fae78
