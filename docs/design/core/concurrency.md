@@ -70,7 +70,10 @@ Instead of a doorbell the page is told when to call again:
 else the time until the next job kept for later comes due, and nothing with
 nothing to come. A cycle is a display frame's, which the display cycle holds
 the clock for, so it is no reason to call - a host that called for it would
-call without end while an engine runs.
+call without end while an engine runs. A browser counts a timer's delay in 32
+bits and calls at once past them, so the page asks for a wait past some
+twenty-four days in parts: each wake finds its time not come and asks for the
+rest, rather than calling again at once without end.
 
 ## Handlers run where their event arrives
 
