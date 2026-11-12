@@ -92,7 +92,7 @@ NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift f2e73407dc02a04e
 OutlineSample.swift 4ee91e4fde45645c
 PacedStateSample.swift e1c6365663a37e85
-PanSample.swift 2caac445cc49d841
+PanSample.swift 56261ced9b5c8e37
 PersistentStateSample.swift 327202dd5b406257
 PickerSample.swift 171ebf39a3a84de4
 PinchSample.swift e56e5f964acfbeee

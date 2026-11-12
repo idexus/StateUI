@@ -8970,6 +8970,10 @@ enum Listings {
         @State private var liveX = 0.0
         @State private var liveY = 0.0
 
+        /// Where the hand holds the box, in the box's own points - driven words, so
+        /// a report writes them without a render.
+        @State private var held = "Hold the box"
+
         var body: some View {
             VStack {
                 // The box is moved by DRIVEN states, so a drag builds nothing: the
@@ -8991,6 +8995,9 @@ enum Listings {
                         .translationX($liveX)
                         .translationY($liveY)
                         .onPanUpdated { update in
+                            // `at` is in the box's own points: the same where
+                            // the box is held, wherever it has been moved.
+                            held = "Held at \(Int(update.at.x)), \(Int(update.at.y)) of the box"
                             switch update.phase {
                             case .changed:
                                 follow(panX + update.total.x, panY + update.total.y)
@@ -9032,6 +9039,8 @@ enum Listings {
                 Text(.multi($liveX.journey, $liveY.journey).convert { x, y in
                         "Moved \(Int(x.value)), \(Int(y.value))"
                     })
+
+                Text($held)
 
                 SwitchRow("The drag snaps", $snaps)
                 // What the box does as the hand lets it go.
