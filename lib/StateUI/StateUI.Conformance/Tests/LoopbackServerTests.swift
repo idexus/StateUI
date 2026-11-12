@@ -47,14 +47,18 @@ final class LoopbackServerTests: XCTestCase {
         }
         guard connected else { throw POSIXFailure(what: "connect") }
         let request = Array("GET / HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n".utf8)
-        _ = request.withUnsafeBytes { send(connection, $0.baseAddress, $0.count, 0) }
+        _ = request.withUnsafeBytes { Self.sent($0, on: connection) }
         var chunk = [UInt8](repeating: 0, count: 4096)
-        while chunk.withUnsafeMutableBytes({ recv(connection, $0.baseAddress, $0.count, 0) }) > 0 {}
+        while chunk.withUnsafeMutableBytes({ Self.received(into: $0, on: connection) }) > 0 {}
     }
 
     /// The server's threads close the connection before they end: a moment for the last to end.
     private static func waitForThreadsToEnd() {
+        #if os(Windows)
+        Sleep(200)
+        #else
         usleep(200_000)
+        #endif
     }
 
     /// What the process holds that a thread takes: its virtual memory regions, its open handles; nil for none read.
@@ -87,12 +91,26 @@ final class LoopbackServerTests: XCTestCase {
     #if os(Windows)
     private static let stream = SOCK_STREAM
     private static func close(_ socket: SOCKET) { closesocket(socket) }
-    #elseif canImport(Glibc)
+    private static func sent(_ bytes: UnsafeRawBufferPointer, on socket: SOCKET) -> Int {
+        Int(send(socket, bytes.baseAddress?.assumingMemoryBound(to: CChar.self), Int32(bytes.count), 0))
+    }
+    private static func received(into bytes: UnsafeMutableRawBufferPointer, on socket: SOCKET) -> Int {
+        Int(recv(socket, bytes.baseAddress?.assumingMemoryBound(to: CChar.self), Int32(bytes.count), 0))
+    }
+    #else
+    #if canImport(Glibc)
     private static let stream = Int32(SOCK_STREAM.rawValue)
     private static func close(_ socket: Int32) { _ = StateUIFoundation.close(socket) }
     #else
     private static let stream = SOCK_STREAM
     private static func close(_ socket: Int32) { _ = Darwin.close(socket) }
+    #endif
+    private static func sent(_ bytes: UnsafeRawBufferPointer, on socket: Int32) -> Int {
+        send(socket, bytes.baseAddress, bytes.count, 0)
+    }
+    private static func received(into bytes: UnsafeMutableRawBufferPointer, on socket: Int32) -> Int {
+        recv(socket, bytes.baseAddress, bytes.count, 0)
+    }
     #endif
 }
 
