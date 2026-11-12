@@ -951,6 +951,30 @@ final class PagesTests: XCTestCase {
         XCTAssertNil(root.first(id: .manual("top"))?.chromeBottomBar, "the top of a tab not chosen")
     }
 
+    /// A split view a stack shows shows both its pages, each with its own bottom bar - the sidebar's while it shows -
+    /// and a page under the stack's top none.
+    func testASplitViewAStackShowsGivesBothItsPagesTheirBars() throws {
+        func tree(_ sidebarShown: Bool) -> HostPatch {
+            node("window", .window, children: [
+                node("stack", .navigationStack, children: [
+                    node("under", .page, children: [node("underBar", .bottomBar, children: [node("unseen", .text)])]),
+                    node("split", .splitView, [.showsSidebar: .bool(sidebarShown)], children: [
+                        node("sidebar", .page, children: [node("sideBar", .bottomBar, children: [node("side", .text)])]),
+                        node("detail", .page, children: [node("mainBar", .bottomBar, children: [node("main", .text)])]),
+                    ]),
+                ]),
+            ])
+        }
+        let shown = try XCTUnwrap(runtime(tree(true)) { _ in }.tree.root)
+        XCTAssertEqual(shown.first(id: .manual("sidebar"))?.chromeBottomBar?.id, .manual("side"), "the sidebar's own")
+        XCTAssertEqual(shown.first(id: .manual("detail"))?.chromeBottomBar?.id, .manual("main"), "the detail's own")
+        XCTAssertNil(shown.first(id: .manual("under"))?.chromeBottomBar, "a page under the top")
+
+        let hidden = try XCTUnwrap(runtime(tree(false)) { _ in }.tree.root)
+        XCTAssertNil(hidden.first(id: .manual("sidebar"))?.chromeBottomBar, "a sidebar not shown")
+        XCTAssertEqual(hidden.first(id: .manual("detail"))?.chromeBottomBar?.id, .manual("main"))
+    }
+
     /// The bar's look a path declares is its nearest arrangement's, one value at a time: a stack further in paints
     /// its own bar. A sidebar wears its own split view's bar and nothing from around it; a sheet wears the look of the
     /// bar over the view presenting it, and its own stack's over that.

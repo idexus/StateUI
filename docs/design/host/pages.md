@@ -12,7 +12,12 @@ view shows its sidebar on screen (`NativeElement.chosenTab`, `showsSidebar`).
 An arrangement shows one page at a time on its path: a stack its top page, a
 tabbed view its chosen tab, a split view its detail - and, while it shows,
 its sidebar beside it (`MountedElement.shownChildren`). The visible page is
-found down that path, and so are the stack and the tabbed view around it. The
+found down that path, and so are the stack and the tabbed view around it.
+Whatever asks whether an element stands where the user meets it asks each
+arrangement around it whether it shows the branch holding it (`shows`): a
+shortcut, the next field, a key and a page's bottom bar alike, so a hidden
+sidebar takes no shortcut and a split view a stack shows gives both its pages
+their bars. The
 tab shown is the one the user chose, else the one the tree says, kept within
 the tabs; the sidebar shows as it stands on screen, else as the tree says.
 

@@ -84,12 +84,13 @@ extension MountedElement {
         return declared(.bottomBar).last?.element.children.lazy.compactMap(\.presentingElement).first
     }
 
-    /// Whether every stack and tabs around this page show it: the top of each stack, the chosen tab.
+    /// Whether every arrangement around this page shows it (`shows`): the top of each stack, the chosen tab, a split
+    /// view's sidebar while it shows - each by the branch it holds the page in.
     private var isShownByItsArrangements: Bool {
-        var each = parent
+        var (child, each) = (self, parent)
         while let element = each, element.type != .window, element.type != .sheet {
-            if element.type == .navigationStack || element.type == .tabView, element.visiblePage !== self { return false }
-            each = element.parent
+            if !element.slots.contains(where: { $0 === child }), !element.shows(child) { return false }
+            (child, each) = (element, element.parent)
         }
         return true
     }

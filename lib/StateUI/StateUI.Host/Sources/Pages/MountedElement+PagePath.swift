@@ -18,6 +18,16 @@ extension MountedElement {
         }
     }
 
+    /// Whether this element shows `child`, one of its own: an arrangement those of `shownChildren` - a tabbed view
+    /// with no tab every one - anything else each child it holds.
+    public func shows(_ child: MountedElement) -> Bool {
+        switch type {
+        case .navigationStack, .splitView: shownChildren.contains { $0 === child.placed }
+        case .tabView: selectedTab.map { $0 === child.placed } ?? true
+        default: true
+        }
+    }
+
     /// The page a split view's sidebar shows - its page, or a stack's top there; nil for any other element.
     public var sidebarPage: MountedElement? {
         type == .splitView ? arrangedChildren.first?.visiblePage : nil
