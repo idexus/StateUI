@@ -60,6 +60,30 @@ final class TextRulesTests: XCTestCase {
         XCTAssertEqual(TextLook().over(label).attributes, .italic, "a run given nothing takes its label's")
     }
 
+    /// A run given no space between its letters, or no lines, stands so in a label that gives them; a run given
+    /// nothing takes its label's. Read as a host reads them, off the tree.
+    func testARunGivenNoSpacingOrLinesStandsSoInALabelThatGivesThem() throws {
+        let runtime = HostRuntime.still()
+        var span = HostPatch(id: .manual("span"), type: .textSpan)
+        span.properties[.text] = .string("plain")
+        span.properties[.tracking] = .number(0)
+        span.properties[.textDecorations] = .enumeration(0)
+        var said = HostPatch(id: .manual("said"), type: .textSpan)
+        said.properties[.text] = .string("as the label")
+        var spans = HostPatch(id: .manual("spans"), type: .textSpans)
+        spans.children = .arranged([span, said])
+        var label = HostPatch(id: .manual("label"), type: .text)
+        label.properties[.tracking] = .number(4)
+        label.properties[.textDecorations] = .enumeration(TextDecorations.underline.rawValue)
+        label.children = .arranged([spans])
+        runtime.tree.apply(label, complete: true)
+        let mounted = try XCTUnwrap(runtime.tree.root)
+        let runs = try XCTUnwrap(mounted.textRuns).map { $0.look.over(mounted.textLook) }
+
+        XCTAssertEqual(runs.map(\.letterSpacing), [0, 4])
+        XCTAssertEqual(runs.map(\.decorations), [[], .underline])
+    }
+
     /// A style and a weight are read from the tree, changed or not, and a run takes its label's where it says none.
     func testAStyleAndAWeightAreTheTreesOrTheLabels() throws {
         let held: [Prop: HostValue] = [.textStyle: TextStyle.title.propValue, .fontWeight: FontWeight.semibold.propValue]

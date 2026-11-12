@@ -61,6 +61,21 @@ final class DiffTests: XCTestCase {
     /// keeping the collection rather than rebuilding it. A message that repeated
     /// every run on every render would work and would send a whole highlighted
     /// code block each time one token changed color.
+    /// A run given no space between its letters and no lines says so, so a host stands it so in a label that gives
+    /// them: none is a value said, not nothing said.
+    func testARunGivenNoSpacingOrLinesSaysSo() throws {
+        let patch = Renders().render(
+            Text()
+                .spans { TextSpan("plain").tracking(0).textDecorations([]) }
+                .tracking(4)
+                .textDecorations(.underline)
+                .node)
+        let run = try XCTUnwrap(patch.subtree.first { $0.type == .textSpan })
+
+        XCTAssertEqual(run.props[.tracking], .number(0))
+        XCTAssertEqual(run.props[.textDecorations], .enumeration(0))
+    }
+
     func testAChangedRunCarriesThatRunAlone() throws {
         let renders = Renders()
 
