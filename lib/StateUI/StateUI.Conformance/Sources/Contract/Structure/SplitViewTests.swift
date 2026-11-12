@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `SplitViewContract` on a host: the sidebar beside the detail shows as the binding says; the user hiding or showing
-/// it is heard on the binding, the program's is shown; the sidebar stands on the material of its place.
+/// it is heard on the binding, the program's is shown; the sidebar stands on the material of its place; and it stands
+/// as the root of a sheet as of a window.
 @_spi(Host) public enum SplitViewTests: ConformanceFamily {
     public static let name = "SplitView"
 
@@ -78,6 +79,35 @@
                 try s.perform(.activate, on: s.element("hide"))
                 try s.settle { try s.held(SplitViewContract.showsSidebar, on: split) == false }
                 s.expect(try s.held(SplitViewContract.showsSidebar, on: split), false)
+            },
+            ConformanceCase("standsAsTheRootOfASheet", proves: [
+                Covered(SplitViewContract.self), Covered(SplitViewContract.showsSidebar),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(SheetContract.self)]) { s in
+                let (presented, open) = (State(wrappedValue: false), State(wrappedValue: true))
+                s.start {
+                    VStack { Button("Open").onClicked { presented.wrappedValue = true }.id("open") }
+                        .sheet(isPresented: presented.projectedValue) {
+                            SplitView {
+                                Text("Sidebar")
+                            } detail: {
+                                WideDetail(VStack { Button("Hide").onClicked { open.wrappedValue = false }.id("hide") })
+                            }
+                            .showsSidebar(open.projectedValue)
+                        }
+                }
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { (try? s.element(ofType: SplitViewContract.nodeType)) != nil }
+                let split = try s.element(ofType: SplitViewContract.nodeType)
+                try s.settle {
+                    try s.held(SplitViewContract.showsSidebar, on: split) == true
+                        && s.held(VisualElementContract.isVisible, on: s.element("hide")) == true
+                }
+                s.expect(try s.held(VisualElementContract.isVisible, on: s.element("hide")), true, "its detail in the sheet")
+                s.expect(try s.held(SplitViewContract.showsSidebar, on: split), true, "its sidebar beside it")
+
+                try s.perform(.activate, on: s.element("hide"))
+                try s.settle { try s.held(SplitViewContract.showsSidebar, on: split) == false }
+                s.expect(try s.held(SplitViewContract.showsSidebar, on: split), false, "hidden as the program says")
             },
             standsOn(SplitViewContract.sidebarBackground, "theSidebarStandsOnItsMaterialBesideTheDetail") {
                 $0.sidebarBackground($1)
