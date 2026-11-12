@@ -60,7 +60,9 @@ least the theme's bar height (`actionBarSize`) under what it reaches
 beneath, actions or none, so a split view's two bars stand as one. The bar's words'
 color - the one written, or white or black against a written background -
 is its title's, its overflow button's, its actions' pictures' and its back
-arrow's or menu glyph's; a sidebar page's own picture keeps its colors.
+arrow's or menu glyph's; a sidebar page's own picture keeps its colors. Given
+none again, the title takes the color its style gives it and the overflow
+button the theme's picture, kept untinted - Android keeps a color otherwise.
 The actions' words follow the bar's theme, as Android's own bars do: the
 toolbar is made in Android's overlay for a dark bar, its action words light,
 or for a light one, their words dark - by the host layer's reading of the

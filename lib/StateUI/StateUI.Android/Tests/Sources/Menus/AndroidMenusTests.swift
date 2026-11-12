@@ -139,11 +139,18 @@ enum TestMenus {
     private static let chooseItem = Java.staticMethod(owner, "choose", "(Landroid/view/Menu;Ljava/lang/String;)Z")
     static let getMenu = Java.method(Java.findClass("android/widget/Toolbar"), "getMenu", "()Landroid/view/Menu;")
     private static let barActions = Java.staticMethod(owner, "onBar", "(Landroid/view/ViewGroup;)Ljava/lang/String;")
+    private static let barForeground = Java.staticMethod(
+        owner, "foreground", "(Landroid/widget/Toolbar;)Ljava/lang/String;")
 
     /// The actions standing on `bar` as it lays them out: each one's words and whether they are drawn "light" or
     /// "dark", or "picture" and the color it is drawn in, as ARGB in hexadecimal.
     static func onBar(_ bar: AndroidView) -> String {
         Java.frame { Java.callStaticObject(owner, barActions, .object(bar.reference)).map { Java.text($0) } ?? "" }
+    }
+
+    /// The color the bar's title stands in and its overflow's picture is drawn in.
+    static func foreground(of bar: AndroidView) -> String {
+        Java.frame { Java.callStaticObject(owner, barForeground, .object(bar.reference)).map { Java.text($0) } ?? "" }
     }
 
     private static let overWindow = Java.staticMethod(

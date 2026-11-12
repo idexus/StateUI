@@ -271,6 +271,23 @@ public final class TestMenus {
     }
 
     /**
+     * The color the bar's title stands in and the one its overflow's picture is drawn in, at its middle:
+     * "title #..., overflow #...".
+     */
+    public static String foreground(android.widget.Toolbar bar) {
+        String title = "none";
+        for (int index = 0; index < bar.getChildCount(); index++) {
+            View child = bar.getChildAt(index);
+            if (child instanceof TextView && bar.getTitle() != null
+                    && ((TextView) child).getText().toString().contentEquals(bar.getTitle())) {
+                title = Integer.toHexString(((TextView) child).getCurrentTextColor());
+            }
+        }
+        Drawable overflow = bar.getOverflowIcon();
+        return "title #" + title + ", overflow #" + (overflow == null ? "none" : Integer.toHexString(middle(overflow)));
+    }
+
+    /**
      * The bar's entries as it lays them out, a line each in its menu's order: its id, its group, whether it stands
      * on the bar as an action, whether its words show there, and whether it can be chosen - numbers, spaces between.
      */

@@ -37,6 +37,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testGroupsBehindTheOverflowAreSectionsOfItsMenu", testGroupsBehindTheOverflowAreSectionsOfItsMenu),
             ("testALeadingGroupStandsFirstAmongTheActions", testALeadingGroupStandsFirstAmongTheActions),
             ("testTheBarsActionsStandInItsWordsColor", testTheBarsActionsStandInItsWordsColor),
+            ("testABarGivenNoForegroundStandsInTheThemesAgain", testABarGivenNoForegroundStandsInTheThemesAgain),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
             ("testAStackAndItsPagesSayHowTheBarAndThePageLook", testAStackAndItsPagesSayHowTheBarAndThePageLook),
             ("testTabsOfStacksOnAStackStandUnderOneBar", testTabsOfStacksOnAStackStandUnderOneBar),
@@ -799,6 +800,32 @@ extension AndroidPagesTests {
 
             XCTAssertEqual(onDark, "Scan light, picture #ffffffff")
             XCTAssertEqual(TestMenus.onBar(navigation.bar), "Scan dark, picture #ff000080")
+        }
+    }
+
+    /// A bar's title and its overflow's picture stand in the color it is given, and in the theme's again once it is
+    /// given none: Android otherwise keeps the color it was last given.
+    func testABarGivenNoForegroundStandsInTheThemesAgain() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Notes", actions: [ToolbarButton("Scan")])
+                } destination: { _ in
+                    TitledPage(title: "Note")
+                }
+            }
+            host.layOut()
+            let bar = try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar
+            let theme = TestMenus.foreground(of: bar)
+            var red = bar.content
+            red.foreground = .color(red: 255, green: 0, blue: 0, alpha: 255)
+
+            bar.show(red)
+            XCTAssertEqual(TestMenus.foreground(of: bar), "title #ffff0000, overflow #ffff0000")
+            var none = red
+            none.foreground = nil
+            bar.show(none)
+            XCTAssertEqual(TestMenus.foreground(of: bar), theme, "the theme's again")
         }
     }
 
