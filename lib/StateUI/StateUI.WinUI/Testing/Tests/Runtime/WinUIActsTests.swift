@@ -83,6 +83,27 @@ final class WinUIActsTests: XCTestCase {
         }
     }
 
+    /// A choice of actions answered by one of them, or cancelled, lets go of its dialog: nothing the dialog holds -
+    /// its buttons, what they do when pressed - keeps it alive.
+    func testAChoiceOfActionsLetsGoOfItsDialog() throws {
+        try onUIThread {
+            for pressed: Int32 in [2, 1] {
+                let host = WinUIRenderer.running {
+                    Text("Share").onCreated {
+                        _ = try await WindowSession().chooseAction("Share via", among: ["Mail", "Message"])
+                    }
+                }
+                let window = try XCTUnwrap(host.window)
+                host.settle(until: { Self.asks(window) })
+                XCTAssertTrue(stateui_winui_last_question_lives())
+
+                _ = stateui_winui_answer(try XCTUnwrap(window.content).handle, pressed, nil)
+                host.settle(until: { !Self.asks(window) && !stateui_winui_last_question_lives() })
+                XCTAssertFalse(stateui_winui_last_question_lives(), "the dialog let go, answered by \(pressed)")
+            }
+        }
+    }
+
     /// A prompt's field holds its bound in characters, as a field of the tree does: WinUI's own counts UTF-16 units,
     /// in which two of these are four.
     func testAPromptsFieldHoldsItsBoundInCharacters() throws {

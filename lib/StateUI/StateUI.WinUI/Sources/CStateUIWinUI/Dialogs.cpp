@@ -65,6 +65,9 @@ namespace {
         return block;
     }
 
+    /// The dialog of the question asked last, held weakly: what a test reads to see it let go.
+    winrt::weak_ref<controls::ContentDialog> lastQuestion;
+
     /// A dialog made for the question under `ticket`, and what hands its answer back once it closes.
     struct Asked {
         int64_t ticket;
@@ -80,6 +83,7 @@ namespace {
 
     Asked ask(int64_t ticket, StateUIQuestion const &question) {
         controls::ContentDialog dialog;
+        lastQuestion = winrt::make_weak(dialog);
         std::function<void(controls::ContentDialogResult)> closed;
         dialog.Title(winrt::box_value(text(question.title)));
         auto hasMessage = question.message && *question.message;
@@ -102,8 +106,9 @@ namespace {
             break;
         case StateUIQuestionKindChooseAction: {
             // Each action is a button of its own, in order; the answer is the place of the one pressed. WinUI draws
-            // no dangerous button apart.
+            // no dangerous button apart. A button holds its dialog weakly: the dialog holds its buttons.
             auto chosen = std::make_shared<int32_t>(-1);
+            auto held = winrt::make_weak(dialog);
             controls::StackPanel choices;
             choices.Spacing(8);
             for (int32_t index = 0; index < question.choiceCount; ++index) {
@@ -111,9 +116,9 @@ namespace {
                 button.Content(winrt::box_value(text(question.choices[index])));
                 button.HorizontalAlignment(xaml::HorizontalAlignment::Stretch);
                 button.Click(guarded("handling Click",
-                    [dialog, chosen, index](IInspectable const &, xaml::RoutedEventArgs const &) {
+                    [held, chosen, index](IInspectable const &, xaml::RoutedEventArgs const &) {
                     *chosen = index;
-                    dialog.Hide();
+                    if (auto dialog = held.get()) dialog.Hide();
                 }));
                 choices.Children().Append(button);
             }
@@ -261,4 +266,8 @@ extern "C" bool stateui_winui_answer(StateUIObjectRef handle, int32_t button, ch
         report("answering a dialog");
         return false;
     }
+}
+
+extern "C" bool stateui_winui_last_question_lives(void) {
+    return lastQuestion.get() != nullptr;
 }

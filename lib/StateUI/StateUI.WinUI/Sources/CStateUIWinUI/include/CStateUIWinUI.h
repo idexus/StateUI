@@ -1583,6 +1583,9 @@ void stateui_winui_prompt_write(StateUIObjectRef element, char const *utf8);
 /// (0x1F) but the last; -1 for none showing. What a test reads.
 int32_t stateui_winui_question(StateUIObjectRef element, char *utf8, int32_t capacity);
 
+/// Whether the dialog of the question asked last still lives. What a test reads to see it let go once answered.
+bool stateui_winui_last_question_lives(void);
+
 /// The file dialog showing in the process: 0 one that opens, 1 one that saves, -1 none. What a test reads.
 int32_t stateui_winui_file_dialog(void);
 
