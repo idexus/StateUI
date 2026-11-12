@@ -249,6 +249,28 @@ private struct ListingApp: Application {
     }
 }
 
+/// The windows the pages read, as each body builds.
+@MainActor private enum WindowsRead {
+    static var sessions: [WindowSession] = []
+}
+
+/// A page that reads the window it stands in.
+private struct ReadingItsWindow: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        WindowsRead.sessions.append(window)
+        return Text("Read")
+    }
+}
+
+private struct WindowReadingApp: Application {
+    var body: some Scene {
+        WindowGroup { ReadingItsWindow() }
+        WindowGroup(.fonts) { ReadingItsWindow() }
+    }
+}
+
 @MainActor
 final class SceneTests: XCTestCase {
     override func setUp() async throws {
@@ -638,6 +660,22 @@ final class SceneTests: XCTestCase {
         XCTAssertThrowsError(try fonts.address) { XCTAssertEqual($0 as? WindowError, .notOpen) }
         let refused = await refusal { _ = try await fonts.hideOnScreenKeyboard() }
         XCTAssertEqual(refused, .notOpen)
+    }
+
+    /// A page reads the session of the window it stands in - the first window's, and one opened of a kind - so its
+    /// acts ask over that window.
+    func testAPageReadsTheWindowItStandsIn() async throws {
+        WindowsRead.sessions = []
+        start(WindowReadingApp())
+        let renders = Renders()
+        renders.render(tree())
+        try await application.openWindow(.fonts)
+        renders.render(tree(), changed: Renderer.shared.pendingChanges)
+
+        let windows = WindowsRead.sessions.map { (try? $0.address.window) ?? Name("none") }
+        XCTAssertTrue(windows.contains(Name(OwnKey.window(kind: nil, serial: 1))), "\(windows)")
+        XCTAssertTrue(windows.contains(Name(OwnKey.window(kind: "fonts", serial: 1))), "\(windows)")
+        XCTAssertFalse(windows.contains(Name("")), "no page reads the window the user is in: \(windows)")
     }
 
     /// A window's session is the same one for as long as the window is open, and goes with it.

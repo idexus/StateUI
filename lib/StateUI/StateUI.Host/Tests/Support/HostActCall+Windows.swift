@@ -5,10 +5,10 @@
 
 extension HostActCall {
     /// The address a window's act opens with where it names no window: the window the user is in.
-    static let usersWindow: [HostValue] = [.string(""), .string("")]
+    static let usersWindow: [HostValue] = [Name("").propValue, Name("").propValue]
 
     /// The address of window `key` of scene `scene`, as a window's act opens with it.
     static func window(_ key: String, of scene: String) -> [HostValue] {
-        [.string(scene), .string(key)]
+        [Name(scene).propValue, Name(key).propValue]
     }
 }
