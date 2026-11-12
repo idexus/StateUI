@@ -96,8 +96,9 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
         return (split.sidebarMaterial(over: controller.overlays), controller.overlays)
     }
 
-    /// The color a sidebar page stands on: its material's, else over the detail the system's background, never the
-    /// window's; nil beside the detail where the split view says nothing.
+    /// The color a sidebar page stands on: its material's - over the detail, the window's ground where the split view
+    /// says none (`sidebarMaterial(over:)`) - else over the detail the system's background; nil beside the detail
+    /// where the split view says nothing.
     private static func ground(of sidebar: (material: HostMaterial, over: Bool)) -> UIColor? {
         sidebar.material.painted.flatMap { HostBrush($0).firstColor }.flatMap(UIColor.init(stateUI:))
             ?? (sidebar.over ? .systemBackground : nil)

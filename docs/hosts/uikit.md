@@ -382,8 +382,9 @@ Each test and each conformance case says as it ends where the run stands, and
 the run ends with *Executed N tests, with M failures*. `STATEUI_FILTER` runs
 the tests whose name holds one of its comma-separated names;
 `STATEUI_UPDATE_EXPORTS=1` writes what the run says into `lib/StateUI/exports/` instead of
-holding it to them. The suite runs with the simulator's accessibility off, as
-a simulator starts.
+holding it to them. The suite runs with the simulator's accessibility on, as
+VoiceOver stands, so UIKit's accessibility answers for its controls as it does
+for a VoiceOver user, whatever ran before.
 
 `STATEUI_STALE_ONLY=1` runs only the conformance families whose verdicts in
 `lib/StateUI/exports/marks/uikit` stand at another revision than
