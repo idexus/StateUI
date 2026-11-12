@@ -10897,7 +10897,7 @@ enum Listings {
             }
         }
         """#,
-        "ShortcutSample": #"""
+        "ShortcutKeys": #"""
         // Sources/Samples/BasicInput/ShortcutSample.swift
         @State private var saved = 0
         @State private var last = "nothing yet"
@@ -10953,6 +10953,48 @@ enum Listings {
         private func pressed(_ name: String) {
             saved += 1
             last = name
+        }
+        """#,
+        "SidebarShortcut": #"""
+        // Sources/Samples/BasicInput/ShortcutSample.swift
+        @State private var open = false
+        @State private var showsSidebar = true
+        @State private var last = "nothing yet"
+
+        var body: some View {
+            VStack {
+                Text("Open the split view, hide its sidebar and press 3.")
+
+                Button("Open the split view")
+                    .onClicked { open = true }
+
+                Text("Last pressed: \(last)")
+            }
+            .sheet(isPresented: $open) {
+                SplitView {
+                    VStack {
+                        Button("The sidebar's 3")
+                            .keyboardShortcut("3", modifiers: [])
+                            .onClicked { last = "the sidebar's" }
+                    }
+                    .pageTitle("Sidebar")
+                } detail: {
+                    VStack {
+                        Button("The detail's 3")
+                            .keyboardShortcut("3", modifiers: [])
+                            .onClicked { last = "the detail's" }
+
+                        Switch("Sidebar", isOn: $showsSidebar)
+
+                        Text("Last pressed: \(last)")
+
+                        Button("Done")
+                            .onClicked { open = false }
+                    }
+                    .pageTitle("Detail")
+                }
+                .showsSidebar($showsSidebar)
+            }
         }
         """#,
         "SizingSample": #"""

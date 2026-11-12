@@ -119,7 +119,7 @@ SemanticsSample.swift cdaf65f079aebf0b
 ShapesSample.swift da1878eaf2de52e6
 ShareSample.swift 61060e30815dd8e7
 SheetsSample.swift 982b656861dea4a0
-ShortcutSample.swift affc5e18caa88ab1
+ShortcutSample.swift 4a136baa75f88f0e
 SizingSample.swift 505216705d5b9909
 SliderSample.swift e2b8f22f39c0543f
 SpinnerSample.swift aa8dfb307e3ef91f
