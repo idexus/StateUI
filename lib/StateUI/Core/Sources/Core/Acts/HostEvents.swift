@@ -27,6 +27,11 @@ public final class HostEventSubscription {
     public func cancel() {
         HostEvents.remove(event, id)
     }
+
+    /// Hears the raises to come with `handler`, through its gate; the runs under way go on.
+    func hand(_ handler: ValueHandler<[PropValue]>) {
+        HostEvents.replace(event, id, with: handler)
+    }
 }
 
 /// Events the host raises by NAME - the push half of the interop surface,
@@ -146,6 +151,12 @@ public enum HostEvents {
 
             try await handler(repeat each values)
         }, gate: gate)
+    }
+
+    /// Hands one subscription `handler`, its gate included, for the raises to come; its runs under way go on.
+    static func replace(_ event: Event, _ id: Int, with handler: ValueHandler<[PropValue]>) {
+        guard let place = subscriptions[event]?.firstIndex(where: { $0.id == id }) else { return }
+        subscriptions[event]?[place].handler = handler
     }
 
     /// Takes one subscription out - `HostEventSubscription.cancel`'s half.
