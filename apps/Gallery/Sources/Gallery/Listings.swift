@@ -6592,11 +6592,18 @@ enum Listings {
         """#,
         "LivingLayoutSample": #"""
         // Sources/Samples/Layout/LivingLayoutSample.swift
-        @State private var rows = ["Alpha", "Bravo", "Charlie"]
-        @State private var next = 4
+        // Each row is a number of its own, its identity; its name only says it.
+        @State private var rows = [0, 1, 2]
+        @State private var next = 3
         @State private var wide = false
 
-        static let names = ["Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India"]
+        static let names = ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India"]
+
+        /// The name row `number` shows: the names in turn, counted on once they come round.
+        static func name(of number: Int) -> String {
+            let round = number / names.count
+            return names[number % names.count] + (round == 0 ? "" : " \(round + 1)")
+        }
 
         var body: some View {
             // NOTHING HERE SAYS "ANIMATE". Where a child sits is worked out by the
@@ -6617,9 +6624,9 @@ enum Listings {
                     // left standing keep their controls.
                     DebugInfoLabel()
 
-                    ForEach(rows, id: \.self) { name in
+                    ForEach(rows, id: \.self) { number in
                         ZStack {
-                            Text(name)
+                            Text(Self.name(of: number))
                                 .verticalAlignment(.center)
                         }
                         .style(.card)
@@ -6630,7 +6637,7 @@ enum Listings {
 
                 HStack {
                     Button("Add").onClicked {
-                        rows.insert(Self.names[next % Self.names.count], at: 0)
+                        rows.insert(next, at: 0)
                         next += 1
                     }
 
