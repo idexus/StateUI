@@ -526,7 +526,9 @@ that target later than the motion at a unit a length, the run approaches it
 under the layout's motion over as much of the motion's length as the way left
 is of a unit: 0.4 left of 300 ms is 120 ms on the motion's curve, setting out
 on the curve's own slope, never slower than the motion; a spring's response is
-cut alike and sets out at the hand's speed toward the target. A throw that gets
+cut alike and sets out at the hand's speed toward the target. A way left that
+is past what a motion's length holds - parameters written far off the axis -
+takes the longest a motion holds, and one that is no number none. A throw that gets
 there sooner sets out at the hand's speed, as above. The two meet where they
 take the same time, so a quicker hand never lands later.
 

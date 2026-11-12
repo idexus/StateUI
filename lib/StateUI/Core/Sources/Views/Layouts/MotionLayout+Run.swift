@@ -761,9 +761,11 @@ extension MotionLayout {
         }
 
         /// The layout's `motion` for an approach `left` units long, a unit a length: eased, as long as the way left
-        /// takes; a spring, its response cut alike.
+        /// takes; a spring, its response cut alike - no longer than a motion's length holds, and none for a way that
+        /// is no number.
         static func approach(_ motion: Motion, over left: Double) -> Motion {
-            let length = Duration.milliseconds(Int((abs(left) * Double(motion.milliseconds)).rounded()))
+            let way = abs(left) * Double(motion.milliseconds)
+            let length = Duration.milliseconds(Int64(way.isFinite ? min(way, Double(UInt32.max)).rounded() : 0))
 
             switch motion.kind {
             case .eased(_, let curve): return .eased(length, curve: curve)
