@@ -2138,7 +2138,8 @@ enum Listings {
                     .onColorChanged { _ in changes += 1 }
 
                 // The swatch wears the same state: the color chosen reaches it
-                // with no render of this view.
+                // with no render of this view. The count below is what renders
+                // it, once for each change the user makes.
                 Rectangle()
                     .fill($tint)
                     .height(80)
@@ -2983,7 +2984,7 @@ enum Listings {
                     .rotation(20)
                     .onTapped { turned += 1 }
 
-                // Moved a card's width to the right: a tap where it stands counts, one where its frame lies does not.
+                // Moved 120 points to the right: a tap where it stands counts, one where its frame lies does not.
                 card("Tap the moved card")
                     .translationX(120)
                     .onTapped { moved += 1 }
@@ -4641,7 +4642,8 @@ enum Listings {
                     .onFrameChanged { slot = $0 }
                     .onFrameChanged(in: .global) { window = $0 }
                     .onFrameChanged(in: .safeArea) { safe = $0 }
-                    // Fed one way into a state, with no body reading it.
+                    // Fed one way into a state, with no handler; the text below
+                    // reads it, so a new size renders this view.
                     .frame(into: feedsSecond ? $second : $first)
                 }
 

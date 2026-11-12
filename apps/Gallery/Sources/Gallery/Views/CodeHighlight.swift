@@ -90,8 +90,9 @@ enum CodeHighlight {
             }
 
             // A string literal, quotes included. A backslash takes the next
-            // character with it, so `\"` does not end the string and neither
-            // does the `"` of an interpolation written `\("…")`.
+            // character with it, so `\"` does not end the string. A string
+            // inside an interpolation, `\("…")`, is not followed: its quotes
+            // end and begin literals, so its own words are drawn as code.
             if character == "\"" {
                 var end = index + 1
                 while end < characters.count, characters[end] != "\"" {

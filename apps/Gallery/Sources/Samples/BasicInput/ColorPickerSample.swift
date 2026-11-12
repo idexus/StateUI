@@ -22,7 +22,8 @@ struct ColorPickerSample: SampleContent, ExampleContent {
                 .onColorChanged { _ in changes += 1 }
 
             // The swatch wears the same state: the color chosen reaches it
-            // with no render of this view.
+            // with no render of this view. The count below is what renders
+            // it, once for each change the user makes.
             Rectangle()
                 .fill($tint)
                 .cornerRadius(12)

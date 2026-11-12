@@ -93,8 +93,9 @@ struct IconButtonSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("It is a button, not an `Image` with a tap recognizer on it: that gives no "
-                + "pressed state, no outline and no shape.")
+            Text("It is a button, not an `Image` that hears taps: a tapped image is pressed as a "
+                + "button is, lighting its `.pressed` state, but it has no button's look, outline "
+                + "or shape.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

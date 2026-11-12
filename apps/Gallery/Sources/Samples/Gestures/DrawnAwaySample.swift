@@ -28,7 +28,7 @@ struct DrawnAwaySample: SampleContent, ExampleContent {
                 .onTapped { turned += 1 }
                 .accessibilityIdentifier("drawnAway.turned")
 
-            // Moved a card's width to the right: a tap where it stands counts, one where its frame lies does not.
+            // Moved 120 points to the right: a tap where it stands counts, one where its frame lies does not.
             card("Tap the moved card")
                 .translationX(120)
                 .onTapped { moved += 1 }

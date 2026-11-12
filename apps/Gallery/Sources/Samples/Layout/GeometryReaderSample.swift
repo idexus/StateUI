@@ -62,7 +62,8 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
                 .onFrameChanged { slot = $0 }
                 .onFrameChanged(in: .global) { window = $0 }
                 .onFrameChanged(in: .safeArea) { safe = $0 }
-                // Fed one way into a state, with no body reading it.
+                // Fed one way into a state, with no handler; the text below
+                // reads it, so a new size renders this view.
                 .frame(into: feedsSecond ? $second : $first)
             }
             .spacing(8)

@@ -25,7 +25,7 @@ ChangingDeckSample.swift 7e97e11b83cd5f02
 CheckBoxSample.swift 59e11010b2651d72
 ChoosingItemsSample.swift 85105c1d71a4884c
 ClipboardSample.swift a210a3c26540a05e
-ColorPickerSample.swift 9ff08e2266d67783
+ColorPickerSample.swift e4dfd0184c4251ec
 ComplaintsSample.swift 12dd4def1812d374
 ConcurrentAnimationSample.swift d31f2c7fa3f1c01d
 ConcurrentStateSample.swift ea26ba1bc9d59073
@@ -38,7 +38,7 @@ DeviceDisplaySample.swift 9a655416aa476cd0
 DeviceInfoSample.swift 9c7798fed7a4e8e5
 DialogsSample.swift 120dcbe9842a0ce2
 DragAndDropSample.swift b3705c71085ccf60
-DrawnAwaySample.swift 7b9524abf7e874ab
+DrawnAwaySample.swift d7c269b2977887d8
 DrivenReadingSample.swift 6a61547b31769284
 DrivenSample.swift d4e2fe22ebd26b2d
 EngineAnimationSample.swift 5fac5333741ffd93
@@ -47,15 +47,15 @@ EnvironmentSample.swift cb3fd389ce8ef814
 FilesSample.swift 2a39c84d37c9d924
 FillSample.swift 0139e896092e6483
 FoundationProbeSample.swift fcf69f5bc9919555
-GalleryViewSample.swift f9029daa72606ce5
+GalleryViewSample.swift 67c5cb1392de5d14
 GateSample.swift c1d53f44dbcedcc1
-GeometryReaderSample.swift 0a55dba03144e5dc
+GeometryReaderSample.swift 766407c1e2e50a95
 GridSample.swift 9c95bd0181e0d392
 HTTPRequestSample.swift bf26141a6d52f7d9
 HoldSample.swift 3179a83bed36f2d7
 HomeScreenSample.swift f289960bc846bd6b
 HostTimeSample.swift 22a8291fdd7fe7a1
-IconButtonSample.swift 3becb5bca84feb1e
+IconButtonSample.swift a4ebe7201bac278c
 IconSample.swift b1a186070a9f38de
 IdentitySample.swift 1027b1b9006f8239
 ImageSample.swift 798ac3475ce4ff0a
