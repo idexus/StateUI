@@ -46,9 +46,15 @@ final class LoopbackServer: Sendable {
                 bind(listener, $0, length) == 0 && listen(listener, 8) == 0 && getsockname(listener, $0, &length) == 0
             }
         }
-        guard bound else { return nil }
+        guard bound else {
+            Self.shut(listener)
+            return nil
+        }
         address = "http://127.0.0.1:\(UInt16(bigEndian: place.sin_port))"
-        Self.start(on: listener, Self.accepting)
+        guard Self.start(on: listener, Self.accepting) else {
+            Self.shut(listener)
+            return nil
+        }
         #endif
     }
 
@@ -107,7 +113,7 @@ final class LoopbackServer: Sendable {
         while true {
             let connection = accept(listener, nil, nil)
             guard LoopbackServer.isOpen(connection) else { continue }
-            LoopbackServer.start(on: connection, LoopbackServer.answering)
+            if !LoopbackServer.start(on: connection, LoopbackServer.answering) { LoopbackServer.shut(connection) }
         }
     }
 
@@ -118,28 +124,41 @@ final class LoopbackServer: Sendable {
         LoopbackServer.shut(connection)
     }
 
-    /// Runs `work` on a thread of its own, handed `socket`.
-    private static func start(on socket: Socket, _ work: Work) {
+    /// Runs `work` on a thread of its own, handed `socket` - one nobody waits for, so what it took goes as it ends;
+    /// false where no thread started, `socket` left to the caller.
+    private static func start(on socket: Socket, _ work: Work) -> Bool {
         let held = UnsafeMutablePointer<(Socket, Work)>.allocate(capacity: 1)
         held.initialize(to: (socket, work))
         #if os(Windows)
-        _ = CreateThread(nil, 0, { argument in
+        let thread = CreateThread(nil, 0, { argument in
             let (socket, work) = LoopbackServer.handed(argument)
             work(LoopbackServer.argument(of: socket))
             return 0
         }, held, 0, nil)
+        if let thread { CloseHandle(thread) }
+        let started = thread != nil
         #else
         #if canImport(Darwin)
         var thread: pthread_t?
         #else
         var thread = pthread_t()
         #endif
-        pthread_create(&thread, nil, { argument in
+        let started = pthread_create(&thread, nil, { argument in
             let (socket, work) = LoopbackServer.handed(argument)
             work(LoopbackServer.argument(of: socket))
             return nil
-        }, held)
+        }, held) == 0
+        #if canImport(Darwin)
+        if started, let thread { pthread_detach(thread) }
+        #else
+        if started { pthread_detach(thread) }
         #endif
+        #endif
+        if !started {
+            held.deinitialize(count: 1)
+            held.deallocate()
+        }
+        return started
     }
 
     /// The socket and the work a thread was handed, let go of.
