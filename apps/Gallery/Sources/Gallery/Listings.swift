@@ -5725,7 +5725,9 @@ enum Listings {
 
             var body: some View {
                 VStack {
-                    let began = ContinuousClock.now
+                    // Read at the top of this closure, which makes it the reader: a press describes it again, every leaf
+                    // below included, and the clock is read afresh.
+                    let (shown, began) = (counter, ContinuousClock.now)
 
                     // The leaves in rows of 25: a stack wraps nothing, so the rows do.
                     ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
@@ -5740,11 +5742,14 @@ enum Listings {
                         }
                     }
 
+                    // Taken at the bottom of the same closure, once the leaves above stand.
+                    let spent = took(began, leaves)
+
                     HStack {
-                        Text("Counter \(counter)")
+                        Text("Counter \(shown)")
                             .fontWeight(.bold)
 
-                        Text(took(began, leaves))
+                        Text(spent)
                             .height(15)
 
                         DebugInfoLabel()   // climbs on every press
@@ -5778,11 +5783,14 @@ enum Listings {
                         }
                     }
 
+                    // Taken at the bottom of the same closure, once the leaves above stand.
+                    let spent = took(began, leaves)
+
                     HStack {
                         Text($counter.convert { "Counter \($0)" })
                             .fontWeight(.bold)
 
-                        Text(took(began, leaves))
+                        Text(spent)
                             .height(15)
 
                         DebugInfoLabel()   // stays at one on +1

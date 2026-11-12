@@ -117,6 +117,7 @@ private struct LayerCost: ExampleContent {
             HStack {
                 Button("+1")
                     .onClicked { counter += 1 }
+                    .accessibilityIdentifier("cost.add")
 
                 // A choice of more than two, so a button that cycles them.
                 Button("Views: \(leaves)")
@@ -177,7 +178,9 @@ private struct Described: View {
 
     var body: some View {
         VStack {
-            let began = ContinuousClock.now
+            // Read at the top of this closure, which makes it the reader: a press describes it again, every leaf
+            // below included, and the clock is read afresh.
+            let (shown, began) = (counter, ContinuousClock.now)
 
             // The leaves in rows of 25: a stack wraps nothing, so the rows do.
             ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
@@ -195,16 +198,20 @@ private struct Described: View {
                 .spacing(2)
             }
 
+            // Taken at the bottom of the same closure, once the leaves above stand.
+            let spent = took(began, leaves)
+
             HStack {
-                Text("Counter \(counter)")
+                Text("Counter \(shown)")
                     .fontSize(13)
                     .fontWeight(.bold)
                     .margin(horizontal: 6, vertical: 0)
 
-                Text(took(began, leaves))
+                Text(spent)
                     .fontSize(12)
                     .textColor(Palette.accent)
                     .height(15)
+                    .accessibilityIdentifier("cost.described")
 
                 DebugInfoLabel()   // climbs on every press
                     .height(15)
@@ -244,13 +251,16 @@ private struct Channelled: View {
                 .spacing(2)
             }
 
+            // Taken at the bottom of the same closure, once the leaves above stand.
+            let spent = took(began, leaves)
+
             HStack {
                 Text($counter.convert { "Counter \($0)" })
                     .fontSize(13)
                     .fontWeight(.bold)
                     .margin(horizontal: 6, vertical: 0)
 
-                Text(took(began, leaves))
+                Text(spent)
                     .fontSize(12)
                     .textColor(Palette.accent)
                     .height(15)
