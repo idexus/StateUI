@@ -32,7 +32,12 @@
                 s.expect(content.y + content.height <= bar.y + 0.5, true, "the content above the bar: \(content), \(bar)")
 
                 tall.wrappedValue = 100
-                try s.settle { try standsTall(s.place(of: s.element("bar")), 100) }
+                // The bar and the page both come to rest: a bar near its height may still be on its way.
+                try s.settle {
+                    let (grown, taller) = (try s.place(of: s.element("content")), try s.place(of: s.element("bar")))
+                    return standsTall(taller, 100) && grown.y + grown.height <= taller.y + 0.5
+                        && abs(content.height - grown.height - 60) < 1
+                }
                 let (grown, taller) = (try s.place(of: s.element("content")), try s.place(of: s.element("bar")))
                 s.expect(grown.y + grown.height <= taller.y + 0.5, true, "above it still: \(grown), \(taller)")
                 s.expect(abs(content.height - grown.height - 60) < 1, true,
