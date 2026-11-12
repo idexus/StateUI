@@ -306,10 +306,11 @@ program close the list: `isOpen` set to false leaves it to the user.
 ## A day and a time
 
 A date picker and a time picker are one field of the host's, showing the day
-or the time in the user's locale - "D" and "d" the long and short day, "T" and
-"t" the long and short time, "t" following the user's choice of a 24-hour
-clock, any other text a pattern - and opening the platform's own calendar or
-clock, within the bounds the tree gave. A day and a time stand by the host
+or the time in the user's locale as its format says - a day's `DateFormat`
+short, medium or long ("d", "M", "D"), a time's `TimeFormat` short or medium
+("t", "T"), the short time following the user's choice of a 24-hour clock -
+and opening the platform's own calendar or clock, within the bounds the tree
+gave. A day and a time stand by the host
 layer's rule (`CalendarArithmetic`): a day not in the calendar keeps the day
 shown, one past the bounds stands at the nearer, and a time is added up from
 midnight. The user's choice is written into the field and reported; the
