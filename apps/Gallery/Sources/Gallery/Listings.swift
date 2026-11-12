@@ -9044,6 +9044,9 @@ enum Listings {
         extension PersistentKey where Value == String {
             /// What the user is called.
             static let who = PersistentKey("dev.stateui.gallery.who")
+
+            /// A note of several lines, kept letter for letter.
+            static let note = PersistentKey("dev.stateui.gallery.note")
         }
 
         extension PersistentKey where Value == Shade {
@@ -9054,6 +9057,7 @@ enum Listings {
         @State(persistentKey: .visits) private var visits = 0
         @State(persistentKey: .who) private var who = ""
         @State(persistentKey: .shade) private var shade = Shade.quiet
+        @State(persistentKey: .note) private var note = ""
 
         var body: some View {
             VStack {
@@ -9086,6 +9090,16 @@ enum Listings {
                 Rectangle()
                     .fill(shade == .bold ? Palette.accent : Palette.well)
                     .height(48)
+
+                // Lines, an accent laid over its letter and a family joined into
+                // one picture come back as they were written.
+                TextEditor($note)
+                    .placeholder("A note of several lines")
+                    .height(88)
+
+                Button("Write lines with marks")
+                    .horizontalAlignment(.center)
+                    .onClicked { note = "Cafe\u{301} at noon,\nthe family 👨\u{200D}👩\u{200D}👧 too." }
             }
         }
         """#,

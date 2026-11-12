@@ -18,6 +18,9 @@ extension PersistentKey where Value == Int {
 extension PersistentKey where Value == String {
     /// What the user is called.
     static let who = PersistentKey("dev.stateui.gallery.who")
+
+    /// A note of several lines, kept letter for letter.
+    static let note = PersistentKey("dev.stateui.gallery.note")
 }
 
 extension PersistentKey where Value == Shade {
@@ -33,6 +36,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
     @State(persistentKey: .visits) private var visits = 0
     @State(persistentKey: .who) private var who = ""
     @State(persistentKey: .shade) private var shade = Shade.quiet
+    @State(persistentKey: .note) private var note = ""
     // listing: end
 
     static let id = "persistent-state"
@@ -43,8 +47,9 @@ struct PersistentStateSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Close the app completely and open it again: the count and the name "
-                + "are where you left them.")
+            Text("Close the app completely and open it again: the count, the name and "
+                + "the note are where you left them - the note's lines, its accent laid "
+                + "over a letter and its family of three joined into one picture as well.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -107,6 +112,18 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                 .fill(shade == .bold ? Palette.accent : Palette.well)
                 .height(48)
                 .cornerRadius(8)
+
+            // Lines, an accent laid over its letter and a family joined into
+            // one picture come back as they were written.
+            TextEditor($note)
+                .accessibilityIdentifier("persistent-state.note")
+                .accessibilityLabel("A note")
+                .placeholder("A note of several lines")
+                .height(88)
+
+            Button("Write lines with marks")
+                .horizontalAlignment(.center)
+                .onClicked { note = "Cafe\u{301} at noon,\nthe family 👨\u{200D}👩\u{200D}👧 too." }
         }
         .spacing(14)
     }
