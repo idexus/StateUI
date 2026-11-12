@@ -1,4 +1,4 @@
-# revision 30.3
+# revision 30.4
 Button.frame: ✅
 Button.rotationY: ✓ read rotationY of Button: the host's own tip, checked against the projection it laid on the element
 Canvas.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.

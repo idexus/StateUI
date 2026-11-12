@@ -1,7 +1,7 @@
-# revision 9.1
+# revision 9.2
 SplitView: ✅
 SplitView.showsSidebar: ✅
-SplitView.showsSidebarChanged: ✅
+SplitView.showsSidebarChanged: ✓ toggle on SplitView: the title bar's sidebar toggle chosen as the relay reports it, no button pressed
 SplitView.showsSidebarToggle: ✅
 SplitView.sidebarBackground: ☑️ WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness.
 SplitView.sidebarOverlayBackground: ☑️ WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness.

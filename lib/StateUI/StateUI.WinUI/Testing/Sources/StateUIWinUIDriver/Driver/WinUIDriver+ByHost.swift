@@ -20,10 +20,20 @@ extension WinUIDriver {
         case "dropFiles": return "the relay's drop report told the driver's files, no drag WinUI began"
         case "sweep": return "the relay's report of the hand handed to the host with its speed, no pointer sent"
         case "pinch", "rotate": return "the relay's report of the manipulation handed to the host, no touch sent"
-        case "pressDown" where Ability(ability).element == "MotionLayout",
-             "drag" where Ability(ability).element == "MotionLayout",
-             "lift" where Ability(ability).element == "MotionLayout":
-            return "the relay's report of the press over the layout handed to the host, no pointer sent"
+        case "pressDown", "drag", "lift": return "the relay's report of the press handed to the host, no pointer sent"
+        case "hover", "leave": return "the relay's report of the pointer handed to the host, no pointer sent"
+        case "tap": return "the relay's report of the tap handed to the host, no pointer sent"
+        case "hold": return "the relay's report of the hold handed to the host, no pointer sent"
+        case "pan": return "the relay's report of the press dragged handed to the host, no pointer sent"
+        case "goBack": return "the title bar's way back chosen as the relay reports it, no button pressed"
+        case "toggle" where Ability(ability).element == "SplitView":
+            return "the title bar's sidebar toggle chosen as the relay reports it, no button pressed"
+        case "close" where Ability(ability).element == "Page":
+            return "the sheet's close chosen as the relay reports it, no button pressed"
+        case "activate" where ["ToolbarButton", "ToolbarToggle"].contains(Ability(ability).element):
+            return "the bar's action chosen as the relay reports it, no button pressed"
+        case "minimize", "restore", "switchAway", "switchBack":
+            return "the relay's report of the window's state handed to the host, no window activated"
         default: break
         }
         if ability == "read role of Button" {

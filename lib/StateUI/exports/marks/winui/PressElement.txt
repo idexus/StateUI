@@ -1,6 +1,6 @@
-# revision 1.1
-Button.pressed: ✅
-Button.released: ✅
+# revision 1.2
+Button.pressed: ✓ pressDown on Button: the relay's report of the press handed to the host, no pointer sent
+Button.released: ✓ pressDown on Button: the relay's report of the press handed to the host, no pointer sent
 Slider.pressed: not realized
 Slider.released: not realized
 ToolbarButton.pressed: – The title bar's commands stand in WinUI's own look.

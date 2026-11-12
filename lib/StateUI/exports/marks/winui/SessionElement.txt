@@ -1,7 +1,7 @@
-# revision 1.1
+# revision 1.2
 Scene.activated: ✅
 Scene.deactivated: ✅
 Scene.stopped: ✅
-Window.activated: ✅
-Window.deactivated: ✅
-Window.stopped: ✅
+Window.activated: ✓ switchAway on Window: the relay's report of the window's state handed to the host, no window activated
+Window.deactivated: ✓ switchAway on Window: the relay's report of the window's state handed to the host, no window activated
+Window.stopped: ✓ minimize on Window: the relay's report of the window's state handed to the host, no window activated

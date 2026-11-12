@@ -1,4 +1,4 @@
-# revision 30.3
+# revision 30.4
 Button.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Button.translationY: ✅
 Canvas.accessibilityPresence: ✅

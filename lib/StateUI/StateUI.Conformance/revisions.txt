@@ -64,7 +64,7 @@ Text 5
 TextColorElement 4
 TintElement 3
 ContextMenu 4
-winui VisualElement 3
+winui VisualElement 4
 winui Layout 2
 gtk Layout 2
 TextField 6
@@ -116,3 +116,29 @@ PresentedElement 2
 Anchor 2
 CorneredShape 2
 winui TextEditor 2
+winui Map 2
+winui MotionLayout 2
+winui Anchor 2
+winui NavigationStack 2
+winui Page 2
+winui Scene 2
+winui SplitView 2
+winui ToolbarButton 2
+winui ToolbarGroup 2
+winui ToolbarToggle 2
+winui Window 2
+winui ButtonMenuElement 2
+winui PopupElement 2
+winui PresentedElement 2
+winui PressElement 2
+winui SessionElement 2
+winui TextAndIconElement 2
+winui ToggleElement 2
+winui View 2
+winui BackgroundElement 2
+winui EnabledElement 2
+winui HoverElement 2
+winui IconElement 2
+winui ShortcutElement 2
+winui StyledElement 2
+winui TextElement 2

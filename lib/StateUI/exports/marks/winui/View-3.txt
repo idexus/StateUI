@@ -1,4 +1,4 @@
-# revision 26.1
+# revision 26.2
 Button.dragEnded: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragStarting: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragText: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
@@ -12,20 +12,20 @@ Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the relay's drop report told
 Capsule.filesDropped: ✓ dropFiles on Capsule: the relay's drop report told the driver's files, no drag WinUI began
 Capsule.frameChanged: ✅
 Capsule.horizontalAlignment: ✅
-Capsule.panTouchCount: ✅
-Capsule.panUpdated: ✅
-Capsule.panXChannel: ✅
+Capsule.panTouchCount: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
+Capsule.panUpdated: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
+Capsule.panXChannel: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
 Capsule.verticalAlignment: ✅
-CheckBox.pointerMoved: ✅
-CheckBox.pointerPressed: ✅
-CheckBox.pointerReleased: ✅
-CheckBox.tapped: ✅
+CheckBox.pointerMoved: ✓ hover on CheckBox: the relay's report of the pointer handed to the host, no pointer sent
+CheckBox.pointerPressed: ✓ hover on CheckBox: the relay's report of the pointer handed to the host, no pointer sent
+CheckBox.pointerReleased: ✓ hover on CheckBox: the relay's report of the pointer handed to the host, no pointer sent
+CheckBox.tapped: ✓ pressDown on CheckBox: the relay's report of the press handed to the host, no pointer sent
 ColorPicker.frameChanged: ✅
 ColorPicker.gridColumn: ✅
 ColorPicker.gridRow: ✅
-ColorPicker.swipeDirections: ✅
-ColorPicker.swipeThreshold: ✅
-ColorPicker.swiped: ✅
+ColorPicker.swipeDirections: ✓ pan on ColorPicker: the relay's report of the press dragged handed to the host, no pointer sent
+ColorPicker.swipeThreshold: ✓ pan on ColorPicker: the relay's report of the press dragged handed to the host, no pointer sent
+ColorPicker.swiped: ✓ pan on ColorPicker: the relay's report of the press dragged handed to the host, no pointer sent
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 DatePicker.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 DatePicker.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -34,12 +34,12 @@ DatePicker.frameChanged: ✅
 DatePicker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 DatePicker.margin: ✅
 Ellipse.rotationUpdated: ✓ rotate on Ellipse: the relay's report of the manipulation handed to the host, no touch sent
-Ellipse.tapCount: ✅
-Ellipse.tapped: ✅
+Ellipse.tapCount: ✓ tap on Ellipse: the relay's report of the tap handed to the host, no pointer sent
+Ellipse.tapped: ✓ tap on Ellipse: the relay's report of the tap handed to the host, no pointer sent
 Fill.area: ✅
 Fill.frameChanged: ✅
 Fill.layoutBody: ✅
-Fill.panYChannel: ✅
+Fill.panYChannel: ✓ pan on Fill: the relay's report of the press dragged handed to the host, no pointer sent
 Grid.dragEnded: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragStarting: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragText: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
@@ -53,21 +53,21 @@ Image.droppedFileTypes: ✓ dropFiles on Image: the relay's drop report told the
 Image.filesDropped: ✓ dropFiles on Image: the relay's drop report told the driver's files, no drag WinUI began
 Image.frameChanged: ✅
 Image.horizontalAlignment: ✅
-Image.panTouchCount: ✅
-Image.panUpdated: ✅
-Image.panXChannel: ✅
+Image.panTouchCount: ✓ pan on Image: the relay's report of the press dragged handed to the host, no pointer sent
+Image.panUpdated: ✓ pan on Image: the relay's report of the press dragged handed to the host, no pointer sent
+Image.panXChannel: ✓ pan on Image: the relay's report of the press dragged handed to the host, no pointer sent
 Image.verticalAlignment: ✅
-ItemsView.pointerMoved: ✅
-ItemsView.pointerPressed: ✅
-ItemsView.pointerReleased: ✅
-ItemsView.tapped: ✅
+ItemsView.pointerMoved: ✓ hover on ItemsView: the relay's report of the pointer handed to the host, no pointer sent
+ItemsView.pointerPressed: ✓ hover on ItemsView: the relay's report of the pointer handed to the host, no pointer sent
+ItemsView.pointerReleased: ✓ hover on ItemsView: the relay's report of the pointer handed to the host, no pointer sent
+ItemsView.tapped: ✓ pressDown on ItemsView: the relay's report of the press handed to the host, no pointer sent
 Line.rotationUpdated: ✓ rotate on Line: the relay's report of the manipulation handed to the host, no touch sent
-Line.tapCount: ✅
-Line.tapped: ✅
+Line.tapCount: ✓ tap on Line: the relay's report of the tap handed to the host, no pointer sent
+Line.tapped: ✓ tap on Line: the relay's report of the tap handed to the host, no pointer sent
 Link.area: ✅
 Link.frameChanged: ✅
 Link.layoutBody: ✅
-Link.panYChannel: ✅
+Link.panYChannel: ✓ pan on Link: the relay's report of the press dragged handed to the host, no pointer sent
 Map.dragEnded: 🧩
 Map.dragStarting: 🧩
 Map.dragText: 🧩
@@ -84,20 +84,20 @@ Path.droppedFileTypes: ✓ dropFiles on Path: the relay's drop report told the d
 Path.filesDropped: ✓ dropFiles on Path: the relay's drop report told the driver's files, no drag WinUI began
 Path.frameChanged: ✅
 Path.horizontalAlignment: ✅
-Path.panTouchCount: ✅
-Path.panUpdated: ✅
-Path.panXChannel: ✅
+Path.panTouchCount: ✓ pan on Path: the relay's report of the press dragged handed to the host, no pointer sent
+Path.panUpdated: ✓ pan on Path: the relay's report of the press dragged handed to the host, no pointer sent
+Path.panXChannel: ✓ pan on Path: the relay's report of the press dragged handed to the host, no pointer sent
 Path.verticalAlignment: ✅
-Picker.pointerMoved: ✅
-Picker.pointerPressed: ✅
-Picker.pointerReleased: ✅
-Picker.tapped: ✅
+Picker.pointerMoved: ✓ hover on Picker: the relay's report of the pointer handed to the host, no pointer sent
+Picker.pointerPressed: ✓ hover on Picker: the relay's report of the pointer handed to the host, no pointer sent
+Picker.pointerReleased: ✓ hover on Picker: the relay's report of the pointer handed to the host, no pointer sent
+Picker.tapped: ✓ pressDown on Picker: the relay's report of the press handed to the host, no pointer sent
 Polygon.frameChanged: ✅
 Polygon.gridColumn: ✅
 Polygon.gridRow: ✅
-Polygon.swipeDirections: ✅
-Polygon.swipeThreshold: ✅
-Polygon.swiped: ✅
+Polygon.swipeDirections: ✓ pan on Polygon: the relay's report of the press dragged handed to the host, no pointer sent
+Polygon.swipeThreshold: ✓ pan on Polygon: the relay's report of the press dragged handed to the host, no pointer sent
+Polygon.swiped: ✓ pan on Polygon: the relay's report of the press dragged handed to the host, no pointer sent
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Polyline.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Polyline.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -106,12 +106,12 @@ Polyline.frameChanged: ✅
 Polyline.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Polyline.margin: ✅
 ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the relay's report of the manipulation handed to the host, no touch sent
-ProgressBar.tapCount: ✅
-ProgressBar.tapped: ✅
+ProgressBar.tapCount: ✓ tap on ProgressBar: the relay's report of the tap handed to the host, no pointer sent
+ProgressBar.tapped: ✓ tap on ProgressBar: the relay's report of the tap handed to the host, no pointer sent
 Rectangle.area: ✅
 Rectangle.frameChanged: ✅
 Rectangle.layoutBody: ✅
-Rectangle.panYChannel: ✅
+Rectangle.panYChannel: ✓ pan on Rectangle: the relay's report of the press dragged handed to the host, no pointer sent
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.dragStarting: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.dragText: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
@@ -129,24 +129,24 @@ Slider.droppedFileTypes: ✓ dropFiles on Slider: the relay's drop report told t
 Slider.filesDropped: ✓ dropFiles on Slider: the relay's drop report told the driver's files, no drag WinUI began
 Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
-Slider.panTouchCount: ✅
-Slider.panUpdated: ✅
-Slider.panXChannel: ✅
+Slider.panTouchCount: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent
+Slider.panUpdated: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent
+Slider.panXChannel: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent
 Slider.verticalAlignment: ✅
-Space.pointerMoved: ✅
-Space.pointerPressed: ✅
-Space.pointerReleased: ✅
-Space.tapped: ✅
+Space.pointerMoved: ✓ hover on Space: the relay's report of the pointer handed to the host, no pointer sent
+Space.pointerPressed: ✓ hover on Space: the relay's report of the pointer handed to the host, no pointer sent
+Space.pointerReleased: ✓ hover on Space: the relay's report of the pointer handed to the host, no pointer sent
+Space.tapped: ✓ pressDown on Space: the relay's report of the press handed to the host, no pointer sent
 Spinner.area: ✅
 Spinner.frameChanged: ✅
 Spinner.layoutBody: ✅
-Spinner.panYChannel: ✅
+Spinner.panYChannel: ✓ pan on Spinner: the relay's report of the press dragged handed to the host, no pointer sent
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅
-Stepper.swipeDirections: ✅
-Stepper.swipeThreshold: ✅
-Stepper.swiped: ✅
+Stepper.swipeDirections: ✓ pan on Stepper: the relay's report of the press dragged handed to the host, no pointer sent
+Stepper.swipeThreshold: ✓ pan on Stepper: the relay's report of the press dragged handed to the host, no pointer sent
+Stepper.swiped: ✓ pan on Stepper: the relay's report of the press dragged handed to the host, no pointer sent
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Switch.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Switch.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -157,17 +157,17 @@ Switch.margin: ✅
 Text.frameChanged: ✅
 Text.gridColumn: ✅
 Text.gridRow: ✅
-Text.swipeDirections: ✅
-Text.swipeThreshold: ✅
-Text.swiped: ✅
+Text.swipeDirections: ✓ pan on Text: the relay's report of the press dragged handed to the host, no pointer sent
+Text.swipeThreshold: ✓ pan on Text: the relay's report of the press dragged handed to the host, no pointer sent
+Text.swiped: ✓ pan on Text: the relay's report of the press dragged handed to the host, no pointer sent
 Text.verticalAlignment: ✅
 TextEditor.rotationUpdated: ✓ rotate on TextEditor: the relay's report of the manipulation handed to the host, no touch sent
-TextEditor.tapCount: ✅
-TextEditor.tapped: ✅
+TextEditor.tapCount: ✓ tap on TextEditor: the relay's report of the tap handed to the host, no pointer sent
+TextEditor.tapped: ✓ tap on TextEditor: the relay's report of the tap handed to the host, no pointer sent
 TextField.area: ✅
 TextField.frameChanged: ✅
 TextField.layoutBody: ✅
-TextField.panYChannel: ✅
+TextField.panYChannel: ✓ pan on TextField: the relay's report of the press dragged handed to the host, no pointer sent
 TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.dragStarting: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.dragText: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
@@ -185,7 +185,7 @@ WebView.panTouchCount: – WebView2 gives the user's hand to its page: listened 
 WebView.panUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.panXChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.verticalAlignment: ✅
-ZStack.pointerMoved: ✅
-ZStack.pointerPressed: ✅
-ZStack.pointerReleased: ✅
-ZStack.tapped: ✅
+ZStack.pointerMoved: ✓ hover on ZStack: the relay's report of the pointer handed to the host, no pointer sent
+ZStack.pointerPressed: ✓ hover on ZStack: the relay's report of the pointer handed to the host, no pointer sent
+ZStack.pointerReleased: ✓ hover on ZStack: the relay's report of the pointer handed to the host, no pointer sent
+ZStack.tapped: ✓ pressDown on ZStack: the relay's report of the press handed to the host, no pointer sent
