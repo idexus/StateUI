@@ -120,6 +120,7 @@ enum TestJava {
     static let getClipChildren = Java.method(JavaAPI.viewGroup, "getClipChildren", "()Z")
     static let getClipToPadding = Java.method(JavaAPI.viewGroup, "getClipToPadding", "()Z")
     static let getTextSize = Java.method(JavaAPI.textView, "getTextSize", "()F")
+    static let getCurrentTextColor = Java.method(JavaAPI.textView, "getCurrentTextColor", "()I")
     static let onEditorAction = Java.method(JavaAPI.textView, "onEditorAction", "(I)V")
     static let getImeOptions = Java.method(JavaAPI.textView, "getImeOptions", "()I")
     static let getInputType = Java.method(JavaAPI.textView, "getInputType", "()I")
