@@ -31,6 +31,77 @@ final class DocumentLinksTests: XCTestCase {
         XCTAssertEqual(broken, [], "a link names nothing")
     }
 
+    /// Each link to a place in a Markdown document - `page.md#heading`, or `#heading` within its own page - finds
+    /// it: a heading by the anchor GitHub gives it, or an anchor the page names; a place broken on purpose is found
+    /// missing.
+    func testEveryLinkToAPlaceInADocumentFindsIt() throws {
+        let control = Self.missingPlaces(in: ["a.md": "# Title\n## The `look` - again\n[here](#title) [gone](#nope)"
+            + " [there](#the-look---again)"])
+        XCTAssertEqual(control, ["a.md: #nope"], "the check finds a place broken on purpose, and only it")
+
+        let root = SourceTree.repository
+        let documents = try SourceTree.files(under: root, entering: { relative in
+            SourceTree.entersSources(relative)
+                && !["node_modules", "exports", "artifacts"].contains(relative.split(separator: "/").last.map(String.init) ?? "")
+        }).filter { $0.hasSuffix(".md") }
+        var texts: [String: String] = [:]
+        for document in documents {
+            texts[document] = try String(contentsOf: root.appendingPathComponent(document), encoding: .utf8)
+        }
+        let placed = texts.values.flatMap(Self.links).filter { $0.contains("#") }.count
+        XCTAssertGreaterThan(placed, 50, "the walk read almost no link to a place")
+        XCTAssertEqual(Self.missingPlaces(in: texts), [], "a link names a place its page does not have")
+    }
+
+    /// The links in `documents`, by their paths from the repository's root, that name a place a Markdown page they
+    /// lead to does not have.
+    static func missingPlaces(in documents: [String: String]) -> [String] {
+        var missing: [String] = []
+        for (document, text) in documents.sorted(by: { $0.key < $1.key }) {
+            for target in links(in: text) {
+                guard let hash = target.firstIndex(of: "#") else { continue }
+                let (path, place) = (String(target[..<hash]), String(target[target.index(after: hash)...]))
+                guard path.isEmpty || path.hasSuffix(".md"), !place.isEmpty else { continue }
+                let page = path.isEmpty
+                    ? document
+                    : URL(fileURLWithPath: "/" + document).deletingLastPathComponent()
+                        .appendingPathComponent(path.removingPercentEncoding ?? path).standardizedFileURL.path.dropFirst()
+                        .description
+                guard let held = documents[page] else { continue }
+                if !anchors(in: held).contains(place.removingPercentEncoding ?? place) {
+                    missing.append("\(document): \(target)")
+                }
+            }
+        }
+        return missing
+    }
+
+    /// The anchors a page offers: GitHub's for its headings outside code blocks - lowercase, punctuation dropped,
+    /// each space a hyphen, a repeated one numbered from 1 - and those it names itself (`id="…"`, `name="…"`).
+    static func anchors(in text: String) -> Set<String> {
+        var found: Set<String> = []
+        var counts: [String: Int] = [:]
+        var fenced = false
+        for line in text.split(separator: "\n", omittingEmptySubsequences: false) {
+            if line.trimmingCharacters(in: .whitespaces).hasPrefix("```") {
+                fenced.toggle()
+                continue
+            }
+            guard !fenced else { continue }
+            found.formUnion(matches(of: #"(?:id|name)="([^"]+)""#, in: String(line)))
+            guard line.hasPrefix("#") else { continue }
+            let heading = line.drop { $0 == "#" }.trimmingCharacters(in: .whitespaces).lowercased()
+            let slug = String(heading.compactMap { character -> Character? in
+                if character == " " { return "-" }
+                return character.isLetter || character.isNumber || character == "-" || character == "_" ? character : nil
+            })
+            let seen = counts[slug, default: 0]
+            counts[slug] = seen + 1
+            found.insert(seen == 0 ? slug : "\(slug)-\(seen)")
+        }
+        return found
+    }
+
     /// The relative targets of a document's links - inline and by reference - outside its code blocks.
     static func links(in text: String) -> [String] {
         var targets: [String] = []
