@@ -64,6 +64,36 @@
         return (words[..<selected.startIndex].unicodeScalars.count, selected.unicodeScalars.count)
     }
 
+    /// A selection a toolkit tells in UTF-16 units, from `start` and `length` long, in the characters of `words`: an
+    /// end inside a character takes it - the start from its beginning, the end past it - and a caret stays one.
+    public static func characterSelection(utf16Start start: Int, length: Int, in words: String) -> (start: Int, length: Int) {
+        characters(from: start, length: length, in: words) { $0.utf16.count }
+    }
+
+    /// A selection a toolkit tells in Unicode scalars, from `start` and `length` long, in the characters of
+    /// `words`: an end inside a character takes it - the start from its beginning, the end past it - and a caret
+    /// stays one.
+    public static func characterSelection(scalarStart start: Int, length: Int, in words: String) -> (start: Int, length: Int) {
+        characters(from: start, length: length, in: words) { $0.unicodeScalars.count }
+    }
+
+    /// The characters a selection of `units` covers: the first is the one the start falls in, the last past the one
+    /// the end falls in.
+    private static func characters(
+        from start: Int, length: Int, in words: String, units: (Character) -> Int
+    ) -> (start: Int, length: Int) {
+        let end = length > 0 ? start + length : start
+        var (offset, place, first, last) = (0, 0, Int?.none, 0)
+        for character in words {
+            let next = offset + units(character)
+            if first == nil, next > start { first = place }
+            if offset < end { last = place + 1 }
+            (offset, place) = (next, place + 1)
+        }
+        let from = first ?? place
+        return (from, length > 0 ? max(0, last - from) : 0)
+    }
+
     /// The `length` characters from the `start`th: each end kept within `words` before any arithmetic, as a number
     /// a program hands may be any.
     private static func selected(start: Int, length: Int, in words: String) -> Substring {

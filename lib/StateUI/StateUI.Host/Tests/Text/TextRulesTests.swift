@@ -301,6 +301,27 @@ final class TextRulesTests: XCTestCase {
         XCTAssertTrue(InputWords.scalarSelection(start: -2, length: 0, in: words) == (0, 0))
     }
 
+    /// A selection a toolkit tells in its own units reads back in characters: every selection in characters comes
+    /// back as it went, and an end falling inside a character takes that character - the start from its beginning,
+    /// the end past it; a caret stays a caret.
+    func testASelectionInAToolkitsUnitsReadsBackInCharacters() {
+        let words = "👩🏽‍💻ab👩🏽‍💻e\u{301}g"
+        let count = words.count
+        for start in 0...count {
+            for length in 0...(count - start) {
+                let utf16 = InputWords.utf16Selection(start: start, length: length, in: words)
+                let scalars = InputWords.scalarSelection(start: start, length: length, in: words)
+                XCTAssertTrue(InputWords.characterSelection(utf16Start: utf16.start, length: utf16.length, in: words)
+                    == (start, length), "\(start) \(length) in UTF-16")
+                XCTAssertTrue(InputWords.characterSelection(scalarStart: scalars.start, length: scalars.length, in: words)
+                    == (start, length), "\(start) \(length) in scalars")
+            }
+        }
+        XCTAssertTrue(InputWords.characterSelection(scalarStart: 2, length: 0, in: words) == (0, 0), "inside the emoji")
+        XCTAssertTrue(InputWords.characterSelection(scalarStart: 2, length: 3, in: words) == (0, 2), "into the a")
+        XCTAssertTrue(InputWords.characterSelection(utf16Start: 99, length: 5, in: words) == (count, 0), "past the end")
+    }
+
     /// Each end of a selection is kept within the words before any arithmetic: a start or a length as large as a
     /// number gets - a program's, never a user's - selects nothing at the end, in either unit.
     func testASelectionsEndsAreKeptWithinTheWordsBeforeAnyArithmetic() {

@@ -381,8 +381,11 @@ extension WinUIDriver {
         case "isTextPredictionEnabled": return (facts[2] != 0).propValue
         case "inputPurpose":
             return WinUIInputScope(rawValue: Int32(try read(view, "scope")) ?? 0).map(Self.purpose)?.propValue
-        case "cursorPosition": return Int(facts[5]).propValue
-        case "selectionLength": return Int(facts[6]).propValue
+        // WinUI counts in UTF-16 units; the characters they cover are read back.
+        case "cursorPosition", "selectionLength":
+            let words = (view as? WinUITextInputView)?.text ?? ""
+            let selection = InputWords.characterSelection(utf16Start: Int(facts[5]), length: Int(facts[6]), in: words)
+            return (name == "cursorPosition" ? selection.start : selection.length).propValue
         default: return nil
         }
     }

@@ -170,12 +170,11 @@ final class WebTextInputView: WebDOMView, WebWordsView {
         style("text-align", alignment == .center ? "center" : alignment == .end ? "end" : nil)
     }
 
-    /// Puts the caret `start` characters in and selects `length` from it.
+    /// Puts the caret `start` characters in and selects `length` from it, in the UTF-16 units the browser counts
+    /// (`InputWords.utf16Selection`).
     func select(start: Int, length: Int) {
-        let words = WebRelay.value(of: node)
-        let from = words.prefix(max(0, start))
-        let selected = words.dropFirst(from.count).prefix(max(0, length))
-        WebRelay.select(node, from: from.utf16.count, length: selected.utf16.count)
+        let units = InputWords.utf16Selection(start: start, length: length, in: WebRelay.value(of: node))
+        WebRelay.select(node, from: units.start, length: units.length)
     }
 
     /// Whether an editor grows with its words.

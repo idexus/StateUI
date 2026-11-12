@@ -396,8 +396,15 @@ extension WebDriver {
         case .placeholder: return .some(try WebBrowser.evaluate("e.placeholder || null", on: e)?.propValue)
         case .isReadOnly: return try WebBrowser.truth("e.readOnly", on: e).propValue
         case .isPassword: return try WebBrowser.truth("e.type === 'password'", on: e).propValue
-        case .cursorPosition: return try WebBrowser.number("e.selectionEnd", on: e).map { Int($0).propValue }
-        case .selectionLength: return try WebBrowser.number("e.selectionEnd - e.selectionStart", on: e).map { Int($0).propValue }
+        // The browser counts in UTF-16 units; the characters they cover are read back.
+        case .cursorPosition, .selectionLength:
+            guard let start = try WebBrowser.number("e.selectionStart", on: e),
+                  let end = try WebBrowser.number("e.selectionEnd", on: e),
+                  let words = try WebBrowser.evaluate("e.value", on: e)
+            else { return nil }
+            let caret = InputWords.characterSelection(utf16Start: Int(end), length: 0, in: words).start
+            let selection = InputWords.characterSelection(utf16Start: Int(start), length: Int(end - start), in: words)
+            return (property == .cursorPosition ? caret : selection.length).propValue
         case .isSpellCheckEnabled: return try WebBrowser.truth("e.spellcheck", on: e).propValue
         case .isTextPredictionEnabled: return try WebBrowser.truth("e.autocomplete !== 'off'", on: e).propValue
         case .submitLabel:

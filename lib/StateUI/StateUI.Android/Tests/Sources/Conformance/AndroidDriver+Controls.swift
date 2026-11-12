@@ -64,10 +64,12 @@ extension AndroidDriver {
         case .placeholder where view is AndroidTextFieldView: return read("hint")?.propValue
         case .placeholderColor where view is AndroidTextFieldView:
             return number("hintColor").map { color(UInt32(bitPattern: Int32(truncatingIfNeeded: Int($0)))).propValue }
-        case .cursorPosition where view is AndroidTextFieldView: return number("selectionStart").map { Int($0).propValue }
-        case .selectionLength where view is AndroidTextFieldView:
-            guard let start = number("selectionStart"), let end = number("selectionEnd") else { return nil }
-            return Int(end - start).propValue
+        // Android counts in UTF-16 units; the characters they cover are read back (`InputWords.characterSelection`).
+        case .cursorPosition where view is AndroidTextFieldView, .selectionLength where view is AndroidTextFieldView:
+            guard let start = number("selectionStart"), let end = number("selectionEnd"), let words = read("words")
+            else { return nil }
+            let selection = InputWords.characterSelection(utf16Start: Int(start), length: Int(end - start), in: words)
+            return (property == .cursorPosition ? selection.start : selection.length).propValue
         case .isPassword where view is AndroidTextFieldView:
             return number("inputType").map { (Int($0) & 0x80 != 0).propValue }
         case .inputPurpose where view is AndroidTextFieldView:

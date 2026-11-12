@@ -47,16 +47,12 @@ extension UIKitTextInputView {
         selectedTextRange = textRange(from: from, to: to)
     }
 
-    /// How many characters stand before the caret, and how many it selects.
+    /// How many characters stand before the caret, and how many it selects (`InputWords.characterSelection`).
     var selection: (start: Int, length: Int) {
         guard let range = selectedTextRange else { return (0, 0) }
-        let units = Array(words.utf16)
         let start = offset(from: beginningOfDocument, to: range.start)
         let end = offset(from: beginningOfDocument, to: range.end)
-        func characters(_ count: Int) -> Int {
-            String(decoding: units.prefix(max(0, count)), as: UTF16.self).count
-        }
-        return (characters(start), characters(end) - characters(start))
+        return InputWords.characterSelection(utf16Start: start, length: end - start, in: words)
     }
 
     /// A line's start and end as the view's own direction says them.

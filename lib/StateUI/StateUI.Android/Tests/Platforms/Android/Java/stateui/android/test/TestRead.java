@@ -58,6 +58,7 @@ public final class TestRead {
             case "hintColor": return String.valueOf(view.getCurrentHintTextColor());
             case "selectionStart": return String.valueOf(view.getSelectionStart());
             case "selectionEnd": return String.valueOf(view.getSelectionEnd());
+            case "words": return String.valueOf(view.getText());
             case "inputType": return String.valueOf(view.getInputType());
             default: return null;
         }
