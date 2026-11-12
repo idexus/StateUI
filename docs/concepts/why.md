@@ -224,8 +224,8 @@ every host's suite proves it through the same conformance cases.
 
 ## Navigation and presentation are state
 
-A navigation stack shows its path, an array of values; a modal page is an
-element of an array; the tab shown is a state
+A navigation stack shows its path, an array of values; a modal page stands
+while a `Bool` says so or an optional holds its item; the tab shown is a state
 ([Navigation and presentation](../interface/navigation-and-presentation.md)).
 Going somewhere is writing a state, and the user's own way back writes it too.
 

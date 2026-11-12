@@ -650,8 +650,8 @@ and its menus - is declared in the view as well, with `.toolbar { }`,
 `.titleView { }` and `.menuBar { }`, and built with the state it follows (see
 [Navigation and presentation](navigation-and-presentation.md#toolbars)). So is
 what the page lays over its window, with `.overlays { }`: declared on a
-window's page it stands over every page and sheet the window shows, declared on
-a page further in it stands while that page is shown
+window's page it stands over every page the window shows, under its sheets;
+declared on a page further in it stands while that page is shown
 ([Over every page](navigation-and-presentation.md#over-every-page)).
 
 The back-button title belongs to the page being returned to, not the page
