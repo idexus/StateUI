@@ -76,7 +76,8 @@
                 var shown: [Double] = []
                 try s.perform(.activate, on: s.element("far"))
                 // Frame by frame on the case's clock, so no step on the way goes unread.
-                for _ in 0..<200 where shown.last != 9.2 {
+                for _ in 0..<200 {
+                    guard shown.last != 9.2 else { break }
                     clock.now += 16
                     s.frame()
                     let standing = try s.held(RangeElementContract.value, on: stepper) ?? .nan

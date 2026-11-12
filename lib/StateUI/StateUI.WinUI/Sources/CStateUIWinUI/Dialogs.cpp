@@ -269,5 +269,10 @@ extern "C" bool stateui_winui_answer(StateUIObjectRef handle, int32_t button, ch
 }
 
 extern "C" bool stateui_winui_last_question_lives(void) {
-    return lastQuestion.get() != nullptr;
+    try {
+        return lastQuestion.get() != nullptr;
+    } catch (...) {
+        report("reading whether the last question lives");
+        return false;
+    }
 }

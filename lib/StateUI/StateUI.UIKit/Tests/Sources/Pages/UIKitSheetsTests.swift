@@ -87,7 +87,10 @@ final class UIKitSheetsTests: XCTestCase {
             host.views(UIKitButtonView.self).first?.sendActions(for: .primaryActionTriggered)
             // The first share sheet a run shows comes slowly, an iPad's as a popover slowest.
             let stands = { host.actToolkit.sharing?.controller?.viewIfLoaded?.window != nil }
-            for _ in 0..<4 where !stands() { host.settle(until: stands) }
+            for _ in 0..<4 {
+                guard !stands() else { break }
+                host.settle(until: stands)
+            }
             XCTAssertTrue(stands(), "the share sheet stands")
             // What UIKit does as the user ends the sheet: it goes, and its own completion says how it ended.
             let sheet = try XCTUnwrap(host.actToolkit.sharing?.controller)
