@@ -10,7 +10,7 @@ extension GridProperties {
     ///
     ///     .rows(.fill, .automatic(count: 2), .fill(count: 5), .fixed(80))
     ///
-    /// `.auto` fits what is in the row, `.fill` and `.proportional` take a
+    /// `.automatic` fits what is in the row, `.fill` and `.proportional` take a
     /// share of what is left over, and `.fixed` is that many device units. A
     /// grid told nothing has one row and one column.
     public func rows(_ runs: GridTracks...) -> Modified {

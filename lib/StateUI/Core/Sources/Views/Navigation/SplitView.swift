@@ -57,11 +57,9 @@ public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement
     /// The node this page describes.
     public var node: Node
 
-    /// A sidebar beside `detail`, shown when `showsSidebar` says so.
+    /// A sidebar beside `detail`, shown as `.showsSidebar(_:)` says - a binding the platform's own sidebar button, a
+    /// swipe or a tap outside it write.
     ///
-    /// - Parameter showsSidebar: whether the sidebar shows, borrowed
-    ///   two-way. The platform's own sidebar button, a swipe or a tap outside
-    ///   it write here.
     /// - Parameter sidebar: the page at the side; its title names the
     ///   sidebar's bar, the application's name where it says none.
     /// - Parameter detail: the page beside it, which is the application.

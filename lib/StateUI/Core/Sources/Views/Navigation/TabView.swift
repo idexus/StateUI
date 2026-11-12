@@ -32,7 +32,7 @@
 ///         }
 ///     }
 ///
-/// A tab's caption and icon are what its view says of its page, `.title` and
+/// A tab's caption and icon are what its view says of its page, `.pageTitle` and
 /// `.pageIcon`. A `NavigationStack` inside a tab takes them the same way and keeps
 /// its own path while the user is on another tab.
 ///

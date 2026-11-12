@@ -630,10 +630,10 @@ core's (views/motion-layout.md, the hand).
 A layout whose views the hand takes by themselves (`itemDrag`) gives the
 hand one of three owners, by one rule every host shares: a first move along
 its axis is the run's; a first move across it is the view's under the press
-where views are taken `.across`, else the page's; and a press standing still
-`HandReading.hold` - 500 ms, the long press the platforms share closely
-enough - is the view's where they are taken `.held`, then whichever way it
-goes. A host says where a press went down (`HeardInput.hand`'s `point`) and
+where views are taken `.perpendicular`, else the page's; and a press standing
+still `HandReading.hold` - 500 ms, the long press the platforms share closely
+enough - is the view's where they are taken `.longPress`, then whichever way
+it goes. A host says where a press went down (`HeardInput.hand`'s `point`) and
 every move and lift as it does for the run, and its end always - a press that
 held a view and never moved still lets it go; it decides nothing more. The
 hold is found by the frames, since nothing moves: a press waiting for it holds

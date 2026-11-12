@@ -17,7 +17,7 @@ every view the way an object an ancestor provides is, and read by its name.
                      connectivity  networkAccess, connectionProfiles
                      accessibility reducesMotion, prefersHigherContrast, isScreenReaderOn, textScale
   \.locale        LocaleInfo      language (a tag: its region too), languages, timeZone, uses24HourClock,
-                                  firstDayOfWeek, isMetric, layoutDirection
+                                  firstDayOfWeek, isMetric, writingDirection
   \.application   ApplicationSession
                      info          name, packageName, version, build, libraryVersion, colorScheme,
                                    accentColor

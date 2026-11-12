@@ -500,8 +500,8 @@ Canvas {
 ```
 
 Commands execute in order. The color commands, `lineWidth`, `fontSize`,
-`opacity` and the transform commands (`translateBy`, `rotate(by:)`,
-`scaleBy`) change the state used by later drawing commands. `saveGraphics` and
+`opacity` and the transform commands (`translate`, `rotate`, `scale`) change
+the state used by later drawing commands. `saveGraphics` and
 `restoreGraphics` bound temporary transform or paint changes.
 
 A canvas hears a press as every view does, in its own points - the ones its

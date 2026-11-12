@@ -71,8 +71,9 @@ the chosen value's place among them (`selectedIndex`), worked out again at
 each build, so the list can change its order and the choice stays the value
 it was. A choice the user makes comes back as its place and lands on the
 state as the value standing there; a place outside the list changes nothing.
-The state is read where the picker is built, so a choice builds that body
-again - the host cannot carry an application's own value. Nothing is chosen
+The state is read as the picker is described (`Node.readsWhenDescribed`), so
+a choice describes the picker again and not the body that wrote it - the host
+cannot carry an application's own value. Nothing is chosen
 while the state holds nil, or a value the list does not hold, and the
 placeholder shows. A value needs only to be `Equatable`; it shows by its
 description unless the picker is given a caption.
