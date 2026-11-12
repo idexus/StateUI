@@ -36,6 +36,11 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
     /// Whether the cards fan out or stand in a pile: read in the body, so a
     /// change is a new description of the layout, and so is the hand's unit.
     @State private var spread = false
+
+    /// Whether moving between cards is slow, and whether the cards reaching
+    /// new places bounce: two motions, each switched alone.
+    @State private var slowTurn = false
+    @State private var bouncy = false
     // listing: end
 
     // The cards are turned by the hand of their own, so the example is not put
@@ -85,8 +90,18 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
             .spacing(16)
             .horizontalAlignment(.center)
             .gridRow(2)
+
+            // Each switch changes one motion: the turn between cards, or the
+            // cards reaching new places - the other stays as it was.
+            HStack {
+                SwitchRow("Slow turn", $slowTurn)
+                SwitchRow("Bouncy cards", $bouncy)
+            }
+            .spacing(16)
+            .horizontalAlignment(.center)
+            .gridRow(3)
         }
-        .rows(.fill, .automatic, .automatic)
+        .rows(.fill, .automatic, .automatic, .automatic)
         .rowSpacing(10)
     }
 
@@ -137,8 +152,8 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
         // where the parameters stand; `.dynamics` THE CARDS reaching their new
         // places after a card joins, leaves or the order changes.
-        .parameterMotion(.eased(.milliseconds(400), curve: .cubicOut))
-        .dynamics(.spring(response: .milliseconds(300), damping: 1))
+        .parameterMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
+        .dynamics(.spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1))
     }
 
     /// Where one card stands in the fan: along an arc and turned with it, the
@@ -226,6 +241,12 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
                 + "still turns. Nothing here animates a card: after a change of the layout's description "
                 + "each card goes from where it was shown to where the new arithmetic puts it on the "
                 + "layout's `.dynamics`, while `.parameterMotion` moves the parameters - the turn between cards.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Slow turn changes `.parameterMotion` alone: swipe or remove the front card and the turn "
+                + "takes longer, while a card added or the order reversed moves as before. Bouncy cards "
+                + "changes `.dynamics` alone: the cards overshoot their new places, and the turn is as it was.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

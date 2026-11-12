@@ -1899,6 +1899,11 @@ enum Listings {
         /// change is a new description of the layout, and so is the hand's unit.
         @State private var spread = false
 
+        /// Whether moving between cards is slow, and whether the cards reaching
+        /// new places bounce: two motions, each switched alone.
+        @State private var slowTurn = false
+        @State private var bouncy = false
+
         var body: some View {
             Grid {
                 Grid {
@@ -1936,8 +1941,17 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
                 .gridRow(2)
+
+                // Each switch changes one motion: the turn between cards, or the
+                // cards reaching new places - the other stays as it was.
+                HStack {
+                    SwitchRow("Slow turn", $slowTurn)
+                    SwitchRow("Bouncy cards", $bouncy)
+                }
+                .horizontalAlignment(.center)
+                .gridRow(3)
             }
-            .rows(.fill, .automatic, .automatic)
+            .rows(.fill, .automatic, .automatic, .automatic)
         }
 
         /// The next card not in the deck, if any is left.
@@ -1987,8 +2001,8 @@ enum Listings {
             // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
             // where the parameters stand; `.dynamics` THE CARDS reaching their new
             // places after a card joins, leaves or the order changes.
-            .parameterMotion(.eased(.milliseconds(400), curve: .cubicOut))
-            .dynamics(.spring(response: .milliseconds(300), damping: 1))
+            .parameterMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
+            .dynamics(.spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1))
         }
 
         /// Where one card stands in the fan: along an arc and turned with it, the

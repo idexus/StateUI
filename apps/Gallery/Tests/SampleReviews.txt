@@ -21,7 +21,7 @@ ButtonMenuSample.swift cee5bf33f56e8bb7
 ButtonRoleSample.swift 3e904d0aa8e02d9c
 ButtonSample.swift 4bf410b3eb5f6336
 CanvasSample.swift b31634f0ee2057b2
-ChangingDeckSample.swift 7e97e11b83cd5f02
+ChangingDeckSample.swift 5865b45492fb6fc2
 CheckBoxSample.swift 59e11010b2651d72
 ChoosingItemsSample.swift 85105c1d71a4884c
 ClipboardSample.swift a210a3c26540a05e
