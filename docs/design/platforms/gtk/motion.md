@@ -16,8 +16,11 @@ but a layout's (`GTKTransitionSurface.classPainted`), a button's box, the
 words of a field, a picker and a date, the bars' colors; and a window's
 place and size, which the desktop keeps. Those arrive at once - a state
 carried on a journey to one of them as well: its registration reads it where
-the journey lands (`Registry.apply(_:to:presenting:atRest:)`), and the bars
-their resting colors (`restingBarColors`). A layout and
+the journey lands (`Registry.apply(_:to:presenting:atRest:)`,
+`GTKTransitionSurface.paintsOnlyAtRest`), and the bars their resting colors
+(`restingBarColors`). Only those: a member the surface does not move as a
+property of its own - a stepper's value - still follows a state's journey
+frame by frame, as every control bound to that state does. A layout and
 a page arrangement draw their own box in their snapshot
 (`GTKTransitionSurface.drawsItsOwnBox`), which moves frame by frame.
 

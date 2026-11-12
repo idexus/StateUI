@@ -189,6 +189,38 @@ final class GTKMotionTests: XCTestCase {
         }
     }
 
+    /// A stepper bound to a state on its way shows its steps on the way, frame by frame with the slider the state
+    /// moves too: only what GTK paints at rest waits for the journey to land.
+    func testAStepperOnAStatesJourneyShowsItsStepsOnTheWay() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let count = State(wrappedValue: 2.0)
+            let host = GTKRenderer.running(clock: clock) {
+                VStack {
+                    Stepper(count.projectedValue).minimum(0).maximum(10).step(2)
+                    Slider(count.projectedValue).minimum(0).maximum(10)
+                    Button("Far").onClicked(policy: .ignoreWhileRunning) {
+                        try await count.projectedValue.journey.move(to: 9.2, .eased(.milliseconds(400), curve: .linear))
+                            .arrived()
+                    }
+                }
+            }
+            let stepper = try XCTUnwrap(host.views(GTKStepperView.self).first)
+            let slider = try XCTUnwrap(host.views(GTKSliderView.self).first)
+            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            XCTAssertEqual(stepper.value, 3.2, accuracy: 0.001, "the first step on its way, toward where it goes")
+
+            clock.now = 160
+            host.frame()
+            XCTAssertEqual(slider.value, 4.88, accuracy: 0.001)
+            XCTAssertEqual(stepper.value, 5.2, accuracy: 0.001, "the step past where the slider stands")
+
+            clock.now = 400
+            host.frame()
+            XCTAssertEqual(stepper.value, 9.2, accuracy: 0.001)
+        }
+    }
+
     /// The transform stands on the element where its layout put it, turning and scaling about its pivot: GTK draws
     /// the pivot moved by the translation alone, a step along the width three times longer and turned 30 degrees,
     /// and a step down the height twice as long.

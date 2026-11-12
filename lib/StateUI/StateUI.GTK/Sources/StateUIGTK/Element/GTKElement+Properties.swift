@@ -55,7 +55,7 @@ extension GTKElement {
         // Design: docs/design/platforms/gtk/motion.md#what-moves
         let type = self.type
         let taken = GTKRegistrations.registry.apply(changed, to: view, presenting: element) {
-            !GTKTransitionSurface.presents($0, on: type)
+            GTKTransitionSurface.paintsOnlyAtRest($0, on: type)
         }
 
         let own = changed.subtracting(taken)
