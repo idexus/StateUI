@@ -314,10 +314,23 @@ final class APISurfaceTests: XCTestCase {
         let surface = try Self.surface(
             module: module, directory: URL(fileURLWithPath: modules), triple: said("STATEUI_API_TRIPLE"),
             sdk: said("STATEUI_API_SDK"),
-            arguments: (environment["STATEUI_API_ARGUMENTS"] ?? "").split(whereSeparator: \.isWhitespace).map(String.init))
+            arguments: Self.arguments(environment["STATEUI_API_ARGUMENTS"] ?? ""))
 
         XCTAssertFalse(surface.isEmpty, "the symbol graph of \(module) read nothing")
         try Self.hold(surface, to: Self.record.deletingLastPathComponent().appendingPathComponent("\(module).txt"))
+    }
+
+    /// The arguments a host's script hands on, an argument a line, as `.scripts/API/record.sh` and `record.ps1`
+    /// write them.
+    static func arguments(_ said: String) -> [String] {
+        said.split(whereSeparator: \.isNewline).map(String.init)
+    }
+
+    /// Arguments come through whole, a path with a space in it included.
+    func testArgumentsComeThroughWhole() {
+        let arguments = ["-Xcc", "-fmodule-map-file=/tmp/State UI/CStateUIGTK/module.modulemap", "-resource-dir", "/a b"]
+        XCTAssertEqual(Self.arguments(arguments.joined(separator: "\n") + "\n"), arguments)
+        XCTAssertEqual(Self.arguments(""), [])
     }
 
     /// Holds `lines` to `record`, or writes them there under `STATEUI_UPDATE_EXPORTS=1`.

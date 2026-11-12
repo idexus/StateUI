@@ -23,7 +23,8 @@ $host_ = $env:STATEUI_HOST
 Remove-Item Env:STATEUI_HOST -ErrorAction SilentlyContinue
 $env:STATEUI_API_MODULE = $Module
 $env:STATEUI_API_MODULES = $Modules
-$env:STATEUI_API_ARGUMENTS = $Arguments -join ' '
+# An argument a line, so one holding a space comes through whole.
+$env:STATEUI_API_ARGUMENTS = $Arguments -join "`n"
 try {
     swift test --package-path $repository --filter APISurfaceTests/testTheModuleAHostsScriptNamesIsItsRecord
     if ($LASTEXITCODE) { throw "the record of $Module does not hold" }

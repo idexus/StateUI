@@ -18,6 +18,8 @@ repository_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 module="$1" modules="$2" triple="${3:-}" sdk="${4:-}"
 shift $(( $# < 4 ? $# : 4 ))
 echo "recording:  $module"
+# An argument a line, so one holding a space comes through whole.
+arguments="$(printf '%s\n' "$@")"
 env -u STATEUI_HOST STATEUI_API_MODULE="$module" STATEUI_API_MODULES="$modules" STATEUI_API_TRIPLE="$triple" \
-  STATEUI_API_SDK="$sdk" STATEUI_API_ARGUMENTS="$*" \
+  STATEUI_API_SDK="$sdk" STATEUI_API_ARGUMENTS="$arguments" \
   swift test --package-path "$repository_dir" --filter APISurfaceTests/testTheModuleAHostsScriptNamesIsItsRecord
