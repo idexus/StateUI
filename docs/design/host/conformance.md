@@ -273,7 +273,9 @@ holds as many of its views alive as the first time - the count its tally
 writes (`HostDriver.liveViews`) - and as many elements
 (`MountedElement.liveCount`). The first time is the measure, not the page
 before it: a toolkit may make a view of its own the first time a control is
-drawn, and keep it.
+drawn, and keep it. A count is a measure only of a page that changed: a click
+after which the element did not come or go fails the walk, naming it
+(`Leaving.Unmoved`), as equal counts on an unchanged page prove nothing.
 
 The elements' count finds what the views' cannot: an element a host still
 holds after the tree dropped it, through an object that is no view - an

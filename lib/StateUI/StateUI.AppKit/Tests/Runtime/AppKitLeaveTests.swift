@@ -40,6 +40,32 @@ private struct DropPage: View {
     }
 }
 
+/// The AppKit driver losing every click: a walk on it can prove nothing.
+@MainActor
+private final class LosingClicks: HostDriver {
+    let driver = AppKitDriver()
+    var host: String { driver.host }
+    var register: HostRegister { driver.register }
+    var cannot: [String: String] { driver.cannot }
+    var liveViews: Int? { driver.liveViews }
+    var liveViewKinds: [String: Int]? { driver.liveViewKinds }
+
+    func start(
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
+    ) -> MountedTree {
+        driver.start(clock: clock, reducesMotion: reducesMotion, page)
+    }
+
+    func perform(_ act: UserAct, on element: MountedElement) throws {}
+    func held(_ property: Prop, on element: MountedElement) throws -> HostValue? { try driver.held(property, on: element) }
+    func step() { driver.step() }
+    func close() { driver.close() }
+    func turn() { driver.turn() }
+    func frame() { driver.frame() }
+    func served() throws -> String { try driver.served() }
+    func held() throws -> (taken: Int, stopped: Int) { try driver.held() }
+}
+
 @MainActor
 final class AppKitLeaveTests: XCTestCase {
     /// An element that leaves the tree lets go of its view: the host holds one view fewer alive, the count its
@@ -132,6 +158,17 @@ final class AppKitLeaveTests: XCTestCase {
         }
 
         XCTAssertEqual(AppKitElement.liveViewCount, before - 1, "the target's view outlived its element")
+    }
+
+    /// A walk whose clicks change nothing proves nothing: it fails, naming the element, rather than finding as many
+    /// views alive each time.
+    @MainActor
+    func testAWalkWhoseClicksChangeNothingFails() throws {
+        let driver = LosingClicks()
+        defer { driver.driver.renderer?.finish() }
+        XCTAssertThrowsError(try Leaving.outlived(on: driver, ["Text"])) { error in
+            XCTAssertEqual("\(error)", "Text: the specimen did not go though its toggle was clicked")
+        }
     }
 
     /// Every element shown and taken away twice leaves the host holding as many views as the first time.
