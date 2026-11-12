@@ -44,6 +44,7 @@ Picker 8
 Image 4
 Page 10
 PageElement 6
+BackgroundElement 2
 View 27
 RefreshElement 2
 VisualElement 30

@@ -71,18 +71,43 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
         view.setNeedsLayout()
     }
 
-    /// The page's background - its own, else its arrangement's (`pageBackground`) - behind the whole screen it stands
-    /// on, the bars and the notch included; where the page says none, a sidebar's ground, else the window's - what the window is made of under a page that paints nothing
-    /// of its own - else the system's.
+    /// The page's background - its own, else its arrangement's (`pageBackground`), a color or a gradient - behind the
+    /// whole screen it stands on, the bars and the notch included; where the page says none, a sidebar's ground, else
+    /// the window's - what the window is made of under a page that paints nothing of its own - else the system's.
     /// Design: docs/design/platforms/uikit/pages.md#a-pages-background
     func showBackground() {
         let element = page?.element
-        let background = HostMaterial(element?.pageBackground).painted.flatMap { HostBrush($0).firstColor }
-        let sidebar = background == nil ? sidebarMaterial(of: element) : nil
+        let painted = UIKitBrush(HostMaterial(element?.pageBackground).painted)
+        showWash(painted)
+        let color = painted.brush.isGradient ? nil : painted.brush.firstColor
+        let sidebar = painted.isEmpty ? sidebarMaterial(of: element) : nil
         showGround(sidebar.flatMap { $0.material.blur == nil ? nil : $0.material })
-        view.backgroundColor = background.flatMap(UIColor.init(stateUI:))
+        view.backgroundColor = color.flatMap(UIColor.init(stateUI:))
             ?? (ground == nil ? sidebar.flatMap(Self.ground(of:)) : .clear)
             ?? view.window?.backgroundColor ?? .systemBackground
+    }
+
+    /// The gradient the page stands on across its whole view, under what it shows, and the brush it paints; nil
+    /// where the page stands on a color, or on what stands under a page that says none.
+    private var wash: (layer: CALayer, brush: UIKitBrush)?
+
+    /// Lays `brush` across the page's whole view, as large as it now stands, where it is a gradient; takes the
+    /// gradient away for any other.
+    private func showWash(_ brush: UIKitBrush) {
+        guard brush.brush.isGradient else {
+            wash?.layer.removeFromSuperlayer()
+            wash = nil
+            return
+        }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        defer { CATransaction.commit() }
+        guard let laid = brush.layer(over: view.bounds, reusing: wash?.layer) else { return }
+        if laid !== wash?.layer {
+            wash?.layer.removeFromSuperlayer()
+            view.layer.insertSublayer(laid, at: 0)
+        }
+        wash = (laid, brush)
     }
 
     /// The split view's material for the place its sidebar page stands in, and whether that is over the detail; nil
@@ -185,6 +210,7 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         layGround()
+        if let wash { showWash(wash.brush) }
         // The bars over the page are its safe area's as the screen's are: content stands clear of them, or under.
         // Design: docs/design/host/layout.md#the-safe-area
         let (inside, whole) = (view.bounds.inset(by: insets), whole)

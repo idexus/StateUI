@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Button.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Canvas.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Capsule.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
@@ -16,7 +16,7 @@ Link.background: ☑️ A brush fills the view with its first color alone; GTK b
 Map.background: 🧩
 MotionLayout.background: ◐ cannot read background of MotionLayout - GTK's driver has no path for it yet
 NavigationStack.background: does not apply - read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it
-Page.background: does not apply - read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it
+Page.background: ✅
 Path.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Picker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Polygon.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.

@@ -81,6 +81,14 @@ clears its color and outline, so the scroller puts them back each time it
 updates its layer. An oval scroller's outline is a shape layer over what it
 shows: under the oval's mask a layer's border would show only as slivers.
 
+## A page's background
+
+A page's view, or a popover's, paints its background as a layout's plain box
+does: a color is its layer's background color, with no backing store; a
+gradient makes the view draw it across its whole bounds, its layer clear, so
+what stands under it shows through a stop that lets it. A blur or glass shows
+its color (`HostMaterial.painted`).
+
 ## The same box again
 
 A layout takes its box - background, outline, shape, cut - each time the

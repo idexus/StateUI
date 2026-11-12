@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Capsule.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.

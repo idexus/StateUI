@@ -1,4 +1,4 @@
-# revision 1.2
+# revision 2.2
 Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Canvas.background: ☑️ A brush fills the canvas with its first color alone.
 Capsule.background: – A WinUI shape is its figure alone: it paints no ground around it.

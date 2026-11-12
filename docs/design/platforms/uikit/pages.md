@@ -112,7 +112,9 @@ than the system's own pictures beside it. An icon is its SF Symbol
 ## A page's background
 
 A page paints its background behind the whole screen it stands on, the bars
-and the notch included. A page that says none paints the window's - what the
+and the notch included: a color is its controller's view's, a gradient a
+layer across that view under what the page shows, laid again as large as the
+view stands after each layout, the window's background under it. A page that says none paints the window's - what the
 window is made of under a page that paints nothing of its own, which a
 UIKit window shows only through its pages: each controller's view is opaque
 by convention - and with neither the system's background. The window's

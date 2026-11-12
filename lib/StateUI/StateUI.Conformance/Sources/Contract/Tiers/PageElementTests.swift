@@ -20,7 +20,7 @@
                 inTab(PageElementContract.title, of: element, "Notes", then: "Drafts"),
                 inTab(IconElementContract.icon, of: element, "test_dot.png", then: "test_wide.png"),
             ] + (element == PageContract.nodeType.name ? [] : [groundsItsPages(element)]) + [linked(element)]
-        } + [titled, titledByState, groundHolds, groundFollowsColor, followsAMaterial]
+        } + [titled, titledByState, groundHolds, groundFollowsColor, followsAMaterial, groundDrawnWhole]
     }
 
     /// A link the application is asked to open, given to the window `element` stands in as its page, is heard by it:
@@ -160,6 +160,38 @@
                 }
             }
             try PageTests.held(BackgroundElementContract.background, first, then: second, s)
+        }
+    }
+
+    /// A pushed page's gradient background is drawn across the whole page - one end's color at one side, the
+    /// other's at the other - and the color the tree changes it to, all over: what is drawn, not what is held.
+    @MainActor
+    static var groundDrawnWhole: ConformanceCase {
+        ConformanceCase("Page.background.aGradientIsDrawnAcrossThePage", proves: [
+            Covered(BackgroundElementContract.background, on: PageContract.self),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+            let stops = [GradientStop(.red, 0), GradientStop(.red, 0.3), GradientStop(.blue, 0.7), GradientStop(.blue, 1)]
+            let value = State(wrappedValue: Material.gradient(.linearGradient(stops, from: Point(0, 0), to: Point(1, 0))))
+            s.start {
+                NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    Saying(value: value, second: .color(.green)) { $0.pageBackground($1) }
+                }
+            }
+            let page = try PageTests.pushedPage(s)
+            try s.settle { try s.place(of: PageTests.pushedPage(s)).width > 0 }
+            let place = try s.place(of: page)
+            // Low on the page, beside nothing its view shows.
+            let (left, right) = (Point(place.width * 0.1, place.height * 0.85), Point(place.width * 0.9, place.height * 0.85))
+            try s.settle { try s.shows(.red, on: PageTests.pushedPage(s), at: [left, right]) == [true, false] }
+            s.expect(try s.colors(of: page, at: [left])[0], shows: .red, "one end's color at its side")
+            s.expect(try s.colors(of: page, at: [right])[0], shows: .blue, "the other's at the other")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.shows(.green, on: PageTests.pushedPage(s), at: [left, right]) == [true, true] }
+            s.expect(try s.shows(.green, on: PageTests.pushedPage(s), at: [left, right]), [true, true],
+                     "the color it changed to, all over")
         }
     }
 

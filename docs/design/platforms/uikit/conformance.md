@@ -57,7 +57,8 @@ last wrote. A run of a text's words is the label's attributes over the
 letters the host layer's runs place it at (`RunPlace`). A text view takes
 input while the user can edit or select it,
 and is read only while they can select it and not edit it. A color at a point is read from the screen: the view drawn as the
-screen shows it into a bitmap in sRGB. Whether a touch reaches a view is the
+screen shows it into a bitmap in sRGB - a page's on its controller's view,
+which its background stands on behind its bars. Whether a touch reaches a view is the
 window's own hit testing at that point.
 
 A layout's box and a shape's paint are layers UIKit holds: a box's fill and
