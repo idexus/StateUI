@@ -32,7 +32,8 @@ final class GTKListening {
     private var pressFrom: Point?
     private var pressByFinger = false
 
-    /// The event a view began its press with: a view around it the same event reaches leaves it to the view.
+    /// The event a view began its press with, held until the next press: a view around it the same event reaches
+    /// leaves it to the view, and no later event takes its place in memory while it is held.
     private static var pressEvent: OpaquePointer?
 
     /// Where the pointer's press went down in the view.
@@ -190,7 +191,10 @@ final class GTKListening {
     func pressBegan(_ gesture: OpaquePointer?, at point: Point) {
         let event: OpaquePointer? = gesture.flatMap { gtk_event_controller_get_current_event($0) }
         guard event == nil || event != Self.pressEvent else { return }
-        Self.pressEvent = event
+        if let event {
+            if let held = Self.pressEvent { gdk_event_unref(held) }
+            Self.pressEvent = gdk_event_ref(event)
+        }
         pressFrom = point
         let device: OpaquePointer? = gesture.flatMap { gtk_event_controller_get_current_event_device($0) }
         pressByFinger = device.map { gdk_device_get_source($0) == GDK_SOURCE_TOUCHSCREEN } ?? false

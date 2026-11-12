@@ -35,7 +35,8 @@ lift, each phase told with where it stands in the view; GTK cancelling the
 gesture - a control under it claiming the sequence, a scroller around it
 claiming a touch - is the press taken away. A view around one that begins its
 press with the same event leaves it to that one, so a tappable row inside
-another answers alone.
+another answers alone: the event is held until the next press, so no later
+event can stand at its address and pass for it.
 
 `GtkGestureClick` stays for a run of taps: its release of the primary button,
 or of a finger, over the view, of a press that has not moved past GTK's drag
