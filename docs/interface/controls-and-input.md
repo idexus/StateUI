@@ -863,6 +863,7 @@ platform's own pull and spinner once it hears the pull:
 ```swift
 struct InboxPage: View {
     @State private var mail = ["Welcome"]
+    @State private var fetched = 0
     @State private var refreshing = false
 
     var body: some View {
@@ -871,7 +872,8 @@ struct InboxPage: View {
             .onRefreshRequested(policy: .ignoreWhileRunning) {
                 defer { refreshing = false }
                 try await Task.sleep(for: .seconds(1))
-                mail.insert("Fresh", at: 0)
+                fetched += 1
+                mail.insert("Fresh \(fetched)", at: 0)
             }
     }
 }

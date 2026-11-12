@@ -797,6 +797,7 @@ the views reaching their new places:
 ```swift
 struct Hand: View {
     @State private var names = ["Mural", "Nebula", "Ridge"]
+    @State private var added = 0
     @State private var fanned = true
     @State private var turn = 0.0
 
@@ -814,7 +815,10 @@ struct Hand: View {
             .dynamics(.spring(response: .milliseconds(300), damping: 0.8))
             .height(160)
 
-            Button("Add").onClicked { names.append("Bloom") }
+            Button("Add").onClicked {
+                added += 1
+                names.append("Bloom \(added)")
+            }
             Button("Fan").onClicked { fanned.toggle() }
         }
     }
