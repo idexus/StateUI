@@ -567,7 +567,9 @@ The core finds the view under the press from what the run last showed: the
 one drawn on top - the highest `zIndex`, then the later - whose place, turned
 as it is drawn about its middle, covers the point; a view drawn clear is
 passed over. The held view is the third layer's: its middle where the middle
-it was taken by has moved with the hand, over every other view. Everything
+it was taken by has moved with the hand, over every other view - a run
+standing at the highest rank an integer holds is ranked anew first, its order
+kept, so nothing stands too high to be passed over. Everything
 else of it is its place's, as shown, and the view's own: the application is
 told as the hand takes it and as it lets it go (`ItemDrag.phase`), and lifts
 it there by the view's own properties - `.scale` under the view's `.motion`,
