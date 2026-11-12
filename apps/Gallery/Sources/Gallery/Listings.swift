@@ -12994,6 +12994,50 @@ enum Listings {
             }
         }
         """#,
+        "TwoEditors": #"""
+        // Sources/Samples/State/AimSample.swift
+        /// Whether the two editors stand the other way round.
+        @State private var swapped = false
+        @State private var says = "Focus an editor, swap them, focus it again."
+
+        var body: some View {
+            VStack {
+                ForEach(swapped ? ["B", "A"] : ["A", "B"]) { name in
+                    Editor(name: name, says: $says)
+                        .id(name)
+                }
+
+                Button("Swap them")
+                    .onClicked { swapped.toggle() }
+
+                Text(says)
+            }
+        }
+
+        /// One editor: its field named `editor` inside it, as the other's is, with an
+        /// aim of its own on it.
+        private struct Editor: View {
+            let name: String
+            @Binding var says: String
+            @Aim(TextField.self) private var field
+            @State private var words = ""
+
+            var body: some View {
+                HStack {
+                    TextField($words)
+                        .placeholder("Editor \(name)")
+                        .id("editor")
+                        .aim(field)
+
+                    Button("Focus \(name)")
+                        .onClicked(policy: .ignoreWhileRunning) {
+                            try await field.focus()
+                            says = "focused editor \(name)"
+                        }
+                }
+            }
+        }
+        """#,
         "TwoFingersSample": #"""
         // Sources/Samples/MotionLayout/TwoFingersSample.swift
         import StateUIFoundation

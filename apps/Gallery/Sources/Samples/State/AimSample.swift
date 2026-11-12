@@ -2,7 +2,18 @@ import StateUI
 
 /// An author holds a CONTROL as well as values, and declares it with `@Aim`:
 /// on a value you write, on a control you call.
-struct AimSample: SampleContent, ExampleContent {
+struct AimSample: SampleContent {
+    static let id = "aim"
+    static let title = "Aiming an act"
+    static let summary = "A value you write, or a control you call - @State and @Aim."
+
+    var examples: [Example] {
+        [Example(AimedFields()), Example(TwoEditors())]
+    }
+}
+
+/// Two fields and the aims put on them.
+private struct AimedFields: ExampleContent {
     // listing: AimSample
     @State private var text = ""
 
@@ -26,10 +37,6 @@ struct AimSample: SampleContent, ExampleContent {
     /// an act aimed through it refuses, until it is on one again.
     @State private var both = false
     // listing: end
-
-    static let id = "aim"
-    static let title = "Aiming an act"
-    static let summary = "A value you write, or a control you call - @State and @Aim."
 
     static var code: String { Listings.joined("AimedField", "AimSample") }
 
@@ -149,6 +156,70 @@ private struct AimedField: View {
             .accessibilityLabel("The first field")
             .placeholder("The first field")
             .aim(aim)
+    }
+}
+// listing: end
+
+/// Two editors, each a view of its own holding a field named as the other's and an aim of its own on it.
+private struct TwoEditors: ExampleContent {
+    // listing: TwoEditors
+    /// Whether the two editors stand the other way round.
+    @State private var swapped = false
+    @State private var says = "Focus an editor, swap them, focus it again."
+
+    var body: some View {
+        VStack {
+            ForEach(swapped ? ["B", "A"] : ["A", "B"]) { name in
+                Editor(name: name, says: $says)
+                    .id(name)
+            }
+
+            Button("Swap them")
+                .accessibilityIdentifier("aim.swap")
+                .onClicked { swapped.toggle() }
+
+            Text(says)
+                .fontSize(13)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+        }
+        .spacing(12)
+    }
+    // listing: end
+
+    var notes: (any View)? {
+        Text("Both editors name their field `editor`, and each holds an aim of its own: an aim and a field "
+            + "are known by their whole place, the editor around them included, so each aim reaches its own "
+            + "editor's field - and its words stay with it - however the two stand.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
+}
+
+// listing: TwoEditors
+/// One editor: its field named `editor` inside it, as the other's is, with an
+/// aim of its own on it.
+private struct Editor: View {
+    let name: String
+    @Binding var says: String
+    @Aim(TextField.self) private var field
+    @State private var words = ""
+
+    var body: some View {
+        HStack {
+            TextField($words)
+                .accessibilityIdentifier("aim.editor.\(name)")
+                .placeholder("Editor \(name)")
+                .id("editor")
+                .aim(field)
+
+            Button("Focus \(name)")
+                .onClicked(policy: .ignoreWhileRunning) {
+                    try await field.focus()
+                    says = "focused editor \(name)"
+                }
+        }
+        .spacing(8)
     }
 }
 // listing: end
