@@ -82,6 +82,46 @@ final class HostPathTests: XCTestCase {
         }
     }
 
+    /// Radii of any size draw an arc of numbers ending where the arc does: radii too small to reach are scaled up
+    /// as any are - a millionth or a 1e-300 draws the same half circle - and radii vastly past the chord draw it.
+    func testArcsOfAnyRadiiDrawNumbers() throws {
+        func numbers(_ curves: [HostCurveCommand]) -> [Double] {
+            curves.flatMap { command -> [Double] in
+                switch command {
+                case .cubic(let a, let b, let c): [a.x, a.y, b.x, b.y, c.x, c.y]
+                case .line(let p), .move(let p): [p.x, p.y]
+                default: []
+                }
+            }
+        }
+        func drawn(_ radius: Double, to end: Point, rotation: Double = 0, large: Bool = false, sweep: Bool = true)
+            -> [HostCurveCommand] {
+            HostPath.arc(from: .zero, to: end, radiusX: radius, radiusY: radius / 2, rotation: rotation,
+                         largeArc: large, sweep: sweep)
+        }
+        var wrong: [String] = []
+        for radius in [1e-300, 1e-200, 1e-6, 1, 1e6, 1e200, 1e300, Double.greatestFiniteMagnitude, 5e-324] {
+            for end in [Point(2, 0), Point(2, 2), Point(0, 2), Point(-1e-3, 5)] {
+                for (rotation, large, sweep) in [(0.0, false, true), (45, true, false), (1e300, true, true)] {
+                    let curves = drawn(radius, to: end, rotation: rotation, large: large, sweep: sweep)
+                    let ending: Point? = switch curves.last {
+                    case .cubic(_, _, let at), .line(let at): at
+                    default: nil
+                    }
+                    if !numbers(curves).allSatisfy(\.isFinite) || ending != end {
+                        wrong.append("\(radius) to \(end), \(rotation) \(large) \(sweep): \(curves)")
+                    }
+                }
+            }
+        }
+        XCTAssertEqual(wrong, [])
+        let (tiny, small) = (numbers(drawn(1e-300, to: Point(2, 0))), numbers(drawn(1e-6, to: Point(2, 0))))
+        XCTAssertEqual(tiny.count, small.count)
+        for (one, other) in zip(tiny, small) { XCTAssertEqual(one, other, accuracy: 1e-9, "scaled up to just reach") }
+        XCTAssertEqual(drawn(1e300, to: Point(2, 0)), [.line(Point(2, 0))], "flatter than any display shows")
+        XCTAssertNotNil(HostPath(svg: "M0 0 A1e-200 1e-200 0 0 1 2 2")?.arcsAsCubics)
+    }
+
     /// A half turn of a circle is two quarter-turn curves that end exactly where the arc does, the first at
     /// the circle's side; every other command passes as it is.
     func testAnArcIsDrawnAsQuarterTurnCurves() throws {

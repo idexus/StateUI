@@ -126,7 +126,11 @@ normalizes it to absolute moves, lines, curves, arcs and closes before each
 toolkit draws that closed set, so the grammar accepted is not any one
 platform's. A toolkit with no SVG arc draws each as the cubic Bézier segments
 the shared parser works out, a quarter turn at most each, so an arc bends the
-same on every host.
+same on every host. The arithmetic works in the radii's own units, so no size
+of radius overflows it: radii too small to reach are scaled up until the arc
+just does, and an arc whose radii stand past a billion times its chord - or one
+no double could draw - is drawn as its chord. A path ending on a command, or
+inside a command's numbers, is rejected whole.
 
 ## Text runs
 

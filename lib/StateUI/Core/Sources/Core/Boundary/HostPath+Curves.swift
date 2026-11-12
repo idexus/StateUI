@@ -103,20 +103,24 @@ extension HostPath {
         let turnedX = cosine * halfX + sine * halfY
         let turnedY = -sine * halfX + cosine * halfY
 
-        // Radii too small to reach are scaled up until the arc just does.
+        // Worked in the radii's own units, so no radius is squared: radii too small to reach are scaled up until
+        // the arc just does - radii a double cannot tell from none beside the chord are none - and an arc whose
+        // radii stand past a billion times its chord is the chord.
         var rx = abs(radiusX)
         var ry = abs(radiusY)
-        let reach = turnedX * turnedX / (rx * rx) + turnedY * turnedY / (ry * ry)
+        var (u, v) = (turnedX / rx, turnedY / ry)
+        let reach = hypot(u, v)
+        guard reach.isFinite else { return [.line(end)] }
         if reach > 1 {
-            rx *= reach.squareRoot()
-            ry *= reach.squareRoot()
+            (rx, ry) = (rx * reach, ry * reach)
+            (u, v) = (turnedX / rx, turnedY / ry)
         }
+        let scaled = hypot(u, v)
+        guard scaled >= 1e-9, rx.isFinite, ry.isFinite else { return [.line(end)] }
 
-        let numerator = max(0, rx * rx * ry * ry - rx * rx * turnedY * turnedY - ry * ry * turnedX * turnedX)
-        let denominator = rx * rx * turnedY * turnedY + ry * ry * turnedX * turnedX
-        let coefficient = denominator > 0 ? (largeArc == sweep ? -1 : 1) * (numerator / denominator).squareRoot() : 0
-        let centerX = coefficient * rx * turnedY / ry
-        let centerY = coefficient * -ry * turnedX / rx
+        let coefficient = (largeArc == sweep ? -1 : 1) * max(0, 1 - scaled * scaled).squareRoot() / scaled
+        let centerX = coefficient * rx * v
+        let centerY = coefficient * -ry * u
         let center = Point(
             cosine * centerX - sine * centerY + (start.x + end.x) / 2,
             sine * centerX + cosine * centerY + (start.y + end.y) / 2)
@@ -124,8 +128,8 @@ extension HostPath {
         func turn(_ fromX: Double, _ fromY: Double, _ toX: Double, _ toY: Double) -> Double {
             atan2(fromX * toY - fromY * toX, fromX * toX + fromY * toY)
         }
-        let first = ((turnedX - centerX) / rx, (turnedY - centerY) / ry)
-        let last = ((-turnedX - centerX) / rx, (-turnedY - centerY) / ry)
+        let first = (u - coefficient * v, v + coefficient * u)
+        let last = (-u - coefficient * v, -v + coefficient * u)
         var from = turn(1, 0, first.0, first.1)
         var delta = turn(first.0, first.1, last.0, last.1)
         if !sweep, delta > 0 { delta -= 2 * .pi }
@@ -143,6 +147,7 @@ extension HostPath {
         let count = max(1, Int((abs(delta) / (.pi / 2)).rounded(.up)))
         let step = delta / Double(count)
         let reachOut = 4 / 3 * tan(step / 4)
+        guard delta.isFinite, center.x.isFinite, center.y.isFinite else { return [.line(end)] }
         var segments: [HostCurveCommand] = []
         for index in 0..<count {
             let to = from + step
@@ -155,6 +160,11 @@ extension HostPath {
                 end: b))
             from = to
         }
-        return segments
+        // What a double cannot hold draws the chord rather than a curve that is no number.
+        let numbers = segments.flatMap { segment -> [Double] in
+            guard case .cubic(let a, let b, _) = segment else { return [] }
+            return [a.x, a.y, b.x, b.y]
+        }
+        return numbers.allSatisfy(\.isFinite) ? segments : [.line(end)]
     }
 }
