@@ -57,7 +57,7 @@ final class GTKQuestion {
         adw_alert_dialog_set_close_response(
             dialog.of(AdwAlertDialog.self), Self.response(of: question.kind == .alert ? .accept : .cancel))
         if question.kind == .prompt {
-            let field = makeField()
+            let field = makeField(number: number)
             adw_alert_dialog_set_extra_child(dialog.of(AdwAlertDialog.self), field)
             // The words are typed at once: the dialog gives the keyboard to its field as it shows.
             adw_dialog_set_focus(dialog, field)
@@ -68,6 +68,21 @@ final class GTKQuestion {
             MainActor.assumeIsolated { GTKQuestion.showing.take(number)?.respond(id) }
         }
         adw_dialog_present(dialog, window.widget)
+    }
+
+    /// Words going in at `place`, a scalar's offset: where they would take the field past its bound, only the first
+    /// characters that fit there (`InputWords.fitting`) - from the first words, a key and a paste alike.
+    private func inserting(_ typed: UnsafePointer<CChar>?, _ bytes: Int32, at place: UnsafeMutablePointer<Int32>?) {
+        guard let typed, let field, let text = gtk_editable_get_delegate(field.opaque) else { return }
+        let inserted = bytes < 0
+            ? String(cString: typed) : String(decoding: UnsafeRawBufferPointer(start: typed, count: Int(bytes)), as: UTF8.self)
+        let held = String(cString: gtk_editable_get_text(field.opaque))
+        guard let fitting = InputWords.fitting(
+            inserted, beside: held, atScalar: place.map { Int($0.pointee) }, in: nil, toBound: question.maximumLength)
+        else { return }
+        g_signal_stop_emission_by_name(UnsafeMutableRawPointer(text), "insert-text")
+        guard !fitting.isEmpty else { return }
+        gtk_editable_insert_text(text, fitting, -1, place)
     }
 
     /// The user answered by the response `id`: what its button does, with the words a prompt's field holds.
@@ -101,17 +116,23 @@ final class GTKQuestion {
     }
 
     /// A prompt's field: its placeholder, the most characters, the keyboard its purpose asks for, and the words it
-    /// starts holding; Enter in it accepts.
-    private func makeField() -> GTKWidget {
+    /// starts holding; Enter in it accepts. Its bound is in characters, as a field's is, never GTK's own, which
+    /// counts Unicode scalars and would split one.
+    private func makeField(number: Int64) -> GTKWidget {
         let entry = gtk_entry_new()!
         if let placeholder = question.placeholder { gtk_entry_set_placeholder_text(entry.of(GtkEntry.self), placeholder) }
-        if let most = question.maximumLength { gtk_entry_set_max_length(entry.of(GtkEntry.self), Int32(clamping: most)) }
+        let text = gtk_editable_get_delegate(entry.opaque)!
+        connectSignal(UnsafeMutableRawPointer(text), "insert-text", number: number) {
+            (_: UnsafeMutableRawPointer?, typed: UnsafePointer<CChar>?, bytes: Int32, place: UnsafeMutablePointer<Int32>?,
+             data: gpointer?) in
+            MainActor.assumeIsolated { GTKQuestion.showing.find(viewNumber(data))?.inserting(typed, bytes, at: place) }
+        }
         let (hints, purpose) = GTKTextFieldView.input(question.traits)
         gtk_entry_set_input_hints(entry.of(GtkEntry.self), hints)
         gtk_entry_set_input_purpose(entry.of(GtkEntry.self), purpose)
-        gtk_editable_set_text(entry.opaque, question.words)
         gtk_entry_set_activates_default(entry.of(GtkEntry.self), 1)
         field = entry
+        gtk_editable_set_text(entry.opaque, question.words)
         return entry
     }
 }

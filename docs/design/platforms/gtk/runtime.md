@@ -197,7 +197,10 @@ that nothing was chosen. Each response is named by what it answers
 (`accept`, `cancel`, `action-<place>`). A
 prompt's field takes the placeholder, the most characters and the keyboard
 its purpose asks for, holds the keyboard as the dialog shows, and Enter in
-it accepts.
+it accepts. Its bound counts characters, as a field's does - only those that
+fit go in, from its first words, a key and a paste alike (`InputWords.fitting`)
+- never GTK's own `max-length`, which counts Unicode scalars and would cut an
+accent from its letter.
 
 ## Files
 

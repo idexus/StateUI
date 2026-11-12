@@ -93,6 +93,22 @@ private struct QuestionsPage: View {
     }
 }
 
+/// A prompt bound to one character, its first words an accented letter written in two scalars and another.
+private struct BoundPromptPage: View {
+    @Environment(\.window) private var window
+    @State private var said = ""
+
+    var body: some View {
+        VStack {
+            Text(said)
+            Button("Prompt").onClicked(policy: .ignoreWhileRunning) {
+                let typed = try await window.prompt("Initial", initialValue: "e\u{301}x", maximumLength: 1)
+                said += "typed \(typed ?? "nothing"); "
+            }
+        }
+    }
+}
+
 @MainActor
 final class GTKActsTests: XCTestCase {
     /// The host answers the time of day and its zone, and a zone's distance from UTC on the day asked - summer
@@ -169,6 +185,23 @@ final class GTKActsTests: XCTestCase {
             }
 
             XCTAssertEqual(host.said, expected)
+        }
+    }
+
+    /// A prompt bound to one character holds one whole character - an accented letter, a joined emoji - from its
+    /// first words and from what is typed, where GTK's own bound counts Unicode scalars and would split it.
+    func testABoundPromptHoldsWholeCharacters() throws {
+        try onUIThread {
+            let host = GTKRenderer.running { BoundPromptPage() }
+
+            try host.press("Prompt")
+            try host.answer(.accept)
+            host.settle { host.said.hasSuffix("; ") }
+            try host.press("Prompt")
+            try host.answer(.accept, typing: "👩🏽‍💻z")
+            host.settle { host.said.components(separatedBy: "; ").count == 3 }
+
+            XCTAssertEqual(Array(host.said.unicodeScalars), Array("typed e\u{301}; typed 👩🏽‍💻; ".unicodeScalars))
         }
     }
 
