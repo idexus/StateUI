@@ -370,6 +370,30 @@ final class EnvironmentTests: XCTestCase {
         XCTAssertTrue(hasComplained("NameButton value stands in two places under different environments"))
     }
 
+    /// The two places are told apart by where they stand, not by the element's own name: one value named alike
+    /// under two parents, each under its own provider, is refused its second place as well.
+    func testAValueNamedAlikeUnderTwoParentsIsRefusedItsSecondPlace() throws {
+        let renders = Renders()
+        let a = Session(), b = Session()
+        a.name = "a"
+        b.name = "b"
+        let button = NameButton()
+
+        let patch = renders.render(stack([
+            stack([button.environment(a).id("same").node], id: "first"),
+            stack([button.environment(b).id("same").node], id: "second"),
+        ], id: "root"))
+
+        let first = try XCTUnwrap(patch.child(.manual("first"))?.child(.manual("same")))
+        XCTAssertEqual(first.props["text"], .string("a"))
+        XCTAssertTrue(renders.fire(try XCTUnwrap(first.events?["clicked"])))
+        XCTAssertEqual(a.visits, 1, "the first place's handler writes the object provided there")
+        XCTAssertEqual(b.visits, 0, "the other parent's object is untouched")
+        XCTAssertEqual(patch.child(.manual("second"))?.child(.manual("same"))?.type, .anchor,
+                       "the second place shows nothing")
+        XCTAssertTrue(hasComplained("NameButton value stands in two places under different environments"))
+    }
+
     /// One view value standing in two places under ONE provider resolves the same object at both, so both stand.
     func testAValueStandingTwiceUnderOneProviderStandsTwice() throws {
         let renders = Renders()

@@ -130,7 +130,7 @@ extension Differ {
                 // is walked by no mirror for this.
                 // Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
                 let slots = resolution(of: stateful)
-                guard place(slots, at: id) else {
+                guard place(slots, at: standing) else {
                     complain(refusal(of: stateful))
                     pass.refused = true
                     node = Node(contract: AnchorContract.self)
@@ -294,19 +294,19 @@ extension Differ {
         }
     }
 
-    /// Marks `slots` as standing at `id` this walk, with what each resolved to, or places none: one of them stood
-    /// this walk at another element the walk is not inside - so no holder of the view - resolving to another object.
+    /// Marks `slots` as standing at `place` this walk - the keys from the root down to the element - with what each
+    /// resolved to, or places none: one of them stood this walk at an element `place` is not inside - so no holder
+    /// of the view - resolving to another object.
     /// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
-    private func place(_ slots: [PlacedSlot], at id: ElementID) -> Bool {
+    private func place(_ slots: [PlacedSlot], at place: [ElementID]) -> Bool {
         for (slot, object) in slots {
-            if let earlier = placed[slot], earlier.element != id, !standing.contains(earlier.element),
-                earlier.object != object {
+            if let earlier = placed[slot], !place.starts(with: earlier.place), earlier.object != object {
                 return false
             }
         }
 
         for (slot, object) in slots {
-            placed[slot] = (id, object)
+            placed[slot] = (place, object)
         }
 
         return true
@@ -314,8 +314,8 @@ extension Differ {
 
     /// Places the slots of `views`, standing as they were built, in order up to one the placing refuses: how many
     /// stand.
-    func stand(_ views: ArraySlice<BuiltView>, at id: ElementID) -> Int {
-        for (step, view) in views.enumerated() where !place(view.slots, at: id) {
+    func stand(_ views: ArraySlice<BuiltView>, at place: [ElementID]) -> Int {
+        for (step, view) in views.enumerated() where !self.place(view.slots, at: place) {
             return step
         }
 
@@ -345,7 +345,7 @@ extension Differ {
     /// holding that view - or holding the first view whose slots the placing refuses, which the walk refuses.
     /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     private func standOutside(_ pass: ElementPass, _ rendered: RenderedNode, through asked: Int) -> Node {
-        let start = stand(rendered.views.prefix(asked), at: pass.id)
+        let start = stand(rendered.views.prefix(asked), at: standing)
         pass.views = Array(rendered.views.prefix(start))
         pass.seen = rendered.seen
         pass.builtFrom = start

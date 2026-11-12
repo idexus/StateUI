@@ -215,13 +215,14 @@ handed in as a property. A slot is another matter: it resolves to the
 nearest provider of the place it stands in, and a handler the body captured
 reads it later with no place to ask - so one value under two providers of its
 type would have both places read the one filled last, the first place's
-button writing the second place's model. The walk records, by the slot, which
-element it stands at and what it resolved to there (`Differ.placed`,
+button writing the second place's model. The walk records, by the slot, where
+it stands - the keys from the root down to its element, as a name is distinct
+among siblings alone - and what it resolved to there (`Differ.placed`,
 forgotten as a walk begins): a view built places its slots as they resolve
 where it stands, and a view standing as it was - carried, or outside the
 view a clean walk builds again - places them as they were built (the
 `slots` of its `BuiltView`), so every place in the tree is on record in the
-tree's order, built or kept. A slot met again at another element, outside
+tree's order, built or kept. A slot met again at another place, outside
 the elements the walk is inside, resolving to another object, refuses the
 placing: the second place shows nothing - an anchor of no view - and the
 library says so once, naming the type. The tree's order decides, whichever
