@@ -117,7 +117,10 @@ not to the tab host.
 
 `SplitView` owns two pages - a sidebar and a detail - and `.showsSidebar`
 hands it a state saying whether the sidebar shows, both ways; without it the
-platform shows and hides the sidebar itself:
+platform shows and hides the sidebar itself. A split view stands as the root of
+a window or of a sheet, as the platforms place theirs: on a stack's page, in a
+tab or in another split view's detail it is left out, and StateUI says so. A
+stack or tabs stand in its detail instead:
 
 ```swift
 struct MenuPage: View {

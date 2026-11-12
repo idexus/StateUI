@@ -951,15 +951,15 @@ final class PagesTests: XCTestCase {
         XCTAssertNil(root.first(id: .manual("top"))?.chromeBottomBar, "the top of a tab not chosen")
     }
 
-    /// A split view a stack shows shows both its pages, each with its own bottom bar - the sidebar's while it shows -
-    /// and a page under the stack's top none.
-    func testASplitViewAStackShowsGivesBothItsPagesTheirBars() throws {
+    /// A split view shows both its pages, each with its own bottom bar - the sidebar's while it shows - and a stack in
+    /// its detail shows its top page's alone: each arrangement on the way says whether it shows the branch.
+    func testASplitViewGivesBothItsPagesTheirBarsAndItsDetailsStackItsTopsAlone() throws {
         func tree(_ sidebarShown: Bool) -> HostPatch {
             node("window", .window, children: [
-                node("stack", .navigationStack, children: [
-                    node("under", .page, children: [node("underBar", .bottomBar, children: [node("unseen", .text)])]),
-                    node("split", .splitView, [.showsSidebar: .bool(sidebarShown)], children: [
-                        node("sidebar", .page, children: [node("sideBar", .bottomBar, children: [node("side", .text)])]),
+                node("split", .splitView, [.showsSidebar: .bool(sidebarShown)], children: [
+                    node("sidebar", .page, children: [node("sideBar", .bottomBar, children: [node("side", .text)])]),
+                    node("stack", .navigationStack, children: [
+                        node("under", .page, children: [node("underBar", .bottomBar, children: [node("unseen", .text)])]),
                         node("detail", .page, children: [node("mainBar", .bottomBar, children: [node("main", .text)])]),
                     ]),
                 ]),

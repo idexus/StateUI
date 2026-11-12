@@ -15,6 +15,7 @@
 // the page's contract, and insist the two exhaustive values in this one carry
 // every key.
 
+import Synchronization
 import XCTest
 @_spi(Host) @testable import StateUI
 
@@ -451,6 +452,28 @@ final class PageTests: XCTestCase {
         }.node)
 
         XCTAssertEqual(patch.subtree.map(\.type), [.vStack, .text])
+    }
+
+    /// A split view stands as the root of a window or of a sheet: on a stack's page, in a tab or in another split
+    /// view's detail it is left out, and said so.
+    func testASplitViewStandsOnlyAtTheRootOfAWindowOrASheet() {
+        let heard = Mutex<[String]>([])
+        Complaints.route { words in heard.withLock { $0.append(words) } }
+        defer { Complaints.route(to: nil) }
+        let (path, sheet) = (State<[Int]>([]), State(wrappedValue: true))
+        func split() -> some View { SplitView { Plain() } detail: { Plain() } }
+        func splits(_ shown: some View) -> Int {
+            let window = Node.window(showing: { Node.page(shown) }, session: WindowSession()).built
+            return Renders().render(window).subtree.filter { $0.type == .splitView }.count
+        }
+
+        XCTAssertEqual(splits(split()), 1, "a window's root")
+        XCTAssertEqual(splits(Text("page").sheet(isPresented: sheet.projectedValue) { split() }), 1, "a sheet's root")
+        XCTAssertEqual(splits(NavigationStack(path.projectedValue) { split() } destination: { _ in Plain() }), 0)
+        XCTAssertEqual(splits(TabView([0]) { _ in split() }), 0)
+        XCTAssertEqual(splits(SplitView { Plain() } detail: { split() }), 1, "the outer one alone")
+        let said = heard.withLock { $0 }.filter { $0.contains("stands as the root of a window or of a sheet") }
+        XCTAssertEqual(said.count, 3, "\(said)")
     }
 
     /// An arrangement fills where a page stands: what its contract does not declare - a width, a tap - is left

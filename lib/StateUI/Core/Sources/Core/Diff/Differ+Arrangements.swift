@@ -7,9 +7,17 @@
 // Design: docs/design/contracts/README.md#what-an-element-does-not-wear
 
 extension Differ {
-    /// Whether `child` may stand under `parent`, which `placesPages` or not: an arrangement only where a page stands.
-    func standsWhereItMay(_ child: RenderedNode, under parent: NodeType, placesPages: Bool) -> Bool {
-        guard NodeType.arrangements.contains(child.type), !placesPages else { return true }
+    /// Whether `child` may stand under `parent`, whose page positions `placer` stands, nil where none: an
+    /// arrangement only where a page stands, a split view only at the root of a window or of a sheet.
+    func standsWhereItMay(_ child: RenderedNode, under parent: NodeType, placedBy placer: NodeType?) -> Bool {
+        guard NodeType.arrangements.contains(child.type) else { return true }
+
+        if child.type == .splitView, let placer, placer != .window, placer != .sheet {
+            complain(
+                "SplitView stands as the root of a window or of a sheet, and was left out of \(placer.name)")
+            return false
+        }
+        guard placer == nil else { return true }
 
         complain(
             "\(child.type.name) stands where a page stands - a window's view, or a page of an arrangement - "

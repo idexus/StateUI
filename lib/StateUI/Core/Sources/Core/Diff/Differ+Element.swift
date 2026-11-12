@@ -20,14 +20,14 @@ extension Differ {
         node: Node,
         forced: Bool = false,
         sizesArrive: Bool = false,
-        atPagePosition: Bool? = nil,
+        pagePlacer: NodeType?? = nil,
         from start: Int = 0
     ) -> (node: RenderedNode, patch: HostPatch) {
         let pass = ElementPass(
             id: id, rendered: rendered, node: node, forced: forced, sizesArrive: sizesArrive,
-            atPageRoot: describesPageRoot, atPagePosition: atPagePosition ?? describesPagePosition,
+            atPageRoot: describesPageRoot, pagePlacer: pagePlacer ?? describesPagePlacer,
             outerScene: sceneRecord, start: start)
-        (describesPageRoot, describesPagePosition) = (false, false)
+        (describesPageRoot, describesPagePlacer) = (false, nil)
         standing.append(id)
 
         // What the element entered - the environments provided, the views, its scene, an inspector's frame - is
@@ -59,7 +59,7 @@ extension Differ {
             describesPageRoot = pass.atPageRoot && pass.node.type == .anchor
             children = reconcileChildren(
                 of: pass.previous, node: pass.node, into: &pass.patch, sizesArrive: pass.node.childSizesArrive,
-                atPagePosition: pass.atPagePosition)
+                pagePlacer: pass.pagePlacer)
             describesPageRoot = false
         }
         return finish(pass, children: children)

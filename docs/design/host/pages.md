@@ -16,8 +16,8 @@ found down that path, and so are the stack and the tabbed view around it.
 Whatever asks whether an element stands where the user meets it asks each
 arrangement around it whether it shows the branch holding it (`shows`): a
 shortcut, the next field, a key and a page's bottom bar alike, so a hidden
-sidebar takes no shortcut and a split view a stack shows gives both its pages
-their bars. The
+sidebar takes no shortcut and a split view gives both its pages their bars, a
+stack in its detail its top page's alone. The
 tab shown is the one the user chose, else the one the tree says, kept within
 the tabs; the sidebar shows as it stands on screen, else as the tree says.
 
