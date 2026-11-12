@@ -12419,7 +12419,8 @@ enum Listings {
 
                     Text(favorite ? "A favorite" : "Not a favorite")
 
-                    Text("Press Save, Add and the star; Sort and Save's arrow open menus; More holds two sections.")
+                    Text("Press Save, Add and the star; Sort and Save's arrow open menus; More holds two sections. "
+                        + "At the foot, Save's arrow holds Save as, and the bar's overflow Export.")
 
                     SectionTitle("Where the actions stand")
 
@@ -12517,7 +12518,8 @@ enum Listings {
                         .onClicked { saved = 0 }
                 }
                 // The bar at the page's foot, by the same rules: words nobody
-                // chooses at its start, an action at its end.
+                // chooses at its start, an action at its end - its click its own,
+                // its menu apart, a submenu in it - and its overflow.
                 .toolbar(.bottom) {
                     if atFoot {
                         ToolbarLabel(recent.isEmpty ? "No recent files" : "\(recent.count) recent file(s)")
@@ -12527,6 +12529,41 @@ enum Listings {
                         ToolbarButton("Save")
                             .id("foot.save")
                             .onClicked { saved += 1 }
+                            .menu(.split) {
+                                MenuItem("Save a copy")
+                                    .id("foot.save.copy")
+                                    .onClicked { saved += 1 }
+
+                                Menu("Save as") {
+                                    MenuItem("Text")
+                                        .id("foot.save.text")
+                                        .onClicked { saved += 1 }
+
+                                    MenuItem("PDF")
+                                        .id("foot.save.pdf")
+                                        .onClicked { saved += 1 }
+                                }
+                            }
+
+                        // In the bar's overflow, its menu a submenu there.
+                        ToolbarButton("Export")
+                            .id("foot.export")
+                            .placement(at: .overflow)
+                            .menu {
+                                MenuItem("As text")
+                                    .id("foot.export.text")
+                                    .onClicked {
+                                        added += 1
+                                        recent.append("export\(added).txt")
+                                    }
+
+                                MenuItem("As PDF")
+                                    .id("foot.export.pdf")
+                                    .onClicked {
+                                        added += 1
+                                        recent.append("export\(added).pdf")
+                                    }
+                            }
                     }
                 }
                 // The desktop File menu, declared the same way: Save, and the recent
