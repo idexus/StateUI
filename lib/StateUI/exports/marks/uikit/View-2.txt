@@ -1,4 +1,4 @@
-# revision 25.1
+# revision 26.1
 Button.dragEnded: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session
 Button.dragStarting: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session
 Button.dragText: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session

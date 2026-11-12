@@ -131,8 +131,6 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         if (rotation) fingers(event);
         boolean letGoAsPress = presses && pressAsButton(event);
 
-        float x = event.getRawX() / density;
-        float y = event.getRawY() / density;
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 downX = event.getRawX();
@@ -143,14 +141,14 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                 if (parent != null && (drags || pinch)) parent.requestDisallowInterceptTouchEvent(true);
                 if (drags) {
                     pressing = true;
-                    press(DOWN, x, y);
+                    press(DOWN, event);
                 }
                 if (hand) handReport(event);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (Math.hypot(event.getRawX() - downX, event.getRawY() - downY) > slop) moved = true;
                 if (pointer) report(MOVED, 0, event.getX() / density, event.getY() / density, 0);
-                if (pressing && !pinching && event.getPointerCount() == 1 && press(MOVE, x, y) && !dragging) {
+                if (pressing && !pinching && event.getPointerCount() == 1 && press(MOVE, event) && !dragging) {
                     dragging = true;
                     cancelOwn(event);
                 }
@@ -158,14 +156,14 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                 break;
             case MotionEvent.ACTION_UP:
                 if (pointer) report(RELEASED, 0, event.getX() / density, event.getY() / density, 0);
-                if (pressing) press(LET_GO, x, y);
+                if (pressing) press(LET_GO, event);
                 if (hand) handReport(event);
                 if (!moved && !pinched && !held && countsTaps) tap(event);
                 pressing = false;
                 dragging = false;
                 break;
             case MotionEvent.ACTION_CANCEL:
-                if (pressing) press(TAKEN, x, y);
+                if (pressing) press(TAKEN, event);
                 if (hand) handReport(event);
                 pressing = false;
                 dragging = false;
@@ -359,7 +357,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         pinching = true;
         pinched = true;
         if (pressing) {
-            press(TAKEN, 0, 0);
+            StateUIHost.pressed(view, TAKEN, 0, 0, 0, 0);
             pressing = false;
             dragging = false;
         }
@@ -389,9 +387,13 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         report(PINCHED, phase, factor, pinchX, pinchY);
     }
 
-    /** A press's phase at a point of the screen; whether it is a drag now. */
-    private boolean press(int phase, float x, float y) {
-        return StateUIHost.pressed(view, phase, x, y);
+    /**
+     * A press's phase at `event`'s point of the screen, which the view a drag moves does not move, and at the same
+     * point of the view; whether it is a drag now.
+     */
+    private boolean press(int phase, MotionEvent event) {
+        return StateUIHost.pressed(view, phase, event.getRawX() / density, event.getRawY() / density,
+            event.getX() / density, event.getY() / density);
     }
 
     private void report(int kind, int phase, float x, float y, float z) {

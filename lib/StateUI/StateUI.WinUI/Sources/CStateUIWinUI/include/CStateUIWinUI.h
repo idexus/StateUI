@@ -68,8 +68,7 @@ typedef enum {
 
 /// What a view heard: a tap, its place in a quick run of taps from 1, 0 for a press assistive technology made; the
 /// pointer at (x, y) DIPs of the view; a pinch's `StateUIPhase`, its scale since the last, at (x, y) as shares of the
-/// view's size; a press a drag may become, its `StateUIPressPhase` at (x, y) DIPs of the window's content, which the
-/// host's rule makes a drag; a rotation's `StateUIPhase` and its degrees clockwise since the last, in the scale's
+/// view's size; a rotation's `StateUIPhase` and its degrees clockwise since the last, in the scale's
 /// place; a wheel turned with Control, as Windows tells a trackpad's pinch, its notches in the scale's place - or,
 /// over a layout WinUI's own scroller hears, the scale it scales for it; a press held, at (x, y) DIPs of the view; a
 /// press on a view that hears taps, its `StateUIPhase` at (x, y) DIPs of the view, 1 in the scale's place where a
@@ -82,7 +81,6 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIHeardPointerPressed,
     StateUIHeardPointerReleased,
     StateUIHeardPinch,
-    StateUIHeardPress,
     StateUIHeardRotation,
     StateUIHeardWheelPinch,
     StateUIHeardWheelScale,
@@ -366,6 +364,10 @@ typedef struct {
     /// What a view heard of the user's input, as `StateUIHeard` says: `phase` a tap's place, a gesture's phase, or
     /// 1 where a finger is a pointer event's pointer.
     void (*heard)(int64_t view, StateUIHeard what, int32_t phase, double x, double y, double scale);
+
+    /// A press a drag may become, at its `StateUIPressPhase`, at (x, y) DIPs of the window's content - which the view
+    /// a drag moves does not move - and (inX, inY) of the view: the host's rule makes it a drag.
+    void (*pressed)(int64_t view, int32_t phase, double x, double y, double inX, double inY);
 
     /// The user answered the question asked under `ticket`: whether it was accepted, the words typed, in UTF-8, null
     /// for none, and the place of the action a choice's user chose, -1 for none; or why WinUI could not ask it, in

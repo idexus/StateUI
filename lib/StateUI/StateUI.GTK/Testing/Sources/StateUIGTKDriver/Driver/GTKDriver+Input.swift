@@ -41,7 +41,8 @@ extension GTKDriver {
             if let click { GTKTestHost.emit(click, "released", [1, x, y]) }
         case .pan(let offset):
             guard let drag = controllers(.drags).first else { return false }
-            GTKTestHost.emit(drag, "drag-begin", [0, 0])
+            let (x, y) = Self.middle(of: view)
+            GTKTestHost.emit(drag, "drag-begin", [x, y])
             GTKTestHost.emit(drag, "drag-update", [offset.x / 2, offset.y / 2])
             GTKTestHost.emit(drag, "drag-update", [offset.x, offset.y])
             GTKTestHost.emit(drag, "drag-end", [offset.x, offset.y])

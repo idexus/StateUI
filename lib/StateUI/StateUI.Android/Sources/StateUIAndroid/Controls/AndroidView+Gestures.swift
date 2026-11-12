@@ -156,12 +156,12 @@ extension AndroidView {
         onDragHeard?(.filesDropped(zip(addresses, names).map { ChosenFile(address: $0, name: $1) }))
     }
 
-    /// A press the listener tells - down, moved, let go or taken away, at `point` of the screen: a drag by the host
-    /// layer's rule. Whether it is one now, which takes the rest of the touch.
+    /// A press the listener tells - down, moved, let go or taken away, at `point` of the screen and `inView` of the
+    /// view: a drag by the host layer's rule. Whether it is one now, which takes the rest of the touch.
     /// Design: docs/design/platforms/android/controls.md#gestures
-    func heardPress(phase: Int32, at point: Point) -> Bool {
+    func heardPress(phase: Int32, at point: Point, inView: Point) -> Bool {
         switch AndroidPressPhase(rawValue: phase) {
-        case .down: press.pressed(at: point)
+        case .down: press.pressed(at: point, inView: inView)
         case .move: press.moved(to: point).forEach { _ = onHeard?($0) }
         case .letGo, .taken, nil:
             if let end = press.ended(letGo: phase == AndroidPressPhase.letGo.rawValue) { _ = onHeard?(end) }

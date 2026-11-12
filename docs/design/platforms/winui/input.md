@@ -81,7 +81,9 @@ The relay tells the press alone - down, moved, let go, taken away - and holds
 the pointer for the view as the rule says it is a drag: from there the view holds the
 pointer, so the drag goes on outside it, and the drag is handled, so a view
 dragged inside another drags alone. It is measured on the window's content,
-where the view it moves does not move the measure. A drag says its phases -
+where the view it moves does not move the measure, and told with the same
+point in the view beside it (`pressed`), where a pan says it is. A drag says
+its phases -
 began, moved by how far since it began, ended or cancelled - and a pan's
 states move by that from where they stood as it began. Ended, it is a swipe
 by the host layer's rule ([a swipe](../../host/runtime.md#a-swipe)). A pan

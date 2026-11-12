@@ -1,4 +1,4 @@
-# revision 25.1
+# revision 26.1
 Button.panYChannel: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.area: ✅
 Canvas.frameChanged: ✅

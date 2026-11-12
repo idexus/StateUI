@@ -220,10 +220,15 @@ final class WinUIDriver: HostDriver {
         case (.hold, let view?) where view.hearing.contains(.holds):
             view.heardHold()
         case (.pan(let offset), let view?) where view.hearing.contains(.drags):
-            // The press the relay tells, which the host layer's rule makes a drag.
-            view.heardPress(.down, at: Point(x: 100, y: 100))
-            view.heardPress(.moved, at: Point(x: 100 + offset.x, y: 100 + offset.y))
-            view.heardPress(.letGo, at: Point(x: 100 + offset.x, y: 100 + offset.y))
+            // The press the relay tells from the view's middle - at its point of the window's content and of the
+            // view - which the host layer's rule makes a drag.
+            let corner = (element.native as? WinUIElement)?.windowCorner ?? view.origin
+            let middle = Point(x: view.placedFrame.width / 2, y: view.placedFrame.height / 2)
+            let on = { (moved: Point) in Point(x: corner.x + middle.x + moved.x, y: corner.y + middle.y + moved.y) }
+            let inView = { (moved: Point) in Point(x: middle.x + moved.x, y: middle.y + moved.y) }
+            view.heardPress(.down, at: on(.zero), inView: inView(.zero))
+            view.heardPress(.moved, at: on(offset), inView: inView(offset))
+            view.heardPress(.letGo, at: on(offset), inView: inView(offset))
         // A throw's speed is the pointer's times, which no input a driver sends carries: the hand reaches the
         // host's entry as the relay would hand it, with the speed - ✓.
         case (.sweep(let offset, let speed), let view?) where view.hearing.contains(.hand):

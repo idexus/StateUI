@@ -101,10 +101,6 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated { WinUIRenderer.shared?.environmentChanged() }
             },
             heard: { view, what, phase, x, y, scale in
-                if what == .press {
-                    guard let phase = StateUIPressPhase(rawValue: phase) else { return }
-                    return MainActor.assumeIsolated { WinUIView.find(view)?.heardPress(phase, at: Point(x: x, y: y)) }
-                }
                 if what == .hold {
                     return MainActor.assumeIsolated { WinUIView.find(view)?.heardHold() }
                 }
@@ -124,6 +120,12 @@ enum WinUICallbacks {
                 }
                 guard let heard = HeardInput(what, phase: phase, x: x, y: y, scale: scale) else { return }
                 MainActor.assumeIsolated { WinUIView.find(view)?.heard(heard) }
+            },
+            pressed: { view, phase, x, y, inX, inY in
+                guard let phase = StateUIPressPhase(rawValue: phase) else { return }
+                MainActor.assumeIsolated {
+                    WinUIView.find(view)?.heardPress(phase, at: Point(x: x, y: y), inView: Point(x: inX, y: inY))
+                }
             },
             answered: { ticket, accepted, utf8, chosen, failure in
                 let words = utf8.map { String(cString: $0) }

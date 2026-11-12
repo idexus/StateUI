@@ -546,13 +546,14 @@
     }
 
     /// A press dragged across a view is heard as it starts, runs and ends - each report how far it came and how fast
-    /// it goes, its end where it reached - carrying the state its pan across moves.
+    /// it goes, its end where it reached, where the press is in the view's own points - carrying the state its pan
+    /// across moves. The view stands away from the window's corner, so a point of the window is no point of the view.
     @MainActor
     static func panned(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPanIsHeardAndCarriesItsStateAcross", proves: [
             Covered(ViewContract.panUpdated, on: element), Covered(ViewContract.panTouchCount, on: element),
             Covered(ViewContract.panXChannel, on: element),
-        ]) { s in
+        ], needs: [Covered(PaddingElementContract.padding, on: "VStack")]) { s in
             let x = State(wrappedValue: 10.0)
             let heard = Received<String>()
             let lifted = Received<Point>()
@@ -569,6 +570,7 @@
                         },
                     ]), carrying: x.projectedValue)
                 }
+                .padding(start: 120, top: 120, end: 0, bottom: 0)
                 .horizontalAlignment(.start)
             }
 
@@ -583,7 +585,8 @@
             let start = began.values.first ?? Point(-1, -1)
             s.expect(began.values.allSatisfy { abs($0.x - start.x) < 1 && abs($0.y - start.y) < 1 }, true,
                      "where the press is moves with it: \(began.values)")
-            s.expect((0...100).contains(start.x) && (0...100).contains(start.y), true, "it began on the view: \(start)")
+            s.expect((0...100).contains(start.x) && (0...100).contains(start.y), true,
+                     "it began on the view, in its own points: \(start)")
             s.expect(x.wrappedValue, -50, "the state carried as far as the hand went across")
         }
     }

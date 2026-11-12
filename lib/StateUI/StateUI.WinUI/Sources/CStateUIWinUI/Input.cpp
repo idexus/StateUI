@@ -140,7 +140,14 @@ namespace {
         entry.pointer = 0;
         entry.dragging = false;
         entry.capturing = false;
-        tell(view, StateUIHeardPress, phase, {});
+        callbacks.pressed(view, phase, 0, 0, 0, 0);
+    }
+
+    /// A press a drag may become, at its point of the window's content and of the view.
+    void press(int64_t view, StateUIPressPhase phase, IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
+        auto on = onContent(args);
+        auto in = args.GetCurrentPoint(sender.as<xaml::UIElement>()).Position();
+        callbacks.pressed(view, phase, on.X, on.Y, in.X, in.Y);
     }
 
     void pointer(int64_t view, StateUIHeard what, IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
@@ -347,7 +354,7 @@ namespace {
             entry->pointer = args.Pointer().PointerId();
             entry->dragging = false;
             entry->capturing = false;
-            tell(view, StateUIHeardPress, StateUIPressPhaseDown, onContent(args));
+            press(view, StateUIPressPhaseDown, sender, args);
         }));
         entry.movedToken = element.PointerMoved(guarded("handling PointerMoved",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
@@ -370,7 +377,7 @@ namespace {
             }
             auto *entry = listener(view, StateUIHearingDrags);
             if (!entry || entry->pointer != args.Pointer().PointerId()) return;
-            tell(view, StateUIHeardPress, StateUIPressPhaseMoved, onContent(args));
+            press(view, StateUIPressPhaseMoved, sender, args);
             // The host said, as it heard the move, whether the press is a drag: the view holds the pointer from there.
             entry = listener(view, StateUIHearingDrags);
             if (!entry || !entry->dragging) return;

@@ -1,4 +1,4 @@
-# revision 25.1
+# revision 26.1
 Button.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Button.panUpdated: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.panXChannel: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent

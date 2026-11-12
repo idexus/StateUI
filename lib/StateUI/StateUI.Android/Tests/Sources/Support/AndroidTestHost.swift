@@ -163,6 +163,8 @@ enum TestJava {
     static let motionEvent = Java.findClass("android/view/MotionEvent")
     static let obtain = Java.staticMethod(motionEvent, "obtain", "(JJIFFI)Landroid/view/MotionEvent;")
     static let recycle = Java.method(motionEvent, "recycle", "()V")
+    static let offsetLocation = Java.method(motionEvent, "offsetLocation", "(FF)V")
+    static let getLocationOnScreen = Java.method(JavaAPI.view, "getLocationOnScreen", "([I)V")
     static let dispatchTouchEvent = Java.method(JavaAPI.view, "dispatchTouchEvent", "(Landroid/view/MotionEvent;)Z")
     static let getTranslationX = Java.method(JavaAPI.view, "getTranslationX", "()F")
     static let getRotation = Java.method(JavaAPI.view, "getRotation", "()F")
@@ -333,10 +335,17 @@ extension AndroidView {
     }
 
     /// Puts a finger down at `x`, `y` pixels of the view, moves it there, or lifts it there, `at` milliseconds
-    /// into the touch, as the user does.
+    /// into the touch, as the user does: the touch stands at its point of the screen, and of the view.
     func touch(_ action: Int32, x: Float, y: Float, at time: Int64 = 0) {
+        let corner = Java.ints([0, 0])
+        Java.call(reference, TestJava.getLocationOnScreen, .object(corner))
+        let onScreen = corner.map(Java.intsOf) ?? [0, 0]
+        Java.release(local: corner)
+        let (left, top) = (Float(onScreen[0]), Float(onScreen[1]))
         let event = Java.callStaticObject(
-            TestJava.motionEvent, TestJava.obtain, .long(0), .long(time), .int(action), .float(x), .float(y), .int(0))
+            TestJava.motionEvent, TestJava.obtain, .long(0), .long(time), .int(action), .float(x + left),
+            .float(y + top), .int(0))
+        Java.call(event!, TestJava.offsetLocation, .float(-left), .float(-top))
         _ = Java.callBool(reference, TestJava.dispatchTouchEvent, .object(event))
         Java.call(event!, TestJava.recycle)
         Java.release(local: event)

@@ -415,7 +415,8 @@ and comes back clicks nothing, where the press taps. Where more taps make one, t
 quick taps near each other as Android measures a double tap - Android itself
 counts no run past two - and tells each with its place in its run. A press is
 told as it goes down, moves, lets go or is taken away, measured on the screen,
-since a view that follows its drag moves where its own touches are measured;
+since a view that follows its drag moves where its own touches are measured,
+with the same point in the view beside it, where a pan says it is (`at`);
 it is a drag by the host layer's rule (`DragRecognition`) once it passes
 Android's touch slop, and the listener, told so at once, takes the rest of the
 touch - the view's own press and click are called off. A press of more than

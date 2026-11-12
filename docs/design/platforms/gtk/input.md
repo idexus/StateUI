@@ -94,7 +94,9 @@ GTK's own click stops at, which also tells a press that moved from a tap. From t
 the drag claims its press: GTK denies it to the tap on the same press and to
 every view around the one dragged, so a view dragged inside another drags
 alone. It is measured on the window, from each event's own position, where
-the view it moves does not move the measure. A drag says its phases - began,
+the view it moves does not move the measure; where it went down in the view,
+which a pan's `at` is measured from, is the start `drag-begin` gives. A drag
+says its phases - began,
 moved by how far since it began, ended or cancelled - and a pan's states move
 by that from where they stood as it began. It ended when the last event it
 followed let go of the press; otherwise it was cancelled. Ended, it is a

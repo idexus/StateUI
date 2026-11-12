@@ -589,13 +589,13 @@ class WinUIView {
         onDragHeard?(heard)
     }
 
-    /// A press the relay tells - down, moved, let go or taken away, at `point` of the window's content: a drag by the
-    /// host layer's rule, and as it becomes one the view holds the pointer.
+    /// A press the relay tells - down, moved, let go or taken away, at `point` of the window's content and `inView`
+    /// of the view: a drag by the host layer's rule, and as it becomes one the view holds the pointer.
     /// Design: docs/design/platforms/winui/input.md#a-press-dragged
-    func heardPress(_ phase: StateUIPressPhase, at point: Point) {
+    func heardPress(_ phase: StateUIPressPhase, at point: Point, inView: Point) {
         switch phase {
         case .down:
-            press.pressed(at: point)
+            press.pressed(at: point, inView: inView)
         case .moved:
             let wasDragging = press.isDragging
             let told = press.moved(to: point)
