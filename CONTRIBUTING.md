@@ -89,11 +89,11 @@ host layer, with its build in `.scripts/<Platform>`. Swift written for one host 
 that host's condition - `#if APPKIT`, `#if UIKIT`, `#if ANDROID`, `#if WINUI`,
 `#if GTK`, `#if WEB` - which its builds define.
 
-The core schedules nothing on Foundation's `Timer` or `RunLoop`, and nothing
-on `DispatchQueue.main` but the one drain `UIThread.swift` posts there for a
-process that turns that queue: nothing drains them on Android, on Windows or
-in a browser. Work for the UI thread goes to `MainActor`, and a timer is
-`Task.sleep` or `Ticker`. Memory allocated in Swift is freed in Swift - never
+The core schedules nothing on Foundation's `Timer` or `RunLoop` - nothing
+turns them off Apple - and nothing on `DispatchQueue.main` but the one drain
+`UIThread.swift` posts there. Every native host off Apple drains that queue on
+its UI thread, for an application's own posts; the library's work for the UI
+thread goes to `MainActor`, and a timer is `Task.sleep` or `Ticker`. Memory allocated in Swift is freed in Swift - never
 `strdup` and `free` - because several C runtimes can share a Windows process.
 
 StateUI's core owns identity, diffing, state, journeys, and motion

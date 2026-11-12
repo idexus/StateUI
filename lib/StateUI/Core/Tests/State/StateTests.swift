@@ -447,8 +447,8 @@ final class StateTests: XCTestCase {
 
     /// A write NOBODY reads asks for nothing: no live element read the state,
     /// so nothing on screen could change for it - and it is not even named.
-    /// What it costs is the storage's lock and one look at the readers; no
-    /// dirty tree, no wake, no walk. See `Renderer.stateChanged`.
+    /// What it costs is one look at the readers; no dirty tree, no wake, no
+    /// walk. See `Renderer.stateChanged`.
     func testAWriteNobodyReadsAsksForNothing() {
         Renderer.shared.clearInvalidation()
         let state = State(0)

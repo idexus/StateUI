@@ -733,10 +733,8 @@ final class InvalidationTests: XCTestCase {
     /// being wiped by this one's bookkeeping.
     ///
     /// The renderer takes and clears its change set in one step BEFORE the
-    /// build, so a write from a pool thread - a `Task.detached` with an
-    /// answer, an `async let` child - that crosses mid-build stays on the
-    /// books. A body writing as it builds stands in for that thread here:
-    /// the write lands after the take, exactly where a crossing would.
+    /// build, so a write that lands mid-build stays on the books. A body
+    /// writing as it builds makes one here: the write lands after the take.
     func testAWriteDuringTheRenderIsKeptForTheNextOne() {
         let page = WritingPage.shared
         page.writes = 1
