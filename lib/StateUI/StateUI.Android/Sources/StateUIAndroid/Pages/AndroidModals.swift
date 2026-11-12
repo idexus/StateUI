@@ -113,11 +113,14 @@ final class AndroidModals {
         }
     }
 
-    /// Stands each sheet's card in a wide window as large as its page asks now.
+    /// Stands each sheet's card in a wide window as large as its page asks now; a sheet the window crossed 600 points
+    /// for stands on a card or on the whole window as it now asks, on its ground again.
     func standAtTheirSizes() {
         for sheet in shown {
             let card = Self.card(for: sheet.element, in: window)
-            Java.callStatic(JavaAPI.views, JavaAPI.sizeSheet, .object(sheet.holder.reference), .int(card.width), .int(card.height))
+            let moved = Java.callStaticBool(
+                JavaAPI.views, JavaAPI.sizeSheet, .object(sheet.holder.reference), .int(card.width), .int(card.height))
+            if moved { Self.ground(sheet.holder, on: sheet.element) }
         }
     }
 

@@ -491,14 +491,22 @@ final class StateUIViews {
         if (page.getParent() instanceof ViewGroup) ((ViewGroup) page.getParent()).removeView(page);
         FrameLayout holder = new FrameLayout(context);
         holder.setClickable(true);
-        FrameLayout.LayoutParams whole = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        java.util.List<View> held = new java.util.ArrayList<>();
+        held.add(page);
+        stand(holder, held, width, height);
+        return holder;
+    }
+
+    /** Stands `held` - a page and what is laid over it - in `holder`: on a card `width` by `height`, or filling it. */
+    private static void stand(FrameLayout holder, java.util.List<View> held, int width, int height) {
+        Context context = holder.getContext();
         if (width <= 0) {
             TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.windowBackground});
             holder.setBackground(theme.getDrawable(0));
             theme.recycle();
-            holder.addView(page, whole);
-            return holder;
+            holder.setTag(null);
+            for (View view : held) holder.addView(view, whole());
+            return;
         }
         TypedArray theme = context.obtainStyledAttributes(new int[] {
                 android.R.attr.colorBackground, android.R.attr.dialogCornerRadius, android.R.attr.backgroundDimAmount});
@@ -516,9 +524,12 @@ final class StateUIViews {
         card.setClipToOutline(true);
         card.setElevation(24 * context.getResources().getDisplayMetrics().density);
         card.setClickable(true);
-        card.addView(page, whole);
+        for (View view : held) card.addView(view, whole());
         holder.addView(card, new FrameLayout.LayoutParams(width, height, Gravity.CENTER));
-        return holder;
+    }
+
+    private static FrameLayout.LayoutParams whole() {
+        return new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
     }
 
     /**
@@ -563,15 +574,30 @@ final class StateUIViews {
         return Long.MIN_VALUE;
     }
 
-    /** Stands the card of a sheet in a wide window at `width` by `height` pixels; nothing for one filling it. */
-    static void sizeSheet(View holder, int width, int height) {
-        if (!CARD.equals(holder.getTag()) || width <= 0) return;
+    /**
+     * Stands the card of a sheet in a wide window at `width` by `height` pixels; nothing for one filling it. A window
+     * crossing from wide to narrow, or back, moves the page and what is laid over it from the card to the whole
+     * window, or back: whether it moved, its ground to be laid again.
+     */
+    static boolean sizeSheet(View holder, int width, int height) {
+        boolean onCard = CARD.equals(holder.getTag());
+        if (onCard != width > 0) {
+            ViewGroup from = onCard ? (ViewGroup) ((ViewGroup) holder).getChildAt(0) : (ViewGroup) holder;
+            java.util.List<View> held = new java.util.ArrayList<>();
+            for (int index = 0; index < from.getChildCount(); index++) held.add(from.getChildAt(index));
+            from.removeAllViews();
+            ((ViewGroup) holder).removeAllViews();
+            stand((FrameLayout) holder, held, width, height);
+            return true;
+        }
+        if (!onCard) return false;
         View card = ((ViewGroup) holder).getChildAt(0);
         ViewGroup.LayoutParams params = card.getLayoutParams();
-        if (params.width == width && params.height == height) return;
+        if (params.width == width && params.height == height) return false;
         params.width = width;
         params.height = height;
         card.setLayoutParams(params);
+        return false;
     }
 
     /** The window's width, or its height where not `across`, in density-independent pixels. */

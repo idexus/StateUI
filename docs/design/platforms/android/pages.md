@@ -224,7 +224,10 @@ over the theme's own ([a page's ground](../../host/pages.md#a-pages-ground)),
 the theme's alone where the window says none, and is grounded again as that
 background changes. Either moves at
 once where the user asks for less motion; the window's size is the
-configuration's, known before the root is laid out. The page in front is the one presented:
+configuration's, known before the root is laid out. A window resized across
+600 points moves the page shown, and what is laid over it, from the card to
+the whole window or back, as the configuration changes - the same page, its
+state kept, on its ground again. The page in front is the one presented:
 the page beneath hears it disappear, and appear again when the one over it
 goes. Back is the page in front's own way first - a stack inside it pops -
 and then that page going down, false written onto its sheet's state.

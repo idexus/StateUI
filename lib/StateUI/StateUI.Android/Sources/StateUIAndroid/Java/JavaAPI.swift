@@ -241,7 +241,7 @@ enum JavaAPI {
     static let groundPage = Java.staticMethod(views, "groundPage", "(Landroid/view/View;)V")
     static let sheet = Java.staticMethod(
         views, "sheet", "(Landroid/content/Context;Landroid/view/View;II)Landroid/widget/FrameLayout;")
-    static let sizeSheet = Java.staticMethod(views, "sizeSheet", "(Landroid/view/View;II)V")
+    static let sizeSheet = Java.staticMethod(views, "sizeSheet", "(Landroid/view/View;II)Z")
     static let groundSheet = Java.staticMethod(views, "groundSheet", "(Landroid/view/View;J)V")
     static let sheetColor = Java.staticMethod(views, "sheetColor", "(Landroid/view/View;)J")
     static let windowDp = Java.staticMethod(views, "windowDp", "(Landroid/content/Context;Z)I")

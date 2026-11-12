@@ -268,7 +268,8 @@ final class AndroidRenderer {
     }
 
     /// The activity's configuration changed - the display turned or resized: the core is told what stands now,
-    /// and the window laid out again. Pixels a point changing - the display's size, another screen - make the window
+    /// and the window laid out again, its sheets standing on a card or on the whole window as its width now asks.
+    /// Pixels a point changing - the display's size, another screen - make the window
     /// again at the new density, as an activity Android makes again does.
     /// Design: docs/design/platforms/android/runtime.md#a-later-activity
     func configured() {
@@ -281,6 +282,8 @@ final class AndroidRenderer {
             AndroidEnvironment.report(to: runtime.core, activity: context.reference)
             Java.call(root.reference, JavaAPI.requestLayout)
         }
+        modals.standAtTheirSizes()
+        standUnderTheWindowsInsets()
     }
 
     /// The safe area's top left in the window, in points: where the page's root stands.
