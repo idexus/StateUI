@@ -304,6 +304,18 @@ final class CompositionTests: XCTestCase {
         return kept.joined(separator: "\n")
     }
 
+    /// The scan reads a declaration's body alike whatever text stands before it: a comment of emoji and one of
+    /// plain letters.
+    func testTheScanReadsABodyAlikeAfterAnyText() {
+        let view = "struct Card: View {\n    var body: some View { Text(\"card\") }\n}\n"
+        let bodies = ["// a card\n", "// 👩‍👩‍👧 a card ✍🏽\n"].map { comment in
+            declarations(in: comment + view, kinds: ["struct"]).map(\.body)
+        }
+
+        XCTAssertEqual(bodies[0], ["\n    var body: some View { Text(\"card\") }\n"])
+        XCTAssertEqual(bodies[1], bodies[0])
+    }
+
     /// One declaration read out of a source file.
     private struct Declaration {
         let name: String
@@ -353,22 +365,24 @@ final class CompositionTests: XCTestCase {
         return found
     }
 
-    /// The text between a brace and the one that closes it.
+    /// The text between a brace and the one that closes it, `offset` counted in UTF-16 units as a match's range
+    /// is.
     private func bracedBody(in source: String, openingAt offset: Int) -> String? {
-        let characters = Array(source)
+        let units = Array(source.utf16)
+        let (opening, closing) = (UInt16(UInt8(ascii: "{")), UInt16(UInt8(ascii: "}")))
 
-        guard offset < characters.count, characters[offset] == "{" else { return nil }
+        guard offset < units.count, units[offset] == opening else { return nil }
 
         var depth = 0
         var index = offset
 
-        while index < characters.count {
-            if characters[index] == "{" { depth += 1 }
-            if characters[index] == "}" {
+        while index < units.count {
+            if units[index] == opening { depth += 1 }
+            if units[index] == closing {
                 depth -= 1
 
                 if depth == 0 {
-                    return String(characters[(offset + 1)..<index])
+                    return String(decoding: units[(offset + 1)..<index], as: UTF16.self)
                 }
             }
 
