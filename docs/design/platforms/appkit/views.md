@@ -233,7 +233,9 @@ opened under it, at least as wide, as a pull-down opens its:
   button pressed while it is open, and an arrow pointing down stands just
   after the words; the button is a menu button to assistive technology;
 - a split button's arrow is a part of its own at its trailing edge, the whole
-  height, set off by a line, opening the menu as it is pressed;
+  height, set off by a line, opening the menu as it is pressed - enabled as its
+  button is, and the menu opening for no part of a disabled button, however
+  pressed;
 - a held button is let go before half a second for its click, and held past
   it opens its menu, the press going on into it - AppKit's own event tracking
   reads the press, with no timer.

@@ -62,6 +62,11 @@ struct AppKitButtonArrow {
             width: 1, height: max(0, bounds.height - 2 * inset))
     }
 
+    /// Takes the press with its button or not: a split button's part as its button does.
+    func enable(_ enabled: Bool) {
+        (view as? NSControl)?.isEnabled = enabled
+    }
+
     /// Draws the arrow in the words' color, and its line fainter.
     func tint(_ color: NSColor) {
         (view as? NSImageView)?.contentTintColor = color

@@ -32,7 +32,14 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
     private let offered = NSMenu()
 
     /// The arrow its menu opens by: a mark after the words, or a split button's part; nil for none.
-    private var arrow: AppKitButtonArrow?
+    private var arrow: AppKitButtonArrow? {
+        didSet { arrow?.enable(isEnabled) }
+    }
+
+    /// Whether the button takes the user's press - its arrow's part with it.
+    override var isEnabled: Bool {
+        didSet { arrow?.enable(isEnabled) }
+    }
 
     /// How long a held button waits before it opens its menu, in seconds.
     private static let holdDelay = 0.5
@@ -273,10 +280,17 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
     /// Whether the button shows the arrow saying its click opens its menu.
     var showsMenuMark: Bool { arrow.map { $0.line == nil } ?? false }
 
-    /// Opens the menu under the button, at least as wide, as AppKit's own pull-down button opens its.
+    /// Opens the menu under the button, at least as wide, as AppKit's own pull-down button opens its - none while
+    /// the button is disabled, whichever part was pressed.
     func showMenu() {
+        guard isEnabled else { return }
         offered.minimumWidth = bounds.width
-        offered.popUp(positioning: nil, at: NSPoint(x: 0, y: isFlipped ? bounds.maxY + 2 : bounds.minY - 2), in: self)
+        Self.showsMenu(offered, NSPoint(x: 0, y: isFlipped ? bounds.maxY + 2 : bounds.minY - 2), self)
+    }
+
+    /// How a button's menu is shown: AppKit's own pop-up, which a test replaces to count what opens.
+    static var showsMenu: @MainActor (NSMenu, NSPoint, NSView) -> Void = { menu, point, view in
+        menu.popUp(positioning: nil, at: point, in: view)
     }
 
     override func updateTrackingAreas() {

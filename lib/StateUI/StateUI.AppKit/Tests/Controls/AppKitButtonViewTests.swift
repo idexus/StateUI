@@ -9,6 +9,15 @@ import AppKit
 import StateUIConformance
 import XCTest
 
+/// A split button whose enablement a test turns.
+private struct SplitPage: View {
+    let enabled: State<Bool>
+
+    var body: some View {
+        Button("Save").onClicked {}.menu(.split) { MenuItem("Save as").onClicked {} }.isEnabled(enabled.projectedValue)
+    }
+}
+
 @MainActor
 final class AppKitButtonViewTests: XCTestCase {
     /// A caption the tree wraps stands as many lines tall as its words take at a narrower width, a width stated on
@@ -31,6 +40,37 @@ final class AppKitButtonViewTests: XCTestCase {
 
         XCTAssertEqual(wrapped.width, 100)
         XCTAssertGreaterThan(wrapped.height, one.height * 2, "the wrapped caption over its lines")
+    }
+
+    /// A disabled split button opens no menu, its arrow part neither - pressed where AppKit's own hit test finds
+    /// it, or by a screen reader - and opens it again once enabled.
+    @MainActor
+    func testADisabledSplitButtonsArrowOpensNoMenu() throws {
+        var opened = 0
+        let showing = AppKitButtonView.showsMenu
+        AppKitButtonView.showsMenu = { _, _, _ in opened += 1 }
+        defer { AppKitButtonView.showsMenu = showing }
+        let enabled = State(wrappedValue: false)
+        let renderer = autoreleasepool { AppKitRenderer.running { SplitPage(enabled: enabled) } }
+        defer { renderer.finish() }
+        let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
+        button.window?.contentView?.layoutSubtreeIfNeeded()
+        func pressArrow() throws {
+            let point = NSPoint(x: button.bounds.maxX - 6, y: button.bounds.midY)
+            let hit = try XCTUnwrap(button.hitTest(button.convert(point, to: button.superview)))
+            let down = try XCTUnwrap(NSEvent.mouseEvent(
+                with: .leftMouseDown, location: button.convert(point, to: nil), modifierFlags: [], timestamp: 0,
+                windowNumber: button.window?.windowNumber ?? 0, context: nil, eventNumber: 0, clickCount: 1, pressure: 1))
+            hit.mouseDown(with: down)
+            _ = hit.accessibilityPerformPress()
+        }
+
+        try pressArrow()
+        XCTAssertEqual(opened, 0, "disabled, its arrow opens nothing")
+        enabled.wrappedValue = true
+        renderer.runtime.pump.turn()
+        try pressArrow()
+        XCTAssertGreaterThan(opened, 0, "enabled, its arrow opens its menu")
     }
 
     @MainActor
