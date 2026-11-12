@@ -3,14 +3,17 @@
 
 /// The bodies of a motion layout's world: how far each view stands from where its arithmetic puts it, lane by lane as
 /// a shift's (`LayoutShift`), and how fast each lane goes - each body a mass on a spring to its place, worked out at a
-/// fixed step, so the same frames or other ones bring it to the same place.
+/// fixed step, so the same frames or other ones bring it to the same place, and landed there by the longest a spring
+/// animates.
 /// Design: docs/design/views/motion-layout.md#bodies
 struct LayoutBodies: Equatable, Sendable {
-    /// One body: its shift's lanes, how fast each goes, per second, and the spring that pulls it onto its place.
+    /// One body: its shift's lanes, how fast each goes, per second, the spring that pulls it onto its place, and
+    /// how long it has moved since it was last set or carried, in milliseconds.
     struct Body: Equatable, Sendable {
         var lanes: [Double]
         var velocity: [Double]
         var spring: Spring
+        var moved = 0.0
     }
 
     /// A spring a body follows its place on: its response, in milliseconds, and its damping - 1 coming to rest
@@ -64,6 +67,7 @@ struct LayoutBodies: Equatable, Sendable {
             return set(identity, lanes: moved, velocity: Array(repeating: 0, count: moved.count), spring: spring, at: now)
         }
         for lane in body.lanes.indices where lane < moved.count { body.lanes[lane] += moved[lane] }
+        body.moved = 0
         bodies[identity] = body
     }
 
@@ -92,15 +96,17 @@ struct LayoutBodies: Equatable, Sendable {
 }
 
 extension LayoutBodies.Body {
-    /// The body `milliseconds` on, its spring pulling each lane onto nought, damped by how fast it goes: semi-implicit,
-    /// the speed first and the place by it.
+    /// The body `milliseconds` on, its spring pulling each lane onto nought: the motion law's own closed form, so a
+    /// step of any spring is where the spring is then, never a step past it. A body moving the longest a spring
+    /// animates, or come out no number, lands on its place.
     mutating func advance(by milliseconds: Double) {
-        let frequency = 2 * Double.pi / max(spring.response, 1)
+        moved += milliseconds
         for lane in lanes.indices {
-            var speed = velocity[lane] / 1_000
-            speed += (-frequency * frequency * lanes[lane] - 2 * spring.damping * frequency * speed) * milliseconds
-            lanes[lane] += speed * milliseconds
-            velocity[lane] = speed * 1_000
+            let (place, speed) = HostMotionLaw.spring(
+                response: max(spring.response, 1), damping: max(spring.damping, 0.01), elapsed: milliseconds,
+                displacement: lanes[lane], speed: velocity[lane] / 1_000)
+            let lands = moved >= HostMotionLaw.longest || !place.isFinite || !speed.isFinite
+            (lanes[lane], velocity[lane]) = lands ? (0, 0) : (place, speed * 1_000)
         }
     }
 

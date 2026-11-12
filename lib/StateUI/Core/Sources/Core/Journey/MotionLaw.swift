@@ -185,46 +185,15 @@ import StateUIFoundation
     ) -> HostMotionSample {
         guard elapsed < longest else { return landed(destination) }
 
-        let frequency = 2 * Double.pi / response
         var value = Array(repeating: 0.0, count: from.count)
         var speed = value
         var rested = true
 
         for lane in value.indices {
             let target = destination[lane]
-            let displacement = from[lane] - target
-            let initialSpeed = velocity[lane]
-            let remaining: Double
-            let derivative: Double
-
-            if abs(damping - 1) < 1e-6 {
-                let b = initialSpeed + (frequency * displacement)
-                let decay = exp(-frequency * elapsed)
-                remaining = (displacement + (b * elapsed)) * decay
-                derivative = (b - (frequency * (displacement + (b * elapsed)))) * decay
-            } else if damping < 1 {
-                let damped = frequency * sqrt(1 - (damping * damping))
-                let a = displacement
-                let b = (initialSpeed + (damping * frequency * displacement)) / damped
-                let decay = exp(-damping * frequency * elapsed)
-                let cosine = cos(damped * elapsed)
-                let sine = sin(damped * elapsed)
-                remaining = decay * ((a * cosine) + (b * sine))
-                derivative = decay * (
-                    (-damping * frequency * ((a * cosine) + (b * sine)))
-                        + (damped * ((b * cosine) - (a * sine))))
-            } else {
-                // The two rates written so neither the damping's square nor their difference loses the number:
-                // the slow one as the fast one's reciprocal, the constants over the fast one.
-                let spread = damping * sqrt(1 - (1 / damping) / damping)
-                let first = -frequency / (damping + spread)
-                let second = -frequency * (damping + spread)
-                let c1 = (displacement - (initialSpeed / second)) / (1 - (first / second))
-                let c2 = displacement - c1
-                remaining = (c1 * exp(first * elapsed)) + (c2 * exp(second * elapsed))
-                derivative = (c1 * first * exp(first * elapsed))
-                    + (c2 * second * exp(second * elapsed))
-            }
+            let (remaining, derivative) = spring(
+                response: response, damping: damping, elapsed: elapsed, displacement: from[lane] - target,
+                speed: velocity[lane])
 
             if abs(remaining) <= still && abs(derivative) * 1_000 <= stillSpeed {
                 value[lane] = target
@@ -239,6 +208,41 @@ import StateUIFoundation
         return rested
             ? landed(destination)
             : HostMotionSample(value: value, velocity: speed, rested: false)
+    }
+
+    /// One lane of a spring `elapsed` milliseconds on, from `displacement` off its destination going `speed` a
+    /// millisecond: how far off it stands and how fast it goes - in closed form for every damping, the one answer
+    /// an animation and a motion layout's body both move by.
+    static func spring(
+        response: Double, damping: Double, elapsed: Double, displacement: Double, speed initialSpeed: Double
+    ) -> (remaining: Double, derivative: Double) {
+        let frequency = 2 * Double.pi / response
+        if abs(damping - 1) < 1e-6 {
+            let b = initialSpeed + (frequency * displacement)
+            let decay = exp(-frequency * elapsed)
+            return ((displacement + (b * elapsed)) * decay, (b - (frequency * (displacement + (b * elapsed)))) * decay)
+        }
+        if damping < 1 {
+            let damped = frequency * sqrt(1 - (damping * damping))
+            let a = displacement
+            let b = (initialSpeed + (damping * frequency * displacement)) / damped
+            let decay = exp(-damping * frequency * elapsed)
+            let cosine = cos(damped * elapsed)
+            let sine = sin(damped * elapsed)
+            return (
+                decay * ((a * cosine) + (b * sine)),
+                decay * ((-damping * frequency * ((a * cosine) + (b * sine))) + (damped * ((b * cosine) - (a * sine)))))
+        }
+        // The two rates written so neither the damping's square nor their difference loses the number: the slow
+        // one as the fast one's reciprocal, the constants over the fast one.
+        let spread = damping * sqrt(1 - (1 / damping) / damping)
+        let first = -frequency / (damping + spread)
+        let second = -frequency * (damping + spread)
+        let c1 = (displacement - (initialSpeed / second)) / (1 - (first / second))
+        let c2 = displacement - c1
+        return (
+            (c1 * exp(first * elapsed)) + (c2 * exp(second * elapsed)),
+            (c1 * first * exp(first * elapsed)) + (c2 * second * exp(second * elapsed)))
     }
 
     /// How far through the change an eased animation is when `progress` of its

@@ -165,12 +165,15 @@ the first time a frame asks, and again once that view is built again - a
 state the view reads, a switch turning its body on, builds the view without
 the layout or its holder, so the layout forgets that view's body as it
 builds it, shade or none). The world is worked out at
-a fixed step - 240 a second, semi-implicit, the spring's frequency as
-`HostMotionLaw`'s - with an accumulator, so other frames, another host or
-another rate bring a body to the same place; a frame works out at most 32
-steps, and a world further behind lets the rest go, slowing rather than
-spending a frame catching up (the Web without a JIT). A body as near and as
-slow as an animation counts arrived leaves the world.
+a fixed step - 240 a second, each step `HostMotionLaw`'s own closed form for
+one lane (`HostMotionLaw.spring`), so a step of any spring is where the
+spring then is and none runs away - with an accumulator, so other frames,
+another host or another rate bring a body to the same place; a frame works
+out at most 32 steps, and a world further behind lets the rest go, slowing
+rather than spending a frame catching up (the Web without a JIT). A body as
+near and as slow as an animation counts arrived leaves the world, and one
+still moving the longest a spring animates since it was set or carried lands
+on its place, as an animation does.
 
 A body of the world's own is at its place but where a change shifted it: the
 parameters and the hand carry it exactly. A body following its layout
