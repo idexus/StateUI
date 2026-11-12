@@ -150,7 +150,8 @@ class WinUIView {
     /// Design: docs/design/platforms/winui/drawing.md#a-views-background
     func setBackground(_ value: HostValue?) {
         let brush = WinUIBrush(value)
-        paint(.background, followsSize: brush.followsSize) { [handle] size in
+        paint(.background, followsSize: brush.followsSize) { [weak self] size in
+            guard let handle = self?.handle else { return }
             brush.withRelayBrush(over: size) { stateui_winui_set_background(handle, $0) }
         }
     }
@@ -315,7 +316,8 @@ class WinUIView {
     }
 
     /// Paints `what` with `paint` at the view's size now, and again at each new size where its brushes follow the
-    /// size of what they paint (`WinUIBrush.followsSize`).
+    /// size of what they paint (`WinUIBrush.followsSize`). `paint` reads the view's control as it runs, never one it
+    /// captured: a password swapped in lets the control before it go (`replaceNative`).
     /// Design: docs/design/platforms/winui/drawing.md#a-box-and-its-brush
     func paint(_ what: Painted, followsSize: Bool, _ paint: @escaping (LayoutSize) -> Void) {
         paintsBySize[what] = followsSize ? paint : nil

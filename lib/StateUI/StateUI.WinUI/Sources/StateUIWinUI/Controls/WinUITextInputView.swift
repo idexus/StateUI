@@ -42,7 +42,8 @@ class WinUITextInputView: WinUIView {
         let outline = WinUIBrush(stroke)
         let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
         let rounds = outlined.map { $0 != .rectangle } ?? false
-        paint(.look, followsSize: outline.followsSize || rounds) { [handle] size in
+        paint(.look, followsSize: outline.followsSize || rounds) { [weak self] size in
+            guard let handle = self?.handle else { return }
             let radius = outlined.map { BoxArithmetic.cornerRadius(of: $0, width: size.width, height: size.height) } ?? -1
             outline.withRelayBrush(over: size) { brush in stateui_winui_field_set_outline(handle, brush, width, radius) }
         }

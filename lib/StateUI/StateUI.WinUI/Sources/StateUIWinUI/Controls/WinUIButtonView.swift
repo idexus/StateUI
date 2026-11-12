@@ -180,7 +180,8 @@ final class WinUIButtonView: WinUIView {
         let (fill, outline) = (WinUIBrush(background), WinUIBrush(stroke))
         let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
         let rounds = outlined.map { $0 != .rectangle } ?? false
-        paint(.look, followsSize: fill.followsSize || outline.followsSize || rounds) { [handle] size in
+        paint(.look, followsSize: fill.followsSize || outline.followsSize || rounds) { [weak self] size in
+            guard let handle = self?.handle else { return }
             let radius = outlined.map {
                 BoxArithmetic.cornerRadius(of: $0, width: size.width, height: size.height)
             } ?? -1
