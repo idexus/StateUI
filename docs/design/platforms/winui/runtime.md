@@ -30,11 +30,10 @@ executor's queue, which posts a turn. The WinUI element goes with it.
 ## Starting
 
 The head's `main` names the application and hands the thread to
-`WinUIHost.run()`, which loads the Windows App SDK the application carries
-and starts WinUI's `Application` there; WinUI's loop runs that thread until
-the last window closes, and `run` answers the code WinUI ended with, which
-the head ends the process with - it holds no `@discardableResult`, so a head
-that drops it is warned. Its `OnLaunched` calls the host, whose first act is to
+`WinUIHost.run(linkSchemes:)`, which loads the Windows App SDK the application
+carries and starts WinUI's `Application` there; WinUI's loop runs that thread
+until the last window closes, and `run` ends the process with the code WinUI
+ended with: it never returns (`Never`). Its `OnLaunched` calls the host, whose first act is to
 claim that thread as the UI thread: `claimUIThread()` makes StateUI's UI
 executor `MainActor`'s and drains it there, and every native call after it
 asserts that isolation rather than assuming a thread.
