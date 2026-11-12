@@ -47,6 +47,27 @@ final class ChildMeasureTests: XCTestCase {
         XCTAssertEqual(values.offer(nil), 504, "with no room said, its own width")
     }
 
+    /// A child stating no width is measured at the width it is placed at too: words filling their lines wrap where
+    /// they stand, whatever its bounds say - a least width past its most one winning, as it wins its place.
+    func testAChildStatingNoWidthIsMeasuredAtTheWidthItIsPlacedAt() {
+        var values = LayoutValues()
+        /// Words filling whatever width they are offered, five hundred points of them in lines ten high.
+        func words(_ width: Double?) -> LayoutSize {
+            let wide = width ?? 500
+            return LayoutSize(width: wide, height: (500 / wide).rounded(.up) * 10)
+        }
+        for (minimum, maximum) in [(nil, 80.0), (60.0, 80.0), (100.0, 20.0), (100.0, nil)] as [(Double?, Double?)] {
+            for room in [50.0, 300] {
+                values.minimumWidth = minimum
+                values.maximumWidth = maximum
+                let offered = values.offer(room)
+                let placed = values.sized(words(offered))
+                XCTAssertEqual(offered, placed.width, "\(minimum ?? 0)...\(maximum ?? .infinity) in \(room)")
+                XCTAssertEqual(placed.height, words(placed.width).height, "wrapped where it stands")
+            }
+        }
+    }
+
     /// A child's size is its stated size before what it measured, within its bounds.
     func testAChildsSizeIsItsStatedSizeBeforeItsMeasuredOne() {
         var values = LayoutValues()

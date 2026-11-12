@@ -129,8 +129,10 @@ instead ([text in a box](../types/drawing.md#text-in-a-box)).
 A layout measures a child the same way on every host: at its stated width,
 within its bounds and the width offered - the width the layout places it at,
 so its words wrap to it - else at the smaller of the width offered and its
-most width; and its size is its stated width and height before what it
-measured, each within its bounds (`LayoutValues.offer`, `sized`). A host
+most width, held within its bounds as its place is, so a least width past its
+most one, or past the room, wins its measure as it wins its place; and its
+size is its stated width and height before what it measured, each within its
+bounds (`LayoutValues.offer`, `sized`). A host
 measures its native view at that width and nothing more.
 
 The trap is a child measured at one width and placed at another: a stated
