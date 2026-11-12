@@ -1,4 +1,4 @@
-# revision 26.2
+# revision 27.2
 Button.rotationUpdated: ✓ rotate on Button: the relay's report of the manipulation handed to the host, no touch sent
 Button.tapCount: ✓ tap on Button: the relay's report of the tap handed to the host, no pointer sent
 Button.tapped: ✓ tap on Button: the relay's report of the tap handed to the host, no pointer sent

@@ -17,18 +17,29 @@
                 Covered(WebViewContract.source), Covered(WebViewContract.navigating),
                 Covered(WebViewContract.navigated),
             ]) { s in
-                let heard = Received<String>()
+                let (heard, going, arrived) = (Received<String>(), Received<WebNavigation>(), Received<WebNavigated>())
                 s.start {
                     VStack {
                         WebView(html: Self.page("First"))
-                            .onNavigating { heard.values.append("navigating \($0.kind)") }
-                            .onNavigated { heard.values.append("navigated \($0.result)") }
+                            .onNavigating {
+                                heard.values.append("navigating")
+                                going.values.append($0)
+                            }
+                            .onNavigated {
+                                heard.values.append("navigated \($0.result)")
+                                arrived.values.append($0)
+                            }
                             .height(200).id("web")
                     }
                 }
 
                 s.settle(for: Self.pageSeconds) { heard.values.contains { $0.hasPrefix("navigated") } }
+                s.expect(heard.values.first, "navigating", "heard going before arriving: \(heard.values)")
                 s.expect(heard.values.last, "navigated success")
+                // The first page is a new one; Windows names no reason for a view's first (`.unknown`).
+                s.expect(going.values.first.map { [.newPage, .unknown].contains($0.kind) }, true, "\(going.values)")
+                s.expect(arrived.values.last?.kind, going.values.first?.kind, "arriving as it went")
+                s.expect(arrived.values.last?.address, going.values.first?.address, "where it went")
                 s.expect(try s.held(WebViewContract.source, on: s.element("web")), .html(Self.page("First"), baseAddress: nil))
             },
             ConformanceCase("aScriptsAnswerComesBack", proves: [

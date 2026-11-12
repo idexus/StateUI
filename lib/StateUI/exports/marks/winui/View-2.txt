@@ -1,4 +1,4 @@
-# revision 26.2
+# revision 27.2
 Button.pointerMoved: ✓ hover on Button: the relay's report of the pointer handed to the host, no pointer sent
 Button.pointerPressed: ✓ hover on Button: the relay's report of the pointer handed to the host, no pointer sent
 Button.pointerReleased: ✓ hover on Button: the relay's report of the pointer handed to the host, no pointer sent

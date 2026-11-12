@@ -57,17 +57,24 @@
                         Text(Self.long).lineBreak(.wordWrap).maximumLines(lines.wrappedValue).width(100)
                             .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("label")
                         Button("More").onClicked { lines.wrappedValue = 3 }.id("change")
+                        Button("Fewer").onClicked { lines.wrappedValue = 1 }.id("fewer")
                     }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
                 }
                 s.settle { !frames.values.isEmpty }
-                let one = frames.values.last.map(FrameReport.size)?[1] ?? 0
+                let height = { frames.values.last.map(FrameReport.size)?[1] ?? 0 }
+                let one = height()
 
+                // The words take far more than three lines at that width: three stand, and no more.
                 try s.perform(.activate, on: s.element("change"))
-                s.settle { (frames.values.last.map(FrameReport.size)?[1] ?? 0) > one * 2 }
-                s.expect((frames.values.last.map(FrameReport.size)?[1] ?? 0) > one * 2, true,
-                         "three lines stand where one stood")
+                s.settle { height() > one * 2.5 }
+                s.expect(height() > one * 2.5 && height() < one * 3.5, true,
+                         "three lines stand where one stood, and no more: \(height()) for \(one)")
+
+                try s.perform(.activate, on: s.element("fewer"))
+                s.settle { abs(height() - one) < one * 0.5 }
+                s.expect(abs(height() - one) < one * 0.5, true, "one line again: \(height()) for \(one)")
             },
             Aspects.holds(TextContract.maximumLines, on: "Text", 2, then: 1,
                           with: [Write(TextElementContract.text, Self.long)]),

@@ -44,7 +44,7 @@ Picker 8
 Image 4
 Page 10
 PageElement 6
-View 26
+View 27
 RefreshElement 2
 VisualElement 30
 Shape 6
@@ -55,12 +55,12 @@ TextSpan 5
 Separator 4
 Canvas 4
 Rectangle 3
-Stepper 7
+Stepper 8
 KeyboardElement 7
 LineBreakElement 2
 LineHeightElement 2
 TextAlignmentElement 2
-Text 5
+Text 6
 TextColorElement 4
 TintElement 3
 ContextMenu 4
@@ -93,7 +93,7 @@ Polygon 3
 ProgressBar 3
 TabView 4
 VStack 3
-WebView 4
+WebView 5
 ZStack 3
 Popover 6
 TextualElement 4

@@ -221,6 +221,9 @@
 
             let above = small.y - large.y
             let below = (large.y + large.height) - (small.y + small.height)
+            // The smaller's foot stands within the larger's, never past it, and its top below the larger's top.
+            s.expect(below >= -0.5 && above > 0 && above < large.height, true,
+                     "within the larger's frame: \(above) above, \(below) below")
             s.expect(above > 2 * below, true, "lower by the larger's rise: \(above) above, \(below) below")
         }
     }

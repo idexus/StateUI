@@ -63,24 +63,46 @@
             ConformanceCase("itShowsItsStepsAlone", proves: [
                 Covered(RangeElementContract.value, on: StepperContract.self), Covered(StepperContract.step),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
-                let count = State(wrappedValue: 2.0)
-                s.start {
+                let (count, clock) = (State(wrappedValue: 2.0), TestClock())
+                s.start(clock: clock) {
                     VStack {
-                        Stepper(count.projectedValue).minimum(0).maximum(10).step(2).id("stepper")
+                        // A motion of its own, so the write travels on every host, whatever the application's.
+                        Stepper(count.projectedValue).minimum(0).maximum(10).step(2)
+                            .motion(.eased(.milliseconds(400), curve: .linear)).id("stepper")
                         Button("Far").onClicked { count.wrappedValue = 9.2 }.id("far")
                     }
                 }
                 let stepper = try s.element("stepper")
                 var shown: [Double] = []
                 try s.perform(.activate, on: s.element("far"))
-                try s.settle {
+                // Frame by frame on the case's clock, so no step on the way goes unread.
+                for _ in 0..<200 where shown.last != 9.2 {
+                    clock.now += 16
+                    s.frame()
                     let standing = try s.held(RangeElementContract.value, on: stepper) ?? .nan
                     if shown.last != standing { shown.append(standing) }
-                    return standing == 9.2
                 }
-                // Every step of 9.2 from where it set out, and nothing between them.
-                s.expect(shown.filter { ![2, 3.2, 5.2, 7.2, 9.2].contains($0) }, [], "shown on its way")
-                s.expect(shown.last, 9.2, "the value it was given, at rest")
+                // Every step of 9.2 from where it set out, at least one of them, and nothing between them.
+                s.expect(shown.filter { ![2, 3.2, 5.2, 7.2, 9.2].contains($0) }, [], "shown on its way: \(shown)")
+                s.expect(shown.contains { [3.2, 5.2, 7.2].contains($0) }, true, "a step on its way: \(shown)")
+                s.expect(shown.last, 9.2, "the value it was given")
+                s.frames(of: clock, until: clock.now + 500)
+                s.expect(try s.held(RangeElementContract.value, on: stepper), 9.2, "and there it rests")
+            },
+            ConformanceCase("itGoesThereAtOnceWithLessMotion", proves: [
+                Covered(RangeElementContract.value, on: StepperContract.self), Covered(StepperContract.step),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+                let count = State(wrappedValue: 2.0)
+                s.start(reducesMotion: true) {
+                    VStack {
+                        Stepper(count.projectedValue).minimum(0).maximum(10).step(2).id("stepper")
+                        Button("Far").onClicked { count.wrappedValue = 9.2 }.id("far")
+                    }
+                }
+                let stepper = try s.element("stepper")
+                try s.perform(.activate, on: s.element("far"))
+                try s.settle { try s.held(RangeElementContract.value, on: stepper) == 9.2 }
+                s.expect(try s.held(RangeElementContract.value, on: stepper), 9.2, "the value given, with no steps between")
             },
             ConformanceCase("aStepIsAsLongAsTheTreeSays", proves: [
                 Covered(RangeElementContract.value, on: StepperContract.self), Covered(StepperContract.step),
