@@ -264,7 +264,8 @@ still add up; its entries are read as they stand then.
 A page keeps no Edit menu of its own, so a menu joining `StandardMenu.edit`
 behind the bar's More holds the host layer's entries (`ChromeMenus.editing`).
 The page keeps the field the user last typed into (`focusin` on an input, a
-text area or editable words), since the menu takes the focus, and each entry
+text area or editable words), since the menu takes the focus - until it leaves,
+or what holds it does, as nothing keeps a field that left - and each entry
 hands it back and does its act there (`stateui_web_edit`): undo, redo, cut,
 copy and delete through the document's own commands - a cut and a copy want
 the user's click, which choosing the entry is - select all through the

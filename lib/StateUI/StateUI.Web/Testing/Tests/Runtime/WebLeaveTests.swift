@@ -119,6 +119,38 @@ final class WebLeaveTests: XCTestCase {
         host.finish()
     }
 
+    /// A field the user typed into, taken away, is let go of though no other field took the keyboard after it - its
+    /// own leaving, or a view holding it leaving - as one another field took the keyboard from is.
+    func testAFieldTypedIntoIsLetGoOfAsItLeaves() throws {
+        for (leaves, focusesAnother) in [("field", false), ("holder", false), ("field", true)] {
+            WebRenderer.shared?.finish()
+            let (field, holder) = (State(wrappedValue: true), State(wrappedValue: true))
+            let (first, second) = (State(wrappedValue: ""), State(wrappedValue: ""))
+            let host = WebRenderer.running {
+                VStack {
+                    if holder.wrappedValue {
+                        VStack { if field.wrappedValue { TextField(first.projectedValue) } }
+                    }
+                    TextField(second.projectedValue)
+                }
+            }
+            host.step()
+            let fields = host.views(WebTextInputView.self)
+            let input = "(e.matches('input, textarea') ? e : e.querySelector('input, textarea'))"
+            _ = try WebBrowser.evaluate("(\(input).focus(), globalThis.left = new WeakRef(\(input)), '')", on: fields[0].node)
+            XCTAssertEqual(try WebBrowser.evaluate("document.activeElement === left.deref()", on: 0), "true")
+
+            if focusesAnother { _ = try WebBrowser.evaluate("(\(input).focus(), '')", on: fields[1].node) }
+            (leaves == "field" ? field : holder).wrappedValue = false
+            for _ in 0..<3 { host.step() }
+            WebBrowser.ask([("collect", .truth(true))])
+
+            XCTAssertEqual(try WebBrowser.evaluate("left.deref() === undefined", on: 0), "true",
+                           "the \(leaves) left\(focusesAnother ? " after another took the keyboard" : "")")
+            host.finish()
+        }
+    }
+
     /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window stands out of
     /// sight, and stands again as the browser shows the page - a window going away would not.
     func testAPageTheBrowserKeepsIsHiddenNotGone() async throws {
