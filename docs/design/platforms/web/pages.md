@@ -59,8 +59,9 @@ said twice. Without a split view the bar names the page alone. The parts follow
 from the split view's `data-sidebar`, which the bar repeats, and the page's
 width, so no measuring moves them.
 
-The bar shows no application's mark: it names the page and the application
-in words, and the browser's tab shows the site's own icon.
+The bar shows the application's mark where its title area has one - the
+sidebar's page's picture, before its name - and names the page and the
+application in words; the browser's tab shows the site's own icon.
 
 The page is one window: an application's second window has no place of its
 own in it.

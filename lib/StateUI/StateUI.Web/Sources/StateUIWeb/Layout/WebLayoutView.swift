@@ -150,7 +150,7 @@ class WebLayoutView: WebDOMView {
         if views.count != children.count || !zip(views, children).allSatisfy({ $0 === $1 }) {
             for (index, view) in views.enumerated() { WebRelay.insert(view.node, into: node, at: index) }
         }
-        // A child let go of first - a page popped - is gone from the page already, and its number may be another's.
+        // A child let go of first - a page popped - is gone from the page already, and its number names nothing.
         for gone in children where !gone.isReleased && gone.placingLayout === self
             && !items.contains(where: { $0.view === gone }) {
             WebRelay.detach(gone.node)

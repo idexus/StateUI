@@ -4,8 +4,7 @@
 @testable import StateUIWeb
 import XCTest
 
-/// A field is as wide as its words or its placeholder, as a native field measures - not the browser's twenty
-/// characters, which in a row of a phone's width pushes what follows it out of the row.
+/// A field is as wide as its words or its placeholder, and no narrower than twenty characters and its padding.
 @MainActor
 final class WebTextInputViewTests: XCTestCase {
     func testAFieldIsAsWideAsItsWordsOrItsPlaceholder() {

@@ -267,7 +267,7 @@ These surfaces lack an honest native counterpart on at least one target:
 - `TabView`: Android Views has no framework tab bar; Web has no tab element.
 - `SplitView`: Android Views has no framework drawer or split pane, so its host lays out its own; Web has no native pane.
 - `Sheet`: Android Views has no modal page presentation, so its host slides a sheet over the activity; WinUI 3 shows one `ContentDialog` at a time, so its host stacks sheets of a dialog's look over the window.
-- The application's name and mark in the bar (`barTitle`, `barIcon`): UIKit, Android Views and GTK 4 give each page a bar of its own that names that page; Web shows no mark in its bar - the browser's tab shows the site's icon.
+- The application's name and mark in the bar (`barTitle`, `barIcon`): UIKit, Android Views and GTK 4 give each page a bar of its own that names that page; Web shows the mark before the application's name in its bar, and the browser's tab shows the site's icon.
 - Menus: Android Views has no menu bar, so a menu bar's menus join the bar's overflow; Web has no native menu element.
 - `Grid`: AppKit, UIKit, and GTK 4 have no container with star and auto tracks.
 - `CheckBox`: UIKit has no check box.

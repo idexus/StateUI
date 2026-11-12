@@ -12,8 +12,8 @@ class WebDOMView {
     /// The relay's number for the DOM element.
     let node: Int32
 
-    /// When the view was made among every view of the page - the order the display's frames serve them in; the
-    /// relay makes a number let go of again, so its number is no order.
+    /// When the view was made among every view of the page - the order the display's frames serve them in, kept on
+    /// this side so no relay's numbering decides it.
     let serial: Int64
 
     /// How many views are alive, for the tally.
@@ -124,7 +124,7 @@ class WebDOMView {
         #endif
     }
 
-    /// Whether the element has been let go of: its number may be another element's by now.
+    /// Whether the element has been let go of: its number names no element any more.
     private(set) var isReleased = false
 
     /// Takes the element off the page and lets go of it and of everything hung on it, once.

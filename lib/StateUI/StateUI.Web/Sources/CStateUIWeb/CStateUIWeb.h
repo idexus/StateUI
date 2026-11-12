@@ -101,8 +101,9 @@ STATEUI_WEB(event_number) double stateui_web_event_number(int32_t index);
 /// The words the event being heard carries in its `detail`, read by `copy_read`: their length.
 STATEUI_WEB(event_words) int32_t stateui_web_event_words(void);
 
-/// Calls `listener` as the element comes near the view of the scroller `root` - within half its size - and as it
-/// goes away: the event's number 0 is 1 near, 0 away.
+/// Calls `listener` - the scroller `root`'s one, the last given - as the element and any other it watches comes
+/// near its view - within half its size - or goes away: the event's number 0 is how many came or went, and after
+/// it a pair each, the element's number and 1 near or 0 away.
 STATEUI_WEB(watch_nearness) void stateui_web_watch_nearness(int32_t element, int32_t root, int32_t listener);
 
 /// Shows the popover element over everything: under the element `anchor`, or beside it for `side` 1, else at (`x`,
