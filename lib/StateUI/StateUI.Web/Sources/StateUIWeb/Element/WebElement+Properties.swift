@@ -60,7 +60,7 @@ extension WebElement {
             case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
             case .isVisible: view.setShown(element.standsShown)
             case .background: view.setBackground(element.drawnBackground)
-            case .ignoresInput: view.style("pointer-events", element.value(.ignoresInput)?.bool == true ? "none" : nil)
+            case .ignoresInput: view.setIgnoresInput(element.ignoresInput)
             case .tooltip: view.attribute("title", element.string(.tooltip))
             default: break
             }

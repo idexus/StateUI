@@ -9,6 +9,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * A StateUI layout: Android asks it to measure and place, and the Swift host
@@ -70,11 +73,12 @@ class StateUIViewGroup extends ViewGroup {
         return order != null && order.length == childCount ? order[drawingPosition] : drawingPosition;
     }
 
-    /** Whether the layout and everything in it take no touch: it goes to whatever is behind. */
-    private boolean ignoresInput;
+    /** The views that, with everything in them, take no touch: it goes to whatever is behind. */
+    private static final Set<View> ignoringInput = Collections.newSetFromMap(new WeakHashMap<>());
 
-    void setIgnoresInput(boolean ignores) {
-        ignoresInput = ignores;
+    /** Makes `view` and everything in it take no touch, which goes to whatever is behind it, or lets it take them. */
+    static void setIgnoresInput(View view, boolean ignores) {
+        if (ignores) ignoringInput.add(view); else ignoringInput.remove(view);
     }
 
     /** Whether the layout's own empty area lets a touch through to whatever is behind it; its children take theirs. */
@@ -121,7 +125,7 @@ class StateUIViewGroup extends ViewGroup {
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        boolean taken = !ignoresInput && watch.touch(this, event, this::reach);
+        boolean taken = !ignoringInput.contains(this) && watch.touch(this, event, this::reach);
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
             keeps = !taken && landsAt(event.getX(), event.getY()) && anotherBehind(event.getX(), event.getY());
         }
@@ -167,12 +171,12 @@ class StateUIViewGroup extends ViewGroup {
 
     /** Whether a touch at `x`, `y` of the layout lands on it: on a child that takes it there, or its own area. */
     boolean landsAt(float x, float y) {
-        return !ignoresInput && (frontChildUnder(x, y) != null || !letsInputThrough);
+        return !ignoringInput.contains(this) && (frontChildUnder(x, y) != null || !letsInputThrough);
     }
 
     /** The deepest view a touch at `x`, `y` of the layout lands on, by the rule it hands touches by; null for none. */
     View hit(float x, float y) {
-        if (ignoresInput) return null;
+        if (ignoringInput.contains(this)) return null;
         View child = frontChildUnder(x, y);
         if (child == null) return letsInputThrough ? null : this;
         return child instanceof StateUIViewGroup ? ((StateUIViewGroup) child).hit(local[0], local[1]) : child;
@@ -183,6 +187,7 @@ class StateUIViewGroup extends ViewGroup {
      * through Android's own containers, where a view that is no container takes it; null for none.
      */
     static View hitIn(View root, float x, float y) {
+        if (ignoringInput.contains(root)) return null;
         if (root instanceof StateUIViewGroup) return ((StateUIViewGroup) root).hit(x, y);
         if (!(root instanceof ViewGroup)) return root;
         ViewGroup group = (ViewGroup) root;
@@ -214,7 +219,8 @@ class StateUIViewGroup extends ViewGroup {
 
     /**
      * The child drawn frontmost under `x`, `y` of the layout that a touch there lands on; null for none. A child
-     * hidden or clear is passed by, and so is a plain view answering no tap - a shade, an edge - which only draws.
+     * hidden, clear or ignoring input is passed by, and so is a plain view answering no tap - a shade, an edge -
+     * which only draws.
      */
     private View frontChildUnder(float x, float y) {
         int count = getChildCount();
@@ -222,7 +228,7 @@ class StateUIViewGroup extends ViewGroup {
         float[] point = local;
         for (int position = count - 1; position >= 0; position--) {
             View child = getChildAt(ordered ? getChildDrawingOrder(count, position) : position);
-            if (child.getVisibility() != VISIBLE || child.getAlpha() < 0.01f) continue;
+            if (child.getVisibility() != VISIBLE || child.getAlpha() < 0.01f || ignoringInput.contains(child)) continue;
             if (child.getClass() == View.class && !child.isClickable()) continue;
             point[0] = x + getScrollX() - child.getLeft();
             point[1] = y + getScrollY() - child.getTop();

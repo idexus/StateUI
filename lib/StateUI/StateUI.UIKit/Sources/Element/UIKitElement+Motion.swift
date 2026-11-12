@@ -42,7 +42,7 @@ extension UIKitElement {
     }
 }
 
-/// A view fades by its drawing: its own opacity, and whether UIKit shows it.
+/// A view fades by its drawing: its own opacity, whether UIKit shows it, and whether it takes a touch.
 extension UIKitViewDrawing: FadingView {
     var isShown: Bool { view?.isHidden == false }
 
@@ -52,6 +52,10 @@ extension UIKitViewDrawing: FadingView {
 
     func setOpacity(_ opacity: Double) {
         ownOpacity = opacity
+    }
+
+    func setIgnoresInput(_ ignores: Bool) {
+        view?.isUserInteractionEnabled = !ignores
     }
 }
 #endif

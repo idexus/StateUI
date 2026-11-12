@@ -1,4 +1,4 @@
-# revision 29.3
+# revision 30.3
 Button.accessibilityHeading: ✅
 Button.scaleX: ✅
 Canvas.tooltip: ✅
@@ -47,31 +47,32 @@ Rectangle.maximumWidth: ✅
 Rectangle.minimumHeight: ✅
 Rectangle.minimumWidth: ✅
 Rectangle.rotation: ✅
-ScrollView.accessibilityLabel: ✅
-ScrollView.scaleY: ✅
-SearchField.tooltip: ✅
+ScrollView.accessibilityHeading: ✅
+ScrollView.scaleX: ✅
+SearchField.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Separator.accessibilityHeading: ✅
-Slider.maximumHeight: ✅
-Slider.maximumWidth: ✅
-Slider.minimumHeight: ✅
-Slider.minimumWidth: ✅
-Slider.rotation: ✅
-Space.accessibilityRole: ✅
-Space.translationY: ✅
+Slider.height: ✅
+Slider.pivotY: ✅
+Slider.width: ✅
+Space.accessibilityHint: ✅
+Space.translationX: ✅
 Spinner.isVisible: ✅
 Spinner.layoutDirection: ✓ read layoutDirection of Spinner: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Stepper.accessibilityPresence: ☑️ Hidden with its contents, WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
-Switch.scale: ✅
-Switch.zIndex: ✅
+Switch.frame: ✅
+Switch.rotationY: ✓ read rotationY of Switch: the host's own tip, checked against the projection it laid on the element
 Text.accessibilityPresence: ✅
-TextEditor.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-TextField.height: ✅
-TextField.pivotY: ✅
-TextField.width: ✅
-TimePicker.accessibilityHint: ✅
-TimePicker.translationX: ✅
-VStack.accessibilityPresence: ✅
-WebView.ignoresInput: ✅
-WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
-ZStack.accessibilityValue: ✅
-ZStack.layoutDirection: ✅
+TextEditor.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+TextEditor.accessibilityActions: – UI Automation offers no action of an application's own words.
+TextField.opacity: ✅
+TextField.pivotX: ✅
+TimePicker.accessibilityLabel: ✅
+TimePicker.scaleY: ✅
+VStack.accessibilityHeading: ✅
+WebView.maximumHeight: ✅
+WebView.maximumWidth: ✅
+WebView.minimumHeight: ✅
+WebView.minimumWidth: ✅
+WebView.rotation: ✅
+ZStack.accessibilityRole: ✅
+ZStack.translationY: ✅

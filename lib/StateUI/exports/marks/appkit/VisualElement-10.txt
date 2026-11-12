@@ -1,4 +1,4 @@
-# revision 29.1
+# revision 30.1
 Button.ignoresInput: ✅
 Button.translationY: ✓ read translationY of Button: the host's own transform, checked against the layer it composed itself
 Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform, checked against the layer it composed itself
@@ -35,23 +35,21 @@ Polyline.accessibilityPresence: ✅
 ProgressBar.accessibilityValue: ✅
 Rectangle.translationX: ✅
 Rectangle.zIndex: ✅
-ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.accessibilityPresence: ✅
 Separator.accessibilityActionPerformed: ✅
 Separator.accessibilityActions: ✅
-Slider.accessibilityActionPerformed: ✅
-Slider.accessibilityActions: ✅
-Space.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+Slider.accessibilityValue: – AppKit's slider says its own number to assistive technology, over any value given.
+Space.zIndex: ✅
 Spinner.accessibilityHint: ✅
-Stepper.height: ✅
-Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform, checked against the layer it composed itself
-Stepper.width: ✅
-Switch.rotation: ✓ read rotation of Switch: the host's own transform, checked against the layer it composed itself
+Stepper.opacity: ✅
+Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself
 Text.tooltip: ✅
-TextEditor.accessibilityPresence: ✅
-TextField.accessibilityValue: ✅
-TimePicker.zIndex: ✅
-VStack.opacity: ✅
-VStack.scaleX: ✓ read scaleX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.pivotX: ✓ read pivotX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.tooltip: ✅
+TextEditor.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+TextField.accessibilityRole: ✅
+TimePicker.frame: ✅
+VStack.isVisible: ✅
+VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
+WebView.layoutDirection: ✅
+ZStack.accessibilityAdjusted: ✅

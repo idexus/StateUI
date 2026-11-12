@@ -141,11 +141,6 @@ class AndroidLayoutView: AndroidView {
         box?.fit(width: width, height: height)
     }
 
-    /// Makes the layout and everything in it deaf to touches, which go to whatever stands behind it.
-    func setIgnoresInput(_ ignores: Bool) {
-        Java.call(reference, JavaAPI.setIgnoresInput, .bool(ignores))
-    }
-
     /// Lets a touch on the layout's own empty area through to whatever stands behind it; its children take theirs.
     func setLetsInputThrough(_ lets: Bool) {
         Java.call(reference, JavaAPI.setLetsInputThrough, .bool(lets))

@@ -141,9 +141,9 @@ another type does not compile.
 hidden fades to nothing first and goes when it gets there, and one being shown
 appears at nothing and fades in. Two views in one place - a tab chosen, a
 panel swapped - therefore cross-fade. The view stays in the tree the whole
-time and is hidden once the fade lands. On AppKit a view on its way out
-answers no touch, so a tap during the change reaches what is arriving; the
-other hosts keep it touchable until it has faded. A view described for the
+time and is hidden once the fade lands. A view on its way out answers no
+input on every host, so a tap during the change reaches what is arriving;
+shown again as it fades, it answers again. A view described for the
 first time is simply shown or not, since nothing anybody saw is changing, and
 `.motion(.none)` makes the property a plain flag again.
 

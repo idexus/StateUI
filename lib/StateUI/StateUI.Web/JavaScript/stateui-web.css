@@ -974,6 +974,8 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) [data-taps]:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
 [data-lets-through] { pointer-events: none; }
 [data-lets-through] > :not([data-lets-through]) { pointer-events: auto; }
+/* A view ignoring input lets a press through, and so does everything in it, a layout's children included. */
+[data-ignores-input], [data-ignores-input] * { pointer-events: none !important; }
 
 /* A picture: as large as itself, its proportions binding neither length. */
 .stateui-picture { contain: size; }

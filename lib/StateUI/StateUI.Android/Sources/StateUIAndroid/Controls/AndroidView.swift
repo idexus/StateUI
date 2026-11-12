@@ -130,6 +130,11 @@ class AndroidView {
         Java.call(outermost, JavaAPI.setVisibility, .int(shown ? ViewConstants.visible : ViewConstants.gone))
     }
 
+    /// Makes the view and everything in it deaf to touches, which go to whatever stands behind it.
+    func setIgnoresInput(_ ignores: Bool) {
+        Java.callStatic(JavaAPI.viewGroupHost, JavaAPI.setIgnoresInput, .object(outermost), .bool(ignores))
+    }
+
     /// Whether the view is shown rather than gone.
     var isShown: Bool {
         Java.callInt(outermost, JavaAPI.getVisibility) == ViewConstants.visible

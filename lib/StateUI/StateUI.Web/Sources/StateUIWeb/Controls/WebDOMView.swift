@@ -316,6 +316,11 @@ class WebDOMView {
         attribute("aria-disabled", enabled ? nil : "true")
     }
 
+    /// Whether the view and everything in it let a press go to what stands behind them.
+    func setIgnoresInput(_ ignores: Bool) {
+        attribute("data-ignores-input", ignores ? "" : nil)
+    }
+
     /// Whether the view shows; a hidden one takes no room, so its layout's places are read before it goes or comes.
     func setShown(_ shown: Bool) {
         if shown != isShown, let layout = placingLayout {

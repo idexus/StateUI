@@ -1,4 +1,4 @@
-# revision 29.1
+# revision 30.1
 Button.accessibilityLabel: ✅
 Canvas.maximumHeight: ✅
 Canvas.maximumWidth: ✅
@@ -32,24 +32,22 @@ Polygon.scaleX: ✓ read scaleX of Polygon: the host's own transform, checked ag
 Polyline.pivotY: ✓ read pivotY of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Rectangle.accessibilityRole: ✅
-ScrollView.maximumHeight: ✅
-ScrollView.maximumWidth: ✅
-ScrollView.minimumHeight: ✅
-ScrollView.minimumWidth: ✅
-ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.rotation: ✓ read rotation of SearchField: the host's own transform, checked against the layer it composed itself
+ScrollView.height: ✅
+ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform, checked against the layer it composed itself
+ScrollView.width: ✅
+SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform, checked against the layer it composed itself
 Separator.accessibilityPresence: ✅
-Slider.accessibilityPresence: ✅
-Space.accessibilityValue: ✅
+Slider.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Space.accessibilityRole: ✅
 Spinner.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-Stepper.zIndex: ✅
-Switch.opacity: ✅
-Switch.scaleX: ✓ read scaleX of Switch: the host's own transform, checked against the layer it composed itself
+Stepper.frame: ✅
+Switch.isVisible: ✅
+Switch.scale: ✓ read scale of Switch: the host's own transform, checked against the layer it composed itself
 Text.layoutDirection: ✅
-TextEditor.pivotY: ✓ read pivotY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-TimePicker.accessibilityRole: ✅
-VStack.frame: ✅
-VStack.layoutDirection: ✅
-WebView.rotationY: ✓ read rotationY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.layoutDirection: ✅
+TextEditor.pivotX: ✓ read pivotX of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.tooltip: ✅
+TimePicker.accessibilityHint: ✅
+VStack.ignoresInput: ✅
+VStack.translationY: ✓ read translationY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.rotationX: ✓ read rotationX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.accessibilityPresence: ✅

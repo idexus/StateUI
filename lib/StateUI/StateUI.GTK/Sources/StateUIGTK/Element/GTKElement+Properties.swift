@@ -63,7 +63,7 @@ extension GTKElement {
             switch property {
             case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
             case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
-            case .ignoresInput: view.setIgnoresInput(value(.ignoresInput)?.bool ?? false)
+            case .ignoresInput: view.setIgnoresInput(element.ignoresInput)
             case .isVisible: view.setShown(isShown)
             case .tooltip: view.setTooltip(element.string(.tooltip))
             // GTK blurs nothing behind a widget: a blur's or glass's color stands in, its tint over it.

@@ -1,4 +1,4 @@
-# revision 29.3
+# revision 30.3
 Button.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Canvas.height: ✅
 Canvas.pivotY: ✅
@@ -41,33 +41,34 @@ ProgressBar.pivotY: ✅
 ProgressBar.width: ✅
 Rectangle.accessibilityHint: ✅
 Rectangle.translationX: ✅
-ScrollView.tooltip: ✅
-SearchField.height: ✅
-SearchField.pivotY: ✅
-SearchField.width: ✅
+ScrollView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+SearchField.opacity: ✅
+SearchField.pivotX: ✅
 Separator.maximumHeight: ✅
 Separator.maximumWidth: ✅
 Separator.minimumHeight: ✅
 Separator.minimumWidth: ✅
 Separator.rotation: ✅
-Slider.accessibilityHint: ✅
-Slider.translationX: ✅
-Space.accessibilityPresence: ✅
+Slider.accessibilityLabel: ✅
+Slider.scaleY: ✅
+Space.accessibilityHeading: ✅
 Spinner.scale: ✅
 Spinner.zIndex: ✅
-Stepper.frame: ✅
-Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
-Switch.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-Switch.accessibilityActions: – UI Automation offers no action of an application's own words.
+Stepper.ignoresInput: ✅
+Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
+Switch.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Text.frame: ✅
 Text.rotationY: ✓ read rotationY of Text: the host's own tip, checked against the projection it laid on the element
-TextEditor.opacity: ✅
-TextEditor.pivotX: ✅
-TextField.accessibilityLabel: ✅
-TextField.scaleY: ✅
-TimePicker.accessibilityHeading: ✅
-VStack.ignoresInput: ✅
-VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
-WebView.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-WebView.translationY: ✅
+TextEditor.isVisible: ✅
+TextEditor.layoutDirection: ✅
+TextField.accessibilityHeading: ✅
+TextField.scaleX: ✅
+TimePicker.tooltip: ✅
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.minimumHeight: ✅
+VStack.minimumWidth: ✅
+VStack.rotation: ✅
+WebView.accessibilityHint: ✅
+WebView.translationX: ✅
 ZStack.accessibilityPresence: ✅

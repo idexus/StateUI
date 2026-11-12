@@ -62,7 +62,7 @@ extension UIKitElement {
                     view.accessibilityTraits = element.presented(.isEnabled)?.bool == false
                         ? traits.union(.notEnabled) : traits.subtracting(.notEnabled)
                 // Ignored, the view and all in it are passed over: a touch goes to what is under it.
-                case .ignoresInput: view.isUserInteractionEnabled = element.bool(.ignoresInput) != true
+                case .ignoresInput: view.isUserInteractionEnabled = !element.ignoresInput
                 case .background:
                     view.backgroundColor = HostMaterial(element.drawnBackground).painted.flatMap(UIColor.init(stateUI:))
                     (controller as? UIKitPageController)?.showBackground()

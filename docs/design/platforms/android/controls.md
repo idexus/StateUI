@@ -174,9 +174,11 @@ thumb follows.
 A view with a tap handler is given the same listener a button has, and a
 click on it is its tap: Android's own touch handling decides what a tap is,
 and a drag that becomes a scroll is no tap. A view whose handler goes away is
-no longer clickable, so it stops taking touches. A StateUI layout that
-ignores input takes no touch at all, and the touch goes to whatever stands
-behind it.
+no longer clickable, so it stops taking touches. A view that ignores input -
+a StateUI layout the tree says ignores it, or any view while it fades out -
+takes no touch, nor does anything in it, and the touch goes to whatever
+stands behind it: the StateUI layout holding it passes it by
+(`StateUIViewGroup.setIgnoresInput`).
 
 ## A label's words
 

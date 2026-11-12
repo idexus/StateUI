@@ -51,7 +51,7 @@
             let boxed: [ConformanceCase] = boxes.contains(element) ? [blurredOrGlass(element)] : []
             let material: [ConformanceCase] = element == "VStack" ? [followsAMaterial] : []
             let transformed: [ConformanceCase] = element == "Rectangle"
-                ? [placedUnderATransform, reachedWhereDrawn] : []
+                ? [placedUnderATransform, reachedWhereDrawn, deafWhileFading] : []
             return held + answered + laidOut + boxed + boxFilled(element) + material + transformed
         }
     }
@@ -116,6 +116,39 @@
             try s.settle { try s.reaches(moved, at: Point(80, 10)) }
             s.expect(try s.reaches(moved, at: Point(80, 10)), true, "where it is drawn")
             s.expect(try s.reaches(moved, at: Point(20, 10)), false, "where it was placed and nothing is drawn")
+        }
+    }
+
+    /// A view fading out is reached by no press while it is still drawn, so a press in the meantime goes to what
+    /// stands behind it or arrives in its place; shown again as it fades, a press reaches it again.
+    @MainActor
+    static var deafWhileFading: ConformanceCase {
+        ConformanceCase("Rectangle.answersNoPressWhileItFadesOut", proves: [
+            Covered(VisualElementContract.isVisible, on: "Rectangle"),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+            let shown = State(wrappedValue: true)
+            s.start {
+                VStack {
+                    Rectangle().fill(.red).width(80).height(40).isVisible(shown.wrappedValue)
+                        .motion(.eased(.seconds(5), curve: .linear)).id("fading")
+                    Button("Hide").onClicked { shown.wrappedValue = false }.id("hide")
+                    Button("Show").onClicked { shown.wrappedValue = true }.id("show")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            let view = try s.element("fading")
+            try s.settle { try s.reaches(view, at: Point(40, 20)) }
+            s.expect(try s.reaches(view, at: Point(40, 20)), true, "a press reaches it")
+
+            try s.perform(.activate, on: s.element("hide"))
+            try s.settle { try s.reaches(view, at: Point(40, 20)) == false }
+            s.expect(try s.held(VisualElementContract.isVisible, on: view), true, "still drawn as it fades")
+            s.expect(try s.reaches(view, at: Point(40, 20)), false, "and reached by no press")
+
+            try s.perform(.activate, on: s.element("show"))
+            try s.settle { try s.reaches(view, at: Point(40, 20)) }
+            s.expect(try s.reaches(view, at: Point(40, 20)), true, "shown again as it fades, a press reaches it")
         }
     }
 
