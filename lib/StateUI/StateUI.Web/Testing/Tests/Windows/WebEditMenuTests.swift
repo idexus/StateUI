@@ -44,6 +44,44 @@ final class WebEditMenuTests: XCTestCase {
         host.finish()
     }
 
+    /// A paste the clipboard answers late lands in the field it was asked for, or nowhere: that field gone and
+    /// another focused before the answer, the other keeps its words.
+    func testALatePasteLandsInNoOtherField() throws {
+        WebRenderer.shared?.finish()
+        let shown = State(wrappedValue: true)
+        let (first, second) = (State(wrappedValue: "first"), State(wrappedValue: "second"))
+        let host = WebRenderer.running {
+            VStack {
+                if shown.wrappedValue { TextField(first.projectedValue) }
+                TextField(second.projectedValue)
+            }
+        }
+        host.step()
+        let fields = host.views(WebTextInputView.self)
+        XCTAssertEqual(fields.count, 2)
+        try click("e", on: fields[0].node, host)
+        _ = try WebBrowser.evaluate(
+            "(navigator.clipboard.readText = () => new Promise((r) => { globalThis.latePaste = r; }), '')", on: 0)
+        defer { _ = try? WebBrowser.evaluate("(delete navigator.clipboard.readText, '')", on: 0) }
+
+        WebRelay.edit(.paste)
+        shown.wrappedValue = false
+        for _ in 0..<3 { host.step() }
+        let left = try XCTUnwrap(host.views(WebTextInputView.self).first)
+        XCTAssertEqual(host.views(WebTextInputView.self).count, 1, "the first field is gone")
+        try click("e", on: left.node, host)
+        _ = try WebBrowser.evaluate("(globalThis.latePaste('pasted'), '')", on: 0)
+        for _ in 0..<10 {
+            host.step()
+            WebBrowser.pause()
+        }
+
+        XCTAssertEqual(second.wrappedValue, "second", "the other field keeps its words")
+        XCTAssertEqual(try WebBrowser.evaluate("e.value ?? e.querySelector('input, textarea').value", on: left.node),
+                       "second")
+        host.finish()
+    }
+
     /// The bar's More opened, its Edit menu, and the entry captioned `caption` clicked.
     private func choose(_ caption: String, _ host: WebRenderer) throws {
         try click("document.querySelector('.stateui-bar > .stateui-bar-actions > button[aria-label=\"More\"]')", host)

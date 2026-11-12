@@ -269,7 +269,9 @@ hands it back and does its act there (`stateui_web_edit`): undo, redo, cut,
 copy and delete through the document's own commands - a cut and a copy want
 the user's click, which choosing the entry is - select all through the
 field's own, and paste through the clipboard's API, which the browser opens
-only where the user allowed it.
+only where the user allowed it. Its answer comes later: it lands in the field
+it was asked for, which takes the focus back, or nowhere once that field left
+the page - never in the field the focus went to meanwhile.
 
 ## Sheets
 
