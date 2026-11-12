@@ -1116,6 +1116,7 @@ enum Listings {
         "Areas": #"""
         // Sources/Samples/Layout/ZStackSample.swift
         @State private var proportional = true
+        @State private var rightToLeft = false
 
         var body: some View {
             VStack {
@@ -1139,10 +1140,21 @@ enum Listings {
                     Badge(text: "end", color: Color(hex: 0x00897B))
                         .horizontalAlignment(.end)
                         .verticalAlignment(.end)
+
+                    // A badge in the panel's area at its own size, at the area's
+                    // top end - right to left, the area and the badge turned.
+                    Badge(text: "in the area", color: Color(hex: 0x8E24AA))
+                        .area(proportional ? .proportional(Rect(0.5, 0, 0.5, 1)) : .absolute(Rect(16, 16, 120, 60)))
+                        .horizontalAlignment(.end)
+                        .verticalAlignment(.start)
                 }
                 .height(180)
+                .layoutDirection(rightToLeft ? .rightToLeft : .leftToRight)
 
                 SwitchRow("Proportional area", $proportional)
+                    .horizontalAlignment(.center)
+
+                SwitchRow("Right to left", $rightToLeft)
                     .horizontalAlignment(.center)
             }
         }
@@ -5279,7 +5291,13 @@ enum Listings {
             let winter = try await clock.utcOffset(
                 on: CalendarDate(year: 2026, month: 1, day: 15))
 
-            season = "Offset now \(offsetText(here)), on 15 January \(offsetText(winter))"
+            // A day long before the zones: Warsaw's own mean time, as the zone
+            // database keeps it for any year - the year 50 is the year 50.
+            let ancient = try await clock.utcOffset(
+                of: TimeZoneName("Europe/Warsaw"), on: CalendarDate(year: 50, month: 7, day: 1))
+
+            season = "Offset now \(offsetText(here)), on 15 January \(offsetText(winter)), "
+                + "in Warsaw on 1 July 50 \(offsetText(ancient))"
 
             var found: [(String, String)] = []
             for city in Self.cities {
