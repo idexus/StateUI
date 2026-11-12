@@ -7,6 +7,9 @@ struct DialogsSample: SampleContent, ExampleContent {
     @State private var answer = "nothing asked yet"
     @State private var name = "Draft 1"
 
+    /// The draft's mark: one character - a family joined into one picture is one.
+    @State private var mark = "👨\u{200D}👩\u{200D}👧"
+
     /// What the draft can be done with.
     enum Share: CaseIterable {
         case mail, message, delete
@@ -71,11 +74,23 @@ struct DialogsSample: SampleContent, ExampleContent {
                     answer = typed.map { "renamed to '\($0)'" } ?? "cancelled"
                 }
 
+            // One character at most, as the user sees one: a letter with its
+            // accent laid over it, a family of three joined - a second is cut
+            // as it is typed, and a cancel keeps the mark.
+            Button("Ask for one character")
+                .onClicked(policy: .ignoreWhileRunning) {
+                    let typed = try await window.prompt(
+                        "Mark", message: "One character for the draft",
+                        placeholder: "Mark", initialValue: mark, maximumLength: 1)
+                    if let typed { mark = typed }
+                    answer = typed.map { "marked '\($0)'" } ?? "cancelled"
+                }
+
             Text(answer)
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
-            Text("the draft is called '\(name)'")
+            Text("the draft is called '\(name)', marked '\(mark)'")
                 .fontSize(14)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -95,6 +110,12 @@ struct DialogsSample: SampleContent, ExampleContent {
             Text("A choice of actions answers with the action chosen, or nil for its "
                 + "cancel. A prompt answers nil when cancelled - an accepted empty answer "
                 + "is \"\", which is not the same thing.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("A prompt's `maximumLength` counts characters as the user sees them: the "
+                + "mark's family of three, joined into one picture, is one, and a second "
+                + "character typed after it is cut.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -2835,6 +2835,9 @@ enum Listings {
         @State private var answer = "nothing asked yet"
         @State private var name = "Draft 1"
 
+        /// The draft's mark: one character - a family joined into one picture is one.
+        @State private var mark = "👨\u{200D}👩\u{200D}👧"
+
         /// What the draft can be done with.
         enum Share: CaseIterable {
             case mail, message, delete
@@ -2893,9 +2896,21 @@ enum Listings {
                         answer = typed.map { "renamed to '\($0)'" } ?? "cancelled"
                     }
 
+                // One character at most, as the user sees one: a letter with its
+                // accent laid over it, a family of three joined - a second is cut
+                // as it is typed, and a cancel keeps the mark.
+                Button("Ask for one character")
+                    .onClicked(policy: .ignoreWhileRunning) {
+                        let typed = try await window.prompt(
+                            "Mark", message: "One character for the draft",
+                            placeholder: "Mark", initialValue: mark, maximumLength: 1)
+                        if let typed { mark = typed }
+                        answer = typed.map { "marked '\($0)'" } ?? "cancelled"
+                    }
+
                 Text(answer)
 
-                Text("the draft is called '\(name)'")
+                Text("the draft is called '\(name)', marked '\(mark)'")
             }
         }
         """#,
