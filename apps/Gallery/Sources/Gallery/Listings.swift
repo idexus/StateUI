@@ -2906,6 +2906,11 @@ enum Listings {
         @State private var over = false
         @State private var finished = "nothing dragged yet"
 
+        /// Whether a drag held over the basket swaps it for a new one, and which
+        /// basket stands now.
+        @State private var swaps = false
+        @State private var basketNumber = 1
+
         var body: some View {
             VStack {
                 // The basket, its light and what the last drag did are read here,
@@ -2938,6 +2943,8 @@ enum Listings {
 
                 ZStack {
                     VStack {
+                        Text("Basket \(basketNumber)")
+
                         Text(over
                             ? "let go to drop it"
                             : (basket.isEmpty ? "nothing yet" : "\(basket.count) dropped"))
@@ -2960,11 +2967,22 @@ enum Listings {
                     basket.append(text.utf8.count <= 1024 ? text : "left out: longer than 1 KB")
                     over = false
                 }
+                // A new basket in the old one's place: the drag goes on over it.
+                .id(basketNumber)
+
+                Switch("Swap the basket while a drag is over it", isOn: $swaps)
 
                 Button("Empty it")
                     .horizontalAlignment(.center)
                     .isEnabled(!basket.isEmpty)
                     .onClicked { basket = [] }
+            }
+            // A second over the basket swaps it; a drag leaving sooner cancels it.
+            .onChanged(over, policy: .cancelPrevious) {
+                guard over, swaps else { return }
+                try await Task.sleep(for: .seconds(1))
+                basketNumber += 1
+                over = false
             }
         }
         """#,

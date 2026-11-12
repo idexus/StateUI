@@ -37,7 +37,7 @@ DatePickerSample.swift 82ff486bed5d3d98
 DeviceDisplaySample.swift 9a655416aa476cd0
 DeviceInfoSample.swift 9c7798fed7a4e8e5
 DialogsSample.swift 120dcbe9842a0ce2
-DragAndDropSample.swift b3705c71085ccf60
+DragAndDropSample.swift 19e8883698b44756
 DrawnAwaySample.swift d7c269b2977887d8
 DrivenReadingSample.swift 6a61547b31769284
 DrivenSample.swift d4e2fe22ebd26b2d
