@@ -22,6 +22,15 @@ final class WebActToolkitTests: XCTestCase {
         XCTAssertNil(WebRelay.utcOffset(of: "Nowhere/Land", on: summer))
     }
 
+    /// A day of the first century is that day, not one of the twentieth: Warsaw kept its mean time then.
+    func testADayOfTheFirstCenturyIsItsOwn() {
+        for year in [1, 50, 99, 100] {
+            XCTAssertEqual(WebRelay.utcOffset(of: "Europe/Warsaw", on: CalendarDate(year: year, month: 1, day: 15)), 84,
+                           "\(year)")
+        }
+        XCTAssertEqual(WebRelay.utcOffset(of: "Europe/Warsaw", on: CalendarDate(year: 1950, month: 1, day: 15)), 60)
+    }
+
     /// A launch opens a page's address, mail's, a call's or the relay's own file - read as the browser reads an
     /// address, its spaces, controls, tabs and line breaks dropped - and never one that runs a script in the
     /// application's origin.
