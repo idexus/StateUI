@@ -814,9 +814,11 @@ struct ContactsPage: View {
             .aim(list)
             .gridRow(0)
 
-            Button("Back to the top")
-                .onClicked(policy: .cancelPrevious) { try await list.scroll(to: contacts[0].name, anchor: .start) }
-                .gridRow(1)
+            if let first = contacts.first {
+                Button("Back to the top")
+                    .onClicked(policy: .cancelPrevious) { try await list.scroll(to: first.name, anchor: .start) }
+                    .gridRow(1)
+            }
         }
         .rows(.fill, .automatic)
     }
