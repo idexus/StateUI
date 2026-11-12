@@ -442,14 +442,17 @@ extension GTKDriver {
     }
 }
 
-/// The look a label's runs give the words at one place, as Pango holds it.
-private struct PangoRun {
+/// The look a label's runs give the words at one place, as Pango holds it: read from Pango's copy of the
+/// attributes, every one of which it destroys, with the list, as it goes.
+final class PangoRun {
     private var attributes: [UnsafeMutablePointer<PangoAttribute>] = []
 
+    /// The copy Pango hands over, whose attributes and list are the run's to free.
+    private let copied: UnsafeMutablePointer<GSList>?
+
     init(_ list: OpaquePointer?, at index: UInt32) {
-        guard let list else { return }
-        var link = pango_attr_list_get_attributes(list)
-        let first = link
+        copied = list.flatMap { pango_attr_list_get_attributes($0) }
+        var link = copied
         while let each = link {
             if let attribute = each.pointee.data?.assumingMemoryBound(to: PangoAttribute.self),
                attribute.pointee.start_index <= index, index < attribute.pointee.end_index {
@@ -457,7 +460,17 @@ private struct PangoRun {
             }
             link = each.pointee.next
         }
-        _ = first
+    }
+
+    deinit {
+        var link = copied
+        while let each = link {
+            if let attribute = each.pointee.data?.assumingMemoryBound(to: PangoAttribute.self) {
+                pango_attribute_destroy(attribute)
+            }
+            link = each.pointee.next
+        }
+        g_slist_free(copied)
     }
 
     private func first(_ type: PangoAttrType) -> UnsafeMutablePointer<PangoAttribute>? {
