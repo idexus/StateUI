@@ -1,4 +1,4 @@
-# revision 27.2
+# revision 28.2
 Button.droppedFileTypes: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.filesDropped: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.frameChanged: ✅

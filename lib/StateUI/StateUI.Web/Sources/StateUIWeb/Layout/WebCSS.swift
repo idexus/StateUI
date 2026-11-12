@@ -185,13 +185,13 @@ enum WebCSS {
         }
     }
 
-    /// The most a child's length may be: `most` where it is stated, and no more than its slot where it is `bound`.
-    static func most(_ most: Double?, bound: Bool) -> String? {
+    /// The most a child's length may be: `most` where it is stated, no more than `bound`, its slot's, where it has one.
+    static func most(_ most: Double?, within bound: String?) -> String? {
         switch (pixels(most), bound) {
-        case (let stated?, true): "min(\(stated), 100%)"
-        case (let stated?, false): stated
-        case (nil, true): "100%"
-        case (nil, false): nil
+        case (let stated?, let bound?): "min(\(stated), \(bound))"
+        case (let stated?, nil): stated
+        case (nil, let bound?): bound
+        case (nil, nil): nil
         }
     }
 

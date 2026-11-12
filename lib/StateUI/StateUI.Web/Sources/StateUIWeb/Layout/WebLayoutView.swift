@@ -109,6 +109,13 @@ class WebLayoutView: WebDOMView {
         super.setPadding(padding)
     }
 
+    /// A ZStack's areas stand from its start side, so its children stand again as it turns.
+    override func setDirection(_ direction: LayoutDirection) {
+        let turned = isRightToLeft != (direction == .rightToLeft)
+        super.setDirection(direction)
+        if turned, arrangement == .layers { placeAll() }
+    }
+
     /// The layout's own box: what fills it, its outline inside its edge, its shape, and whether it cuts what it holds.
     func setBox(background: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?, clips: Bool) {
         let material = HostMaterial(background)
@@ -224,13 +231,19 @@ class WebLayoutView: WebDOMView {
         view.drawInRun(nil, size: nil)
         view.style("will-change", nil)
         for (side, length) in WebCSS.sides(values.margin, margin: true) { view.style("margin-\(side)", length) }
-        view.style("width", WebCSS.pixels(values.width))
-        view.style("height", WebCSS.pixels(values.height))
         // A child is no larger than its slot - across a stack, in a cell, an area or a room it does not scroll in.
-        let boundAcross = arrangement != .stack(.horizontal) && !scrolls.across
-        let boundDown = arrangement != .stack(.vertical) && !scrolls.down
-        view.style("max-width", WebCSS.most(values.maximumWidth, bound: boundAcross))
-        view.style("max-height", WebCSS.most(values.maximumHeight, bound: boundDown))
+        let area = arrangement == .layers ? values.area.map { box(of: $0, margin: values.margin) } : nil
+        let boundAcross = arrangement != .stack(.horizontal) && !scrolls.across ? area?.width ?? "100%" : nil
+        let boundDown = arrangement != .stack(.vertical) && !scrolls.down ? area?.height ?? "100%" : nil
+        view.style("max-width", WebCSS.most(values.maximumWidth, within: boundAcross))
+        view.style("max-height", WebCSS.most(values.maximumHeight, within: boundDown))
+        // A filling child in an area - where the browser stretches a control no narrower than its own size - takes
+        // the area's length, which its most bounds, in its middle.
+        // Design: docs/design/platforms/web/layout.md#a-childs-area
+        let fillsItsArea = (
+            across: values.horizontal == 3 && values.width == nil, down: values.vertical == 3 && values.height == nil)
+        view.style("width", WebCSS.pixels(values.width) ?? (fillsItsArea.across ? area?.width : nil))
+        view.style("height", WebCSS.pixels(values.height) ?? (fillsItsArea.down ? area?.height : nil))
         let stopsAcross = values.width != nil || values.maximumWidth != nil
         let stopsDown = values.height != nil || values.maximumHeight != nil
         let across = WebCSS.alignment(values.horizontal, stops: stopsAcross)
@@ -244,8 +257,13 @@ class WebLayoutView: WebDOMView {
         let wordsInARow = arrangement == .stack(.horizontal) && values.yieldsInARow
         let yieldsAcross = stopsAcross || fillsAcross || sized || wordsInARow
         let yieldsDown = stopsDown || fillsDown || sized
-        view.style("min-width", WebCSS.pixels(values.minimumWidth) ?? (yieldsAcross ? "0" : nil))
-        view.style("min-height", WebCSS.pixels(values.minimumHeight) ?? (yieldsDown ? "0" : nil))
+        // In an area its least gives way to the area's length, as the host layer bounds it by the room it has.
+        let least = { (least: Double?, yields: Bool, bound: String?) -> String? in
+            guard let stated = WebCSS.pixels(least) else { return yields ? "0" : nil }
+            return bound.map { "min(\(stated), \($0))" } ?? stated
+        }
+        view.style("min-width", least(values.minimumWidth, yieldsAcross, area?.width))
+        view.style("min-height", least(values.minimumHeight, yieldsDown, area?.height))
         switch arrangement {
         case .stack(let axis):
             // A space takes an equal share of the room its siblings leave.
@@ -265,41 +283,65 @@ class WebLayoutView: WebDOMView {
             view.style("grid-row", "\(cell.row + 1) / span \(cell.rowSpan)")
             view.style("grid-column", "\(cell.column + 1) / span \(cell.columnSpan)")
         case .layers:
-            placeInArea(view, values.area)
+            placeInArea(view, area)
         default:
             break
         }
     }
 
-    /// A ZStack's child in its area - in points from the room's top left, or in fractions of the room - else in the
-    /// whole room, the one cell every child shares.
-    private func placeInArea(_ view: WebDOMView, _ area: Area?) {
+    /// The box a ZStack's child stands in: its area's edges as CSS insets from the room's - its start one from the
+    /// room's start side, below nothing too - and how wide and tall the child may be within its margin.
+    struct AreaBox {
+        let start, top, end, bottom: String
+        let width, height: String
+    }
+
+    /// The box `area` names within the padding - in points from the room's start corner, or in fractions of the room.
+    /// Design: docs/design/platforms/web/layout.md#a-childs-area
+    private func box(of area: Area, margin: Insets) -> AreaBox {
+        let (start, top) = (padding.start, padding.top)
+        let n: (Double) -> String = WebCSS.signedPixels
+        switch area {
+        case .absolute(let area):
+            let (width, height) = (max(0, area.width), max(0, area.height))
+            return AreaBox(
+                start: n(start + area.x), top: n(top + area.y),
+                end: "calc(100% - \(n(start + area.x + width)))", bottom: "calc(100% - \(n(top + area.y + height)))",
+                width: WebCSS.pixels(width - margin.start - margin.end)!,
+                height: WebCSS.pixels(height - margin.top - margin.bottom)!)
+        case .proportional(let area):
+            let room = "(100% - \(n(padding.start + padding.end)))"
+            let tall = "(100% - \(n(padding.top + padding.bottom)))"
+            let (width, height) = (max(0, area.width), max(0, area.height))
+            let f: (Double) -> String = WebCSS.number
+            return AreaBox(
+                start: "calc(\(n(start)) + \(room) * \(f(area.x)))", top: "calc(\(n(top)) + \(tall) * \(f(area.y)))",
+                end: "calc(100% - \(n(start)) - \(room) * \(f(area.x + width)))",
+                bottom: "calc(100% - \(n(top)) - \(tall) * \(f(area.y + height)))",
+                width: "max(0px, calc(\(room) * \(f(width)) - \(n(margin.start + margin.end))))",
+                height: "max(0px, calc(\(tall) * \(f(height)) - \(n(margin.top + margin.bottom))))")
+        }
+    }
+
+    /// A ZStack's child in its area's box, where it stands by its own size and alignments as in any slot - mirrored
+    /// right to left, its start edge the room's right - else in the whole room, the one cell every child shares.
+    /// Design: docs/design/platforms/web/layout.md#a-childs-area
+    private func placeInArea(_ view: WebDOMView, _ area: AreaBox?) {
         // A run's drawn opacity gives way to the view's own, which a placing never touches.
         // Design: docs/design/platforms/web/layout.md#a-placing-run
         view.setOpacity(view.opacity)
         guard let area else {
             view.style("grid-area", "1 / 1 / 2 / 2")
-            view.style("left", nil)
-            view.style("top", nil)
+            for side in ["left", "top", "right", "bottom"] { view.style(side, nil) }
             return view.style("position", "relative")
         }
-        let (left, top) = (WebCSS.pixels(padding.start)!, WebCSS.pixels(padding.top)!)
-        let room = "(100% - \(WebCSS.pixels(padding.start + padding.end)!))"
-        let tall = "(100% - \(WebCSS.pixels(padding.top + padding.bottom)!))"
         view.style("position", "absolute")
         view.style("grid-area", nil)
-        switch area {
-        case .absolute(let area):
-            view.style("left", "calc(\(left) + \(WebCSS.pixels(area.x)!))")
-            view.style("top", "calc(\(top) + \(WebCSS.pixels(area.y)!))")
-            view.style("width", WebCSS.pixels(area.width))
-            view.style("height", WebCSS.pixels(area.height))
-        case .proportional(let area):
-            view.style("left", "calc(\(left) + \(room) * \(WebCSS.number(area.x)))")
-            view.style("top", "calc(\(top) + \(tall) * \(WebCSS.number(area.y)))")
-            view.style("width", "calc(\(room) * \(WebCSS.number(area.width)))")
-            view.style("height", "calc(\(tall) * \(WebCSS.number(area.height)))")
-        }
+        let (start, end) = isRightToLeft ? ("right", "left") : ("left", "right")
+        view.style(start, area.start)
+        view.style("top", area.top)
+        view.style(end, area.end)
+        view.style("bottom", area.bottom)
     }
 
     /// A child where the run puts it, drawn as it says, over the children placed before it in the run's order.
@@ -315,6 +357,7 @@ class WebLayoutView: WebDOMView {
             // The place is a move drawn over the layout's corner, which the browser composes each frame without
             // laying the page out again, and the view its own layer to move.
             view.style("top", "0px")
+            view.style("bottom", nil)
             view.style("will-change", "transform")
             // The run's size, whatever the room's: a slot's bound would squash a card a short room scales down.
             view.style("max-width", "none")

@@ -342,36 +342,68 @@
         }
     }
 
-    /// A view in a layered stack stands in its area: in points, then in shares of the room as the tree changes it.
-    /// It fills its place across, whatever it does unsaid - a link stands at its words.
+    /// A view in a layered stack stands in its area as in any slot: filling it, in points and then in shares of the
+    /// room; at its own size where its alignments say, in an area reaching past the room's top left corner, and that
+    /// turned about the room's middle right to left; and no larger than its area, its most stopping it short in the
+    /// middle and its least giving way to it. It fills its place across, whatever it does unsaid - a link stands at
+    /// its words.
     @MainActor
     static func inArea(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsArea", proves: [
             Covered(ViewContract.area, on: element), Covered(ViewContract.frameChanged, on: element),
-        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ViewContract.horizontalAlignment, on: element)]) { s in
-            let shared = State(wrappedValue: false)
+        ], needs: [
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+            Covered(ViewContract.horizontalAlignment, on: element), Covered(ViewContract.verticalAlignment, on: element),
+            Covered(VisualElementContract.width, on: element), Covered(VisualElementContract.height, on: element),
+            Covered(VisualElementContract.maximumHeight, on: element),
+            Covered(VisualElementContract.minimumWidth, on: element),
+            Covered(VisualElementContract.layoutDirection, on: "ZStack"),
+        ]) { s in
+            let step = State(wrappedValue: 0)
             let frames = Received<[Double]>()
+            let worn: [[any Worn]] = [
+                [Write(ViewContract.area, Area.absolute(Rect(10, 20, 30, 40))),
+                 Write(ViewContract.horizontalAlignment, Alignment.fill)],
+                [Write(ViewContract.area, Area.proportional(Rect(0.5, 0.5, 0.5, 0.5))),
+                 Write(ViewContract.horizontalAlignment, Alignment.fill)],
+                [Write(ViewContract.area, Area.absolute(Rect(-10, -5, 80, 60))),
+                 Write(VisualElementContract.width, 30), Write(VisualElementContract.height, 40),
+                 Write(ViewContract.horizontalAlignment, Alignment.start), Write(ViewContract.verticalAlignment, Alignment.end)],
+                [Write(ViewContract.area, Area.absolute(Rect(-10, -5, 80, 60))),
+                 Write(VisualElementContract.width, 30), Write(VisualElementContract.height, 40),
+                 Write(ViewContract.horizontalAlignment, Alignment.start), Write(ViewContract.verticalAlignment, Alignment.end)],
+                [Write(ViewContract.area, Area.absolute(Rect(20, 30, 40, 40))),
+                 Write(VisualElementContract.width, 60), Write(VisualElementContract.maximumHeight, 20),
+                 Write(ViewContract.horizontalAlignment, Alignment.start)],
+                [Write(ViewContract.area, Area.absolute(Rect(0, 0, 40, 40))),
+                 Write(VisualElementContract.minimumWidth, 60), Write(ViewContract.horizontalAlignment, Alignment.start)],
+            ]
             s.start {
                 VStack {
                     ZStack {
-                        reporting(element, frames, [
-                            Write(ViewContract.area, shared.wrappedValue
-                                  ? Area.proportional(Rect(0.5, 0.5, 0.5, 0.5)) : Area.absolute(Rect(10, 20, 30, 40))),
-                            Write(ViewContract.horizontalAlignment, Alignment.fill),
-                        ])
+                        reporting(element, frames, worn[step.wrappedValue])
                     }
                     .width(200).height(200)
-                    Button("Share").onClicked { shared.wrappedValue = true }.id("change")
+                    .layoutDirection(step.wrappedValue == 3 ? .rightToLeft : .leftToRight)
+                    Button("Next").onClicked { step.wrappedValue += 1 }.id("change")
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
             }
 
-            s.settle { frames.values.last.map(FrameReport.place) == [10, 20, 30, 40] }
-            s.expect(frames.values.last.map(FrameReport.place), [10, 20, 30, 40], "in points")
-            try s.perform(.activate, on: s.element("change"))
-            s.settle { frames.values.last.map(FrameReport.place) == [100, 100, 100, 100] }
-            s.expect(frames.values.last.map(FrameReport.place), [100, 100, 100, 100], "its room's lower right quarter")
+            let places: [([Double], String)] = [
+                ([10, 20, 30, 40], "filling it, in points"),
+                ([100, 100, 100, 100], "its room's lower right quarter"),
+                ([-10, 15, 30, 40], "its own size at its start and its foot, the area past the room's corner"),
+                ([180, 15, 30, 40], "the same turned about the room's middle right to left"),
+                ([20, 40, 40, 20], "no wider than its area, its most short of it in the middle"),
+                ([0, 0, 40, 40], "its least giving way to its area"),
+            ]
+            for (index, (place, said)) in places.enumerated() {
+                if index > 0 { try s.perform(.activate, on: s.element("change")) }
+                s.settle { frames.values.last.map(FrameReport.place) == place }
+                s.expect(frames.values.last.map(FrameReport.place), place, said)
+            }
         }
     }
 

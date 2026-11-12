@@ -246,9 +246,14 @@ class WebDOMView {
         guard styles[name] != value else { return }
         styles[name] = value
         if !overridden.contains(name) { WebRelay.setStyle(node, name, value) }
-        // The width the layout gives the view, which a field's padding yields to.
+        // The width the layout gives the view - no more than its most - else its most, which a field's padding
+        // yields to.
         // Design: docs/design/platforms/web/look.md#a-fields-padding
-        if name == "width" { WebRelay.setStyle(node, "--stateui-width", value) }
+        if name == "width" || name == "max-width" {
+            let most = styles["max-width"]
+            let width = styles["width"].map { width in most.map { "min(\(width), \($0))" } ?? width } ?? most
+            WebRelay.setStyle(node, "--stateui-width", width)
+        }
     }
 
     /// The value of a CSS property as the view's own say keeps it.
