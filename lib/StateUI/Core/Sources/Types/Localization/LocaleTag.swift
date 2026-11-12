@@ -33,7 +33,9 @@ public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomS
 
     /// Reads a tag; a POSIX locale such as `pl_PL.UTF-8@euro` reads as its language and region.
     public init(_ text: String) {
-        let core = text.split(whereSeparator: { $0 == "." || $0 == "@" }).first.map(String.init) ?? ""
+        // What stands before a POSIX suffix, empty where nothing does - which is no tag.
+        let core = text.split(maxSplits: 1, omittingEmptySubsequences: false, whereSeparator: { $0 == "." || $0 == "@" })
+            .first.map(String.init) ?? ""
         let parts = core.split(separator: "-", omittingEmptySubsequences: false)
             .flatMap { $0.split(separator: "_", omittingEmptySubsequences: false) }
             .map(String.init)
