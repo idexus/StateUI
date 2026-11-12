@@ -1,7 +1,8 @@
 # Layers
 
-Every element, property and event declares the layer that realizes it; an
-act declares none. The layer is what the contract promises about who does the
+Every element, property, event and act declares the layer that realizes it -
+an act the provider's (`provider`, the map's `moveToRegion` among them)
+unless its contract says another. The layer is what the contract promises about who does the
 work, and the dictionary prints it beside every row.
 
 ## Five layers
