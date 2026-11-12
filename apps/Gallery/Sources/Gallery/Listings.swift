@@ -7427,6 +7427,9 @@ enum Listings {
         /// The color the last panel walks to and back - a color's channel.
         @State private var wash = Palette.accent
 
+        /// Which ground the last panel stands on: a blur, a color, or none.
+        @State private var ground = 0
+
         /// The blurs on offer, thinnest first.
         private static let blurs: [(name: String, blur: Blur)] = [
             ("Ultra thin", .ultraThin), ("Thin", .thin), ("Regular", .regular), ("Thick", .thick),
@@ -7467,6 +7470,9 @@ enum Listings {
                         words("A color's channel")
                             .height(76)
                             .gridRow(2).gridColumn(1)
+                        // One panel whose ground changes kind: a blur gives way to a color, and that to none.
+                        panel(["Blur", "Color", "None"][ground], [.blur(blur), .color(Palette.accent), .color(.transparent)][ground])
+                            .gridRow(3).gridColumn(0)
                     }
                     .columns(.fill, .fill)
                 }
@@ -7481,6 +7487,9 @@ enum Listings {
                 Button("Change the color")
                     .horizontalAlignment(.center)
                     .onClicked { wash = wash == Palette.accent ? Palette.brand : Palette.accent }
+                Button("Blur, color, none")
+                    .horizontalAlignment(.center)
+                    .onClicked { ground = (ground + 1) % 3 }
             }
         }
 

@@ -19,6 +19,9 @@ struct MaterialsSample: SampleContent, ExampleContent {
 
     /// The color the last panel walks to and back - a color's channel.
     @State private var wash = Palette.accent
+
+    /// Which ground the last panel stands on: a blur, a color, or none.
+    @State private var ground = 0
     // listing: end
 
     static let id = "materials"
@@ -70,6 +73,9 @@ struct MaterialsSample: SampleContent, ExampleContent {
                         .shape(.roundedRectangle(14))
                         .height(76)
                         .gridRow(2).gridColumn(1)
+                    // One panel whose ground changes kind: a blur gives way to a color, and that to none.
+                    panel(["Blur", "Color", "None"][ground], [.blur(blur), .color(Palette.accent), .color(.transparent)][ground])
+                        .gridRow(3).gridColumn(0)
                 }
                 .columns(.fill, .fill)
                 .rowSpacing(12)
@@ -90,6 +96,10 @@ struct MaterialsSample: SampleContent, ExampleContent {
             Button("Change the color")
                 .horizontalAlignment(.center)
                 .onClicked { wash = wash == Palette.accent ? Palette.brand : Palette.accent }
+            Button("Blur, color, none")
+                .horizontalAlignment(.center)
+                .accessibilityIdentifier("materials.ground")
+                .onClicked { ground = (ground + 1) % 3 }
         }
         .spacing(10)
     }
@@ -131,6 +141,12 @@ struct MaterialsSample: SampleContent, ExampleContent {
 
             Text("`.background($wash)` hands the color to the host as a channel: it walks the color "
                 + "to each new one, and nothing here is built again.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Blur, color, none turns the last panel's ground from one kind to the next: the blur "
+                + "goes with the blur, and what stands behind shows plain through the color and then "
+                + "through nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
