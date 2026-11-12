@@ -18,14 +18,12 @@ final class AppKitDrops {
         var files: [URL] = []
     }
 
-    /// An element taking drops as a drag knows it: weakly, so one leaving under the drag is let go of.
-    private struct Taker {
-        weak var element: AppKitElement?
-    }
-
-    /// The elements whose views take drops, by their view: read as a drag comes, let go as it ends.
+    /// The elements whose views take drops, by their view: read where the drag is now, each time it moves, so a
+    /// view coming under it takes it and none leaving is held.
+    /// Design: docs/design/platforms/appkit/input.md#a-drag-between-views
     private let takers: () -> [ObjectIdentifier: AppKitElement]
-    private var targets: [ObjectIdentifier: Taker] = [:]
+
+    /// The element the drag is over, known weakly: one leaving under the drag is let go of.
     private weak var over: AppKitElement?
 
     init(takers: @escaping () -> [ObjectIdentifier: AppKitElement]) {
@@ -34,8 +32,7 @@ final class AppKitDrops {
 
     /// A drag came over the window at `location`, in the window, carrying `carried`.
     func entered(at location: NSPoint, carrying carried: Carried, in root: NSView) -> NSDragOperation {
-        targets = takers().mapValues(Taker.init)
-        return moved(to: location, carrying: carried, in: root)
+        moved(to: location, carrying: carried, in: root)
     }
 
     /// The drag moved: the view under it that takes what it carries hears it over it, and the one it left hears it
@@ -53,12 +50,10 @@ final class AppKitDrops {
     func exited() {
         over?.hear(.dragLeft)
         over = nil
-        targets = [:]
     }
 
     /// The drag was let go, carrying `carried`: whether a view took it - files where it takes them, else words.
     func dropped(_ carried: Carried) -> Bool {
-        defer { targets = [:] }
         guard let target = over else { return false }
         over = nil
         if !carried.files.isEmpty, target.element.dragAndDrop.takesFiles {
@@ -73,9 +68,10 @@ final class AppKitDrops {
 
     /// The element of the view under `location`, in the window, that takes what `carried` holds.
     private func taker(at location: NSPoint, of carried: Carried, in root: NSView) -> AppKitElement? {
+        let targets = takers()
         var view = root.hitTest(root.superview?.convert(location, from: nil) ?? location)
         while let each = view, each !== root.superview {
-            if let element = targets[ObjectIdentifier(each)]?.element {
+            if let element = targets[ObjectIdentifier(each)] {
                 let taking = element.element.dragAndDrop
                 if (!carried.files.isEmpty && taking.takesFiles) || (carried.words != nil && taking.takesWords) {
                     return element
