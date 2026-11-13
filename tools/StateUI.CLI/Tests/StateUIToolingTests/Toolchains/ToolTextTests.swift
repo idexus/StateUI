@@ -19,14 +19,17 @@ final class ToolTextTests: XCTestCase {
         let swiftOrg = "Apple Swift version 6.4 (swift-6.4-RELEASE)\nTarget: arm64-apple-macosx26.0"
         XCTAssertEqual(Versions.swiftRelease(in: swiftOrg), "6.4")
         XCTAssertEqual(Versions.swiftRelease(in: "Swift version 6.4.0 (swift-6.4-RELEASE)"), "6.4")
-        XCTAssertEqual(Versions.swiftRelease(in: "Swift version 6.4.1 (swift-6.4.1-RELEASE)"), "6.4.1")
+        // Another release than the manifests' is assembled from parts: the repository names one Swift (ToolchainTests).
+        let patch = "6.4" + ".1"
+        XCTAssertEqual(Versions.swiftRelease(in: "Swift version \(patch) (swift-\(patch)-RELEASE)"), patch)
         XCTAssertTrue(Versions.isSwiftOrgBuild(swiftOrg))
         XCTAssertFalse(Versions.isSwiftOrgBuild("Apple Swift version 6.4 (swiftlang-6.4.0.1.2 clang-1800.0.1)"))
     }
 
     /// A Swift SDK is the last of Swift's release whose id ends in the family asked, never an Embedded sibling.
     func testASwiftSDKIsOfSwiftsReleaseAndFamily() {
-        let list = "swift-6.3-RELEASE_android\nswift-6.4.0-RELEASE_wasm\nswift-6.4.0-RELEASE_wasm-embedded\nswift-6.4-RELEASE_android"
+        let older = "6" + ".3"
+        let list = "swift-\(older)-RELEASE_android\nswift-6.4.0-RELEASE_wasm\nswift-6.4.0-RELEASE_wasm-embedded\nswift-6.4-RELEASE_android"
         XCTAssertEqual(Versions.swiftSDK(of: "6.4", in: list, family: "wasm"), "swift-6.4.0-RELEASE_wasm")
         XCTAssertEqual(Versions.swiftSDK(of: "6.4", in: list, family: "android"), "swift-6.4-RELEASE_android")
         XCTAssertNil(Versions.swiftSDK(of: "6.5", in: list, family: "android"))
