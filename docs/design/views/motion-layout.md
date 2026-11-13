@@ -173,7 +173,8 @@ out at most 32 steps, and a world further behind lets the rest go, slowing
 rather than spending a frame catching up (the Web without a JIT). A body as
 near and as slow as an animation counts arrived leaves the world, and one
 still moving the longest a spring animates since it was set or carried lands
-on its place, as an animation does.
+on its place, as an animation does - as does one whose step comes out no
+number, its speed told back per second included.
 
 A body of the world's own is at its place but where a change shifted it: the
 parameters and the hand carry it exactly. A body following its layout

@@ -43,28 +43,33 @@ final class LayoutBodiesTests: XCTestCase {
         XCTAssertTrue(world.isEmpty, "at rest, gone from the world")
     }
 
-    /// EVERY SPRING A WORLD ADMITS COMES TO AN END: on any response and damping a body's lanes and speeds are numbers
-    /// at every frame, and it has left the world by the longest a spring animates.
+    /// EVERY SPRING A WORLD ADMITS COMES TO AN END: on any response and damping, however far from its place and
+    /// however fast, a body's lanes and speeds are numbers at every frame, and it has left the world by the longest a
+    /// spring animates.
     func testEverySpringAWorldAdmitsComesToAnEnd() {
         var wrong: [String] = []
-        for response in [1.0, 30, 300, 2_000] {
+        for response in [1.0, 13, 30, 300, 2_000] {
             for damping in [0.05, 0.5, 1, 2, 10, 1e3, 1e6, 1e200] {
-                var world = LayoutBodies()
-                let spring = LayoutBodies.Spring(response: .milliseconds(Int64(response)), damping: damping)
-                world.set(1, lanes: [100, -40], velocity: [500, 0], spring: spring, at: 0)
-                var frame = 0.0
-                while !world.isEmpty, frame <= HostMotionLaw.longest + 16 {
-                    frame += 16
-                    world.step(to: frame)
-                    if let body = world[1], !(body.lanes + body.velocity).allSatisfy(\.isFinite) {
-                        wrong.append("\(response) ms, \(damping): \(body.lanes) at \(frame)")
-                        break
+                for far in [100, 1e300, 1e307, Double.greatestFiniteMagnitude] {
+                    for fast in [0, 500, 1e300, Double.greatestFiniteMagnitude] {
+                        var world = LayoutBodies()
+                        let spring = LayoutBodies.Spring(response: .milliseconds(Int64(response)), damping: damping)
+                        world.set(1, lanes: [far, -far / 2], velocity: [fast, 0], spring: spring, at: 0)
+                        var frame = 0.0
+                        while !world.isEmpty, frame <= HostMotionLaw.longest + 16 {
+                            frame += 1_000 / 240
+                            world.step(to: frame)
+                            if let body = world[1], !(body.lanes + body.velocity).allSatisfy(\.isFinite) {
+                                wrong.append("\(response) ms, \(damping), \(far), \(fast): \(body.velocity) at \(frame)")
+                                break
+                            }
+                        }
+                        if !world.isEmpty { wrong.append("\(response) ms, \(damping), \(far), \(fast): still in the world") }
                     }
                 }
-                if !world.isEmpty { wrong.append("\(response) ms, \(damping): still in the world at \(frame)") }
             }
         }
-        XCTAssertEqual(wrong, [])
+        XCTAssertEqual(wrong.count, 0, "\(wrong.prefix(5))")
     }
 
     /// A LIGHTER DAMPED BODY PASSES ITS PLACE AND COMES BACK.

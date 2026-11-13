@@ -804,28 +804,35 @@ final class MotionTests: XCTestCase {
     }
 
     /// Every spring a motion admits answers numbers: at every moment each lane's value and speed are finite, and by
-    /// the longest a spring animates it has landed - whatever the damping, however slow or snappy.
+    /// the longest a spring animates it has landed - whatever the damping, however slow or snappy, however far it
+    /// goes and however fast it sets out.
     func testEverySpringAMotionAdmitsAnswersNumbers() {
         let dampings = [0.05, 0.5, 0.999_999_9, 1, 1.000_000_1, 2, 10, 1e3, 1e6, 1e10, 1e100, 1e200, 1e307,
                         Double.greatestFiniteMagnitude]
         let responses: [Duration] = [.milliseconds(1), .milliseconds(300), .seconds(10)]
+        let spans = [100, 1e100, 1e300, 1e307, Double.greatestFiniteMagnitude / 2]
+        let speeds = [0, 2_000, 1e300, Double.greatestFiniteMagnitude]
         var wrong: [String] = []
         for damping in dampings {
             for response in responses {
                 let motion = Motion.spring(response: response, damping: damping)
-                for elapsed in [0, 16, 250, 1_000, 9_999, HostMotionLaw.longest] {
-                    let sample = HostMotionLaw.sample(
-                        motion, elapsed: elapsed, from: [0, 100], destination: [100, -50], velocity: [2_000, 0])
-                    if !(sample.value + sample.velocity).allSatisfy(\.isFinite) {
-                        wrong.append("\(damping) \(response) at \(elapsed): \(sample.value) \(sample.velocity)")
-                    }
-                    if elapsed == HostMotionLaw.longest, !sample.rested || sample.value != [100, -50] {
-                        wrong.append("\(damping) \(response) has not landed by the longest")
+                for span in spans {
+                    for speed in speeds {
+                        for elapsed in [0, 16, 250, 1_000, 9_999, HostMotionLaw.longest] {
+                            let sample = HostMotionLaw.sample(
+                                motion, elapsed: elapsed, from: [0, 0], destination: [span, -span], velocity: [speed, -speed])
+                            if !(sample.value + sample.velocity).allSatisfy(\.isFinite) {
+                                wrong.append("\(damping) \(response) \(span) \(speed) at \(elapsed): \(sample.velocity)")
+                            }
+                            if elapsed == HostMotionLaw.longest, !sample.rested || sample.value != [span, -span] {
+                                wrong.append("\(damping) \(response) \(span) \(speed) has not landed by the longest")
+                            }
+                        }
                     }
                 }
             }
         }
-        XCTAssertEqual(wrong, [])
+        XCTAssertEqual(wrong.count, 0, "\(wrong.prefix(5))")
     }
 
     /// An overdamped spring creeps towards its destination, the more slowly the more it is damped, and never

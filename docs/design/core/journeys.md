@@ -358,8 +358,9 @@ every animation of its table to where it starts and where it lands.
                                     overdamped one's rates written so no
                                     damping a motion admits overflows or
                                     cancels them away
-  no number                         a sample past what a double holds lands,
-                                    for every animator alike
+  no number                         a sample past what a double holds - its
+                                    speed told back per second included -
+                                    lands, for every animator alike
   still                             0.001 in the value's units, and 1 a second
                                     for a speed: below any display's resolution
                                     for a color channel (0 to 1) or a point

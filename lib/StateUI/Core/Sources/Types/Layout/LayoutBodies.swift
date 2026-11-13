@@ -105,8 +105,9 @@ extension LayoutBodies.Body {
             let (place, speed) = HostMotionLaw.spring(
                 response: max(spring.response, 1), damping: max(spring.damping, 0.01), elapsed: milliseconds,
                 displacement: lanes[lane], speed: velocity[lane] / 1_000)
-            let lands = moved >= HostMotionLaw.longest || !place.isFinite || !speed.isFinite
-            (lanes[lane], velocity[lane]) = lands ? (0, 0) : (place, speed * 1_000)
+            let perSecond = speed * 1_000
+            let lands = moved >= HostMotionLaw.longest || !place.isFinite || !perSecond.isFinite
+            (lanes[lane], velocity[lane]) = lands ? (0, 0) : (place, perSecond)
         }
     }
 

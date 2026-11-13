@@ -96,10 +96,11 @@ import StateUIFoundation
         case .inherited, .none, .custom:
             sample = landed(destination)
         }
-        // A sample that came out no number - arithmetic past what a double holds - lands, for every reader alike.
-        guard (sample.value + sample.velocity).allSatisfy(\.isFinite) else { return landed(destination) }
-        return HostMotionSample(
-            value: sample.value, velocity: sample.velocity.map { $0 * 1_000 }, rested: sample.rested)
+        // A sample that came out no number - arithmetic past what a double holds, the speed back per second
+        // included - lands, for every reader alike.
+        let perSecond = sample.velocity.map { $0 * 1_000 }
+        guard (sample.value + perSecond).allSatisfy(\.isFinite) else { return landed(destination) }
+        return HostMotionSample(value: sample.value, velocity: perSecond, rested: sample.rested)
     }
 
     /// An animation at its destination, standing still.
