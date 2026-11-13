@@ -3,10 +3,12 @@
 
 /// The methods a service answers, each by name with its parameter and result types.
 public struct Methods: Sendable {
-    /// Who calls a method: the connection's instance, which owns what it starts, and where its events go.
+    /// Who calls a method: the connection's instance, which owns what it starts, where its events go, and the
+    /// workspace it opened.
     struct Caller: Sendable {
         var owner: String
         var channel: EventChannel
+        var workspaceUri: String?
     }
 
     /// A method's answer, and what runs once the answer is written.
@@ -40,19 +42,36 @@ public struct Methods: Sendable {
         _ name: String,
         _ answer: @escaping @Sendable (Parameters) async throws -> Result
     ) {
-        answers[name] = { params, _ in
-            let parameters: Parameters
-            switch Self.read(Parameters.self, of: name, from: params) {
-            case .success(let read): parameters = read
-            case .failure(let error): return Reply(outcome: .error(error))
-            }
-            do {
-                return Reply(outcome: .result(try JSONValue(encoding: try await answer(parameters))))
-            } catch let error as ToolingError {
-                return Reply(outcome: .error(.refused(error)))
-            } catch {
-                return Reply(outcome: .error(.internalError("\(name) failed: \(error)")))
-            }
+        query(name) { (parameters: Parameters, _: RequestContext) in try await answer(parameters) }
+    }
+
+    /// Adds a method answered at once that reads the workspace its connection opened beside its parameters.
+    public mutating func query<Parameters: Codable & Sendable, Result: Codable & Sendable>(
+        _ name: String,
+        _ answer: @escaping @Sendable (Parameters, RequestContext) async throws -> Result
+    ) {
+        answers[name] = { params, caller in
+            await Self.answer(name, params, RequestContext(workspaceUri: caller.workspaceUri), answer)
+        }
+    }
+
+    private static func answer<Parameters: Codable & Sendable, Result: Codable & Sendable>(
+        _ name: String,
+        _ params: JSONValue,
+        _ context: RequestContext,
+        _ answer: @escaping @Sendable (Parameters, RequestContext) async throws -> Result
+    ) async -> Reply {
+        let parameters: Parameters
+        switch read(Parameters.self, of: name, from: params) {
+        case .success(let read): parameters = read
+        case .failure(let error): return Reply(outcome: .error(error))
+        }
+        do {
+            return Reply(outcome: .result(try JSONValue(encoding: try await answer(parameters, context))))
+        } catch let error as ToolingError {
+            return Reply(outcome: .error(.refused(error)))
+        } catch {
+            return Reply(outcome: .error(.internalError("\(name) failed: \(error)")))
         }
     }
 

@@ -23,3 +23,5 @@ writes its result as words or as the message an editor receives.
   statuses the tool ends with.
 - [The protocol](protocol.md): the frames and messages an editor and the
   tool exchange.
+- [Projects](projects.md): how a project, its applications and their
+  checkouts are read.

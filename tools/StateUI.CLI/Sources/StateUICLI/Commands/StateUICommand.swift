@@ -12,7 +12,7 @@ struct StateUICommand: AsyncParsableCommand {
         commandName: "stateui",
         abstract: "StateUI's developer tool.",
         version: Release.version,
-        subcommands: [ServeCommand.self, VersionCommand.self]
+        subcommands: [ProjectCommand.self, ServeCommand.self, VersionCommand.self]
     )
 
     /// A command line naming no command: the help, on standard error, and status 2.
@@ -24,11 +24,14 @@ struct StateUICommand: AsyncParsableCommand {
     /// Runs the command the arguments name; arguments a command does not take end with status 2.
     static func main() async {
         do {
-            var command = try parseAsRoot()
-            if var command = command as? AsyncParsableCommand {
-                try await command.run()
-            } else {
-                try command.run()
+            let command = try parseAsRoot()
+            try await Interruption.run {
+                if var command = command as? AsyncParsableCommand {
+                    try await command.run()
+                } else {
+                    var command = command
+                    try command.run()
+                }
             }
         } catch {
             guard exitCode(for: error) == .validationFailure else { exit(withError: error) }

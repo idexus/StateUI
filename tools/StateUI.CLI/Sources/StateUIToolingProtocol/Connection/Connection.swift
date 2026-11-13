@@ -39,7 +39,7 @@ public actor Connection {
     private let diagnose: @Sendable (String) -> Void
     private let backlog: @Sendable () -> Int
     private let lostAfter: Duration
-    private let caller: Methods.Caller
+    private var caller: Methods.Caller
     private var pending: [Int: Task<Void, Never>] = [:]
     private var nextPending = 0
     private var watchdog: Task<Void, Never>?
@@ -72,7 +72,7 @@ public actor Connection {
                 Self.write(.notification(method: "operation/event", params: params), send, diagnose)
             },
             backlog: backlog)
-        caller = Methods.Caller(owner: UUID().uuidString.lowercased(), channel: channel)
+        caller = Methods.Caller(owner: UUID().uuidString.lowercased(), channel: channel, workspaceUri: nil)
     }
 
     /// Reads `bytes` as they came; `false` once the connection has ended.
@@ -257,6 +257,7 @@ public actor Connection {
         )
         guard let encoded = try? JSONValue(encoding: result) else { return .error(.internalError("initialize")) }
         state = .initializing
+        caller.workspaceUri = parameters.workspaceUri
         return .result(encoded)
     }
 

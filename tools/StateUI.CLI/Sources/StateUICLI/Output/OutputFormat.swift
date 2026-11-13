@@ -28,4 +28,12 @@ enum OutputFormat: String, CaseIterable, ExpressibleByArgument {
         }
         FileHandle.standardOutput.write(Data((line + "\n").utf8))
     }
+
+    /// Writes `error`: in JSON its envelope on standard output, in words on standard error.
+    func write(_ error: ToolingError) throws {
+        guard self != .text else { return StandardOutput.diagnose("stateui: \(error.message)") }
+        let envelope = ErrorEnvelope(apiVersion: Release.newestAPIVersion, error: error)
+        let data = try ToolingJSON.encoder(pretty: self == .json).encode(envelope)
+        FileHandle.standardOutput.write(data + Data("\n".utf8))
+    }
 }

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import Foundation
 import StateUIToolingProtocol
 
 /// The work every client of the tool asks for, by the tooling API's methods: the terminal's commands and an
@@ -17,10 +18,21 @@ public struct ToolingService: Sendable {
         ServerInfo(server: Self.identity, apiVersions: Release.apiVersions, machine: .current)
     }
 
+    /// The project holding `folder` - `project/describe`.
+    public func describeProject(containing folder: URL) async throws -> Project {
+        try await ProjectReader().describe(containing: folder)
+    }
+
     /// The methods an editor calls, each answered by this service.
     public var methods: Methods {
         var methods = Methods()
         methods.query("server/info") { (_: NoParameters) in serverInfo() }
+        methods.query("project/describe") { (reference: ProjectReference, context: RequestContext) in
+            guard let uri = reference.projectUri ?? context.workspaceUri else {
+                throw ToolingError(.projectNotFound, "No project is named, and the connection opened no workspace.")
+            }
+            return try await describeProject(containing: try FileURI.url(uri))
+        }
         return methods
     }
 }

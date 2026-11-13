@@ -9,7 +9,12 @@ import XCTest
 /// The built `stateui`, run as a user runs it.
 enum Stateui {
     /// The program's path among the package's products.
-    static var path: String {
+    static var path: String { product("stateui") }
+
+    /// The test program `ProcessProbe`'s path, which plays a program the tool runs.
+    static var probe: String { product("ProcessProbe") }
+
+    private static func product(_ name: String) -> String {
         #if os(macOS)
         let products = Bundle.allBundles.first { $0.bundlePath.hasSuffix(".xctest") }!.bundleURL
             .deletingLastPathComponent()
@@ -17,9 +22,9 @@ enum Stateui {
         let products = Bundle.main.bundleURL
         #endif
         #if os(Windows)
-        return products.appendingPathComponent("stateui.exe").path
+        return products.appendingPathComponent(name + ".exe").path
         #else
-        return products.appendingPathComponent("stateui").path
+        return products.appendingPathComponent(name).path
         #endif
     }
 

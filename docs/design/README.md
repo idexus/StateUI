@@ -63,8 +63,8 @@ any number, the first trailing closure by any label.
 - [`contracts/`](contracts/README.md): how an element contract declares a
   node type, its tiers and its members, and who reads it.
 - [`tooling/`](tooling/README.md): the `stateui` tool - its
-  [processes](tooling/processes.md), [command line](tooling/command-line.md) and
-  [protocol](tooling/protocol.md).
+  [processes](tooling/processes.md), [command line](tooling/command-line.md),
+  [protocol](tooling/protocol.md) and [projects](tooling/projects.md).
 - `host/`: the runtime every host shares - [the runtime](host/runtime.md),
   [the mounted tree](host/tree.md), [pages](host/pages.md), [layout](host/layout.md),
   [motion](host/motion.md), [patches](host/patches.md), [items](host/items.md),

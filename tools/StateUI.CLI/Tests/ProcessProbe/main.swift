@@ -20,6 +20,16 @@ func json<Value: Encodable>(_ value: Value) -> String {
     return String(decoding: try! encoder.encode(value), as: UTF8.self)
 }
 
+func startDescendant(writingTo file: String, holdingOutput: Bool, staying: Bool) {
+    let descendant = Process()
+    descendant.executableURL = URL(fileURLWithPath: CommandLine.arguments[0])
+    descendant.arguments = ["sleep", "60"]
+    if !holdingOutput { descendant.standardOutput = FileHandle.nullDevice }
+    try! descendant.run()
+    try! "\(descendant.processIdentifier)".write(toFile: file, atomically: true, encoding: .utf8)
+    if staying { descendant.waitUntilExit() }
+}
+
 let arguments = Array(CommandLine.arguments.dropFirst())
 let rest = Array(arguments.dropFirst())
 
@@ -57,13 +67,11 @@ case "streams":
 case "descendant":
     // rest: the file the descendant's process identifier is written to, "holds" when the descendant keeps
     // this program's standard output, "stays" when this program waits for it rather than leaving at once.
-    let descendant = Process()
-    descendant.executableURL = URL(fileURLWithPath: CommandLine.arguments[0])
-    descendant.arguments = ["sleep", "60"]
-    if rest[1] != "holds" { descendant.standardOutput = FileHandle.nullDevice }
-    try! descendant.run()
-    try! "\(descendant.processIdentifier)".write(toFile: rest[0], atomically: true, encoding: .utf8)
-    if rest[2] == "stays" { descendant.waitUntilExit() }
+    startDescendant(writingTo: rest[0], holdingOutput: rest[1] == "holds", staying: rest[2] == "stays")
+case "package":
+    // Swift asked to describe a package: a program that starts a descendant and waits, as a slow manifest does.
+    startDescendant(
+        writingTo: ProcessInfo.processInfo.environment["STATEUI_PROBE_FILE"]!, holdingOutput: false, staying: true)
 case "sleep":
     Thread.sleep(forTimeInterval: Double(rest[0])!)
 default:

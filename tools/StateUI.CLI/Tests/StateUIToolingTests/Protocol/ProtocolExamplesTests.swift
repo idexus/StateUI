@@ -13,6 +13,8 @@ final class ProtocolExamplesTests: XCTestCase {
     private struct Example {
         var name: String
         var messages: [(role: String, message: JSONValue)]
+        /// Whether the service answers it as written; an answer of this machine's files is held to its type alone.
+        var answeredAsWritten = true
     }
 
     private static let directory = URL(fileURLWithPath: #filePath)
@@ -50,6 +52,15 @@ final class ProtocolExamplesTests: XCTestCase {
             capabilities: ServerCapabilities(methods: ToolingService().methods.names, notifications: []),
             limits: .current)
         let info = ServerInfo(server: tool, apiVersions: Release.apiVersions, machine: Machine(system: "macos", architecture: "arm64"))
+        let demo = "file:///Users/example/Projects/Demo"
+        let project = Project(
+            rootUri: demo,
+            applications: [Application(
+                id: "apps/Notes", name: "Notes", packageUri: demo + "/apps/Notes", declaredHosts: [.appkit, .uikit],
+                products: ["NotesUI"], testSuites: ["NotesTests"], libraryUri: demo + "/StateUI")],
+            libraries: [Library(
+                rootUri: demo + "/StateUI", release: "1.0.0", revision: "0123456789abcdef0123456789abcdef01234567",
+                dirty: false)])
         return [
             Example(name: "initialize", messages: [
                 ("request", try request("1", "initialize", initialize)), ("response", try response("1", initialized)),
@@ -58,6 +69,10 @@ final class ProtocolExamplesTests: XCTestCase {
             Example(name: "server-info", messages: [
                 ("request", try request("2", "server/info", NoParameters())), ("response", try response("2", info)),
             ]),
+            Example(name: "project-describe", messages: [
+                ("request", try request("4", "project/describe", ProjectReference(projectUri: demo))),
+                ("response", try response("4", project)),
+            ], answeredAsWritten: false),
             Example(name: "shutdown", messages: [
                 ("request", .object(["jsonrpc": .string("2.0"), "id": .string("3"), "method": .string("shutdown")])),
                 ("response", try JSONValue(encoding: OutgoingMessage.response(id: .string("3"), outcome: .result(.null)))),
@@ -106,7 +121,7 @@ final class ProtocolExamplesTests: XCTestCase {
             server: Self.tool, apiVersions: Release.apiVersions, methods: ToolingService().methods,
             send: { frame in written.bytes.withLock { $0 += Array(frame) } }, diagnose: { _ in })
         var expected: [JSONValue] = []
-        for example in try Self.examples() {
+        for example in try Self.examples() where example.answeredAsWritten {
             for (role, message) in example.messages {
                 if role == "response" { expected.append(message); continue }
                 let body = try ToolingJSON.encoder().encode(message)

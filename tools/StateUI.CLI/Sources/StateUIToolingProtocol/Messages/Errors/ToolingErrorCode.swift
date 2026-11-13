@@ -17,6 +17,14 @@ public struct ToolingErrorCode: RawRepresentable, Codable, Hashable, Sendable {
     public static let notFound = ToolingErrorCode(rawValue: "NOT_FOUND")
     /// A request token already stands for a request of other parameters.
     public static let requestTokenConflict = ToolingErrorCode(rawValue: "REQUEST_TOKEN_CONFLICT")
+    /// No project stands where the request names one.
+    public static let projectNotFound = ToolingErrorCode(rawValue: "PROJECT_NOT_FOUND")
+    /// A program the tool runs - a compiler, a package manager - failed.
+    public static let toolFailed = ToolingErrorCode(rawValue: "TOOL_FAILED")
+    /// A program the tool needs cannot be found.
+    public static let missingToolchain = ToolingErrorCode(rawValue: "MISSING_TOOLCHAIN")
+    /// The request's work was interrupted before it ended.
+    public static let operationInterrupted = ToolingErrorCode(rawValue: "OPERATION_INTERRUPTED")
     /// The tool failed in a way no other code describes.
     public static let internalError = ToolingErrorCode(rawValue: "INTERNAL_ERROR")
 }

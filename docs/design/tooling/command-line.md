@@ -27,9 +27,21 @@ apart without reading words:
 | Status | The tool ended |
 | --- | --- |
 | `0` | with the work done, or with the help that was asked for |
-| `2` | on a command line naming no command, or arguments a command does not take |
+| `1` | on a program it ran failing - SwiftPM unable to read a package |
+| `2` | on a command line naming no command, arguments a command does not take, or no project where one is named |
+| `3` | missing a program it needs - Swift not found |
 | `6` | serving an editor, when its input ended or broke before it shut the service down - a client lost |
+| `130` | interrupted, once the work it stopped has stopped |
 
 A command line naming no command writes the help on standard error. The
 argument parser's own status for arguments a command does not take, 64, is
 read as `2`.
+
+## An interrupt
+
+The terminal's interrupt - Ctrl+C - stops the command's work instead of
+the tool: the work's task is cancelled, so each program it runs is stopped
+with every program it started, and the tool ends with status `130` once they
+are gone. A second interrupt ends the tool at once, with what is still
+running left as it stands. On Windows the console's Ctrl+C and Ctrl+Break are
+the interrupt.
