@@ -307,16 +307,26 @@ extension MultiBinding {
         guard let conversion = converted.conversion else { return converted }
 
         let (derived, reaches) = (converted.storage, reaches)
-        conversion.declareBack { [weak derived] in
-            guard let first = reaches[0]() as? State<A>.Storage, let second = reaches[1]() as? State<B>.Storage,
-                  let derived
-            else { return }
+        let sources = { () -> (State<A>.Storage, State<B>.Storage)? in
+            guard let first = reaches[0]() as? State<A>.Storage, let second = reaches[1]() as? State<B>.Storage
+            else { return nil }
+            return (first, second)
+        }
+        let refusal = { (value: Out) -> String? in
+            guard let (first, second) = sources() else { return nil }
+            let (one, two) = back(value)
+            return first.refusal(of: one) ?? second.refusal(of: two)
+        }
+        conversion.declareBack(refusing: refusal) { [weak derived] in
+            guard let (first, second) = sources(), let derived else { return }
 
-            // A report lands on both sources or on neither: the derived state goes back to what they hold.
-            let (one, two) = back(derived.value)
-            guard first.admits(one), second.admits(two) else {
+            // A report lands on both sources or on neither, asked up each one's chain before either is written:
+            // the derived state goes back to what they hold.
+            if let why = refusal(derived.value) {
+                complain(why)
                 return derived.settle(transform(first.value, second.value), asking: true)
             }
+            let (one, two) = back(derived.value)
             first.settle(one, asking: true)
             second.settle(two, asking: true)
             first.conversion?.back?()

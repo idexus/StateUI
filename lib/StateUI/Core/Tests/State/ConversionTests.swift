@@ -636,6 +636,55 @@ final class ConversionTests: XCTestCase {
         XCTAssertEqual(destination(of: number), 90, "the thumb goes back to what the sources hold")
     }
 
+    /// A source that is itself a conversion refuses what its own sources refuse: a report whose first part a state
+    /// two links up refuses lands on neither source, the second keeping its own.
+    func testAReportAStateUpTheChainRefusesLandsOnNeitherSource() throws {
+        let base = State(wrappedValue: 1.0)
+        let second = State(wrappedValue: 30.0)
+        base.storage.refuses = { $0 > 1 ? "\($0) is too much" : nil }
+        let renders = Renders()
+        let patch = renders.render(
+            Slider(
+                Binding<Double>.multi(base.projectedValue.convert({ $0 * 10 }, back: { $0 / 10 }), second.projectedValue)
+                    .convert({ $0 + $1 }, back: { (20, $0 - 20) }))
+            .maximum(100)
+            .node)
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        dragged(number, to: 25)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(base.wrappedValue, 1)
+        XCTAssertEqual(second.wrappedValue, 30, "the source that takes its part keeps its own all the same")
+        XCTAssertTrue(hasComplained("2.0 is too much"))
+        XCTAssertEqual(destination(of: number), 40, "the thumb goes back to what the sources hold")
+    }
+
+    /// A report a state two links up a chain refuses lands on no link: each goes back to what the first source holds.
+    func testAReportAStateTwoLinksUpRefusesLandsOnNoLink() throws {
+        let volume = State(wrappedValue: 0.5)
+        volume.storage.refuses = { $0 > 0.6 ? "\($0) is too loud" : nil }
+        let renders = Renders()
+        let patch = renders.render(
+            Slider(volume.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 }).convert({ $0 * 2 }, back: { $0 / 2 }))
+                .maximum(200)
+                .node)
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        dragged(number, to: 160)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(volume.wrappedValue, 0.5, "the refused report landed nowhere")
+        XCTAssertTrue(hasComplained("0.8 is too loud"))
+        XCTAssertEqual(destination(of: number), 100, "the thumb goes back to what the first source holds")
+    }
+
     /// A report into a two-source conversion lands on both sources.
     func testAReportComesBackIntoBothSources() throws {
         let hours = State(wrappedValue: 1.0)

@@ -54,6 +54,11 @@ final class Conversion {
     /// alone (`declareAgain`, `declareBack`).
     private(set) var back: (() -> Void)?
 
+    /// Why the way back refuses a derived value - what a source up the chain refuses of what the value goes back to
+    /// it as - asked before anything lands: the current declaration's, none without a way back.
+    /// Design: docs/design/core/journeys.md#a-refusal-up-the-chain
+    private(set) var refusesBack: ((Any) -> String?)?
+
     /// Whether the declaration before this one wrote a way back.
     private var backBefore = false
 
@@ -69,13 +74,15 @@ final class Conversion {
     func declareAgain() {
         backBefore = back != nil
         back = nil
+        refusesBack = nil
     }
 
-    /// Says the way back this declaration writes. Written anew after a declaration with none, it takes only the
-    /// reports made from now on.
-    func declareBack(_ back: @escaping () -> Void) {
+    /// Says the way back this declaration writes, and why it refuses a derived value. Written anew after a
+    /// declaration with none, it takes only the reports made from now on.
+    func declareBack<Out>(refusing refusal: @escaping (Out) -> String?, _ back: @escaping () -> Void) {
         if !backBefore, let reports = derived()?.reports { reportsTaken = reports }
         self.back = back
+        refusesBack = { ($0 as? Out).flatMap(refusal) }
     }
 
     /// The engines for this conversion, ahead of every author's: the back one first,
@@ -222,12 +229,16 @@ extension Binding where Value: StateValue {
         derived.conversion = conversion
 
         if let back {
-            conversion.declareBack { [weak derived] in
+            conversion.declareBack(refusing: { reach()?.refusal(of: back($0)) }) { [weak derived] in
                 guard let source = reach(), let derived else { return }
 
-                // A report the source refuses lands nowhere: the derived state goes back to what the source holds.
+                // A report the source - or a state up its chain - refuses lands nowhere: the derived state goes back
+                // to what the source holds.
                 let value = back(derived.value)
-                guard source.admits(value) else { return derived.settle(transform(source.value), asking: true) }
+                if let why = source.refusal(of: value) {
+                    complain(why)
+                    return derived.settle(transform(source.value), asking: true)
+                }
 
                 source.settle(value, asking: true)
                 // A source that is a link of a chain carries the report on to its own sources.

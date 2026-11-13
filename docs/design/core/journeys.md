@@ -293,6 +293,20 @@ cycle. A body reading the last reads every link's sources, and works each link
 out over the one before it. A report goes back the same way: each link's
 way back lands it on its sources and hands it to the link before.
 
+## A refusal up the chain
+
+A report is asked whole before anything lands. A state that is a conversion's
+derived side refuses what its way back refuses: what a source refuses of the
+value the report goes back to it as, and that source, if it is itself a
+derived state, what its own way back refuses - `Storage.refusal(of:)`, the
+state's own word first, then `Conversion.refusesBack`, which the declaration
+writing the way back writes beside it. So a report into `.multi(a, b)` whose
+first part a state two links up `a` refuses lands on neither `a` nor `b`, and
+a report into a chain lands on no link; the derived state goes back to what
+its sources hold, and the refusal is said once. The refusal sits on the
+conversion, which the derived state knows weakly, since the derived state
+holding its sources would close the ring the section above opens.
+
 ## A conversion declared again
 
 A conversion is one object across renders, and each render declares it again:

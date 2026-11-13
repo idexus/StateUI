@@ -277,6 +277,12 @@ extension State {
             return false
         }
 
+        /// Why the state refuses `value` - its own word, else what a state up its chain refuses - or nil.
+        /// Design: docs/design/core/journeys.md#a-refusal-up-the-chain
+        func refusal(of value: Value) -> String? {
+            refuses?(value) ?? conversion?.refusesBack?(value)
+        }
+
         /// Why a state refuses a value it is handed - said once, nothing lands - or nil; set once, as `keep` is.
         /// Design: docs/design/core/state.md#kept-state
         @usableFromInline var refuses: ((Value) -> String?)?
