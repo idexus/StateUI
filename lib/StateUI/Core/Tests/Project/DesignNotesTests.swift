@@ -8,7 +8,8 @@ import XCTest
 /// Design: docs/design/README.md#the-golden-rule
 @MainActor
 final class DesignNotesTests: XCTestCase {
-    /// The directories that keep the golden rule, relative to the repository: StateUI's, and every backend's.
+    /// The directories that keep the golden rule, relative to the repository: StateUI's, every backend's and
+    /// the `stateui` tool's.
     private static var held: [String] {
         [
             "lib/StateUI/StateUI.Host/Sources", "lib/StateUI/Core/Sources/Types", "lib/StateUI/Core/Sources/Contracts",
@@ -16,7 +17,7 @@ final class DesignNotesTests: XCTestCase {
             "lib/StateUI/StateUI.Apple/Sources", "lib/StateUI/StateUI.AppKit/Sources",
             "lib/StateUI/StateUI.UIKit/Sources", "lib/StateUI/StateUI.Android/Sources",
             "lib/StateUI/StateUI.WinUI/Sources", "lib/StateUI/StateUI.GTK/Sources", "lib/StateUI/StateUI.Web/Sources",
-            "lib/StateUI/StateUI.Conformance/Sources",
+            "lib/StateUI/StateUI.Conformance/Sources", "tools/StateUI.CLI/Sources",
         ] + backendSources
     }
 
@@ -50,6 +51,11 @@ final class DesignNotesTests: XCTestCase {
         sources += try SourceTree.runtimeSources().map { ("lib/StateUI/\($0.path)", $0.text) }
         sources += try SourceTree.testSources().map { ($0.path, $0.text) }
         sources += try SourceTree.backendSources()
+        let tools = SourceTree.repository.appendingPathComponent("tools/StateUI.CLI/Sources")
+        for path in try SourceTree.files(under: tools, entering: { _ in true }) where path.hasSuffix(".swift") {
+            let text = try String(contentsOf: tools.appendingPathComponent(path), encoding: .utf8)
+            sources.append(("tools/StateUI.CLI/Sources/\(path)", text))
+        }
         var read = 0
         var broken: [String] = []
 

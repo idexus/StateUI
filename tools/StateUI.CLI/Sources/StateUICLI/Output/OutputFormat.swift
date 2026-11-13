@@ -1,0 +1,31 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import ArgumentParser
+import Foundation
+import StateUITooling
+import StateUIToolingProtocol
+
+/// How a command writes its result on standard output.
+enum OutputFormat: String, CaseIterable, ExpressibleByArgument {
+    /// Words for a person.
+    case text
+    /// One JSON document, the result in its envelope.
+    case json
+    /// JSON lines: the events of an operation, then its result in its envelope, one document a line.
+    case jsonl
+
+    /// Writes `result` - in JSON its envelope alone, so standard output holds nothing else.
+    func write<Result: Codable & Sendable>(_ result: Result, text: (Result) -> String) throws {
+        let line: String
+        switch self {
+        case .text:
+            line = text(result)
+        case .json, .jsonl:
+            let envelope = Envelope(apiVersion: Release.newestAPIVersion, result: result)
+            let data = try ToolingJSON.encoder(pretty: self == .json).encode(envelope)
+            line = String(decoding: data, as: UTF8.self)
+        }
+        FileHandle.standardOutput.write(Data((line + "\n").utf8))
+    }
+}
