@@ -51,8 +51,8 @@ final class Conversion {
     var forward: (_ asking: Bool) -> Void = { _ in }
 
     /// Works the sources out from the derived value, where a control reports into it - the current declaration's
-    /// alone (`declareAgain`, `declareBack`).
-    private(set) var back: (() -> Void)?
+    /// alone (`declareAgain`, `declareBack`) - and says whether the report landed.
+    private(set) var back: (() -> Bool)?
 
     /// Why the way back refuses a derived value - what a source up the chain refuses of what the value goes back to
     /// it as - asked before anything lands: the current declaration's, none without a way back.
@@ -79,7 +79,7 @@ final class Conversion {
 
     /// Says the way back this declaration writes, and why it refuses a derived value. Written anew after a
     /// declaration with none, it takes only the reports made from now on.
-    func declareBack<Out>(refusing refusal: @escaping (Out) -> String?, _ back: @escaping () -> Void) {
+    func declareBack<Out>(refusing refusal: @escaping (Out) -> String?, _ back: @escaping () -> Bool) {
         if !backBefore, let reports = derived()?.reports { reportsTaken = reports }
         self.back = back
         refusesBack = { ($0 as? Out).flatMap(refusal) }
@@ -96,7 +96,7 @@ final class Conversion {
                 EngineDeclaration(follows: derived().map { [$0] } ?? [], priority: -2) { [self] _ in
                     guard let reports = derived()?.reports, reports != reportsTaken else { return .wait }
                     reportsTaken = reports
-                    back()
+                    _ = back()
                     return .wait
                 })
         }
@@ -122,6 +122,16 @@ protocol AnyStateStorage: FollowedState {
 
     /// The derived state a conversion written at `key` keeps on this source.
     func derived<Out>(_: Out.Type, at key: PathNumber, make: @escaping () -> Out) -> State<Out>.Storage
+
+    /// Puts the state back, when called, to the value it holds now.
+    func restorer() -> () -> Void
+}
+
+extension AnyStateStorage {
+    /// This state and every state a report into it writes on its way back - its chain's sources.
+    var writtenBack: [any AnyStateStorage] {
+        [self] + (conversion?.chain.flatMap(\.sources) ?? [])
+    }
 }
 
 extension Journey {
@@ -230,19 +240,20 @@ extension Binding where Value: StateValue {
 
         if let back {
             conversion.declareBack(refusing: { reach()?.refusal(of: back($0)) }) { [weak derived] in
-                guard let source = reach(), let derived else { return }
+                guard let source = reach(), let derived else { return false }
 
                 // A report the source - or a state up its chain - refuses lands nowhere: the derived state goes back
                 // to what the source holds.
                 let value = back(derived.value)
                 if let why = source.refusal(of: value) {
                     complain(why)
-                    return derived.settle(transform(source.value), asking: true)
+                    derived.settle(transform(source.value), asking: true)
+                    return false
                 }
 
                 source.settle(value, asking: true)
                 // A source that is a link of a chain carries the report on to its own sources.
-                source.conversion?.back?()
+                return source.conversion?.back?() ?? true
             }
         }
 

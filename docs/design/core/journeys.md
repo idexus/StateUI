@@ -307,6 +307,14 @@ its sources hold, and the refusal is said once. The refusal sits on the
 conversion, which the derived state knows weakly, since the derived state
 holding its sources would close the ring the section above opens.
 
+Asking each source before either is written does not settle sources whose
+refusals read each other - two windows of one kind asked for one value, free
+while neither holds it. So the second source is asked again once the first
+stands, each way back says whether its report landed, and a report that does
+not land whole puts back every state it wrote - each source and its chain's
+(`writtenBack`, `restorer`) - before the derived state goes back to what they
+hold: a report lands whole or not at all.
+
 ## A conversion declared again
 
 A conversion is one object across renders, and each render declares it again:

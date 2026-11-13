@@ -318,19 +318,35 @@ extension MultiBinding {
             return first.refusal(of: one) ?? second.refusal(of: two)
         }
         conversion.declareBack(refusing: refusal) { [weak derived] in
-            guard let (first, second) = sources(), let derived else { return }
+            guard let (first, second) = sources(), let derived else { return false }
 
-            // A report lands on both sources or on neither, asked up each one's chain before either is written:
-            // the derived state goes back to what they hold.
+            // A report lands on both sources or on neither: asked up each one's chain before either is written, then
+            // the second asked again once the first stands - a refusal may read the other - and every state written
+            // put back where it stood if it does not land whole.
+            // Design: docs/design/core/journeys.md#a-refusal-up-the-chain
             if let why = refusal(derived.value) {
                 complain(why)
-                return derived.settle(transform(first.value, second.value), asking: true)
+                derived.settle(transform(first.value, second.value), asking: true)
+                return false
             }
             let (one, two) = back(derived.value)
+            let restore = (first.writtenBack + second.writtenBack).map { $0.restorer() }
             first.settle(one, asking: true)
-            second.settle(two, asking: true)
-            first.conversion?.back?()
-            second.conversion?.back?()
+            var landed = first.conversion?.back?() ?? true
+            if landed, let why = second.refusal(of: two) {
+                complain(why)
+                landed = false
+            }
+            if landed {
+                second.settle(two, asking: true)
+                landed = second.conversion?.back?() ?? true
+            }
+            guard landed else {
+                restore.forEach { $0() }
+                derived.settle(transform(first.value, second.value), asking: true)
+                return false
+            }
+            return true
         }
         return converted
     }

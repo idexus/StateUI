@@ -277,6 +277,15 @@ extension State {
             return false
         }
 
+        /// Puts the state back, when called, to the value it holds now - a report that did not land whole.
+        func restorer() -> () -> Void {
+            let held = value
+            return { [weak self] in
+                self?.write(held)
+                self?.askForRender()
+            }
+        }
+
         /// Why the state refuses `value` - its own word, else what a state up its chain refuses - or nil.
         /// Design: docs/design/core/journeys.md#a-refusal-up-the-chain
         func refusal(of value: Value) -> String? {

@@ -685,6 +685,40 @@ final class ConversionTests: XCTestCase {
         XCTAssertEqual(destination(of: number), 100, "the thumb goes back to what the first source holds")
     }
 
+    /// A report into two sources whose refusals read each other lands whole or not at all: two windows of one kind
+    /// asked for the same value - free while neither holds it - keep their own, through their bindings or through
+    /// conversions of them.
+    func testAReportTwoSourcesRefuseTogetherLandsOnNeither() throws {
+        for converted in [false, true] {
+            let record = SceneRecord(id: converted ? "converted" : "direct", declaration: 0)
+            let kind = KeyName("conversion.document")
+            record.open(kind, value: AnyHashable(1.0), text: "1")
+            record.open(kind, value: AnyHashable(2.0), text: "2")
+            let (a, b) = (record.windowValue(record.windows[0], as: Double.self), record.windowValue(record.windows[1], as: Double.self))
+            let (left, right) = converted
+                ? (a.projectedValue.convert({ $0 }, back: { $0 }), b.projectedValue.convert({ $0 }, back: { $0 }))
+                : (a.projectedValue, b.projectedValue)
+            let renders = Renders()
+            let patch = renders.render(
+                Slider(Binding<Double>.multi(left, right).convert({ $0 * 10 + $1 }, back: { _ in (3, 3) }))
+                    .maximum(100)
+                    .node)
+            let number = try XCTUnwrap(patch.driven?[.value]?.state)
+            let board = Renderer.shared.board
+            board.cycle(now: 0, reducesMotion: false)
+
+            dragged(number, to: 33)
+            board.cycle(now: 16, reducesMotion: false)
+            board.cycle(now: 32, reducesMotion: false)
+
+            let held = record.windows.compactMap { $0.value?.base as? Double }
+            XCTAssertEqual(held, [1, 2], "converted \(converted): neither window moved")
+            XCTAssertEqual([a.wrappedValue, b.wrappedValue], [1, 2], "converted \(converted)")
+            XCTAssertTrue(hasComplained("a window of its kind is open for the value 3.0 already"))
+            XCTAssertEqual(destination(of: number), 12, "converted \(converted): the thumb goes back to what they hold")
+        }
+    }
+
     /// A report into a two-source conversion lands on both sources.
     func testAReportComesBackIntoBothSources() throws {
         let hours = State(wrappedValue: 1.0)
