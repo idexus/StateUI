@@ -1,0 +1,24 @@
+{
+  "request" : {
+    "id" : "7",
+    "jsonrpc" : "2.0",
+    "method" : "operation/get",
+    "params" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69"
+    }
+  },
+  "response" : {
+    "id" : "7",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "createdAt" : "2026-11-13T12:00:00.000Z",
+      "finishedAt" : "2026-11-13T12:00:02.000Z",
+      "id" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "kind" : "project/create",
+      "lastSequence" : 2,
+      "requestToken" : "5f0e3c2a-6c55-4b7a-9d1e-2a4c8b7f9e10",
+      "startedAt" : "2026-11-13T12:00:00.001Z",
+      "state" : "succeeded"
+    }
+  }
+}

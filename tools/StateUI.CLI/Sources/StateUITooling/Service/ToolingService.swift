@@ -23,6 +23,25 @@ public struct ToolingService: Sendable {
         try await ProjectReader().describe(containing: folder)
     }
 
+    /// Makes application `name` in `parent` from a checkout's HelloWorld - `checkout`, else the workspace's library,
+    /// else the checkout `parent` stands in - and lists it in the workspace - `project/create`.
+    public func createApplication(_ name: String, in parent: URL, from checkout: URL?) async throws -> ProjectCreation {
+        var workspace = try Workspace.nearest(from: parent)
+        guard let checkout = checkout ?? workspace?.library ?? Checkout.holding(parent)?.root else {
+            throw ToolingError(
+                .projectNotFound, "No StateUI checkout is named for \(parent.path): name one with --checkout, or in a"
+                    + " stateui.json's library.")
+        }
+        let made = try ApplicationMaker().make(name, in: parent, from: checkout)
+        var created = [FileURI.string(made)]
+        if workspace != nil {
+            try workspace?.add(made)
+            created.append(FileURI.string(workspace!.folder.appendingPathComponent(WorkspaceFile.name)))
+        }
+        let project = try await ProjectReader().describe(containing: made)
+        return ProjectCreation(project: project, createdUris: created)
+    }
+
     /// What this machine has of every component it needs - `toolchain/check`.
     public func checkToolchain() async -> ToolchainReport {
         await Doctor().check()
@@ -33,6 +52,10 @@ public struct ToolingService: Sendable {
         var methods = Methods()
         methods.query("server/info") { (_: NoParameters) in serverInfo() }
         methods.query("toolchain/check") { (_: NoParameters) in await checkToolchain() }
+        methods.mutation("project/create") { (request: ApplicationRequest, _: OperationContext) in
+            try await createApplication(
+                request.name, in: try FileURI.url(request.parentUri), from: try request.checkoutUri.map(FileURI.url))
+        }
         methods.query("project/describe") { (reference: ProjectReference, context: RequestContext) in
             guard let uri = reference.projectUri ?? context.workspaceUri else {
                 throw ToolingError(.projectNotFound, "No project is named, and the connection opened no workspace.")

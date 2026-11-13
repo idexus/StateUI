@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A new application: HelloWorld under another name, made by a checkout's own
-// scaffolder in an apps/ - the checkout's, or a project group's - and named to
-// that checkout by the path from its own directory.
+// scaffolder - `stateui new` behind .scripts/new-app.sh - in an apps/, the
+// checkout's or a project group's; the tool names the checkout by the path from
+// the application itself.
 
 import { execFile } from "child_process";
 import * as fs from "fs";
@@ -44,9 +45,8 @@ export function scaffolderCommand(checkout: string, apps: string, name: string,
 }
 
 /**
- * Makes `name` in `apps` with `checkout`'s scaffolder, then names the checkout
- * in its Package.swift by the path from the application - `../..` in the
- * checkout's own apps/, which HelloWorld already says.
+ * Makes `name` in `apps` with `checkout`'s scaffolder, which names the checkout
+ * in its Package.swift by the path from the application.
  *
  * @returns whether it was made, and what the scaffolder said.
  */
@@ -59,21 +59,6 @@ export function makeApplication(checkout: string, apps: string, name: string): P
             resolve({ made: false, output });
             return;
         }
-        nameCheckout(path.join(apps, name), checkout);
         resolve({ made: true, output });
     }));
-}
-
-/**
- * Rewrites every `../..` in the application's Package.swift - the checkout's
- * root, as HelloWorld names it - to the path from the application to
- * `checkout`, written with forward slashes as SwiftPM reads it everywhere.
- */
-export function nameCheckout(application: string, checkout: string): void {
-    const relative = path.relative(fs.realpathSync(application), fs.realpathSync(checkout)).split(path.sep).join("/");
-    if (relative === "../..") {
-        return;
-    }
-    const manifest = path.join(application, "Package.swift");
-    fs.writeFileSync(manifest, fs.readFileSync(manifest, "utf8").split("../..").join(relative));
 }

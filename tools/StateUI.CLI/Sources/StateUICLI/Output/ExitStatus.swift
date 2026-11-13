@@ -8,13 +8,15 @@ enum ExitStatus {
     static let toolFailed: Int32 = 1
     static let invalidCommand: Int32 = 2
     static let missingPrerequisite: Int32 = 3
+    static let conflict: Int32 = 5
     static let lostClient: Int32 = 6
     static let interrupted: Int32 = 130
 
     /// The status a command refused or failed by `error` ends with.
     static func of(_ error: ToolingError) -> Int32 {
         switch error.code {
-        case .projectNotFound, .notFound: invalidCommand
+        case .projectNotFound, .notFound, .invalidName, .invalidConfiguration: invalidCommand
+        case .alreadyExists: conflict
         case .missingToolchain: missingPrerequisite
         case .toolFailed: toolFailed
         default: lostClient

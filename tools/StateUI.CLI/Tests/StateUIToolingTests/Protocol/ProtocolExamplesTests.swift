@@ -49,10 +49,19 @@ final class ProtocolExamplesTests: XCTestCase {
             serverInstanceId: "00000000-0000-0000-0000-000000000000",
             server: tool,
             workspace: Workspace(uri: initialize.workspaceUri),
-            capabilities: ServerCapabilities(methods: ToolingService().methods.names, notifications: []),
+            capabilities: ServerCapabilities(
+                methods: ToolingService().methods.names, notifications: ToolingService().methods.notifications),
             limits: .current)
         let info = ServerInfo(server: tool, apiVersions: Release.apiVersions, machine: Machine(system: "macos", architecture: "arm64"))
         let demo = "file:///Users/example/Projects/Demo"
+        let operation = "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69"
+        var finished = OperationSnapshot(
+            id: operation, kind: "project/create", requestToken: "5f0e3c2a-6c55-4b7a-9d1e-2a4c8b7f9e10",
+            createdAt: "2026-11-13T12:00:00.000Z")
+        finished.state = .succeeded
+        finished.startedAt = "2026-11-13T12:00:00.001Z"
+        finished.finishedAt = "2026-11-13T12:00:02.000Z"
+        finished.lastSequence = 2
         let project = Project(
             rootUri: demo,
             applications: [Application(
@@ -84,6 +93,27 @@ final class ProtocolExamplesTests: XCTestCase {
                         tooOld: "29.0.1", advice: "Install it with Android Studio's SDK Manager."),
                 ]))),
             ], answeredAsWritten: false),
+            Example(name: "project-create", messages: [
+                ("request", try request("6", "project/create", Mutation(
+                    requestToken: "5f0e3c2a-6c55-4b7a-9d1e-2a4c8b7f9e10",
+                    request: ApplicationRequest(name: "Notes", parentUri: demo + "/apps")))),
+                ("response", try response("6", OperationHandle(operationId: operation, state: .queued))),
+            ], answeredAsWritten: false),
+            Example(name: "operation-event", messages: [
+                ("notification", try JSONValue(encoding: OutgoingMessage.notification(
+                    method: "operation/event",
+                    params: try JSONValue(encoding: OperationEvent(
+                        operationId: operation, sequence: 1, timestamp: "2026-11-13T12:00:00.000Z",
+                        event: .state(.running)))))),
+            ], answeredAsWritten: false),
+            Example(name: "operation-get", messages: [
+                ("request", try request("7", "operation/get", OperationReference(operationId: operation))),
+                ("response", try response("7", finished)),
+            ], answeredAsWritten: false),
+            Example(name: "operation-cancel", messages: [
+                ("request", try request("8", "operation/cancel", OperationReference(operationId: operation))),
+                ("response", try response("8", CancelResult(accepted: false, state: .succeeded))),
+            ], answeredAsWritten: false),
             Example(name: "shutdown", messages: [
                 ("request", .object(["jsonrpc": .string("2.0"), "id": .string("3"), "method": .string("shutdown")])),
                 ("response", try JSONValue(encoding: OutgoingMessage.response(id: .string("3"), outcome: .result(.null)))),
@@ -113,6 +143,28 @@ final class ProtocolExamplesTests: XCTestCase {
         for example in examples {
             let file = Self.directory.appendingPathComponent(example.name + ".json")
             XCTAssertEqual(try? Data(contentsOf: file), try Self.file(example), "\(file.lastPathComponent) differs")
+        }
+    }
+
+    /// A mutation's request: its token beside its own parameters.
+    private struct Mutation<Request: Encodable>: Encodable {
+        var requestToken: String
+        var request: Request
+
+        func encode(to encoder: any Encoder) throws {
+            try request.encode(to: encoder)
+            var token = encoder.container(keyedBy: Key.self)
+            try token.encode(requestToken, forKey: .requestToken)
+        }
+
+        private enum Key: String, CodingKey { case requestToken }
+    }
+
+    /// Every notification the service sends has its example.
+    func testEveryNotificationHasItsExample() throws {
+        let names = Set(try Self.examples().map(\.name))
+        for notification in ToolingService().methods.notifications {
+            XCTAssertTrue(names.contains(notification.replacingOccurrences(of: "/", with: "-")), "\(notification) has no example")
         }
     }
 

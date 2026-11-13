@@ -1,0 +1,20 @@
+{
+  "request" : {
+    "id" : "6",
+    "jsonrpc" : "2.0",
+    "method" : "project/create",
+    "params" : {
+      "name" : "Notes",
+      "parentUri" : "file:///Users/example/Projects/Demo/apps",
+      "requestToken" : "5f0e3c2a-6c55-4b7a-9d1e-2a4c8b7f9e10"
+    }
+  },
+  "response" : {
+    "id" : "6",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  }
+}

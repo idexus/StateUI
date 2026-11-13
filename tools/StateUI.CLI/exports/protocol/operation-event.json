@@ -1,0 +1,15 @@
+{
+  "notification" : {
+    "jsonrpc" : "2.0",
+    "method" : "operation/event",
+    "params" : {
+      "event" : {
+        "kind" : "state",
+        "state" : "running"
+      },
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "sequence" : 1,
+      "timestamp" : "2026-11-13T12:00:00.000Z"
+    }
+  }
+}

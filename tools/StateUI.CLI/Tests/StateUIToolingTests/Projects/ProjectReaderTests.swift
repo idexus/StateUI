@@ -23,8 +23,8 @@ final class ProjectReaderTests: XCTestCase {
         return folder
     }
 
-    /// A StateUI checkout is a project of its applications - each with its heads, products and tests - building with
-    /// the checkout itself, whose release is the library's, and whose commit Git says where it is a working tree.
+    /// The StateUI repository is a workspace of its applications - each with its heads, products and tests - building
+    /// with the checkout itself, whose release is the library's, and whose commit Git says where it is a working tree.
     func testACheckoutIsAProjectOfItsApplications() async throws {
         let project = try await ProjectReader().describe(containing: Self.repository)
 
@@ -51,6 +51,49 @@ final class ProjectReaderTests: XCTestCase {
         XCTAssertEqual(project.applications.map(\.name), ["HelloWorld"])
     }
 
+    /// A workspace's applications are the ones its `stateui.json` lists, in any folders; inside one of them, the
+    /// project is that application, standing in its workspace.
+    func testAWorkspaceIsTheApplicationsItsFileLists() async throws {
+        let root = try package([
+            "a/One/Package.swift": "", "a/One/Platforms/AppKit/main.swift": "",
+            "b/c/Two/Package.swift": "", "b/c/Two/Platforms/Android/build.gradle.kts": "",
+            "Unlisted/Package.swift": "", "Unlisted/Platforms/GTK/main.swift": "",
+        ])
+        try WorkspaceFile(projects: ["b/c/Two", "a/One"]).write(to: root.appendingPathComponent("stateui.json"))
+        let workspace = try XCTUnwrap(try Workspace.nearest(from: root.appendingPathComponent("b")))
+        XCTAssertEqual(try workspace.applications().map(\.lastPathComponent), ["One", "Two"])
+        XCTAssertEqual(ProjectReader.application(holding: root.appendingPathComponent("a/One/Platforms"))?.lastPathComponent, "One")
+        XCTAssertNil(ProjectReader.application(holding: root))
+    }
+
+    /// A workspace file listing a folder that is no application, or saying what the tool does not read, is refused
+    /// by what and where.
+    func testAWorkspaceFileIsReadWhole() throws {
+        let root = try package(["notes/readme.txt": ""])
+        let file = root.appendingPathComponent("stateui.json")
+        try WorkspaceFile(projects: ["notes"]).write(to: file)
+        XCTAssertThrowsError(try Workspace.nearest(from: root)?.applications()) {
+            XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration)
+        }
+        try #"{"schemaVersion":1,"projects":[],"profiles":{}}"#.write(to: file, atomically: true, encoding: .utf8)
+        XCTAssertThrowsError(try Workspace.nearest(from: root)) {
+            XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration)
+            XCTAssertTrue(($0 as? ToolingError)?.message.contains("/profiles") == true)
+        }
+        try #"{"schemaVersion":2,"projects":[]}"#.write(to: file, atomically: true, encoding: .utf8)
+        XCTAssertThrowsError(try Workspace.nearest(from: root))
+    }
+
+    /// The file is written the same every time: keys and projects sorted, a line break at its end.
+    func testAWorkspaceFileIsWrittenTheSameEveryTime() throws {
+        let file = try package(["x": ""]).appendingPathComponent("stateui.json")
+        try WorkspaceFile(library: .init(path: "StateUI"), projects: ["b", "a"]).write(to: file)
+        XCTAssertEqual(
+            try String(contentsOf: file, encoding: .utf8),
+            "{\n  \"library\" : {\n    \"path\" : \"StateUI\"\n  },\n  \"projects\" : [\n    \"a\",\n    \"b\"\n  ],\n"
+                + "  \"schemaVersion\" : 1\n}\n")
+    }
+
     /// A host this tool inherited reaches no description: SwiftPM reads the package without one.
     func testAnInheritedHostChangesNoDescription() async throws {
         TestEnvironment.set("STATEUI_HOST", "appkit")
@@ -69,7 +112,7 @@ final class ProjectReaderTests: XCTestCase {
         XCTAssertEqual(ProjectReader.hosts(of: folder), [.uikit, .android])
     }
 
-    /// No application in a folder or above it is no project.
+    /// No application in a folder or above it, and no workspace, is no project.
     func testAFolderWithoutApplicationsIsNoProject() async throws {
         let folder = try package(["notes.txt": ""])
         do {

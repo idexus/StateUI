@@ -25,12 +25,15 @@
       "apiVersion" : "1.0",
       "capabilities" : {
         "methods" : [
+          "operation/cancel",
+          "operation/get",
+          "project/create",
           "project/describe",
           "server/info",
           "toolchain/check"
         ],
         "notifications" : [
-
+          "operation/event"
         ]
       },
       "limits" : {

@@ -20,6 +20,16 @@ struct Checkout: Sendable {
         root = directory
     }
 
+    /// The checkout `folder` stands in: itself, or the nearest folder above it that is one.
+    static func holding(_ folder: URL) -> Checkout? {
+        var current = RealPath.of(folder)
+        while true {
+            if let checkout = Checkout(at: current) { return checkout }
+            guard let parent = Folders.parent(of: current) else { return nil }
+            current = parent
+        }
+    }
+
     /// The release the library states: its `ApplicationInfo.libraryVersion`.
     var release: String? {
         let home = root.appendingPathComponent("lib/StateUI/Core/Sources/Types/Environment/ApplicationInfo.swift")

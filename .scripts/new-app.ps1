@@ -12,15 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ---------------------------------------------------------------------------
-# Creates a new StateUI application in apps/ - the Windows half of
-# new-app.sh, and the same contract:
+# Creates a new StateUI application: `stateui new`, run from this checkout's own
+# tool (tools/StateUI.CLI), which owns the rule - HelloWorld under another name,
+# naming this checkout by the path from it.
 #
-#   .\new-app.ps1 -Name MyApp [-AppsDir <dir>]
+#   .\new-app.ps1 -Name MyApp [-AppsDir <dir>]      -AppsDir defaults to <repo>\apps
 #
-# It makes apps/HelloWorld under another name: Package.swift, Sources/, Tests/,
-# Resources/, Platforms/AppKit/, Platforms/UIKit/, Platforms/Android/, Platforms/WinUI/, Platforms/GTK/ and
-# Platforms/Web/.
-# What HelloWorld's builds wrote is left behind.
+# The first run builds the tool, which fetches its packages.
 # ---------------------------------------------------------------------------
 param(
     [Parameter(Mandatory = $true)][string]$Name,
@@ -28,61 +26,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$rootDir   = Split-Path -Parent $scriptDir
-$model     = Join-Path $rootDir "apps/HelloWorld"
-
+$rootDir = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 if (-not $AppsDir) { $AppsDir = Join-Path $rootDir "apps" }
 
-# Letters and digits, starting with a letter - the same rule as new-app.sh,
-# for the same reasons: the name becomes a Swift module, a process name, a
-# package identifier and a directory. No dots - Finder reads Name.App as a
-# bundle.
-if ($Name -notmatch '^[A-Za-z][A-Za-z0-9]*$') {
-    throw "'$Name' cannot name an application: letters and digits only, starting with a letter."
-}
-if ($Name -eq "StateUI") {
-    throw "'StateUI' is the library. Pick a name of the app's own."
-}
-
-$app = Join-Path $AppsDir $Name
-if (Test-Path $app) { throw "$app already exists." }
-if (-not (Test-Path $model)) { throw "HelloWorld is not at $model - it is what a new application is made from." }
-
-$lower = $Name.ToLowerInvariant()
-
-New-Item -ItemType Directory -Path (Join-Path $app "Platforms/Android") -Force | Out-Null
-foreach ($item in @("Package.swift", "Sources", "Tests", "Resources", "Platforms/AppKit", "Platforms/UIKit", "Platforms/WinUI", "Platforms/GTK", "Platforms/Web")) {
-    Copy-Item -Recurse (Join-Path $model $item) (Join-Path $app $item)
-}
-
-# The Android head without Gradle's .gradle/, which an editor that opens the
-# head writes beside it.
-Get-ChildItem -Path (Join-Path $model "Platforms/Android") -Force |
-    Where-Object { $_.Name -ne ".gradle" } |
-    ForEach-Object { Copy-Item -Recurse $_.FullName (Join-Path $app "Platforms/Android") }
-
-# And whatever Finder left behind.
-Get-ChildItem -Path $app -Recurse -Force -Filter ".DS_Store" | Remove-Item -Force
-
-# The rename, in names and then in contents: the model's name is a plain token
-# wherever it appears, and the application identifier carries it lowercased.
-Get-ChildItem -Path $app -Recurse -Filter "*HelloWorld*" |
-    Sort-Object { $_.FullName.Length } -Descending |
-    ForEach-Object { Rename-Item $_.FullName ($_.Name.Replace("HelloWorld", $Name)) }
-
-$extensions = @(".swift", ".xml", ".kts")
-Get-ChildItem -Path $app -Recurse -File |
-    Where-Object { $extensions -contains $_.Extension } |
-    ForEach-Object {
-        $text = [System.IO.File]::ReadAllText($_.FullName)
-        $text = $text.Replace("HelloWorld", $Name).Replace("helloworld", $lower)
-        [System.IO.File]::WriteAllText($_.FullName, $text)
-    }
-
-Write-Host "Created $app"
-Write-Host ""
-Write-Host "Next, from the repository root:"
-Write-Host "  swift build --package-path apps/$Name    # the application's module; its AppKit, UIKit and Android heads build on macOS"
-Write-Host "  .scripts\WinUI\run-app.ps1 -App apps\$Name    # the WinUI head"
+swift run --quiet --package-path (Join-Path $rootDir "tools/StateUI.CLI") stateui new $Name --directory $AppsDir --checkout $rootDir
+exit $LASTEXITCODE

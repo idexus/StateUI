@@ -1,0 +1,53 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import Foundation
+import StateUIToolingProtocol
+
+/// A workspace: the folder of the nearest `stateui.json` up from a command's folder, and what its file says.
+/// Design: docs/design/tooling/projects.md#a-workspace
+struct Workspace: Sendable {
+    /// The folder the file stands in.
+    let folder: URL
+    /// What the file says.
+    var file: WorkspaceFile
+
+    /// The workspace whose `stateui.json` is nearest up from `folder`, itself included.
+    static func nearest(from folder: URL) throws(ToolingError) -> Workspace? {
+        var current = RealPath.of(folder)
+        while true {
+            let file = current.appendingPathComponent(WorkspaceFile.name)
+            if FileManager.default.fileExists(atPath: file.path) {
+                return Workspace(folder: current, file: try WorkspaceFile.read(file))
+            }
+            guard let parent = Folders.parent(of: current) else { return nil }
+            current = parent
+        }
+    }
+
+    /// The folders of the applications the file lists, each one checked to be an application.
+    func applications() throws(ToolingError) -> [URL] {
+        try file.projects.map { (path: String) throws(ToolingError) -> URL in
+            let folder = self.folder.appendingPathComponent(path).standardizedFileURL
+            guard !ProjectReader.hosts(of: folder).isEmpty else {
+                throw ToolingError(
+                    .invalidConfiguration,
+                    "\(self.folder.appendingPathComponent(WorkspaceFile.name).path) lists \(path), which is no application.")
+            }
+            return folder
+        }
+    }
+
+    /// The checkout the file names for new applications.
+    var library: URL? {
+        file.library.map { folder.appendingPathComponent($0.path).standardizedFileURL }
+    }
+
+    /// Lists `application` in the file and writes it, unless listed already.
+    mutating func add(_ application: URL) throws {
+        let path = ApplicationMaker.relativePath(from: folder, to: application)
+        guard !file.projects.contains(path) else { return }
+        file.projects.append(path)
+        try file.write(to: folder.appendingPathComponent(WorkspaceFile.name))
+    }
+}

@@ -19,6 +19,12 @@ public struct ToolingErrorCode: RawRepresentable, Codable, Hashable, Sendable {
     public static let requestTokenConflict = ToolingErrorCode(rawValue: "REQUEST_TOKEN_CONFLICT")
     /// No project stands where the request names one.
     public static let projectNotFound = ToolingErrorCode(rawValue: "PROJECT_NOT_FOUND")
+    /// A workspace's file cannot be read as written.
+    public static let invalidConfiguration = ToolingErrorCode(rawValue: "INVALID_CONFIGURATION")
+    /// A name the request gives cannot name what it would make.
+    public static let invalidName = ToolingErrorCode(rawValue: "INVALID_NAME")
+    /// What the request would make stands already.
+    public static let alreadyExists = ToolingErrorCode(rawValue: "ALREADY_EXISTS")
     /// A program the tool runs - a compiler, a package manager - failed.
     public static let toolFailed = ToolingErrorCode(rawValue: "TOOL_FAILED")
     /// A program the tool needs cannot be found.

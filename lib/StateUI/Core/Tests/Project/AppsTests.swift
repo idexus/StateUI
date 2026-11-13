@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The applications under apps/, their artwork, and the scaffolder that makes
-// one.
+// The applications under apps/ and their artwork.
 //
 // An application lives under apps/<Name>/ and states every connection to the
 // repository as a relative path - to the library's Swift packages and to the
@@ -11,23 +10,15 @@
 // tests read the paths out of the manifests and resolve them here, so a moved
 // directory names the file that still points at the old place.
 //
-// The scaffolder - .scripts/new-app.sh, .scripts/new-app.ps1, and the StateUI
-// extension's "New Application in apps/" that runs them - makes an application by copying
-// apps/HelloWorld under another name. The bash half runs here for real, into a
-// temporary directory, and what it made is read back; the PowerShell half
-// cannot run where these tests run, so it is held to agreement with the bash
-// half.
+// What makes a new application - `stateui new`, which .scripts/new-app.sh and
+// new-app.ps1 run - is the tool's, tested in tools/StateUI.CLI
+// (ApplicationMakerTests).
 
 import Foundation
 import XCTest
 
 @MainActor
 final class AppsTests: XCTestCase {
-    /// `apps/HelloWorld`, what a new application is made from.
-    private var helloWorld: URL {
-        SourceTree.repository.appendingPathComponent("apps/HelloWorld")
-    }
-
     // MARK: - The layout
 
     /// Every application under `apps/` is wired to the repository: its Swift
@@ -163,16 +154,8 @@ final class AppsTests: XCTestCase {
         }
     }
 
-    // MARK: - The scaffolder
+    // MARK: - The AppKit head's artwork
 
-    /// A new application is HelloWorld under another name. new-app.sh copies
-    /// HelloWorld's tree, leaves every byproduct of its builds behind, and
-    /// renames it in file names and inside every file, the application
-    /// identifier in lower case - checked file for file against HelloWorld
-    /// itself, so a file HelloWorld gains is asked about the day it appears,
-    /// and a file the rename does not reach is named here rather than in an
-    /// application that builds under one name and runs under another.
-    ///
     /// An AppKit head no script of `.scripts/AppKit` bundles runs, and is deployed, as its executable with the
     /// application's `Resources` beside it: `run-app.sh` and `deploy.sh` lay them there, the host reads them where
     /// the program stands - on another Mac too - and the head finds no artwork itself.
@@ -194,129 +177,6 @@ final class AppsTests: XCTestCase {
             let text = try String(contentsOf: head, encoding: .utf8)
             XCTAssertFalse(text.contains("Bundle.main") || text.contains("#filePath"),
                            "\(app)'s AppKit head finds its artwork itself")
-        }
-    }
-
-    func testANewAppIsHelloWorldUnderAnotherName() throws {
-        let root = try temporaryDirectory()
-        defer { try? FileManager.default.removeItem(at: root) }
-
-        let made = try newApp("Probe", into: root)
-        XCTAssertEqual(made.status, 0, "new-app.sh failed:\n\(made.output)")
-
-        let app = root.appendingPathComponent("Probe")
-        let model = SourceTree.files(under: helloWorld)
-        XCTAssertFalse(model.isEmpty, "apps/HelloWorld holds nothing to make an application from.")
-
-        // The same files under the new name, and nothing besides: no build
-        // output, no Finder settings, nothing of HelloWorld's left out.
-        XCTAssertEqual(
-            SourceTree.files(under: app, leavingOut: { _ in false }),
-            model.map { $0.replacingOccurrences(of: "HelloWorld", with: "Probe") }.sorted(),
-            "the new application's files are not HelloWorld's under the new name.")
-
-        for original in model {
-            let relative = original.replacingOccurrences(of: "HelloWorld", with: "Probe")
-
-            // A file that is not there is named by the comparison above.
-            guard let written = FileManager.default.contents(
-                atPath: app.appendingPathComponent(relative).path)
-            else { continue }
-
-            let source = try Data(contentsOf: helloWorld.appendingPathComponent(original))
-            assertSameFile(
-                written, SourceTree.helloWorld(source, renamedTo: "Probe"),
-                "\(relative) is not HelloWorld's \(original) with the name changed.")
-        }
-
-        // No file, and no file's text, still names the model - in any spelling.
-        for relative in SourceTree.files(under: app, leavingOut: { _ in false }) {
-            XCTAssertFalse(
-                relative.lowercased().contains("helloworld"),
-                "\(relative) is still named after HelloWorld.")
-
-            guard let text = try? String(
-                contentsOf: app.appendingPathComponent(relative), encoding: .utf8)
-            else { continue }
-
-            XCTAssertFalse(
-                text.lowercased().contains("helloworld"),
-                "\(relative) still says HelloWorld - the rename missed it.")
-        }
-
-        let gradle = try String(
-            contentsOf: app.appendingPathComponent("Platforms/Android/build.gradle.kts"), encoding: .utf8)
-        XCTAssertTrue(
-            gradle.contains("applicationId = \"com.stateui.probe\""),
-            "the application identifier is not the new name in lower case.")
-
-        let head = try String(
-            contentsOf: app.appendingPathComponent("Platforms/AppKit/main.swift"), encoding: .utf8)
-        XCTAssertTrue(
-            head.contains("ProbeApp.register()"),
-            "the new application's head does not register its own application.")
-    }
-
-    /// The names new-app.sh refuses, each for the reason it cannot build: no
-    /// name at all; a dot, which Finder reads as a bundle; a leading digit, a
-    /// hyphen or a space, which no Swift module holds; and
-    /// StateUI, which is the library. A refused name leaves nothing behind, and
-    /// an existing directory is refused rather than written into.
-    func testTheScaffolderRefusesANameItCannotBuild() throws {
-        for bad in ["", "My.App", "1Fish", "My-App", "has space", "StateUI"] {
-            let root = try temporaryDirectory()
-            defer { try? FileManager.default.removeItem(at: root) }
-
-            let made = try newApp(bad, into: root)
-            XCTAssertNotEqual(made.status, 0, "'\(bad)' should have been refused: \(made.output)")
-            XCTAssertEqual(
-                SourceTree.files(under: root, leavingOut: { _ in false }), [],
-                "'\(bad)' was refused and still left files behind.")
-        }
-
-        let root = try temporaryDirectory()
-        defer { try? FileManager.default.removeItem(at: root) }
-
-        let taken = root.appendingPathComponent("Taken")
-        try FileManager.default.createDirectory(at: taken, withIntermediateDirectories: true)
-        try "still here".write(
-            to: taken.appendingPathComponent("keep.txt"), atomically: true, encoding: .utf8)
-
-        let made = try newApp("Taken", into: root)
-        XCTAssertNotEqual(made.status, 0, "an existing directory should be refused.")
-        XCTAssertEqual(
-            SourceTree.files(under: taken, leavingOut: { _ in false }), ["keep.txt"],
-            "the existing directory was written into.")
-        XCTAssertEqual(
-            try String(contentsOf: taken.appendingPathComponent("keep.txt"), encoding: .utf8),
-            "still here")
-    }
-
-    /// The PowerShell half cannot run where these tests run, so it is held to
-    /// agreement with the bash half: both copy the same parts of HelloWorld,
-    /// rename inside the same kinds of file and refuse by the same rule - the
-    /// pieces that drift first when one script is edited without the other.
-    func testTheWindowsScaffolderKeepsStep() throws {
-        let sh = try script("new-app.sh")
-        let ps = try script("new-app.ps1")
-
-        let shCopied = (sh.occurrences(between: "for item in ", and: "; do").first ?? "")
-            .split(separator: " ").map(String.init)
-        let psCopied = quoted(ps.occurrences(between: "foreach ($item in @(", and: "))").first ?? "")
-        XCTAssertFalse(shCopied.isEmpty, "new-app.sh names nothing to copy.")
-        XCTAssertEqual(
-            Set(psCopied), Set(shCopied), "the two scaffolders copy different parts of HelloWorld.")
-
-        let shRenamed = sh.occurrences(between: "-name \"*", and: "\"")
-        let psRenamed = quoted(ps.occurrences(between: "$extensions = @(", and: ")").first ?? "")
-        XCTAssertFalse(shRenamed.isEmpty, "new-app.sh renames inside no file.")
-        XCTAssertEqual(
-            Set(psRenamed), Set(shRenamed),
-            "the two scaffolders rename inside different kinds of file.")
-
-        for piece in ["^[A-Za-z][A-Za-z0-9]*$", "\"StateUI\"", "apps/HelloWorld", "helloworld", ".DS_Store"] {
-            XCTAssertTrue(sh.contains(piece), "new-app.sh no longer says \(piece)")
-            XCTAssertTrue(ps.contains(piece), "new-app.ps1 no longer says \(piece)")
         }
     }
 
@@ -342,61 +202,5 @@ final class AppsTests: XCTestCase {
     /// over several lines reads as the one call it is.
     private func squeezed(_ text: String) -> String {
         text.components(separatedBy: .whitespacesAndNewlines).joined()
-    }
-
-    /// The strings between double quotes, in order.
-    private func quoted(_ text: String) -> [String] {
-        text.occurrences(between: "\"", and: "\"")
-    }
-
-    /// One of the scaffolders, read as text.
-    private func script(_ name: String) throws -> String {
-        try String(
-            contentsOf: SourceTree.repository.appendingPathComponent(".scripts/\(name)"),
-            encoding: .utf8)
-    }
-
-    /// A fresh, empty directory of the test's own.
-    private func temporaryDirectory() throws -> URL {
-        let directory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("stateui-newapp-\(UUID().uuidString)")
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        return directory
-    }
-
-    /// Runs the repository's new-app.sh for a name, into a destination.
-    private func newApp(
-        _ name: String, into destination: URL
-    ) throws -> (status: Int32, output: String) {
-        try run(
-            SourceTree.repository.appendingPathComponent(".scripts/new-app.sh"),
-            [name, destination.path])
-    }
-
-    /// Runs a bash script and collects what it said, standard error included.
-    /// Skipped where there is no bash: Windows has new-app.ps1, held to
-    /// agreement with new-app.sh by `testTheWindowsScaffolderKeepsStep`.
-    private func run(
-        _ script: URL, _ arguments: [String]
-    ) throws -> (status: Int32, output: String) {
-        let bash = URL(fileURLWithPath: "/bin/bash")
-
-        guard FileManager.default.fileExists(atPath: bash.path) else {
-            throw XCTSkip("no /bin/bash here; new-app.ps1 is held to agreement with new-app.sh.")
-        }
-
-        let process = Process()
-        process.executableURL = bash
-        process.arguments = [script.path] + arguments
-
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = pipe
-
-        try process.run()
-        let output = pipe.fileHandleForReading.readDataToEndOfFile()
-        process.waitUntilExit()
-
-        return (process.terminationStatus, String(decoding: output, as: UTF8.self))
     }
 }

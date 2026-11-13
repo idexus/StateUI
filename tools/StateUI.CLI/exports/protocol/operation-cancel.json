@@ -1,0 +1,18 @@
+{
+  "request" : {
+    "id" : "8",
+    "jsonrpc" : "2.0",
+    "method" : "operation/cancel",
+    "params" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69"
+    }
+  },
+  "response" : {
+    "id" : "8",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "accepted" : false,
+      "state" : "succeeded"
+    }
+  }
+}

@@ -16,25 +16,25 @@ public struct ProjectReader: Sendable {
         self.tools = tools
     }
 
-    /// The project holding `path`: the nearest folder from it up that is an application or keeps applications in
-    /// `apps/`.
+    /// The project at `path`: the nearest application up from it, else the applications its workspace - the nearest
+    /// `stateui.json` up - lists.
     ///
-    /// - Throws: ``ToolingError`` - `PROJECT_NOT_FOUND`, `MISSING_TOOLCHAIN`, `TOOL_FAILED` - or `CancellationError`.
+    /// - Throws: ``ToolingError`` - `PROJECT_NOT_FOUND`, `INVALID_CONFIGURATION`, `MISSING_TOOLCHAIN`, `TOOL_FAILED` -
+    ///   or `CancellationError`.
     public func describe(containing path: URL) async throws -> Project {
-        var folder = path.standardizedFileURL.resolvingSymlinksInPath()
-        while true {
-            let packages = Self.applicationFolders(in: folder)
-            if !packages.isEmpty { return try await describe(root: folder, packages: packages) }
-            let parent = folder.deletingLastPathComponent().standardizedFileURL
-            let (above, here) = (parent.pathComponents, folder.pathComponents)
-            if above.count >= here.count || Array(here.prefix(above.count)) != above {
-                throw ToolingError(.projectNotFound, "No StateUI application stands in or above \(path.path).")
-            }
-            folder = parent
+        let folder = RealPath.of(path.standardizedFileURL)
+        let workspace = try Workspace.nearest(from: folder)
+        if let application = Self.application(holding: folder) {
+            return try await describe(root: application, packages: [application], workspace: workspace)
         }
+        guard let workspace else {
+            throw ToolingError(
+                .projectNotFound, "No StateUI application stands in or above \(path.path), and no stateui.json lists one.")
+        }
+        return try await describe(root: workspace.folder, packages: try workspace.applications(), workspace: workspace)
     }
 
-    private func describe(root: URL, packages: [URL]) async throws -> Project {
+    private func describe(root: URL, packages: [URL], workspace: Workspace?) async throws -> Project {
         let applications = try await withThrowingTaskGroup(of: (Application, Checkout?).self) { group in
             for package in packages {
                 group.addTask { try await self.application(at: package, root: root) }
@@ -50,7 +50,9 @@ public struct ProjectReader: Sendable {
             libraries.append(await checkouts[path]!.library(runner: runner, tools: tools))
         }
         try Task.checkCancellation()
-        return Project(rootUri: FileURI.string(root), applications: applications.map(\.0), libraries: libraries)
+        return Project(
+            rootUri: FileURI.string(root), applications: applications.map(\.0), libraries: libraries,
+            workspaceUri: workspace.map { FileURI.string($0.folder) })
     }
 
     private func application(at package: URL, root: URL) async throws -> (Application, Checkout?) {
@@ -94,12 +96,14 @@ public struct ProjectReader: Sendable {
         }
     }
 
-    /// The folders holding an application: `folder` itself, and each folder of its `apps/`.
-    static func applicationFolders(in folder: URL) -> [URL] {
-        let apps = folder.appendingPathComponent("apps")
-        let children = ((try? FileManager.default.contentsOfDirectory(atPath: apps.path)) ?? []).sorted()
-            .map { apps.appendingPathComponent($0) }
-        return ([folder] + children).filter { !hosts(of: $0).isEmpty }
+    /// The application `folder` stands in: itself, or the nearest folder above it that is one.
+    static func application(holding folder: URL) -> URL? {
+        var current = folder
+        while true {
+            if !hosts(of: current).isEmpty { return current }
+            guard let parent = Folders.parent(of: current) else { return nil }
+            current = parent
+        }
     }
 
     /// The hosts a package has a head for: a `main.swift` in `Platforms/<Host>`, or Android's Gradle build there.
