@@ -36,7 +36,11 @@ platform's tools is no failure: a Mac without the Android NDK builds AppKit.
 
 The Android build and doctor find its tools one way (`AndroidTools`): the
 SDK is `ANDROID_HOME`, `ANDROID_SDK_ROOT`, else Android Studio's own place;
-the compiler is the first swift.org toolchain of 6.4 or newer holding a Swift
-SDK for Android of its own release, since Xcode's Swift cannot read that SDK;
-the NDK is the one `ANDROID_NDK_ROOT` or `ANDROID_NDK_HOME` names, else the
-one the Swift SDK's setup linked into its bundle, else the SDK's newest.
+the compiler is the one the build takes - `SWIFT_BIN`, else `swift` on the
+search path, 6.4 or newer - with the Swift SDK for Android of its release, and
+where that compiler is Xcode's, which cannot read the SDK, the swift.org
+toolchain of the same release; the NDK is the one `ANDROID_NDK_ROOT` or
+`ANDROID_NDK_HOME` names, else the one the Swift SDK's setup linked into its
+bundle, else the SDK's newest. Asking any other toolchain says what the build
+will not meet: a newer release's SDK whose bundle no setup has linked an NDK
+into reads as an older one's NDK found.

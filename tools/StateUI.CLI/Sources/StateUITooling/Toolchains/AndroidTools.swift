@@ -10,10 +10,13 @@ public struct AndroidTools: Sendable {
     private let environment: [String: String]
     private let home: URL
 
-    /// The tools `environment` names, else the platform's own places.
-    public init(environment: [String: String] = ProcessInfo.processInfo.environment) {
+    /// The tools `environment` names, else the platform's own places under `home`.
+    public init(
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        home: URL = FileManager.default.homeDirectoryForCurrentUser
+    ) {
         self.environment = environment
-        home = FileManager.default.homeDirectoryForCurrentUser
+        self.home = home
     }
 
     /// The Android SDK: `ANDROID_HOME`, `ANDROID_SDK_ROOT`, else Android Studio's own place.
@@ -33,14 +36,20 @@ public struct AndroidTools: Sendable {
         return (found + [home.appendingPathComponent(".swiftly/bin/swift")]).filter { files.fileExists(atPath: $0.path) }
     }
 
-    /// The first swift.org compiler of 6.4 or newer with a Swift SDK for Android of its own release, and that SDK.
+    /// The compiler the Android build takes and the Swift SDK for Android of its release: `SWIFT_BIN`, else `swift`
+    /// on the search path, 6.4 or newer; where that is not swift.org's - Xcode's cannot read the SDK - the swift.org
+    /// toolchain of the same release, as `build-swift.sh` looks for it.
     public func swift() async -> (compiler: URL, sdk: String)? {
+        let named = environment["SWIFT_BIN"].flatMap { $0.isEmpty ? nil : URL(fileURLWithPath: $0) }
+        guard let builder = named ?? SearchPath(environment: environment).find("swift") else { return nil }
+        let text = await ToolOutput.text(.path(builder.path), ["--version"]) ?? ""
+        guard let release = Versions.swiftRelease(in: text), Versions.atLeast(release, "6.4") else { return nil }
+        let list = await ToolOutput.text(.path(builder.path), ["sdk", "list"]) ?? ""
+        guard let sdk = Versions.swiftSDK(of: release, in: list, family: "android") else { return nil }
+        if Versions.isSwiftOrgBuild(text) { return (builder, sdk) }
         for compiler in swiftOrgCompilers {
-            let text = await ToolOutput.text(.path(compiler.path), ["--version"]) ?? ""
-            guard Versions.isSwiftOrgBuild(text), let release = Versions.swiftRelease(in: text),
-                  Versions.atLeast(release, "6.4") else { continue }
-            let list = await ToolOutput.text(.path(compiler.path), ["sdk", "list"]) ?? ""
-            if let sdk = Versions.swiftSDK(of: release, in: list, family: "android") { return (compiler, sdk) }
+            let own = await ToolOutput.text(.path(compiler.path), ["--version"]) ?? ""
+            if Versions.isSwiftOrgBuild(own), Versions.swiftRelease(in: own) == release { return (compiler, sdk) }
         }
         return nil
     }

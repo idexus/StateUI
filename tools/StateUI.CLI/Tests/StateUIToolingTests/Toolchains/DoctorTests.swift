@@ -66,4 +66,41 @@ final class DoctorTests: XCTestCase {
         XCTAssertEqual(AndroidTools(environment: ["ANDROID_HOME": sdk]).ndk(for: nil)?.path, newest.path)
         XCTAssertEqual(AndroidTools(environment: ["ANDROID_SDK_ROOT": sdk]).sdk.path, sdk)
     }
+
+    /// Android's Swift is the compiler the build takes - the search path's - with the Swift SDK of its release, not
+    /// the first swift.org toolchain with any; where the search path's is Xcode's, the swift.org one of its release.
+    func testAndroidsSwiftIsTheOneTheBuildTakes() async throws {
+        #if os(Windows)
+        throw XCTSkip("Android's tools are looked for on macOS")
+        #else
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-cli-tests-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        // Another release than the manifests' is assembled from parts: the repository names one Swift (ToolchainTests).
+        let current = "6.4" + ".2", earlier = "6.4" + ".0"
+        let sdks = "swift-\(earlier)-RELEASE_android\nswift-\(current)-RELEASE_android\n"
+        let compiler = { (folder: URL, says: String) throws -> URL in
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            let program = folder.appendingPathComponent("swift")
+            let script = "#!/bin/sh\nif [ \"$1\" = sdk ]; then printf '\(sdks)'; else echo '\(says)'; fi\n"
+            try script.write(to: program, atomically: true, encoding: .utf8)
+            try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: program.path)
+            return program
+        }
+        let toolchains = root.appendingPathComponent("home/Library/Developer/Toolchains")
+        _ = try compiler(toolchains.appendingPathComponent("swift-\(earlier)-RELEASE.xctoolchain/usr/bin"),
+                         "Swift version \(earlier) (swift-\(earlier)-RELEASE)")
+        let swiftOrg = try compiler(toolchains.appendingPathComponent("swift-\(current)-RELEASE.xctoolchain/usr/bin"),
+                                    "Swift version \(current) (swift-\(current)-RELEASE)")
+        let onPath = try compiler(root.appendingPathComponent("bin"), "Swift version \(current) (swift-\(current)-RELEASE)")
+        let xcode = try compiler(root.appendingPathComponent("xcode"), "Apple Swift version \(current) (swiftlang-6.4.2.1.1)")
+        let home = root.appendingPathComponent("home")
+
+        let taken = await AndroidTools(environment: ["PATH": onPath.deletingLastPathComponent().path], home: home).swift()
+        XCTAssertEqual(taken?.compiler.path, onPath.path)
+        XCTAssertEqual(taken?.sdk, "swift-\(current)-RELEASE_android")
+        let behindXcode = await AndroidTools(environment: ["SWIFT_BIN": xcode.path], home: home).swift()
+        XCTAssertEqual(behindXcode?.compiler.path, swiftOrg.path)
+        XCTAssertEqual(behindXcode?.sdk, "swift-\(current)-RELEASE_android")
+        #endif
+    }
 }
