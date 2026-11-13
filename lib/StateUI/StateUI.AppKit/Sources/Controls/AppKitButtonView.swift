@@ -41,9 +41,6 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         didSet { arrow?.enable(isEnabled) }
     }
 
-    /// How long a held button waits before it opens its menu, in seconds.
-    private static let holdDelay = 0.5
-
     /// The words the tree gives, those shown before them, and those shown now.
     private var words = NSAttributedString()
     private var formerWords: NSAttributedString?
@@ -335,20 +332,14 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         highlight(false)
     }
 
-    /// A held button: let go before the hold's delay, its click; held past it, its menu opens, the press going on
-    /// into it. AppKit's own tracking reads the press's events.
+    /// A held button: let go before the hold's delay, its click; held past it, its menu opens (`AppKitHeldPress`).
     private func held() {
-        guard let window else { return }
-        let until = Date(timeIntervalSinceNow: Self.holdDelay)
         pressed {
-            var letGo: NSEvent?
-            while letGo == nil,
-                  let next = window.nextEvent(
-                    matching: [.leftMouseUp, .leftMouseDragged], until: until, inMode: .eventTracking, dequeue: true) {
-                if next.type == .leftMouseUp { letGo = next }
+            switch AppKitHeldPress.follow(on: self) {
+            case .click: onClicked?()
+            case .held: showMenu()
+            case .away: break
             }
-            guard let letGo else { return showMenu() }
-            if drawnPoint(fromWindow: letGo.locationInWindow).map(bounds.contains) == true { onClicked?() }
         }
     }
 

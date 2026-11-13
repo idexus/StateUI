@@ -83,7 +83,7 @@ final class AppKitBottomToolbar: NSView {
 
     /// The control standing for `action`: words for a label, a button for an action or a setting, AppKit's menu button
     /// where it holds a menu - its click opening the menu where the button has none of its own, else the arrow beside
-    /// it, as on the window's bar.
+    /// it - and a held menu's button no arrow, as on the window's bar.
     private func control(_ action: AppKitToolbarAction) -> NSView {
         let identifier = Self.identifier(action)
         if action.isLabel {
@@ -91,7 +91,7 @@ final class AppKitBottomToolbar: NSView {
             label.identifier = identifier
             return label
         }
-        if let menu = action.menu {
+        if let menu = action.menu, menu.opening != .hold {
             let menuShown = NSMenu()
             menuShown.autoenablesItems = false
             AppKitMenus.items(menu.entries).forEach { item in
@@ -109,7 +109,17 @@ final class AppKitBottomToolbar: NSView {
             button.toolTip = action.title
             return button
         }
-        let button = NSButton(title: action.image == nil ? action.title : "", target: self, action: #selector(choose(_:)))
+        let held = action.menu.map { menu in
+            let button = AppKitBarHeldButton()
+            button.offered.autoenablesItems = false
+            AppKitMenus.items(menu.entries).forEach { item in
+                item.menu?.removeItem(item)
+                button.offered.addItem(item)
+            }
+            return button
+        }
+        let button = held ?? NSButton()
+        (button.title, button.target, button.action) = (action.image == nil ? action.title : "", self, #selector(choose(_:)))
         button.image = action.image
         button.imagePosition = action.image == nil ? .noImage : .imageOnly
         button.bezelStyle = .accessoryBarAction

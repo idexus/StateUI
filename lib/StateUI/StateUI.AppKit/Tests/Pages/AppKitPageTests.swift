@@ -6,6 +6,7 @@ import AppKit
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
+import StateUIConformance
 import XCTest
 
 @MainActor
@@ -1126,6 +1127,44 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual((control("Save") as? NSComboButton)?.style, .split)
         let share = try XCTUnwrap(foot.overflowMenuForTesting.items.first { $0.title == "Share" })
         XCTAssertEqual(share.submenu?.items.map(\.title), ["Mail"], "behind More, a submenu")
+    }
+
+    /// A held menu on the bar at the page's foot is held as on the window's: no arrow and no split, its click its own,
+    /// and assistive technology asking for its menu opens it.
+    @MainActor
+    func testAHeldMenuOnTheFootBarKeepsItsClickItsOwn() throws {
+        let heard = Received<String>()
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").pageTitle("Files")
+                    .toolbar(.bottom) {
+                        ToolbarButton("Copy").onClicked { heard.values.append("copy") }
+                            .menu(.held) { MenuItem("Copy as").onClicked {} }
+                    }
+            } destination: { _ in Text("Pushed") }
+        }
+        defer { renderer.finish() }
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        func footBar(_ view: NSView) -> AppKitBottomToolbar? {
+            if let bar = view as? AppKitBottomBarView, bar.showsAnything { return bar.toolbar }
+            return view.subviews.lazy.compactMap(footBar).first
+        }
+        let foot = try XCTUnwrap(controller.window?.contentView.flatMap(footBar))
+        func search(_ view: NSView) -> NSControl? {
+            if let control = view as? NSControl, control.toolTip == "Copy" { return control }
+            return view.subviews.lazy.compactMap(search).first
+        }
+        let found = try XCTUnwrap(search(foot))
+        XCTAssertFalse(found is NSComboButton, "no arrow and no split")
+        let copy = try XCTUnwrap(found as? NSButton)
+        XCTAssertEqual(copy.bezelStyle, NSButton.BezelStyle.accessoryBarAction, "an accessory bar control as its neighbors")
+        copy.performClick(nil)
+        XCTAssertEqual(heard.values, ["copy"], "its click its own")
+
+        let watch = MenuWatch()
+        defer { watch.stop() }
+        XCTAssertTrue(copy.accessibilityPerformShowMenu())
+        XCTAssertEqual(watch.opened, ["Copy as"], "its menu opened")
     }
 
     /// Groups placed behind a bar's More are sections of its menu, a line between two - on the window's bar and on
