@@ -72,6 +72,52 @@ standard error carries diagnostics, which no client reads as messages. The
 process ends with status `0` when the client shut the service down, and `6`
 when the input ended or broke first - a client lost.
 
+## An operation and its events
+
+A method that changes something - builds, runs, installs - starts an
+operation and answers at once with its handle, `queued`; a client follows it
+by its events and reads it whole with `operation/get`. A mutation takes the
+client's `requestToken` beside its own parameters: the same token with the
+same request is the same operation, run once, and answers with its handle as
+it stands; the same token with another request is refused
+(`REQUEST_TOKEN_CONFLICT`). A service with no such method offers neither
+`operation/get` nor `operation/cancel`.
+
+```text
+queued -> running -> succeeded | failed
+queued/running -> cancelling -> cancelled
+```
+
+The handle is written before the operation starts, so no event comes before
+the answer that names its operation - for a batch, before the whole batch's
+answer. Events go to the connection that started the operation, numbered from
+1 in the order they happened (`operation/event`): a state reached, progress a
+tool told, a program's output. The snapshot is written before the event that
+tells it, and the terminal state is the operation's last event.
+
+A cancel stops a queued operation at once and a running one through
+`cancelling`, which cancels its work's task; the operation is `cancelled`
+once its work has ended. Asking again changes nothing, and a cancel after the
+operation succeeded or failed is not accepted - its end stands. `shutdown`
+and the connection's end cancel the client's operations and wait for them,
+within ten seconds, before going on.
+
+A program's output comes in chunks below 64 KiB, cut where a character ends:
+text when the bytes are UTF-8, Base64 when they are not. Each carries the
+stream's cursor - the bytes written before it and in it - so a client knows
+where it stands.
+
+## A client that reads too slowly
+
+The service never waits on a client to read: a program's output is read as
+it comes, whatever the editor does. Once more than 8 MiB stand written and
+unread, live output is no longer sent; the operation records a gap instead,
+and before its next event of any other kind - its end included - it sends
+`outputGap` with the cursors the missed output lies between and
+`replayAvailable: false`. A gap is never presented as a whole log. States and
+progress are always sent. A client leaving more than 8 MiB unread for 30
+seconds is lost: the connection ends and its operations stop.
+
 ## The recorded examples
 
 `tools/StateUI.CLI/exports/protocol` holds one example a method - its request

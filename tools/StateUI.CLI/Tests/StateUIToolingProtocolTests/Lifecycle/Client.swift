@@ -10,19 +10,48 @@ import XCTest
 final class Client: Sendable {
     let connection: Connection
     let service: FakeService
+    /// The methods the connection answers, its operations among them.
+    let methods: Methods
     private let transcript = Transcript()
     private let read = Mutex(0)
 
-    init(apiVersions: [APIVersionRange] = [APIVersionRange(major: 1, minMinor: 0, maxMinor: 2)]) {
+    init(
+        apiVersions: [APIVersionRange] = [APIVersionRange(major: 1, minMinor: 0, maxMinor: 2)],
+        lostAfter: Duration = .seconds(30)
+    ) {
+        let backlog = Backlog()
+        self.backlogSource = backlog
         let (service, transcript) = (FakeService(), transcript)
+        let methods = service.methods
         self.service = service
+        self.methods = methods
         connection = Connection(
             server: ToolIdentity(name: "stateui", version: "0.0.0"),
             apiVersions: apiVersions,
-            methods: service.methods,
+            methods: methods,
             send: { frame in transcript.written.withLock { $0 += Array(frame) } },
-            diagnose: { line in transcript.diagnostics.withLock { $0.append(line) } }
+            diagnose: { line in transcript.diagnostics.withLock { $0.append(line) } },
+            backlog: { backlog.bytes.withLock { $0 } },
+            lostAfter: lostAfter
         )
+    }
+
+    private let backlogSource: Backlog
+
+    /// Says the client leaves `bytes` unread.
+    func leaveUnread(_ bytes: Int) {
+        backlogSource.bytes.withLock { $0 = bytes }
+    }
+
+    /// The messages written until `done` holds of them all, waited for up to five seconds.
+    func messages(until done: ([JSONValue]) -> Bool) async throws -> [JSONValue] {
+        var gathered: [JSONValue] = []
+        let deadline = ContinuousClock.now + .seconds(5)
+        while !done(gathered), ContinuousClock.now < deadline {
+            gathered += try unread()
+            if !done(gathered) { try await Task.sleep(for: .milliseconds(5)) }
+        }
+        return gathered
     }
 
     /// Sends `json` as one frame; whether the connection goes on.
@@ -79,6 +108,11 @@ final class Client: Sendable {
 
     /// The diagnostics written so far.
     var diagnosed: [String] { transcript.diagnostics.withLock { $0 } }
+}
+
+/// The bytes a test says its client leaves unread.
+final class Backlog: Sendable {
+    let bytes = Mutex(0)
 }
 
 /// What a connection wrote: its frames' bytes and its diagnostics.

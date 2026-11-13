@@ -3,7 +3,7 @@
 
 import Foundation
 
-/// One client's connection: its frames read, its life kept, its requests answered.
+/// One client's connection: its frames read, its life kept, its requests answered, its operations told.
 /// Design: docs/design/tooling/protocol.md#a-connections-life
 public actor Connection {
     /// Where a connection stands in its life.
@@ -37,35 +37,54 @@ public actor Connection {
     private let methods: Methods
     private let send: @Sendable (Data) -> Void
     private let diagnose: @Sendable (String) -> Void
-    private let instance = UUID().uuidString.lowercased()
+    private let backlog: @Sendable () -> Int
+    private let lostAfter: Duration
+    private let caller: Methods.Caller
     private var pending: [Int: Task<Void, Never>] = [:]
     private var nextPending = 0
+    private var watchdog: Task<Void, Never>?
+
+    /// How long a stop of the client's operations may take before the connection goes on without them.
+    static let stopLimit = Duration.seconds(10)
 
     /// A connection of the service `server`, speaking `apiVersions` and answering `methods`, which writes each
-    /// frame through `send` and each diagnostic - never a frame - through `diagnose`.
+    /// frame through `send` and each diagnostic - never a frame - through `diagnose`; `backlog` gives the bytes
+    /// written but not yet read, and a client leaving more than the backlog's limit unread for `lostAfter` is lost.
     public init(
         server: ToolIdentity,
         apiVersions: [APIVersionRange],
         methods: Methods,
         send: @escaping @Sendable (Data) -> Void,
-        diagnose: @escaping @Sendable (String) -> Void
+        diagnose: @escaping @Sendable (String) -> Void,
+        backlog: @escaping @Sendable () -> Int = { 0 },
+        lostAfter: Duration = .seconds(30)
     ) {
         self.server = server
         self.apiVersions = apiVersions
         self.methods = methods
         self.send = send
         self.diagnose = diagnose
+        self.backlog = backlog
+        self.lostAfter = lostAfter
+        let channel = EventChannel(
+            deliver: { event in
+                guard let params = try? JSONValue(encoding: event) else { return }
+                Self.write(.notification(method: "operation/event", params: params), send, diagnose)
+            },
+            backlog: backlog)
+        caller = Methods.Caller(owner: UUID().uuidString.lowercased(), channel: channel)
     }
 
     /// Reads `bytes` as they came; `false` once the connection has ended.
     public func receive(_ bytes: Data) -> Bool {
         guard state != .closed else { return false }
+        if watchdog == nil { watchdog = Task { await watch() } }
         let bodies: [Data]
         do {
             bodies = try reader.take(bytes)
         } catch {
             diagnose("stateui: the connection ends on bytes that are no frame: \(error)")
-            state = .closed
+            close()
             return false
         }
         for body in bodies where state != .closed {
@@ -78,10 +97,51 @@ public actor Connection {
         return state != .closed
     }
 
-    /// The client's end of the connection closed; returns once every request accepted is answered.
+    /// The client's end of the connection closed: its operations are stopped, and every request accepted is
+    /// answered before this returns.
     public func end() async {
-        state = .closed
+        close()
+        await methods.operations.stop(ownedBy: caller.owner, within: Self.stopLimit)
         await settle()
+    }
+
+    /// Returns once the connection has ended, or once the calling task is cancelled.
+    public func closed() async {
+        while state != .closed, !Task.isCancelled {
+            try? await Task.sleep(for: .milliseconds(100))
+        }
+    }
+
+    /// Returns once every request accepted so far is answered.
+    func settle() async {
+        while let task = pending.values.first {
+            await task.value
+        }
+    }
+
+    private func close() {
+        state = .closed
+        watchdog?.cancel()
+    }
+
+    /// Design: docs/design/tooling/protocol.md#a-client-that-reads-too-slowly
+    private func watch() async {
+        var congestedSince: ContinuousClock.Instant?
+        while state != .closed, !Task.isCancelled {
+            if backlog() > EventChannel.backlogLimit {
+                let since = congestedSince ?? .now
+                congestedSince = since
+                if ContinuousClock.now - since >= lostAfter {
+                    diagnose("stateui: the client read nothing for \(lostAfter); it is lost")
+                    close()
+                    await methods.operations.stop(ownedBy: caller.owner, within: Self.stopLimit)
+                    return
+                }
+            } else {
+                congestedSince = nil
+            }
+            try? await Task.sleep(for: min(.seconds(1), lostAfter / 4))
+        }
     }
 
     private func dispatch(_ messages: [IncomingMessage], batch: Bool) {
@@ -93,31 +153,30 @@ public actor Connection {
             if batch, !ready.isEmpty { write(.batch(ready)) } else { ready.forEach(write) }
             return
         }
-        let (methods, send, diagnose, earlier) = (methods, send, diagnose, Array(pending.values))
+        let (methods, caller, send, diagnose) = (methods, caller, send, diagnose)
+        let earlier = Array(pending.values)
         let key = nextPending
         nextPending += 1
         pending[key] = Task {
             var written: [OutgoingMessage] = []
+            var then: [@Sendable () async -> Void] = []
             for answer in answers {
                 switch answer {
                 case .now(let message):
                     written.append(message)
                 case .later(let id, let method, let params):
-                    written.append(.response(id: id, outcome: await methods.answer(method, params: params)))
+                    let reply = await methods.answer(method, params: params, caller: caller)
+                    written.append(.response(id: id, outcome: reply.outcome))
+                    if let start = reply.then { then.append(start) }
                 case .afterPending(let message):
                     for task in earlier { await task.value }
+                    await methods.operations.stop(ownedBy: caller.owner, within: Self.stopLimit)
                     written.append(message)
                 }
             }
             Self.write(batch ? .batch(written) : written[0], send, diagnose)
+            for start in then { await start() }
             answered(key)
-        }
-    }
-
-    /// Returns once every request accepted so far is answered.
-    func settle() async {
-        while let task = pending.values.first {
-            await task.value
         }
     }
 
@@ -145,7 +204,7 @@ public actor Connection {
         case "initialized" where state == .initializing:
             state = .ready
         case "exit":
-            state = .closed
+            close()
         case "initialized", "initialize", "shutdown":
             diagnose("stateui: \(method) came as a notification while the connection is \(state); it was passed over")
         default:
@@ -190,10 +249,10 @@ public actor Connection {
         }
         let result = InitializeResult(
             apiVersion: version,
-            serverInstanceId: instance,
+            serverInstanceId: caller.owner,
             server: server,
             workspace: Workspace(uri: parameters.workspaceUri),
-            capabilities: ServerCapabilities(methods: methods.names, notifications: []),
+            capabilities: ServerCapabilities(methods: methods.names, notifications: methods.notifications),
             limits: .current
         )
         guard let encoded = try? JSONValue(encoding: result) else { return .error(.internalError("initialize")) }

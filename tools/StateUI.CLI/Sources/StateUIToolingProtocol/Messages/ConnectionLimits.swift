@@ -5,12 +5,16 @@
 public struct ConnectionLimits: Codable, Equatable, Sendable {
     /// The longest frame body, in bytes.
     public var maxFrameBytes: Int
+    /// The most bytes of a program's output one event carries, before they are encoded.
+    public var maxEventChunkBytes: Int
 
-    /// Limits of `maxFrameBytes`.
-    public init(maxFrameBytes: Int) {
+    /// Limits of `maxFrameBytes` and `maxEventChunkBytes`.
+    public init(maxFrameBytes: Int, maxEventChunkBytes: Int) {
         self.maxFrameBytes = maxFrameBytes
+        self.maxEventChunkBytes = maxEventChunkBytes
     }
 
     /// The limits a connection of this tool keeps.
-    public static let current = ConnectionLimits(maxFrameBytes: FrameReader.bodyLimit)
+    public static let current = ConnectionLimits(
+        maxFrameBytes: FrameReader.bodyLimit, maxEventChunkBytes: OutputChunker.limit)
 }

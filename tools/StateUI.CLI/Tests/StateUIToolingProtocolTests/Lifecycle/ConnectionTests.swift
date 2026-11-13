@@ -25,7 +25,10 @@ final class ConnectionTests: XCTestCase {
         XCTAssertEqual(messages[1]["result"]?["apiVersion"], .string("1.0"))
         XCTAssertEqual(
             messages[1]["result"]?["capabilities"]?["methods"],
-            .array(["test/count", "test/echo", "test/fail", "test/refuse", "test/slow"].map(JSONValue.string)))
+            .array(
+                ["operation/cancel", "operation/get", "test/count", "test/echo", "test/fail", "test/refuse", "test/slow",
+                 "test/work"].map(JSONValue.string)))
+        XCTAssertEqual(messages[1]["result"]?["capabilities"]?["notifications"], .array([.string("operation/event")]))
         XCTAssertEqual(messages[1]["result"]?["workspace"], .object(["uri": .string("file:///w")]))
         XCTAssertEqual(error(messages[2]), -32002)
         XCTAssertEqual(messages[3]["result"], .object(["text": .string("c")]))

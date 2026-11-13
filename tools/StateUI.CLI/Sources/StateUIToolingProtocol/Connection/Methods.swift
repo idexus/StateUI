@@ -3,13 +3,31 @@
 
 /// The methods a service answers, each by name with its parameter and result types.
 public struct Methods: Sendable {
-    private var answers: [String: @Sendable (JSONValue) async -> OutgoingMessage.Outcome] = [:]
+    /// Who calls a method: the connection's instance, which owns what it starts, and where its events go.
+    struct Caller: Sendable {
+        var owner: String
+        var channel: EventChannel
+    }
+
+    /// A method's answer, and what runs once the answer is written.
+    struct Reply: Sendable {
+        var outcome: OutgoingMessage.Outcome
+        var then: (@Sendable () async -> Void)?
+    }
+
+    private var answers: [String: @Sendable (JSONValue, Caller) async -> Reply] = [:]
+
+    /// The service's operations, which its mutating methods start.
+    public let operations = Operations()
 
     /// No methods.
     public init() {}
 
     /// The methods' names, in sorted order.
     public var names: [String] { answers.keys.sorted() }
+
+    /// The notifications the methods send, in sorted order.
+    public var notifications: [String] { contains("operation/get") ? ["operation/event"] : [] }
 
     /// Whether a method of that name is answered.
     public func contains(_ name: String) -> Bool { answers[name] != nil }
@@ -22,20 +40,71 @@ public struct Methods: Sendable {
         _ name: String,
         _ answer: @escaping @Sendable (Parameters) async throws -> Result
     ) {
-        answers[name] = { params in
+        answers[name] = { params, _ in
             let parameters: Parameters
             switch Self.read(Parameters.self, of: name, from: params) {
             case .success(let read): parameters = read
-            case .failure(let error): return .error(error)
+            case .failure(let error): return Reply(outcome: .error(error))
             }
             do {
-                return .result(try JSONValue(encoding: try await answer(parameters)))
+                return Reply(outcome: .result(try JSONValue(encoding: try await answer(parameters))))
             } catch let error as ToolingError {
-                return .error(.refused(error))
+                return Reply(outcome: .error(.refused(error)))
             } catch {
-                return .error(.internalError("\(name) failed: \(error)"))
+                return Reply(outcome: .error(.internalError("\(name) failed: \(error)")))
             }
         }
+    }
+
+    /// Adds a method that starts an operation: it takes a `requestToken` beside `Parameters` and answers with the
+    /// operation's handle at once; `work` runs once the handle is written, its result the operation's.
+    ///
+    /// The first such method adds `operation/get` and `operation/cancel`.
+    public mutating func mutation<Parameters: Codable & Sendable, Result: Codable & Sendable>(
+        _ name: String,
+        _ work: @escaping @Sendable (Parameters, OperationContext) async throws -> Result
+    ) {
+        addOperationMethods()
+        let operations = operations
+        answers[name] = { params, caller in await Self.accept(name, params, caller, operations, work) }
+    }
+
+    private static func accept<Parameters: Codable & Sendable, Result: Codable & Sendable>(
+        _ name: String,
+        _ params: JSONValue,
+        _ caller: Caller,
+        _ operations: Operations,
+        _ work: @escaping @Sendable (Parameters, OperationContext) async throws -> Result
+    ) async -> Reply {
+        guard case .object(var fields) = params, case .string(let token)? = fields.removeValue(forKey: "requestToken"),
+              !token.isEmpty
+        else { return Reply(outcome: .error(.invalidParams("\(name) takes a requestToken."))) }
+        let parameters: Parameters
+        switch read(Parameters.self, of: name, from: .object(fields)) {
+        case .success(let read): parameters = read
+        case .failure(let error): return Reply(outcome: .error(error))
+        }
+        let operationWork: Operations.Work = { context in try JSONValue(encoding: try await work(parameters, context)) }
+        let request = JSONValue.object(["method": .string(name), "params": .object(fields)])
+        do {
+            let (handle, isNew) = try await operations.accept(
+                kind: name, token: token, request: request, owner: caller.owner, channel: caller.channel, work: operationWork)
+            let id = handle.operationId
+            var start: (@Sendable () async -> Void)?
+            if isNew { start = { @Sendable in await operations.start(id) } }
+            return Reply(outcome: .result(try JSONValue(encoding: handle)), then: start)
+        } catch let error as ToolingError {
+            return Reply(outcome: .error(.refused(error)))
+        } catch {
+            return Reply(outcome: .error(.internalError("\(name) failed: \(error)")))
+        }
+    }
+
+    private mutating func addOperationMethods() {
+        guard !contains("operation/get") else { return }
+        let operations = operations
+        query("operation/get") { (reference: OperationReference) in try await operations.snapshot(reference.operationId) }
+        query("operation/cancel") { (reference: OperationReference) in try await operations.cancel(reference.operationId) }
     }
 
     /// `params` read whole as method `name`'s `Parameters`, or the error refusing them.
@@ -51,9 +120,9 @@ public struct Methods: Sendable {
         }
     }
 
-    /// The answer to `name` called with `params`; parameters not sent are read as `{}`.
-    func answer(_ name: String, params: JSONValue?) async -> OutgoingMessage.Outcome {
-        guard let answer = answers[name] else { return .error(.methodNotFound(name)) }
-        return await answer(params ?? .object([:]))
+    /// The answer to `name` called by `caller` with `params`; parameters not sent are read as `{}`.
+    func answer(_ name: String, params: JSONValue?, caller: Caller) async -> Reply {
+        guard let answer = answers[name] else { return Reply(outcome: .error(.methodNotFound(name))) }
+        return await answer(params ?? .object([:]), caller)
     }
 }

@@ -32,6 +32,7 @@
         ]
       },
       "limits" : {
+        "maxEventChunkBytes" : 65535,
         "maxFrameBytes" : 16777216
       },
       "server" : {
