@@ -9,9 +9,17 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 - **`stateui`, StateUI's developer tool, begins.** `tools/StateUI.CLI` builds the `stateui` program on macOS, Linux
   and Windows. `stateui version` says its release, the API it speaks and the machine it runs on - in words, or for a
-  program with `--format json` or `--format jsonl`. `stateui serve --stdio` answers an editor's JSON-RPC over
-  standard input and output: `initialize`, `server/info`, `shutdown` and `exit`, each message read whole. It builds,
-  runs and tests no application yet: until it does, `.scripts` build and run each host as before.
+  program with `--format json` or `--format jsonl`. `stateui doctor` says what each host needs of this machine and
+  what to install. `stateui new` makes an application - HelloWorld renamed - wherever it is asked to;
+  `stateui project describe` reads the applications of a folder. A workspace is a `stateui.json`, found upward from
+  where the tool runs, naming its applications and the StateUI they build with: `stateui workspace create` makes one
+  from a checkout or a release, `stateui workspace library` points every application at another, and
+  `stateui releases list` lists the releases. `stateui serve --stdio` answers an editor's JSON-RPC over standard input
+  and output - the same answers, and the making as operations with events and a cancel. It builds, runs and tests no
+  application yet: until it does, `.scripts` build and run each host as before.
+- **The VS Code extension works through `stateui`.** Check Toolchain, New Application in apps/ and a project
+  group's first application and releases ask the tool; the `stateui.cliPath` setting names it where it is not on the
+  search path. The making shows in a notification that cancels it.
 
 ### Tooling
 

@@ -23,6 +23,18 @@ path, **Extensions: Install from VSIX…** in the Command Palette installs that
 file. Build and install it again after pulling changes to the extension -
 [**StateUI: Reinstall VS Code Extension**](#the-extension-itself) does both.
 
+The extension works through the `stateui` tool, built from the same
+checkout. Build it and put it on the search path:
+
+```bash
+swift build -c release --package-path tools/StateUI.CLI
+ln -sf "$(swift build -c release --package-path tools/StateUI.CLI --show-bin-path)/stateui" ~/.local/bin/stateui
+```
+
+Where it stands elsewhere, the `stateui.cliPath` setting names the program.
+A tool of another API than the extension's is refused with the version each
+speaks; what the tool says of itself shows in the **StateUI Tool** output.
+
 The extension installs the **Swift** extension (swiftlang) with it. Install
 **LLDB DAP** for the Swift debugger.
 
@@ -168,11 +180,11 @@ configuration naming `"application": "Gallery"` runs that one instead.
 ## A new application
 
 **StateUI: New Application in apps/** - in a StateUI checkout or a project
-group, asks for a name and runs the scaffolder of the checkout the folder's
-applications build with, `.scripts/new-app.sh` (or `new-app.ps1` on Windows),
-which makes HelloWorld under that name - its example test in `Tests/`
-included, which **StateUI: Run Tests** runs. The application is then chosen,
-so **StateUI: Debug** runs it.
+group, asks for a name, and the `stateui` tool makes HelloWorld under that
+name with the checkout the folder's applications build with - its example
+test in `Tests/` included, which **StateUI: Run Tests** runs. A notification
+follows the making and cancels it. The application is then chosen, so
+**StateUI: Debug** runs it.
 
 A name is letters and digits, starting with a letter: it becomes the
 directory, the process, the package identifier and the Swift module
@@ -291,15 +303,17 @@ them and restarts the server, for an index a failed build left inconsistent.
 
 ## The toolchain
 
-**StateUI: Check Toolchain** looks for what this machine needs to build and run
-the hosts it runs, as [Requirements](#requirements) and the handbook's host pages
-say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
+**StateUI: Check Toolchain** asks the `stateui` tool what this machine has of
+what it needs to build and run the hosts it runs - what `stateui doctor` prints -
+as [Requirements](#requirements) and the handbook's host pages say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
 JDK and Swift SDK on macOS; Visual Studio's C++ tools, the Windows SDK and the
 WebView2 runtime on Windows; GTK, libadwaita, WebKitGTK, gdk-pixbuf's SVG
 loader and a desktop session on Linux; the Swift SDK for WebAssembly and Python 3 for the Web on macOS and
 Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch - on Linux
 and Windows an `lldb-dap` that starts with the Python its LLDB loads; Git for a project group's
-releases; and Node.js for this extension's own build. The **StateUI Toolchain** output lists each
+releases; and Node.js for this extension's own build. The LLDB DAP extension
+and whether the `lldb-dap` it is set to starts are the extension's own
+findings, added to the tool's. The **StateUI Toolchain** output lists each
 with what was found - a version older than the one required marked as too old - and
 for each not found what to install. It looks where the build scripts look
 (the NDK as `build-swift.sh` finds it); it installs nothing.
@@ -326,6 +340,8 @@ launch file at all:
 
 - The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode),
   installed with StateUI.
+- The `stateui` tool of the same release, on the search path or named by
+  `stateui.cliPath` ([Installing](#installing)).
 - For AppKit: macOS 26.4 or newer and the `lldb-dap` extension.
 - For UIKit: macOS with Xcode, a StateUI checkout, whose `.scripts/UIKit`
   builds and runs the head, the `lldb-dap` extension, and an iOS 26.4 or newer

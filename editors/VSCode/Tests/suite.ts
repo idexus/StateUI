@@ -24,15 +24,16 @@ import { findSuites, forDevice } from "../Sources/tests";
 import { givesWay } from "../Sources/tasks";
 import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
-import { nameProblem, scaffolderCommand } from "../Sources/newApplication";
-import { cloneCommand, groupNameProblem, listReleases, releaseDirectory, releasesIn } from "../Sources/projectGroup";
+import { nameProblem } from "../Sources/newApplication";
+import { cloneCommand, groupNameProblem, releaseDirectory } from "../Sources/projectGroup";
 import { editorCommandLine, reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
 import { deployCommand, deployDestination, winUIArchitectures } from "../Sources/deploy";
 import {
-    atLeast, checkedPythonIn, checkToolchain, debuggerFinding, developmentIdentityIn, isSwiftOrgBuild, ndkRevisionIn, newestIOSRuntime, report,
-    svgLoaderIn, lldbDapFailure, lldbDapFinding, svgLoaderInGlycin, xcodeVersion,
+    atLeast, checkedPythonIn, debuggerFinding, Finding, lldbDapFailure, report,
 } from "../Sources/toolchain";
+import { ToolingClient } from "../Sources/Tooling/client";
+import { locateTool } from "../Sources/Tooling/locate";
 
 const started = Date.now();
 
@@ -642,12 +643,6 @@ export async function run(): Promise<void> {
             && nameProblem("2App") !== undefined && nameProblem("StateUI") !== undefined);
         {
             const apps = path.join(root.uri.fsPath, "apps");
-            const made = scaffolderCommand(root.uri.fsPath, apps, "Notes", "darwin");
-            const windows = scaffolderCommand(root.uri.fsPath, apps, "Notes", "win32");
-            check("in apps/ it is the checkout's scaffolder: new-app.sh Notes <apps>, new-app.ps1 -Name Notes -AppsDir <apps>",
-                made.command === "bash" && made.args[0].split(path.sep).join("/").endsWith("/.scripts/new-app.sh")
-                && made.args.slice(1).join(" ") === `Notes ${apps}`
-                && windows.command === "powershell" && windows.args.slice(-5).join(" ").endsWith(`new-app.ps1 -Name Notes -AppsDir ${apps}`));
             const manifest = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8"));
             const setting = manifest.contributes.configuration.properties;
             check("the palette has New Project Group; New Application in apps/ shows where a folder keeps apps/; "
@@ -655,19 +650,17 @@ export async function run(): Promise<void> {
                 commands.includes("stateui.newProjectGroup")
                 && manifest.contributes.commands.some((each: { command: string; enablement?: string }) =>
                     each.command === "stateui.newApplicationInApps" && each.enablement === "stateui.hasApps")
-                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.5.0");
+                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.5.0"
+                && setting["stateui.cliPath"].scope === "machine");
             check("an application's Package.swift names its checkout: HelloWorld's ../.. is this one",
                 fs.realpathSync(checkoutNamedBy(path.join(apps, "HelloWorld")) ?? "/") === fs.realpathSync(root.uri.fsPath)
                 && findApplications(root.uri.fsPath).every((each) => each.checkout !== undefined));
             check("a group's name is letters, digits, dots, hyphens and underscores",
                 groupNameProblem("My.Apps-2_x") === undefined && groupNameProblem("My Apps") !== undefined
                 && groupNameProblem("-apps") !== undefined && groupNameProblem("") !== undefined);
-            const listed = ["0.3.1", "0.4.0", "0.10.0", "0.4.1", "v1.0", "1.0.0-beta"]
-                .map((tag, at) => `${at}abc\trefs/tags/${tag}`).join("\n");
             const clone = cloneCommand("https://github.com/idexus/StateUI.git", "0.4.0", "/Groups/Mine");
-            check("the releases offered are the tags minimumRelease or newer, the newest first; one is cloned shallow into the group's StateUI/",
-                releasesIn(listed, "0.4.0").join(" ") === "0.10.0 0.4.1 0.4.0"
-                && clone.command === "git" && clone.args.join(" ")
+            check("a release is cloned shallow into the group's StateUI/",
+                clone.command === "git" && clone.args.join(" ")
                     === `-c advice.detachedHead=false clone --depth 1 --branch 0.4.0 https://github.com/idexus/StateUI.git ${path.join("/Groups/Mine", "StateUI")}`);
         }
         // 7a. A project group, made by the command itself with its questions answered: one building with this checkout,
@@ -783,8 +776,11 @@ export async function run(): Promise<void> {
             // A release is offered from minimumRelease on - the first whose scripts build as this extension does.
             const minimum: string = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8"))
                 .contributes.configuration.properties["stateui.minimumRelease"].default;
-            const every = await listReleases("https://github.com/idexus/StateUI.git", "0.0.0");
-            const offered = await listReleases("https://github.com/idexus/StateUI.git", minimum);
+            // The releases as the command lists them: by the stateui tool on the search path.
+            const tool = await ToolingClient.start({ executable: locateTool(undefined), folder: root.uri.fsPath, clientVersion: "suite" });
+            const every = await tool.request("releases/list", { minimum: "0.0.0", repository: "https://github.com/idexus/StateUI.git" });
+            const offered = await tool.request("releases/list", { minimum, repository: "https://github.com/idexus/StateUI.git" });
+            await tool.dispose();
             check(`GitHub lists its releases, and none older than ${minimum} is offered - 0.4.0 builds differently`,
                 every.releases.includes("0.4.0") && !offered.releases.includes("0.4.0")
                 && offered.releases.every((each) => every.releases.includes(each)));
@@ -847,29 +843,12 @@ export async function run(): Promise<void> {
                 && hidden("stateui.reinstallExtension"));
         }
         // 7d. StateUI: Check Toolchain says what this machine has of what its hosts need, and what to install for the
-        //     rest: its tools' words read, and on the machine running the suite, nothing missing.
+        //     rest: the stateui tool's findings, with what the editor alone knows of a Debug launch; on the machine
+        //     running the suite, nothing missing.
         {
-            const loaders = (svg: boolean) => [
-                "# GdkPixbuf Image Loader Modules file", "",
-                '"/usr/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so"',
-                '"png" 5 "gdk-pixbuf" "PNG" "LGPL"', '"image/png" ""', '"png" ""', "",
-                ...(svg ? ['"/usr/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-svg.so"',
-                    '"svg" 6 "gdk-pixbuf" "Scalable Vector Graphics" "LGPL"', '"image/svg+xml" "image/svg" ""', ""] : []),
-            ].join("\n");
-            check("Check Toolchain compares versions part by part, reads Xcode's, simctl's, a toolchain's, an NDK's, the "
-                + "keychain's and gdk-pixbuf's words, and says a version too old",
+            check("Check Toolchain compares versions part by part, reads lldb-dap's words, and says a version too old",
                 commands.includes("stateui.checkToolchain")
                 && atLeast("6.4.1", "6.4") && atLeast("26", "26.0") && !atLeast("6.3.9", "6.4") && !atLeast("4.13", "4.14")
-                && xcodeVersion("Xcode 27.0\nBuild version 27A123") === "27.0"
-                && isSwiftOrgBuild("Swift version 6.4 (swift-6.4-RELEASE)")
-                && !isSwiftOrgBuild("Apple Swift version 6.4 (swiftlang-6.4.0.1.2 clang-1700.0.1)")
-                && newestIOSRuntime(JSON.stringify({ runtimes: [
-                    { platform: "iOS", version: "26.0", isAvailable: true }, { platform: "iOS", version: "26.2", isAvailable: true },
-                    { platform: "watchOS", version: "27.0", isAvailable: true }] })) === "26.2"
-                && svgLoaderIn(loaders(true)) === "libpixbufloader-svg.so" && svgLoaderIn(loaders(false)) === undefined
-                && svgLoaderInGlycin("[loader:image/png]\nExec = /usr/libexec/glycin-loaders/2+/glycin-image-rs\n\n"
-                    + "[loader:image/svg+xml]\nExec = /usr/libexec/glycin-loaders/2+/glycin-svg\n") === "glycin-svg"
-                && svgLoaderInGlycin("[loader:image/png]\nExec = /usr/libexec/glycin-loaders/2+/glycin-image-rs\n") === undefined
                 && lldbDapFailure("lldb-dap: LLVM (http://llvm.org/):\n  LLVM version 21.0.0\n") === undefined
                 && lldbDapFailure(".../usr/bin/lldb-dap: error while loading shared libraries: libpython3.9.so.1.0: cannot open"
                     + " shared object file: No such file or directory\n") === "libpython3.9.so.1.0 is missing"
@@ -878,40 +857,44 @@ export async function run(): Promise<void> {
                 && checkedPythonIn("error: unable to find 'python310.dll'.\r\nEnsure Python 3.10 (arm64) is installed and available"
                     + " in your Path.\r\n") === undefined
                 && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined
-                && ndkRevisionIn("Pkg.Desc = Android NDK\nPkg.Revision = 30.0.16248370\n") === "30.0.16248370"
-                && developmentIdentityIn('  1) 0A1B "Apple Development: Ann Doe (AB12CD34EF)"\n     1 valid identities found\n')
-                    === "Apple Development: Ann Doe (AB12CD34EF)"
-                && developmentIdentityIn("     0 valid identities found\n") === undefined
                 && report([{ component: "Node.js 20 or newer", neededBy: "it", tooOld: "19.4.0", advice: "Install it." }])[0]
                     === "✗ Node.js 20 or newer - 19.4.0 found, too old [it]. Install it.");
-            // As the command asks: the components, then whether the lldb-dap a launch takes starts (Linux, Windows).
-            const starts = await lldbDapFinding(vscode.workspace.getConfiguration("lldb-dap").get<string>("executable-path"));
-            const findings = [...await checkToolchain(), ...(starts ? [starts] : [])];
+            // As the command answers: the tool's components, the LLDB DAP extension, and whether the lldb-dap a launch
+            // takes starts (Linux, Windows).
+            const findings = await vscode.commands.executeCommand<Finding[] | undefined>("stateui.checkToolchain") ?? [];
             report(findings).forEach((line) => say(`     ${line}`));
             const own: Record<string, string> = { linux: "GTK 4.14 or newer, with its headers", darwin: "Xcode 27 or newer",
                 win32: "Visual Studio 2026 with the C++ tools for this machine" };
             const missing = findings.filter((each) => each.found === undefined).map((each) => each.component);
-            check(`Check Toolchain looks for Swift, this platform's own, lldb-dap - one that starts, off the Mac - and Git, and finds them all here${
+            check(`Check Toolchain asks the stateui tool for Swift, this platform's own, lldb-dap and Git, adds the LLDB DAP `
+                + `extension - and an lldb-dap that starts, off the Mac - and finds them all here${
                 missing.length > 0 ? ` - not ${missing.join(", ")}` : ""}`,
                 findings[0]?.component === "Swift 6.4 or newer" && findings.some((each) => each.component === own[process.platform])
                 && findings.some((each) => each.component === "lldb-dap") && findings.some((each) => each.component === "Git")
-                && (process.platform === "darwin" || starts?.component === "an lldb-dap that starts")
+                && findings.some((each) => each.component === "the LLDB DAP extension")
+                && (process.platform === "darwin" || findings.some((each) => each.component === "an lldb-dap that starts"))
                 && missing.length === 0 && findings.every((each) => each.advice.length > 0));
         }
-        // 8. The package holds what the sources build today and nothing an
-        //    older build left in out/.
+        // 8. The package holds what the sources build today - every one, its folders' too - and nothing an older
+        //    build left in out/.
         {
             const extension = path.join(root.uri.fsPath, "editors", "VSCode");
             const vsce = path.join(extension, "node_modules", ".bin", process.platform === "win32" ? "vsce.cmd" : "vsce");
             const packed = execSync(`"${vsce}" ls`, { cwd: extension }).toString().split(/\r?\n/).filter((line) => line.length > 0);
             // A compiled file whose source is gone is left in out/ by tsc, and would be packed.
             const stray = packed.filter((file) => {
-                const compiled = file.match(/^out\/Sources\/([A-Za-z]+)\.js$/);
+                const compiled = file.match(/^out\/Sources\/((?:[A-Za-z]+\/)*[A-Za-z]+)\.js$/);
                 return compiled ? !fs.existsSync(path.join(extension, "Sources", `${compiled[1]}.ts`))
                     : !/^(package\.json|README\.md|icon\.png|LICENSE)$/.test(file);
             });
+            const sources = (folder: string): string[] => fs.readdirSync(path.join(extension, folder), { withFileTypes: true })
+                .flatMap((each) => each.isDirectory() ? sources(`${folder}/${each.name}`)
+                    : each.name.endsWith(".ts") ? [`out/${folder}/${each.name.slice(0, -3)}.js`] : []);
+            const missing = sources("Sources").filter((file) => !packed.includes(file));
             check(`the package holds the manifest, the readme, the icon and what Sources compile to alone${stray.length > 0 ? ` - not ${stray.slice(0, 3).join(", ")}` : ""}`,
                 stray.length === 0 && packed.includes("out/Sources/extension.js"));
+            check(`the package holds what every source compiles to, in Sources' folders too${missing.length > 0 ? ` - not ${missing.slice(0, 3).join(", ")}` : ""}`,
+                missing.length === 0 && packed.includes("out/Sources/Tooling/client.js"));
         }
         // 9. StateUI: Debug runs the REMEMBERED application - no question asked - on this machine's host: AppKit
         //    built and under lldb-dap on macOS, WinUI on Windows and GTK on Linux alike.

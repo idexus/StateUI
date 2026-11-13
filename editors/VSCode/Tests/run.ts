@@ -3,9 +3,10 @@
 
 // Runs the integration suite in a real VS Code: the one installed, with the
 // extensions installed, on a profile of its own - so nothing the user has set is
-// read or written - opened on this repository.
+// read or written - opened on this repository, the stateui tool of this
+// checkout first on its search path.
 
-import { spawn } from "child_process";
+import { execFileSync, spawn } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -20,7 +21,14 @@ const results = path.join(profile, "results.txt");
 // repository with the extension installed indexes in the same ones. The
 // extension's own switches wait for any build running there.
 
+// The extension finds the tool on the search path, as it does when stateui.cliPath is empty.
+const tool = path.join(repository, "tools", "StateUI.CLI");
+execFileSync("swift", ["build", "--package-path", tool, "--product", "stateui"], { stdio: "inherit" });
+const bin = execFileSync("swift", ["build", "--package-path", tool, "--show-bin-path"], { encoding: "utf8" }).trim();
+
 const env: NodeJS.ProcessEnv = { ...process.env, STATEUI_TEST_RESULTS: results };
+const searchPath = Object.keys(env).find((key) => key.toUpperCase() === "PATH") ?? "PATH";
+env[searchPath] = `${bin}${path.delimiter}${env[searchPath] ?? ""}`;
 // The suite starts from no host at all; an inherited one would decide the first answer.
 delete env.STATEUI_HOST;
 delete env.ELECTRON_RUN_AS_NODE;

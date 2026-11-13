@@ -121,10 +121,12 @@ seconds is lost: the connection ends and its operations stop.
 ## The recorded examples
 
 `tools/StateUI.CLI/exports/protocol` holds one example a method - its request
-and its answer - and one a notification, written from the Swift types by
-`ProtocolExamplesTests` (`STATEUI_UPDATE_EXPORTS=1` records them). The same
-test sends the examples' requests to the service in their order and finds
-the answers the examples hold, the service's instance, identity and machine
-aside, and requires an example of every method the service answers. An
-editor's client is held to these files: its own tests read them with its own
-types.
+and its answer, and for a method starting an operation, the operation's
+`result` as `operation/get` gives it once it succeeded - and one a
+notification, written from the Swift types by `ProtocolExamplesTests`
+(`STATEUI_UPDATE_EXPORTS=1` records them). The same test sends the examples'
+requests to the service in their order and finds the answers the examples
+hold, the service's instance, identity and machine aside, and requires an
+example of every method the service answers. An editor's client is held to
+these files: its own tests read each message with its own types and write it
+back the same (`npm run test:tooling` in `editors/VSCode`).

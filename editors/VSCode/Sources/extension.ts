@@ -19,11 +19,13 @@ import { availableHosts, describe, Host } from "./hosts";
 import { askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceToRunOn, uiKitSimulatorToTestOn } from "./uiKitDevices";
 import { readyWhen, runTask, startTask } from "./tasks";
 import { findSuites, forDevice, runSuites } from "./tests";
-import { checkoutOf, makeApplication, nameProblem } from "./newApplication";
-import { cloneRelease, groupNameProblem, listReleases, makeProjectGroup, releaseDirectory } from "./projectGroup";
+import { checkoutOf, nameProblem } from "./newApplication";
+import { cloneRelease, groupNameProblem, makeProjectGroup, releaseDirectory } from "./projectGroup";
 import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinstall";
 import { Rebuild, rebuildSteps } from "./conformance";
-import { checkToolchain, debuggerFinding, lldbDapFinding, report } from "./toolchain";
+import { debuggerFinding, Finding, lldbDapFinding, report } from "./toolchain";
+import { pathToFileUri } from "./Tooling/client";
+import { runOperation, toolingClients, withTool } from "./Tooling/presentation";
 import { Architecture, deployCommand, deployDestination, winUIArchitectures } from "./deploy";
 
 /** What the extension answers to another extension - and to its own tests. */
@@ -97,9 +99,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     const toolchain = vscode.window.createOutputChannel("StateUI Toolchain");
     context.subscriptions.push(toolchain);
 
-    // What the scaffolder and git said while making an application or a project group.
+    // What the stateui tool and git said while making an application or a project group.
     const scaffolder = vscode.window.createOutputChannel("StateUI Scaffolder");
     context.subscriptions.push(scaffolder);
+
+    // The stateui tool, one connection per folder.
+    const tool = toolingClients(context);
 
     /** The repository a release is cloned from: the one the extension's manifest names. */
     const repository: string = context.extension.packageJSON.repository.url;
@@ -395,10 +400,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 return undefined;
             }
 
-            const made = await makeApplication(checkout, apps, name);
-            scaffolder.appendLine(made.output);
-            if (!made.made) {
-                reportFailure(`${name} was not made`);
+            const made = await withTool(tool, folder, `${name} was not made`, (client) => runOperation(client, "project/create",
+                { name, parentUri: pathToFileUri(apps), checkoutUri: pathToFileUri(checkout) }, `StateUI: making apps/${name}`, scaffolder));
+            if (!made) {
                 return undefined;
             }
 
@@ -449,12 +453,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                     return undefined;
                 }
                 if (source.release) {
-                    const listed = await vscode.window.withProgress(
-                        { location: vscode.ProgressLocation.Notification, title: `StateUI: reading the releases of ${repository}` },
-                        () => listReleases(repository, minimum));
-                    if (listed.problem) {
-                        scaffolder.appendLine(listed.problem);
-                        reportFailure(`the releases of ${repository} were not read`);
+                    const listed = await withTool(tool, location, `the releases of ${repository} were not read`, (client) =>
+                        vscode.window.withProgress(
+                            { location: vscode.ProgressLocation.Notification, title: `StateUI: reading the releases of ${repository}` },
+                            () => client.request("releases/list", { minimum, repository })));
+                    if (!listed) {
                         return undefined;
                     }
                     if (listed.releases.length === 0) {
@@ -486,27 +489,25 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 return undefined;
             }
 
-            const made = await vscode.window.withProgress(
+            const cloned = await vscode.window.withProgress(
                 { location: vscode.ProgressLocation.Notification, title: `StateUI: making ${name}` },
                 async (progress) => {
                     makeProjectGroup(group, repository);
-                    if (release) {
-                        progress.report({ message: `cloning StateUI ${release}` });
-                        const cloned = await cloneRelease(repository, release, group);
-                        scaffolder.appendLine(cloned.output);
-                        if (!cloned.cloned) {
-                            reportFailure(`StateUI ${release} was not cloned into ${group}`);
-                            return false;
-                        }
+                    if (!release) {
+                        return true;
                     }
-                    progress.report({ message: `making apps/${application}` });
-                    const scaffolded = await makeApplication(library, path.join(group, "apps"), application);
-                    scaffolder.appendLine(scaffolded.output);
-                    if (!scaffolded.made) {
-                        reportFailure(`${application} was not made in ${group}`);
+                    progress.report({ message: `cloning StateUI ${release}` });
+                    const clone = await cloneRelease(repository, release, group);
+                    scaffolder.appendLine(clone.output);
+                    if (!clone.cloned) {
+                        reportFailure(`StateUI ${release} was not cloned into ${group}`);
                     }
-                    return scaffolded.made;
+                    return clone.cloned;
                 });
+            const made = cloned && await withTool(tool, group, `${application} was not made in ${group}`, (client) =>
+                runOperation(client, "project/create", {
+                    name: application, parentUri: pathToFileUri(path.join(group, "apps")), checkoutUri: pathToFileUri(library),
+                }, `StateUI: making apps/${application}`, scaffolder));
             if (!made) {
                 return undefined;
             }
@@ -543,10 +544,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 await vscode.commands.executeCommand("workbench.action.reloadWindow");
             }
         }),
-        vscode.commands.registerCommand("stateui.checkToolchain", async () => {
-            const findings = await vscode.window.withProgress(
+        // The findings, as the command's answer too - for the suite.
+        vscode.commands.registerCommand("stateui.checkToolchain", async (): Promise<Finding[] | undefined> => {
+            const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? os.homedir();
+            const checked = await withTool(tool, folder, "the toolchain was not checked", (client) => vscode.window.withProgress(
                 { location: vscode.ProgressLocation.Notification, title: "StateUI: checking the toolchain" },
-                () => checkToolchain());
+                () => client.request("toolchain/check", {})));
+            if (!checked) {
+                return undefined;
+            }
+            const findings = checked.findings;
             const types = vscode.extensions.all.flatMap((each) =>
                 ((each.packageJSON?.contributes?.debuggers ?? []) as { type?: string }[]).map((debug) => debug.type ?? ""));
             const starts = await lldbDapFinding(vscode.workspace.getConfiguration("lldb-dap").get<string>("executable-path"));
@@ -563,6 +570,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 void vscode.window.showWarningMessage(
                     `StateUI: ${missing} of ${all.length} components are missing - the output says what to install.`);
             }
+            return all;
         }),
         // The answers can come as an argument - the application's folder, the architecture - as the suite gives them.
         vscode.commands.registerCommand("stateui.deploy", async (asked?: { application?: string; architecture?: Architecture }) => {

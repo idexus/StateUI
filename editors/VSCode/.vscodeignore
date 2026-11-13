@@ -2,7 +2,7 @@ Build/**
 Sources/**
 Tests/**
 out/**
-!out/Sources/*.js
+!out/Sources/**/*.js
 tsconfig.json
 .gitignore
 node_modules/**

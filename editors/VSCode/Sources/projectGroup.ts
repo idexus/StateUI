@@ -9,7 +9,6 @@
 import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import { atLeast } from "./toolchain";
 
 /** Why `name` cannot name a project group, or undefined where it can. */
 export function groupNameProblem(name: string): string | undefined {
@@ -67,20 +66,6 @@ export function makeProjectGroup(group: string, repository: string): void {
     fs.writeFileSync(path.join(group, ".gitignore"), ignored(repository));
     fs.writeFileSync(path.join(group, ".vscode", "settings.json"), `${JSON.stringify(settings, null, 2)}\n`);
     fs.writeFileSync(path.join(group, ".vscode", "launch.json"), `${JSON.stringify(launch, null, 2)}\n`);
-}
-
-/** The releases `git ls-remote --tags --refs` lists, `minimum` or newer, the newest first. */
-export function releasesIn(listed: string, minimum: string): string[] {
-    return listed.split(/\r?\n/)
-        .map((line) => line.match(/refs\/tags\/(\d+\.\d+\.\d+)$/)?.[1])
-        .filter((tag): tag is string => tag !== undefined && atLeast(tag, minimum))
-        .sort((a, b) => Number(atLeast(b, a)) - Number(atLeast(a, b)));
-}
-
-/** The releases of the StateUI at `repository`, `minimum` or newer, the newest first - or why none were read. */
-export function listReleases(repository: string, minimum: string): Promise<{ releases: string[]; problem?: string }> {
-    return new Promise((resolve) => execFile("git", ["ls-remote", "--tags", "--refs", repository], (error, stdout, stderr) =>
-        resolve(error ? { releases: [], problem: `${stderr}`.trim() || error.message } : { releases: releasesIn(stdout, minimum) })));
 }
 
 /** The command line that clones `release` of the StateUI at `repository` into `group`'s StateUI/, its tree alone. */

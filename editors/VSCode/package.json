@@ -35,6 +35,12 @@
     "configuration": {
       "title": "StateUI",
       "properties": {
+        "stateui.cliPath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "markdownDescription": "The `stateui` tool the extension works through. Empty: `stateui` on the search path."
+        },
         "stateui.checkout": {
           "type": "string",
           "default": "",
@@ -242,6 +248,7 @@
   "scripts": {
     "compile": "node -e \"require('fs').rmSync('out', { recursive: true, force: true })\" && tsc -p .",
     "test": "npm run compile && node out/Tests/run.js",
+    "test:tooling": "npm run compile && node --test \"out/Tests/Tooling/**/*.test.js\"",
     "package": "npm run compile && node out/Build/package.js"
   },
   "devDependencies": {
