@@ -15,16 +15,17 @@ final class ApplicationMakerTests: XCTestCase {
         return folder
     }
 
-    /// The files under `root`, every hidden entry left out, by their paths from it.
-    private func files(under root: URL) -> [String] {
-        let walker = FileManager.default.enumerator(
-            at: root, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles])
-        var found: [String] = []
-        while let file = walker?.nextObject() as? URL {
-            guard (try? file.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == false else { continue }
-            found.append(file.resolvingSymlinksInPath().path.replacingOccurrences(of: root.resolvingSymlinksInPath().path + "/", with: ""))
-        }
-        return found.sorted()
+    /// The files under `root`, every entry named with a dot left out - as the maker leaves them - by their paths
+    /// from it.
+    private func files(under root: URL, at path: String = "") -> [String] {
+        let folder = path.isEmpty ? root : root.appendingPathComponent(path)
+        let entries = ((try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? []).sorted()
+        return entries.filter { !$0.hasPrefix(".") }.flatMap { entry -> [String] in
+            let relative = path.isEmpty ? entry : path + "/" + entry
+            var isFolder: ObjCBool = false
+            FileManager.default.fileExists(atPath: root.appendingPathComponent(relative).path, isDirectory: &isFolder)
+            return isFolder.boolValue ? files(under: root, at: relative) : [relative]
+        }.sorted()
     }
 
     /// A new application is HelloWorld under another name: the same files, no build's leftovers, the name changed in
