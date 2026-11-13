@@ -125,10 +125,12 @@ extension WebDriver {
         return 0
     }
 
-    /// Opens the More of the bar a bar's button `item` stands behind: the bar at the foot holding it there - one page
-    /// of several showing theirs - or the window's bar.
+    /// Opens the More of the bar a bar's button `item` stands behind: the shown bar at the foot holding it there -
+    /// one page of several showing theirs, or the page shown of a stack whose pages share it - or the window's bar.
     private func openMore(holding item: MountedElement) throws {
-        if let foot = footToolbars(in: renderer?.runtime.tree.root).first(where: { $0.standsBehindForTesting(item) }) {
+        let holding = footToolbars(in: renderer?.runtime.tree.root).filter { $0.standsBehindForTesting(item) }
+        let shown = "e.checkVisibility({ visibilityProperty: true })"
+        if let foot = try holding.first(where: { try WebBrowser.truth(shown, on: $0.more.node) }) {
             return try click(foot.more)
         }
         try click(try bar(over: item), part: Self.more)

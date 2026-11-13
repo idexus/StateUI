@@ -8,8 +8,8 @@
 import XCTest
 
 /// The driver reads and chooses a bar's button's menu where the button stands: behind the More of its own page's bar
-/// at the foot, while both pages of a split view show theirs. A host runs in the page, so the suite runs it in a
-/// browser (`test-web.sh --browser`).
+/// at the foot, while both pages of a split view show theirs, and behind the shown page's where a stack's pages share
+/// it. A host runs in the page, so the suite runs it in a browser (`test-web.sh --browser`).
 @MainActor
 final class WebDriverBarMenuTests: XCTestCase {
     override func setUp() async throws {
@@ -48,5 +48,40 @@ final class WebDriverBarMenuTests: XCTestCase {
             driver.step()
         }
         XCTAssertEqual(heard.values, ["mail"], "chosen in the detail's")
+    }
+
+    func testAButtonAStacksPagesShareIsReadOnThePageShown() throws {
+        let heard = Received<String>()
+        let path = State(wrappedValue: [Int]())
+        let driver = WebDriver()
+        let tree = driver.start(clock: nil, reducesMotion: true) {
+            NavigationStack(path.projectedValue) {
+                Text("Root").pageTitle("Root")
+            } destination: { _ in
+                Text("Detail").pageTitle("Detail")
+            }
+            .toolbar(.bottom) {
+                ToolbarButton("Shared").onClicked {}.placement(at: .overflow).id("shared")
+                    .menu { MenuItem("Shared action").onClicked { heard.values.append("shared") }.id("action") }
+            }
+        }
+        defer { driver.renderer?.finish() }
+        let element = { (id: String) in try XCTUnwrap(tree.root?.first(id: .manual(id)), id) }
+        for (pushed, feet) in [([1], 2), ([], 1)] {
+            path.wrappedValue = pushed
+            for _ in 0..<8 { driver.step() }
+            let shared = try element("shared")
+            let holding = driver.footToolbars(in: tree.root).filter { $0.standsBehindForTesting(shared) }
+            XCTAssertEqual(holding.count, feet, "the pages whose feet hold it, \(pushed)")
+
+            XCTAssertEqual(try driver.buttonMenu(of: element("shared")), "Shared;-;Shared action", "\(pushed)")
+            let before = heard.values.count
+            try driver.perform(.activate, on: element("action"))
+            for _ in 0..<5 {
+                guard heard.values.count == before else { break }
+                driver.step()
+            }
+            XCTAssertEqual(heard.values.count, before + 1, "chosen on the page shown, \(pushed)")
+        }
     }
 }
