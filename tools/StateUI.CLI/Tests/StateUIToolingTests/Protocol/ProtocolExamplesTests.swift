@@ -8,7 +8,8 @@ import Synchronization
 import XCTest
 
 /// The recorded example messages: one exchange a method, one message a notification, each written from the
-/// Swift types and true of the service - what an editor's client is held to.
+/// Swift types and true of the service - what an editor's client is held to. A method starting an operation records
+/// the operation's result too, as `operation/get` gives it once the operation succeeded.
 final class ProtocolExamplesTests: XCTestCase {
     private struct Example {
         var name: String
@@ -70,6 +71,12 @@ final class ProtocolExamplesTests: XCTestCase {
             libraries: [Library(
                 rootUri: demo + "/StateUI", release: "1.0.0", revision: "0123456789abcdef0123456789abcdef01234567",
                 dirty: false)])
+        let creation = ProjectCreation(project: project, createdUris: [demo + "/apps/Notes", demo + "/stateui.json"])
+        finished.result = try JSONValue(encoding: creation)
+        let made = WorkspaceChange(
+            workspaceUri: demo, library: "StateUI", changedUris: [demo + "/stateui.json", demo + "/StateUI", demo + "/Notes"])
+        let used = WorkspaceChange(
+            workspaceUri: demo, library: "../../StateUI", changedUris: [demo + "/stateui.json", demo + "/Notes/Package.swift"])
         return [
             Example(name: "initialize", messages: [
                 ("request", try request("1", "initialize", initialize)), ("response", try response("1", initialized)),
@@ -98,6 +105,7 @@ final class ProtocolExamplesTests: XCTestCase {
                     requestToken: "5f0e3c2a-6c55-4b7a-9d1e-2a4c8b7f9e10",
                     request: ApplicationRequest(name: "Notes", parentUri: demo + "/apps")))),
                 ("response", try response("6", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: creation)),
             ], answeredAsWritten: false),
             Example(name: "operation-event", messages: [
                 ("notification", try JSONValue(encoding: OutgoingMessage.notification(
@@ -124,12 +132,14 @@ final class ProtocolExamplesTests: XCTestCase {
                     request: WorkspaceRequest(name: "Demo", parentUri: "file:///Users/example/Projects", release: "0.8.5",
                                               application: "Notes")))),
                 ("response", try response("10", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: made)),
             ], answeredAsWritten: false),
             Example(name: "workspace-useLibrary", messages: [
                 ("request", try request("11", "workspace/useLibrary", Mutation(
                     requestToken: "7c3e1a9b-5f2d-4e8c-a6b4-1d3f5a7c9e20",
                     request: LibraryRequest(workspaceUri: demo, checkoutUri: "file:///Users/example/StateUI")))),
                 ("response", try response("11", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: used)),
             ], answeredAsWritten: false),
             Example(name: "shutdown", messages: [
                 ("request", .object(["jsonrpc": .string("2.0"), "id": .string("3"), "method": .string("shutdown")])),
@@ -203,6 +213,7 @@ final class ProtocolExamplesTests: XCTestCase {
         var expected: [JSONValue] = []
         for example in try Self.examples() where example.answeredAsWritten {
             for (role, message) in example.messages {
+                if role == "result" { continue }
                 if role == "response" { expected.append(message); continue }
                 let body = try ToolingJSON.encoder().encode(message)
                 _ = await connection.receive(Data("Content-Length: \(body.count)\r\n\r\n".utf8) + body)

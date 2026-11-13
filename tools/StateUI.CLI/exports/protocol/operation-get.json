@@ -17,6 +17,41 @@
       "kind" : "project/create",
       "lastSequence" : 2,
       "requestToken" : "5f0e3c2a-6c55-4b7a-9d1e-2a4c8b7f9e10",
+      "result" : {
+        "createdUris" : [
+          "file:///Users/example/Projects/Demo/apps/Notes",
+          "file:///Users/example/Projects/Demo/stateui.json"
+        ],
+        "project" : {
+          "applications" : [
+            {
+              "declaredHosts" : [
+                "appkit",
+                "uikit"
+              ],
+              "id" : "apps/Notes",
+              "libraryUri" : "file:///Users/example/Projects/Demo/StateUI",
+              "name" : "Notes",
+              "packageUri" : "file:///Users/example/Projects/Demo/apps/Notes",
+              "products" : [
+                "NotesUI"
+              ],
+              "testSuites" : [
+                "NotesTests"
+              ]
+            }
+          ],
+          "libraries" : [
+            {
+              "dirty" : false,
+              "release" : "1.0.0",
+              "revision" : "0123456789abcdef0123456789abcdef01234567",
+              "rootUri" : "file:///Users/example/Projects/Demo/StateUI"
+            }
+          ],
+          "rootUri" : "file:///Users/example/Projects/Demo"
+        }
+      },
       "startedAt" : "2026-11-13T12:00:00.001Z",
       "state" : "succeeded"
     }

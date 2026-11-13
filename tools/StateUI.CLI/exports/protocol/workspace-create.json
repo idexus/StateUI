@@ -18,5 +18,14 @@
       "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
       "state" : "queued"
     }
+  },
+  "result" : {
+    "changedUris" : [
+      "file:///Users/example/Projects/Demo/stateui.json",
+      "file:///Users/example/Projects/Demo/StateUI",
+      "file:///Users/example/Projects/Demo/Notes"
+    ],
+    "library" : "StateUI",
+    "workspaceUri" : "file:///Users/example/Projects/Demo"
   }
 }
