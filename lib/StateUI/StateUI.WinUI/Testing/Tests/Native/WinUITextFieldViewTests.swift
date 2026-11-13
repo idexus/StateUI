@@ -61,6 +61,43 @@ final class WinUITextFieldViewTests: XCTestCase {
         }
     }
 
+    /// A field's paint that follows its size - a capsule's corners - stands on the password box swapped into its
+    /// place and follows its size there, its taps heard or not: the paint reads the control the view holds now.
+    func testAPasswordFieldsCapsuleFollowsItsSizeOnThePasswordBox() throws {
+        for hears in [false, true] {
+            try onUIThread {
+                let (hidden, tall) = (State(wrappedValue: false), State(wrappedValue: 32.0))
+                let words = State(wrappedValue: "")
+                let host = WinUIRenderer.running {
+                    VStack {
+                        if hears {
+                            TextField(words.projectedValue).isPassword(hidden.wrappedValue).shape(.capsule)
+                                .height(tall.wrappedValue).width(200).onTapped {}
+                        } else {
+                            TextField(words.projectedValue).isPassword(hidden.wrappedValue).shape(.capsule)
+                                .height(tall.wrappedValue).width(200)
+                        }
+                    }
+                }
+                host.layOut()
+                let field = try XCTUnwrap(host.views(WinUITextFieldView.self).first)
+                XCTAssertEqual(Self.read(field, "cornerRadius"), "16,16,16,16", "a capsule \(hears)")
+
+                hidden.wrappedValue = true
+                host.settle { Self.read(field, "password") == "1" }
+                host.layOut()
+                XCTAssertEqual(Self.read(field, "cornerRadius"), "16,16,16,16", "on the password box \(hears)")
+
+                tall.wrappedValue = 48
+                host.settle {
+                    host.layOut()
+                    return Self.read(field, "cornerRadius") == "24,24,24,24"
+                }
+                XCTAssertEqual(Self.read(field, "cornerRadius"), "24,24,24,24", "following its size there \(hears)")
+            }
+        }
+    }
+
     /// Words an input method is composing stand whole past the field's bound - cut under it, the composition would be
     /// lost - and are cut once it commits them.
     func testWordsAnInputMethodComposesAreCutOnceCommitted() throws {
