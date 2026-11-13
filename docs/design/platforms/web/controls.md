@@ -61,7 +61,10 @@ text around it, as the page's styles inherit - a space between its letters
 of none said as `0px`, so it takes no other through the cascade. A line under a
 node is drawn under all it holds and no span can take it away, so while runs
 show, the text's own lines stand on each run that says none of its own, and
-none on the text's node. A span is kept for each run by
+none on the text's node. Each run's lines are written whenever the text's look
+is, from the text's lines as they stand then - a description arranging the
+runs again, or a frame writing the look alone, which arranges nothing - so a
+state driving the text's decorations reaches its runs on its own frame. A span is kept for each run by
 its place: every span's words are written again as the runs change, and of its
 look only what changed.
 

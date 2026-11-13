@@ -15,6 +15,9 @@ final class WebTextView: WebDOMView, WebWordsView {
     /// A span for each run shown, in order; nil showing the text's own words.
     private var runs: [WebDOMView]?
 
+    /// The runs the spans show, for the lines each takes from the text's look as it stands.
+    private var shownRuns: [TextRun] = []
+
     /// The spans of the runs shown, in order.
     var runSpans: [WebDOMView] { runs ?? [] }
 
@@ -46,7 +49,7 @@ final class WebTextView: WebDOMView, WebWordsView {
             // Shown without runs before, the words stand already.
             guard let spans = runs else { return }
             for span in spans { span.release() }
-            runs = nil
+            (runs, shownRuns) = (nil, [])
             writeSpacing()
             return WebRelay.setText(node, words)
         }
@@ -58,13 +61,14 @@ final class WebTextView: WebDOMView, WebWordsView {
             WebRelay.insert(span.node, into: node, at: index)
             WebRelay.setText(span.node, run.text)
             var runLook = run.look
-            runLook.decorations = run.look.over(look).decorations
             runLook.scales = run.look.scales && look.scales
             if runLook.scales != look.scales, runLook.size == nil { runLook.size = look.size }
-            for (name, value) in WebCSS.font(runLook) + WebCSS.spacing(runLook) { span.style(name, value) }
+            for (name, value) in WebCSS.font(runLook) + WebCSS.spacing(runLook) where name != "text-decoration-line" {
+                span.style(name, value)
+            }
             span.style("background", WebCSS.fill(run.look.background))
         }
-        runs = spans
+        (runs, shownRuns) = (spans, shown)
         writeSpacing()
     }
 
@@ -89,10 +93,15 @@ final class WebTextView: WebDOMView, WebWordsView {
     }
 
     /// The text's spacing on its own node, and its lines there too while it shows its own words - a line under a
-    /// node is drawn under all it holds, which no run could take away, so runs take them each.
+    /// node is drawn under all it holds, which no run could take away, so runs take them each: a run's own, else the
+    /// text's as they stand now, however they came - a description or a frame.
+    /// Design: docs/design/platforms/web/controls.md#runs-of-words
     private func writeSpacing() {
         for (name, value) in WebCSS.spacing(spacing) {
             style(name, name == "text-decoration-line" && runs != nil ? nil : value)
+        }
+        for (span, run) in zip(runs ?? [], shownRuns) {
+            span.style("text-decoration-line", WebCSS.decorationLines(run.look.over(spacing).decorations))
         }
     }
 

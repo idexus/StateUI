@@ -160,13 +160,18 @@ enum WebCSS {
 
     /// The rest of a look: the space between the letters, the lines' height and the lines under or through.
     static func spacing(_ look: TextLook) -> [(String, String?)] {
-        let lines = [(TextDecorations.underline, "underline"), (.strikethrough, "line-through")]
-            .filter { look.decorations.contains($0.0) }.map(\.1)
         // Given none, a run says none, so it does not take its label's through the cascade.
         let spacing = look.letterSpacingGiven ? signedPixels(look.letterSpacing) : letterSpacing(look.letterSpacing)
         return [("letter-spacing", spacing),
                 ("line-height", look.lineHeight.map(number)),
-                ("text-decoration-line", lines.isEmpty ? nil : lines.joined(separator: " "))]
+                ("text-decoration-line", decorationLines(look.decorations))]
+    }
+
+    /// The lines under or through words as `text-decoration-line` says them; nil for none.
+    static func decorationLines(_ decorations: TextDecorations) -> String? {
+        let lines = [(TextDecorations.underline, "underline"), (.strikethrough, "line-through")]
+            .filter { decorations.contains($0.0) }.map(\.1)
+        return lines.isEmpty ? nil : lines.joined(separator: " ")
     }
 
     /// A color as CSS's `rgb()`; nil for a value that is none.
