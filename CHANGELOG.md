@@ -5,6 +5,20 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ## 0.8.5 - 2026-11-13
 
+### New
+
+- **`stateui`, StateUI's developer tool, begins.** `tools/StateUI.CLI` builds the `stateui` program on macOS, Linux
+  and Windows. `stateui version` says its release, the API it speaks and the machine it runs on - in words, or for a
+  program with `--format json` or `--format jsonl`. `stateui serve --stdio` answers an editor's JSON-RPC over
+  standard input and output: `initialize`, `server/info`, `shutdown` and `exit`, each message read whole. It builds,
+  runs and tests no application yet: until it does, `.scripts` build and run each host as before.
+
+### Tooling
+
+- The release's version stands in the library's `ApplicationInfo.libraryVersion`; the editor extension's
+  `package.json`, the tool's release, the Android heads and the bundles are its copies, which `ReleaseTests` holds.
+- The core workflows on macOS, Linux and Windows run the `stateui` tool's suite.
+
 ## 0.8.4 - 2026-11-10
 
 ### Breaking changes
