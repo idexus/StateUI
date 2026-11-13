@@ -23,18 +23,26 @@ final class LoopbackServer: Sendable {
     static let heldStarted = Atomic<Int>(0)
     static let heldStopped = Atomic<Int>(0)
 
+    #if os(WASI)
     private init?() {
-        #if os(WASI)
         return nil
-        #else
+    }
+    #else
+    /// A server listening on `port` - any the system gives, unsaid - accepting on a thread `start` starts; nil where
+    /// its socket, its binding or its thread fails, nothing it opened left open.
+    init?(port: UInt16 = 0, starting start: (Socket, Work) -> Bool = { LoopbackServer.start(on: $0, $1) }) {
         #if os(Windows)
         var data = WSADATA()
         guard WSAStartup(0x0202, &data) == 0 else { return nil }
         #endif
         let listener = socket(AF_INET, Self.stream, 0)
-        guard Self.isOpen(listener) else { return nil }
+        guard Self.isOpen(listener) else {
+            Self.endSockets()
+            return nil
+        }
         var place = sockaddr_in()
         place.sin_family = .init(AF_INET)
+        place.sin_port = port.bigEndian
         #if os(Windows)
         place.sin_addr.S_un.S_addr = UInt32(0x7F00_0001).bigEndian
         #else
@@ -46,24 +54,23 @@ final class LoopbackServer: Sendable {
                 bind(listener, $0, length) == 0 && listen(listener, 8) == 0 && getsockname(listener, $0, &length) == 0
             }
         }
-        guard bound else {
+        guard bound, start(listener, Self.accepting) else {
             Self.shut(listener)
+            Self.endSockets()
             return nil
         }
         address = "http://127.0.0.1:\(UInt16(bigEndian: place.sin_port))"
-        guard Self.start(on: listener, Self.accepting) else {
-            Self.shut(listener)
-            return nil
-        }
-        #endif
     }
+    #endif
 
     #if !os(WASI)
     #if os(Windows)
-    private typealias Socket = SOCKET
+    typealias Socket = SOCKET
     private static let stream = SOCK_STREAM
     private static func isOpen(_ socket: Socket) -> Bool { socket != INVALID_SOCKET }
     private static func shut(_ socket: Socket) { closesocket(socket) }
+    /// Gives back the use of the sockets a server that failed began.
+    private static func endSockets() { WSACleanup() }
     private static func receive(_ socket: Socket, into buffer: UnsafeMutableRawBufferPointer) -> Int {
         Int(recv(socket, buffer.baseAddress?.assumingMemoryBound(to: CChar.self), Int32(buffer.count), 0))
     }
@@ -76,7 +83,7 @@ final class LoopbackServer: Sendable {
         return WSAPoll(&watched, 1, milliseconds) > 0
     }
     #else
-    private typealias Socket = Int32
+    typealias Socket = Int32
     #if canImport(Glibc)
     private static let stream = Int32(SOCK_STREAM.rawValue)
     #else
@@ -84,6 +91,7 @@ final class LoopbackServer: Sendable {
     #endif
     private static func isOpen(_ socket: Socket) -> Bool { socket >= 0 }
     private static func shut(_ socket: Socket) { close(socket) }
+    private static func endSockets() {}
     private static func receive(_ socket: Socket, into buffer: UnsafeMutableRawBufferPointer) -> Int {
         recv(socket, buffer.baseAddress!, buffer.count, 0)
     }
@@ -105,7 +113,7 @@ final class LoopbackServer: Sendable {
     #endif
 
     /// What a thread runs, handed its socket.
-    private typealias Work = @convention(c) (UnsafeMutableRawPointer?) -> Void
+    typealias Work = @convention(c) (UnsafeMutableRawPointer?) -> Void
 
     /// Accepts connections for as long as the process runs, each answered on a thread of its own.
     private static let accepting: Work = { argument in
@@ -126,7 +134,7 @@ final class LoopbackServer: Sendable {
 
     /// Runs `work` on a thread of its own, handed `socket` - one nobody waits for, so what it took goes as it ends;
     /// false where no thread started, `socket` left to the caller.
-    private static func start(on socket: Socket, _ work: Work) -> Bool {
+    static func start(on socket: Socket, _ work: Work) -> Bool {
         let held = UnsafeMutablePointer<(Socket, Work)>.allocate(capacity: 1)
         held.initialize(to: (socket, work))
         #if os(Windows)
