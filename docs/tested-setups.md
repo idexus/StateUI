@@ -7,7 +7,7 @@ what its hosts need ([Getting started](getting-started.md#requirements)).
 
 ## A Mac: AppKit, UIKit, Android Views, Web
 
-Last verified 2026-11-08; on Swift 6.4.2 since 2026-11-13 - the editor extension's suite (96 checks: AppKit, the UIKit simulator, the Android and Web launches, project groups) and the stateui tool's suites so far.
+Last verified 2026-11-13, on Swift 6.4.2: the core, the host layer, the conformance runner, the application-testing package, the Gallery, HelloWorld and the stateui tool; AppKit's suite (621); UIKit's on the iPhone 18 Pro and the iPad Air 13-inch (M4) simulators (314 and every family); Android's on the Pixel 3a emulator and the CPH2363 (562 each); the editor extension's suite (96). The Web's own suite last on 2026-11-08.
 
 | | |
 | --- | --- |
@@ -74,7 +74,7 @@ It stands for CI, not for a desktop: X11, no portals, no GNOME Shell.
 
 ## A Windows machine: WinUI 3
 
-Last verified 2026-10-05; the editor extension 0.8.5 with the stateui tool on 2026-11-13 (87 checks, both architectures deployed), before Swift moved to 6.4.2 that day.
+Last verified 2026-11-13, on Swift 6.4.2: the host's own tests, 223 of 224 - `testAChoiceOfActionsLetsGoOfItsDialog` lost a race in the whole run and passed alone five times in five; the stateui tool's suites; the editor extension's suite (89: project groups, both architectures deployed and run with no Swift on the search path, F5 on HelloWorldWinUI). The whole conformance run last on 2026-11-12.
 
 | | |
 | --- | --- |
@@ -107,7 +107,7 @@ and x64, started with no Swift on the search path.
 
 ## A Linux machine: GTK 4, Web
 
-Last verified 2026-10-12; the editor extension 0.8.5 with the stateui tool on 2026-11-13 (84 checks, F5 on HelloWorldGTK); on Swift 6.4.2 since that day.
+Last verified 2026-11-13, on Swift 6.4.2: GTK's suite (342) and the stateui tool's suites; the editor extension 0.8.5's suite that day (84, F5 on HelloWorldGTK).
 
 | | |
 | --- | --- |
