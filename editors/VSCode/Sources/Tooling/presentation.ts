@@ -40,17 +40,21 @@ export async function withTool<T>(clients: ToolingClients, folder: string, failu
     try {
         return await body(await clients.for(folder));
     } catch (error) {
-        if (error instanceof ToolRequestError && error.state === "cancelled") {
-            return undefined;
+        if (!(error instanceof ToolRequestError && error.state === "cancelled")) {
+            sayProblem(failure, error);
         }
-        const settings = error instanceof ToolNotFound ? ["Open Settings"] : [];
-        void vscode.window.showErrorMessage(`StateUI: ${failure} - ${problemOf(error)}`, ...settings).then(async (answer) => {
-            if (answer) {
-                await vscode.commands.executeCommand("workbench.action.openSettings", "stateui.cliPath");
-            }
-        });
         return undefined;
     }
+}
+
+/** Says `failure` with why the tool gave no answer - a missing tool with the way to the setting that names it. */
+export function sayProblem(failure: string, error: unknown): void {
+    const settings = error instanceof ToolNotFound ? ["Open Settings"] : [];
+    void vscode.window.showErrorMessage(`StateUI: ${failure} - ${problemOf(error)}`, ...settings).then(async (answer) => {
+        if (answer) {
+            await vscode.commands.executeCommand("workbench.action.openSettings", "stateui.cliPath");
+        }
+    });
 }
 
 /** Operation `method` followed in a notification titled `title` that cancels it, its output written to `output`. */

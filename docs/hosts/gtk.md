@@ -326,8 +326,9 @@ anew: the head, the StateUI libraries it links, and its pictures in
 `Images/`. It lays nothing the system provides - GTK, libadwaita,
 WebKitGTK: the machine that runs the folder has them installed.
 **StateUI: Deploy** in the editor runs it for the application chosen,
-and lays the head in `artifacts/<application>/GTK` of the folder that holds
-the application's `apps/` - a checkout's, or a project group's.
+and lays the head in `artifacts/<application>/GTK` of the application's
+workspace - the folder of the stateui.json listing it, a checkout's or a
+project group's.
 
 ## Testing
 

@@ -92,7 +92,7 @@ every module of the application; `lib/StateUI.Head` brings the
 under `#if ANDROID`. The scripts set it as they call `build-swift.sh`, and
 nothing else: the library itself is built as every host builds it.
 
-A new application made in `apps/` - **StateUI: New Application in apps/**, or
+A new application - **StateUI: New Application**, `stateui new`, or
 `.scripts/new-app.sh` - has an Android head, as HelloWorld does, and runs and
 is debugged as soon as it is made.
 
@@ -381,8 +381,8 @@ named - and lays its APK, `<application>.apk`, in the folder named, made
 anew. The APK is signed as the head's `build.gradle.kts` says: HelloWorld's
 and the Gallery's sign a release with the debug key. **StateUI: Deploy** in
 the editor runs it for the application and the device chosen, and lays the
-APK in `artifacts/<application>/Android` of the folder that holds the
-application's `apps/` - a checkout's, or a project group's.
+APK in `artifacts/<application>/Android` of the application's workspace - the
+folder of the stateui.json listing it, a checkout's or a project group's.
 
 ## Testing
 

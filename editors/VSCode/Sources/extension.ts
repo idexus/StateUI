@@ -8,8 +8,9 @@
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { fileURLToPath } from "url";
 import * as vscode from "vscode";
-import { Application, findApplications, hasHead, keepsApps } from "./applications";
+import { Application, applicationsOf, hasHead, readApplications } from "./applications";
 import { isCheckout } from "./checkouts";
 import { configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
 import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
@@ -19,14 +20,14 @@ import { availableHosts, describe, Host } from "./hosts";
 import { askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceToRunOn, uiKitSimulatorToTestOn } from "./uiKitDevices";
 import { readyWhen, runTask, startTask } from "./tasks";
 import { findSuites, forDevice, runSuites } from "./tests";
-import { checkoutOf, nameProblem } from "./newApplication";
-import { cloneRelease, groupNameProblem, makeProjectGroup, releaseDirectory } from "./projectGroup";
+import { writeEditorFiles } from "./projectGroup";
 import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinstall";
 import { Rebuild, rebuildSteps } from "./conformance";
 import { debuggerFinding, Finding, lldbDapFinding, report } from "./toolchain";
 import { pathToFileUri } from "./Tooling/client";
-import { runOperation, toolingClients, withTool } from "./Tooling/presentation";
-import { Architecture, deployCommand, deployDestination, winUIArchitectures } from "./deploy";
+import { NameKind } from "./Tooling/protocol";
+import { runOperation, sayProblem, toolingClients, withTool } from "./Tooling/presentation";
+import { Architecture, deployCommand, deployDestination, deployFolder, winUIArchitectures } from "./deploy";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
@@ -36,6 +37,8 @@ export interface StateUIApi {
     selectApplication(name: string): Promise<void>;
     /** Chooses the iPhone, iPad or simulator listed by `wanted` - its id or its name - and answers its name. */
     selectUIKitDevice(wanted: string): Promise<string | undefined>;
+    /** The applications the stateui tool found in the workspace's folders. */
+    applications(): readonly Application[];
 }
 
 const hostKey = "stateui.host";
@@ -54,8 +57,31 @@ const heads: Record<Host, string> = {
 export async function activate(context: vscode.ExtensionContext): Promise<StateUIApi> {
     const state = context.workspaceState;
 
-    const applications = (): Application[] =>
-        (vscode.workspace.workspaceFolders ?? []).flatMap((folder) => findApplications(folder.uri.fsPath));
+    // The stateui tool, one connection per folder.
+    const tool = toolingClients(context);
+
+    // What the tool found in each folder: its applications, and the workspace - the folder of a stateui.json -
+    // holding them. Read on activation, and again when a folder, a stateui.json, a manifest or a head comes or goes.
+    let found: { readonly applications: Application[]; readonly workspace?: string }[] = [];
+    let unread = false;
+    const discover = async (): Promise<void> => {
+        const folders = (vscode.workspace.workspaceFolders ?? []).map((each) => each.uri.fsPath);
+        found = await Promise.all(folders.map(async (folder) => {
+            try {
+                const project = await readApplications(await tool.for(folder));
+                unread = false;
+                return { applications: project ? applicationsOf(project) : [], workspace: project?.workspaceUri && fileURLToPath(project.workspaceUri) };
+            } catch (error) {
+                // Said once until a folder is read again: a missing tool would say it on every change.
+                if (!unread) {
+                    unread = true;
+                    sayProblem(`no application of ${folder} was read`, error);
+                }
+                return { applications: [] };
+            }
+        }));
+    };
+    const applications = (): Application[] => found.flatMap((each) => each.applications);
 
     /** The applications that have a head for `host`. */
     const runnable = (host: Host): Application[] => applications().filter((each) => hasHead(each, host));
@@ -103,9 +129,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     const scaffolder = vscode.window.createOutputChannel("StateUI Scaffolder");
     context.subscriptions.push(scaffolder);
 
-    // The stateui tool, one connection per folder.
-    const tool = toolingClients(context);
-
     /** The repository a release is cloned from: the one the extension's manifest names. */
     const repository: string = context.extension.packageJSON.repository.url;
 
@@ -137,20 +160,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return picked;
     };
 
-    /** Asks for the name of an application made in `apps`. */
-    const askApplicationName = (apps: string, title: string): Thenable<string | undefined> => vscode.window.showInputBox({
-        title,
-        prompt: "The application's name: its directory, process and Swift module (<Name>UI).",
-        placeHolder: "MyApp",
-        ignoreFocusOut: true,
-        validateInput: (value) => nameProblem(value) ?? (fs.existsSync(path.join(apps, value)) ? `apps/${value} already exists.` : undefined),
-    });
-
-    /** What went wrong, said with the scaffolder's output, which says why. */
-    const reportFailure = (message: string): void => {
-        scaffolder.show(true);
-        void vscode.window.showErrorMessage(`StateUI: ${message} - the StateUI Scaffolder output says why.`);
-    };
+    /**
+     * Asks for the name of a `kind` made in `parent`, each answer checked by the tool (`name/check`) through the
+     * connection of `folder`, a folder that stands.
+     */
+    const askName = (kind: NameKind, parent: string, folder: string, title: string, prompt: string): Thenable<string | undefined> =>
+        vscode.window.showInputBox({
+            title, prompt, placeHolder: kind === "application" ? "MyApp" : "MyApps", ignoreFocusOut: true,
+            validateInput: async (value) => {
+                try {
+                    const client = await tool.for(folder);
+                    return (await client.request("name/check", { kind, name: value, parentUri: pathToFileUri(parent) })).problem;
+                } catch {
+                    return undefined;
+                }
+            },
+        });
+    const applicationPrompt = "The application's name: its folder, process and Swift module (<Name>UI).";
 
     const refresh = (): void => {
         const chosenHost = host();
@@ -349,7 +375,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         }),
         vscode.commands.registerCommand("stateui.runTests", async () => {
             const folder = vscode.workspace.workspaceFolders?.[0];
-            const suites = folder ? findSuites(folder.uri.fsPath, host()) : [];
+            const suites = folder ? findSuites(folder.uri.fsPath, host(), applications()) : [];
             if (!folder || suites.length === 0) {
                 void vscode.window.showInformationMessage(`StateUI: no test suite here runs as ${runningAs()}.`);
                 return;
@@ -379,38 +405,49 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                     `StateUI: ${failed.length} of ${picked.length} suites failed as ${runningAs()}: ${failed.join(", ")}. Their output is in the terminal.`);
             }
         }),
+        // A new application in a workspace, beside its applications - or at its root where it lists none yet - building
+        // with the library its stateui.json names.
         vscode.commands.registerCommand("stateui.newApplicationInApps", async (given?: { folder?: string; name?: string }) => {
-            const keeping = (vscode.workspace.workspaceFolders ?? []).filter((each) => keepsApps(each.uri.fsPath));
-            const folder = given?.folder ?? (keeping.length > 1
-                ? (await vscode.window.showWorkspaceFolderPick({ placeHolder: "Which folder's apps/ is the application made in?" }))?.uri.fsPath
-                : keeping[0]?.uri.fsPath);
-            if (!folder || !keepsApps(folder)) {
-                void vscode.window.showErrorMessage("StateUI: no folder here keeps applications in apps/ - a StateUI checkout or a project group does.");
+            const folder = given?.folder ?? await (async () => {
+                const workspaces = [...new Set(found.map((each) => each.workspace).filter((each): each is string => each !== undefined))];
+                return workspaces.length > 1
+                    ? (await vscode.window.showQuickPick(workspaces, { placeHolder: "Which workspace is the application made in?" }))
+                    : workspaces[0];
+            })();
+            if (!folder) {
+                void vscode.window.showErrorMessage("StateUI: no folder here is a workspace - a stateui.json lists its applications.");
                 return undefined;
             }
-
-            // The checkout its applications build with; in a group whose apps/ holds none yet, the local one.
-            const checkout = checkoutOf(folder) ?? await localCheckout();
-            if (!checkout) {
+            const project = await withTool(tool, folder, "the workspace was not read", async (client) => readApplications(client, folder));
+            if (!project?.workspaceUri) {
+                if (project) {
+                    void vscode.window.showErrorMessage(`StateUI: ${folder} is no workspace - a stateui.json lists its applications.`);
+                }
                 return undefined;
             }
-            const apps = path.join(folder, "apps");
-            const name = given?.name ?? await askApplicationName(apps, "New Application in apps/");
+            const workspace = fileURLToPath(project.workspaceUri);
+            const beside = [...new Set(applicationsOf(project).map((each) => path.dirname(each.directory)))];
+            const parent = beside.length === 1 ? beside[0] : workspace;
+            const name = given?.name ?? await askName("application", parent, workspace, "New Application", applicationPrompt);
             if (!name) {
                 return undefined;
             }
 
-            const made = await withTool(tool, folder, `${name} was not made`, (client) => runOperation(client, "project/create",
-                { name, parentUri: pathToFileUri(apps), checkoutUri: pathToFileUri(checkout) }, `StateUI: making apps/${name}`, scaffolder));
+            const made = await withTool(tool, workspace, `${name} was not made`, (client) => runOperation(client, "project/create",
+                { name, parentUri: pathToFileUri(parent) }, `StateUI: making ${name}`, scaffolder));
             if (!made) {
                 return undefined;
             }
 
-            // Runnable at once: chosen, and indexed as the host the editor works as.
+            // Runnable at once: found, chosen, and indexed as the host the editor works as.
+            const directory = fileURLToPath(made.createdUris[0]);
+            await discover();
             await selectApplication(name);
+            updateFolderContexts();
             await applyEditorMode(host(), roots());
-            void vscode.window.showInformationMessage(`StateUI: apps/${name} is made and chosen - StateUI: Debug runs it.`);
-            return path.join(apps, name);
+            void vscode.window.showInformationMessage(
+                `StateUI: ${vscode.workspace.asRelativePath(directory)} is made and chosen - StateUI: Debug runs it.`);
+            return directory;
         }),
         vscode.commands.registerCommand("stateui.newProjectGroup", async (given?: {
             location?: string; name?: string; release?: string; checkout?: string; application?: string;
@@ -422,20 +459,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             if (!location) {
                 return undefined;
             }
-            const taken = (value: string): string | undefined =>
-                groupNameProblem(value) ?? (fs.existsSync(path.join(location, value)) ? `${path.join(location, value)} already exists.` : undefined);
-            const name = given?.name ?? await vscode.window.showInputBox({
-                title: "New Project Group",
-                prompt: `The group's folder, made in ${location}: apps/, and what git and the editor need beside it.`,
-                placeHolder: "MyApps",
-                ignoreFocusOut: true,
-                validateInput: taken,
-            });
+            const name = given?.name ?? await askName("workspace", location, location, "New Project Group",
+                `The group's folder, made in ${location}: its stateui.json, the StateUI it builds with, and its applications.`);
             if (!name) {
-                return undefined;
-            }
-            if (taken(name)) {
-                void vscode.window.showErrorMessage(`StateUI: ${taken(name)}`);
                 return undefined;
             }
             const group = path.join(location, name);
@@ -478,48 +504,30 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                     }
                 }
             }
-            if (checkout && !isCheckout(checkout)) {
-                void vscode.window.showErrorMessage(`StateUI: ${checkout} is not a StateUI checkout - it has no .scripts/new-app.sh and apps/HelloWorld.`);
+            const application = given?.application
+                ?? await askName("application", group, location, "New Project Group: its first application", applicationPrompt);
+            if (!application) {
                 return undefined;
             }
 
-            const library = release ? releaseDirectory(group) : checkout;
-            const application = given?.application ?? await askApplicationName(path.join(group, "apps"), "New Project Group: its first application");
-            if (!library || !application) {
-                return undefined;
-            }
-
-            const cloned = await vscode.window.withProgress(
-                { location: vscode.ProgressLocation.Notification, title: `StateUI: making ${name}` },
-                async (progress) => {
-                    makeProjectGroup(group, repository);
-                    if (!release) {
-                        return true;
-                    }
-                    progress.report({ message: `cloning StateUI ${release}` });
-                    const clone = await cloneRelease(repository, release, group);
-                    scaffolder.appendLine(clone.output);
-                    if (!clone.cloned) {
-                        reportFailure(`StateUI ${release} was not cloned into ${group}`);
-                    }
-                    return clone.cloned;
-                });
-            const made = cloned && await withTool(tool, group, `${application} was not made in ${group}`, (client) =>
-                runOperation(client, "project/create", {
-                    name: application, parentUri: pathToFileUri(path.join(group, "apps")), checkoutUri: pathToFileUri(library),
-                }, `StateUI: making apps/${application}`, scaffolder));
+            const made = await withTool(tool, location, `${name} was not made`, (client) => runOperation(client, "workspace/create", {
+                name, parentUri: pathToFileUri(location), application,
+                ...(release ? { release, repository } : { checkoutUri: pathToFileUri(checkout!) }),
+            }, `StateUI: making ${name}`, scaffolder));
             if (!made) {
                 return undefined;
             }
+            const workspace = fileURLToPath(made.workspaceUri);
+            writeEditorFiles(workspace);
 
             void vscode.window.showInformationMessage(
-                `StateUI: ${group} is made, building with ${release ? `StateUI ${release}` : checkout}, and holds apps/${application}.`,
+                `StateUI: ${workspace} is made, building with ${release ? `StateUI ${release}` : checkout}, and holds ${application}.`,
                 "Open", "Open in New Window").then(async (answer) => {
                     if (answer) {
-                        await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(group), { forceNewWindow: answer === "Open in New Window" });
+                        await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(workspace), { forceNewWindow: answer === "Open in New Window" });
                     }
                 });
-            return group;
+            return workspace;
         }),
         vscode.commands.registerCommand("stateui.reinstallExtension", async () => {
             const folder = (vscode.workspace.workspaceFolders ?? []).find((each) => hasExtensionSources(each.uri.fsPath));
@@ -580,7 +588,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 return undefined;
             }
             const application = asked?.application
-                ? findApplications(path.dirname(path.dirname(asked.application))).find((each) => each.directory === asked.application)
+                ? await withTool(tool, asked.application, `${asked.application} was not read`, async (client) => {
+                    const project = await readApplications(client, asked.application);
+                    return project && applicationsOf(project).find((each) => each.directory === asked.application);
+                })
                 : chosen() ?? await askForApplication(forHost);
             if (!application) {
                 return undefined;
@@ -610,7 +621,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             const task = new vscode.Task(
                 { type: "stateui", application: application.name, configuration: "release", device: architecture ?? device ?? forHost },
                 vscode.TaskScope.Workspace, `Deploy ${application.name} (${describe(forHost).label}${architecture ? `, ${architecture}` : ""})`,
-                "StateUI", new vscode.ProcessExecution(step.command, step.args, { cwd: path.dirname(path.dirname(application.directory)) }), []);
+                "StateUI", new vscode.ProcessExecution(step.command, step.args, { cwd: deployFolder(application) }), []);
             task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
             if ((await runTask(task)) !== 0) {
                 void vscode.window.showErrorMessage(`StateUI: ${application.name} was not deployed - the terminal says why.`);
@@ -679,15 +690,41 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             });
     }
 
-    // A checkout's own commands show in a checkout alone; New Application in apps/ in a checkout or a project group.
+    // A checkout's own commands show in a checkout alone; New Application in a workspace.
     const updateFolderContexts = (): void => {
         const folders = (vscode.workspace.workspaceFolders ?? []).map((folder) => folder.uri.fsPath);
         void vscode.commands.executeCommand("setContext", "stateui.hasCheckout", folders.some(isCheckout));
-        void vscode.commands.executeCommand("setContext", "stateui.hasApps", folders.some(keepsApps));
+        void vscode.commands.executeCommand("setContext", "stateui.hasWorkspace", found.some((each) => each.workspace !== undefined));
     };
-    context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(updateFolderContexts));
-    updateFolderContexts();
 
+    // The applications read again, a moment after what makes one comes, goes or changes - never for what a build
+    // writes in .build, which SwiftPM would make the reading wait behind.
+    let pending: NodeJS.Timeout | undefined;
+    const rediscover = (): void => {
+        clearTimeout(pending);
+        pending = setTimeout(async () => {
+            const before = roots().join("\n");
+            await discover();
+            refresh();
+            updateFolderContexts();
+            if (roots().join("\n") !== before) {
+                await applyEditorMode(host(), roots());
+            }
+        }, 500);
+    };
+    const watched = (uri: vscode.Uri): void => {
+        if (!uri.fsPath.split(/[\\/]/).some((part) => part === ".build" || part === "node_modules")) {
+            rediscover();
+        }
+    };
+    for (const pattern of ["**/stateui.json", "**/Package.swift", "**/Platforms/*/main.swift", "**/Platforms/Android/build.gradle.kts"]) {
+        const watcher = vscode.workspace.createFileSystemWatcher(pattern);
+        context.subscriptions.push(watcher, watcher.onDidCreate(watched), watcher.onDidDelete(watched), watcher.onDidChange(watched));
+    }
+    context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(rediscover), { dispose: () => clearTimeout(pending) });
+
+    await discover();
+    updateFolderContexts();
     refresh();
     await applyEditorMode(host(), roots());
 
@@ -697,7 +734,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return name;
     };
 
-    return { host, selectHost, application: () => state.get<string>(applicationKey), selectApplication, selectUIKitDevice };
+    return { host, selectHost, application: () => state.get<string>(applicationKey), selectApplication, selectUIKitDevice, applications };
 }
 
 export function deactivate(): void {}

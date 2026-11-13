@@ -371,7 +371,7 @@ session. Any other browser, and **StateUI: Release**, the script opens itself.
 does, and lays its page in the folder named, made anew: a folder any web
 server serves as it is. **StateUI: Deploy** in the editor runs it for the
 application chosen, and lays the page in `artifacts/<application>/Web` of the
-folder that holds the application's `apps/`.
+application's workspace - the folder of the stateui.json listing it.
 
 ## Testing
 

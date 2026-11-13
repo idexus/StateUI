@@ -7,7 +7,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { findApplications } from "./applications";
+import { Application } from "./applications";
 import { androidScript } from "./devices";
 import { describe, environment, Host } from "./hosts";
 import { uiKitScript } from "./uiKitDevices";
@@ -30,7 +30,8 @@ export interface Suite {
 
 /**
  * The suites under `root` for `host`, in the order they are best run: the
- * library first, the hosts' packages next, the applications, then a device's suite.
+ * library first, the hosts' packages next, `root`'s `applications`, then a
+ * device's suite.
  *
  * - A Swift package with a test target runs with `swift test`. For AppKit an
  *   APPLICATION runs as the host - `STATEUI_HOST=appkit` on `.build/appkit`.
@@ -55,9 +56,9 @@ export interface Suite {
  * - With no host - a machine that runs none - every package but the hosts'
  *   own runs as plain Swift.
  */
-export function findSuites(root: string, host: Host | undefined): Suite[] {
+export function findSuites(root: string, host: Host | undefined, applications: readonly Application[]): Suite[] {
     const suites: Suite[] = [];
-    const applications = new Set(findApplications(root).map((each) => each.directory));
+    const owned = applications.map((each) => each.directory).sort();
     const appKitEnvironment = Object.fromEntries(
         Object.entries(environment("appkit")).filter((entry): entry is [string, string] => entry[1] !== undefined));
 
@@ -65,7 +66,7 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
     // Testing, inside it; a backend has none of its own - its host's tests run it.
     const library = [path.join(root, "lib"), path.join(root, "lib", "StateUI")];
     const grouped = library.flatMap(children);
-    const packages = [root, ...grouped.flatMap((each) => [each, path.join(each, "Testing")]), ...children(path.join(root, "apps"))];
+    const packages = [...new Set([root, ...grouped.flatMap((each) => [each, path.join(each, "Testing")]), ...owned])];
     for (const directory of packages) {
         const manifest = path.join(directory, "Package.swift");
         if (!fs.existsSync(manifest) || !fs.readFileSync(manifest, "utf8").includes(".testTarget(")) {
@@ -96,7 +97,7 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
             });
         } else if (hostPackage && host) {
             suites.push({ label: name, detail: `swift test - the ${describe(host).label} host's own package`, command: "swift", args: base, env: {} });
-        } else if (host === "appkit" && applications.has(directory)) {
+        } else if (host === "appkit" && owned.includes(directory)) {
             suites.push({
                 label: name, detail: "swift test as an AppKit build, on .build/appkit", command: "swift",
                 args: [...base, "--scratch-path", path.join(directory, ".build", "appkit")], env: appKitEnvironment,

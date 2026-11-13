@@ -179,7 +179,7 @@ Then open the repository in VS Code:
    host.
 
 [StateUI for VS Code](docs/editors/VSCode/README.md) covers the extension's
-hosts and commands, including **StateUI: New Application in apps/**.
+hosts and commands, including **StateUI: New Application**.
 
 From a terminal, the same builds and suites are:
 

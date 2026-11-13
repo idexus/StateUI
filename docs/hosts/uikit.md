@@ -99,7 +99,7 @@ manifest reads it, declares its `Platforms/UIKit` head, and defines the
 `lib/StateUI.Head` brings the `StateUIUIKit` host to the head. Swift written for this host alone stands
 under `#if UIKIT`.
 
-A new application made in `apps/` - **StateUI: New Application in apps/**, or
+A new application - **StateUI: New Application**, `stateui new`, or
 `.scripts/new-app.sh` - has a UIKit head, as HelloWorld does.
 
 ## Scenes and windows
@@ -364,8 +364,9 @@ bundle for the device named - a simulator, by its name or UDID, or an iPhone
 or iPad, the bundle then signed for it as `build-app.sh` signs one - and lays
 the bundle, `<App>UIKit.app`, in the folder named, made anew.
 **StateUI: Deploy** in the editor runs it for the application and the device
-chosen, and lays the bundle in `artifacts/<application>/UIKit` of the folder
-that holds the application's `apps/` - a checkout's, or a project group's.
+chosen, and lays the bundle in `artifacts/<application>/UIKit` of the
+application's workspace - the folder of the stateui.json listing it, a
+checkout's or a project group's.
 
 ## Testing
 

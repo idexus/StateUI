@@ -88,9 +88,9 @@
       },
       {
         "command": "stateui.newApplicationInApps",
-        "title": "New Application in apps/",
+        "title": "New Application",
         "category": "StateUI",
-        "enablement": "stateui.hasApps"
+        "enablement": "stateui.hasWorkspace"
       },
       {
         "command": "stateui.reinstallExtension",
@@ -228,7 +228,7 @@
       "commandPalette": [
         {
           "command": "stateui.newApplicationInApps",
-          "when": "stateui.hasApps"
+          "when": "stateui.hasWorkspace"
         },
         {
           "command": "stateui.reinstallExtension",

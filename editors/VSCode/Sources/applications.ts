@@ -1,12 +1,14 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The applications a workspace holds: a StateUI checkout keeps them in apps/,
-// and a workspace may be one itself.
+// The applications the stateui tool finds in a folder (`project/describe`): the nearest application up from it, else
+// the ones its workspace's stateui.json lists.
 
 import * as fs from "fs";
 import * as path from "path";
-import { checkoutNamedBy } from "./checkouts";
+import { fileURLToPath } from "url";
+import { pathToFileUri, ToolingClient, toolingErrorCode, ToolRequestError } from "./Tooling/client";
+import { Project } from "./Tooling/protocol";
 import { Host } from "./hosts";
 
 /** One application, and the heads it has. */
@@ -17,22 +19,11 @@ export interface Application {
     /** The directory holding its Package.swift. */
     readonly directory: string;
 
-    readonly hasAppKitHead: boolean;
+    /** The hosts it has a head for: `Platforms/<Host>/main.swift`, Android's `Platforms/Android/build.gradle.kts`. */
+    readonly hosts: readonly Host[];
 
-    /** Whether it has a UIKit head: `Platforms/UIKit/main.swift`. */
-    readonly hasUIKitHead: boolean;
-
-    /** Whether it has an Android head: the Gradle build in `Platforms/Android`. */
-    readonly hasAndroidHead: boolean;
-
-    /** Whether it has a WinUI head: `Platforms/WinUI/main.swift`. */
-    readonly hasWinUIHead: boolean;
-
-    /** Whether it has a GTK head: `Platforms/GTK/main.swift`. */
-    readonly hasGTKHead: boolean;
-
-    /** Whether it has a Web head: `Platforms/Web/main.swift`. */
-    readonly hasWebHead: boolean;
+    /** The workspace listing it - the folder of its stateui.json - where one does. */
+    readonly workspace?: string;
 
     /**
      * The script that builds the application's AppKit bundle, where it has one
@@ -48,86 +39,45 @@ export interface Application {
     readonly checkout?: string;
 }
 
-/** The applications under `root`, the workspace itself first. */
-export function findApplications(root: string): Application[] {
-    const candidates = [root];
-    const apps = path.join(root, "apps");
-
-    if (isDirectory(apps)) {
-        for (const entry of fs.readdirSync(apps).sort()) {
-            candidates.push(path.join(apps, entry));
-        }
-    }
-
-    return candidates.flatMap((directory) => {
-        const application = describeApplication(root, directory);
-        return application ? [application] : [];
+/** The applications of `project`, as the tool described them. */
+export function applicationsOf(project: Project): Application[] {
+    const workspace = project.workspaceUri && fileURLToPath(project.workspaceUri);
+    return project.applications.map((each) => {
+        const directory = fileURLToPath(each.packageUri);
+        const checkout = each.libraryUri && fileURLToPath(each.libraryUri);
+        return {
+            name: each.name, directory, hosts: each.declaredHosts,
+            workspace, checkout, bundleScript: checkout ? bundlerFor(checkout, directory) : undefined,
+        };
     });
 }
 
+/** The applications in or above `folder` - or its workspace's - by `client`; none where the tool finds none. */
+export async function readApplications(client: ToolingClient, folder?: string): Promise<Project | undefined> {
+    try {
+        return await client.request("project/describe", folder ? { projectUri: pathToFileUri(folder) } : {});
+    } catch (error) {
+        if (error instanceof ToolRequestError && error.code === toolingErrorCode && error.tooling?.code === "PROJECT_NOT_FOUND") {
+            return undefined;
+        }
+        throw error;
+    }
+}
+
 /**
- * The script of `root`'s `.scripts/AppKit` that bundles the application in `directory` - `build-gallery-appkit.sh` -
- * where `directory` is `root`'s own `apps/<Name>` it was written for; none for an application of the same name
+ * The script of `checkout`'s `.scripts/AppKit` that bundles the application in `directory` - `build-gallery-appkit.sh` -
+ * where `directory` is `checkout`'s own `apps/<Name>` it was written for; none for an application of the same name
  * elsewhere.
  */
-export function bundlerFor(root: string, directory: string): string | undefined {
+export function bundlerFor(checkout: string, directory: string): string | undefined {
     const name = path.basename(directory);
-    const script = path.join(root, ".scripts", "AppKit", `build-${name.toLowerCase()}-appkit.sh`);
-    return path.resolve(directory) === path.resolve(root, "apps", name) && fs.existsSync(script) ? script : undefined;
+    const script = path.join(checkout, ".scripts", "AppKit", `build-${name.toLowerCase()}-appkit.sh`);
+    return path.resolve(directory) === path.resolve(checkout, "apps", name) && fs.existsSync(script) ? script : undefined;
 }
-
-function describeApplication(root: string, directory: string): Application | undefined {
-    if (!fs.existsSync(path.join(directory, "Package.swift"))) {
-        return undefined;
-    }
-
-    const hasAppKitHead = fs.existsSync(path.join(directory, "Platforms", "AppKit", "main.swift"));
-    const hasUIKitHead = fs.existsSync(path.join(directory, "Platforms", "UIKit", "main.swift"));
-    const hasAndroidHead = fs.existsSync(path.join(directory, "Platforms", "Android", "build.gradle.kts"));
-    const hasWinUIHead = fs.existsSync(path.join(directory, "Platforms", "WinUI", "main.swift"));
-    const hasGTKHead = fs.existsSync(path.join(directory, "Platforms", "GTK", "main.swift"));
-    const hasWebHead = fs.existsSync(path.join(directory, "Platforms", "Web", "main.swift"));
-
-    if (!hasAppKitHead && !hasUIKitHead && !hasAndroidHead && !hasWinUIHead && !hasGTKHead && !hasWebHead) {
-        return undefined;
-    }
-
-    const name = path.basename(directory);
-
-    return {
-        name,
-        directory,
-        hasAppKitHead,
-        hasUIKitHead,
-        hasAndroidHead,
-        hasWinUIHead,
-        hasGTKHead,
-        hasWebHead,
-        bundleScript: bundlerFor(root, directory),
-        checkout: checkoutNamedBy(directory),
-    };
-}
-
 
 /** Whether `application` has a head for `host`. */
 export function hasHead(application: Application, host: Host): boolean {
-    switch (host) {
-    case "appkit": return application.hasAppKitHead;
-    case "uikit": return application.hasUIKitHead;
-    case "android": return application.hasAndroidHead;
-    case "winui": return application.hasWinUIHead;
-    case "gtk": return application.hasGTKHead;
-    case "web": return application.hasWebHead;
-    }
-}
-
-/** Whether `folder` keeps applications in apps/ - a StateUI checkout, or a project group. */
-export function keepsApps(folder: string): boolean {
-    return isDirectory(path.join(folder, "apps"));
-}
-
-function isDirectory(candidate: string): boolean {
-    return fs.existsSync(candidate) && fs.statSync(candidate).isDirectory();
+    return application.hosts.includes(host);
 }
 
 /** Where an application's AppKit head is, once built in `configuration`. */

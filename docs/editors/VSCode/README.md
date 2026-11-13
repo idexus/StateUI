@@ -76,10 +76,10 @@ The Command Palette offers the rest under **StateUI:**
 | [Select Browser](#the-browser) | the browser a Web head's page opens in |
 | [Select Application](#the-application) | the application F5 runs |
 | [Run Tests](#tests) | the workspace's suites, run as the chosen host |
-| [Deploy](#deploy) | the chosen application built for release and laid, with what it runs with, in `artifacts/<application>/<platform>` - on WinUI per architecture - beside its `apps/` |
+| [Deploy](#deploy) | the chosen application built for release and laid, with what it runs with, in `artifacts/<application>/<platform>` of its workspace - on WinUI per architecture |
 | [Conformance - Rebuild all / changed](#the-conformance-marks) | the chosen host's marks run again - every family, or the stale ones - and the documents rendered |
-| [New Application in apps/](#a-new-application) | a new application in a checkout's or a project group's `apps/`, made by `.scripts/new-app.sh` (`.scripts/new-app.ps1` on Windows) |
-| [New Project Group](#a-project-group) | a folder of applications outside the checkout |
+| [New Application](#a-new-application) | a new application in a workspace, beside its applications, made by the `stateui` tool |
+| [New Project Group](#a-project-group) | a workspace of applications outside the checkout |
 | [Clean Index](#the-index) | removes the language server's index and builds it again |
 | [Check Toolchain](#the-toolchain) | what this machine has of what its hosts need, and what to install for the rest |
 | [Reinstall VS Code Extension](#the-extension-itself) | packs the extension from the checkout and installs it again |
@@ -179,23 +179,31 @@ configuration naming `"application": "Gallery"` runs that one instead.
 
 ## A new application
 
-**StateUI: New Application in apps/** - in a StateUI checkout or a project
-group, asks for a name, and the `stateui` tool makes HelloWorld under that
-name with the checkout the folder's applications build with - its example
-test in `Tests/` included, which **StateUI: Run Tests** runs. A notification
+The extension finds applications through the `stateui` tool: in a folder that
+is an application, that one; else the ones its workspace lists - the nearest
+`stateui.json` up from the folder, which names the applications and the
+StateUI they build with. A StateUI checkout is a workspace of its own
+(`apps/Gallery`, `apps/HelloWorld`), and so is a [project group](#a-project-group).
+An application added, removed or listed there is found again by itself.
+
+**StateUI: New Application** - in a workspace, asks for a name, and the
+`stateui` tool makes HelloWorld under that name beside the workspace's
+applications - at its root where it lists none yet - building with the
+StateUI its `stateui.json` names, and lists it there. Its example test in
+`Tests/` comes with it, which **StateUI: Run Tests** runs. A notification
 follows the making and cancels it. The application is then chosen, so
 **StateUI: Debug** runs it.
 
 A name is letters and digits, starting with a letter: it becomes the
 directory, the process, the package identifier and the Swift module
-(`<Name>UI`).
+(`<Name>UI`). The tool checks it as it is typed.
 
 ## A project group
 
-An application outside the checkout lives in a project group, a folder of its
-own that **StateUI: New Project Group** makes. It asks where to make the group
-and its name, which StateUI its applications build with, and the name of its
-first application:
+An application outside the checkout lives in a project group, a workspace of
+its own that **StateUI: New Project Group** has the `stateui` tool make. It
+asks where to make the group and its name, which StateUI its applications
+build with, and the name of its first application:
 
 - **A release from GitHub** - a release tag, `stateui.minimumRelease` or
   newer, cloned into the group's `StateUI/`.
@@ -204,25 +212,26 @@ first application:
 
 ```text
 MyApps/
+  stateui.json        the applications, and the StateUI they build with
   .gitignore
   .vscode/            StateUI: Debug and StateUI: Release
   StateUI/            the release, left out of git; absent with a local checkout
-  apps/
-    Notes/            HelloWorld renamed; its Package.swift names ../../StateUI
+  Notes/              HelloWorld renamed; its Package.swift names ../StateUI
 ```
 
 Its applications are HelloWorld renamed, and each one's `Package.swift` names
-its StateUI by path: `../../StateUI` for a release, the path from the
+its StateUI by path: `../StateUI` for a release, the path from the
 application to the checkout for a local one. That path is how the extension
 finds the scripts that build and run the application's heads, in that
 StateUI's `.scripts/`; the group copies none of them. **StateUI: New
-Application in apps/** makes the next application there.
+Application** makes the next application beside it, and `stateui workspace
+library` points every application at another StateUI.
 
 `StateUI/` is left out of git. A clone of the group gets it back with the
 command its `.gitignore` names:
 
 ```bash
-git clone --depth 1 --branch <release> https://github.com/idexus/StateUI.git StateUI
+stateui workspace library --release <release>
 ```
 
 | Setting | What it holds |
@@ -261,8 +270,8 @@ failed.
 ## Deploy
 
 **StateUI: Deploy** builds the chosen application for release on the chosen
-host and lays it in `artifacts/<application>/<platform>` of the folder that
-keeps its `apps/` - a project group's, or a checkout's - made anew each time.
+host and lays it in `artifacts/<application>/<platform>` of its workspace - a
+project group's, or a checkout's - made anew each time.
 The host's own `deploy` script of the application's checkout does it:
 
 - **WinUI**: a folder that runs on a Windows machine with nothing installed -

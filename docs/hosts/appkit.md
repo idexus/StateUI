@@ -396,8 +396,9 @@ folder named, made anew: its application bundle, where `.scripts/AppKit`
 holds a bundling script of the application's, else the head, the StateUI
 libraries it links and the application's pictures in `Images/`.
 **StateUI: Deploy** in the editor runs it for the application chosen, and
-lays the head in `artifacts/<application>/AppKit` of the folder that holds
-the application's `apps/` - a checkout's, or a project group's.
+lays the head in `artifacts/<application>/AppKit` of the application's
+workspace - the folder of the stateui.json listing it, a checkout's or a
+project group's.
 
 ## Testing
 

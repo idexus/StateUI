@@ -5,6 +5,21 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ## 0.8.5 - 2026-11-13
 
+### Breaking changes
+
+- **A project group is a workspace.** The VS Code extension finds applications through `stateui`: in a folder that
+  is an application, that one; else the ones the nearest `stateui.json` up lists - and no longer every folder of an
+  `apps/`. **StateUI: New Project Group** makes a workspace: `stateui.json`, the StateUI it builds with, and its first
+  application beside it (`MyApps/Notes`, naming `../StateUI`), and **StateUI: Deploy** lays it in the workspace's
+  `artifacts/`. A group made before lists its applications in a `stateui.json` at its root:
+
+  ```json
+  { "schemaVersion": 1, "library": { "path": "StateUI" }, "projects": ["apps/Notes"] }
+  ```
+
+  `library.path` is the StateUI its applications build with, from the group's folder - `StateUI` for a release
+  cloned into it.
+
 ### New
 
 - **`stateui`, StateUI's developer tool, begins.** `tools/StateUI.CLI` builds the `stateui` program on macOS, Linux
@@ -17,8 +32,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `stateui releases list` lists the releases. `stateui serve --stdio` answers an editor's JSON-RPC over standard input
   and output - the same answers, and the making as operations with events and a cancel. It builds, runs and tests no
   application yet: until it does, `.scripts` build and run each host as before.
-- **The VS Code extension works through `stateui`.** Check Toolchain, New Application in apps/ and a project
-  group's first application and releases ask the tool; the `stateui.cliPath` setting names it where it is not on the
+- **The VS Code extension works through `stateui`.** It finds the applications, checks the toolchain, makes a
+  project group and a new application - **StateUI: New Application**, beside a workspace's applications - and checks
+  their names as they are typed, all by the tool; the `stateui.cliPath` setting names it where it is not on the
   search path. The making shows in a notification that cancels it.
 
 ### Tooling

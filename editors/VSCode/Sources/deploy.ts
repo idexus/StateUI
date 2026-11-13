@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // StateUI: Deploy - an application built for release on a host and laid, with
-// what it runs with, in artifacts/<application>/<platform> of the folder that
-// keeps its apps/: a project group's, or a checkout's. A WinUI head is laid
+// what it runs with, in artifacts/<application>/<platform> of its workspace -
+// the folder of the stateui.json listing it - else of its own folder. A WinUI head is laid
 // per architecture - this machine's own, and on an ARM64 machine x64 too,
 // which Windows runs emulated. The host's own deploy script of the
 // application's checkout builds and lays it.
@@ -21,10 +21,14 @@ export function winUIArchitectures(machine: string = os.arch()): Architecture[] 
     return machine === "arm64" ? ["arm64", "x64"] : ["x64"];
 }
 
-/** Where `application` lands: artifacts/<application>/<platform>[/<architecture>] beside the apps/ holding it. */
+/** The folder `application`'s artifacts/ stands in: its workspace's, else its own. */
+export function deployFolder(application: Application): string {
+    return application.workspace ?? application.directory;
+}
+
+/** Where `application` lands: artifacts/<application>/<platform>[/<architecture>] in its deploy folder. */
 export function deployDestination(application: Application, host: Host, architecture?: Architecture): string {
-    const folder = path.dirname(path.dirname(application.directory));
-    return path.join(folder, "artifacts", application.name, describe(host).label, ...(architecture ? [architecture] : []));
+    return path.join(deployFolder(application), "artifacts", application.name, describe(host).label, ...(architecture ? [architecture] : []));
 }
 
 /**
