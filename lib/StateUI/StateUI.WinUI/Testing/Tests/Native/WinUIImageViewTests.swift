@@ -213,6 +213,46 @@ extension WinUIImageViewTests {
         }
     }
 
+    /// Everything assistive technology meets of an icon - its name, help, automation id, heading level and whether it
+    /// is met at all - stays as it turns into another icon and as its fit alone changes.
+    func testAnIconKeepsAllItsAccessibilityAsItChanges() throws {
+        try onUIThread {
+            let (other, filled) = (State(wrappedValue: false), State(wrappedValue: false))
+            let host = WinUIRenderer.running {
+                VStack {
+                    Image(other.wrappedValue ? .icon(.share) : .icon(.add))
+                        .contentMode(filled.wrappedValue ? .fill : .fit)
+                        .accessibilityLabel("Add")
+                        .accessibilityHint("Adds a row")
+                        .accessibilityIdentifier("add")
+                        .accessibilityHeading(.h2)
+                        .accessibilityPresence(.hidden)
+                    Button("Other").onClicked { other.wrappedValue.toggle() }
+                    Button("Fill").onClicked { filled.wrappedValue.toggle() }
+                }
+            }
+            let image = try XCTUnwrap(host.views(WinUIImageView.self).first)
+            let buttons = host.views(WinUIButtonView.self)
+            @MainActor func said(_ when: String) {
+                let words = image.automationWords
+                let facts = image.automationFacts
+                XCTAssertEqual([words.name, words.help, words.identifier], ["Add", "Adds a row", "add"], when)
+                XCTAssertEqual(facts.heading, 2, when)
+                XCTAssertFalse(facts.isControl || facts.isContent, "met by nobody \(when)")
+            }
+            said("at first")
+
+            buttons[0].invoke()
+            host.settle { Self.held(image, "source") != "glyph:E710" }
+            XCTAssertNotEqual(Self.held(image, "source"), "glyph:E710", "another icon")
+            said("with another icon")
+
+            buttons[1].invoke()
+            host.step()
+            said("as its fit changes")
+        }
+    }
+
     /// What WinUI holds of `view`'s property named `what`, by the relay's reader.
     @MainActor private static func held(_ view: WinUIView, _ what: String) -> String {
         let length = stateui_winui_read(view.handle, what, nil, 0)
