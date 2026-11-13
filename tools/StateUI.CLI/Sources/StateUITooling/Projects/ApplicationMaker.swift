@@ -55,8 +55,7 @@ public struct ApplicationMaker: Sendable {
             let source = model.appendingPathComponent(entry)
             let target = copy.appendingPathComponent(entry.replacingOccurrences(of: "HelloWorld", with: name))
             var isFolder: ObjCBool = false
-            files.fileExists(atPath: source.path, isDirectory: &isFolder)
-            if isFolder.boolValue {
+            if files.fileExists(atPath: source.path, isDirectory: &isFolder), isFolder.boolValue {
                 try self.copy(source, to: target, naming: name)
             } else {
                 let contents = try Data(contentsOf: source)

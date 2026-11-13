@@ -23,8 +23,8 @@ final class ApplicationMakerTests: XCTestCase {
         return entries.filter { !$0.hasPrefix(".") }.flatMap { entry -> [String] in
             let relative = path.isEmpty ? entry : path + "/" + entry
             var isFolder: ObjCBool = false
-            FileManager.default.fileExists(atPath: root.appendingPathComponent(relative).path, isDirectory: &isFolder)
-            return isFolder.boolValue ? files(under: root, at: relative) : [relative]
+            let exists = FileManager.default.fileExists(atPath: root.appendingPathComponent(relative).path, isDirectory: &isFolder)
+            return exists && isFolder.boolValue ? files(under: root, at: relative) : [relative]
         }.sorted()
     }
 

@@ -41,8 +41,7 @@ enum GitFixture {
         try files.createDirectory(at: target, withIntermediateDirectories: true)
         for entry in try files.contentsOfDirectory(atPath: source.path) where !entry.hasPrefix(".") {
             var isFolder: ObjCBool = false
-            files.fileExists(atPath: source.appendingPathComponent(entry).path, isDirectory: &isFolder)
-            if isFolder.boolValue {
+            if files.fileExists(atPath: source.appendingPathComponent(entry).path, isDirectory: &isFolder), isFolder.boolValue {
                 try copy(source.appendingPathComponent(entry), to: target.appendingPathComponent(entry))
             } else {
                 try files.copyItem(at: source.appendingPathComponent(entry), to: target.appendingPathComponent(entry))
