@@ -3,6 +3,8 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
+## 0.8.5 - 2026-11-13
+
 ## 0.8.4 - 2026-11-10
 
 ### Fixed
