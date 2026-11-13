@@ -21,3 +21,5 @@ writes its result as words or as the message an editor receives.
   everything it started, how its output is read.
 - [The command line](command-line.md): what standard output holds and the
   statuses the tool ends with.
+- [The protocol](protocol.md): the frames and messages an editor and the
+  tool exchange.
