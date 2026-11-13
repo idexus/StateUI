@@ -96,3 +96,36 @@ lists the new application.
 On macOS `URL.resolvingSymlinksInPath` leaves `/private` off a temporary
 folder's path while SwiftPM keeps it, so a path from it would climb one folder
 short; real paths come from `realpath` (`RealPath`).
+
+## A new workspace
+
+`stateui workspace create <name>` makes a workspace's folder - its name letters,
+digits, dots, hyphens and underscores, as every build tool takes a path - with
+its `stateui.json`, a `.gitignore` for what builds and tools write, and the
+library: a checkout on this machine, named by the path from the workspace, or
+a release cloned into the workspace's `StateUI/`, which Git then leaves out.
+Like an application, it is written beside its place and moved into it whole. A
+first application made with it is listed at once.
+
+`stateui workspace library` makes another checkout or release the library: each
+listed application's manifest names it by the path from the application - the
+`.package(name: "StateUIRoot", path: ...)` line and the packages under it -
+then the file does. Every manifest is read before any is written; one naming
+its checkout in another form is refused by its file, and nothing changes. A
+release replaces the workspace's clone only where the clone holds no changes of
+its own.
+
+The paths stay in each manifest because SwiftPM caches a manifest by its own
+text: a manifest reading `stateui.json` would go on resolving the checkout it
+read before. The workspace file declares the library; the tool writes the
+manifests from it.
+
+## A release
+
+A release is a tag of three numbers on StateUI's repository - `stateui releases
+list` reads them with `git ls-remote`, newest first - cloned at its tag with its
+tree alone. The tool builds with 0.5.0 and newer: the first release whose
+checkout holds the library's heads and HelloWorld. An older one is refused
+before anything is cloned. A release is cloned, not named by URL, since SwiftPM
+cannot depend on a package in a subfolder of a remote repository, as a head's
+host and the testing package stand.

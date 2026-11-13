@@ -29,8 +29,11 @@
           "operation/get",
           "project/create",
           "project/describe",
+          "releases/list",
           "server/info",
-          "toolchain/check"
+          "toolchain/check",
+          "workspace/create",
+          "workspace/useLibrary"
         ],
         "notifications" : [
           "operation/event"

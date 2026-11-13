@@ -114,6 +114,23 @@ final class ProtocolExamplesTests: XCTestCase {
                 ("request", try request("8", "operation/cancel", OperationReference(operationId: operation))),
                 ("response", try response("8", CancelResult(accepted: false, state: .succeeded))),
             ], answeredAsWritten: false),
+            Example(name: "releases-list", messages: [
+                ("request", try request("9", "releases/list", ReleaseQuery(minimum: "0.8.0"))),
+                ("response", try response("9", ReleaseList(repository: Release.repository, releases: ["0.8.5", "0.8.4", "0.8.0"]))),
+            ], answeredAsWritten: false),
+            Example(name: "workspace-create", messages: [
+                ("request", try request("10", "workspace/create", Mutation(
+                    requestToken: "0b6f2c8e-3d1a-4f5b-8c7e-9a2d4b6c8e10",
+                    request: WorkspaceRequest(name: "Demo", parentUri: "file:///Users/example/Projects", release: "0.8.5",
+                                              application: "Notes")))),
+                ("response", try response("10", OperationHandle(operationId: operation, state: .queued))),
+            ], answeredAsWritten: false),
+            Example(name: "workspace-useLibrary", messages: [
+                ("request", try request("11", "workspace/useLibrary", Mutation(
+                    requestToken: "7c3e1a9b-5f2d-4e8c-a6b4-1d3f5a7c9e20",
+                    request: LibraryRequest(workspaceUri: demo, checkoutUri: "file:///Users/example/StateUI")))),
+                ("response", try response("11", OperationHandle(operationId: operation, state: .queued))),
+            ], answeredAsWritten: false),
             Example(name: "shutdown", messages: [
                 ("request", .object(["jsonrpc": .string("2.0"), "id": .string("3"), "method": .string("shutdown")])),
                 ("response", try JSONValue(encoding: OutgoingMessage.response(id: .string("3"), outcome: .result(.null)))),

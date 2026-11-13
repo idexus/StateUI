@@ -25,6 +25,8 @@ public struct ToolingErrorCode: RawRepresentable, Codable, Hashable, Sendable {
     public static let invalidName = ToolingErrorCode(rawValue: "INVALID_NAME")
     /// What the request would make stands already.
     public static let alreadyExists = ToolingErrorCode(rawValue: "ALREADY_EXISTS")
+    /// A library the request names cannot be built with: too old, or no StateUI checkout.
+    public static let incompatibleLibrary = ToolingErrorCode(rawValue: "INCOMPATIBLE_LIBRARY")
     /// A program the tool runs - a compiler, a package manager - failed.
     public static let toolFailed = ToolingErrorCode(rawValue: "TOOL_FAILED")
     /// A program the tool needs cannot be found.

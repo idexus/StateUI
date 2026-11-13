@@ -13,7 +13,8 @@ struct StateUICommand: AsyncParsableCommand {
         abstract: "StateUI's developer tool.",
         version: Release.version,
         subcommands: [
-            DoctorCommand.self, NewCommand.self, ProjectCommand.self, ServeCommand.self, VersionCommand.self,
+            DoctorCommand.self, NewCommand.self, ProjectCommand.self, ReleasesCommand.self, ServeCommand.self,
+            VersionCommand.self, WorkspaceCommand.self,
         ]
     )
 

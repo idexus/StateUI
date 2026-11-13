@@ -42,6 +42,76 @@ public struct ToolingService: Sendable {
         return ProjectCreation(project: project, createdUris: created)
     }
 
+    /// The releases of `repository` from `minimum`, newest first - `releases/list`.
+    public func listReleases(of repository: String?, from minimum: String?) async throws -> ReleaseList {
+        let repository = repository ?? Release.repository
+        let releases = try await ReleaseCatalog().releases(of: repository, from: minimum ?? Release.oldestUsable)
+        return ReleaseList(repository: repository, releases: releases)
+    }
+
+    /// Makes workspace `name` in `parent`, building with `checkout` or `release`, with a first `application` -
+    /// `workspace/create`.
+    public func createWorkspace(
+        _ name: String, in parent: URL, checkout: URL?, release: String?, repository: String?, application: String?
+    ) async throws -> WorkspaceChange {
+        try await WorkspaceMaker().make(
+            name, in: parent, library: try Self.library(checkout, release, repository), application: application)
+    }
+
+    /// Makes `checkout` or `release` the library of the workspace `folder` stands in, rewriting its applications'
+    /// manifests - `workspace/useLibrary`.
+    public func useLibrary(in folder: URL, checkout: URL?, release: String?, repository: String?) async throws -> WorkspaceChange {
+        guard var workspace = try Workspace.nearest(from: folder) else {
+            throw ToolingError(.projectNotFound, "No stateui.json stands in or above \(folder.path).")
+        }
+        let library: URL
+        switch try Self.library(checkout, release, repository) {
+        case .checkout(let named):
+            guard Checkout(at: named) != nil else {
+                throw ToolingError(.projectNotFound, "No StateUI checkout stands at \(named.path).")
+            }
+            library = named
+        case .release(let release, let repository):
+            library = try await Self.replaceClone(in: workspace.folder, with: release, of: repository)
+        }
+        let rewritten = try workspace.use(library)
+        return WorkspaceChange(
+            workspaceUri: FileURI.string(workspace.folder), library: workspace.file.library?.path ?? "",
+            changedUris: rewritten.map(FileURI.string))
+    }
+
+    private static func library(_ checkout: URL?, _ release: String?, _ repository: String?) throws -> WorkspaceMaker.Library {
+        switch (checkout, release) {
+        case (let checkout?, nil): return .checkout(checkout)
+        case (nil, let release?): return .release(release, repository: repository ?? Release.repository)
+        default: throw ToolingError(.invalidConfiguration, "Name one library: a checkout or a release.")
+        }
+    }
+
+    /// Clones `release` into `workspace`'s `StateUI/`, in place of a clone there with no changes of its own.
+    private static func replaceClone(in workspace: URL, with release: String, of repository: String) async throws -> URL {
+        let files = FileManager.default
+        let clone = workspace.appendingPathComponent("StateUI")
+        let staging = workspace.appendingPathComponent(".StateUI.stateui-new-\(UUID().uuidString.lowercased())")
+        if files.fileExists(atPath: clone.path) {
+            let changes = Gathered()
+            let status = ProcessRequest(ToolResolver().git, arguments: ["-C", clone.path, "status", "--porcelain"])
+            let outcome = try? await ProcessRunner().run(status, output: changes.add)
+            guard outcome?.succeeded == true, changes.lines(of: .standardOutput).isEmpty else {
+                throw ToolingError(.alreadyExists, "\(clone.path) holds changes of its own; it is left as it is.")
+            }
+        }
+        do {
+            _ = try await ReleaseCatalog().clone(release, of: repository, into: staging)
+            if files.fileExists(atPath: clone.path) { try files.removeItem(at: clone) }
+            try files.moveItem(at: staging, to: clone)
+        } catch {
+            try? files.removeItem(at: staging)
+            throw error
+        }
+        return clone
+    }
+
     /// What this machine has of every component it needs - `toolchain/check`.
     public func checkToolchain() async -> ToolchainReport {
         await Doctor().check()
@@ -52,6 +122,22 @@ public struct ToolingService: Sendable {
         var methods = Methods()
         methods.query("server/info") { (_: NoParameters) in serverInfo() }
         methods.query("toolchain/check") { (_: NoParameters) in await checkToolchain() }
+        methods.query("releases/list") { (query: ReleaseQuery) in
+            try await listReleases(of: query.repository, from: query.minimum)
+        }
+        methods.mutation("workspace/create") { (request: WorkspaceRequest, _: OperationContext) in
+            try await createWorkspace(
+                request.name, in: try FileURI.url(request.parentUri), checkout: try request.checkoutUri.map(FileURI.url),
+                release: request.release, repository: request.repository, application: request.application)
+        }
+        methods.mutation("workspace/useLibrary") { (request: LibraryRequest, _: OperationContext) in
+            guard let uri = request.workspaceUri else {
+                throw ToolingError(.projectNotFound, "No workspace is named.")
+            }
+            return try await useLibrary(
+                in: try FileURI.url(uri), checkout: try request.checkoutUri.map(FileURI.url), release: request.release,
+                repository: request.repository)
+        }
         methods.mutation("project/create") { (request: ApplicationRequest, _: OperationContext) in
             try await createApplication(
                 request.name, in: try FileURI.url(request.parentUri), from: try request.checkoutUri.map(FileURI.url))
