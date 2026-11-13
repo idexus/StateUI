@@ -38,6 +38,8 @@ final class DocumentLinksTests: XCTestCase {
         let control = Self.missingPlaces(in: ["a.md": "# Title\n## The `look` - again\n[here](#title) [gone](#nope)"
             + " [there](#the-look---again)"])
         XCTAssertEqual(control, ["a.md: #nope"], "the check finds a place broken on purpose, and only it")
+        XCTAssertEqual(Self.anchors(in: "# Foo\n# Foo-1\n# Foo\n# Foo"), ["foo", "foo-1", "foo-2", "foo-3"],
+                       "a repeated heading numbered past every anchor already given, its own number included")
 
         let root = SourceTree.repository
         let documents = try SourceTree.files(under: root, entering: { relative in
@@ -77,9 +79,11 @@ final class DocumentLinksTests: XCTestCase {
     }
 
     /// The anchors a page offers: GitHub's for its headings outside code blocks - lowercase, punctuation dropped,
-    /// each space a hyphen, a repeated one numbered from 1 - and those it names itself (`id="…"`, `name="…"`).
+    /// each space a hyphen, a repeated one numbered from 1 past every anchor a heading was given already - and those
+    /// it names itself (`id="…"`, `name="…"`).
     static func anchors(in text: String) -> Set<String> {
         var found: Set<String> = []
+        // Every anchor a heading was given, and how far each was numbered as a heading of its words repeated.
         var counts: [String: Int] = [:]
         var fenced = false
         for line in text.split(separator: "\n", omittingEmptySubsequences: false) {
@@ -95,9 +99,13 @@ final class DocumentLinksTests: XCTestCase {
                 if character == " " { return "-" }
                 return character.isLetter || character.isNumber || character == "-" || character == "_" ? character : nil
             })
-            let seen = counts[slug, default: 0]
-            counts[slug] = seen + 1
-            found.insert(seen == 0 ? slug : "\(slug)-\(seen)")
+            var given = slug
+            while counts[given] != nil {
+                counts[slug, default: 0] += 1
+                given = "\(slug)-\(counts[slug, default: 0])"
+            }
+            counts[given] = 0
+            found.insert(given)
         }
         return found
     }
