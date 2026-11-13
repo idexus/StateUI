@@ -369,7 +369,9 @@ the host layer, the conformance runner and the application-testing package,
 and the Gallery and HelloWorld), and one for each host - **AppKit**, **UIKit**
 (an iPhone and an iPad simulator),
 **Android** (the test APK built on macOS, run on a Linux emulator), **WinUI**,
-**GTK** and **Web**. **Core macOS** runs the core, the host layer, the
+**GTK** and **Web** - and **stateui tool** (`cli.yml`), the tool's suites on
+macOS, Linux and Windows with the editor extension's client of it. **Core
+macOS** runs the core, the host layer, the
 conformance runner and the application-testing package once more under
 Thread Sanitizer, where a race it sees fails the run -
 `swift test --sanitize=thread` on a Mac; on Linux the

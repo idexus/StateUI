@@ -25,7 +25,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 - The release's version stands in the library's `ApplicationInfo.libraryVersion`; the editor extension's
   `package.json`, the tool's release, the Android heads and the bundles are its copies, which `ReleaseTests` holds.
-- The core workflows on macOS, Linux and Windows run the `stateui` tool's suite.
+- The `stateui` tool has a workflow of its own (`cli.yml`): its suites on macOS, Linux and Windows, then the editor
+  extension's client of it against a real `stateui serve --stdio`.
 
 ## 0.8.4 - 2026-11-10
 

@@ -1,7 +1,7 @@
 # The core's suites on macOS - the library, the host layer, the conformance
-# runner, the application-testing package and the stateui tool - the host
-# layer's benchmarks built for release, and the Gallery's and starter
-# application's. Each host's own suite runs in a workflow of its own.
+# runner and the application-testing package - the host layer's benchmarks
+# built for release, and the Gallery's and starter application's. Each host's
+# own suite runs in a workflow of its own, the stateui tool's in cli.yml.
 
 name: Core macOS
 
@@ -39,8 +39,6 @@ jobs:
         run: swift test --package-path lib/StateUI/StateUI.Conformance
       - name: Test StateUI.Testing
         run: swift test --package-path lib/StateUI/StateUI.Testing
-      - name: Test the stateui tool
-        run: swift test --package-path tools/StateUI.CLI
 
   # The same suites under Thread Sanitizer: a race it sees fails the run. On
   # macOS, whose locks it understands; on Linux a `Mutex` is a futex it cannot
