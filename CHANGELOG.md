@@ -7,21 +7,59 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ## 0.8.4 - 2026-11-10
 
+### Breaking changes
+
+- **A split view stands at a window's or a sheet's root.** A `SplitView` is the root of a window or of a sheet; on a
+  stack's page, in a tab or in another split view's detail it is left out, and said so as a complaint. It has no
+  title or icon of its own: `.pageTitle(_:)` and `.pageIcon(_:)` written on a split view, or on a view whose body is
+  one, are said and left out, where a stack takes them and its pages keep their own. Host authors:
+  `PageElementContract.linkOpened` is `OpenedLinkElementContract.linkOpened`, which a page and a split view wear.
+
 ### Fixed
+
+- State: a report through a conversion asks its sources, as every road a value comes in by does - a value a source
+  refuses, such as a window's value another window holds, lands nowhere and the control goes back to it; a report
+  into two sources refusing together lands whole or not at all; a refusal two links up a chain lands on no link; and
+  a report that does not land leaves every journey whole and publishes nothing it took back. Two views named alike
+  under two parents keep a conversion each, and an environment value stands where it is placed. A host event passes
+  the gate, and an engine runs at the priority, the last render wrote; a reading booked for its window's end goes
+  with its element.
 
 - Numbers: a number past what a toolkit counts no longer ends the process - a tab chosen past `Int`'s reach on GTK,
   iOS and Windows, a window asked a size or a place past what the Mac and Windows count, and on GTK a canvas's words
   or a text editor wider than the toolkit measures; on Windows such a window no longer falls to its least size.
+  A spring of any response and damping - in a motion or a layout's body - stays a number and lands by the longest
+  a spring animates, however far it goes and however fast it sets out; an arc of any radii draws numbers, the long
+  way round a far-radii arc its ellipse; a row of dots holds any position, a held card stands over any rank, and a
+  run let go far past its axis approaches its target in numbers. A cadence held back past twenty-four days holds on
+  a 32-bit `Int`, and on the Web a wait that long is asked for in parts; on the Web a day of the first century
+  reads its own time zone's offset. A path ending on a bare command is refused whole.
 - Pages and menus: a popover larger than the screen stands within it on the Mac; a context menu open as its view goes
-  closes with it on Android and the Web.
+  closes with it on Android and the Web. A split view's sidebar out of sight reaches no shortcut. On the Web a menu
+  open under a bar goes with what it stands for - its item, its page, a page joining only the Edit menu. On the Mac a
+  disabled split button opens no menu, and a menu on the bar at the page's foot opens - a held one keeping its
+  click - as on the window's bar; on iOS a disabled split button's arrow opens no menu and is heard dimmed, and what
+  comes after a share sheet stands. On Android a sheet follows its window across 600 points; on Windows a choice of
+  actions lets go of its dialog. A window's act asks over the window its page stands in.
 - Input: on Windows a press whose view went mid-press no longer keeps the mouse from every other view, and a view
   whose drag is offered again hears each drop once; on the Web a view let go of while pressed leaves nothing
   listening on the page, and a view that stops hearing a drag gives the page its touch and its selection back.
+  A view fading out answers no press on every host, and a disabled view offers no pull to refresh; on Android a view
+  scaled to nothing takes no touch. On Android, GTK and Windows a pan says where it is in the view's own points. On
+  the Mac a drag lets go of a target that leaves and finds one that came under it; on iOS a pinch or a rotation the
+  system takes away ends cancelled. A selection reads back in characters, and a prompt's bound counts whole
+  characters on the Mac and GTK. On the Web a late paste lands in no other field, and a field that left is held by
+  no Edit menu.
 - Text: on the Web a text's words are selected only where the application says so; on Windows a text editor that
-  does not grow stands a whole line tall at every scale, with no scroll bar over its one line.
+  does not grow stands a whole line tall at every scale, with no scroll bar over its one line. A run given no space
+  between its letters or no lines stands so in a label that gives them; on the Web a text's lines reach its runs on
+  every frame, and a run takes no line it does not say. Kept words and a window's values read back whole whatever
+  follows an escape - a combining mark, a joiner. A POSIX suffix alone is no language tag.
 - Controls: on the Web a button given the ordinary role (`.normal`) no longer ends the application; a disabled picker
   offered as segments or radio buttons keeps the values it offers later disabled, and a picture changed to one the
-  application does not have takes no room.
+  application does not have takes no room. On Android a read-only password keeps its weight, a bar given no
+  foreground takes the theme's again, and radio buttons and segments keep the look they are given; on GTK a stepper
+  follows a state's journey; on Windows an icon keeps its words for assistive technology as it changes.
 - Layout: on the Web a list turned into a row keeps each item scrolled away at the width it took, a view freed of
   its area in a layered stack fills the room again, and a list that becomes the page's scroller as a view beside it
   goes keeps its last items clear of the bar at the foot. The bars over and under a page no longer listen again to a
@@ -30,16 +68,23 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   its entry comes, on Windows, GTK and Android alike, and a Windows list is no longer measured before it stands
   anywhere. On Windows at 125% a layout no longer runs for ever and ends the application - wrapped words given
   their own width back keep their line - and a layout WinUI gives up on is said as a complaint while the
-  application goes on.
+  application goes on. A child stating no width is measured at the width it is placed at, and a list showing no
+  item reaches no end. On iOS a page stands clear of the keyboard, and on the Web a phone's keyboard stands in the
+  safe area; on the Web a view in a layered stack stands in its area as in any slot, and a child filling its slot
+  stops at its most.
 - Drawing: a gradient's stops stand at their own offsets whatever order they are written in, on every platform; on
-  Windows a path's curve after a close begins a figure of its own.
+  Windows a path's curve after a close begins a figure of its own. A pushed page's gradient is drawn across the whole
+  page on the Mac and iOS; on the Web a blur goes with the look that said it.
 - Accessibility: on iOS, under VoiceOver, a color picker and a switch say what the application says of them - name,
   kind, value, whether VoiceOver meets them - where UIKit's own words stood; on the Web words made at run time and
   told to the screen reader are said as asked, a list the user chooses in names its items options, and a shortcut on
   the plus key is named as assistive technology reads it. On Windows assistive technology choosing a segment or a tab
   of a row that has left no longer stops the application answering.
-- Hosts: on GTK a popover waiting for its hidden anchor and the frame clock hold what they use; Windows keeps no
-  record of what an application told the screen reader or launched.
+- Hosts: on GTK a popover waiting for its hidden anchor, the frame clock and a press hold what they use; Windows keeps
+  no record of what an application told the screen reader or launched, and a password field swapped in lets the
+  control before it go.
+- Testing: a test window acts only as its user can - a slider's thumb stops at its ends, a value that is no number
+  slides nothing, and a switch's or a field's act is no label's.
 - Pictures: on the Mac and iOS a picture larger than the whole budget of pictures kept no longer pushes every other
   one out, and what is kept follows that budget alone until the system says memory runs short.
 - Gallery: on the Web the Map sample makes Google's map once and hands it on, as Google asks maps to be reused, so
