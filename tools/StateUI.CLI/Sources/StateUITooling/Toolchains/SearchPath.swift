@@ -25,9 +25,19 @@ public struct SearchPath: Sendable {
         for folder in path.split(separator: separator) where !folder.isEmpty {
             for suffix in extensions {
                 let candidate = URL(fileURLWithPath: String(folder)).appendingPathComponent(name + suffix)
-                if FileManager.default.isExecutableFile(atPath: candidate.path) { return candidate }
+                if Self.isProgram(candidate) { return candidate }
             }
         }
         return nil
+    }
+
+    /// Whether `file` is a program: on Windows a file of a program's extension, elsewhere one marked executable.
+    private static func isProgram(_ file: URL) -> Bool {
+        #if os(Windows)
+        var isFolder: ObjCBool = false
+        return FileManager.default.fileExists(atPath: file.path, isDirectory: &isFolder) && !isFolder.boolValue
+        #else
+        return FileManager.default.isExecutableFile(atPath: file.path)
+        #endif
     }
 }

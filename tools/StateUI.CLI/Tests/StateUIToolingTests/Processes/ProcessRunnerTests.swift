@@ -50,8 +50,8 @@ final class ProcessRunnerTests: XCTestCase {
 
     /// The program inherits this tool's environment, less what the request removes, with what it sets.
     func testTheEnvironmentIsInheritedLessWhatIsRemovedWithWhatIsSet() async throws {
-        setEnvironment("STATEUI_CLI_TEST_INHERITED", "kept")
-        setEnvironment("STATEUI_CLI_TEST_REMOVED", "appkit")
+        TestEnvironment.set("STATEUI_CLI_TEST_INHERITED", "kept")
+        TestEnvironment.set("STATEUI_CLI_TEST_REMOVED", "appkit")
         var request = Probe.request(
             "environment", "STATEUI_CLI_TEST_INHERITED", "STATEUI_CLI_TEST_REMOVED", "STATEUI_CLI_TEST_SET")
         request.environment = ProcessEnvironment.inherited
@@ -210,11 +210,4 @@ final class ProcessRunnerTests: XCTestCase {
     }
     #endif
 
-    private func setEnvironment(_ name: String, _ value: String) {
-        #if os(Windows)
-        _putenv_s(name, value)
-        #else
-        setenv(name, value, 1)
-        #endif
-    }
 }

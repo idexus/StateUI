@@ -26,7 +26,8 @@ public struct ProjectReader: Sendable {
             let packages = Self.applicationFolders(in: folder)
             if !packages.isEmpty { return try await describe(root: folder, packages: packages) }
             let parent = folder.deletingLastPathComponent().standardizedFileURL
-            if parent.path == folder.path {
+            let (above, here) = (parent.pathComponents, folder.pathComponents)
+            if above.count >= here.count || Array(here.prefix(above.count)) != above {
                 throw ToolingError(.projectNotFound, "No StateUI application stands in or above \(path.path).")
             }
             folder = parent

@@ -24,7 +24,12 @@ enum Interruption {
     static func run(_ body: sending @escaping () async throws -> Void) async throws {
         let task = Task { try await body() }
         work.withLock { $0 = task }
+        #if os(Windows)
         listen()
+        #else
+        let signals = listen()
+        defer { signals.cancel() }
+        #endif
         do {
             try await task.value
         } catch is CancellationError where task.isCancelled {
@@ -56,14 +61,13 @@ enum Interruption {
         }, true)
     }
     #else
-    private static let source = Mutex<(any DispatchSourceSignal)?>(nil)
-
-    private static func listen() {
+    /// The terminal's interrupt, heard while the source returned lives.
+    private static func listen() -> any DispatchSourceSignal {
         signal(SIGINT, SIG_IGN)
         let signals = DispatchSource.makeSignalSource(signal: SIGINT, queue: DispatchQueue(label: "stateui interrupt"))
         signals.setEventHandler { interrupted() }
         signals.resume()
-        source.withLock { $0 = signals }
+        return signals
     }
     #endif
 }

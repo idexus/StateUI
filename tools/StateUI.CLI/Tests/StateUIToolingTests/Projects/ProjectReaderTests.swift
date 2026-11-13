@@ -5,11 +5,6 @@ import Foundation
 @testable import StateUITooling
 import StateUIToolingProtocol
 import XCTest
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Glibc)
-import Glibc
-#endif
 
 final class ProjectReaderTests: XCTestCase {
     /// The StateUI repository this test stands in.
@@ -29,7 +24,7 @@ final class ProjectReaderTests: XCTestCase {
     }
 
     /// A StateUI checkout is a project of its applications - each with its heads, products and tests - building with
-    /// the checkout itself, whose release is the library's.
+    /// the checkout itself, whose release is the library's, and whose commit Git says where it is a working tree.
     func testACheckoutIsAProjectOfItsApplications() async throws {
         let project = try await ProjectReader().describe(containing: Self.repository)
 
@@ -43,7 +38,8 @@ final class ProjectReaderTests: XCTestCase {
         XCTAssertEqual(hello.libraryUri, project.rootUri)
         XCTAssertEqual(project.libraries.map(\.rootUri), [project.rootUri])
         XCTAssertEqual(project.libraries.first?.release, Release.version)
-        XCTAssertEqual(project.libraries.first?.revision?.count, 40)
+        let isWorkingTree = FileManager.default.fileExists(atPath: Self.repository.appendingPathComponent(".git").path)
+        XCTAssertEqual(project.libraries.first?.revision?.count, isWorkingTree ? 40 : nil)
     }
 
     /// The project is the nearest folder up that holds an application: inside an application, the application.
@@ -57,8 +53,8 @@ final class ProjectReaderTests: XCTestCase {
 
     /// A host this tool inherited reaches no description: SwiftPM reads the package without one.
     func testAnInheritedHostChangesNoDescription() async throws {
-        setenv("STATEUI_HOST", "appkit", 1)
-        defer { unsetenv("STATEUI_HOST") }
+        TestEnvironment.set("STATEUI_HOST", "appkit")
+        defer { TestEnvironment.set("STATEUI_HOST", nil) }
         let project = try await ProjectReader().describe(containing: Self.repository.appendingPathComponent("apps/HelloWorld"))
 
         XCTAssertEqual(project.applications.first?.products, ["HelloWorldUI"])
