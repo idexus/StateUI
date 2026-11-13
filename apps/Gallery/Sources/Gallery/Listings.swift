@@ -5812,8 +5812,8 @@ enum Listings {
         var body: some View {
             // The same two layers inside a subtree worth describing: `leaves`
             // little views, plus the counter. Each side times its OWN describe -
-            // the clock is read at the top of the closure and again at the
-            // bottom - so the number is what describing it cost.
+            // the clock is read at the top of the closure and again by a view
+            // standing after the leaves - so the number is what describing it cost.
             VStack {
                 // In layer one the get is in the block's own closure, so a press
                 // describes every leaf in it again, and its reading says how long
@@ -5866,15 +5866,13 @@ enum Listings {
                         }
                     }
 
-                    // Taken at the bottom of the same closure, once the leaves above stand.
-                    let spent = took(began, leaves)
-
                     HStack {
                         Text("Counter \(shown)")
                             .fontWeight(.bold)
 
-                        Text(spent)
-                            .height(15)
+                        // Built when the differ reaches it - after every leaf above,
+                        // whose views a container builds only then.
+                        Spent(since: began, views: leaves, named: "cost.described")
 
                         DebugInfoLabel()   // climbs on every press
                             .height(15)
@@ -5907,15 +5905,12 @@ enum Listings {
                         }
                     }
 
-                    // Taken at the bottom of the same closure, once the leaves above stand.
-                    let spent = took(began, leaves)
-
                     HStack {
                         Text($counter.convert { "Counter \($0)" })
                             .fontWeight(.bold)
 
-                        Text(spent)
-                            .height(15)
+                        // Built after every leaf above, as in the first block.
+                        Spent(since: began, views: leaves, named: "cost.channelled")
 
                         DebugInfoLabel()   // stays at one on +1
                             .height(15)
@@ -5924,14 +5919,34 @@ enum Listings {
             }
         }
 
-        /// How long describing this closure has taken so far, in microseconds.
-        ///
-        /// Read at the top of a closure and printed at the bottom of the same one, so
-        /// what it measures is that closure's own work - the leaves above it included,
-        /// since a `ForEach` builds its views where it is written.
+        /// The clock read again where this view stands: after a block's leaves, so
+        /// what it prints is their describe. A line at the bottom of the block's own
+        /// closure would read it too early - a container builds its views only when
+        /// the differ reaches it, after that closure has run.
+        private struct Spent: View {
+            /// The clock at the top of the block's closure.
+            let began: ContinuousClock.Instant
+
+            /// How many views stand above it.
+            let views: Int
+
+            /// What a test finds the words by.
+            let name: String
+
+            init(since began: ContinuousClock.Instant, views: Int, named name: String) {
+                (self.began, self.views, self.name) = (began, views, name)
+            }
+
+            var body: some View {
+                Text(took(began, views))
+                    .height(15)
+            }
+        }
+
+        /// How long describing a block has taken so far, in microseconds.
         ///
         /// - Parameters:
-        ///   - began: the clock at the top of the closure.
+        ///   - began: the clock at the top of the block's closure.
         ///   - views: how many views stand above the reading.
         /// - Returns: the sentence to print.
         private func took(_ began: ContinuousClock.Instant, _ views: Int) -> String {

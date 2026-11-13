@@ -81,6 +81,44 @@ private struct Nested: View {
     }
 }
 
+/// Counts the views a block's rows have built, and what a reading saw of them.
+@MainActor
+private final class Leaves {
+    var built = 0
+    var seenInline: Int?
+    var seenAfter: Int?
+}
+
+/// Rows of leaves, a reading taken in the same closure below them, and one taken by a view standing after them.
+private struct Rows: View {
+    let leaves: Leaves
+
+    var body: some View {
+        VStack {
+            ForEach([0, 25], id: \.self) { row in
+                HStack {
+                    ForEach(Array(row..<row + 25), id: \.self) { index in
+                        let _ = leaves.built += 1
+                        Rectangle().width(7).id(index)
+                    }
+                }
+            }
+            let _ = leaves.seenInline = leaves.built
+            After(leaves: leaves)
+        }
+    }
+}
+
+/// A view standing after the rows: its body is built when the differ reaches it.
+private struct After: View {
+    let leaves: Leaves
+
+    var body: some View {
+        leaves.seenAfter = leaves.built
+        return Text("after")
+    }
+}
+
 @MainActor
 final class BuildsTests: XCTestCase {
     override func setUp() async throws {
@@ -180,6 +218,19 @@ final class BuildsTests: XCTestCase {
     /// The differ runs that closure when it descends rather than when the
     /// author's line does, inside the build frame of the view whose closure it
     /// is - so a reading written beside what it is about answers about it.
+    /// A container's views are built when the differ reaches it: a reading taken in a closure below its rows has
+    /// seen none of their views, and a view standing after them is built once every one of them is.
+    func testAViewAfterRowsIsBuiltOnceEveryViewOfTheirsIs() {
+        let leaves = Leaves()
+        let renders = Renders()
+
+        renders.render(stack([Rows(leaves: leaves).node], id: "root"))
+
+        XCTAssertEqual(leaves.built, 50)
+        XCTAssertEqual(leaves.seenInline, 0, "the closure ran on before the rows were reached")
+        XCTAssertEqual(leaves.seenAfter, 50, "the view after them was built once they were")
+    }
+
     func testAReadingInsideAContainersClosureHasItsFrame() {
         let said = Said()
         let renders = Renders()
