@@ -118,7 +118,7 @@ extension State {
         /// hook.
         var noted: ((Value) -> Void)?
 
-        /// Takes the journey the host carries as it stands, answering what lays it back whole.
+        /// Takes what the host carries as it stands, answering what puts it back whole.
         var hostHeld: (() -> () -> Void)?
 
         /// The value wearing the theme last written into a carried state - a color
@@ -280,15 +280,16 @@ extension State {
             return false
         }
 
-        /// Puts the state back, when called, to what it holds now - a journey the host carries whole, its law and its
-        /// way - where anything wrote it since; one nothing wrote stands as it is.
+        /// Puts the state back, when called, to what it holds now - what the host carries whole, a journey's law and
+        /// way included, and what waited to be published of it - where anything wrote it since; one nothing wrote
+        /// stands as it is.
         /// Design: docs/design/core/journeys.md#a-refusal-up-the-chain
         func restorer() -> () -> Void {
-            let (held, themedHeld, stampHeld, journey) = (value, themed, stamp, hostHeld?())
+            let (held, themedHeld, stampHeld, carried) = (value, themed, stamp, hostHeld?())
             return { [weak self] in
                 guard let self, self.stamp != stampHeld else { return }
-                if let journey {
-                    journey()
+                if let carried {
+                    carried()
                     self.themed = themedHeld
                     self.keep?(held)
                 } else {
@@ -411,10 +412,10 @@ extension State.Storage where Value: Walked {
             }
             noted = { destination in known.destination = destination }
             hostHeld = {
-                let held = Self.journey(on: made)
+                let (held, destination) = (Renderer.shared.board.held(made), known.destination)
                 return {
-                    known.destination = held.destination
-                    Self.lay([.value, .destination, .velocity, .motion, .completion, .stopped], of: held, on: made)
+                    known.destination = destination
+                    Renderer.shared.board.restore(held, to: made)
                 }
             }
             made.told = { [weak self, unowned made] mask in
@@ -584,6 +585,13 @@ extension State.Storage where Value: StateValue {
                 let bytes = StateImage.bytes(of: value.carried(in: .current))
                 known.bytes = bytes
                 Renderer.shared.board.write(bytes, to: made)
+            }
+            hostHeld = {
+                let (held, bytes) = (Renderer.shared.board.held(made), known.bytes)
+                return {
+                    known.bytes = bytes
+                    Renderer.shared.board.restore(held, to: made)
+                }
             }
 
             // A host write ends where this side's do, the storage deciding by its readers; a

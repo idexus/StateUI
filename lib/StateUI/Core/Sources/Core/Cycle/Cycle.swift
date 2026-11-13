@@ -55,6 +55,28 @@ final class CycleBoard {
         storage.stamp &+= 1
     }
 
+    /// A storage's image and what of it waits to be published, as they stand.
+    struct Held {
+        let image: [UInt8]
+        let pending: [UInt8]?
+        let pendingMask: UInt64
+        let dirty: UInt64
+    }
+
+    /// What `storage` holds now, for `restore` to put back.
+    func held(_ storage: HostStorage) -> Held {
+        Held(image: storage.image, pending: storage.pending, pendingMask: storage.pendingMask, dirty: storage.dirty)
+    }
+
+    /// Puts `storage` back as `held` had it - its image and what waited to be published then, no more: writes taken
+    /// back publish nothing, and what waited before them still does.
+    /// Design: docs/design/core/journeys.md#a-refusal-up-the-chain
+    func restore(_ held: Held, to storage: HostStorage) {
+        storage.stamp &+= 1
+        (storage.image, storage.pending) = (held.image, held.pending)
+        (storage.pendingMask, storage.dirty) = (held.pendingMask, held.dirty)
+    }
+
     /// Takes a storage into this board's keeping.
     func hold(_ storage: HostStorage) {
         storages.removeAll { $0.storage == nil }

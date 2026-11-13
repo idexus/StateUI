@@ -317,9 +317,14 @@ and put back last taken first - before the derived state goes back to what they
 hold: a report lands whole or not at all. Putting back touches only what was
 written: a source the refusal stopped short of, and a state whose write stamp
 did not move, stand as they are - a journey on its way keeps its law. One that
-was written gets its journey back whole - its value, destination, speed, law,
-completion and stop, laid as they lay (`hostHeld`), the destination this side
-knows with them, so the host's next frame asks nothing.
+was written gets back whole what the host carries of it - its value, a
+journey's destination, speed, law, completion and stop - and what of it waited
+to be published then, no more (`hostHeld`, `CycleBoard.held`, `restore`): the
+writes taken back publish nothing, so the host's run of it travels on to its
+own deadline and its waiter is answered as it arrives, while a write made
+before the report - a move to the destination it holds - is published as it
+would have been. What this side knows of the image goes back with it, so the
+host's next frame asks nothing.
 
 ## A conversion declared again
 

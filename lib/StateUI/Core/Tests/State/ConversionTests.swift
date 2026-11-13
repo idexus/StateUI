@@ -756,6 +756,42 @@ final class ConversionTests: XCTestCase {
         }
     }
 
+    /// A report a refusal takes back takes back its own writes alone: a move asked before it - to the destination
+    /// the state holds already - is published as it would have been without the report.
+    func testARefusedReportLeavesWhatWaitedBeforeItToBePublished() throws {
+        var published: [UInt64?] = []
+        for refused in [false, true] {
+            let record = SceneRecord(id: "waiting \(refused)", declaration: 0)
+            let kind = KeyName("conversion.waiting")
+            record.open(kind, value: AnyHashable(1.0), text: "1")
+            record.open(kind, value: AnyHashable(2.0), text: "2")
+            let (a, b) = (record.windowValue(record.windows[0], as: Double.self), record.windowValue(record.windows[1], as: Double.self))
+            let sum = Binding<Double>.multi(a.projectedValue, b.projectedValue).convert({ $0 + $1 }, back: { _ in (3, 3) })
+            let conversion = try XCTUnwrap(sum.storage.conversion)
+            let renders = Renders()
+            _ = renders.render(VStack {
+                Slider(a.projectedValue).maximum(100)
+                Slider(b.projectedValue).maximum(100)
+                Slider(sum).maximum(100)
+            }.node)
+            let board = Renderer.shared.board
+            board.cycle(now: 0, reducesMotion: false)
+            _ = board.dirty()
+            let number = try XCTUnwrap(a.storage.carryAsJourney()?.number)
+
+            _ = a.projectedValue.journey.move(to: 1, .eased(.seconds(1), curve: .linear))
+            if refused {
+                sum.storage.settle(6, asking: false)
+                XCTAssertEqual(conversion.back?(), false, "two windows of a kind asked for one value")
+            }
+            board.cycle(now: 16, reducesMotion: false)
+            published.append(board.dirty().first { $0.number == number }?.mask)
+            withExtendedLifetime((record, conversion)) {}
+        }
+        XCTAssertNotNil(published[0], "the move is published")
+        XCTAssertEqual(published[1], published[0], "and published alike after a report taken back")
+    }
+
     /// A report into a two-source conversion lands on both sources.
     func testAReportComesBackIntoBothSources() throws {
         let hours = State(wrappedValue: 1.0)
