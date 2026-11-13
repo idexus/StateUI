@@ -194,6 +194,54 @@ final class WebLeaveTests: XCTestCase {
         }
     }
 
+    /// The bar's More listing only the system's Edit menu a page joins - entries no element stands for - goes with the
+    /// page all the same, its Edit submenu open or not.
+    func testAMoreOfTheSystemsEditAloneGoesWithItsPage() throws {
+        for opensEdit in [false, true] {
+            WebRenderer.shared?.finish()
+            let path = State(wrappedValue: [1])
+            let host = WebRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    Text("Editing").menuBar { Menu("Edit") {}.joins(.edit) }
+                }
+            }
+            for _ in 0..<5 {
+                host.step()
+                WebBrowser.pause()
+            }
+            let more = "[...document.querySelectorAll('.stateui-bar button[aria-label=\"More\"]')]"
+                + ".find((b) => getComputedStyle(b).display !== 'none')"
+            _ = try WebBrowser.evaluate("(\(more).click(), '')", on: 0)
+            for _ in 0..<3 {
+                host.step()
+                WebBrowser.pause()
+            }
+            let open = "document.querySelectorAll('.stateui-menu').length"
+            XCTAssertNotEqual(try WebBrowser.evaluate(open, on: 0), "0", "More open")
+            if opensEdit {
+                let edit = "[...document.querySelectorAll('.stateui-menu button')].find((b) => b.textContent === 'Edit')"
+                _ = try WebBrowser.evaluate("(\(edit).click(), '')", on: 0)
+                for _ in 0..<3 {
+                    host.step()
+                    WebBrowser.pause()
+                }
+                let shown = "String([...document.querySelectorAll('.stateui-menu')].filter((m) => m.matches(':popover-open')).length)"
+                XCTAssertEqual(try WebBrowser.evaluate(shown, on: 0), "2", "More and its Edit open")
+            }
+
+            path.wrappedValue = []
+            for _ in 0..<5 {
+                host.step()
+                WebBrowser.pause()
+            }
+
+            XCTAssertEqual(try WebBrowser.evaluate(open, on: 0), "0", "More\(opensEdit ? " and Edit" : "") as the page left")
+            host.finish()
+        }
+    }
+
     /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window stands out of
     /// sight, and stands again as the browser shows the page - a window going away would not.
     func testAPageTheBrowserKeepsIsHiddenNotGone() async throws {

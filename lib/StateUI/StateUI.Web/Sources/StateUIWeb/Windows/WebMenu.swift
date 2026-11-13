@@ -51,6 +51,9 @@ final class WebMenu {
     }
 
     private func add(_ entry: MenuEntry) {
+        // The menu goes as the element an entry stands for leaves - an item's or a submenu's: no entry acts for an
+        // element gone, and a submenu of the system's entries alone goes with its menu.
+        (entry.element?.native as? WebElement)?.menuShown = self
         switch entry.kind {
         case .separator:
             guard placed > 0 else { return }
@@ -58,8 +61,6 @@ final class WebMenu {
             line.attribute("role", "separator")
             place(line)
         case .item:
-            // The menu goes as the element an entry stands for leaves: no entry acts for an element gone.
-            (entry.element?.native as? WebElement)?.menuShown = self
             let button = item(entry)
             button.listen("click") { [weak self] in
                 guard let self, entry.isEnabled else { return }
