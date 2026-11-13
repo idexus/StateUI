@@ -112,9 +112,10 @@ struct UIKitBarAction {
         isDestructive ? .systemRed : tint
     }
 
-    /// Its entry behind the bar's overflow: its action, or, holding a menu, a submenu under its words.
+    /// Its entry behind the bar's overflow: its action, or, holding a menu, a submenu under its words - known by the
+    /// identifier its menu on the bar takes, as it stands in one place at a time.
     var overflowEntry: UIMenuElement {
-        menu.map { UIKitMenus.menu($0.inOverflow, title: title) } ?? menuAction
+        menu.map { UIKitMenus.menu($0.inOverflow, title: title, identifier: element?.menuIdentifier) } ?? menuAction
     }
 
     /// The menu behind a bar's overflow: each group a section of it, a line between two.

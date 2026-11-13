@@ -268,10 +268,12 @@ extension UIKitDriver {
     /// The menu a button on the bars the window shows opens, by its identifier.
     func barMenu(identified identifier: UIMenu.Identifier) -> UIMenu? {
         guard let window = renderer?.roster.windows.first?.1.window else { return nil }
+        // The bar's menus, and the submenus under them: a button's behind the overflow is one of those.
+        func within(_ menu: UIMenu) -> UIMenu? {
+            menu.identifier == identifier ? menu : menu.children.lazy.compactMap { ($0 as? UIMenu).flatMap(within) }.first
+        }
         func search(_ controller: UIViewController) -> UIMenu? {
-            if let menu = Self.barItems(of: controller).compactMap(\.menu).first(where: { $0.identifier == identifier }) {
-                return menu
-            }
+            if let menu = Self.barItems(of: controller).compactMap(\.menu).lazy.compactMap(within).first { return menu }
             return controller.children.lazy.compactMap(search).first
         }
         return window.rootViewController.flatMap(search)

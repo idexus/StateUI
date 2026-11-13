@@ -97,12 +97,15 @@ extension GTKDriver {
     }
 
     /// The widget whose menu shows the item `element` - a view its context menu, a main menu's button, a button its
-    /// own menu, a bar's button on the bar or behind its overflow - the menu, and the name of its action.
+    /// own menu, a bar's button on the bar at the top or the foot, or behind either's overflow - the menu, and the name
+    /// of its action.
     private func menuItem(_ element: MountedElement) -> (GTKWidget, GTKMenu, String)? {
+        let bars = frames().flatMap { frame in
+            frame.buttons + frame.overflowButtons + (frame.footBar.map { $0.buttons + $0.overflowButtons } ?? [])
+        }
         let shown: [(GTKWidget, GTKMenu)] = frames().compactMap { frame in frame.mainMenu.map { ($0.button, $0.menu) } }
             + (renderer?.views(GTKView.self) ?? []).compactMap { view in view.contextMenu.map { (view.widget, $0.menu) } }
-            + ((renderer?.views(GTKButtonView.self) ?? []) + frames().flatMap { $0.buttons + $0.overflowButtons })
-                .compactMap { button in button.menu.map { (button.widget, $0) } }
+            + ((renderer?.views(GTKButtonView.self) ?? []) + bars).compactMap { button in button.menu.map { (button.widget, $0) } }
         for (widget, menu) in shown {
             if let name = menu.items.first(where: { $0.value() === element })?.key { return (widget, menu, name) }
         }

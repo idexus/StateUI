@@ -6,25 +6,27 @@
 
 /// `ButtonMenuContract` on a host: a button holding a menu - a button among views, a bar's button - offers its
 /// entries - an entry chosen runs - and follows the states they read; one with a click of its own splits, its click
-/// its action and its menu apart. Each case made for every element wearing `ButtonMenuElement`.
+/// its action and its menu apart. Each case made for every element wearing `ButtonMenuElement`, and a bar's button on
+/// the bar at the page's foot too; behind a bar's overflow its menu is a submenu, its own action first.
 @_spi(Host) public enum ButtonMenuTests: ConformanceFamily {
     public static let name = "ButtonMenu"
 
     public static var cases: [ConformanceCase] {
-        Specimens.wearing(ButtonMenuElementContract.self).flatMap { element in
+        let bar = ToolbarButtonContract.nodeType.name
+        return Specimens.wearing(ButtonMenuElementContract.self).flatMap { element in
             [offers(element), splits(element), follows(element)]
-        }
+        } + [offers(bar, at: .foot), splits(bar, at: .foot), submenu(at: .topOverflow), submenu(at: .footOverflow)]
     }
 
     /// A button's menu offers its entries, and an entry chosen runs.
     @MainActor
-    static func offers(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aButtonsMenuOffersItsEntries", proves: [
+    static func offers(_ element: String, at place: MenuButtons.BarPlace = .top) -> ConformanceCase {
+        ConformanceCase("\(element)\(place.named).aButtonsMenuOffersItsEntries", proves: [
             Covered(ButtonMenuContract.self),
         ], needs: [Covered(ClickElementContract.clicked, on: "MenuItem")]) { s in
             let heard = Received<String>()
             s.start {
-                MenuButtons.standing(element, "Share") {
+                MenuButtons.standing(element, "Share", at: place) {
                     MenuItem("Mail").onClicked { heard.values.append("mail") }.id("mail")
                     MenuSeparator()
                     MenuItem("Link").isEnabled(false).id("link")
@@ -40,14 +42,14 @@
 
     /// A button with a click of its own splits: its click its action, its menu apart.
     @MainActor
-    static func splits(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aButtonWithAClickOfItsOwnSplits", proves: [
+    static func splits(_ element: String, at place: MenuButtons.BarPlace = .top) -> ConformanceCase {
+        ConformanceCase("\(element)\(place.named).aButtonWithAClickOfItsOwnSplits", proves: [
             Covered(ButtonMenuContract.self),
         ], needs: [ButtonMenuElementTests.clicking(element), Covered(ClickElementContract.clicked, on: "MenuItem")]) { s in
             let heard = Received<String>()
             s.start {
                 MenuButtons.standing(
-                    element, "Save", clicked: { heard.values.append("save") },
+                    element, "Save", clicked: { heard.values.append("save") }, at: place,
                     entries: { MenuItem("Save as").onClicked { heard.values.append("save as") }.id("saveAs") })
             }
             let save = try s.element("save")
@@ -59,6 +61,30 @@
             try s.perform(.activate, on: s.element("saveAs"))
             s.settle { heard.values == ["save", "save as"] }
             s.expect(heard.values, ["save", "save as"], "an entry of its menu chosen")
+        }
+    }
+
+    /// A bar's button behind its overflow, at the top or at the page's foot, is a submenu under its words: its own
+    /// action first where its click is its own, a line, then its menu's entries - an entry chosen runs.
+    @MainActor
+    static func submenu(at place: MenuButtons.BarPlace) -> ConformanceCase {
+        let element = ToolbarButtonContract.nodeType.name
+        return ConformanceCase("\(element)\(place.named).aButtonsMenuIsASubmenuItsOwnActionFirst", proves: [
+            Covered(ButtonMenuContract.self),
+        ], needs: [Covered(ClickElementContract.clicked, on: "MenuItem")]) { s in
+            let heard = Received<String>()
+            s.start {
+                MenuButtons.standing(
+                    element, "Save", clicked: { heard.values.append("save") }, at: place,
+                    entries: { MenuItem("Save as").onClicked { heard.values.append("save as") }.id("saveAs") })
+            }
+            let save = try s.element("save")
+            try s.settle { try s.buttonMenu(of: save) == "Save;-;Save as" }
+            s.expect(try s.buttonMenu(of: save), "Save;-;Save as", "its own action, a line, its entries")
+
+            try s.perform(.activate, on: s.element("saveAs"))
+            s.settle { heard.values == ["save as"] }
+            s.expect(heard.values, ["save as"], "an entry of the submenu chosen")
         }
     }
 

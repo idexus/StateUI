@@ -1,4 +1,4 @@
-# revision 1.2
+# revision 2.2
 Button.menuKind: ✅
 Button.showsMenuArrow: ✅
 ToolbarButton.menuKind: ✓ activate on ToolbarButton: the bar's action chosen as the relay reports it, no button pressed

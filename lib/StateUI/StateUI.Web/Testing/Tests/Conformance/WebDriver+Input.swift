@@ -32,7 +32,10 @@ extension WebDriver {
         if let page = Self.pageState(after: act) { return try running().pageChanged(page) }
         if act == .close, element.type == .window { return try running().runtime.ending() }
         if case .openLink(let address) = act { return try running().runtime.openLink(address) }
-        if act == .openMenu { return try open(menuOf: element) }
+        if act == .openMenu {
+            try open(menuOf: element)
+            return
+        }
         if act == .close, element.type == .page {
             // The close button on the bar of the sheet the page stands in, as a click presses it.
             return try click(try sheetBar(over: element), part: "button:has(> [data-glyph=close])")

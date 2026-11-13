@@ -253,9 +253,10 @@ void stateui::setActionMenu(
     else button.as<controls::Button>().Flyout(flyout);
 }
 
-extern "C" int32_t stateui_winui_title_bar_action_menu(StateUIObjectRef handle, int32_t place, char *utf8, int32_t capacity) {
-    try {
-        auto button = actionButton(actionEdges(borrow<controls::TitleBar>(handle)), place);
+namespace {
+    /// The menu of the action at `place` on `edges`, as `stateui_winui_menus` writes one, in UTF-8; the length it needs.
+    int32_t actionMenu(ActionEdges const &edges, int32_t place, char *utf8, int32_t capacity) {
+        auto button = actionButton(edges, place);
         auto flyout = button ? offered(button) : nullptr;
         auto bytes = winrt::to_string(flyout ? described(flyout.Items()) : std::wstring());
         if (utf8 && capacity > 0) {
@@ -264,23 +265,51 @@ extern "C" int32_t stateui_winui_title_bar_action_menu(StateUIObjectRef handle, 
             utf8[size] = 0;
         }
         return static_cast<int32_t>(bytes.size());
-    } catch (...) {
-        report("reading a bar's action's menu");
-        return 0;
     }
-}
 
-extern "C" void stateui_winui_title_bar_action_menu_choose(StateUIObjectRef handle, int32_t place, int32_t index) {
-    try {
-        auto button = actionButton(actionEdges(borrow<controls::TitleBar>(handle)), place);
+    /// Chooses the item at `index` of the menu of the action at `place` on `edges`, as assistive technology does.
+    void chooseInActionMenu(ActionEdges const &edges, int32_t place, int32_t index) {
+        auto button = actionButton(edges, place);
         auto flyout = button ? offered(button) : nullptr;
         if (!flyout) return;
         if (auto chosen = item(flyout.Items(), index)) {
             if (auto invoke = pattern<provider::IInvokeProvider>(chosen, PatternInterface::Invoke)) invoke.Invoke();
             else pattern<provider::IToggleProvider>(chosen, PatternInterface::Toggle).Toggle();
         }
+    }
+}
+
+extern "C" int32_t stateui_winui_title_bar_action_menu(StateUIObjectRef handle, int32_t place, char *utf8, int32_t capacity) {
+    try {
+        return actionMenu(actionEdges(borrow<controls::TitleBar>(handle)), place, utf8, capacity);
+    } catch (...) {
+        report("reading a bar's action's menu");
+        return 0;
+    }
+}
+
+extern "C" int32_t stateui_winui_foot_bar_action_menu(StateUIObjectRef handle, int32_t place, char *utf8, int32_t capacity) {
+    try {
+        return actionMenu(footActionEdges(borrow<controls::Grid>(handle)), place, utf8, capacity);
+    } catch (...) {
+        report("reading a foot bar's action's menu");
+        return 0;
+    }
+}
+
+extern "C" void stateui_winui_title_bar_action_menu_choose(StateUIObjectRef handle, int32_t place, int32_t index) {
+    try {
+        chooseInActionMenu(actionEdges(borrow<controls::TitleBar>(handle)), place, index);
     } catch (...) {
         report("choosing in a bar's action's menu");
+    }
+}
+
+extern "C" void stateui_winui_foot_bar_action_menu_choose(StateUIObjectRef handle, int32_t place, int32_t index) {
+    try {
+        chooseInActionMenu(footActionEdges(borrow<controls::Grid>(handle)), place, index);
+    } catch (...) {
+        report("choosing in a foot bar's action's menu");
     }
 }
 

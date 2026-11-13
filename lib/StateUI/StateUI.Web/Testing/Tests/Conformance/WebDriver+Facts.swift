@@ -357,7 +357,7 @@ extension WebDriver {
     }
 
     /// The bars at the feet of the pages under `element`.
-    private func footToolbars(in element: MountedElement?) -> [WebBottomToolbar] {
+    func footToolbars(in element: MountedElement?) -> [WebBottomToolbar] {
         guard let element else { return [] }
         let own = element.type == .page ? [(element.native as? WebElement)?.bottomBar?.toolbar].compactMap { $0 } : []
         return own + element.children.flatMap { footToolbars(in: $0) }

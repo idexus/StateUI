@@ -25,6 +25,11 @@ extension WebDriver {
         })([...document.querySelectorAll('.stateui-menu')].find((m) => m.matches(':popover-open') && !m.parentElement.closest('.stateui-menu')))
         """
 
+    /// The open menu standing deepest - a submenu inside another - as `menu(of:)` says one.
+    private static let saidDeepest = saidOpen.replacingOccurrences(
+        of: "[...document.querySelectorAll('.stateui-menu')].find((m) => m.matches(':popover-open') && !m.parentElement.closest('.stateui-menu'))",
+        with: "[...document.querySelectorAll('.stateui-menu')].filter((m) => m.matches(':popover-open')).pop()")
+
     func menu(of element: MountedElement) throws -> String {
         try open(menuOf: element)
         defer { press("Escape") }
@@ -40,9 +45,9 @@ extension WebDriver {
     /// The menu `button` opens, as `menu(of:)` says one: opened as its user opens it, then taken down.
     func buttonMenu(of button: MountedElement) throws -> String {
         guard ButtonMenu.opening(of: button) != .none else { throw DriverCannot("read the menu \(button.type.name) opens") }
-        try open(menuOf: button, button: true)
-        defer { press("Escape") }
-        return try WebBrowser.evaluate(Self.saidOpen, on: 0) ?? ""
+        let behind = try open(menuOf: button, button: true)
+        defer { for _ in 0...behind { press("Escape") } }
+        return try WebBrowser.evaluate(behind > 0 ? Self.saidDeepest : Self.saidOpen, on: 0) ?? ""
     }
 
     /// The item `element` chosen from its menu, as the user does: the menu opened, each submenu on its way, the
@@ -52,9 +57,9 @@ extension WebDriver {
         guard let (anchor, button) = menuAnchor(of: element), !path.isEmpty else {
             throw DriverCannot(.activate, on: element)
         }
-        try open(menuOf: anchor, button: button)
+        let behind = try open(menuOf: anchor, button: button)
         for (depth, caption) in path.enumerated() {
-            let item = try openItem(caption, depth: depth)
+            let item = try openItem(caption, depth: behind + depth)
             try click(item)
         }
         // An item out of reach leaves its menus open, and the user takes them down.
@@ -69,10 +74,10 @@ extension WebDriver {
     func menuItemHolds(_ property: Prop, on element: MountedElement) throws -> HostValue?? {
         let path = captions(to: element)
         guard let (anchor, button) = menuAnchor(of: element), !path.isEmpty else { return nil }
-        try open(menuOf: anchor, button: button)
+        let behind = try open(menuOf: anchor, button: button)
         defer { press("Escape") }
-        for (depth, caption) in path.dropLast().enumerated() { try click(try openItem(caption, depth: depth)) }
-        let item = try openItem(path.last!, depth: path.count - 1)
+        for (depth, caption) in path.dropLast().enumerated() { try click(try openItem(caption, depth: behind + depth)) }
+        let item = try openItem(path.last!, depth: behind + path.count - 1)
         switch property {
         case .text: return try WebBrowser.evaluate("[...e.querySelectorAll('span')].pop()?.textContent ?? null", on: item)?.propValue
         case .isEnabled: return try (!WebBrowser.truth("e.disabled", on: item)).propValue
@@ -88,29 +93,49 @@ extension WebDriver {
     }
 
     /// Opens the menu `element` offers: the window's behind the bar's More, a view's with the mouse's other button,
-    /// a button's - where `button` - with a click where its click opens it, a split button's with a click on its arrow.
-    func open(menuOf element: MountedElement, button: Bool = false) throws {
+    /// a button's - where `button` - with a click where its click opens it, a split button's with a click on its arrow,
+    /// a bar's button behind its bar's More as the submenu under its words. How many menus stand open before it.
+    @discardableResult
+    func open(menuOf element: MountedElement, button: Bool = false) throws -> Int {
         if element.type == .window {
-            return try click(try bar(over: element), part: Self.more)
+            try click(try bar(over: element), part: Self.more)
+            return 0
         }
-        // A bar's button stands on the bar, a button among views as its own view.
+        // A bar's button stands on the bar, or behind its More; a button among views as its own view.
         let node: Int32
         if element.type == .toolbarButton {
             guard let shown = try barButtons().first(where: { $0.item === element }) else {
-                throw DriverCannot("open the menu \(element.type.name) opens: no button stands for it on the bar")
+                try openMore(holding: element)
+                try click(try openItem(element.value(.text)?.string ?? "", depth: 0))
+                return 1
             }
             node = shown.node
         } else {
             node = try self.view(of: element, reading: .frame).node
         }
         if button, ButtonMenu.opening(of: element) == .arrow {
-            return try click(node, part: ".stateui-split-arrow")
+            try click(node, part: ".stateui-split-arrow")
+            return 0
         }
         let box = try box(of: node)
         let middle = Point(x: box.width / 2, y: box.height / 2)
         let pressed = button && ButtonMenu.opening(of: element) == .click ? "left" : "right"
         mouse("mousePressed", at: middle, in: box, button: pressed)
         mouse("mouseReleased", at: middle, in: box, button: pressed)
+        return 0
+    }
+
+    /// Opens the More of the bar a bar's button `item` stands behind: its page's foot's, or the window's bar's.
+    private func openMore(holding item: MountedElement) throws {
+        // The edge its declaration says, on it or on the group around it.
+        let edge = sequence(first: item, next: \.parent).lazy
+            .compactMap { $0.value(.barEdge).flatMap(ToolbarEdge.init(propValue:)) }.first ?? .top
+        let shown = "!e.hidden && !e.closest('[hidden]')"
+        if edge == .bottom,
+           let foot = try footToolbars(in: renderer?.runtime.tree.root).first(where: { try WebBrowser.truth(shown, on: $0.more.node) }) {
+            return try click(foot.more)
+        }
+        try click(try bar(over: item), part: Self.more)
     }
 
     /// The button of the item `caption` in the menu open at `depth` - the outermost 0.

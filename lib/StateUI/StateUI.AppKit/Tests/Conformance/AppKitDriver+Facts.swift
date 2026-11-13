@@ -20,14 +20,24 @@ extension AppKitDriver {
         return Self.said(view.menu?.items ?? [])
     }
 
-    /// The menu the button standing for `button` opens - a toolbar's button, the menu of its toolbar item.
+    /// The menu the button standing for `button` opens - a toolbar's button, the menu of its toolbar item; at the
+    /// page's foot its control's; behind either bar's overflow the submenu under its words.
     func buttonMenu(of button: MountedElement) throws -> String {
         if button.type == .toolbarButton {
             let identifier = NSToolbarItem.Identifier("StateUI.action.\(button.mount)")
-            guard let item = try controller(of: button).toolbarForTesting.itemForTesting(identifier)
-                as? NSMenuToolbarItem
-            else { throw DriverCannot("read the menu \(button.type.name) opens: its toolbar item opens none") }
-            return Self.said(item.menu.items)
+            if let page = button.enclosing(type: .page),
+               let foot = bottomToolbar(of: page)?.controlForTesting(identifier.rawValue) {
+                switch foot {
+                case let combo as NSComboButton: return Self.said(combo.menu.items)
+                case let held as AppKitBarHeldButton: return Self.said(held.offered.items)
+                case let item as NSMenuItem: return Self.said(item.submenu?.items ?? [])
+                default: throw DriverCannot("read the menu \(button.type.name) opens: its control at the foot opens none")
+                }
+            }
+            let toolbar = try controller(of: button).toolbarForTesting
+            if let item = toolbar.itemForTesting(identifier) as? NSMenuToolbarItem { return Self.said(item.menu.items) }
+            if let submenu = toolbar.overflowItemForTesting(identifier)?.submenu { return Self.said(submenu.items) }
+            throw DriverCannot("read the menu \(button.type.name) opens: its toolbar item opens none")
         }
         guard let view = (button.native as? AppKitElement)?.view as? AppKitButtonView, view.opening != .none else {
             throw DriverCannot("read the menu \(button.type.name) opens")

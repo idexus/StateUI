@@ -30,8 +30,11 @@ extension WinUIDriver {
     }
 
     /// The flyout the WinUI button standing for `button` opens, or the context menu it holds - a bar's button, its
-    /// button's on the title bar.
+    /// button's on the title bar or on the bar at its page's foot, or its submenu behind either's "more".
     func buttonMenu(of button: MountedElement) throws -> String {
+        if button.type == .toolbarButton, let (foot, place) = footPlace(of: button) {
+            return WinUIStrings.read { stateui_winui_foot_bar_action_menu(foot.handle, Int32(place), $0, $1) }
+        }
         if button.type == .toolbarButton {
             let titleBar = try window(of: button).titleBar
             guard let place = try actionPlace(of: button) else { throw DriverCannot("read the menu \(button.type.name) opens") }
@@ -184,6 +187,12 @@ extension WinUIDriver {
         guard let slot = menu.parent, let button = slot.parent, button.type == .toolbarButton else { return nil }
         let items = Self.flat(slot).filter { Self.menuEntries.contains($0.type) }
         return items.firstIndex { $0 === element }.map { (button, $0) }
+    }
+
+    /// How many items the relay's menu of the bar's button `button` holds before its own menu's: behind "more", its own
+    /// action first where its click is its own (`ButtonMenu.inOverflow`).
+    static func itemsBefore(_ button: MountedElement, behindMore: Bool) -> Int {
+        behindMore && ButtonMenu.opening(of: button) != .click ? 1 : 0
     }
 
     /// `element` and everything under it, in the order a menu lists them.

@@ -338,10 +338,16 @@ final class WinUIDriver: HostDriver {
             return
         default: break
         }
-        if Self.menuEntries.contains(element.type), let (button, index) = barMenuPlace(of: element),
-           let place = try actionPlace(of: button) {
-            stateui_winui_title_bar_action_menu_choose(try window(of: button).titleBar.handle, Int32(place), Int32(index))
-            return
+        if Self.menuEntries.contains(element.type), let (button, index) = barMenuPlace(of: element) {
+            if let (foot, place) = footPlace(of: button) {
+                let before = Self.itemsBefore(button, behindMore: foot.drawnBehindMore[place])
+                return stateui_winui_foot_bar_action_menu_choose(foot.handle, Int32(place), Int32(before + index))
+            }
+            if let place = try actionPlace(of: button) {
+                let bar = try window(of: button).titleBar
+                let before = Self.itemsBefore(button, behindMore: bar.drawnBehindMore[place])
+                return stateui_winui_title_bar_action_menu_choose(bar.handle, Int32(place), Int32(before + index))
+            }
         }
         if Self.menuEntries.contains(element.type), let (owner, index) = menuPlace(of: element) {
             stateui_winui_menus_choose(owner.handle, Int32(index))

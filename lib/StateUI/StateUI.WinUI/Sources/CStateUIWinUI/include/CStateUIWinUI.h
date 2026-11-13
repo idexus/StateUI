@@ -1341,6 +1341,11 @@ void stateui_winui_foot_bar_set_action_menu(StateUIObjectRef bar, int32_t place,
                                             bool const *destructive, int32_t const *keys, int32_t const *modifiers,
                                             bool const *givesWay, int32_t count);
 
+/// What a test reads: the menu of the foot bar's action at `place`, as `stateui_winui_title_bar_action_menu` writes
+/// one; the length it needs. And the item at `index` of it chosen, as assistive technology does.
+int32_t stateui_winui_foot_bar_action_menu(StateUIObjectRef bar, int32_t place, char *utf8, int32_t capacity);
+void stateui_winui_foot_bar_action_menu_choose(StateUIObjectRef bar, int32_t place, int32_t index);
+
 /// Asks WinUI to measure a split view's pane and everything in it again, as its height changes: WinUI applies an
 /// arrange inside the pane only to what it measured in that pass.
 void stateui_winui_split_measure_pane_again(StateUIObjectRef split);

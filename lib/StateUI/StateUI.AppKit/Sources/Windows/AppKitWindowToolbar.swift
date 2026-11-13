@@ -552,6 +552,14 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         toolbar.items.first { $0.itemIdentifier == identifier }
     }
 
+    /// The overflow's menu item standing for the action `identifier`; nil where no overflow lists it.
+    func overflowItemForTesting(_ identifier: NSToolbarItem.Identifier) -> NSMenuItem? {
+        guard let place = (sidebarOverflowActions + overflowActions).firstIndex(where: { $0.identifier == identifier })
+        else { return nil }
+        let menus = [Self.overflow, Self.sidebarOverflow].compactMap { (itemForTesting($0) as? NSMenuToolbarItem)?.menu }
+        return menus.lazy.flatMap(\.items).first { $0.tag == place && !$0.isSeparatorItem }
+    }
+
     func itemForTesting(titled title: String) -> NSToolbarItem? {
         toolbar.items.first { $0.label == title && views[$0.itemIdentifier] == nil }
     }
