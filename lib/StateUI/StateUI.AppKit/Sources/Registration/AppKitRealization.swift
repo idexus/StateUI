@@ -173,7 +173,8 @@ enum AppKitRealization {
         // A page is no `VisualElement`: it wears `PageElement` alone, so the
         // tier's record about a background does not reach it.
         .complete(BackgroundElementContract.background, on: PageElementContract.self),
-        .complete(PageElementContract.linkOpened),
+        .complete(BackgroundElementContract.background, on: SplitViewContract.self),
+        .complete(OpenedLinkElementContract.linkOpened),
         .complete(IconElementContract.icon, on: PageContract.self),
         .complete(PageContract.navigatedFrom),
         .complete(PageContract.navigatedTo),

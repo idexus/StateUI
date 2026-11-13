@@ -1046,6 +1046,17 @@ extension ControlDictionary {
             .pageTitle("Settings")
             .pageIcon("settings.png")
             """#),
+
+        (OpenedLinkElementContract.self, #"""
+            @State var opened = ""
+
+            SplitView {
+                Text("Notes")
+            } detail: {
+                Text(opened)
+            }
+            .onLinkOpened { address in opened = address }
+            """#),
     ]
 
     /// What an application registers with a host that does not realize a provider's element, shown under the

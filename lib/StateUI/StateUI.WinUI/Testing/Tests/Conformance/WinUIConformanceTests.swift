@@ -152,6 +152,7 @@ final class WinUIConformanceTests: XCTestCase {
     func testLink() { conform(LinkTests.self) }
     func testTextAndIconElement() { conform(TextAndIconElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }
+    func testOpenedLinkElement() { conform(OpenedLinkElementTests.self) }
 
     /// Runs `family` - or `part` of it - on WinUI, and holds its verdicts to its file of WinUI's marks. A test runs
     /// in a process of its own, whose GDI objects - some forty left by every window a case shows - stay well below

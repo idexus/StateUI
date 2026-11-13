@@ -1,0 +1,5 @@
+# revision 1.1
+NavigationStack.linkOpened: ✓ openLink on NavigationStack: the host's entry the application's delegate calls, no Apple event sent
+Page.linkOpened: ✓ openLink on Page: the host's entry the application's delegate calls, no Apple event sent
+SplitView.linkOpened: ✓ openLink on SplitView: the host's entry the application's delegate calls, no Apple event sent
+TabView.linkOpened: ✓ openLink on TabView: the host's entry the application's delegate calls, no Apple event sent

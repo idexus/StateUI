@@ -215,8 +215,14 @@ gesture.
 What a screen is - its title, its buttons - its view says of its page. An
 arrangement's bar belongs to the arrangement (`BarElement`) and looks the same
 whichever page it shows. An arrangement standing
-where a page stands takes its own title and icon from the same modifiers, for
-where it is shown as an item of something else, such as a tab.
+where a page stands takes what of a page its contract wears from the same
+modifiers (`Node.takeAsArrangement`): a stack and tabs their own title and icon,
+for where they are shown as an item of something else, such as a tab. A split
+view stands only at a window's or a sheet's root, where nothing presents it as
+an item, so it wears no title or icon (`PageElement`) - only the ground of its
+pages and the links its window is given (`OpenedLinkElement`); `pageTitle` and
+`pageIcon` on one are refused at compile time, and on a view whose body is one
+they are said once and left out.
 
 ## The stack is the state
 

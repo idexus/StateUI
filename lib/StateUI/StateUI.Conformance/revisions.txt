@@ -43,7 +43,8 @@ TimePicker 6
 Picker 8
 Image 4
 Page 10
-PageElement 6
+PageElement 7
+IconElement 2
 BackgroundElement 2
 View 28
 RefreshElement 2

@@ -97,7 +97,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Popover](Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [SplitView](SplitView.md) | 16 | 8 ✅ · 3 ☑️ · 1 ✓ · 3 – | 11 ✅ · 3 ✓ · 2 – | 6 ✅ · 4 ☑️ · 4 ✓ · 2 – | 9 ✅ · 3 ☑️ · 2 ✓ · 2 – | 6 ✅ · 4 ☑️ · 1 ✓ · 4 – | 12 ✅ · 3 ☑️ · 1 ✓ |
+| [SplitView](SplitView.md) | 14 | 7 ✅ · 3 ☑️ · 1 ✓ · 3 – | 9 ✅ · 3 ✓ · 2 – | 4 ✅ · 4 ☑️ · 4 ✓ · 2 – | 7 ✅ · 3 ☑️ · 2 ✓ · 2 – | 5 ✅ · 4 ☑️ · 1 ✓ · 3 – | 10 ✅ · 3 ☑️ · 1 ✓ |
 | [TabView](TabView.md) | 12 | 4 ✅ · 3 ☑️ · 2 ✓ · 2 – | 9 ✅ · 1 ✓ · 2 – | 7 ✅ · 2 ☑️ · 1 ✓ · 2 – | 8 ✅ · 1 ☑️ · 1 ✓ · 2 – | 4 ✅ · 2 ☑️ · 1 ✓ · 4 – | 10 ✅ · 1 ☑️ · 1 ✓ |
 | [TextSpan](TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -107,10 +107,10 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarLabel](ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 7 ✅ · 2 ✓ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](Window.md) | 22 | 13 ✅ · 2 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 2 ✅ · 2 ☑️ · 4 ✓ · 12 – | 17 ✅ · 1 ☑️ · 4 ✓ | 8 ✅ · 3 ☑️ · 4 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 108 | 115 | 92 | 131 | 102 | 169 |
+| ✅ |  | 107 | 113 | 90 | 129 | 101 | 167 |
 | ✓ |  | 27 | 25 | 23 | 18 | 16 | 14 |
-| – |  | 55 | 61 | 72 | 52 | 73 | 16 |
-| **Met** | 213 | **190** | **201** | **187** | **201** | **191** | **199** |
+| – |  | 55 | 61 | 72 | 52 | 72 | 16 |
+| **Met** | 211 | **189** | **199** | **185** | **199** | **189** | **197** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 
@@ -166,6 +166,7 @@ Members many elements share, declared once.
 - [ButtonMenuElement](tiers/ButtonMenuElement.md) - What a button that holds a menu has - a button's, a toolbar button's: how its menu opens, and whether the arrow saying so shows.
 - [TextAndIconElement](tiers/TextAndIconElement.md) - What an element showing words and a picture has - a button, a bar's item: whether its words stand beside its picture.
 - [PageElement](tiers/PageElement.md) - What a page shows about itself - a title and a picture where another container presents it as an item, and what it stands on - and the links its window is given.
+- [OpenedLinkElement](tiers/OpenedLinkElement.md) - What hears the links its window is given: a link opened into the application - one chosen elsewhere, its scheme the application's - goes to the window it names, else the one the user came to last, and every page and arrangement there that hears links takes it.
 <!-- tiers:end -->
 
 ## Layers

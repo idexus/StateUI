@@ -533,7 +533,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Popover](controls/Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](controls/Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [SplitView](controls/SplitView.md) | 16 | 8 ✅ · 3 ☑️ · 1 ✓ · 3 – | 11 ✅ · 3 ✓ · 2 – | 6 ✅ · 4 ☑️ · 4 ✓ · 2 – | 9 ✅ · 3 ☑️ · 2 ✓ · 2 – | 6 ✅ · 4 ☑️ · 1 ✓ · 4 – | 12 ✅ · 3 ☑️ · 1 ✓ |
+| [SplitView](controls/SplitView.md) | 14 | 7 ✅ · 3 ☑️ · 1 ✓ · 3 – | 9 ✅ · 3 ✓ · 2 – | 4 ✅ · 4 ☑️ · 4 ✓ · 2 – | 7 ✅ · 3 ☑️ · 2 ✓ · 2 – | 5 ✅ · 4 ☑️ · 1 ✓ · 3 – | 10 ✅ · 3 ☑️ · 1 ✓ |
 | [TabView](controls/TabView.md) | 12 | 4 ✅ · 3 ☑️ · 2 ✓ · 2 – | 9 ✅ · 1 ✓ · 2 – | 7 ✅ · 2 ☑️ · 1 ✓ · 2 – | 8 ✅ · 1 ☑️ · 1 ✓ · 2 – | 4 ✅ · 2 ☑️ · 1 ✓ · 4 – | 10 ✅ · 1 ☑️ · 1 ✓ |
 | [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -543,10 +543,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarLabel](controls/ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 7 ✅ · 2 ✓ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](controls/Window.md) | 22 | 13 ✅ · 2 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 2 ✅ · 2 ☑️ · 4 ✓ · 12 – | 17 ✅ · 1 ☑️ · 4 ✓ | 8 ✅ · 3 ☑️ · 4 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 108 | 115 | 92 | 131 | 102 | 169 |
+| ✅ |  | 107 | 113 | 90 | 129 | 101 | 167 |
 | ✓ |  | 27 | 25 | 23 | 18 | 16 | 14 |
-| – |  | 55 | 61 | 72 | 52 | 73 | 16 |
-| **Met** | 213 | **190** | **201** | **187** | **201** | **191** | **199** |
+| – |  | 55 | 61 | 72 | 52 | 72 | 16 |
+| **Met** | 211 | **189** | **199** | **185** | **199** | **189** | **197** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -611,7 +611,8 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ActionElement](controls/tiers/ActionElement.md) | `role` | 1 |
 | [ButtonMenuElement](controls/tiers/ButtonMenuElement.md) | `menuKind`, `showsMenuArrow` | 2 |
 | [TextAndIconElement](controls/tiers/TextAndIconElement.md) | `showsText` | 1 |
-| [PageElement](controls/tiers/PageElement.md) | `onLinkOpened` (`linkOpened`), `title` | 2 |
+| [PageElement](controls/tiers/PageElement.md) | `title` | 1 |
+| [OpenedLinkElement](controls/tiers/OpenedLinkElement.md) | `onLinkOpened` (`linkOpened`) | 1 |
 
 ### Elements
 

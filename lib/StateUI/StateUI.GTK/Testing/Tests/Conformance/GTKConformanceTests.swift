@@ -127,6 +127,7 @@ final class GTKConformanceTests: XCTestCase {
     func testLink() { conform(LinkTests.self) }
     func testTextAndIconElement() { conform(TextAndIconElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }
+    func testOpenedLinkElement() { conform(OpenedLinkElementTests.self) }
 
     /// Runs `family` on GTK, and holds its verdicts to the family's file of GTK's marks.
     private func conform(_ family: any ConformanceFamily.Type) {

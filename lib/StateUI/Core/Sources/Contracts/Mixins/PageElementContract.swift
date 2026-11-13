@@ -3,24 +3,22 @@
 
 /// What a page shows about itself - a title and a picture where another
 /// container presents it as an item, and what it stands on - and the links its
-/// window is given. A page and an arrangement say them under the same keys, so
-/// both wear this tier, and it wears what they stand on and their picture - its
-/// background and its icon: an arrangement's background is the ground of its
-/// pages that say none.
+/// window is given. A page and an arrangement that can be presented as an item
+/// say them under the same keys, so both wear this tier, and it wears what they
+/// stand on, their picture and the links: an arrangement's background is the
+/// ground of its pages that say none.
 public enum PageElementContract: Tier {
     /// The tier's name.
     public static let name = "PageElement"
-
-    /// A link was opened into the application - one chosen elsewhere, its scheme the application's - and given
-    /// to the window this page or arrangement stands in: its address.
-    public static let linkOpened = ElementEvent<Self, String>("linkOpened", layer: .adaptive)
 
     /// The title.
     public static let title = ElementProperty<Self, String>("title", layer: .native)
 
     /// The tiers it wears.
-    public static let tiers: [any Tier.Type] = [BackgroundElementContract.self, IconElementContract.self]
+    public static let tiers: [any Tier.Type] = [
+        BackgroundElementContract.self, IconElementContract.self, OpenedLinkElementContract.self,
+    ]
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [linkOpened, title]
+    public static let members: [any ContractMember] = [title]
 }

@@ -190,7 +190,8 @@ enum WinUIRealization {
     private static let pageRecords: [HostRecord] = [
         .complete(PageContract.appearing),
         .complete(BackgroundElementContract.background, on: PageElementContract.self),
-        .complete(PageElementContract.linkOpened),
+        .complete(BackgroundElementContract.background, on: SplitViewContract.self),
+        .complete(OpenedLinkElementContract.linkOpened),
         .complete(PageContract.disappearing),
         .complete(PageContract.showsBackButton),
         .complete(PageContract.showsCloseButton),

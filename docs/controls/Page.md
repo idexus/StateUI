@@ -16,7 +16,7 @@ struct NotePage: View {
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
-Inherits: [IconElement](tiers/IconElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [PageElement](tiers/PageElement.md)
+Inherits: [IconElement](tiers/IconElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [PageElement](tiers/PageElement.md) · [OpenedLinkElement](tiers/OpenedLinkElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -89,7 +89,15 @@ What a page shows about itself - a title and a picture where another container p
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [OpenedLinkElement](tiers/OpenedLinkElement.md)
+
+What hears the links its window is given: a link opened into the application - one chosen elsewhere, its scheme the application's - goes to the window it names, else the one the user came to last, and every page and arrangement there that hears links takes it.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>onLinkOpened</code> (<code>linkOpened</code>)</td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: openLink on Page: the host's entry the application's delegate calls, no Apple event sent<br>UIKit: only through the host's own: openLink on Page: the host's entry the scene's delegate calls, as no URL context can be made<br>Android Views: only through the host's own: openLink on Page: the host's entry the activity's intent reaches, no intent sent<br>WinUI 3: only through the host's own: openLink on Page: the relay's report of an activation told the driver's address, no activation<br>GTK 4: only through the host's own: openLink on Page: the host's entry the application's open signal reaches, no file opened<br>Web: only through the host's own: openLink on Page: the host's entry the page's address with a fragment reaches, no address loaded</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

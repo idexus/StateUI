@@ -141,7 +141,11 @@ SplitView(sidebar: {
 ```
 
 The sidebar is a page, so its header, rows, and actions are composed from the
-same controls as any other page. StateUI does not require a special menu-item
+same controls as any other page. A split view has no title or icon of its own,
+as nothing presents it as an item: its pages name themselves - the sidebar's
+title its bar, the detail's the window - so `.pageTitle` and `.pageIcon` on a
+split view do not compile. It takes the ground of its pages (`.pageBackground`)
+and the links its window is given (`.onLinkOpened`). StateUI does not require a special menu-item
 model. A committed native show or hide writes `menuOpen`; assigning the state
 shows or hides the sidebar.
 

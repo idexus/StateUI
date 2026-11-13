@@ -1,9 +1,4 @@
-# revision 6.1
-NavigationStack.linkOpened: ✓ openLink on NavigationStack: the host's entry the activity's intent reaches, no intent sent
+# revision 7.1
 NavigationStack.title: ✅
-Page.linkOpened: ✓ openLink on Page: the host's entry the activity's intent reaches, no intent sent
 Page.title: ✅
-SplitView.linkOpened: ✓ openLink on SplitView: the host's entry the activity's intent reaches, no intent sent
-SplitView.title: ✅
-TabView.linkOpened: ✓ openLink on TabView: the host's entry the activity's intent reaches, no intent sent
 TabView.title: ✅

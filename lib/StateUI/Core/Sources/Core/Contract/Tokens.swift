@@ -311,7 +311,7 @@ extension NodeType {
     static let itemDragUpdated = MotionLayoutContract.itemDragUpdated.token
     static let pinchRotationUpdated = MotionLayoutContract.pinchRotationUpdated.token
     static let keyPressed = KeyboardElementContract.keyPressed.token
-    static let linkOpened = PageElementContract.linkOpened.token
+    static let linkOpened = OpenedLinkElementContract.linkOpened.token
     static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token
     static let locationTapped = MapContract.locationTapped.token
     static let navigated = WebViewContract.navigated.token

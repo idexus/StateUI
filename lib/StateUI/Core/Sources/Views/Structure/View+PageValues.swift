@@ -156,18 +156,18 @@ extension View {
     /// The handler writes the view's own state, and its scene's through a binding. Every page and arrangement of
     /// the window that hears links hears the same one, the outermost first.
     public func onLinkOpened(_ handler: @escaping @MainActor (String) throws -> Void) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageElementContract.linkOpened, handler) } }
+        pageSays { $0.modified { $0.addHandler(OpenedLinkElementContract.linkOpened, handler) } }
     }
 
     /// The same, with a handler that awaits - a sign-in finished in a browser exchanging its code: its `policy`
     /// says what a link does when it comes again while a run is under way.
     public func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageElementContract.linkOpened, policy: policy, handler) } }
+        pageSays { $0.modified { $0.addHandler(OpenedLinkElementContract.linkOpened, policy: policy, handler) } }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageElementContract.linkOpened, gate: gate, handler) } }
+        pageSays { $0.modified { $0.addHandler(OpenedLinkElementContract.linkOpened, gate: gate, handler) } }
     }
 
     /// Runs once navigation has arrived at the page. Only navigation says it; `onAppearing` answers any showing.

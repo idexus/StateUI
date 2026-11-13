@@ -7,7 +7,7 @@
 /// `PageElementContract` on a host: a page and an arrangement stand under the title and with the icon the tree gives
 /// them where another container presents them - a tabbed view's tab - and under the titles the tree changes them to,
 /// each case made for every element wearing the tier; an arrangement's background is the ground of its pages that say
-/// none; the visible page's title names its window, from a state too.
+/// none - a split view's too, which wears no title; the visible page's title names its window, from a state too.
 @_spi(Host) public enum PageElementTests: ConformanceFamily {
     public static let name = "PageElement"
 
@@ -19,8 +19,9 @@
             [
                 inTab(PageElementContract.title, of: element, "Notes", then: "Drafts"),
                 inTab(IconElementContract.icon, of: element, "test_dot.png", then: "test_wide.png"),
-            ] + (element == PageContract.nodeType.name ? [] : [groundsItsPages(element)]) + [linked(element)]
-        } + [titled, titledByState, groundHolds, groundFollowsColor, followsAMaterial, groundDrawnWhole]
+            ] + (element == PageContract.nodeType.name ? [] : [groundsItsPages(element)])
+        } + [groundsItsPages(SplitViewContract.nodeType.name)]
+            + [titled, titledByState, groundHolds, groundFollowsColor, followsAMaterial, groundDrawnWhole]
     }
 
     /// A link the application is asked to open, given to the window `element` stands in as its page, is heard by it:
@@ -28,7 +29,7 @@
     @MainActor
     static func linked(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).hearsALinkItsWindowIsGiven", proves: [
-            Covered(PageElementContract.linkOpened, on: element),
+            Covered(OpenedLinkElementContract.linkOpened, on: element),
         ]) { s in
             let heard = Received<String>()
             s.start { Presented.hearing(element) { heard.values.append($0) } }

@@ -656,6 +656,7 @@ swift.conformance NodeType: Swift.ExpressibleByStringLiteral
 swift.conformance NodeType: Swift.ExpressibleByUnicodeScalarLiteral
 swift.conformance NodeType: Swift.Hashable
 swift.conformance NodeType: Swift.Sendable
+swift.conformance OpenedLinkElementContract: StateUI.Contract
 swift.conformance Orientation: StateUI.HostRepresentable
 swift.conformance OverlayContract: StateUI.Contract
 swift.conformance OverlayContract: StateUI.ElementContract
@@ -3158,6 +3159,8 @@ swift.type.property NavigationStackContract.members: static let members: [any Co
 swift.type.property NavigationStackContract.nodeType: static let nodeType: NodeType
 swift.type.property NavigationStackContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property NavigationStackContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property OpenedLinkElementContract.members: static let members: [any ContractMember]
+swift.type.property OpenedLinkElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property OverlayContract.layer: static let layer: ElementLayer
 swift.type.property OverlayContract.layer: static var layer: ElementLayer { get }
 swift.type.property OverlayContract.members: static let members: [any ContractMember]

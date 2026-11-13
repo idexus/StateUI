@@ -476,6 +476,38 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(said.count, 3, "\(said)")
     }
 
+    /// A split view takes of what a view says of its page the ground of its pages and the links its window is
+    /// given: it has no title or icon of its own, so those - written on a view whose body is one - are said and left
+    /// out, where a stack takes them.
+    func testASplitViewTakesTheGroundAndTheLinksOfAPageAlone() throws {
+        struct Split: View {
+            var body: some View { SplitView { Plain() } detail: { Plain() } }
+        }
+        let heard = Mutex<[String]>([])
+        Complaints.route { words in heard.withLock { $0.append(words) } }
+        defer { Complaints.route(to: nil) }
+        func root(_ shown: some View) throws -> HostPatch {
+            let window = Node.window(showing: { Node.page(shown) }, session: WindowSession()).built
+            return try XCTUnwrap(Renders().render(window).subtree.first { NodeType.arrangements.contains($0.type) })
+        }
+
+        let split = try root(Split().pageTitle("Mail").pageIcon("mail.png").pageBackground(.red).onLinkOpened { _ in })
+        XCTAssertNil(split.props[PageElementContract.title.token], "no title of its own")
+        XCTAssertNil(split.props[IconElementContract.icon.token], "nor an icon")
+        XCTAssertNotNil(split.props[BackgroundElementContract.background.token], "the ground of its pages")
+        XCTAssertNotNil(split.events?[.linkOpened], "the links its window is given")
+        let said = heard.withLock { $0 }.filter { $0.contains("written on SplitView") }
+        XCTAssertEqual(said.count, 1, "\(heard.withLock { $0 })")
+        XCTAssertTrue(said.first?.contains("IconElement.icon, PageElement.title says something of a page") == true, "\(said)")
+        XCTAssertTrue(said.first?.contains("takes only the ground of its pages and the links its window is given") == true)
+
+        let path = State<[Int]>([])
+        let stack = try root(
+            NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }.pageTitle("Mail").pageIcon("mail.png"))
+        XCTAssertEqual(stack.props[PageElementContract.title.token], .string("Mail"), "a stack takes its title")
+        XCTAssertNotNil(stack.props[IconElementContract.icon.token], "and its icon")
+    }
+
     /// An arrangement fills where a page stands: what its contract does not declare - a width, a tap - is left
     /// out, and what it declares stays.
     func testAnArrangementKeepsWhatItsContractDeclares() {

@@ -1,10 +1,9 @@
-# revision 1.2
+# revision 2.2
 Button.icon: ✅
 MenuItem.icon: ✅
 MenuToggle.icon: ✅
 NavigationStack.icon: ✅
 Page.icon: ✅
-SplitView.icon: ✅
 TabView.icon: ✅
 ToolbarButton.icon: ✅
 ToolbarLabel.icon: ✅
