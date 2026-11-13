@@ -122,6 +122,54 @@ final class HostPathTests: XCTestCase {
         XCTAssertNotNil(HostPath(svg: "M0 0 A1e-200 1e-200 0 0 1 2 2")?.arcsAsCubics)
     }
 
+    /// An arc whose radii stand far past its chord is the chord the short way round and the whole ellipse less the
+    /// chord the long way: fitted to a room by its frame, as a host fits a shape, the long one is the ellipse.
+    func testALargeArcOfRadiiFarPastItsChordIsTheWholeEllipse() throws {
+        func sampled(_ curves: [HostCurveCommand]) -> [Point] {
+            var (at, points) = (Point.zero, [Point.zero])
+            for curve in curves {
+                switch curve {
+                case .cubic(let a, let b, let end):
+                    for step in 1...16 {
+                        let t = Double(step) / 16, s = 1 - t
+                        points.append(Point(
+                            s * s * s * at.x + 3 * s * s * t * a.x + 3 * s * t * t * b.x + t * t * t * end.x,
+                            s * s * s * at.y + 3 * s * s * t * a.y + 3 * s * t * t * b.y + t * t * t * end.y))
+                    }
+                    at = end
+                case .line(let end):
+                    (at, points) = (end, points + [end])
+                default: XCTFail("\(curve)")
+                }
+            }
+            return points
+        }
+        for (radius, chord) in [(1_000.0, 1e-6), (1e10, 2), (1e100, 2), (1e300, 1)] {
+            for (squash, rotation) in [(1.0, 0.0), (0.5, 0), (0.5, 90)] {
+                for sweep in [false, true] {
+                    let named = "r \(radius) chord \(chord) squash \(squash) rotation \(rotation) sweep \(sweep)"
+                    func drawn(large: Bool) -> [Point] {
+                        sampled(HostPath.arc(from: .zero, to: Point(chord, 0), radiusX: radius, radiusY: radius * squash,
+                                             rotation: rotation, largeArc: large, sweep: sweep))
+                    }
+                    let short = drawn(large: false)
+                    XCTAssertLessThanOrEqual(short.map { abs($0.y) }.max() ?? .infinity, chord * 1e-6, "short: \(named)")
+
+                    let long = drawn(large: true)
+                    let (xs, ys) = (long.map(\.x), long.map(\.y))
+                    let (width, height) = (xs.max()! - xs.min()!, ys.max()! - ys.min()!)
+                    let across = rotation == 0 ? squash : 1 / squash
+                    XCTAssertEqual(height / width, across, accuracy: 1e-3, "the long way's frame: \(named)")
+                    let center = Point((xs.max()! + xs.min()!) / 2, (ys.max()! + ys.min()!) / 2)
+                    let off = long.map { point in
+                        abs(hypot((point.x - center.x) / (width / 2), (point.y - center.y) / (height / 2)) - 1)
+                    }
+                    XCTAssertLessThan(off.max()!, 1e-3, "every point on the ellipse fitted to the room: \(named)")
+                }
+            }
+        }
+    }
+
     /// A half turn of a circle is two quarter-turn curves that end exactly where the arc does, the first at
     /// the circle's side; every other command passes as it is.
     func testAnArcIsDrawnAsQuarterTurnCurves() throws {

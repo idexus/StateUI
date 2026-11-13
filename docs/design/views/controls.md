@@ -129,9 +129,13 @@ platform's. A toolkit with no SVG arc draws each as the cubic Bézier segments
 the shared parser works out, a quarter turn at most each, so an arc bends the
 same on every host. The arithmetic works in the radii's own units, so no size
 of radius overflows it: radii too small to reach are scaled up until the arc
-just does, and an arc whose radii stand past a billion times its chord - or one
-no double could draw - is drawn as its chord. A path ending on a command, or
-inside a command's numbers, is rejected whole.
+just does. The short way round an arc whose radii stand past a billion times
+its chord is drawn as its chord, flatter than any display shows; the long way
+is the whole ellipse less that chord, its center worked from the chord's
+direction rather than divided by a length a double barely holds, so a host
+fitting the shape to its room draws the ellipse. An arc no double could draw
+is drawn as its chord. A path ending on a command, or inside a command's
+numbers, is rejected whole.
 
 ## Text runs
 

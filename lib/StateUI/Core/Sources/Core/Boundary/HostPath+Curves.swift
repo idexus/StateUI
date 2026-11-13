@@ -104,8 +104,9 @@ extension HostPath {
         let turnedY = -sine * halfX + cosine * halfY
 
         // Worked in the radii's own units, so no radius is squared: radii too small to reach are scaled up until
-        // the arc just does - radii a double cannot tell from none beside the chord are none - and an arc whose
-        // radii stand past a billion times its chord is the chord.
+        // the arc just does - radii a double cannot tell from none beside the chord are none - and the short way
+        // round an arc whose radii stand past a billion times its chord is the chord; the long way is the ellipse.
+        // Design: docs/design/views/controls.md#canvas-and-path
         var rx = abs(radiusX)
         var ry = abs(radiusY)
         var (u, v) = (turnedX / rx, turnedY / ry)
@@ -116,11 +117,14 @@ extension HostPath {
             (u, v) = (turnedX / rx, turnedY / ry)
         }
         let scaled = hypot(u, v)
-        guard scaled >= 1e-9, rx.isFinite, ry.isFinite else { return [.line(end)] }
+        guard scaled > 0, largeArc || scaled >= 1e-9, rx.isFinite, ry.isFinite else { return [.line(end)] }
 
-        let coefficient = (largeArc == sweep ? -1 : 1) * max(0, 1 - scaled * scaled).squareRoot() / scaled
-        let centerX = coefficient * rx * v
-        let centerY = coefficient * -ry * u
+        // The center stands off the chord's middle along the chord's own direction turned, worked from the
+        // direction rather than divided by a chord a double barely holds.
+        let side = (largeArc == sweep ? -1 : 1) * max(0, 1 - scaled * scaled).squareRoot()
+        let (alongU, alongV) = (u / scaled, v / scaled)
+        let centerX = side * rx * alongV
+        let centerY = side * -ry * alongU
         let center = Point(
             cosine * centerX - sine * centerY + (start.x + end.x) / 2,
             sine * centerX + cosine * centerY + (start.y + end.y) / 2)
@@ -128,12 +132,14 @@ extension HostPath {
         func turn(_ fromX: Double, _ fromY: Double, _ toX: Double, _ toY: Double) -> Double {
             atan2(fromX * toY - fromY * toX, fromX * toX + fromY * toY)
         }
-        let first = (u - coefficient * v, v + coefficient * u)
-        let last = (-u - coefficient * v, -v + coefficient * u)
+        let first = (u - side * alongV, v + side * alongU)
+        let last = (-u - side * alongV, -v + side * alongU)
         var from = turn(1, 0, first.0, first.1)
         var delta = turn(first.0, first.1, last.0, last.1)
         if !sweep, delta > 0 { delta -= 2 * .pi }
         if sweep, delta < 0 { delta += 2 * .pi }
+        // The long way turns half a turn at least: ends a double cannot tell apart are the whole turn.
+        if largeArc, abs(delta) < .pi / 2 { delta += sweep ? 2 * .pi : -2 * .pi }
 
         func point(_ at: Double) -> Point {
             Point(
