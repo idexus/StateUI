@@ -6,7 +6,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import { fileURLToPath } from "url";
+import * as vscode from "vscode";
 import { pathToFileUri, ToolingClient, toolingErrorCode, ToolRequestError } from "./Tooling/client";
 import { Project } from "./Tooling/protocol";
 import { Host } from "./hosts";
@@ -39,12 +39,17 @@ export interface Application {
     readonly checkout?: string;
 }
 
+/** The folder a file URI of the tool's names, spelled as the editor spells its folders - `c:\…` on Windows. */
+export function pathOf(uri: string): string {
+    return vscode.Uri.parse(uri).fsPath;
+}
+
 /** The applications of `project`, as the tool described them. */
 export function applicationsOf(project: Project): Application[] {
-    const workspace = project.workspaceUri && fileURLToPath(project.workspaceUri);
+    const workspace = project.workspaceUri && pathOf(project.workspaceUri);
     return project.applications.map((each) => {
-        const directory = fileURLToPath(each.packageUri);
-        const checkout = each.libraryUri && fileURLToPath(each.libraryUri);
+        const directory = pathOf(each.packageUri);
+        const checkout = each.libraryUri && pathOf(each.libraryUri);
         return {
             name: each.name, directory, hosts: each.declaredHosts,
             workspace, checkout, bundleScript: checkout ? bundlerFor(checkout, directory) : undefined,

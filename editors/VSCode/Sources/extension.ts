@@ -8,9 +8,8 @@
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { fileURLToPath } from "url";
 import * as vscode from "vscode";
-import { Application, applicationsOf, hasHead, readApplications } from "./applications";
+import { Application, applicationsOf, hasHead, pathOf, readApplications } from "./applications";
 import { isCheckout } from "./checkouts";
 import { configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
 import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
@@ -70,7 +69,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             try {
                 const project = await readApplications(await tool.for(folder));
                 unread = false;
-                return { applications: project ? applicationsOf(project) : [], workspace: project?.workspaceUri && fileURLToPath(project.workspaceUri) };
+                return { applications: project ? applicationsOf(project) : [], workspace: project?.workspaceUri && pathOf(project.workspaceUri) };
             } catch (error) {
                 // Said once until a folder is read again: a missing tool would say it on every change.
                 if (!unread) {
@@ -425,7 +424,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 }
                 return undefined;
             }
-            const workspace = fileURLToPath(project.workspaceUri);
+            const workspace = pathOf(project.workspaceUri);
             const beside = [...new Set(applicationsOf(project).map((each) => path.dirname(each.directory)))];
             const parent = beside.length === 1 ? beside[0] : workspace;
             const name = given?.name ?? await askName("application", parent, workspace, "New Application", applicationPrompt);
@@ -440,7 +439,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             }
 
             // Runnable at once: found, chosen, and indexed as the host the editor works as.
-            const directory = fileURLToPath(made.createdUris[0]);
+            const directory = pathOf(made.createdUris[0]);
             await discover();
             await selectApplication(name);
             updateFolderContexts();
@@ -517,7 +516,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             if (!made) {
                 return undefined;
             }
-            const workspace = fileURLToPath(made.workspaceUri);
+            const workspace = pathOf(made.workspaceUri);
             writeEditorFiles(workspace);
 
             void vscode.window.showInformationMessage(

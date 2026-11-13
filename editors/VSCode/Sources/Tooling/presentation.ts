@@ -11,14 +11,18 @@ import { ToolingClients } from "./clients";
 import { locateTool, ToolNotFound } from "./locate";
 import { apiVersions, MutationName, ParamsOf, ResultOf } from "./protocol";
 
+/** Where the tool's own words go, and every problem said of it: a notification goes, the output stays. */
+let log: vscode.OutputChannel | undefined;
+
 /** The extension's connections, shut down with it, and the output the tool's own words go to. */
 export function toolingClients(context: vscode.ExtensionContext): ToolingClients {
-    const log = vscode.window.createOutputChannel("StateUI Tool");
+    const channel = vscode.window.createOutputChannel("StateUI Tool");
+    log = channel;
     const clients = new ToolingClients(async (folder) => ToolingClient.start({
         executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
-        folder, clientVersion: context.extension.packageJSON.version, log: (line) => log.appendLine(line),
+        folder, clientVersion: context.extension.packageJSON.version, log: (line) => channel.appendLine(line),
     }));
-    context.subscriptions.push(log, { dispose: () => void clients.dispose() });
+    context.subscriptions.push(channel, { dispose: () => void clients.dispose() });
     return clients;
 }
 
@@ -49,6 +53,7 @@ export async function withTool<T>(clients: ToolingClients, folder: string, failu
 
 /** Says `failure` with why the tool gave no answer - a missing tool with the way to the setting that names it. */
 export function sayProblem(failure: string, error: unknown): void {
+    log?.appendLine(`StateUI: ${failure} - ${problemOf(error)}`);
     const settings = error instanceof ToolNotFound ? ["Open Settings"] : [];
     void vscode.window.showErrorMessage(`StateUI: ${failure} - ${problemOf(error)}`, ...settings).then(async (answer) => {
         if (answer) {
