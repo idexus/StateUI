@@ -32,6 +32,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `stateui releases list` lists the releases. `stateui serve --stdio` answers an editor's JSON-RPC over standard input
   and output - the same answers, and the making as operations with events and a cancel. It builds, runs and tests no
   application yet: until it does, `.scripts` build and run each host as before.
+- **`stateui build`, `run` and `package` make AppKit applications.** Every application is a bundle - its name,
+  identifier `com.stateui.<name>` and icon - with its own `Platforms/AppKit/Info.plist` keys laid over the host's;
+  a failed build never runs or packages an older one; one application builds at a time on a machine. The Gallery's
+  name, links and location purpose stand in its own `Info.plist`.
 - **The VS Code extension works through `stateui`.** It finds the applications, checks the toolchain, makes a
   project group and a new application - **StateUI: New Application**, beside a workspace's applications - and checks
   their names as they are typed, all by the tool; the `stateui.cliPath` setting names it where it is not on the

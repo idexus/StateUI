@@ -127,11 +127,60 @@ public struct ToolingService: Sendable {
         await Doctor().check()
     }
 
+    /// Builds `request`'s application and publishes it - `application/build`.
+    public func build(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> BuildResult {
+        try await ApplicationBuilder().build(request, in: folder, operation: operation, reporter: reporter)
+    }
+
+    /// Builds `request`'s application for release and lays it out to be shipped - `application/package`.
+    public func package(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> BuildResult {
+        try await ApplicationBuilder().package(request, in: folder, operation: operation, reporter: reporter)
+    }
+
+    /// `work` given a reporter whose words reach `context` in the order they were said.
+    private static func reporting<Result: Sendable>(
+        _ context: OperationContext, _ work: (BuildReporter) async throws -> Result
+    ) async throws -> Result {
+        let (said, saying) = AsyncStream<Reported>.makeStream()
+        let telling = Task {
+            for await each in said {
+                switch each {
+                case .progress(let words): await context.progress(OperationProgress(stage: words))
+                case .output(let line): await context.output(Array((line.text + "\n").utf8), on: line.stream == .standardError ? .stderr : .stdout)
+                }
+            }
+        }
+        defer { saying.finish() }
+        let reporter = BuildReporter(progress: { saying.yield(.progress($0)) }, output: { saying.yield(.output($0)) })
+        let result = try await work(reporter)
+        saying.finish()
+        await telling.value
+        return result
+    }
+
+    /// The workspace a connection opened, as a folder.
+    private static func folder(of caller: RequestContext) throws -> URL {
+        guard let uri = caller.workspaceUri else {
+            throw ToolingError(.projectNotFound, "No project is named, and the connection opened no workspace.")
+        }
+        return try FileURI.url(uri)
+    }
+
     /// The methods an editor calls, each answered by this service.
     public var methods: Methods {
         var methods = Methods()
         methods.query("server/info") { (_: NoParameters) in serverInfo() }
         methods.query("toolchain/check") { (_: NoParameters) in await checkToolchain() }
+        methods.mutation("application/build") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
+            try await Self.reporting(context) { reporter in
+                try await build(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter)
+            }
+        }
+        methods.mutation("application/package") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
+            try await Self.reporting(context) { reporter in
+                try await package(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter)
+            }
+        }
         methods.query("name/check") { (check: NameCheck) in
             checkName(check.name, of: check.kind, in: try check.parentUri.map(FileURI.url))
         }
@@ -163,4 +212,10 @@ public struct ToolingService: Sendable {
         }
         return methods
     }
+}
+
+/// What a build said, kept in order on its way to an editor.
+private enum Reported: Sendable {
+    case progress(String)
+    case output(ProcessOutput)
 }

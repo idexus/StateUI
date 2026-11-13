@@ -1,0 +1,28 @@
+{
+  "request" : {
+    "id" : "13",
+    "jsonrpc" : "2.0",
+    "method" : "application/build",
+    "params" : {
+      "host" : "appkit",
+      "projectUri" : "file:///Users/example/Projects/Demo/apps/Notes",
+      "requestToken" : "2a9c4e6b-8d1f-4a3c-b5e7-0f9d2c4a6b80"
+    }
+  },
+  "response" : {
+    "id" : "13",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "application" : "Notes",
+    "architecture" : "arm64",
+    "configuration" : "debug",
+    "folderUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug",
+    "host" : "appkit",
+    "programUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug/NotesAppKit.app/Contents/MacOS/NotesAppKit"
+  }
+}

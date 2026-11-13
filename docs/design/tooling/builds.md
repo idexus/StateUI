@@ -34,6 +34,27 @@ leaves no lock behind. A waiter tries again every quarter second, is told who
 holds it as the holder wrote in `build.owner` beside it, and can be cancelled
 while it waits.
 
+## An application build
+
+`stateui build` (`application/build`) reads the project, picks the
+application - the one named, else the only one - and refuses before anything
+runs what cannot be: a host whose row has not moved to the tool, an
+application with no head for it, one naming no checkout. It resolves the
+build's context, waits for the machine's permit, journals the operation, and
+runs `swift build --product <Name><Host>` with exactly the host's
+`STATEUI_HOST`, `--disable-build-manifest-caching` (the manifest reads that
+variable) and a triple only for an architecture not the machine's own; every
+line SwiftPM writes goes to the journal and, as the operation's output, to
+the client. A failed compile publishes nothing and says SwiftPM's last
+lines. Then it asks SwiftPM where it laid the product (`--show-bin-path`),
+assembles the host's artifact in staging and publishes it whole
+(apple-bundles.md). `stateui package` (`application/package`) builds for
+release unless told otherwise and lays the bundle, made anew, in its
+`--output`, else `<workspace>/artifacts/<Name>/<Host>`. `stateui run` builds,
+then runs the program in the foreground, sharing the terminal, until it ends
+or Ctrl+C stops it with everything it started; standard output keeps the
+result alone, the build's words going to standard error.
+
 ## The operation journal
 
 A connection keeps its operations in memory; what stays is the project's

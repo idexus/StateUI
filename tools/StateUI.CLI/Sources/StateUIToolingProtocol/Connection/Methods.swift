@@ -83,9 +83,21 @@ public struct Methods: Sendable {
         _ name: String,
         _ work: @escaping @Sendable (Parameters, OperationContext) async throws -> Result
     ) {
+        mutation(name) { (parameters: Parameters, context: OperationContext, _: RequestContext) in try await work(parameters, context) }
+    }
+
+    /// Adds method `name`, starting an operation of `work` given the request's context - the caller's workspace.
+    public mutating func mutation<Parameters: Codable & Sendable, Result: Codable & Sendable>(
+        _ name: String,
+        _ work: @escaping @Sendable (Parameters, OperationContext, RequestContext) async throws -> Result
+    ) {
         addOperationMethods()
         let operations = operations
-        answers[name] = { params, caller in await Self.accept(name, params, caller, operations, work) }
+        answers[name] = { params, caller in
+            await Self.accept(name, params, caller, operations) { parameters, context in
+                try await work(parameters, context, RequestContext(workspaceUri: caller.workspaceUri))
+            }
+        }
     }
 
     private static func accept<Parameters: Codable & Sendable, Result: Codable & Sendable>(

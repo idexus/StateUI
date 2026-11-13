@@ -77,6 +77,14 @@ final class ProtocolExamplesTests: XCTestCase {
             workspaceUri: demo, library: "StateUI", changedUris: [demo + "/stateui.json", demo + "/StateUI", demo + "/Notes"])
         let used = WorkspaceChange(
             workspaceUri: demo, library: "../../StateUI", changedUris: [demo + "/stateui.json", demo + "/Notes/Package.swift"])
+        let artifact = demo + "/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug"
+        let built = BuildResult(
+            application: "Notes", host: .appkit, configuration: .debug, architecture: .arm64, folderUri: artifact,
+            programUri: artifact + "/NotesAppKit.app/Contents/MacOS/NotesAppKit")
+        let packaged = BuildResult(
+            application: "Notes", host: .appkit, configuration: .release, architecture: .arm64,
+            folderUri: demo + "/artifacts/Notes/AppKit",
+            programUri: demo + "/artifacts/Notes/AppKit/NotesAppKit.app/Contents/MacOS/NotesAppKit")
         return [
             Example(name: "initialize", messages: [
                 ("request", try request("1", "initialize", initialize)), ("response", try response("1", initialized)),
@@ -125,6 +133,21 @@ final class ProtocolExamplesTests: XCTestCase {
             Example(name: "releases-list", messages: [
                 ("request", try request("9", "releases/list", ReleaseQuery(minimum: "0.8.0"))),
                 ("response", try response("9", ReleaseList(repository: Release.repository, releases: ["0.8.5", "0.8.4", "0.8.0"]))),
+            ], answeredAsWritten: false),
+            Example(name: "application-build", messages: [
+                ("request", try request("13", "application/build", Mutation(
+                    requestToken: "2a9c4e6b-8d1f-4a3c-b5e7-0f9d2c4a6b80",
+                    request: BuildRequest(projectUri: demo + "/apps/Notes", host: .appkit)))),
+                ("response", try response("13", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: built)),
+            ], answeredAsWritten: false),
+            Example(name: "application-package", messages: [
+                ("request", try request("14", "application/package", Mutation(
+                    requestToken: "4c1e8a2d-6b3f-4e5a-9c7d-1b3e5f7a9c20",
+                    request: BuildRequest(projectUri: demo + "/apps/Notes", host: .appkit, configuration: .release,
+                                          architecture: .arm64, outputUri: demo + "/artifacts/Notes/AppKit")))),
+                ("response", try response("14", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: packaged)),
             ], answeredAsWritten: false),
             Example(name: "name-check", messages: [
                 ("request", try request("12", "name/check", NameCheck(kind: .application, name: "My-App", parentUri: demo + "/apps"))),

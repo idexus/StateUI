@@ -154,6 +154,38 @@ export const ProjectReference = object<ProjectReference>({ projectUri: optional(
 export interface ApplicationRequest { name: string; parentUri: string; checkoutUri?: string }
 export const ApplicationRequest = object<ApplicationRequest>({ name: string, parentUri: string, checkoutUri: optional(string) });
 
+export type Architecture = "arm64" | "x86_64" | "armv7" | "x86" | "wasm32";
+export const Architecture = oneOf<Architecture>("arm64", "x86_64", "armv7", "x86", "wasm32");
+
+export type BuildConfiguration = "debug" | "release";
+export const BuildConfiguration = oneOf<BuildConfiguration>("debug", "release");
+
+export interface BuildRequest {
+    projectUri?: string;
+    application?: string;
+    host: HostFamily;
+    configuration?: BuildConfiguration;
+    architecture?: Architecture;
+    outputUri?: string;
+}
+export const BuildRequest = object<BuildRequest>({
+    projectUri: optional(string), application: optional(string), host: HostFamily, configuration: optional(BuildConfiguration),
+    architecture: optional(Architecture), outputUri: optional(string),
+});
+
+export interface BuildResult {
+    application: string;
+    host: HostFamily;
+    configuration: BuildConfiguration;
+    architecture: Architecture;
+    folderUri: string;
+    programUri: string;
+}
+export const BuildResult = object<BuildResult>({
+    application: string, host: HostFamily, configuration: BuildConfiguration, architecture: Architecture, folderUri: string,
+    programUri: string,
+});
+
 export type NameKind = "application" | "workspace";
 export const NameKind = oneOf<NameKind>("application", "workspace");
 
@@ -227,6 +259,8 @@ export const methods = {
     "operation/get": query(OperationReference, OperationSnapshot),
     "operation/cancel": query(OperationReference, CancelResult),
     "project/create": mutation(ApplicationRequest, ProjectCreation),
+    "application/build": mutation(BuildRequest, BuildResult),
+    "application/package": mutation(BuildRequest, BuildResult),
     "workspace/create": mutation(WorkspaceRequest, WorkspaceChange),
     "workspace/useLibrary": mutation(LibraryRequest, WorkspaceChange),
 };
