@@ -32,7 +32,7 @@ extension WinUIDriver {
             return "the sheet's close chosen as the relay reports it, no button pressed"
         case "activate" where ["ToolbarButton", "ToolbarToggle"].contains(Ability(ability).element):
             return "the bar's action chosen as the relay reports it, no button pressed"
-        case "minimize", "restore", "switchAway", "switchBack":
+        case "minimize", "restore", "switchAway", "switchBack", "bringToFront":
             return "the relay's report of the window's state handed to the host, no window activated"
         default: break
         }

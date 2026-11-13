@@ -542,9 +542,9 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarGroup](controls/ToolbarGroup.md) | 16 | 6 ✅ · 10 – | 6 ✅ · 10 – | 5 ✅ · 1 ☑️ · 10 – | 7 ✅ · 9 – | 6 ✅ · 10 – | 15 ✅ · 1 – |
 | [ToolbarLabel](controls/ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 7 ✅ · 2 ✓ · 17 – | 8 ✅ · 18 – | 26 ✅ |
-| [Window](controls/Window.md) | 22 | 13 ✅ · 2 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 2 ✅ · 2 ☑️ · 4 ✓ · 12 – | 17 ✅ · 1 ☑️ · 4 ✓ | 8 ✅ · 3 ☑️ · 4 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 107 | 113 | 90 | 129 | 101 | 167 |
-| ✓ |  | 27 | 25 | 23 | 18 | 16 | 14 |
+| [Window](controls/Window.md) | 22 | 14 ✅ · 2 ☑️ · 5 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 2 ✅ · 2 ☑️ · 4 ✓ · 12 – | 16 ✅ · 1 ☑️ · 5 ✓ | 8 ✅ · 3 ☑️ · 4 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
+| ✅ |  | 108 | 113 | 90 | 128 | 101 | 167 |
+| ✓ |  | 26 | 25 | 23 | 19 | 16 | 14 |
 | – |  | 55 | 61 | 72 | 52 | 72 | 16 |
 | **Met** | 211 | **189** | **199** | **185** | **199** | **189** | **197** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
@@ -652,7 +652,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ToolbarGroup](controls/ToolbarGroup.md) | `barEdge`, `hidesWithSidebar`, `order`, `part`, `position`, `spacing`, `standsAlone` | 7 | 5 ✅ · 2 – | 5 ✅ · 2 – | 4 ✅ · 1 ☑️ · 2 – | 6 ✅ · 1 – | 5 ✅ · 2 – | 6 ✅ · 1 – |
 | [ToolbarToggle](controls/ToolbarToggle.md) | `onIcon` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
-| [Window](controls/Window.md) | `created`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `title`, `width`, `windowKind`, `windowValue`, `x`, `y` | 17 | 13 ✅ · 3 ✓ | 2 ✅ · 1 ✓ · 8 – | 2 ✅ · 1 ✓ · 12 – | 16 ✅ · 1 ✓ | 8 ✅ · 2 ✓ · 7 – | 2 ✅ · 1 ✓ · 14 – |
+| [Window](controls/Window.md) | `created`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `title`, `width`, `windowKind`, `windowValue`, `x`, `y` | 17 | 14 ✅ · 2 ✓ | 2 ✅ · 1 ✓ · 8 – | 2 ✅ · 1 ✓ · 12 – | 15 ✅ · 2 ✓ | 8 ✅ · 2 ✓ · 7 – | 2 ✅ · 1 ✓ · 14 – |
 <!-- members:end -->
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,

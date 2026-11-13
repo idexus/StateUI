@@ -457,9 +457,10 @@ extension WinUIDriver {
             let back = try read(bar, "back") == "1"
             let actions = try read(bar, "actions") != "||"
             return (back || actions).propValue
-        // The window's title bar shows the page's title in its place, else the page's heading does.
+        // The window's title bar shows the page's title in its place, else the page's heading does - in its own window.
         case ("showsTitle", _):
-            let heading = renderer?.views(WinUILayoutView.self).contains { $0.heading != nil } ?? false
+            let shown = element.enclosing(type: .window) ?? element
+            let heading = WinUIRenderer.views(WinUILayoutView.self, in: shown).contains { $0.heading != nil }
             return try (heading || !read(window(of: element).titleBar, "title").isEmpty).propValue
         // The window's title bar offers the way back of the page it shows.
         case ("showsBackButton", _): return (try read(window(of: element).titleBar, "back") == "1").propValue

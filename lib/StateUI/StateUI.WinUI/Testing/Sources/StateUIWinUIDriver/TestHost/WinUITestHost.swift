@@ -183,7 +183,8 @@ extension WinUIRenderer {
         return Self.views(type, in: root)
     }
 
-    private static func views<Native: WinUIView>(_ type: Native.Type, in element: MountedElement) -> [Native] {
+    /// Every view of `type` under `element`, its own included, in order.
+    static func views<Native: WinUIView>(_ type: Native.Type, in element: MountedElement) -> [Native] {
         let own = ((element.native as? WinUIElement)?.view as? Native).map { [$0] } ?? []
         return own + element.children.flatMap { views(type, in: $0) }
     }

@@ -92,6 +92,24 @@
                 s.settle { !said.values.isEmpty }
                 s.expect(said.values, [true], "the draft's window answered")
             },
+            ConformanceCase("aWindowOfAKindShowsItsOwnPagesTitle", proves: [
+                Covered(WindowContract.windowKind),
+            ], needs: [
+                Covered(PageContract.showsTitle), Covered(SplitViewContract.self),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
+            ]) { s in
+                try s.start(application: { TitledWindowsApplication() })
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                let page = { (id: String) throws -> MountedElement in
+                    guard let page = try s.element(id).enclosing(type: .page) else { throw DriverCannot("find \(id)'s page") }
+                    return page
+                }
+
+                try s.settle { try s.held(PageContract.showsTitle, on: page("untitled")) == false }
+                s.expect(try s.held(PageContract.showsTitle, on: page("titled")), true, "the first window's page shows its title")
+                s.expect(try s.held(PageContract.showsTitle, on: page("untitled")), false, "the second's shows none")
+            },
             ConformanceCase("aWindowThePlatformKeepsComesBackForItsValue", proves: [
                 Covered(WindowContract.windowValue),
             ]) { s in
@@ -317,5 +335,52 @@ struct NotesPage: View {
             Button("Open").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(NotesApplication.note, value: 7) }.id("open")
             Button("Another").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(NotesApplication.other) }.id("another")
         }
+    }
+}
+
+/// Two windows: the first a split view, its detail a page showing its title and a button opening the second, whose
+/// page shows none.
+struct TitledWindowsApplication: Application {
+    /// The kind of the second window.
+    static let untitled = WindowKind<Void>("conformance.untitled")
+
+    var body: some Scene {
+        TitledWindowsScene()
+    }
+}
+
+/// The scene of `TitledWindowsApplication`.
+struct TitledWindowsScene: Scene {
+    var body: some Scene {
+        WindowGroup {
+            SplitView {
+                Text("Sidebar").pageTitle("Places")
+            } detail: {
+                TitledPage()
+            }
+        }
+        WindowGroup(TitledWindowsApplication.untitled) {
+            NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                Text("Root")
+            } destination: { _ in
+                Text("Draft").id("untitled").pageTitle("Draft").showsTitle(false)
+            }
+        }
+    }
+}
+
+/// The detail of the first window: a page showing its title, with a button opening the second window.
+struct TitledPage: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        let application = self.application
+        return VStack {
+            Text("Notes").id("titled")
+            Button("Open").onClicked(policy: .ignoreWhileRunning) {
+                try await application.openWindow(TitledWindowsApplication.untitled)
+            }.id("open")
+        }
+        .pageTitle("Notes")
     }
 }

@@ -1,10 +1,10 @@
-# revision 15.2
+# revision 16.3
 Window: ✅
 Window.created: ✅
 Window.destroying: ✅
-Window.floatsOnTop: ✓ switchAway on Window: the relay's report of the window's state handed to the host, no window activated
+Window.floatsOnTop: ✓ bringToFront on Window: the relay's report of the window's state handed to the host, no window activated
 Window.height: ✅
-Window.hidesWhenInactive: ✅
+Window.hidesWhenInactive: ✓ bringToFront on Window: the relay's report of the window's state handed to the host, no window activated
 Window.isMaximizable: ✅
 Window.isMinimizable: ✅
 Window.maximumHeight: ✅

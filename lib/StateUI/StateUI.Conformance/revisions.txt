@@ -22,7 +22,7 @@ ToolbarGroup 10
 TitleView 3
 MenuBar 4
 MenuItem 4
-Window 15
+Window 16
 Scene 4
 Overlay 6
 BarElement 15
@@ -128,7 +128,7 @@ winui SplitView 2
 winui ToolbarButton 2
 winui ToolbarGroup 2
 winui ToolbarToggle 2
-winui Window 2
+winui Window 3
 winui ButtonMenuElement 2
 winui PopupElement 2
 winui PresentedElement 2
