@@ -221,8 +221,10 @@ for where they are shown as an item of something else, such as a tab. A split
 view stands only at a window's or a sheet's root, where nothing presents it as
 an item, so it wears no title or icon (`PageElement`) - only the ground of its
 pages and the links its window is given (`OpenedLinkElement`); `pageTitle` and
-`pageIcon` on one are refused at compile time, and on a view whose body is one
-they are said once and left out.
+`pageIcon` written on one, or on a view whose body is one, are said once and
+left out. They are modifiers of every view - what a view says of its page - so
+no type refuses them on a split view alone: an overload of its own marked
+unavailable loses to the one every view has, and the call compiles.
 
 ## The stack is the state
 

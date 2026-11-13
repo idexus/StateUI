@@ -53,7 +53,8 @@
 /// a host with room for both pages may open with the sidebar showing. The
 /// sidebar page's title names the sidebar's bar; a sidebar page with none
 /// shows the application's name there. A split view stands at a window's or a
-/// sheet's root and has no title or icon of its own: its pages have theirs.
+/// sheet's root and has no title or icon of its own: its pages have theirs, and
+/// `pageTitle` or `pageIcon` written on it is said once and says nothing.
 public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement {
     /// The node this page describes.
     public var node: Node
@@ -106,21 +107,6 @@ public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement
         copy.id = identity
         return copy
     }
-}
-
-extension SplitView {
-    /// Refused: a split view stands at a window's or a sheet's root, where nothing shows a title of its own - its
-    /// pages say theirs.
-    @available(*, unavailable, message: "a split view has no title of its own: write it on its pages")
-    public func pageTitle(_ value: String) -> Modified { fatalError() }
-
-    /// Refused, as a title is.
-    @available(*, unavailable, message: "a split view has no title of its own: write it on its pages")
-    public func pageTitle(_ state: Binding<String>) -> Modified { fatalError() }
-
-    /// Refused: nothing presents a split view as an item, so it has no icon of its own.
-    @available(*, unavailable, message: "a split view has no icon of its own: write it on its pages")
-    public func pageIcon(_ value: ImageSource) -> Modified { fatalError() }
 }
 
 extension SplitView {
