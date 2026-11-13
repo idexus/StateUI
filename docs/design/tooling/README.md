@@ -31,3 +31,5 @@ writes its result as words or as the message an editor receives.
   application build at a time on a machine, and the operation journal.
 - [Pictures](pictures.md): which heads get their pictures drawn, and how
   an SVG, an application's pictures and a macOS icon are drawn.
+- [Apple bundles](apple-bundles.md): an Apple head's `Info.plist`, and what an
+  AppKit bundle holds.

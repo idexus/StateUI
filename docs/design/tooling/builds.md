@@ -43,3 +43,16 @@ version 1: the operation, its kind, what was asked, its state, when it started
 and ended, the failure) written as it opens and again as it ends, through a
 file written beside and moved into place, and `output.log`, what its programs
 said. `.stateui/` stands in every workspace's `.gitignore`.
+
+## An artifact published whole
+
+What a build makes is an artifact (`ArtifactStore`): assembled in
+`<application>/.build/stateui/staging/<operation>/`, then given its
+`artifact.json` - schema version 1: its identifier `<host>-<context
+key>-<configuration>`, the operation that made it, when, the application,
+the host, configuration and architecture, the product, the programs it
+starts by and how it is signed - and moved into
+`.build/stateui/artifacts/<identifier>/` in place of the last, which waits
+aside until the new one stands. A failed operation drops its staging and
+never touches the last artifact, so nothing ever runs or packages what an
+earlier build left after a later one failed.
