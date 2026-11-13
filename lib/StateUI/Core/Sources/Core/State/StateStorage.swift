@@ -118,6 +118,9 @@ extension State {
         /// hook.
         var noted: ((Value) -> Void)?
 
+        /// Takes the journey the host carries as it stands, answering what lays it back whole.
+        var hostHeld: (() -> () -> Void)?
+
         /// The value wearing the theme last written into a carried state - a color
         /// pair, the accent, a material holding either; the image holds its half in force.
         /// Design: docs/design/core/state.md#themed-colors-on-a-carried-state
@@ -277,12 +280,21 @@ extension State {
             return false
         }
 
-        /// Puts the state back, when called, to the value it holds now - a report that did not land whole.
+        /// Puts the state back, when called, to what it holds now - a journey the host carries whole, its law and its
+        /// way - where anything wrote it since; one nothing wrote stands as it is.
+        /// Design: docs/design/core/journeys.md#a-refusal-up-the-chain
         func restorer() -> () -> Void {
-            let held = value
+            let (held, themedHeld, stampHeld, journey) = (value, themed, stamp, hostHeld?())
             return { [weak self] in
-                self?.write(held)
-                self?.askForRender()
+                guard let self, self.stamp != stampHeld else { return }
+                if let journey {
+                    journey()
+                    self.themed = themedHeld
+                    self.keep?(held)
+                } else {
+                    self.write(held)
+                }
+                self.askForRender()
             }
         }
 
@@ -398,6 +410,13 @@ extension State.Storage where Value: Walked {
                 Self.lay([.value, .destination, .velocity], of: journey, on: made)
             }
             noted = { destination in known.destination = destination }
+            hostHeld = {
+                let held = Self.journey(on: made)
+                return {
+                    known.destination = held.destination
+                    Self.lay([.value, .destination, .velocity, .motion, .completion, .stopped], of: held, on: made)
+                }
+            }
             made.told = { [weak self, unowned made] mask in
                 let now = Self.journey(on: made)
 

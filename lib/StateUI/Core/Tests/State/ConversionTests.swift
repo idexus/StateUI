@@ -719,6 +719,43 @@ final class ConversionTests: XCTestCase {
         }
     }
 
+    /// A report that does not land leaves a source it never wrote as it stands - a journey on its way keeps its law
+    /// and its way - and puts a source it wrote back whole, the journey it was on included.
+    func testAReportNotLandingLeavesEachJourneyAsItStood() throws {
+        let record = SceneRecord(id: "journeys", declaration: 0)
+        let kind = KeyName("conversion.journey")
+        record.open(kind, value: AnyHashable(1.0), text: "1")
+        record.open(kind, value: AnyHashable(2.0), text: "2")
+        let (a, b) = (record.windowValue(record.windows[0], as: Double.self), record.windowValue(record.windows[1], as: Double.self))
+        let renders = Renders()
+        let patch = renders.render(VStack {
+            Slider(a.projectedValue).maximum(100)
+            Slider(b.projectedValue).maximum(100)
+            Slider(Binding<Double>.multi(a.projectedValue, b.projectedValue).convert({ $0 * 10 + $1 }, back: { _ in (3, 3) }))
+                .maximum(100)
+        }.node)
+        let number = try XCTUnwrap(patch.children.last?.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+        a.projectedValue.journey.snap(to: 5)
+        _ = a.projectedValue.journey.move(to: 1, .eased(.seconds(1), curve: .linear))
+        b.projectedValue.journey.snap(to: 0)
+        _ = b.projectedValue.journey.move(to: 2, .eased(.seconds(2), curve: .linear))
+        let before = try (XCTUnwrap(a.storage.journeyLanes), XCTUnwrap(b.storage.journeyLanes))
+
+        dragged(number, to: 33)
+        board.cycle(now: 16, reducesMotion: false)
+
+        let after = try (XCTUnwrap(a.storage.journeyLanes), XCTUnwrap(b.storage.journeyLanes))
+        XCTAssertEqual(record.windows.compactMap { $0.value?.base as? Double }, [1, 2], "neither window moved")
+        for (name, was, now) in [("written", before.0, after.0), ("never written", before.1, after.1)] {
+            XCTAssertEqual(now.destination, was.destination, name)
+            XCTAssertEqual(now.motion, was.motion, "\(name): the law it travelled under")
+            XCTAssertEqual(now.value, was.value, name)
+            XCTAssertEqual(now.velocity, was.velocity, name)
+        }
+    }
+
     /// A report into a two-source conversion lands on both sources.
     func testAReportComesBackIntoBothSources() throws {
         let hours = State(wrappedValue: 1.0)

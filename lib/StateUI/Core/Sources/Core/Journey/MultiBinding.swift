@@ -330,7 +330,9 @@ extension MultiBinding {
                 return false
             }
             let (one, two) = back(derived.value)
-            let restore = (first.writtenBack + second.writtenBack).map { $0.restorer() }
+            // Each source taken as it stands just before it is written, and put back last taken first: one a
+            // refusal stopped short of stands as it is, its journey on its way.
+            var restore = first.writtenBack.map { $0.restorer() }
             first.settle(one, asking: true)
             var landed = first.conversion?.back?() ?? true
             if landed, let why = second.refusal(of: two) {
@@ -338,11 +340,12 @@ extension MultiBinding {
                 landed = false
             }
             if landed {
+                restore += second.writtenBack.map { $0.restorer() }
                 second.settle(two, asking: true)
                 landed = second.conversion?.back?() ?? true
             }
             guard landed else {
-                restore.forEach { $0() }
+                restore.reversed().forEach { $0() }
                 derived.settle(transform(first.value, second.value), asking: true)
                 return false
             }

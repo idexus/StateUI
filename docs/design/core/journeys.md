@@ -312,8 +312,14 @@ refusals read each other - two windows of one kind asked for one value, free
 while neither holds it. So the second source is asked again once the first
 stands, each way back says whether its report landed, and a report that does
 not land whole puts back every state it wrote - each source and its chain's
-(`writtenBack`, `restorer`) - before the derived state goes back to what they
-hold: a report lands whole or not at all.
+(`writtenBack`, `restorer`), each taken as it stood just before it was written
+and put back last taken first - before the derived state goes back to what they
+hold: a report lands whole or not at all. Putting back touches only what was
+written: a source the refusal stopped short of, and a state whose write stamp
+did not move, stand as they are - a journey on its way keeps its law. One that
+was written gets its journey back whole - its value, destination, speed, law,
+completion and stop, laid as they lay (`hostHeld`), the destination this side
+knows with them, so the host's next frame asks nothing.
 
 ## A conversion declared again
 
