@@ -156,20 +156,13 @@ final class AppsTests: XCTestCase {
 
     // MARK: - The AppKit head's artwork
 
-    /// An AppKit head no script of `.scripts/AppKit` bundles runs, and is deployed, as its executable with the
-    /// application's `Resources` beside it: `run-app.sh` and `deploy.sh` lay them there, the host reads them where
-    /// the program stands - on another Mac too - and the head finds no artwork itself.
-    func testAnUnbundledAppKitHeadReadsItsArtworkBesideItself() throws {
-        let scripts = SourceTree.repository.appendingPathComponent(".scripts/AppKit")
-        let deploy = try String(contentsOf: scripts.appendingPathComponent("deploy.sh"), encoding: .utf8)
-        let run = try String(contentsOf: scripts.appendingPathComponent("run-app.sh"), encoding: .utf8)
-        XCTAssertTrue(deploy.contains(#"cp -R "$app_dir/Resources/$artwork" "$destination/Resources/""#),
-                      "deploy.sh lays the artwork beside the head")
-        XCTAssertTrue(run.contains(#"cp -R "$app_dir/Resources/$artwork" "$build/Resources/""#),
-                      "run-app.sh lays the artwork beside the head")
+    /// An AppKit head finds its artwork where what carries it put it - its bundle's `Resources`, which the stateui
+    /// tool lays for every application (AppKitBundleTests), else the `Resources` beside an unbundled program - and
+    /// never looks for it itself.
+    func testAnAppKitHeadReadsItsArtworkFromWhatCarriesIt() throws {
         let carried = try SourceTree.runtimeSources().first { $0.path.hasSuffix("/CarriedArtwork.swift") }?.text ?? ""
-        XCTAssertTrue(carried.contains(#"appendingPathComponent("Resources", isDirectory: true)"#),
-                      "the AppKit host reads no artwork beside the program")
+        XCTAssertTrue(carried.contains("bundleResources") && carried.contains(#"appendingPathComponent("Resources", isDirectory: true)"#),
+                      "the AppKit host reads its artwork from the bundle, else beside the program")
         let apps = SourceTree.repository.appendingPathComponent("apps")
         for app in try FileManager.default.contentsOfDirectory(atPath: apps.path).sorted() {
             let head = apps.appendingPathComponent("\(app)/Platforms/AppKit/main.swift")

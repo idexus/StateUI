@@ -21,7 +21,7 @@ public enum AppKitHost {
     ///
     /// - Parameters:
     ///   - resourceDirectory: where the application's pictures are; nil shows the `Images` the program carries -
-    ///     in its bundle, or in the `Resources` beside it, where `.scripts/AppKit/deploy.sh` lays them.
+    ///     in its bundle, as the stateui tool builds every application, or in the `Resources` beside an unbundled one.
     ///   - applicationIcon: the complete image shown for the running application; nil shows the
     ///     `Resources/AppIcon/appicon_macos.svg` beside the program, and a bundle shows its own.
     public static func run(

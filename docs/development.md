@@ -22,7 +22,7 @@ lib/StateUI/StateUI.Web/           Web host package, Swift for WebAssembly over 
 lib/StateUI/StateUI.Web/Testing/   its tests, and the driver its conformance runs go through
 lib/StateUI.Head/                  the package that brings each application's head its host
 lib/Backends/                      backends: one element on one host, its engine not shipped - WebView.GTK, WebView.WinUI
-.scripts/AppKit/                   AppKit Gallery bundling, the host's tests and deploys
+.scripts/AppKit/                   the AppKit host's marks and exports recorded (test-appkit.sh)
 .scripts/UIKit/                    UIKit bundles, runs on a simulator or a device, tests and deploys
 .scripts/Android/                  Android Views builds, runs, devices, tests and deploys
 .scripts/WinUI/                    WinUI builds, runs, tests and deploys, and the Windows App SDK
@@ -75,8 +75,8 @@ targets of a build, never the manifest describing them - so no
 resolves no host package and compiles no line of one host's half, and a
 `Platforms/AppKit/` folder needs no condition inside it.
 
-`.scripts/AppKit/build-gallery-appkit.sh` and the AppKit tasks set the variable
-for a build. The editor gets it from the StateUI extension: the host chosen in
+The `stateui` tool and the AppKit tasks, which call it, set the variable for a
+build. The editor gets it from the StateUI extension: the host chosen in
 its status bar sets the variable for the Swift language server
 ([StateUI for VS Code](editors/VSCode/README.md#the-host)). A
 `swift.swiftEnvironmentVariables` setting naming the variable would override
@@ -161,19 +161,20 @@ The AppKit host requires macOS 26.4 or newer and Xcode 27, with its Swift 6.4.
 Build the runnable Gallery bundle:
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug
+stateui build --project apps/Gallery --host appkit
 ```
 
 Build and start the smaller example:
 
 ```bash
-.scripts/AppKit/run-app.sh apps/HelloWorld debug
+stateui run --project apps/HelloWorld --host appkit
 ```
 
 In VS Code, **StateUI: Debug** and **StateUI: Release** build and start the
 application chosen in the StateUI extension's status bar, on the host chosen
 there ([StateUI for VS Code](editors/VSCode/README.md)). The Gallery's
-build assembles its resources, icon, runtime libraries, and ad-hoc signature.
+build, and every application's, assembles its resources, icon, runtime
+libraries, `Info.plist` and ad-hoc signature.
 
 The UIKit host builds on macOS with the same Xcode and its iOS 26.4 or
 newer simulator runtime, for iOS and iPadOS 26.4 or newer. An application's UIKit
@@ -235,7 +236,7 @@ Each host's `deploy` script builds an application's head for release and lays
 it, with what it runs with, in a folder it makes anew:
 
 ```bash
-.scripts/AppKit/deploy.sh apps/Gallery artifacts/Gallery/AppKit
+stateui package --project apps/Gallery --host appkit
 .scripts/UIKit/deploy.sh apps/Gallery artifacts/Gallery/UIKit <device-udid>
 .scripts/Android/deploy.sh apps/Gallery artifacts/Gallery/Android emulator-5554
 .scripts/GTK/deploy.sh apps/Gallery artifacts/Gallery/GTK
@@ -306,8 +307,8 @@ The AppKit host's runs `swift test` in `lib/StateUI/StateUI.AppKit` and hands
 on `swift test`'s arguments:
 
 ```bash
-.scripts/AppKit/test-appkit.sh
-.scripts/AppKit/test-appkit.sh --filter AppKitConformanceTests
+stateui repo test --suite host:appkit
+stateui repo test --suite host:appkit --filter AppKitConformanceTests
 ```
 
 The UIKit host's suite is an application of its own, built, installed on an

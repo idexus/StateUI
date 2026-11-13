@@ -708,10 +708,7 @@ final class NativeProjectTests: XCTestCase {
             }
         }
 
-        for relative in [
-            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/AppKit/run-app.sh", ".scripts/AppKit/deploy.sh",
-            ".scripts/test-native.sh",
-        ] {
+        for relative in [".scripts/test-native.sh"] {
             let commands = try text(relative)
                 .replacingOccurrences(of: "\\\n", with: " ")
                 .components(separatedBy: "\n")
@@ -768,28 +765,22 @@ final class NativeProjectTests: XCTestCase {
             try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
         }
 
-        for relative in [
-            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/AppKit/run-app.sh", ".scripts/AppKit/deploy.sh",
-            ".scripts/test-native.sh",
-        ] {
+        // The stateui tool's AppKit builds set it too: ApplicationBuilderTests' SwiftPM refuses a build without it.
+        for relative in [".scripts/test-native.sh"] {
             XCTAssertTrue(
                 try text(relative).contains("STATEUI_HOST=appkit"),
                 "\(relative) builds an AppKit head without telling the manifest there is one")
         }
 
-        // A task sets it in the environment it runs the build in.
-        let tasks = try text(".vscode/tasks.json").components(separatedBy: "\"label\"").filter { task in
-            let lines = task.components(separatedBy: "\n").map { $0.trimmingCharacters(in: .whitespaces) }
-            guard let product = lines.firstIndex(of: "\"--product\","), product + 1 < lines.count
-            else { return false }
-            return lines[product + 1].hasSuffix("AppKit\"")
-        }
+        // A task builds an AppKit head through the tool, which names the host - or sets it where it runs SwiftPM.
+        let tasks = try text(".vscode/tasks.json").components(separatedBy: "\"label\"").filter { $0.contains("(AppKit,") }
 
         XCTAssertFalse(tasks.isEmpty, ".vscode/tasks.json builds no AppKit head")
 
         for task in tasks {
             XCTAssertTrue(
-                task.contains("\"STATEUI_HOST\": \"appkit\""),
+                (task.contains("\"command\": \"stateui\"") && task.contains("\"--host\", \"appkit\""))
+                    || task.contains("\"STATEUI_HOST\": \"appkit\""),
                 ".vscode/tasks.json builds an AppKit head without telling the manifest there is one")
         }
     }
@@ -937,19 +928,8 @@ final class NativeProjectTests: XCTestCase {
                 "\(relative)/\(icon) is not on macOS's icon grid: an 824 body, 100 in, on a 1024 canvas")
         }
 
+        // Every bundle's .icns is drawn from this artwork and carries the pictures: AppKitBundleTests prove it.
         XCTAssertGreaterThan(heads, 1, "no AppKit head found")
-        XCTAssertTrue(
-            try String(
-                contentsOf: SourceTree.repository.appendingPathComponent(".scripts/AppKit/build-gallery-appkit.sh"),
-                encoding: .utf8
-            ).contains("Resources/AppIcon/appicon_macos.svg"),
-            "the Gallery's bundle makes its .icns from artwork off macOS's icon grid")
-        for script in [".scripts/AppKit/run-app.sh", ".scripts/AppKit/deploy.sh"] {
-            XCTAssertTrue(
-                try String(contentsOf: SourceTree.repository.appendingPathComponent(script), encoding: .utf8)
-                    .contains("for artwork in Images AppIcon"),
-                "\(script) lays no artwork beside the program it builds")
-        }
     }
 
     /// Every application's GTK head has its icon on GNOME's icon grid, which the run script installs, with the

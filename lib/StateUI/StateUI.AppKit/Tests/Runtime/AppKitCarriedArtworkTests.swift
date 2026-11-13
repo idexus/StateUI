@@ -8,9 +8,9 @@ import XCTest
 
 /// The artwork a program carries, found where `run()` is handed none.
 final class AppKitCarriedArtworkTests: XCTestCase {
-    /// A DEPLOYED COPY'S ARTWORK IS FOUND BESIDE IT: `.scripts/AppKit/deploy.sh` lays the application's
-    /// `Resources` beside the program, and the host takes its `Images` and its icon from there.
-    func testADeployedCopysArtworkIsFoundBesideIt() throws {
+    /// AN UNBUNDLED PROGRAM'S ARTWORK IS FOUND BESIDE IT: a head run as its bare program, the application's
+    /// `Resources` laid beside it, takes its `Images` and its icon from there.
+    func testAnUnbundledProgramsArtworkIsFoundBesideIt() throws {
         let folder = try Self.folder()
         defer { try? FileManager.default.removeItem(at: folder) }
         let resources = folder.appendingPathComponent("Resources")

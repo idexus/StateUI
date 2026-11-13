@@ -7,6 +7,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### Breaking changes
 
+- **AppKit builds through `stateui`.** `.scripts/AppKit/run-app.sh`, `build-gallery-appkit.sh` and `deploy.sh` are
+  gone: `stateui run`, `stateui build` and `stateui package --host appkit` take their place, and every application,
+  not only the Gallery, runs as a bundle. `test-appkit.sh` stays only to record the host's marks and exports
+  (`STATEUI_UPDATE_EXPORTS=1`) until the tool records them; `stateui repo test --suite host:appkit` checks them.
 - **A project group is a workspace.** The VS Code extension finds applications through `stateui`: in a folder that
   is an application, that one; else the ones the nearest `stateui.json` up lists - and no longer every folder of an
   `apps/`. **StateUI: New Project Group** makes a workspace: `stateui.json`, the StateUI it builds with, and its first

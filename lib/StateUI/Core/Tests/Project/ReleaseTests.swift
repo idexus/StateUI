@@ -24,7 +24,6 @@ final class ReleaseTests: XCTestCase {
             ("editors/VSCode/package.json", "\"version\": \"", "\""),
             ("tools/StateUI.CLI/Sources/StateUITooling/Release/Release.swift", "version = \"", "\""),
             (".github/ISSUE_TEMPLATE/bug.yml", "placeholder: StateUI ", ","),
-            (".scripts/AppKit/build-gallery-appkit.sh", "CFBundleShortVersionString -string ", " "),
             (".scripts/UIKit/tools.sh", "CFBundleShortVersionString -string ", " "),
             ("lib/StateUI/StateUI.Android/Tests/Platforms/Android/build.gradle.kts", "versionName = \"", "\""),
         ]

@@ -47,10 +47,10 @@ Every launch has a command-line equivalent. Build and start HelloWorld's
 AppKit head from the repository root:
 
 ```bash
-.scripts/AppKit/run-app.sh apps/HelloWorld debug
+stateui run --project apps/HelloWorld --host appkit
 ```
 
-The script builds it with `STATEUI_HOST=appkit`, the variable that makes it an
+The `stateui` tool builds it with `STATEUI_HOST=appkit`, the variable that makes it an
 AppKit build: the manifest then declares the
 AppKit head and defines `APPKIT`, and without it `swift test` compiles no part
 of one host's half; see
@@ -76,7 +76,7 @@ one named, else the one booted, else an iPhone:
 
 The WinUI, GTK and Web heads have a script of their own too, under
 [Build](development.md#build). So has each host's suite -
-`.scripts/AppKit/test-appkit.sh`, `.scripts/UIKit/test-uikit.sh`,
+`stateui repo test --suite host:appkit`, `.scripts/UIKit/test-uikit.sh`,
 `.scripts/Android/test-android.sh`, `.scripts/GTK/test-gtk.sh`,
 `.scripts/Web/test-web.sh`, and `.scripts\WinUI\test-winui.ps1` on Windows -
 which [Test](development.md#test) lists with the arguments each takes.
@@ -84,7 +84,7 @@ which [Test](development.md#test) lists with the arguments each takes.
 Build the signed Gallery bundle with its resources and icon:
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug
+stateui build --project apps/Gallery --host appkit
 ```
 
 A new application is HelloWorld under another name, with every head
@@ -101,7 +101,7 @@ Test it, then build and start its AppKit head from the same repository root:
 
 ```bash
 swift test --package-path apps/Notes
-.scripts/AppKit/run-app.sh apps/Notes debug
+stateui run --project apps/Notes --host appkit
 ```
 
 ## Application shape
@@ -222,9 +222,9 @@ GalleryEventSources.start()
 AppKitHost.run()
 ```
 
-The host finds the artwork beside the program - its bundle's, or the
-`Resources` that `.scripts/AppKit/run-app.sh` and `deploy.sh` lay there - so a
-head runs from any directory, and on another Mac. Its icon is drawn on
+The host finds the artwork the program carries - in the bundle the `stateui`
+tool builds every application as, or in the `Resources` beside a bare
+program - so a head runs from any directory, and on another Mac. Its icon is drawn on
 macOS's icon grid; see [AppKit host](hosts/appkit.md).
 
 Registration and `run` happen once per process. All scenes and windows then

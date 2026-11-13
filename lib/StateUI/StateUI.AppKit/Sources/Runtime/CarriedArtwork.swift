@@ -5,8 +5,8 @@
 import Foundation
 
 /// The artwork a program carries, which `AppKitHost.run()` shows where it is handed none: the `Images` in the
-/// program's bundle, else in the `Resources` beside it, where `.scripts/AppKit/deploy.sh` lays a deployed copy's;
-/// and the icon beside it - a bundle shows its own.
+/// program's bundle, as the stateui tool builds every application, else in the `Resources` beside an unbundled
+/// program; and the icon beside it - a bundle shows its own.
 struct CarriedArtwork {
     /// Where the pictures are; nil where the program carries none.
     let images: URL?

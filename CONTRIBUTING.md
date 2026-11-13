@@ -176,7 +176,7 @@ Run the Gallery with **StateUI: Debug** on each host the change reaches. From a
 terminal:
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug
+stateui build --project apps/Gallery --host appkit
 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554
 ```
 

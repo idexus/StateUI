@@ -184,7 +184,7 @@ hosts and commands, including **StateUI: New Application**.
 From a terminal, the same builds and suites are:
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug                  # the AppKit Gallery bundle
+stateui build --project apps/Gallery --host appkit            # the AppKit Gallery bundle
 .scripts/UIKit/run-app.sh apps/Gallery debug "iPhone 18 Pro"   # the UIKit Gallery, on a simulator
 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554   # the Android Gallery
 .scripts/test-native.sh                                        # the Swift suites, the AppKit host's among them
