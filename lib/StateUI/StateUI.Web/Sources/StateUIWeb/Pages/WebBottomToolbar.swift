@@ -109,6 +109,11 @@ final class WebBottomToolbar: WebDOMView {
         more.setShown(!behind.isEmpty)
     }
 
+    /// Whether the item `item` stands behind the bar's More.
+    func standsBehindForTesting(_ item: MountedElement) -> Bool {
+        behind.contains { $0.element === item }
+    }
+
     override func release() {
         for button in buttons.values { button.release() }
         for group in groups { group.release() }

@@ -125,14 +125,10 @@ extension WebDriver {
         return 0
     }
 
-    /// Opens the More of the bar a bar's button `item` stands behind: its page's foot's, or the window's bar's.
+    /// Opens the More of the bar a bar's button `item` stands behind: the bar at the foot holding it there - one page
+    /// of several showing theirs - or the window's bar.
     private func openMore(holding item: MountedElement) throws {
-        // The edge its declaration says, on it or on the group around it.
-        let edge = sequence(first: item, next: \.parent).lazy
-            .compactMap { $0.value(.barEdge).flatMap(ToolbarEdge.init(propValue:)) }.first ?? .top
-        let shown = "!e.hidden && !e.closest('[hidden]')"
-        if edge == .bottom,
-           let foot = try footToolbars(in: renderer?.runtime.tree.root).first(where: { try WebBrowser.truth(shown, on: $0.more.node) }) {
+        if let foot = footToolbars(in: renderer?.runtime.tree.root).first(where: { $0.standsBehindForTesting(item) }) {
             return try click(foot.more)
         }
         try click(try bar(over: item), part: Self.more)
