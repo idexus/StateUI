@@ -12,6 +12,8 @@ artifacts/
 # the index directory of the host the editor works as.
 .sourcekit-lsp/
 .vs/
+# The stateui tool's own state: each operation's record and output, its sessions.
+.stateui/
 
 # Debug symbols
 *.dSYM/

@@ -27,3 +27,5 @@ writes its result as words or as the message an editor receives.
   checkouts are read.
 - [Doctor](doctor.md): what the machine is checked for, and how the hosts'
   tools are found.
+- [Builds](builds.md): what one build is and where it writes, one
+  application build at a time on a machine, and the operation journal.
