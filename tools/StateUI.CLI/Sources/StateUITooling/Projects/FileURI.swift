@@ -8,7 +8,7 @@ import StateUIToolingProtocol
 public enum FileURI {
     /// The URI of `url`'s file, a folder's with no slash after its name.
     public static func string(_ url: URL) -> String {
-        let uri = url.standardizedFileURL.absoluteString
+        let uri = RealPath.lexical(url).absoluteString
         return uri.hasSuffix("/") && url.pathComponents.count > 1 ? String(uri.dropLast()) : uri
     }
 
@@ -19,6 +19,6 @@ public enum FileURI {
         guard let url = URL(string: uri), url.isFileURL else {
             throw ToolingError(.projectNotFound, "\(uri) is no file URI.")
         }
-        return url.standardizedFileURL
+        return RealPath.lexical(url)
     }
 }

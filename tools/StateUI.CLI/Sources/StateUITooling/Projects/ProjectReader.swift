@@ -22,7 +22,7 @@ public struct ProjectReader: Sendable {
     /// - Throws: ``ToolingError`` - `PROJECT_NOT_FOUND`, `INVALID_CONFIGURATION`, `MISSING_TOOLCHAIN`, `TOOL_FAILED` -
     ///   or `CancellationError`.
     public func describe(containing path: URL) async throws -> Project {
-        let folder = RealPath.of(path.standardizedFileURL)
+        let folder = RealPath.of(RealPath.lexical(path))
         let workspace = try Workspace.nearest(from: folder)
         if let application = Self.application(holding: folder) {
             return try await describe(root: application, packages: [application], workspace: workspace)
@@ -118,7 +118,7 @@ public struct ProjectReader: Sendable {
     }
 
     private static func relativePath(of package: URL, from root: URL) -> String {
-        let (inner, outer) = (package.standardizedFileURL.pathComponents, root.standardizedFileURL.pathComponents)
+        let (inner, outer) = (RealPath.lexical(package).pathComponents, RealPath.lexical(root).pathComponents)
         guard inner.starts(with: outer), inner.count > outer.count else { return "." }
         return inner.dropFirst(outer.count).joined(separator: "/")
     }

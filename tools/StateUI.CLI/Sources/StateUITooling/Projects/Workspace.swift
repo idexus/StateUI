@@ -28,7 +28,7 @@ struct Workspace: Sendable {
     /// The folders of the applications the file lists, each one checked to be an application.
     func applications() throws(ToolingError) -> [URL] {
         try file.projects.map { (path: String) throws(ToolingError) -> URL in
-            let folder = self.folder.appendingPathComponent(path).standardizedFileURL
+            let folder = RealPath.lexical(self.folder.appendingPathComponent(path))
             guard !ProjectReader.hosts(of: folder).isEmpty else {
                 throw ToolingError(
                     .invalidConfiguration,
@@ -40,7 +40,7 @@ struct Workspace: Sendable {
 
     /// The checkout the file names for new applications.
     var library: URL? {
-        file.library.map { folder.appendingPathComponent($0.path).standardizedFileURL }
+        file.library.map { RealPath.lexical(folder.appendingPathComponent($0.path)) }
     }
 
     /// Makes `checkout` the workspace's library: every listed application's manifest names it by the path from the

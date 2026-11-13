@@ -25,7 +25,7 @@ public struct ApplicationMaker: Sendable {
     /// - Throws: ``ToolingError`` - a name that cannot be, a folder already holding something, no checkout.
     public func make(_ name: String, in parent: URL, from checkout: URL) throws(ToolingError) -> URL {
         if let problem = Self.problem(with: name) { throw ToolingError(.invalidName, problem) }
-        guard let checkout = Checkout(at: checkout.standardizedFileURL) else {
+        guard let checkout = Checkout(at: RealPath.lexical(checkout)) else {
             throw ToolingError(.projectNotFound, "No StateUI checkout stands at \(checkout.path).")
         }
         let files = FileManager.default
