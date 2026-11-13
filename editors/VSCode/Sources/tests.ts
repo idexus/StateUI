@@ -10,6 +10,7 @@ import * as vscode from "vscode";
 import { Application } from "./applications";
 import { androidScript } from "./devices";
 import { describe, environment, Host } from "./hosts";
+import { builtByTool } from "./Tooling/migration";
 import { uiKitScript } from "./uiKitDevices";
 import { runTask } from "./tasks";
 
@@ -56,7 +57,7 @@ export interface Suite {
  * - With no host - a machine that runs none - every package but the hosts'
  *   own runs as plain Swift.
  */
-export function findSuites(root: string, host: Host | undefined, applications: readonly Application[]): Suite[] {
+export function findSuites(root: string, host: Host | undefined, applications: readonly Application[], tool = "stateui"): Suite[] {
     const suites: Suite[] = [];
     const owned = applications.map((each) => each.directory).sort();
     const appKitEnvironment = Object.fromEntries(
@@ -94,6 +95,11 @@ export function findSuites(root: string, host: Host | undefined, applications: r
             suites.push({
                 label: name, detail: "test-winui.ps1 - the WinUI host's own package, the Windows App SDK beside its runner",
                 command: "powershell", args: ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", winUITests], env: {},
+            });
+        } else if (hostPackage && host && builtByTool(host)) {
+            suites.push({
+                label: name, detail: `stateui repo test - the ${describe(host).label} host's tests, every verdict held, then its API records`,
+                command: tool, args: ["repo", "test", "--suite", `host:${host}`], env: {},
             });
         } else if (hostPackage && host) {
             suites.push({ label: name, detail: `swift test - the ${describe(host).label} host's own package`, command: "swift", args: base, env: {} });

@@ -13,7 +13,7 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, applicationsOf, bundlerFor, hasHead, readApplications, winUIProgram } from "../Sources/applications";
+import { Application, applicationsOf, hasHead, readApplications, winUIProgram } from "../Sources/applications";
 import { configurations, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
 import { parseDevices } from "../Sources/devices";
 import { isChromium, parseBrowsers } from "../Sources/browsers";
@@ -163,6 +163,7 @@ export async function run(): Promise<void> {
         {
             const ran: string[] = [];
             const provider = new StateUIDebugConfigurationProvider({
+                build: async () => undefined,
                 host: () => undefined, application: async () => gallery_,
                 run: async (task) => { ran.push(task.name); return 0; },
                 start: async (task) => { ran.push(task.name); },
@@ -184,6 +185,8 @@ export async function run(): Promise<void> {
         say(`suites with no host: ${plainSuites.map((each) => each.label).join(", ")}`);
         check("appkit runs the core, StateUI.AppKit and the Gallery, and no device",
             appkitSuites.includes(core) && appkitSuites.includes("lib/StateUI/StateUI.AppKit")
+            && findSuites(root.uri.fsPath, "appkit", api.applications(), "/bin/stateui").some((each) => each.label === "lib/StateUI/StateUI.AppKit"
+                && each.command === "/bin/stateui" && each.args.join(" ") === "repo test --suite host:appkit")
             && appkitSuites.includes("apps/Gallery") && !appkitSuites.some((each) => each.endsWith("Tests")));
         check("HelloWorld's example test runs with the rest - as an AppKit build on its .build/appkit, or as plain Swift",
             findSuites(root.uri.fsPath, "appkit", api.applications()).some((each) => each.label === "apps/HelloWorld"
@@ -261,6 +264,7 @@ export async function run(): Promise<void> {
                 const started: vscode.Task[] = [];
                 const ran: string[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
+                    build: async () => undefined,
                     host: () => "android", application: async () => helloWorld,
                     run: async (task) => { ran.push(task.name); return 0; },
                     start: async (task) => {
@@ -361,15 +365,6 @@ export async function run(): Promise<void> {
             fs.rmSync(directory, { recursive: true, force: true });
         }
         {
-            const checkout = root.uri.fsPath;
-            const elsewhere = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-apps-"));
-            check("the Gallery's bundling script bundles the checkout's own Gallery, not an application of its name elsewhere",
-                bundlerFor(checkout, path.join(checkout, "apps", "Gallery")) === path.join(checkout, ".scripts", "AppKit", "build-gallery-appkit.sh")
-                && bundlerFor(checkout, path.join(elsewhere, "Gallery")) === undefined
-                && bundlerFor(checkout, path.join(checkout, "apps", "HelloWorld")) === undefined);
-            fs.rmSync(elsewhere, { recursive: true, force: true });
-        }
-        {
             const windows = buildingCommand("C:\\Users\\O'Neil\\apps\\Notes\\.build", "win32");
             check("a build is looked for with pgrep, and on Windows - which has no pgrep - with PowerShell's process list",
                 JSON.stringify(buildingCommand("/apps/Notes/.build", "darwin")) === JSON.stringify({ command: "pgrep", args: ["-f", "/apps/Notes/.build"] })
@@ -436,6 +431,7 @@ export async function run(): Promise<void> {
             const launchOnUIKit = async (udid: string | undefined, configuration = "release", starts = true) => {
                 const started: vscode.Task[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
+                    build: async () => undefined,
                     host: () => "uikit", application: async () => helloWorldHere,
                     run: async () => 0,
                     start: async (task) => {
@@ -498,6 +494,7 @@ export async function run(): Promise<void> {
         {
             const ran: vscode.Task[] = [];
             const provider = new StateUIDebugConfigurationProvider({
+                build: async () => undefined,
                 host: () => "winui", application: async () => helloWorld,
                 run: async (task) => { ran.push(task); return 0; },
                 start: async () => {},
@@ -535,6 +532,7 @@ export async function run(): Promise<void> {
         {
             const ran: vscode.Task[] = [];
             const provider = new StateUIDebugConfigurationProvider({
+                build: async () => undefined,
                 host: () => "gtk", application: async () => helloWorld,
                 run: async (task) => { ran.push(task); return 0; },
                 start: async () => {},
@@ -587,6 +585,7 @@ export async function run(): Promise<void> {
             const launchOnWeb = async (browser: (typeof listed)[number], configuration: string) => {
                 const started: vscode.Task[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
+                    build: async () => undefined,
                     host: () => "web", application: async () => helloWorld,
                     run: async () => 0,
                     start: async (task) => {
@@ -939,9 +938,13 @@ export async function run(): Promise<void> {
             check("StateUI: Debug starts", await vscode.debug.startDebugging(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
             const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 600_000))]);
-            check("an lldb-dap session starts on HelloWorldAppKit", String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build/appkit/debug/HelloWorldAppKit"));
+            // The bundle the stateui tool built and published, its program launched under lldb-dap.
+            const program = String(running?.configuration.program ?? "");
+            check(`an lldb-dap session starts on HelloWorldAppKit as the stateui tool published it - ${program}`,
+                program.includes("/apps/HelloWorld/.build/stateui/artifacts/appkit-")
+                && program.endsWith("-debug/HelloWorldAppKit.app/Contents/MacOS/HelloWorldAppKit") && fs.existsSync(program));
             await new Promise((resume) => setTimeout(resume, 4000));
-            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/appkit/debug/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
+            const alive = (() => { try { return execSync("pgrep -f HelloWorldAppKit.app/Contents/MacOS/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
             check("the HelloWorldAppKit process is running", alive);
             await vscode.debug.stopDebugging(running);
 

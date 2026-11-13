@@ -24,6 +24,8 @@ import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinst
 import { Rebuild, rebuildSteps } from "./conformance";
 import { debuggerFinding, Finding, lldbDapFinding, report } from "./toolchain";
 import { pathToFileUri } from "./Tooling/client";
+import { locateTool } from "./Tooling/locate";
+import { builtByTool } from "./Tooling/migration";
 import { NameKind } from "./Tooling/protocol";
 import { runOperation, sayProblem, toolingClients, withTool } from "./Tooling/presentation";
 import { Architecture, deployCommand, deployDestination, deployFolder, winUIArchitectures } from "./deploy";
@@ -58,6 +60,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
 
     // The stateui tool, one connection per folder.
     const tool = toolingClients(context);
+
+    // What the tool's builds and packages said: SwiftPM's words, the bundle's assembly.
+    const buildOutput = vscode.window.createOutputChannel("StateUI Build");
+    context.subscriptions.push(buildOutput);
 
     // What the tool found in each folder: its applications, and the workspace - the folder of a stateui.json -
     // holding them. Read on activation, and again when a folder, a stateui.json, a manifest or a head comes or goes.
@@ -374,7 +380,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         }),
         vscode.commands.registerCommand("stateui.runTests", async () => {
             const folder = vscode.workspace.workspaceFolders?.[0];
-            const suites = folder ? findSuites(folder.uri.fsPath, host(), applications()) : [];
+            const located = (() => {
+                try {
+                    return locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath"));
+                } catch {
+                    return "stateui";
+                }
+            })();
+            const suites = folder ? findSuites(folder.uri.fsPath, host(), applications(), located) : [];
             if (!folder || suites.length === 0) {
                 void vscode.window.showInformationMessage(`StateUI: no test suite here runs as ${runningAs()}.`);
                 return;
@@ -611,6 +624,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             }
 
             const destination = deployDestination(application, forHost, architecture);
+            if (builtByTool(forHost)) {
+                const laid = await withTool(tool, application.directory, `${application.name} was not deployed`, (client) =>
+                    runOperation(client, "application/package", {
+                        projectUri: pathToFileUri(application.directory), host: forHost, outputUri: pathToFileUri(destination),
+                    }, `StateUI: deploying ${application.name}`, buildOutput));
+                if (!laid) {
+                    return undefined;
+                }
+                void vscode.window.showInformationMessage(`StateUI: ${application.name} is deployed in ${destination}.`, "Reveal")
+                    .then((answer) => answer && vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(destination)));
+                return destination;
+            }
             const step = deployCommand(application, forHost, destination, architecture, device);
             if (!step || !fs.existsSync(step.script)) {
                 void vscode.window.showErrorMessage(
@@ -638,6 +663,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     const provider = new StateUIDebugConfigurationProvider({
         host,
         run: runTask,
+        build: async (folder, application, forHost, configuration) => {
+            const built = await withTool(tool, folder.uri.fsPath, `${application.name} was not built`, (client) =>
+                runOperation(client, "application/build", { projectUri: pathToFileUri(application.directory), host: forHost, configuration },
+                    `StateUI: building ${application.name}`, buildOutput));
+            return built && pathOf(built.programUri);
+        },
         start: startTask,
         ready: (file, task) => readyWhen(file, task),
         device: androidDevice,

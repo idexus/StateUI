@@ -26,13 +26,6 @@ export interface Application {
     readonly workspace?: string;
 
     /**
-     * The script that builds the application's AppKit bundle, where it has one
-     * - `.scripts/AppKit/build-gallery-appkit.sh`. Without one the head is
-     * built by SwiftPM alone.
-     */
-    readonly bundleScript?: string;
-
-    /**
      * The StateUI checkout its Package.swift names by path - the library it
      * builds with, whose `.scripts` build and run its heads - where it names one.
      */
@@ -52,7 +45,7 @@ export function applicationsOf(project: Project): Application[] {
         const checkout = each.libraryUri && pathOf(each.libraryUri);
         return {
             name: each.name, directory, hosts: each.declaredHosts,
-            workspace, checkout, bundleScript: checkout ? bundlerFor(checkout, directory) : undefined,
+            workspace, checkout,
         };
     });
 }
@@ -69,32 +62,9 @@ export async function readApplications(client: ToolingClient, folder?: string): 
     }
 }
 
-/**
- * The script of `checkout`'s `.scripts/AppKit` that bundles the application in `directory` - `build-gallery-appkit.sh` -
- * where `directory` is `checkout`'s own `apps/<Name>` it was written for; none for an application of the same name
- * elsewhere.
- */
-export function bundlerFor(checkout: string, directory: string): string | undefined {
-    const name = path.basename(directory);
-    const script = path.join(checkout, ".scripts", "AppKit", `build-${name.toLowerCase()}-appkit.sh`);
-    return path.resolve(directory) === path.resolve(checkout, "apps", name) && fs.existsSync(script) ? script : undefined;
-}
-
 /** Whether `application` has a head for `host`. */
 export function hasHead(application: Application, host: Host): boolean {
     return application.hosts.includes(host);
-}
-
-/** Where an application's AppKit head is, once built in `configuration`. */
-export function appKitProgram(application: Application, configuration: "debug" | "release"): string {
-    const product = `${application.name}AppKit`;
-
-    // Every AppKit build is on .build/appkit; a bundling script wraps the
-    // executable in an application bundle there.
-    const build = path.join(application.directory, ".build", "appkit", configuration);
-    return application.bundleScript
-        ? path.join(build, `${product}.app`, "Contents", "MacOS", product)
-        : path.join(build, product);
 }
 
 /** Where an application's GTK head is, once `.scripts/GTK/run-app.sh` built it in `configuration`. */

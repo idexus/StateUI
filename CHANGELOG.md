@@ -39,7 +39,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **The VS Code extension works through `stateui`.** It finds the applications, checks the toolchain, makes a
   project group and a new application - **StateUI: New Application**, beside a workspace's applications - and checks
   their names as they are typed, all by the tool; the `stateui.cliPath` setting names it where it is not on the
-  search path. The making shows in a notification that cancels it.
+  search path. The making shows in a notification that cancels it. AppKit's Debug, Release, Deploy and the host's
+  own suite in Run Tests go through the tool; the other hosts through their `.scripts` until each moves.
 
 ### Tooling
 
