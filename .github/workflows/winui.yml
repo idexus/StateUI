@@ -39,8 +39,8 @@ jobs:
       - name: Install Swift
         uses: compnerd/gha-setup-swift@v0.4.0
         with:
-          swift-version: swift-6.4.0-release
-          swift-build: 6.4.0-RELEASE
+          swift-version: swift-6.4.2-release
+          swift-build: 6.4.2-RELEASE
 
       # THE ACTION ADDS WHERE IT EXPECTS THE TOOLCHAIN TO BE, not where the
       # installer put it (build-windows.yml says what that cost): the toolchain

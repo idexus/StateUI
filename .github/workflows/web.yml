@@ -28,9 +28,9 @@ concurrency:
 env:
   # One release, named once; `swift sdk install` verifies the bundle against the
   # checksum swift.org publishes in its release list, so a stale pair fails loudly.
-  SWIFT_TAG: swift-6.4.0-RELEASE
-  SWIFT_CHANNEL: swift-6.4.0-release
-  WASM_SDK_CHECKSUM: f07b7be3c586d92d7a07051fc6d303b87ebea67eadc40640ba59d5a8b79aa86d
+  SWIFT_TAG: swift-6.4.2-RELEASE
+  SWIFT_CHANNEL: swift-6.4.2-release
+  WASM_SDK_CHECKSUM: 83baca83553f8c443cda7b84800912e6e709c3acd2e7ebf277794ca5836c0da5
 
 jobs:
   web:

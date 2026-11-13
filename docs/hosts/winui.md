@@ -45,7 +45,7 @@ apps/<App>/Platforms/WinUI/
 
 The host builds on Windows 10 1809 or newer, on arm64 or x64:
 
-- Swift 6.4 from swift.org, `swift-6.4.0-RELEASE` - for Debug, its `lldb-dap`
+- Swift 6.4 from swift.org, `swift-6.4.2-RELEASE` - for Debug, its `lldb-dap`
   loads the Python the installer lays beside the toolchain, which
   `lldb-dap --check-python` names;
 - Visual Studio 2026 with the C++ tools for the machine's architecture, and

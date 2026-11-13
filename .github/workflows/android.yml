@@ -32,9 +32,9 @@ concurrency:
 env:
   # One release, named once; `swift sdk install` verifies the bundle against the
   # checksum swift.org publishes beside it, so a stale pair fails loudly.
-  SWIFT_TAG: swift-6.4.0-RELEASE
-  SWIFT_CHANNEL: swift-6.4.0-release
-  ANDROID_SDK_CHECKSUM: 21fb555122a3d801ad943d48df7ebffdd8824de61c25c180bb792d3edaee0b43
+  SWIFT_TAG: swift-6.4.2-RELEASE
+  SWIFT_CHANNEL: swift-6.4.2-release
+  ANDROID_SDK_CHECKSUM: 4d6ad63ea74becd58e123ff58b1b48c3be5ec0db0dff0ea5abe37ac007dd3233
   ANDROID_NDK_VERSION: 30.0.16248370
 
 jobs:

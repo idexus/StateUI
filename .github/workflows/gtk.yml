@@ -34,7 +34,7 @@ jobs:
     name: GTK
     runs-on: ubuntu-24.04
     timeout-minutes: 60
-    container: swift:6.4.0-resolute
+    container: swift:6.4.2-resolute
     steps:
       - uses: actions/checkout@v7.0.1
 

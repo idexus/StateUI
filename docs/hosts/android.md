@@ -35,7 +35,7 @@ apps/<App>/Platforms/Android/
 
 The host builds on macOS, for Android 9 (API 28) or newer:
 
-- Swift 6.4 from swift.org, `swift-6.4.0-RELEASE`, and the Swift SDK for
+- Swift 6.4 from swift.org, `swift-6.4.2-RELEASE`, and the Swift SDK for
   Android of the same release, installed with `swift sdk install`. Xcode's own
   Swift 6.4 is a different build and cannot read the SDK's modules;
   `build-swift.sh` finds the matching toolchain by itself;

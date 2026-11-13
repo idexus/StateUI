@@ -219,7 +219,7 @@ libadwaita. An application's GTK head is built and started by one script:
 
 [GTK host](hosts/gtk.md) lists what it needs and what it builds.
 
-The Web host builds on macOS and Linux with swift.org's Swift 6.4.0
+The Web host builds on macOS and Linux with swift.org's Swift 6.4.2
 toolchain and its Swift SDK for WebAssembly. An application's Web head is
 built, served and opened in a browser by one script:
 

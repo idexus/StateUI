@@ -53,9 +53,9 @@ apps/<App>/Platforms/Web/
 
 The host builds on macOS and on Linux:
 
-- swift.org's Swift 6.4.0 toolchain, not Xcode's, first on `PATH`, and the
+- swift.org's Swift 6.4.2 toolchain, not Xcode's, first on `PATH`, and the
   Swift SDK for WebAssembly of the same release,
-  `swift-6.4.0-RELEASE_wasm`, which `swift sdk install` installs
+  `swift-6.4.2-RELEASE_wasm`, which `swift sdk install` installs
   ([Getting started with WebAssembly](https://www.swift.org/documentation/articles/wasm-getting-started.html));
   its `_wasm-embedded` sibling is Embedded Swift, which StateUI does not use;
 - Python 3, which serves the page on this machine;

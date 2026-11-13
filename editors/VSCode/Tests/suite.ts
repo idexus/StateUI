@@ -212,7 +212,7 @@ export async function run(): Promise<void> {
                 hosts.every((host) => fs.existsSync(path.join(root.uri.fsPath, "lib", "StateUI", `StateUI.${host.label}`, "Package.swift"))));
         }
         {
-            const sdk = "swift-6.4.0-RELEASE_android";
+            const sdk = "swift-6.4.2-RELEASE_android";
             const android = serverConfig(
                 { swiftPM: { scratchPath: ".build/appkit/index-build", configuration: "debug" }, index: { indexStorePath: "x" } },
                 serverSettings("android", sdk));
@@ -230,16 +230,16 @@ export async function run(): Promise<void> {
 
             // The other releases are assembled, so the repository's one-release guard reads no second one here.
             const older = ["6", "3", "3"].join("."), newer = ["6", "5"].join(".");
-            const list = `swift-${older}-RELEASE_android\nswift-6.4.0-RELEASE_android\nswift-6.4.0-RELEASE_static-linux-0.1.0\n`;
+            const list = `swift-${older}-RELEASE_android\nswift-6.4.2-RELEASE_android\nswift-6.4.2-RELEASE_static-linux-0.1.0\n`;
             const sdkOf = (version: string) => swiftSDKOf(swiftRelease(version), list, "android");
             check("the Swift SDK for Android is the one of the toolchain's release, as build-swift.sh finds it",
-                sdkOf("Apple Swift version 6.4 (swift-6.4-RELEASE)\nTarget: arm64-apple-macosx26.0") === sdk
+                sdkOf("Apple Swift version 6.4.2 (swift-6.4.2-RELEASE)\nTarget: arm64-apple-macosx26.0") === sdk
                 && sdkOf(`Apple Swift version ${older} (swift-${older}-RELEASE)`) === `swift-${older}-RELEASE_android`
                 && sdkOf(`Apple Swift version ${newer} (swift-${newer}-RELEASE)`) === undefined && sdkOf("") === undefined);
-            const wasm = "swift-6.4.0-RELEASE_wasm\nswift-6.4.0-RELEASE_wasm-embedded\n";
+            const wasm = "swift-6.4.2-RELEASE_wasm\nswift-6.4.2-RELEASE_wasm-embedded\n";
             check("the Swift SDK for WebAssembly is the one whose id ends in _wasm, never its Embedded Swift sibling",
-                swiftSDKOf("6.4", wasm, "wasm") === "swift-6.4.0-RELEASE_wasm"
-                && swiftSDKOf("6.4", "swift-6.4.0-RELEASE_wasm-embedded\n", "wasm") === undefined);
+                swiftSDKOf("6.4.2", wasm, "wasm") === "swift-6.4.2-RELEASE_wasm"
+                && swiftSDKOf("6.4.2", "swift-6.4.2-RELEASE_wasm-embedded\n", "wasm") === undefined);
         }
         check("devices.sh list reads as the devices attached, by serial and name, and the emulators not running",
             JSON.stringify(parseDevices("device\t190a991d\tCPH2363\r\ndevice\temulator-5554\tPixel_3a_API_34\ndevice\tR5CT\navd\tMedium_Phone_API_36\n\nnoise\n"))
@@ -571,8 +571,8 @@ export async function run(): Promise<void> {
         //     VS Code's JavaScript debugger on the page server.json names.
         check("HelloWorld has a Web head, and as the Web the language server indexes in .build/web/index-build for wasm32-unknown-wasip1",
             hasHead(helloWorld, "web")
-            && JSON.stringify(serverSettings("web", "swift-6.4.0-RELEASE_wasm")) === JSON.stringify(
-                { scratchPath: ".build/web/index-build", swiftSDK: "swift-6.4.0-RELEASE_wasm", triple: "wasm32-unknown-wasip1" }));
+            && JSON.stringify(serverSettings("web", "swift-6.4.2-RELEASE_wasm")) === JSON.stringify(
+                { scratchPath: ".build/web/index-build", swiftSDK: "swift-6.4.2-RELEASE_wasm", triple: "wasm32-unknown-wasip1" }));
         {
             const listed = parseBrowsers("com.apple.Safari\tSafari\t/Applications/Safari.app/Contents/MacOS/Safari\tdefault\r\n"
                 + "com.google.Chrome\tGoogle Chrome\t/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\t\n\n"

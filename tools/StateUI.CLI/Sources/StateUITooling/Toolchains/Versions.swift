@@ -33,7 +33,7 @@ public enum Versions {
     public static func isSwiftOrgBuild(_ text: String) -> Bool { text.contains(/\(swift-\d/) }
 
     /// The last Swift SDK of `release` whose id ends in `_<family>` among the ids `swift sdk list` printed; `wasm`
-    /// is `swift-6.4.0-RELEASE_wasm`, never its `_wasm-embedded` sibling.
+    /// is `swift-6.4.2-RELEASE_wasm`, never its `_wasm-embedded` sibling.
     public static func swiftSDK(of release: String?, in list: String, family: String) -> String? {
         guard let release else { return nil }
         return list.split(whereSeparator: \.isWhitespace).map(String.init)

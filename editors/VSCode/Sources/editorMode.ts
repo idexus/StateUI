@@ -272,7 +272,7 @@ export function serverConfig(config: ServerConfig, settings: ServerSettings): Se
 
 /**
  * The release a Swift version names - `6.4` in `swift --version`'s "Swift
- * version 6.4" or in the SDK id `swift-6.4.0-RELEASE_android`: a release
+ * version 6.4" or in the SDK id `swift-6.4.2-RELEASE_android`: a release
  * ending in `.0` is the release without it, as build-swift.sh reads it.
  */
 export function swiftRelease(text: string): string | undefined {
@@ -283,7 +283,7 @@ export function swiftRelease(text: string): string | undefined {
 /**
  * The Swift SDK of `release` whose id ends in `_<family>`, among the ids
  * `swift sdk list` printed as `list` - the last one, as build-swift.sh takes it.
- * `wasm` is `swift-6.4.0-RELEASE_wasm`, never its Embedded Swift sibling `_wasm-embedded`.
+ * `wasm` is `swift-6.4.2-RELEASE_wasm`, never its Embedded Swift sibling `_wasm-embedded`.
  */
 export function swiftSDKOf(release: string | undefined, list: string, family: string): string | undefined {
     return release === undefined

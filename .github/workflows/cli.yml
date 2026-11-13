@@ -42,7 +42,7 @@ jobs:
     name: Linux
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    container: swift:6.4.0-noble
+    container: swift:6.4.2-noble
     steps:
       # THE CHECKOUT DIRECTORY HAS TO BE CALLED StateUI: the tool's tests read
       # this checkout's applications, whose manifests name the library by it.
@@ -74,8 +74,8 @@ jobs:
       - name: Install Swift
         uses: compnerd/gha-setup-swift@v0.4.0
         with:
-          swift-version: swift-6.4.0-release
-          swift-build: 6.4.0-RELEASE
+          swift-version: swift-6.4.2-release
+          swift-build: 6.4.2-RELEASE
       - name: Find and report the toolchain
         run: |
           $roots = @(

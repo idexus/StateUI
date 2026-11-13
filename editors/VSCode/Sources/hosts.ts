@@ -29,7 +29,7 @@ export interface HostDescription {
     readonly target?: {
         readonly triple: string;
 
-        /** What ends the Swift SDK's id: `android` in `swift-6.4.0-RELEASE_android`. */
+        /** What ends the Swift SDK's id: `android` in `swift-6.4.2-RELEASE_android`. */
         readonly swiftSDK?: string;
 
         /** Where that Swift SDK is installed from. */

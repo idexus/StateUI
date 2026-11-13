@@ -29,9 +29,9 @@ final class ToolTextTests: XCTestCase {
     /// A Swift SDK is the last of Swift's release whose id ends in the family asked, never an Embedded sibling.
     func testASwiftSDKIsOfSwiftsReleaseAndFamily() {
         let older = "6" + ".3"
-        let list = "swift-\(older)-RELEASE_android\nswift-6.4.0-RELEASE_wasm\nswift-6.4.0-RELEASE_wasm-embedded\nswift-6.4-RELEASE_android"
-        XCTAssertEqual(Versions.swiftSDK(of: "6.4", in: list, family: "wasm"), "swift-6.4.0-RELEASE_wasm")
-        XCTAssertEqual(Versions.swiftSDK(of: "6.4", in: list, family: "android"), "swift-6.4-RELEASE_android")
+        let list = "swift-\(older)-RELEASE_android\nswift-6.4.2-RELEASE_wasm\nswift-6.4.2-RELEASE_wasm-embedded\nswift-6.4.2-RELEASE_android"
+        XCTAssertEqual(Versions.swiftSDK(of: "6.4.2", in: list, family: "wasm"), "swift-6.4.2-RELEASE_wasm")
+        XCTAssertEqual(Versions.swiftSDK(of: "6.4.2", in: list, family: "android"), "swift-6.4.2-RELEASE_android")
         XCTAssertNil(Versions.swiftSDK(of: "6.5", in: list, family: "android"))
         XCTAssertNil(Versions.swiftSDK(of: nil, in: list, family: "wasm"))
     }
