@@ -29,3 +29,5 @@ writes its result as words or as the message an editor receives.
   tools are found.
 - [Builds](builds.md): what one build is and where it writes, one
   application build at a time on a machine, and the operation journal.
+- [Pictures](pictures.md): which heads get their pictures drawn, and how
+  an SVG, an application's pictures and a macOS icon are drawn.
