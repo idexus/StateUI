@@ -1,0 +1,47 @@
+{
+  "request" : {
+    "id" : "1",
+    "jsonrpc" : "2.0",
+    "method" : "initialize",
+    "params" : {
+      "apiVersions" : [
+        {
+          "major" : 1,
+          "maxMinor" : 0,
+          "minMinor" : 0
+        }
+      ],
+      "client" : {
+        "name" : "stateui-vscode",
+        "version" : "1.0.0"
+      },
+      "workspaceUri" : "file:///Users/example/Projects/Demo"
+    }
+  },
+  "response" : {
+    "id" : "1",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "apiVersion" : "1.0",
+      "capabilities" : {
+        "methods" : [
+          "server/info"
+        ],
+        "notifications" : [
+
+        ]
+      },
+      "limits" : {
+        "maxFrameBytes" : 16777216
+      },
+      "server" : {
+        "name" : "stateui",
+        "version" : "1.0.0"
+      },
+      "serverInstanceId" : "00000000-0000-0000-0000-000000000000",
+      "workspace" : {
+        "uri" : "file:///Users/example/Projects/Demo"
+      }
+    }
+  }
+}

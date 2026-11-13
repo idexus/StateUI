@@ -4,4 +4,5 @@
 /// Design: docs/design/tooling/command-line.md#exit-status
 enum ExitStatus {
     static let invalidCommand: Int32 = 2
+    static let lostClient: Int32 = 6
 }

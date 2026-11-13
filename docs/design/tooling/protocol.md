@@ -44,3 +44,41 @@ needs nothing written twice.
 An id keeps the type it came with - a string, a number, `null` - and the
 answer carries it back so. A message with no `id` is a notification and is
 never answered.
+
+## A connection's life
+
+```text
+created --initialize--> initializing --initialized--> ready --shutdown--> shuttingDown --exit--> closed
+```
+
+A new connection answers `initialize` alone. Its answer names the API version
+both sides speak - the newest minor of a major both offer - and the methods
+the service answers, only those it implements; a client offering no version
+the service speaks is refused (`-32001`) before anything runs, and may offer
+again. Until `initialized` comes, every other request is refused as not
+initialized (`-32002`). After `shutdown`, every request is refused as
+shutting down (`-32003`); `exit` ends the connection. A method sent as a
+notification does not run: a method is called with an id, and is answered.
+
+Reading never waits on a method. A frame's lifecycle messages and refusals
+are answered at once, in the order the frames came; a method's answer is
+written when its method returns, so a slow method holds no other, and answers
+are matched to requests by id. `shutdown` is answered after every request
+accepted before it, and the connection's end waits for every answer still
+owed - an answer accepted is never lost to the process ending.
+
+One writer puts frames on standard output, each whole, in the order given;
+standard error carries diagnostics, which no client reads as messages. The
+process ends with status `0` when the client shut the service down, and `6`
+when the input ended or broke first - a client lost.
+
+## The recorded examples
+
+`tools/StateUI.CLI/exports/protocol` holds one example a method - its request
+and its answer - and one a notification, written from the Swift types by
+`ProtocolExamplesTests` (`STATEUI_UPDATE_EXPORTS=1` records them). The same
+test sends the examples' requests to the service in their order and finds
+the answers the examples hold, the service's instance, identity and machine
+aside, and requires an example of every method the service answers. An
+editor's client is held to these files: its own tests read them with its own
+types.

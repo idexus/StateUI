@@ -9,12 +9,18 @@ public struct ToolingService: Sendable {
     /// A service for this process.
     public init() {}
 
+    /// The tool's name and release.
+    public static let identity = ToolIdentity(name: "stateui", version: Release.version)
+
     /// The tool's name, release, API versions and machine - `server/info`.
     public func serverInfo() -> ServerInfo {
-        ServerInfo(
-            server: ToolIdentity(name: "stateui", version: Release.version),
-            apiVersions: Release.apiVersions,
-            machine: .current
-        )
+        ServerInfo(server: Self.identity, apiVersions: Release.apiVersions, machine: .current)
+    }
+
+    /// The methods an editor calls, each answered by this service.
+    public var methods: Methods {
+        var methods = Methods()
+        methods.query("server/info") { (_: NoParameters) in serverInfo() }
+        return methods
     }
 }

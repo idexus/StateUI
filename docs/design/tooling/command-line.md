@@ -28,6 +28,7 @@ apart without reading words:
 | --- | --- |
 | `0` | with the work done, or with the help that was asked for |
 | `2` | on a command line naming no command, or arguments a command does not take |
+| `6` | serving an editor, when its input ended or broke before it shut the service down - a client lost |
 
 A command line naming no command writes the help on standard error. The
 argument parser's own status for arguments a command does not take, 64, is
