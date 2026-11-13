@@ -154,6 +154,15 @@ export const ProjectReference = object<ProjectReference>({ projectUri: optional(
 export interface ApplicationRequest { name: string; parentUri: string; checkoutUri?: string }
 export const ApplicationRequest = object<ApplicationRequest>({ name: string, parentUri: string, checkoutUri: optional(string) });
 
+export type NameKind = "application" | "workspace";
+export const NameKind = oneOf<NameKind>("application", "workspace");
+
+export interface NameCheck { kind: NameKind; name: string; parentUri?: string }
+export const NameCheck = object<NameCheck>({ kind: NameKind, name: string, parentUri: optional(string) });
+
+export interface NameVerdict { problem?: string }
+export const NameVerdict = object<NameVerdict>({ problem: optional(string) });
+
 export interface ProjectCreation { project: Project; createdUris: string[] }
 export const ProjectCreation = object<ProjectCreation>({ project: Project, createdUris: array(string) });
 
@@ -213,6 +222,7 @@ export const methods = {
     "server/info": query(NoParameters, ServerInfo),
     "project/describe": query(ProjectReference, Project),
     "toolchain/check": query(NoParameters, ToolchainReport),
+    "name/check": query(NameCheck, NameVerdict),
     "releases/list": query(ReleaseQuery, ReleaseList),
     "operation/get": query(OperationReference, OperationSnapshot),
     "operation/cancel": query(OperationReference, CancelResult),

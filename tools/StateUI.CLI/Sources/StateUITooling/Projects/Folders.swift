@@ -19,4 +19,13 @@ enum Folders {
         let above = parent.pathComponents
         return above.count < components.count && Array(components.prefix(above.count)) == above ? parent : nil
     }
+
+    /// Why nothing new can be put at `destination`, or `nil`: an empty folder or no entry at all takes it.
+    static func taken(_ destination: URL) -> String? {
+        let files = FileManager.default
+        if let held = try? files.contentsOfDirectory(atPath: destination.path) {
+            return held.isEmpty ? nil : "\(destination.path) already holds files."
+        }
+        return files.fileExists(atPath: destination.path) ? "\(destination.path) already exists." : nil
+    }
 }

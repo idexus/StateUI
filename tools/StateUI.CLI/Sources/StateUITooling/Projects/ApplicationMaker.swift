@@ -31,11 +31,7 @@ public struct ApplicationMaker: Sendable {
         let files = FileManager.default
         try? files.createDirectory(at: parent, withIntermediateDirectories: true)
         let destination = RealPath.of(parent).appendingPathComponent(name)
-        if let held = try? files.contentsOfDirectory(atPath: destination.path), !held.isEmpty {
-            throw ToolingError(.alreadyExists, "\(destination.path) already holds files.")
-        } else if files.fileExists(atPath: destination.path), (try? files.contentsOfDirectory(atPath: destination.path)) == nil {
-            throw ToolingError(.alreadyExists, "\(destination.path) already exists.")
-        }
+        if let taken = Folders.taken(destination) { throw ToolingError(.alreadyExists, taken) }
         let staging = destination.deletingLastPathComponent()
             .appendingPathComponent(".\(name).stateui-new-\(UUID().uuidString.lowercased())")
         do {

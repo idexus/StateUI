@@ -32,6 +32,31 @@ final class ProjectServiceTests: XCTestCase {
 
         XCTAssertEqual(projects.map { $0.applications.map(\.name) }, [["HelloWorld"], ["Gallery", "HelloWorld"]])
     }
+
+    /// `name/check` answers by the name's rule first, then by the folder it would be made in: one taken - holding
+    /// files, or a file - refuses it, an empty one or none takes it.
+    func testANameIsCheckedByItsRuleThenItsFolder() throws {
+        let parent = FileManager.default.temporaryDirectory.appendingPathComponent("names-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: parent) }
+        let files = FileManager.default
+        try files.createDirectory(at: parent.appendingPathComponent("Held/Sources"), withIntermediateDirectories: true)
+        try files.createDirectory(at: parent.appendingPathComponent("Empty"), withIntermediateDirectories: true)
+        try Data().write(to: parent.appendingPathComponent("File"))
+        let service = ToolingService()
+
+        XCTAssertNil(service.checkName("Notes", of: .application, in: parent).problem)
+        XCTAssertNil(service.checkName("Empty", of: .application, in: parent).problem)
+        XCTAssertNil(service.checkName("Notes", of: .application, in: nil).problem)
+        XCTAssertEqual(service.checkName("My-App", of: .application, in: parent).problem,
+                       "'My-App' cannot name an application: letters and digits only, starting with a letter.")
+        XCTAssertEqual(service.checkName("StateUI", of: .application, in: nil).problem,
+                       "'StateUI' is the library. Pick a name of the application's own.")
+        XCTAssertNil(service.checkName("My.Apps-2_x", of: .workspace, in: parent).problem)
+        XCTAssertNotNil(service.checkName("My Apps", of: .workspace, in: nil).problem)
+        XCTAssertNotNil(service.checkName("-apps", of: .workspace, in: nil).problem)
+        XCTAssertTrue(try XCTUnwrap(service.checkName("Held", of: .application, in: parent).problem).hasSuffix("already holds files."))
+        XCTAssertTrue(try XCTUnwrap(service.checkName("File", of: .workspace, in: parent).problem).hasSuffix("already exists."))
+    }
 }
 
 /// The frames a connection wrote.

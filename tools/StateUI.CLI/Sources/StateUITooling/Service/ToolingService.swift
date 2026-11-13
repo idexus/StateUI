@@ -23,6 +23,16 @@ public struct ToolingService: Sendable {
         try await ProjectReader().describe(containing: folder)
     }
 
+    /// Why `name` cannot name a `kind` made in `parent` - its rule, or a folder already there - or a verdict taking
+    /// it - `name/check`.
+    public func checkName(_ name: String, of kind: NameKind, in parent: URL?) -> NameVerdict {
+        let rule = switch kind {
+        case .application: ApplicationMaker.problem(with: name)
+        case .workspace: WorkspaceMaker.problem(with: name)
+        }
+        return NameVerdict(problem: rule ?? parent.flatMap { Folders.taken(RealPath.of($0).appendingPathComponent(name)) })
+    }
+
     /// Makes application `name` in `parent` from a checkout's HelloWorld - `checkout`, else the workspace's library,
     /// else the checkout `parent` stands in - and lists it in the workspace - `project/create`.
     public func createApplication(_ name: String, in parent: URL, from checkout: URL?) async throws -> ProjectCreation {
@@ -122,6 +132,9 @@ public struct ToolingService: Sendable {
         var methods = Methods()
         methods.query("server/info") { (_: NoParameters) in serverInfo() }
         methods.query("toolchain/check") { (_: NoParameters) in await checkToolchain() }
+        methods.query("name/check") { (check: NameCheck) in
+            checkName(check.name, of: check.kind, in: try check.parentUri.map(FileURI.url))
+        }
         methods.query("releases/list") { (query: ReleaseQuery) in
             try await listReleases(of: query.repository, from: query.minimum)
         }

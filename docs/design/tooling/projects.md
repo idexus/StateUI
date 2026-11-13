@@ -120,6 +120,15 @@ text: a manifest reading `stateui.json` would go on resolving the checkout it
 read before. The workspace file declares the library; the tool writes the
 manifests from it.
 
+## A name checked
+
+`name/check` answers, before anything is made, whether a name can name an
+application or a workspace in a folder: by its rule first - the one each maker
+refuses by - then by the folder it would take, refused where it holds files or
+is a file, taken where it is empty or absent. An editor asks it as a name is
+typed, so each rule stands once, in the tool; the makers refuse the same way
+when the folder changed in between.
+
 ## A release
 
 A release is a tag of three numbers on StateUI's repository - `stateui releases

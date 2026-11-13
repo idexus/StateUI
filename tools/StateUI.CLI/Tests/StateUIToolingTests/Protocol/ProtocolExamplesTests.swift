@@ -126,6 +126,11 @@ final class ProtocolExamplesTests: XCTestCase {
                 ("request", try request("9", "releases/list", ReleaseQuery(minimum: "0.8.0"))),
                 ("response", try response("9", ReleaseList(repository: Release.repository, releases: ["0.8.5", "0.8.4", "0.8.0"]))),
             ], answeredAsWritten: false),
+            Example(name: "name-check", messages: [
+                ("request", try request("12", "name/check", NameCheck(kind: .application, name: "My-App", parentUri: demo + "/apps"))),
+                ("response", try response("12", NameVerdict(
+                    problem: "'My-App' cannot name an application: letters and digits only, starting with a letter."))),
+            ]),
             Example(name: "workspace-create", messages: [
                 ("request", try request("10", "workspace/create", Mutation(
                     requestToken: "0b6f2c8e-3d1a-4f5b-8c7e-9a2d4b6c8e10",

@@ -25,6 +25,7 @@
       "apiVersion" : "1.0",
       "capabilities" : {
         "methods" : [
+          "name/check",
           "operation/cancel",
           "operation/get",
           "project/create",
