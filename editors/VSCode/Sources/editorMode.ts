@@ -198,15 +198,22 @@ export async function cleanIndex(roots: readonly string[]): Promise<void> {
 
 /**
  * Restarts the Swift extension's language server. A server still loading its packages may not stop within the two
- * seconds that extension gives it: the restart then rejects with the server stopped and not started again, and is
- * asked once more, which only starts it.
+ * seconds that extension gives it, and a client still starting refuses to stop: a refused restart is asked again,
+ * every `pause` milliseconds, `attempts` times in all, the last refusal the caller's.
  */
 export async function restartServer(
-    restart: () => Thenable<unknown> = () => vscode.commands.executeCommand("swift.restartLSPServer")): Promise<void> {
-    try {
-        await restart();
-    } catch {
-        await restart();
+    restart: () => Thenable<unknown> = () => vscode.commands.executeCommand("swift.restartLSPServer"),
+    attempts = 30, pause = 2000): Promise<void> {
+    for (let attempt = 1; ; attempt += 1) {
+        try {
+            await restart();
+            return;
+        } catch (error) {
+            if (attempt >= attempts) {
+                throw error;
+            }
+            await new Promise((resume) => setTimeout(resume, pause));
+        }
     }
 }
 

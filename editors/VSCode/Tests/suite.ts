@@ -60,16 +60,22 @@ async function resolves(file: string, needle: string, after?: string): Promise<b
     return (found?.length ?? 0) > 0;
 }
 
+// A probe that throws has not yet seen it: a request the language server's restart rejected is asked again.
 async function until(what: string, probe: () => Promise<boolean>, seconds: number): Promise<void> {
     const deadline = Date.now() + seconds * 1000;
+    let refused: unknown;
     while (Date.now() < deadline) {
-        if (await probe()) {
-            say(`ok   ${what}`);
-            return;
+        try {
+            if (await probe()) {
+                say(`ok   ${what}`);
+                return;
+            }
+        } catch (error) {
+            refused = error;
         }
         await new Promise((resume) => setTimeout(resume, 5000));
     }
-    throw new Error(`timed out after ${seconds}s: ${what}`);
+    throw new Error(`timed out after ${seconds}s: ${what}${refused ? ` - last refused: ${String(refused)}` : ""}`);
 }
 
 function check(what: string, value: boolean): void {
@@ -96,23 +102,24 @@ export async function run(): Promise<void> {
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
 
-        // 0. A restart the Swift extension rejects - its server, still loading packages, not stopped in time and left
-        //    stopped - is asked once more, which starts it; a second rejection is the caller's.
+        // 0. A restart the Swift extension rejects - its server, still loading packages, not stopped in time, or its
+        //    client still starting - is asked again until it takes; a refusal that lasts is the caller's.
         {
             let asked = 0;
             const recovered = await restartServer(async () => {
                 asked += 1;
-                if (asked === 1) {
-                    throw new Error("Stopping the server timed out");
+                if (asked < 3) {
+                    throw new Error(asked === 1 ? "Stopping the server timed out" : "Client is not running and can't be stopped");
                 }
-            }).then(() => true, () => false);
+            }, 5, 1).then(() => true, () => false);
             let refused = 0;
             const failed = await restartServer(async () => {
                 refused += 1;
                 throw new Error("refused");
-            }).then(() => false, () => true);
-            check("a restart the Swift extension rejects, its server left stopped, is asked once more, which starts it",
-                recovered && asked === 2 && failed && refused === 2);
+            }, 5, 1).then(() => false, () => true);
+            check("a restart the Swift extension refuses - a server not stopped in time, a client still starting - is asked "
+                + "again until it takes, and one refused every time is the caller's",
+                recovered && asked === 3 && failed && refused === 5);
         }
 
         // 1-3 ask the language server as the hosts only macOS builds.
