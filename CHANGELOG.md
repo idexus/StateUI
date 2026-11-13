@@ -47,6 +47,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `package.json`, the tool's release, the Android heads and the bundles are its copies, which `ReleaseTests` holds.
 - Swift 6.4.2 is the release StateUI builds with: the workflows' images and installers, the Swift SDKs for Android
   and WebAssembly and the handbook name it, and `ToolchainTests` holds one patch release everywhere.
+- `stateui repo test --suite host:appkit` runs the AppKit host's suite - its tests, every conformance verdict held, then
+  its API records, each a phase of the result - and the AppKit workflow runs it.
 - The `stateui` tool has a workflow of its own (`cli.yml`): its suites on macOS, Linux and Windows, then the editor
   extension's client of it against a real `stateui serve --stdio`.
 

@@ -14,7 +14,7 @@ struct StateUICommand: AsyncParsableCommand {
         version: Release.version,
         subcommands: [
             BuildCommand.self, DoctorCommand.self, NewCommand.self, PackageCommand.self, ProjectCommand.self,
-            ReleasesCommand.self, RunCommand.self, ServeCommand.self, VersionCommand.self, WorkspaceCommand.self,
+            ReleasesCommand.self, RepoCommand.self, RunCommand.self, ServeCommand.self, VersionCommand.self, WorkspaceCommand.self,
         ]
     )
 

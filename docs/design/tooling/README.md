@@ -33,3 +33,4 @@ writes its result as words or as the message an editor receives.
   an SVG, an application's pictures and a macOS icon are drawn.
 - [Apple bundles](apple-bundles.md): an Apple head's `Info.plist`, and what an
   AppKit bundle holds.
+- [The repository's own work](repository.md): a host's suite, run as its CI runs it.
