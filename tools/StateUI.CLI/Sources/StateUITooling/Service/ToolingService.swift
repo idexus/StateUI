@@ -23,10 +23,16 @@ public struct ToolingService: Sendable {
         try await ProjectReader().describe(containing: folder)
     }
 
+    /// What this machine has of every component it needs - `toolchain/check`.
+    public func checkToolchain() async -> ToolchainReport {
+        await Doctor().check()
+    }
+
     /// The methods an editor calls, each answered by this service.
     public var methods: Methods {
         var methods = Methods()
         methods.query("server/info") { (_: NoParameters) in serverInfo() }
+        methods.query("toolchain/check") { (_: NoParameters) in await checkToolchain() }
         methods.query("project/describe") { (reference: ProjectReference, context: RequestContext) in
             guard let uri = reference.projectUri ?? context.workspaceUri else {
                 throw ToolingError(.projectNotFound, "No project is named, and the connection opened no workspace.")

@@ -12,7 +12,7 @@ struct StateUICommand: AsyncParsableCommand {
         commandName: "stateui",
         abstract: "StateUI's developer tool.",
         version: Release.version,
-        subcommands: [ProjectCommand.self, ServeCommand.self, VersionCommand.self]
+        subcommands: [DoctorCommand.self, ProjectCommand.self, ServeCommand.self, VersionCommand.self]
     )
 
     /// A command line naming no command: the help, on standard error, and status 2.

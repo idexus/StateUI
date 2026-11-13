@@ -25,3 +25,5 @@ writes its result as words or as the message an editor receives.
   tool exchange.
 - [Projects](projects.md): how a project, its applications and their
   checkouts are read.
+- [Doctor](doctor.md): what the machine is checked for, and how the hosts'
+  tools are found.

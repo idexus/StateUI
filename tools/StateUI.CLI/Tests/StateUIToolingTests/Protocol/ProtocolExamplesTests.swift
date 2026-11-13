@@ -73,6 +73,17 @@ final class ProtocolExamplesTests: XCTestCase {
                 ("request", try request("4", "project/describe", ProjectReference(projectUri: demo))),
                 ("response", try response("4", project)),
             ], answeredAsWritten: false),
+            Example(name: "toolchain-check", messages: [
+                ("request", try request("5", "toolchain/check", NoParameters())),
+                ("response", try response("5", ToolchainReport(findings: [
+                    ToolFinding(
+                        component: "Swift 6.4 or newer", neededBy: "every host", hosts: HostFamily.allCases,
+                        found: "6.4 (/usr/bin/swift)", tooOld: nil, advice: "Install Swift 6.4 from https://www.swift.org/install."),
+                    ToolFinding(
+                        component: "the Android NDK r30 or newer", neededBy: "Android", hosts: [.android], found: nil,
+                        tooOld: "29.0.1", advice: "Install it with Android Studio's SDK Manager."),
+                ]))),
+            ], answeredAsWritten: false),
             Example(name: "shutdown", messages: [
                 ("request", .object(["jsonrpc": .string("2.0"), "id": .string("3"), "method": .string("shutdown")])),
                 ("response", try JSONValue(encoding: OutgoingMessage.response(id: .string("3"), outcome: .result(.null)))),

@@ -29,7 +29,7 @@ apart without reading words:
 | `0` | with the work done, or with the help that was asked for |
 | `1` | on a program it ran failing - SwiftPM unable to read a package |
 | `2` | on a command line naming no command, arguments a command does not take, or no project where one is named |
-| `3` | missing a program it needs - Swift not found |
+| `3` | missing a program it needs - Swift not found, or what `doctor` was asked to find |
 | `6` | serving an editor, when its input ended or broke before it shut the service down - a client lost |
 | `130` | interrupted, once the work it stopped has stopped |
 

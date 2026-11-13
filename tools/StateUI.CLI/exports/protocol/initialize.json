@@ -26,7 +26,8 @@
       "capabilities" : {
         "methods" : [
           "project/describe",
-          "server/info"
+          "server/info",
+          "toolchain/check"
         ],
         "notifications" : [
 
