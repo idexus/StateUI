@@ -30,9 +30,6 @@ lib/StateUI/StateUI.WinUI/
   Sources/CStateUIWinUI/     the relay: C++/WinRT behind the C functions its header declares
   Testing/                   a package of its own: the host's suite, run by stateui repo test, in
                              Tests/, and the driver every conformance run on WinUI goes through
-.scripts/WinUI/
-  test-winui.ps1             records the host's marks and exports (STATEUI_UPDATE_EXPORTS=1)
-  tools.ps1                  what test-winui.ps1 takes: the packages, the projection, its runner made self-contained
 lib/Backends/WebView.WinUI/
   Packaging/runtime.txt      what the web view's backend lays beside an application depending on it
 apps/<App>/Platforms/WinUI/
@@ -356,16 +353,20 @@ A run holds what it says to `lib\StateUI\exports\`: the host's own tests what
 it declares to `winui.txt`, and each family its verdicts to
 `marks\winui\<Family>.txt` - a family run in parts to
 `marks\winui\<Family>-<part>.txt`, one file a part; a run that says
-otherwise fails. Recording stays with the script until the tool records:
-`.scripts\WinUI\test-winui.ps1 -Conformance` with `STATEUI_UPDATE_EXPORTS=1` in its
-environment writes them instead, each verdict file under the revision its family stands
-at in `lib\StateUI\StateUI.Conformance\revisions.txt`. `-Stale` runs only the
-families whose verdicts stand at another revision, or at none: each other
-one's process ends at once. With the verdicts written,
-`swift test --filter ControlDictionaryTests` at the repository's root, with
-`STATEUI_UPDATE_DOCS=1` in its environment, renders the
+otherwise fails. `stateui repo conformance run --host winui --record` writes them instead
+- `--all` every family and what the host declares, `--changed` the families
+whose verdicts stand at another revision or at none, `--family <name>` the
+ones named - each verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, then renders the
 [platform contract](../platform-contract.md#reading-the-matrix) and
-[the control dictionary](../controls/README.md) from them. In the editor,
-with WinUI chosen, **StateUI: Conformance - Rebuild all** runs both -
-`-Conformance` writing its verdicts, then the documents - and
-**StateUI: Conformance - Rebuild changed** runs `-Stale` before it renders.
+[the control dictionary](../controls/README.md) from them;
+`stateui repo conformance status --host winui` says where they stand, and
+`stateui repo api record --host winui` writes the API records:
+
+```powershell
+stateui repo conformance run --host winui --all --record
+stateui repo conformance run --host winui --changed --record
+```
+
+In the editor, with WinUI chosen, **StateUI: Conformance - Rebuild all**
+and **Rebuild changed** run the same.

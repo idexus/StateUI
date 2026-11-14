@@ -11,7 +11,7 @@ import XCTest
 /// said last stands - never zeros, which a frame driving a size would turn into a page of no width; it says where it
 /// went when its layout moves it on the way, its size the same all along; a filling picture says its room, and a
 /// shape whose frame is read is drawn again at its new size. A host runs here, so the suite runs it in a browser
-/// (`test-web.sh --browser`).
+/// (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebFrameReportTests: XCTestCase {
     override func setUp() async throws {

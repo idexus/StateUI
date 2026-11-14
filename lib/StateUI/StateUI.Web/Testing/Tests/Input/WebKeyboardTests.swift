@@ -8,7 +8,7 @@ import XCTest
 
 /// The keyboard in a strip of tabs and in a menu: the arrows go from one to the next, Home and End to the ends, a tab
 /// chosen as the keyboard reaches it. The browser takes the keys, so the suite runs it in a browser
-/// (`test-web.sh --browser`).
+/// (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebKeyboardTests: XCTestCase {
     override func setUp() async throws {

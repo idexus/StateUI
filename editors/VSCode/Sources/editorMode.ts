@@ -37,10 +37,10 @@
 //
 // A HOST WHOSE HEADS RUN ON ANOTHER PLATFORM IS INDEXED FOR THAT PLATFORM. For
 // Android the same file names the Swift SDK of the toolchain's release and the
-// triple, found as .scripts/Android/build-swift.sh finds them. With no such SDK
+// triple, found as the stateui tool's Android build finds them. With no such SDK
 // installed the editor still works as the host, compiling for this Mac, and
 // says so. For UIKit it names the triple and the iOS simulator's SDK, which
-// Xcode ships - found as .scripts/UIKit/tools.sh finds it. SwiftPM's own
+// Xcode ships - found as the stateui tool's UIKit build finds it. SwiftPM's own
 // command infers that SDK from the triple, but the server's SwiftPM does not:
 // measured, it compiled for the simulator against the macOS SDK, and nothing
 // in a UIKit head resolved.
@@ -273,7 +273,7 @@ export function serverConfig(config: ServerConfig, settings: ServerSettings): Se
 /**
  * The release a Swift version names - `6.4` in `swift --version`'s "Swift
  * version 6.4" or in the SDK id `swift-6.4.2-RELEASE_android`: a release
- * ending in `.0` is the release without it, as build-swift.sh reads it.
+ * ending in `.0` is the release without it, as the stateui tool reads it.
  */
 export function swiftRelease(text: string): string | undefined {
     const version = text.match(/Swift version (\d+\.\d+(\.\d+)?)/)?.[1] ?? text.match(/\d+\.\d+(\.\d+)?/)?.[0];
@@ -282,7 +282,7 @@ export function swiftRelease(text: string): string | undefined {
 
 /**
  * The Swift SDK of `release` whose id ends in `_<family>`, among the ids
- * `swift sdk list` printed as `list` - the last one, as build-swift.sh takes it.
+ * `swift sdk list` printed as `list` - the last one, as the stateui tool takes it.
  * `wasm` is `swift-6.4.2-RELEASE_wasm`, never its Embedded Swift sibling `_wasm-embedded`.
  */
 export function swiftSDKOf(release: string | undefined, list: string, family: string): string | undefined {

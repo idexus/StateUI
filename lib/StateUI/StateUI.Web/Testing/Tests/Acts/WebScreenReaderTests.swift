@@ -6,7 +6,7 @@
 import XCTest
 
 /// What the screen reader is told, as the page's live region says it. The browser says it, so the suite runs it in
-/// one (`test-web.sh --browser`).
+/// one (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebScreenReaderTests: XCTestCase {
     override func setUp() async throws {

@@ -8,7 +8,7 @@ import XCTest
 
 /// A page keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection, and
 /// they act on the words the user typed into though the bar's More took the focus. The browser holds the clipboard
-/// and wants a user's click to cut, so the suite runs it in one (`test-web.sh --browser`), clicking as a mouse does.
+/// and wants a user's click to cut, so the suite runs it in one (the stateui tool's `WebSuite.inBrowser`), clicking as a mouse does.
 @MainActor
 final class WebEditMenuTests: XCTestCase {
     override func setUp() async throws {

@@ -159,7 +159,7 @@ public struct AndroidTools: Sendable {
 
     /// The compiler the Android build takes and the Swift SDK for Android of its release: `SWIFT_BIN`, else `swift`
     /// on the search path, 6.4 or newer; where that is not swift.org's - Xcode's cannot read the SDK - the swift.org
-    /// toolchain of the same release, as `build-swift.sh` looks for it.
+    /// toolchain of the same release.
     public func swift() async -> (compiler: URL, sdk: String)? {
         let named = environment["SWIFT_BIN"].flatMap { $0.isEmpty ? nil : URL(fileURLWithPath: $0) }
         guard let builder = named ?? SearchPath(environment: environment).find("swift") else { return nil }

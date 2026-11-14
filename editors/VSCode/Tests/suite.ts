@@ -232,7 +232,7 @@ export async function run(): Promise<void> {
             const older = ["6", "3", "3"].join("."), newer = ["6", "5"].join(".");
             const list = `swift-${older}-RELEASE_android\nswift-6.4.2-RELEASE_android\nswift-6.4.2-RELEASE_static-linux-0.1.0\n`;
             const sdkOf = (version: string) => swiftSDKOf(swiftRelease(version), list, "android");
-            check("the Swift SDK for Android is the one of the toolchain's release, as build-swift.sh finds it",
+            check("the Swift SDK for Android is the one of the toolchain's release, as the stateui tool finds it",
                 sdkOf("Apple Swift version 6.4.2 (swift-6.4.2-RELEASE)\nTarget: arm64-apple-macosx26.0") === sdk
                 && sdkOf(`Apple Swift version ${older} (swift-${older}-RELEASE)`) === `swift-${older}-RELEASE_android`
                 && sdkOf(`Apple Swift version ${newer} (swift-${newer}-RELEASE)`) === undefined && sdkOf("") === undefined);

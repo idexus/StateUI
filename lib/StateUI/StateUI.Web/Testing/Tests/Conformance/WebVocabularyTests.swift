@@ -4,7 +4,7 @@
 @_spi(Host) import StateUIConformance
 import XCTest
 
-/// A host runs here, so the suite runs it in a browser (`test-web.sh --browser`).
+/// A host runs here, so the suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebVocabularyTests: XCTestCase {
     override func setUp() async throws {

@@ -181,7 +181,6 @@ final class NativeProjectTests: XCTestCase {
             "\(host)/Package.swift", "\(host)/Tests/Package.swift",
             "\(host)/Tests/Platforms/Android/build.gradle.kts",
             "\(host)/Java/stateui/android/StateUIActivity.java",
-            ".scripts/Android/test-android.sh",
         ] {
             XCTAssertTrue(
                 FileManager.default.fileExists(atPath: repository.appendingPathComponent(relative).path),
@@ -204,7 +203,7 @@ final class NativeProjectTests: XCTestCase {
     }
 
     /// The WinUI 3 host is a Swift package beside the others, with its C++/WinRT
-    /// relay as a C++ target of its own and its recording script under `.scripts/WinUI`;
+    /// relay as a C++ target of its own;
     /// and every function the relay's header declares is one the relay defines -
     /// a declaration with nothing behind it is found only when a head links.
     func testTheWinUIHostIsAHostPackageBesideTheOthers() throws {
@@ -213,7 +212,6 @@ final class NativeProjectTests: XCTestCase {
         let relay = "\(host)/Sources/CStateUIWinUI"
         for relative in [
             "\(host)/Package.swift", "\(relay)/include/CStateUIWinUI.h",
-            ".scripts/WinUI/tools.ps1", ".scripts/WinUI/test-winui.ps1",
         ] {
             XCTAssertTrue(
                 FileManager.default.fileExists(atPath: repository.appendingPathComponent(relative).path),
@@ -348,19 +346,6 @@ final class NativeProjectTests: XCTestCase {
         return found
     }
 
-    /// No WinUI script writes into an executable a build linked: the next build would link it again, however
-    /// little changed. The Windows App SDK's manifest stands beside each one.
-    func testTheWinUIScriptsLeaveWhatABuildLinked() throws {
-        let scripts = SourceTree.repository.appendingPathComponent(".scripts/WinUI")
-        let tools = try String(contentsOf: scripts.appendingPathComponent("tools.ps1"), encoding: .utf8)
-        XCTAssertTrue(tools.contains(#"WriteAllText("$executable.manifest""#), "the manifest stands beside each executable")
-
-        for name in try FileManager.default.contentsOfDirectory(atPath: scripts.path) where name.hasSuffix(".ps1") {
-            let text = try String(contentsOf: scripts.appendingPathComponent(name), encoding: .utf8)
-            XCTAssertFalse(text.contains("-outputresource"), "\(name) writes into an executable")
-        }
-    }
-
     /// A WinRT object a WinUI relay keeps for the process beside WinUI is made with `new` and never destroyed: a
     /// static one is destroyed as the process exits, after WinUI is gone, and Windows ends the process there (a
     /// display watcher did, `RaiseFailFastException` in Microsoft.UI.Windowing.dll on every window's close). The
@@ -393,14 +378,10 @@ final class NativeProjectTests: XCTestCase {
     ]
 
     /// What a backend's engine needs beside a WinUI application is the backend's to declare, and only an
-    /// application linking it gets it: the host's scripts name no file of WebView2's, and the web view's backend
-    /// declares them in its `Packaging/runtime.txt`, which the stateui tool lays.
+    /// application linking it gets it: the web view's backend declares WebView2's files in its
+    /// `Packaging/runtime.txt`, which the stateui tool lays.
     func testAWinUIBackendDeclaresItsOwnFilesBesideTheApplication() throws {
         let repository = SourceTree.repository
-        let tools = try String(contentsOf: repository.appendingPathComponent(".scripts/WinUI/tools.ps1"), encoding: .utf8)
-        for file in ["Microsoft.Web.WebView2.Core.dll", "WebView2Loader.dll"] {
-            XCTAssertFalse(tools.contains(file), "tools.ps1 lays \(file) beside every application")
-        }
         let declaration = repository.appendingPathComponent("lib/Backends/WebView.WinUI/Packaging/runtime.txt")
         let text = (try? String(contentsOf: declaration, encoding: .utf8)) ?? ""
         XCTAssertTrue(text.contains("WebView2Loader.dll"), "the web view's backend declares no loader")
@@ -500,7 +481,7 @@ final class NativeProjectTests: XCTestCase {
     /// The GTK 4 host is a Swift package beside the others, Swift alone over GTK's C API: its C modules are
     /// the system's headers and nothing else - each a module map and one header: one including libadwaita's and
     /// GLib's watch of a file descriptor, and naming GLib's flags, each under a name of the host's, the other
-    /// libsoup's - and its scripts stand under `.scripts/GTK`.
+    /// libsoup's.
     func testTheGTKHostIsSwiftAloneOverGTKsCAPI() throws {
         let repository = SourceTree.repository
         let host = "lib/StateUI/StateUI.GTK"
@@ -835,47 +816,6 @@ final class NativeProjectTests: XCTestCase {
         }
 
         XCTAssertGreaterThan(heads, 0, "no Android head found")
-        let tools = try String(
-            contentsOf: SourceTree.repository.appendingPathComponent(".scripts/Android/tools.sh"), encoding: .utf8)
-        XCTAssertTrue(
-            tools.contains("draw-app-icon") && tools.contains("-Pstateui.res="),
-            "an Android head is built without its icon being drawn")
-    }
-
-    /// The Android scripts' shared tools find the checkout they stand in by themselves: a script sourcing them from
-    /// anywhere, strict about names never set, sets nothing first.
-    func testTheAndroidToolsFindTheirCheckoutThemselves() throws {
-        let bash = URL(fileURLWithPath: "/bin/bash")
-        guard FileManager.default.fileExists(atPath: bash.path) else {
-            throw XCTSkip("no /bin/bash here; an Android head is built on macOS and Linux.")
-        }
-        let sdk = FileManager.default.temporaryDirectory.appendingPathComponent("NativeProjectTests-\(UUID().uuidString)")
-        let aapt2 = sdk.appendingPathComponent("build-tools/1.0.0/aapt2")
-        try FileManager.default.createDirectory(
-            at: sdk.appendingPathComponent("platform-tools"), withIntermediateDirectories: true)
-        try FileManager.default.createDirectory(at: aapt2.deletingLastPathComponent(), withIntermediateDirectories: true)
-        try Data().write(to: aapt2)
-        defer { try? FileManager.default.removeItem(at: sdk) }
-
-        let process = Process()
-        process.executableURL = bash
-        process.arguments = [
-            "-c", #"set -euo pipefail; source "$0"; echo "$repository_dir""#,
-            SourceTree.repository.appendingPathComponent(".scripts/Android/tools.sh").path,
-        ]
-        process.environment = ["ANDROID_HOME": sdk.path, "HOME": sdk.path, "PATH": "/usr/bin:/bin"]
-        process.currentDirectoryURL = sdk
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = pipe
-        try process.run()
-        let output = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-        process.waitUntilExit()
-
-        XCTAssertEqual(process.terminationStatus, 0, output)
-        XCTAssertEqual(
-            URL(fileURLWithPath: output.trimmingCharacters(in: .newlines)).resolvingSymlinksInPath(),
-            SourceTree.repository.resolvingSymlinksInPath())
     }
 
     /// Every Android head may read the network: the host reports it to the application's views, and a head

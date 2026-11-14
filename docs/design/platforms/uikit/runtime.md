@@ -27,7 +27,7 @@ only to an application whose `Info.plist` says
 `CADisableMinimumFrameDurationOnPhone`, and otherwise draws a display link's
 motion at sixty while its own scrolling runs at 120 - a layout moved by the
 hand then moves half as often as the finger. The bundle every UIKit head is built into
-says it (`.scripts/UIKit/tools.sh`), so no application has to.
+says it (the stateui tool's `InfoPlist`), so no application has to.
 
 ## Scenes
 

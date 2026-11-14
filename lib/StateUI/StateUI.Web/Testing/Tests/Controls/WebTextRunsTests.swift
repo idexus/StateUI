@@ -8,7 +8,7 @@ import XCTest
 
 /// A text's runs over its own look: a line under a node is drawn under all it holds and no run could take it away,
 /// so while runs show, the text's lines stand on each run that does not say its own. A host runs in the page, so the
-/// suite runs it in a browser (`test-web.sh --browser`).
+/// suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebTextRunsTests: XCTestCase {
     override func setUp() async throws {

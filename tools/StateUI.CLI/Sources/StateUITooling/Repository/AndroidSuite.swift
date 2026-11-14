@@ -60,10 +60,12 @@ struct AndroidSuite {
         let (package, _) = try await AndroidHead.badging(of: apk, tools: android)
         let passed = try await runTests(apk, package: package, on: target, filter: filter, reporter: reporter)
         var phases = [SuiteResult.Phase(name: "tests", passed: passed)]
+        // The device reads no repository: what a run proved is held to the records here, or written there.
+        let declared = filter.map { $0.contains("AndroidDeclarationExportTests") } ?? true
         if passed, let revisions {
-            phases.append(try await recordMarks(package: package, on: target, revisions: revisions, reporter: reporter))
-        } else if passed, filter == nil {
-            phases += try await holdRecords(package: package, on: target, reporter: reporter)
+            phases.append(try await recordMarks(package: package, on: target, revisions: revisions, declared: declared, reporter: reporter))
+        } else if passed, filter == nil || filter?.contains("AndroidConformanceTests") == true {
+            phases += try await holdRecords(package: package, on: target, whole: filter == nil, declared: declared, reporter: reporter)
         }
         if let built {
             phases.append(SuiteResult.Phase(name: "api StateUIAndroid", passed: try await recordAPI(built, environment: environment, reporter: reporter)))
@@ -229,15 +231,16 @@ struct AndroidSuite {
     }
 
     /// What the host declares, and every family's verdicts, taken off the device and held to their records.
-    private func holdRecords(package: String, on device: Destination, reporter: BuildReporter) async throws -> [SuiteResult.Phase] {
+    private func holdRecords(
+        package: String, on device: Destination, whole: Bool, declared: Bool, reporter: BuildReporter
+    ) async throws -> [SuiteResult.Phase] {
         let adb = ProcessExecutable.path(android.adb.path)
         let read = { (file: String) async in
             await ToolOutput.standardOutput(adb, ["-s", device.id, "exec-out", "run-as", package, "cat", file]) ?? ""
         }
         let exports = checkout.appendingPathComponent("lib/StateUI/exports")
-        let declared = await read("files/android.txt")
         let kept = (try? String(contentsOf: exports.appendingPathComponent("android.txt"), encoding: .utf8)) ?? ""
-        let declarationsHeld = Self.lines(declared) == Self.lines(kept)
+        let declarationsHeld = declared ? Self.lines(await read("files/android.txt")) == Self.lines(kept) : true
         if !declarationsHeld {
             reporter.output(ProcessOutput(stream: .standardError, text:
                 "lib/StateUI/exports/android.txt is not what the host declares - a registration changed, or something stopped being realized."))
@@ -248,7 +251,8 @@ struct AndroidSuite {
         let marks = exports.appendingPathComponent("marks/android")
         let recorded = ((try? FileManager.default.contentsOfDirectory(atPath: marks.path)) ?? []).filter { $0.hasSuffix(".txt") }.sorted()
         var differ: [String] = []
-        if names != recorded { differ.append("the families run (\(names.count)) are not those recorded (\(recorded.count))") }
+        if whole, names != recorded { differ.append("the families run (\(names.count)) are not those recorded (\(recorded.count))") }
+        if names.isEmpty { differ.append("no family's verdicts were proved") }
         for name in names {
             let run = Self.verdicts(await read("files/marks/android/\(name)"))
             let held = Self.verdicts((try? String(contentsOf: marks.appendingPathComponent(name), encoding: .utf8)) ?? "")
@@ -258,17 +262,25 @@ struct AndroidSuite {
             reporter.output(ProcessOutput(stream: .standardError, text:
                 "lib/StateUI/exports/marks/android is not what this run proved: \(differ.prefix(12).joined(separator: ", "))."))
         }
-        return [SuiteResult.Phase(name: "declarations android.txt", passed: declarationsHeld),
-                SuiteResult.Phase(name: "marks android", passed: differ.isEmpty)]
+        return (declared ? [SuiteResult.Phase(name: "declarations android.txt", passed: declarationsHeld)] : [])
+            + [SuiteResult.Phase(name: "marks android", passed: differ.isEmpty)]
     }
 
     /// Every family's verdicts the run proved, taken off the device and written into the repository's marks, each
     /// under the revision `revisions` gives its family - the device reads no repository.
     private func recordMarks(
-        package: String, on device: Destination, revisions: [String: String], reporter: BuildReporter
+        package: String, on device: Destination, revisions: [String: String], declared: Bool, reporter: BuildReporter
     ) async throws -> SuiteResult.Phase {
         let adb = ProcessExecutable.path(android.adb.path)
         let marks = checkout.appendingPathComponent("lib/StateUI/exports/marks/android")
+        if declared {
+            let declaration = await ToolOutput.standardOutput(
+                adb, ["-s", device.id, "exec-out", "run-as", package, "cat", "files/android.txt"], limit: .seconds(60)) ?? ""
+            if !declaration.isEmpty {
+                try Data((declaration.hasSuffix("\n") ? declaration : declaration + "\n").utf8)
+                    .write(to: marks.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("android.txt"))
+            }
+        }
         let names = (await ToolOutput.standardOutput(adb, ["-s", device.id, "exec-out", "run-as", package, "ls", "files/marks/android"]) ?? "")
             .split(whereSeparator: \.isWhitespace).map(String.init).filter { $0.hasSuffix(".txt") }.sorted()
         for name in names {

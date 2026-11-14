@@ -13,8 +13,6 @@ control belongs, so a gap is visible rather than silent.
 lib/StateUI/StateUI.AppKit/
   Sources/    StateUIAppKit: the renderer, windows, sessions and the registry
   Tests/      the host's suite
-.scripts/AppKit/
-  test-appkit.sh               records the host's marks and exports (STATEUI_UPDATE_EXPORTS=1)
 apps/<App>/Platforms/AppKit/
   main.swift                   the application's AppKit head
   Info.plist                   the application's own bundle keys, where it has any
@@ -414,21 +412,20 @@ parts, each a test of its own, which `--parallel` runs side by side.
 A run holds what it says to `lib/StateUI/exports/`: what the host declares to
 `appkit.txt`, and each family's verdicts to `marks/appkit/<Family>.txt` - a
 family run in parts to `marks/appkit/<Family>-<part>.txt`, one file a part;
-a run that says otherwise fails. `STATEUI_UPDATE_EXPORTS=1` with
-`.scripts/AppKit/test-appkit.sh` writes them instead, each verdict file under the revision its family stands at in
-`lib/StateUI/StateUI.Conformance/revisions.txt`, and `STATEUI_STALE_ONLY=1`
-runs only the families whose verdicts stand at another revision, or at none:
-each other family's test ends at once. With the verdicts written, the
+a run that says otherwise fails. `stateui repo conformance run --host appkit --record` writes them instead
+- `--all` every family and what the host declares, `--changed` the families
+whose verdicts stand at another revision or at none, `--family <name>` the
+ones named - each verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, then renders the
 [platform contract](../platform-contract.md#reading-the-matrix) and
-[the control dictionary](../controls/README.md) are rendered from them at the
-repository's root:
+[the control dictionary](../controls/README.md) from them;
+`stateui repo conformance status --host appkit` says where they stand, and
+`stateui repo api record --host appkit` writes the API records:
 
 ```bash
-STATEUI_UPDATE_EXPORTS=1 .scripts/AppKit/test-appkit.sh --filter AppKitConformanceTests
-STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
+stateui repo conformance run --host appkit --all --record
+stateui repo conformance run --host appkit --changed --record
 ```
 
 In the editor, with AppKit chosen, **StateUI: Conformance - Rebuild all**
-runs both: the families writing their verdicts, then the documents.
-**StateUI: Conformance - Rebuild changed** runs the stale families alone
-before it renders.
+and **Rebuild changed** run the same.

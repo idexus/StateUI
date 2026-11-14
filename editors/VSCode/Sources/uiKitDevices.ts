@@ -5,7 +5,6 @@
 // lists them (`devices/list`), and the one chosen for the workspace. The tool boots a simulator, and signs for a
 // device.
 
-import * as path from "path";
 import * as vscode from "vscode";
 import { Destination } from "./Tooling/protocol";
 import { appleFloor } from "./toolchain";
@@ -28,11 +27,6 @@ export interface UIKitDevice {
 export type ChosenUIKitDevice = Pick<UIKitDevice, "id" | "name">;
 
 const chosenKey = "stateui.uiKitDevice";
-
-/** The UIKit script in `root`/.scripts/UIKit that still records the host's marks. */
-export function uiKitScript(root: string, script: "test-uikit.sh"): string {
-    return path.join(root, ".scripts", "UIKit", script);
-}
 
 /** The devices paired and the simulators available as the tool lists them, or nothing, said, where it could not. */
 export type UIKitLister = () => Promise<UIKitDevice[] | undefined>;

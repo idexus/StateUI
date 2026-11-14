@@ -8,7 +8,7 @@ import XCTest
 
 /// What the relay answers a request and a save whatever the browser does past its first step: every call answered
 /// once, and a stop stopping it to its end. The browser's own `fetch` and save picker stand in for the network and
-/// the disk, so the suite runs it in a browser (`test-web.sh --browser`).
+/// the disk, so the suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebRequestTests: XCTestCase {
     /// The host the relay tells what it heard - started for each test, as an application's is.

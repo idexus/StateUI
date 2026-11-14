@@ -6,7 +6,7 @@
 import XCTest
 
 /// An element of the application's own, as it hears the page. Events cross a browser's own page, so the suite runs
-/// it in one (`test-web.sh --browser`).
+/// it in one (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebPageElementTests: XCTestCase {
     override func setUp() async throws {

@@ -9,35 +9,32 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 - **AppKit builds through `stateui`.** `.scripts/AppKit/run-app.sh`, `build-gallery-appkit.sh` and `deploy.sh` are
   gone: `stateui run`, `stateui build` and `stateui package --host appkit` take their place, and every application,
-  not only the Gallery, runs as a bundle. `test-appkit.sh` stays only to record the host's marks and exports
-  (`STATEUI_UPDATE_EXPORTS=1`) until the tool records them; `stateui repo test --suite host:appkit` checks them.
+  not only the Gallery, runs as a bundle.
 - **UIKit builds through `stateui`.** `.scripts/UIKit/run-app.sh`, `build-app.sh` and `deploy.sh` are gone:
   `stateui run`, `stateui build` and `stateui package --host uikit --device <name or id>` take their place, a
   simulator's build and a device's keeping scratch folders of their own; `.build/uikit/debugger.json` goes, a run
-  saying its process instead. `test-uikit.sh` stays only to record the host's marks and exports until the tool
-  records them; `stateui repo test --suite host:uikit` checks them.
+  saying its process instead.
 - **Android builds through `stateui`.** `.scripts/Android/run-app.sh`, `deploy.sh` and `devices.sh` are gone:
   `stateui run`, `stateui build`, `stateui package --host android --device <serial or name>` and `stateui devices --host
   android` take their place, an ABI's build keeping a scratch folder of its own and the symbols beside the APK in its
   artifact; `.build/android/debugger.json` goes, a run saying its process and the debugger's socket instead.
-  `test-android.sh` stays only to record the host's marks and exports until the tool records them; `stateui repo test
-  --suite host:android` checks them.
 - **GTK builds through `stateui`.** `.scripts/GTK/run-app.sh` and `deploy.sh` are gone: `stateui run`, `build`,
   `install` and `package --host gtk` take their place; a build no longer writes the user's desktop entry - `install`
   does, and `run` installs - and `run --debugger` runs the head under gdb with every GTK critical's stack said.
-  `test-gtk.sh` stays only to record the host's marks and exports until the tool records them; `stateui repo test
-  --suite host:gtk` checks them.
 - **WinUI builds through `stateui`.** `.scripts/WinUI/run-app.ps1` and `deploy.ps1` are gone: `stateui run`, `stateui
   build` and `stateui package --host winui [--architecture x86_64]` take their place, a head published in
-  `.build/stateui/artifacts` - no longer `.build/winui/<configuration>` and its `.program` file. `test-winui.ps1` stays
-  only to record the host's marks and exports until the tool records them; `stateui repo test --suite host:winui`
-  checks them, the conformance families with `--filter WinUIConformanceTests`.
+  `.build/stateui/artifacts` - no longer `.build/winui/<configuration>` and its `.program` file.
 - **Web builds through `stateui`.** `.scripts/Web/run-app.sh`, `deploy.sh`, `page.sh`, `serve.py`, `browsers.sh` and
   `size-budgets.sh` are gone: `stateui run`, `stateui build`, `stateui package --host web`, `stateui devices --host
   web` and `stateui repo web-size check` take their place. A page is laid in the build's artifact, no longer
   in `.build/web/site`, and `.build/web/server.json` goes, a run saying the page's address instead; the page is served
-  to this machine alone unless `--listen lan` shares it. `test-web.sh` stays only to record the host's marks and
-  exports until the tool records them; `stateui repo test --suite host:web` checks them.
+  to this machine alone unless `--listen lan` shares it.
+- **The hosts' marks, declarations and API records are recorded by `stateui`.** `test-appkit.sh`, `test-uikit.sh`,
+  `test-android.sh`, `test-gtk.sh`, `test-web.sh` and `test-winui.ps1`, their `tools.sh`, `tools.ps1`, `build-swift.sh`
+  and `swift-sdk.sh`, `.scripts/API/record.sh` and `record.ps1`, and `.scripts/Marks/revision.sh` are gone:
+  `stateui repo conformance run --host <host> --all | --changed | --family <name> --record` writes a host's verdicts
+  - with `--all` what it declares too - and renders the documents, `stateui repo api record [--host <host>]` writes
+  the API records, and `stateui repo conformance status` says where each family's verdicts stand.
 - **A WinUI backend declares what it lays beside an application.** `lib/Backends/<Element>.WinUI/SelfContained.ps1`
   is gone: a backend lists the files its engine needs in `Packaging/runtime.txt` - a line a file, the NuGet package,
   its path there (`{architecture}` for `arm64` or `x64`) and its path beside the application - and only an application

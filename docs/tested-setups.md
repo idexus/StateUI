@@ -140,7 +140,7 @@ flags, and SwiftPM leaves the flag out.
 ### Web
 
 The host's own suite in Node and the conformance suite in a headless browser
-(`test-web.sh --browser`); HelloWorld and the Gallery were last served and run
+(then `test-web.sh --browser`); HelloWorld and the Gallery were last served and run
 here on Ubuntu 24.04, on 2026-10-05.
 
 | | |

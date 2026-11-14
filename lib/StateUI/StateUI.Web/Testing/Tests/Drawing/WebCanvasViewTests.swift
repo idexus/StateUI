@@ -6,7 +6,7 @@
 import XCTest
 
 /// A canvas as the browser draws it, at the screen's own density. The browser lays out and draws, so the suite runs
-/// it in a browser (`test-web.sh --browser`).
+/// it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebCanvasViewTests: XCTestCase {
     override func setUp() async throws {

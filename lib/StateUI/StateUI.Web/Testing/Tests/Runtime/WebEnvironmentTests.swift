@@ -7,7 +7,7 @@
 import XCTest
 
 /// What the page tells the core it stands on, as the browser has it. The browser says, so the suite runs it in one
-/// (`test-web.sh --browser`).
+/// (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebEnvironmentTests: XCTestCase {
     override func setUp() async throws {

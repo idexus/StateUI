@@ -22,13 +22,6 @@ lib/StateUI/StateUI.Web/           Web host package, Swift for WebAssembly over 
 lib/StateUI/StateUI.Web/Testing/   its tests, and the driver its conformance runs go through
 lib/StateUI.Head/                  the package that brings each application's head its host
 lib/Backends/                      backends: one element on one host, its engine not shipped - WebView.GTK, WebView.WinUI
-.scripts/AppKit/                   the AppKit host's marks and exports recorded (test-appkit.sh)
-.scripts/UIKit/                    the UIKit host's marks and exports recorded (test-uikit.sh)
-.scripts/Android/                  the Android Views host's marks and exports recorded (test-android.sh)
-.scripts/WinUI/                    the WinUI host's marks and exports recorded (test-winui.ps1)
-.scripts/GTK/                      the GTK host's marks and exports recorded (test-gtk.sh)
-.scripts/Web/                      the Web host's marks and exports recorded (test-web.sh)
-.scripts/Marks/                    the revision a conformance family's verdicts stand at
 .scripts/new-app.sh                a new application in apps/ (new-app.ps1 on Windows)
 .scripts/test-native.sh            the Swift suites on macOS, the AppKit host's among them
 .scripts/rasterize-images.swift    an application's SVGs drawn as PNGs for a head whose toolkit draws none
@@ -382,7 +375,7 @@ writes them: a family whose verdicts changed fails there, and its marks are
 written again on that platform's machine. The Web's workflow runs the host's
 own tests in Node and every conformance family in a headless browser; its
 marks are written on a Mac by
-`STATEUI_UPDATE_EXPORTS=1 .scripts/Web/test-web.sh --browser`.
+`stateui repo conformance run --host web --all --record`.
 
 ### Conformance and marks
 
@@ -551,5 +544,5 @@ A release has one version, stated in the editor extension's
 published-package line in the root `Package.swift`, the library's own
 `application.info.libraryVersion`, each application's Android
 head's version and the Android host's test head's, the Gallery's AppKit
-bundle, every UIKit bundle (`.scripts/UIKit/tools.sh`), the bug report's
+bundle, every UIKit bundle (the stateui tool's `Release.version`), the bug report's
 example - names the same one, and `ReleaseTests` holds them to it.

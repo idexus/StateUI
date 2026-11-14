@@ -7,7 +7,7 @@
 import XCTest
 
 /// What the user chooses in the browser's own choice controls reaches the tree, and what follows it runs with no
-/// other event to carry it. The browser raises the events, so the suite runs it in a browser (`test-web.sh --browser`).
+/// other event to carry it. The browser raises the events, so the suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebChoiceTests: XCTestCase {
     override func setUp() async throws {

@@ -9,7 +9,7 @@ import XCTest
 
 /// The driver reads and chooses a bar's button's menu where the button stands: behind the More of its own page's bar
 /// at the foot, while both pages of a split view show theirs, and behind the shown page's where a stack's pages share
-/// it. A host runs in the page, so the suite runs it in a browser (`test-web.sh --browser`).
+/// it. A host runs in the page, so the suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebDriverBarMenuTests: XCTestCase {
     override func setUp() async throws {

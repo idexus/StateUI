@@ -26,8 +26,6 @@ lib/StateUI/StateUI.GTK/
                              by names every GLib resolves: the C module a head imports too
   Testing/                   a package of its own: the host's suite, run by stateui repo test, in
                              Tests/, and the driver every conformance run on GTK goes through
-.scripts/GTK/
-  test-gtk.sh                records the host's marks and exports (STATEUI_UPDATE_EXPORTS=1)
 apps/<App>/Platforms/GTK/
   main.swift                 the application's GTK head
   Host/                      what this host answers for the application
@@ -348,22 +346,20 @@ The suite runs the conformance families too, one test a family -
 `GTKConformanceTests/testButton` - with the web view's backend registered.
 A run holds what it says to `lib/StateUI/exports/`: what the host declares to
 `gtk.txt`, and each family's verdicts to `marks/gtk/<Family>.txt`; a run that
-says otherwise fails. Recording stays with the script until the tool records
-them: `STATEUI_UPDATE_EXPORTS=1 .scripts/GTK/test-gtk.sh` writes them instead, each
-verdict file under the revision its family stands at in
-`lib/StateUI/StateUI.Conformance/revisions.txt`, and `STATEUI_STALE_ONLY=1`
-runs only the families whose verdicts stand at another revision, or at none:
-each other family's test ends at once. With the verdicts written, the
+says otherwise fails. `stateui repo conformance run --host gtk --record` writes them instead
+- `--all` every family and what the host declares, `--changed` the families
+whose verdicts stand at another revision or at none, `--family <name>` the
+ones named - each verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, then renders the
 [platform contract](../platform-contract.md#reading-the-matrix) and
-[the control dictionary](../controls/README.md) are rendered from them at the
-repository's root:
+[the control dictionary](../controls/README.md) from them;
+`stateui repo conformance status --host gtk` says where they stand, and
+`stateui repo api record --host gtk` writes the API records:
 
 ```bash
-STATEUI_UPDATE_EXPORTS=1 .scripts/GTK/test-gtk.sh --filter GTKConformanceTests
-STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
+stateui repo conformance run --host gtk --all --record
+stateui repo conformance run --host gtk --changed --record
 ```
 
-In the editor, with GTK chosen, **StateUI: Conformance - Rebuild all** runs
-both: the families writing their verdicts, then the documents.
-**StateUI: Conformance - Rebuild changed** runs the stale families alone
-before it renders.
+In the editor, with GTK chosen, **StateUI: Conformance - Rebuild all**
+and **Rebuild changed** run the same.

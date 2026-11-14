@@ -1,7 +1,7 @@
 # The Web host's suite: its own tests in Node over a page with just enough of a
 # DOM, then, in a headless Google Chrome, every conformance family and the
 # host's tests that run a host - each verdict held to the marks the Mac wrote
-# (`STATEUI_UPDATE_EXPORTS=1 test-web.sh --browser`), so a family whose verdicts
+# (`stateui repo conformance run --host web --all --record`), so a family whose verdicts
 # changed fails here as on every other host.
 #
 # ON A MAC, as the marks are written there: a case reads frames, and words stand

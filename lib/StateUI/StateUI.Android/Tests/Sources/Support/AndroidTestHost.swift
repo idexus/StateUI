@@ -507,7 +507,7 @@ enum TestPictures {
     }
 }
 
-/// The files the suite writes into the test APK's own files directory, which `test-android.sh` reads by `run-as`.
+/// The files the suite writes into the test APK's own files directory, which the stateui tool reads by `run-as`.
 @MainActor
 enum TestFiles {
     /// The test APK's files directory.

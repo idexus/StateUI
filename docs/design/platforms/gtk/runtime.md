@@ -150,7 +150,7 @@ rate.
 
 ## The suite's desktop
 
-The host's suite meets one desktop on every machine: `test-gtk.sh` pins
+The host's suite meets one desktop on every machine: the stateui tool pins
 libadwaita's accent (`ADW_DEBUG_ACCENT_COLOR=blue`), a desktop whose user
 chose one, as GNOME's from 47 on - where the application's own accent does
 not apply - so a machine with no desktop's settings, a CI container, gives

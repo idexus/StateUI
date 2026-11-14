@@ -10,7 +10,7 @@ import CStateUIAndroid
 import XCTest
 
 /// Every test case the runner runs. A case missing here never runs, so
-/// test-android.sh refuses a `func test` that no `allTests` lists.
+/// the stateui tool refuses a `func test` that no `allTests` lists.
 nonisolated(unsafe) let testCases: [XCTestCaseEntry] = [
     testCase(AndroidRendererTests.allTests),
     testCase(AndroidActTests.allTests),

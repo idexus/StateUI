@@ -113,10 +113,11 @@ words beside a picture, and that stays unread.
 
 ## Running the stale families
 
-The device reads no repository, so `STATEUI_STALE_ONLY=1` is the script's to
-answer: it runs the families whose verdict files in `lib/StateUI/exports/marks/android`
-open with another revision than `.scripts/Marks/revision.sh` gives, or with
-none, and takes only theirs off the device.
+The device reads no repository, so the stale families are the stateui tool's
+to name: `stateui repo conformance run --host android --changed` runs the
+families whose verdict files in `lib/StateUI/exports/marks/android` open with
+another revision than the conformance package's reader gives, or with none,
+and takes only theirs off the device.
 
 ## What goes past Android
 

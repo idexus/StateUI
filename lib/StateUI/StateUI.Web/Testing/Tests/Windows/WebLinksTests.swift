@@ -6,7 +6,7 @@
 import XCTest
 
 /// A link into the application on the Web is the page's address with a fragment: told as the page starts and as
-/// the fragment changes. The address is the browser's, so the suite runs it in a browser (`test-web.sh --browser`).
+/// the fragment changes. The address is the browser's, so the suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebLinksTests: XCTestCase {
     override func setUp() async throws {

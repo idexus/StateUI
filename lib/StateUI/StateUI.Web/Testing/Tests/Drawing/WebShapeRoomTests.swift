@@ -8,7 +8,7 @@ import XCTest
 
 /// A shape has no size of its own: in a stack it takes no room along it, so what follows it stands in the window; it
 /// fills the room its layout gives it, and its gradient lies over that room. The browser lays out, so the suite runs
-/// it in a browser (`test-web.sh --browser`).
+/// it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebShapeRoomTests: XCTestCase {
     override func setUp() async throws {

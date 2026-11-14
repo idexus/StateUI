@@ -16,8 +16,6 @@ lib/StateUI/StateUI.Android/
   Sources/CStateUIAndroid/   the NDK's C surface: JNI, the looper, the log
   Java/stateui/android/      the Java layer: the activity, the views and view groups the host makes, the frame callback and the listeners
   Tests/                     the host's suite, run in a test APK on a device
-.scripts/Android/
-  test-android.sh            writes the host's conformance marks, until the stateui tool records them
 apps/<App>/Platforms/Android/
   Swift/<App>Android.swift   the application's Android head
   Java/                      the application's own views, where it has any
@@ -406,27 +404,29 @@ otherwise fails, and so does the facade's API record that differs. `--filter`
 runs the tests whose `Case.test` name holds one of its comma-separated names,
 and then holds nothing to `lib/StateUI/exports/`: a part of the suite proves
 only part of what the host declares; a filter matching no test fails.
-Recording the marks stays with the script until the tool records them:
-`STATEUI_UPDATE_EXPORTS=1` writes them instead, and `STATEUI_STALE_ONLY=1`
-runs only the families whose verdict files stand at another revision, or at
-none.
+A filtered conformance run holds the families it ran.
 
 ```bash
 stateui repo test --suite host:android --device emulator-5554 --filter testPicker,AndroidShapeViewTests
-STATEUI_UPDATE_EXPORTS=1 .scripts/Android/test-android.sh emulator-5554
-STATEUI_UPDATE_EXPORTS=1 STATEUI_STALE_ONLY=1 .scripts/Android/test-android.sh emulator-5554
-STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
 ```
 
-With the verdicts written, the last line - at the repository's root - renders
-the [platform contract](../platform-contract.md#reading-the-matrix) and
-[the control dictionary](../controls/README.md) from them. In the editor,
-with Android and a device chosen, **StateUI: Conformance - Rebuild all** runs
-the whole suite on the device with `STATEUI_UPDATE_EXPORTS=1`, then renders
-the documents. **StateUI: Conformance - Rebuild changed** runs nothing for
-Android: the editor answers that the device reads no repository, so its marks
-are made again whole, by Rebuild all. From a terminal, `STATEUI_STALE_ONLY=1`
-runs the stale families alone, as above.
+`stateui repo conformance run --host android --record` writes them instead
+- `--all` every family and what the host declares, `--changed` the families
+whose verdicts stand at another revision or at none, `--family <name>` the
+ones named - each verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt` - the tool writes it over each file it takes off the device, the stale families named by the conformance package's reader, then renders the
+[platform contract](../platform-contract.md#reading-the-matrix) and
+[the control dictionary](../controls/README.md) from them;
+`stateui repo conformance status --host android` says where they stand, and
+`stateui repo api record --host android` writes the API records:
+
+```bash
+stateui repo conformance run --host android --all --record --device emulator-5554
+stateui repo conformance run --host android --changed --record --device emulator-5554
+```
+
+In the editor, with Android and a device chosen, **StateUI: Conformance - Rebuild all**
+and **Rebuild changed** run the same.
 
 The test APK can be built on one machine and run on another:
 `stateui repo test --suite host:android --build-only --architecture x86_64`

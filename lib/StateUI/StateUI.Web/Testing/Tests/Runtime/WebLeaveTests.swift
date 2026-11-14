@@ -8,7 +8,7 @@
 import XCTest
 
 /// An element that leaves the tree lets go of its views, each of which lets go of its DOM element. A host runs
-/// here, so the suite runs it in a browser (`test-web.sh --browser`).
+/// here, so the suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebLeaveTests: XCTestCase {
     override func setUp() async throws {

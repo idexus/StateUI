@@ -19,7 +19,9 @@ final class ConformanceRunTests: XCTestCase {
     /// A host's suite is filtered to whole families: SwiftPM's expression takes each family's test and its parts
     /// alone, the UIKit and Android test applications each family's name, the Web suite the families by name.
     func testAFilterTakesWholeFamilies() {
-        XCTAssertEqual(ConformanceRun.filter(for: .appkit, families: nil), "AppKitConformanceTests")
+        XCTAssertEqual(ConformanceRun.filter(for: .appkit, families: nil), "AppKitConformanceTests|AppKitDeclarationExportTests")
+        XCTAssertEqual(ConformanceRun.filter(for: .android, families: nil), "AndroidConformanceTests,AndroidDeclarationExportTests")
+        XCTAssertEqual(ConformanceRun.filter(for: .web, families: nil), "WebConformanceTests")
         XCTAssertEqual(ConformanceRun.filter(for: .winui, families: ["Button", "VisualElement"]),
                        "WinUIConformanceTests/test(Button|VisualElement)[0-9]*$")
         XCTAssertEqual(ConformanceRun.filter(for: .android, families: ["Slider", "Text"]),

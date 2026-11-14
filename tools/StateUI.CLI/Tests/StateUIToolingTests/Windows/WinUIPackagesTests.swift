@@ -6,17 +6,6 @@ import Foundation
 import XCTest
 
 final class WinUIPackagesTests: XCTestCase {
-    /// While `tools.ps1` records the WinUI host's marks, it pins what the tool pins: one version of each package.
-    func testTheRecordingScriptPinsWhatTheToolPins() throws {
-        let script = ProjectReaderTests.repository.appendingPathComponent(".scripts/WinUI/tools.ps1")
-        guard let text = try? String(contentsOf: script, encoding: .utf8) else { return }
-        let pinned = text.split(whereSeparator: \.isNewline).compactMap { line -> (String, String)? in
-            let words = line.split(separator: "'").map(String.init)
-            return words.count == 4 && words[2].trimmingCharacters(in: .whitespaces) == "=" ? (words[1], words[3]) : nil
-        }
-        XCTAssertEqual(pinned.map { "\($0.0) \($0.1)" }.joined(separator: "\n"), WinUIPackages.stamp)
-    }
-
     /// The projection's stamp lists every pin, a line each, in the order the script writes it.
     func testTheStampListsEveryPin() {
         XCTAssertEqual(WinUIPackages.stamp.split(separator: "\n").count, WinUIPackages.pins.count)

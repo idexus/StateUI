@@ -227,8 +227,7 @@ MyApps/
 Its applications are HelloWorld renamed, and each one's `Package.swift` names
 its StateUI by path: `../StateUI` for a release, the path from the
 application to the checkout for a local one. The `stateui` tool builds and
-runs every head from it; a WinUI head's scripts the extension finds in that
-StateUI's `.scripts/WinUI`, and the group copies none of them. **StateUI: New
+runs every head from it, and the group copies nothing of it. **StateUI: New
 Application** makes the next application beside it, and `stateui workspace
 library` points every application at another StateUI.
 

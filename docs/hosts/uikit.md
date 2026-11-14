@@ -15,8 +15,6 @@ so a gap is visible rather than silent.
 lib/StateUI/StateUI.UIKit/
   Sources/    StateUIUIKit: the renderer, scenes and windows, pages, controls and the registry
   Tests/      the host's suite - an application of tests, run on a simulator
-.scripts/UIKit/
-  test-uikit.sh     writes the host's conformance marks, until the stateui tool records them
 apps/<App>/Platforms/UIKit/
   main.swift        the application's UIKit head
   Host/             what this host answers for the application
@@ -383,19 +381,20 @@ the marks recorded, nothing written. The suite runs with the simulator's
 accessibility on, as VoiceOver stands, so UIKit's accessibility answers for
 its controls as it does for a VoiceOver user, whatever ran before.
 
-Recording the marks stays with the script until the tool records them:
-`STATEUI_UPDATE_EXPORTS=1 .scripts/UIKit/test-uikit.sh "iPhone 18 Pro"`
-writes what the run says into `lib/StateUI/exports/` instead of holding it to
-them.
-
-`STATEUI_STALE_ONLY=1` runs only the conformance families whose verdicts in
-`lib/StateUI/exports/marks/uikit` stand at another revision than
-`lib/StateUI/StateUI.Conformance/revisions.txt` gives, or at none. With the
-verdicts written, `STATEUI_UPDATE_DOCS=1 swift test --filter
-ControlDictionaryTests` at the repository's root renders the
+A run's verdicts are held to `lib/StateUI/exports/marks/uikit`; `stateui repo conformance run --host uikit --record` writes them instead
+- `--all` every family and what the host declares, `--changed` the families
+whose verdicts stand at another revision or at none, `--family <name>` the
+ones named - each verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, then renders the
 [platform contract](../platform-contract.md#reading-the-matrix) and
-[the control dictionary](../controls/README.md) from them. In the editor,
-with UIKit and a simulator chosen, **StateUI: Conformance - Rebuild all** runs
-both - `UIKitConformanceTests` writing its verdicts, then the documents - and
-**StateUI: Conformance - Rebuild changed** runs the stale families alone
-before it renders.
+[the control dictionary](../controls/README.md) from them;
+`stateui repo conformance status --host uikit` says where they stand, and
+`stateui repo api record --host uikit` writes the API records:
+
+```bash
+stateui repo conformance run --host uikit --all --record --device "iPhone 18 Pro"
+stateui repo conformance run --host uikit --changed --record --device "iPhone 18 Pro"
+```
+
+In the editor, with UIKit and a simulator chosen, **StateUI: Conformance - Rebuild all**
+and **Rebuild changed** run the same.

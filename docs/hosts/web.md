@@ -34,9 +34,6 @@ lib/StateUI/StateUI.Web/
     index.html               the page a head runs in
   Testing/                   a package of its own: the host's suite, compiled for WebAssembly, the page in
                              Node it runs over, and what it runs in a browser
-.scripts/Web/
-  test-web.sh                records the host's marks and exports (STATEUI_UPDATE_EXPORTS=1)
-  swift-sdk.sh               names the Swift SDK for WebAssembly of the compiler's release, for test-web.sh
 apps/<App>/Platforms/Web/
   main.swift                 the application's Web head
   Host/                      what this host answers for the application
@@ -393,8 +390,20 @@ with the user's input as the browser takes it - every family, or the one
 `--filter` names - and the host's tests that run a host. Every verdict is held
 to the marks recorded, nothing written.
 
-Recording the marks stays with the script until the tool records them:
-`STATEUI_UPDATE_EXPORTS=1 .scripts/Web/test-web.sh --browser` writes each
-family's verdicts under `lib/StateUI/exports/marks/web`, and
-`STATEUI_STALE_ONLY=1` runs only the families whose verdicts stand at another
-revision.
+`stateui repo conformance run --host web --record` writes them instead
+- `--all` every family and what the host declares, `--changed` the families
+whose verdicts stand at another revision or at none, `--family <name>` the
+ones named - each verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, then renders the
+[platform contract](../platform-contract.md#reading-the-matrix) and
+[the control dictionary](../controls/README.md) from them;
+`stateui repo conformance status --host web` says where they stand, and
+`stateui repo api record --host web` writes the API records:
+
+```bash
+stateui repo conformance run --host web --all --record
+stateui repo conformance run --host web --changed --record
+```
+
+In the editor, with the Web chosen, **StateUI: Conformance - Rebuild all**
+and **Rebuild changed** run the same.

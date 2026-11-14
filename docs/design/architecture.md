@@ -189,9 +189,8 @@ StateUI's two: each facade (`StateUIAppKit.txt`, `StateUIUIKit.txt`,
 `StateUIAndroid.txt`, `StateUIWinUI.txt`, `StateUIGTK.txt`, `StateUIWeb.txt`),
 each backend (`StateUIWebViewGTK.txt`, `StateUIWebViewWinUI.txt`) and the
 testing module (`StateUITesting.txt`). The core's `APISurfaceTests` stays the
-one reading of a surface: a host's test script, after its build, runs its
-`testTheModuleAHostsScriptNamesIsItsRecord` through `.scripts/API/record.sh`
-(`record.ps1` on Windows), naming the module, the folder its build left the
+one reading of a surface: a host's suite in the stateui tool, after its build,
+runs its `testTheModuleAHostsScriptNamesIsItsRecord`, naming the module, the folder its build left the
 modules in, and - for a build for another platform - the triple, the SDK and
 what finds the module's C modules (their maps, pkg-config's flags). The record
 is written under `STATEUI_UPDATE_EXPORTS=1` and held otherwise, as the marks

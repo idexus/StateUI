@@ -64,7 +64,14 @@ public struct ConformanceRun: Sendable {
     /// UIKit and Android; the families by name on the Web.
     static func filter(for host: HostFamily, families: [String]?) -> String {
         let tests = "\(host.folder)ConformanceTests"
-        guard let families else { return tests }
+        // Every family, and what the host declares it realizes - `exports/<host>.txt` - with them.
+        guard let families else {
+            switch host {
+            case .web: return tests
+            case .uikit, .android: return "\(tests),\(host.folder)DeclarationExportTests"
+            default: return "\(tests)|\(host.folder)DeclarationExportTests"
+            }
+        }
         switch host {
         case .uikit, .android:
             return families.map { "\(tests).test\($0)" }.joined(separator: ",")

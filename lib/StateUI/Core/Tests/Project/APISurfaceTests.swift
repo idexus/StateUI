@@ -320,8 +320,7 @@ final class APISurfaceTests: XCTestCase {
         try Self.hold(surface, to: Self.record.deletingLastPathComponent().appendingPathComponent("\(module).txt"))
     }
 
-    /// The arguments a host's script hands on, an argument a line, as `.scripts/API/record.sh` and `record.ps1`
-    /// write them.
+    /// The arguments a host's suite hands on, an argument a line, as the stateui tool writes them.
     static func arguments(_ said: String) -> [String] {
         said.split(whereSeparator: \.isNewline).map(String.init)
     }
