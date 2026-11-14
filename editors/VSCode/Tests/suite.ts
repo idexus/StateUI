@@ -927,6 +927,22 @@ export async function run(): Promise<void> {
             await api.selectHost("appkit");
             await api.selectApplication("HelloWorld");
             check("the chosen application is remembered", api.application() === "HelloWorld");
+            // A breakpoint the first render reaches - the button's caption - and the stop lldb-dap reports.
+            const page = vscode.Uri.file(path.join(root.uri.fsPath, "apps", "HelloWorld", "Sources", "MainPage.swift"));
+            const breakpoint = new vscode.SourceBreakpoint(new vscode.Location(page, new vscode.Position(40, 0)));
+            vscode.debug.addBreakpoints([breakpoint]);
+            const stopped = new Promise<number>((resolve) => {
+                const tracking = vscode.debug.registerDebugAdapterTrackerFactory("lldb-dap", {
+                    createDebugAdapterTracker: () => ({
+                        onDidSendMessage: (message: { type?: string; event?: string; body?: { reason?: string; threadId?: number } }) => {
+                            if (message.type === "event" && message.event === "stopped" && message.body?.reason === "breakpoint") {
+                                tracking.dispose();
+                                resolve(message.body.threadId ?? 0);
+                            }
+                        },
+                    }),
+                });
+            });
             const session = new Promise<vscode.DebugSession>((resolve) => {
                 const listener = vscode.debug.onDidStartDebugSession((each) => {
                     if (each.type === "lldb-dap") {
@@ -943,10 +959,29 @@ export async function run(): Promise<void> {
             check(`an lldb-dap session starts on HelloWorldAppKit as the stateui tool published it - ${program}`,
                 program.includes("/apps/HelloWorld/.build/stateui/artifacts/appkit-")
                 && program.endsWith("-debug/HelloWorldAppKit.app/Contents/MacOS/HelloWorldAppKit") && fs.existsSync(program));
+            const thread = await Promise.race([stopped, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 120_000))]);
+            check("the breakpoint in the button's caption stops the first render", thread !== undefined && running !== undefined);
+            if (thread !== undefined && running) {
+                const trace = await running.customRequest("stackTrace", { threadId: thread, levels: 1 });
+                const frame = trace.stackFrames?.[0];
+                const scopes = await running.customRequest("scopes", { frameId: frame?.id });
+                const locals = (scopes.scopes ?? []).find((each: { name: string }) => /local/i.test(each.name));
+                const variables = locals ? await running.customRequest("variables", { variablesReference: locals.variablesReference }) : {};
+                check(`it stops in MainPage.caption(clicks:) at line 41, its locals holding count - ${frame?.name} ${frame?.source?.path}:${frame?.line}`,
+                    String(frame?.name ?? "").includes("caption") && String(frame?.source?.path ?? "").endsWith("MainPage.swift")
+                    && frame?.line === 41 && (variables.variables ?? []).some((each: { name: string }) => each.name === "count"));
+                vscode.debug.removeBreakpoints([breakpoint]);
+                await running.customRequest("continue", { threadId: thread });
+            } else {
+                vscode.debug.removeBreakpoints([breakpoint]);
+            }
             await new Promise((resume) => setTimeout(resume, 4000));
             const alive = (() => { try { return execSync("pgrep -f HelloWorldAppKit.app/Contents/MacOS/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
             check("the HelloWorldAppKit process is running", alive);
             await vscode.debug.stopDebugging(running);
+            await new Promise((resume) => setTimeout(resume, 3000));
+            const gone = (() => { try { return execSync("pgrep -f HelloWorldAppKit.app/Contents/MacOS/HelloWorldAppKit").toString().trim().length === 0; } catch { return true; } })();
+            check("Stop ends the HelloWorldAppKit process", gone);
 
             // And on the iOS simulator: run-app.sh starts HelloWorld held, and lldb-dap attaches and lets it run.
             const iPhone = parseSimulators(execSync("xcrun simctl list devices available -j").toString())
