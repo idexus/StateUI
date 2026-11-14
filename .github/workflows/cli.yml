@@ -116,9 +116,16 @@ jobs:
       - uses: actions/setup-node@v4.4.0
         with:
           node-version: 22
+      # npm runs a package's scripts in cmd.exe, which finds no program at all on a
+      # Path past 8191 characters - and the developer environment's, its folders
+      # named again by the setup steps, is longer: each folder stands once.
       - name: Test the extension's client of the tool
         working-directory: editors/VSCode
-        run: npm ci; if ($LASTEXITCODE -eq 0) { npm run test:tooling }
+        run: |
+          "Path: $($env:Path.Length) characters"
+          $env:Path = (($env:Path -split ';') | Where-Object { $_ -and (Test-Path -LiteralPath $_) } | Select-Object -Unique) -join ';'
+          "Path, each folder once: $($env:Path.Length) characters"
+          npm ci; if ($LASTEXITCODE -eq 0) { npm run test:tooling }
       - name: Package the tool's distribution, then read it back
         run: swift run --quiet --package-path tools/StateUI.CLI stateui repo distribution package --output artifacts/stateui
       - uses: actions/upload-artifact@v5
