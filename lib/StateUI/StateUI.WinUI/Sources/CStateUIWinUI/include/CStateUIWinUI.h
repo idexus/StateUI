@@ -518,6 +518,10 @@ void stateui_winui_window_set_content(StateUIObjectRef window, StateUIObjectRef 
 void stateui_winui_window_set_chrome(StateUIObjectRef window, StateUIObjectRef titleBar, StateUIObjectRef menuBar,
                                      StateUIObjectRef tabs);
 void stateui_winui_window_activate(StateUIObjectRef window);
+/// Brings the window in front of every other, as a test does before it sends the system's keys or mouse: activated,
+/// and where the system keeps the front for another process, taken through that window's input; whether it stands
+/// in front.
+bool stateui_winui_window_bring_forward(StateUIObjectRef window);
 void stateui_winui_window_close(StateUIObjectRef window);
 /// Hides the window, or shows it again without activating it.
 void stateui_winui_window_set_shown(StateUIObjectRef window, bool shown);
@@ -667,14 +671,15 @@ void stateui_winui_set_tooltip(StateUIObjectRef element, char const *utf8);
 
 /// A control's keyboard shortcut - a virtual key, 0 for none, the VirtualKeyModifiers held with it, and whether it
 /// gives way to a field being typed into - and the shortcut it holds, whether it holds one; and a key with its
-/// modifiers sent as the system sends keys.
+/// modifiers sent as the system sends keys, to `window` in front - nothing sent, false, where another stands there.
 void stateui_winui_set_shortcut(StateUIObjectRef element, int32_t key, int32_t modifiers, bool givesWayToTyping);
 bool stateui_winui_shortcut(StateUIObjectRef element, int32_t *key, int32_t *modifiers);
-void stateui_winui_send_keys(int32_t key, int32_t modifiers);
+bool stateui_winui_send_keys(StateUIObjectRef window, int32_t key, int32_t modifiers);
 
 /// The mouse's main button pressed or let go at (x, y) DIPs of `element`, which stands in `window`, as the system sends
-/// the user's: the cursor moved there first. What a test does.
-void stateui_winui_send_mouse(StateUIObjectRef window, StateUIObjectRef element, double x, double y, bool down);
+/// the user's: the cursor moved there first - nothing sent, false, where another window covers the point. What a
+/// test does.
+bool stateui_winui_send_mouse(StateUIObjectRef window, StateUIObjectRef element, double x, double y, bool down);
 int32_t stateui_winui_tooltip(StateUIObjectRef element, char *utf8, int32_t capacity);
 
 StateUIObjectRef stateui_winui_panel_make(int64_t view);

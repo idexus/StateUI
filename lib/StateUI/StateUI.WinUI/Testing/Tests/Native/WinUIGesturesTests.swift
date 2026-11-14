@@ -6,6 +6,7 @@ import CStateUIWinUI
 @_spi(Host) import StateUIHost
 @testable import StateUIWinUI
 @testable import StateUIWinUIDriver
+import WinSDK
 import XCTest
 
 /// A row that counts its taps - `count` of them in a quick run make one - beside a stack that answers nothing.
@@ -153,11 +154,13 @@ final class WinUIGesturesTests: XCTestCase {
             let rows = host.views(WinUIStackView.self)
             let (first, second) = (rows[1], rows[2])
             @MainActor func mouse(_ row: WinUIView, down: Bool) {
-                stateui_winui_send_mouse(window, row.handle, 100, 20, down)
+                XCTAssertTrue(stateui_winui_send_mouse(window, row.handle, 100, 20, down), "the mouse reaches the row")
                 WinUITestHost.pump(0.1)
             }
             // The mouse reaches the window in front.
-            stateui_winui_window_activate(window)
+            guard stateui_winui_window_bring_forward(window) else {
+                return XCTFail("the window did not come in front of the others")
+            }
             WinUITestHost.pump(0.3)
             mouse(first, down: true)
             mouse(first, down: false)
@@ -173,6 +176,38 @@ final class WinUIGesturesTests: XCTestCase {
             host.settle { host.texts.first == "taps 11" }
 
             XCTAssertEqual(host.texts.first, "taps 11", "the second row tapped")
+        }
+    }
+
+    /// The mouse is sent only where the window it is meant for stands: over another window covering the point, nothing
+    /// is sent, and the row hears nothing.
+    func testAClickOverAnotherWindowIsNotSent() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { TwoRowsPage() }
+            let window = try XCTUnwrap(host.window).handle
+            let row = host.views(WinUIStackView.self)[1]
+            guard stateui_winui_window_bring_forward(window) else {
+                return XCTFail("the window did not come in front of the others")
+            }
+            WinUITestHost.pump(0.3)
+            var frame = RECT()
+            GetWindowRect(GetForegroundWindow(), &frame)
+            // A static answering the pointer, as another application's window does - one that does not is passed over.
+            let cover = "STATIC".withCString(encodedAs: UTF16.self) { kind in
+                CreateWindowExW(DWORD(truncatingIfNeeded: WS_EX_TOPMOST | WS_EX_TOOLWINDOW), kind, nil,
+                                DWORD(truncatingIfNeeded: WS_POPUP) | DWORD(truncatingIfNeeded: WS_VISIBLE)
+                                    | DWORD(truncatingIfNeeded: SS_NOTIFY),
+                                frame.left, frame.top, frame.right - frame.left, frame.bottom - frame.top,
+                                nil, nil, GetModuleHandleW(nil), nil)
+            }
+            defer { DestroyWindow(cover) }
+            XCTAssertNotNil(cover)
+            WinUITestHost.pump(0.3)
+
+            XCTAssertFalse(stateui_winui_send_mouse(window, row.handle, 100, 20, true), "a covered row is not pressed")
+            XCTAssertFalse(stateui_winui_send_mouse(window, row.handle, 100, 20, false))
+            WinUITestHost.pump(0.3)
+            XCTAssertEqual(host.texts.first, "taps 0")
         }
     }
 

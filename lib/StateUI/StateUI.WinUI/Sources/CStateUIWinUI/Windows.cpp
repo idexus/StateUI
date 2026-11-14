@@ -267,6 +267,28 @@ extern "C" void stateui_winui_window_activate(StateUIObjectRef handle) {
     }
 }
 
+extern "C" bool stateui_winui_window_bring_forward(StateUIObjectRef handle) {
+    try {
+        auto window = borrow<xaml::Window>(handle);
+        auto own = reinterpret_cast<HWND>(window.AppWindow().Id().Value);
+        if (GetForegroundWindow() == own) return true;
+        window.Activate();
+        if (GetForegroundWindow() != own) {
+            // Design: docs/design/host/conformance.md#the-systems-input
+            auto front = GetWindowThreadProcessId(GetForegroundWindow(), nullptr);
+            auto thread = GetCurrentThreadId();
+            bool joined = front != 0 && front != thread && AttachThreadInput(front, thread, TRUE);
+            BringWindowToTop(own);
+            SetForegroundWindow(own);
+            if (joined) AttachThreadInput(front, thread, FALSE);
+        }
+        return GetForegroundWindow() == own;
+    } catch (...) {
+        report("bringing a window forward");
+        return false;
+    }
+}
+
 extern "C" void stateui_winui_window_close(StateUIObjectRef handle) {
     try {
         borrow<xaml::Window>(handle).Close();

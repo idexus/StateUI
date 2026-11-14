@@ -144,7 +144,7 @@ final class WinUIDriver: HostDriver {
         case (.pressKeys(let shortcut), _):
             // The keys sent as the system sends them, to the window in front.
             guard let spelled = WinUIKeys.spelled(shortcut) else { throw DriverCannot(act, on: element) }
-            stateui_winui_send_keys(spelled.key, spelled.modifiers)
+            try send(spelled, to: window(of: element))
         case (.openMenu, let view?):
             // WinUI's own `ShowAt`, as the element's context request opens its menu.
             guard stateui_winui_menu_open(view.handle) else { throw DriverCannot(act, on: element) }
@@ -171,7 +171,7 @@ final class WinUIDriver: HostDriver {
                 throw DriverCannot(act, on: element)
             }
             _ = stateui_winui_focus(field.handle, true)
-            stateui_winui_send_keys(enter.key, enter.modifiers)
+            try send(enter, to: window(of: element))
         case (.choose(let place), let picker as WinUIPickerView):
             stateui_winui_picker_choose_as_user(picker.handle, Int32(place))
         case (.choose(let place), _) where element.type == .tabView: try chooseTab(place, of: element)
@@ -313,6 +313,19 @@ final class WinUIDriver: HostDriver {
     }
 
     /// The window `element` stands in.
+    /// Keys sent as the system sends them, to `window` brought in front: where it does not come there, nothing is
+    /// sent - the keys would reach another application - and the case fails saying so.
+    /// Design: docs/design/host/conformance.md#the-systems-input
+    private func send(_ keys: (key: Int32, modifiers: Int32), to window: WinUIWindow) throws {
+        guard stateui_winui_window_bring_forward(window.handle),
+              stateui_winui_send_keys(window.handle, keys.key, keys.modifiers) else { throw NotInFront() }
+    }
+
+    /// The case's window did not come in front of the others, so the system's keys were not sent.
+    struct NotInFront: Error, CustomStringConvertible {
+        var description: String { "the window did not come in front of the others; the system's keys were not sent" }
+    }
+
     func window(of element: MountedElement) throws -> WinUIWindow {
         guard let window = renderer?.controller(of: element)?.window else { throw DriverCannot("find the window") }
         return window

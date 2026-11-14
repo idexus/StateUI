@@ -166,6 +166,19 @@ conformance suite in a browser, whose layout, focus, dialogs and input its
 cases need - and what the driver reads, that JavaScript answers through
 functions of its own (`CWebTesting`).
 
+## The system's input
+
+A few acts a driver sends only as the system sends a user's: WinUI raises a
+text box's key-down and a keyboard accelerator from the keyboard alone, and a
+test of a press's own path moves the mouse. The system delivers such input to
+the window in front, or to the window standing at the point, whichever
+application it belongs to. The driver brings the case's window in front first
+- activated, and where the system keeps the front for another process, taken
+through the input of the window in front - and sends nothing where its window
+does not stand in front, or where another covers the point: the case fails
+saying so, rather than reading a press nobody heard or typing into another
+application.
+
 ## A drawing read by its colors
 
 What StateUI draws itself - a shape's outline, a canvas, a box's fill - holds

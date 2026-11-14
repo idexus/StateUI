@@ -119,15 +119,20 @@ extern "C" bool stateui_winui_shortcut(StateUIObjectRef handle, int32_t *key, in
     }
 }
 
-extern "C" void stateui_winui_send_keys(int32_t key, int32_t modifiers) {
+extern "C" bool stateui_winui_send_keys(StateUIObjectRef window, int32_t key, int32_t modifiers) {
     try {
+        // Design: docs/design/host/conformance.md#the-systems-input
+        if (GetForegroundWindow() != reinterpret_cast<HWND>(borrow<xaml::Window>(window).AppWindow().Id().Value))
+            return false;
         sendKeys(key, modifiers);
+        return true;
     } catch (...) {
         report("sending keys");
+        return false;
     }
 }
 
-extern "C" void stateui_winui_send_mouse(
+extern "C" bool stateui_winui_send_mouse(
     StateUIObjectRef window, StateUIObjectRef handle, double x, double y, bool down
 ) {
     try {
@@ -135,17 +140,22 @@ extern "C" void stateui_winui_send_mouse(
         // client area, its title bar's room included.
         auto element = as<xaml::UIElement>(handle);
         auto root = element.XamlRoot();
-        if (!root) return;
+        if (!root) return false;
         auto at = element.TransformToVisual(nullptr).TransformPoint({static_cast<float>(x), static_cast<float>(y)});
         auto scale = root.RasterizationScale();
         POINT point{static_cast<LONG>(std::lround(at.X * scale)), static_cast<LONG>(std::lround(at.Y * scale))};
-        ClientToScreen(reinterpret_cast<HWND>(borrow<xaml::Window>(window).AppWindow().Id().Value), &point);
+        auto own = reinterpret_cast<HWND>(borrow<xaml::Window>(window).AppWindow().Id().Value);
+        ClientToScreen(own, &point);
+        // Design: docs/design/host/conformance.md#the-systems-input
+        if (GetAncestor(WindowFromPoint(point), GA_ROOT) != own) return false;
         SetCursorPos(point.x, point.y);
         INPUT input{};
         input.type = INPUT_MOUSE;
         input.mi.dwFlags = down ? MOUSEEVENTF_LEFTDOWN : MOUSEEVENTF_LEFTUP;
         SendInput(1, &input, sizeof(INPUT));
+        return true;
     } catch (...) {
         report("sending the mouse");
+        return false;
     }
 }
