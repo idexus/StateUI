@@ -127,6 +127,22 @@ public struct ToolingService: Sendable {
         await Doctor().check()
     }
 
+    /// Where `host`'s heads can run on this machine - `devices/list`: UIKit's iPhones, iPads and simulators on a Mac.
+    ///
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose heads run on this machine itself.
+    public func listDestinations(of host: HostFamily) async throws -> DestinationList {
+        switch host {
+        case .uikit:
+            #if os(macOS)
+            return DestinationList(host: host, destinations: await AppleDestinations().list())
+            #else
+            return DestinationList(host: host, destinations: [])
+            #endif
+        default:
+            throw ToolingError(.invalidConfiguration, "Heads of \(host.rawValue) run on this machine itself; uikit's run on devices and simulators.")
+        }
+    }
+
     /// Builds `request`'s application and publishes it - `application/build`.
     public func build(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> BuildResult {
         try await ApplicationBuilder().build(request, in: folder, operation: operation, reporter: reporter)
@@ -185,6 +201,7 @@ public struct ToolingService: Sendable {
         var methods = Methods()
         methods.query("server/info") { (_: NoParameters) in serverInfo() }
         methods.query("toolchain/check") { (_: NoParameters) in await checkToolchain() }
+        methods.query("devices/list") { (query: DestinationQuery) in try await listDestinations(of: query.host) }
         methods.mutation("application/build") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
             try await Self.reporting(context) { reporter in
                 try await build(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter)

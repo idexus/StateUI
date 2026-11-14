@@ -31,6 +31,8 @@ writes its result as words or as the message an editor receives.
   application build at a time on a machine, and the operation journal.
 - [Pictures](pictures.md): which heads get their pictures drawn, and how
   an SVG, an application's pictures and a macOS icon are drawn.
+- [Destinations](destinations.md): where a head runs - the iPhones, iPads
+  and simulators - which one a run means, and the SDK each is built against.
 - [Apple bundles](apple-bundles.md): an Apple head's `Info.plist`, and what an
   AppKit bundle holds.
 - [The repository's own work](repository.md): a host's suite, run as its CI runs it.

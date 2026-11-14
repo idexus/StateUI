@@ -14,4 +14,13 @@ enum ToolOutput {
         let text = (output.lines(of: .standardOutput) + output.lines(of: .standardError)).joined(separator: "\n")
         return outcome.succeeded || !text.isEmpty ? text : nil
     }
+
+    /// What `executable` run with `arguments` printed to its standard output, a line each, or `nil` where it did not
+    /// run or failed.
+    static func standardOutput(_ executable: ProcessExecutable, _ arguments: [String]) async -> String? {
+        let output = Gathered()
+        let request = ProcessRequest(executable, arguments: arguments, timeout: .seconds(30))
+        guard let outcome = try? await ProcessRunner().run(request, output: output.add), outcome.succeeded else { return nil }
+        return output.lines(of: .standardOutput).joined(separator: "\n")
+    }
 }

@@ -154,6 +154,17 @@ final class ProtocolExamplesTests: XCTestCase {
                 ("response", try response("12", NameVerdict(
                     problem: "'My-App' cannot name an application: letters and digits only, starting with a letter."))),
             ]),
+            Example(name: "devices-list", messages: [
+                ("request", try request("15", "devices/list", DestinationQuery(host: .uikit))),
+                ("response", try response("15", DestinationList(host: .uikit, destinations: [
+                    Destination(
+                        id: "0B05862F-1427-5E93-AFC2-5FEAA82B99FB", udid: "00008132-001808DC3C03001C", name: "Example iPad",
+                        kind: .device, version: "27.0", connection: "USB"),
+                    Destination(
+                        id: "C8992893-1166-4CDF-AF44-2169C94EE53B", udid: "C8992893-1166-4CDF-AF44-2169C94EE53B",
+                        name: "iPhone 18 Pro", kind: .simulator, version: "27.0", booted: true),
+                ]))),
+            ], answeredAsWritten: false),
             Example(name: "workspace-create", messages: [
                 ("request", try request("10", "workspace/create", Mutation(
                     requestToken: "0b6f2c8e-3d1a-4f5b-8c7e-9a2d4b6c8e10",

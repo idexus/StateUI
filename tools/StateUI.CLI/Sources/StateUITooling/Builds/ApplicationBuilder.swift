@@ -78,8 +78,7 @@ public struct ApplicationBuilder: Sendable {
             application: folderOfApplication, product: "\(application.name)AppKit", host: .appkit,
             configuration: configuration, architecture: architecture,
             compiler: (await ToolOutput.text(tools.swift, ["--version"]))?.split(separator: "\n").first.map(String.init) ?? "",
-            sdk: (await ToolOutput.text(.name("xcrun"), ["--sdk", "macosx", "--show-sdk-version"]))?
-                .trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+            sdk: await AppleSDK.find(.macOS)?.identity ?? "",
             library: try FileURI.url(libraryUri))
 
         let lease = try await permit.acquire(for: "\(application.name) for \(request.host.rawValue), stateui \(ProcessInfo.processInfo.processIdentifier)") {
@@ -106,7 +105,7 @@ public struct ApplicationBuilder: Sendable {
         _ context: BuildContext, name: String, operation: String, entry: OperationJournal.Entry, reporter: BuildReporter,
         machine: Architecture
     ) async throws -> BuildResult {
-        let triple = context.architecture == machine ? [] : ["--triple", "\(context.architecture.rawValue)-apple-macosx\(Doctor.appleFloor)"]
+        let triple = context.architecture == machine ? [] : ["--triple", AppleSDK.Platform.macOS.triple(context.architecture, floor: Doctor.appleFloor)]
         let common = ["--package-path", context.application.path, "--scratch-path", context.scratch.path,
                       "--configuration", context.configuration.rawValue, "--disable-build-manifest-caching"] + triple
         let environment = ProcessEnvironment.inherited.setting("STATEUI_HOST", to: context.host.rawValue)

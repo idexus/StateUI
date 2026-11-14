@@ -214,6 +214,29 @@ export const ToolFinding = object<ToolFinding>({
 export interface ToolchainReport { findings: ToolFinding[] }
 export const ToolchainReport = object<ToolchainReport>({ findings: array(ToolFinding) });
 
+export type DestinationKind = "device" | "simulator";
+export const DestinationKind = oneOf<DestinationKind>("device", "simulator");
+
+export interface Destination {
+    id: string;
+    udid: string;
+    name: string;
+    kind: DestinationKind;
+    version: string;
+    booted: boolean;
+    connection?: string;
+}
+export const Destination = object<Destination>({
+    id: string, udid: string, name: string, kind: DestinationKind, version: string, booted: boolean,
+    connection: optional(string),
+});
+
+export interface DestinationQuery { host: HostFamily }
+export const DestinationQuery = object<DestinationQuery>({ host: HostFamily });
+
+export interface DestinationList { host: HostFamily; destinations: Destination[] }
+export const DestinationList = object<DestinationList>({ host: HostFamily, destinations: array(Destination) });
+
 export interface ReleaseQuery { minimum?: string; repository?: string }
 export const ReleaseQuery = object<ReleaseQuery>({ minimum: optional(string), repository: optional(string) });
 
@@ -255,6 +278,7 @@ export const methods = {
     "project/describe": query(ProjectReference, Project),
     "toolchain/check": query(NoParameters, ToolchainReport),
     "name/check": query(NameCheck, NameVerdict),
+    "devices/list": query(DestinationQuery, DestinationList),
     "releases/list": query(ReleaseQuery, ReleaseList),
     "operation/get": query(OperationReference, OperationSnapshot),
     "operation/cancel": query(OperationReference, CancelResult),

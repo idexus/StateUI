@@ -27,6 +27,7 @@
         "methods" : [
           "application/build",
           "application/package",
+          "devices/list",
           "name/check",
           "operation/cancel",
           "operation/get",
