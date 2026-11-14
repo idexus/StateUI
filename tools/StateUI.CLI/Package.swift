@@ -15,6 +15,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.8.2"),
         .package(url: "https://github.com/swiftlang/swift-subprocess", exact: "1.0.2"),
+        // The Web page's server, on the machines that build Web heads.
+        .package(url: "https://github.com/apple/swift-nio", exact: "2.103.0"),
     ],
     targets: [
         // The terminal: arguments, presentation and the editor service's entry.
@@ -33,6 +35,9 @@ let package = Package(
             dependencies: [
                 "StateUIToolingProtocol",
                 .product(name: "Subprocess", package: "swift-subprocess"),
+                .product(name: "NIOCore", package: "swift-nio", condition: .when(platforms: [.macOS, .linux])),
+                .product(name: "NIOPosix", package: "swift-nio", condition: .when(platforms: [.macOS, .linux])),
+                .product(name: "NIOHTTP1", package: "swift-nio", condition: .when(platforms: [.macOS, .linux])),
             ],
             path: "Sources/StateUITooling"
         ),

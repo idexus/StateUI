@@ -68,6 +68,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   user - no longer a build's side effect - and `run` builds, installs, stops a copy still running and runs it.
 - **`stateui build` and `package --host web`** build a Web head's module with the Swift SDK for WebAssembly of the
   compiler's release and lay its page beside it - the same page the scripts laid.
+- **`stateui run --host web`** serves a Web head's page from its build on this machine alone - `--listen lan` shares it
+  with the network - on port 8460, else a free one where another program holds it, and opens it in the system's
+  browser, every `STATEUI_` switch a parameter of its address; the page's server is the tool's own, on SwiftNIO.
 - **`stateui run --host uikit`** installs and starts a UIKit head on its simulator or device and follows its output;
   `--debugger` starts it held until a debugger attaches, saying its process. `--host android` does so on a device or
   emulator - a virtual device named but not running is booted - every `STATEUI_` switch handed to the application,

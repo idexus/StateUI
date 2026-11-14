@@ -27,3 +27,22 @@ address it is found at, what a shared link shows - stands in the page as
 written, after a `<title>` named after the application where it names none.
 `stateui package --host web` lays the page in `artifacts/<Name>/Web`, a
 folder any web server serves as it is.
+
+## The page's server
+
+`stateui run --host web` serves the page from its artifact while the run
+lasts (`PageServer`, on SwiftNIO's HTTP/1, on macOS and Linux): GET and HEAD
+of the files in the page's folder - a folder's `index.html`, the query
+aside, the path percent-decoded - each answer typed by its file and saying
+not to keep it (`no-store`), so the build shown is always the last. A path
+leaving the folder, by `..` or by a link, is answered as missing, and any
+other method is refused. A missing file is said in the run's output, but
+for a picture asked for as a PNG, which the relay asks for before its SVG.
+It listens on this machine alone; `--listen lan` shares the page with the
+network and says the machine's addresses. The port is 8460 from run to run,
+so the page's address - and what a browser keeps for it - stays the same; a
+server another program holds on it on any interface leaves the run another
+free port, and a port asked for with `--port` that is in use is refused.
+The server stands before the run's `started` event names its address; the
+run's stop closes it and its connections.
+

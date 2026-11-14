@@ -99,14 +99,24 @@ struct RunCommand: AsyncParsableCommand {
 
     @OptionGroup var build: BuildOptions
 
+    @Option(help: "A Web head's page's port; 8460, else another free, when left out.")
+    var port: Int?
+
+    @Option(help: "A Web head's page served on this machine alone, loopback, or shared with the network, lan.")
+    var listen: String?
+
     @Flag(help: "Ready a debugger: a UIKit head starts held until one attaches, an Android head with the debugger's server in its sandbox - what to attach to said as it starts; a GTK head runs under gdb, each GTK critical's stack and a crash's said as they come.")
     var debugger = false
 
     func run() async throws {
         do {
-            if [.uikit, .android].contains(build.host) {
+            if [.uikit, .android, .web].contains(build.host) {
+                guard listen == nil || ["loopback", "lan"].contains(listen ?? "") else {
+                    throw ToolingError(.invalidConfiguration, "--listen is loopback or lan.")
+                }
                 _ = try await ToolingService().run(
-                    RunRequest(build: build.request(), debugger: debugger), in: build.here, operation: BuildOptions.operation,
+                    RunRequest(build: build.request(), debugger: debugger, port: port, lan: listen.map { $0 == "lan" }), in: build.here,
+                    operation: BuildOptions.operation,
                     reporter: RunReporter(
                         build: BuildOptions.terminal, started: { FileHandle.standardError.write(Data((Self.words($0) + "\n").utf8)) },
                         output: { line in
@@ -146,6 +156,7 @@ struct RunCommand: AsyncParsableCommand {
         let place = launched.build.destination.map { " on \($0.name)" } ?? ""
         let process = launched.process.map { ", process \($0)" } ?? ""
         let server = launched.debuggerSocket.map { ", the debugger's server at unix-abstract:///\($0)" } ?? ""
+        if let url = launched.url { return "stateui: serving \(launched.build.application) at \(url)" }
         return "stateui: started \(launched.build.application)\(place)\(process)\(launched.held ? ", held for a debugger" : "")\(server)"
     }
 }

@@ -219,12 +219,12 @@ export const BuildResult = object<BuildResult>({
     symbolsUri: optional(string),
 });
 
-export interface RunRequest { build: BuildRequest; debugger: boolean }
-export const RunRequest = object<RunRequest>({ build: BuildRequest, debugger: boolean });
+export interface RunRequest { build: BuildRequest; debugger: boolean; port?: number; lan?: boolean }
+export const RunRequest = object<RunRequest>({ build: BuildRequest, debugger: boolean, port: optional(number), lan: optional(boolean) });
 
-export interface LaunchedApplication { build: BuildResult; process?: number; held: boolean; debuggerSocket?: string }
+export interface LaunchedApplication { build: BuildResult; process?: number; held: boolean; debuggerSocket?: string; url?: string }
 export const LaunchedApplication = object<LaunchedApplication>({
-    build: BuildResult, process: optional(number), held: boolean, debuggerSocket: optional(string),
+    build: BuildResult, process: optional(number), held: boolean, debuggerSocket: optional(string), url: optional(string),
 });
 
 export interface RunResult { launched: LaunchedApplication; exitStatus?: number }

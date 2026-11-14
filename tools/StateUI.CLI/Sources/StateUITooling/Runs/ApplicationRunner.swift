@@ -25,8 +25,19 @@ public struct ApplicationRunner: Sendable {
         if request.build.host == .android {
             return try await runAndroid(request, in: folder, operation: operation, reporter: reporter)
         }
+        if request.build.host == .web {
+            #if canImport(NIOPosix)
+            let (built, _) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
+            return try await WebLaunch(
+                site: try FileURI.url(built.folderUri), port: request.port, lan: request.lan ?? false, browser: request.build.device,
+                environment: ProcessInfo.processInfo.environment
+            ).run(built, reporter: reporter)
+            #else
+            throw ToolingError(.invalidConfiguration, "A Web head's page is served on macOS and Linux.")
+            #endif
+        }
         guard request.build.host == .uikit else {
-            throw ToolingError(.invalidConfiguration, "application/run starts UIKit and Android heads; \(request.build.host.rawValue) runs from the program application/build names.")
+            throw ToolingError(.invalidConfiguration, "application/run starts UIKit, Android and Web heads; \(request.build.host.rawValue) runs from the program application/build names.")
         }
         if request.debugger, request.build.configuration == .release {
             throw ToolingError(.invalidConfiguration, "Only a debug build is held for a debugger.")

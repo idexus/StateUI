@@ -69,3 +69,12 @@ ended and the log's follower; the application ending by itself ends the run.
 A cancelled run decides it was stopped by its cancel, not by asking the
 device, whose own answer the cancel cuts short.
 
+## On the Web
+
+The page is served (web-heads.md) and opened in the browser the run names
+- the system's own where none is named, none for `none` - each `STATEUI_`
+variable of the tool's environment handed to the application as a
+parameter of the page's address, `?STATEUI_TALLY=1`. The `started` event
+names that address. The run lasts until it is stopped, which closes the
+server; the browser and its tab are the user's.
+

@@ -31,6 +31,11 @@ running is booted - the emulator started apart from the tool, which it
 outlives as a booted simulator does - and waited for until Android says it
 booted, four minutes at most.
 
+## Browsers
+
+A Web head's page opens in a browser: the system's own unless the run names
+another by its id, or `none`.
+
 ## The one meant
 
 A run names its destination by any of the three: a device's identifier, UDID

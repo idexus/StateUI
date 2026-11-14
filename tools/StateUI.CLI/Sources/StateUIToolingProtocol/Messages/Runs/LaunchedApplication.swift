@@ -14,12 +14,16 @@ public struct LaunchedApplication: Codable, Equatable, Sendable {
     /// Where a debugger reaches it, where the run readied one: an Android head's `lldb-server` socket in the
     /// application's sandbox, abstract, by its name.
     public var debuggerSocket: String?
+    /// A Web head's page, where it is served: `http://127.0.0.1:8460/`.
+    public var url: String?
 
-    /// `build` started as `process`, `held` for a debugger or not, a debugger's server readied at `debuggerSocket`.
-    public init(build: BuildResult, process: Int?, held: Bool, debuggerSocket: String? = nil) {
+    /// `build` started as `process`, `held` for a debugger or not, a debugger's server readied at `debuggerSocket`, a
+    /// page served at `url`.
+    public init(build: BuildResult, process: Int?, held: Bool, debuggerSocket: String? = nil, url: String? = nil) {
         self.build = build
         self.process = process
         self.held = held
         self.debuggerSocket = debuggerSocket
+        self.url = url
     }
 }
