@@ -27,11 +27,13 @@ public struct Destination: Codable, Equatable, Sendable {
     public var connection: String?
     /// The architecture a build for it targets, where the platform says it: an Android device's ABI.
     public var architecture: Architecture?
+    /// A browser's program, as a file URI: what a debugger starts on a page.
+    public var programUri: String?
 
     /// Destination `name`, reached as `id`.
     public init(
         id: String, udid: String, name: String, kind: Kind, version: String, booted: Bool = false, connection: String? = nil,
-        architecture: Architecture? = nil
+        architecture: Architecture? = nil, programUri: String? = nil
     ) {
         self.id = id
         self.udid = udid
@@ -41,5 +43,6 @@ public struct Destination: Codable, Equatable, Sendable {
         self.booted = booted
         self.connection = connection
         self.architecture = architecture
+        self.programUri = programUri
     }
 }

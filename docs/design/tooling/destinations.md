@@ -36,10 +36,14 @@ booted, four minutes at most.
 A Web head's page opens in a browser. `stateui devices --host web` lists
 what the system opens both a web address and a web page with: on macOS every
 application Launch Services offers for `https` and for an HTML file, by its
-bundle id; on Linux every shown desktop entry taking `x-scheme-handler/https`
-and `text/html`, by its file's name - the system's own marked. A run opens
-the page in the one it names, the system's own where it names none, and no
-browser for `none`.
+bundle id; on Linux every desktop entry taking `x-scheme-handler/https` and
+`text/html` and shown on the desktop running - `NoDisplay`, `Hidden`,
+`OnlyShowIn` and `NotShowIn` read as the desktop does - by its file's name.
+The system's own is marked, and each names its program (`programUri`): the
+bundle's executable, the entry's `Exec` past `env` and its variables. A run
+opens the page in the one it names, the system's own where it names none, and
+no browser for `none` - the page left to a debugger, which starts a browser's
+program on it.
 
 ## The one meant
 

@@ -175,10 +175,11 @@ export interface Destination {
     booted: boolean;
     connection?: string;
     architecture?: Architecture;
+    programUri?: string;
 }
 export const Destination = object<Destination>({
     id: string, udid: string, name: string, kind: DestinationKind, version: string, booted: boolean,
-    connection: optional(string), architecture: optional(Architecture),
+    connection: optional(string), architecture: optional(Architecture), programUri: optional(string),
 });
 
 export interface DestinationQuery { host: HostFamily }

@@ -30,12 +30,13 @@
 // which stops a running copy first, its executable written again - and
 // launched by lldb-dap, which reads the DWARF the head carries.
 //
-// A Web head is built, laid out and served by .scripts/Web/run-app.sh in a task
-// whose terminal follows the server, and opened in the browser chosen. A Debug
-// launch in one of Chromium's is VS Code's own JavaScript debugger starting it
-// on the page, once the script writes where the page is to
-// .build/web/server.json: the console in the Debug Console, a breakpoint in the
-// relay. Any other browser the script opens itself, with no session.
+// A Web head is built, laid out and served by the stateui tool
+// (`application/run`), which opens the page in the browser chosen. A Debug
+// launch in one of Chromium's has the page served alone, and VS Code's own
+// JavaScript debugger starts that browser's program on the address the
+// `started` event says: the console in the Debug Console, a breakpoint in the
+// relay; the debug session's end stops the run. Any other browser the tool
+// opens, with no session.
 //
 // The application is the one chosen with StateUI: Select Application; a launch
 // naming its `application` runs that one instead.
@@ -44,8 +45,8 @@ import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, pathOf, webSite, winUIProgram } from "./applications";
-import { Browser, isChromium, webScript } from "./browsers";
+import { Application, pathOf, winUIProgram } from "./applications";
+import { Browser, isChromium } from "./browsers";
 import { lldbDapFinding } from "./toolchain";
 import { environment, Host } from "./hosts";
 import { LaunchedApplication } from "./Tooling/protocol";
@@ -73,15 +74,6 @@ export interface Choices {
      */
     build(folder: vscode.WorkspaceFolder, application: Application, host: Host, configuration: Configuration): Promise<string | undefined>;
 
-    /** Starts a task that runs until it is stopped - a head followed by its log. */
-    start(task: vscode.Task): Promise<void>;
-
-    /**
-     * Waits, while `task` runs, for it to write `file`; whether it did before
-     * it ended.
-     */
-    ready(file: string, task: vscode.Task): Promise<boolean>;
-
     /**
      * What the tool knows the Android device a launch runs on by - the one
      * chosen while it is listed, else asked for - or nothing, where none is
@@ -105,10 +97,10 @@ export interface Choices {
     ): Promise<{ launched: LaunchedApplication; token: string } | undefined>;
 
     /**
-     * The browser a Web launch opens the page in - the one chosen while it is installed, else asked for, as
-     * `checkout`'s browsers.sh lists them - or nothing, where none is picked.
+     * The browser a Web launch opens the page in - the one chosen while it is installed, else asked for - or nothing,
+     * where none is picked.
      */
-    browser(checkout: string): Promise<Browser | undefined>;
+    browser(): Promise<Browser | undefined>;
 }
 
 /** What a machine that runs no host is told, wherever a host is asked for. */
@@ -343,8 +335,9 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
     }
 
     /**
-     * A Web head, built, laid out and served by run-app.sh in a task that follows the server; a Debug build in one
-     * of Chromium's browsers started on the page by VS Code's JavaScript debugger, any other opened by the script.
+     * A Web head, built and served by the stateui tool, which opens the page in the browser chosen; a Debug launch in
+     * one of Chromium's has the page served alone and VS Code's JavaScript debugger starting that browser on it, the
+     * session's end stopping the run.
      */
     private async web(
         root: vscode.WorkspaceFolder,
@@ -352,40 +345,28 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const checkout = application.checkout;
-        const script = checkout && webScript(checkout, "run-app.sh");
-        if (!checkout || !script || !fs.existsSync(script)) {
-            void vscode.window.showErrorMessage(
-                `StateUI: a Web head runs through a StateUI checkout's .scripts/Web/run-app.sh, and ${application.name}'s Package.swift names none by path.`);
-            return undefined;
-        }
-
-        const browser = await this.choices.browser(checkout);
+        const browser = await this.choices.browser();
         if (!browser) {
             return undefined;
         }
 
-        const debugged = configuration === "debug" && isChromium(browser);
-        const facts = path.join(application.directory, ".build", "web", "server.json");
-        fs.rmSync(facts, { force: true });
-        const task = new vscode.Task(
-            { type: "stateui", launch: true, application: application.name, configuration, device: "web" }, root,
-            `Run ${application.name} (Web, ${configuration})`, "StateUI",
-            new vscode.ShellExecution("bash",
-                [script, application.directory, configuration, "--browser", debugged ? "none" : browser.id],
-                { cwd: root.uri.fsPath }), []);
-        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-        await this.choices.start(task);
-        if (!debugged) {
+        const debugged = configuration === "debug" && isChromium(browser) && browser.program !== undefined;
+        const running = await this.choices.runHead(root, application, "web", configuration, debugged ? "none" : browser.id, false);
+        if (!running || !debugged) {
             return undefined;
         }
-
-        if (!(await this.choices.ready(facts, task))) {
-            void vscode.window.showErrorMessage(`StateUI: ${application.name}'s page was not served - the terminal says why.`);
+        const { launched, token } = running;
+        if (!launched.url) {
+            void vscode.window.showErrorMessage(`StateUI: ${application.name}'s page is served, but its address is not known.`);
             return undefined;
         }
-        return webLaunch(name, JSON.parse(fs.readFileSync(facts, "utf8")).url, browser, webSite(application, configuration));
+        return { ...webLaunch(name, launched.url, browser, pathOf(launched.build.folderUri)), stateuiRun: token };
     }
+}
+
+/** Where a run goes: an application's head on a device - its page, whichever browser opens it. */
+export function runPlace(directory: string, host: Host, device: string): string {
+    return JSON.stringify([directory, host, host === "web" ? "" : device]);
 }
 
 /**
@@ -393,7 +374,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
  * the page's console in the Debug Console, and the relay's sources read from `site`.
  */
 export function webLaunch(name: string, url: string, browser: Browser, site: string): vscode.DebugConfiguration {
-    return { type: "chrome", request: "launch", name, url, runtimeExecutable: browser.executable, webRoot: site };
+    return { type: "chrome", request: "launch", name, url, runtimeExecutable: browser.program, webRoot: site };
 }
 
 /** Where a run readied an Android head for a debugger: its process, the debugger server's socket, its symbols. */

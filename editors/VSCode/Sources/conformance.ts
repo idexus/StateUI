@@ -22,7 +22,7 @@ export interface RebuildStep extends Step {
  * families run writing their verdicts, then the dictionary's renderer. `device` - an Android serial, a simulator's
  * UDID - is where the host's suite runs on one. Undefined where the editor makes none: a device the suite needs and was
  * not given, Android asked for the changed families, as its device reads no repository, or the Web, whose marks
- * `.scripts/Web/test-web.sh --browser` makes in a browser of its own.
+ * `stateui repo test --suite host:web` makes in a browser of its own.
  */
 export function rebuildSteps(checkout: string, host: Host, rebuild: Rebuild, device?: string): RebuildStep[] | undefined {
     const scripts = path.join(checkout, ".scripts");

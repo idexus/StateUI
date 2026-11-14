@@ -26,7 +26,8 @@ enum Browsers {
         return workspace.urlsForApplications(toOpen: address).compactMap { application in
             guard let id = Bundle(url: application)?.bundleIdentifier, pages.contains(id), seen.insert(id).inserted else { return nil }
             let name = FileManager.default.displayName(atPath: application.path).replacingOccurrences(of: ".app", with: "")
-            return Destination(id: id, udid: id, name: name, kind: .browser, version: "", booted: application == preferred)
+            return Destination(id: id, udid: id, name: name, kind: .browser, version: "", booted: application == preferred,
+                               programUri: Bundle(url: application)?.executableURL.map(FileURI.string))
         }
         #else
         let home = FileManager.default.homeDirectoryForCurrentUser
@@ -36,26 +37,58 @@ enum Browsers {
                        URL(fileURLWithPath: "/var/lib/snapd/desktop/applications")]
         let preferred = (await ToolOutput.standardOutput(.name("xdg-settings"), ["get", "default-web-browser"]) ?? "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
+        let desktops = (ProcessInfo.processInfo.environment["XDG_CURRENT_DESKTOP"] ?? "").split(separator: ":").map(String.init)
         var seen = Set<String>()
         var found: [Destination] = []
         for folder in folders {
             for id in ((try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? []).sorted() where id.hasSuffix(".desktop") {
                 guard let entry = try? String(contentsOf: folder.appendingPathComponent(id), encoding: .utf8),
-                      let name = Self.browser(entry), seen.insert(id).inserted
+                      let browser = Self.browser(entry, on: desktops), seen.insert(id).inserted
                 else { continue }
-                found.append(Destination(id: id, udid: id, name: name, kind: .browser, version: "", booted: id == preferred))
+                let program = browser.program.hasPrefix("/") ? URL(fileURLWithPath: browser.program) : SearchPath().find(browser.program)
+                found.append(Destination(id: id, udid: id, name: browser.name, kind: .browser, version: "", booted: id == preferred,
+                                         programUri: program.map(FileURI.string)))
             }
         }
         return found
         #endif
     }
 
-    /// The name of the browser a desktop entry `text` is - one taking both https and HTML, shown - or `nil`.
-    static func browser(_ text: String) -> String? {
-        let lines = text.split(whereSeparator: \.isNewline).map(String.init)
-        let types = lines.first { $0.hasPrefix("MimeType=") } ?? ""
-        guard types.contains("x-scheme-handler/https"), types.contains("text/html"), !lines.contains("NoDisplay=true") else { return nil }
-        return lines.first { $0.hasPrefix("Name=") }.map { String($0.dropFirst("Name=".count)) } ?? ""
+    /// The browser a desktop entry `text` is - one taking both https and HTML, shown on `desktops` - by its name and
+    /// the program its `Exec` starts, or `nil`.
+    static func browser(_ text: String, on desktops: [String]) -> (name: String, program: String)? {
+        let entry = text.split(whereSeparator: \.isNewline).map(String.init)
+            .drop { $0 != "[Desktop Entry]" }.dropFirst().prefix { !$0.hasPrefix("[") }
+        func value(_ key: String) -> String? { entry.first { $0.hasPrefix(key + "=") }.map { String($0.dropFirst(key.count + 1)) } }
+        func list(_ key: String) -> [String] { (value(key) ?? "").split(separator: ";").map(String.init) }
+        let types = list("MimeType")
+        guard types.contains("x-scheme-handler/https"), types.contains("text/html"), value("NoDisplay") != "true",
+              value("Hidden") != "true", value("OnlyShowIn") == nil || list("OnlyShowIn").contains(where: desktops.contains),
+              !list("NotShowIn").contains(where: desktops.contains), let program = Self.program(value("Exec") ?? "")
+        else { return nil }
+        return (value("Name") ?? "", program)
+    }
+
+    /// The program an `Exec` line starts: its first word - quoted where it holds a space - past `env` and its
+    /// variables.
+    static func program(_ exec: String) -> String? {
+        var words: [String] = []
+        var word: String?
+        var quoted = false
+        for character in exec {
+            if character == "\"" {
+                quoted.toggle()
+                word = word ?? ""
+            } else if character == " ", !quoted {
+                word.map { words.append($0) }
+                word = nil
+            } else {
+                word = (word ?? "") + String(character)
+            }
+        }
+        word.map { words.append($0) }
+        if words.first == "env" { words = Array(words.dropFirst().drop { $0.contains("=") }) }
+        return words.first
     }
 
     /// Opens `url` in browser `id`: `default` the system's own.

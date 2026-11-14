@@ -7,7 +7,7 @@
 import { Host } from "../hosts";
 
 /** The hosts whose build, launch, deploy and own suite go through the stateui tool. */
-const byTool: ReadonlySet<Host> = new Set<Host>(["appkit", "uikit", "android", "gtk"]);
+const byTool: ReadonlySet<Host> = new Set<Host>(["appkit", "uikit", "android", "gtk", "web"]);
 
 /** Whether `host` goes through the stateui tool. */
 export function builtByTool(host: Host): boolean {

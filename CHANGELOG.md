@@ -78,14 +78,17 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `application/run`, ends the application and every process the launch started.
 - **`stateui devices --host uikit`** lists the iPhones and iPads paired with the Mac, then the simulators, the newest
   iOS first - each with what names it, its system, and whether it is booted or how it is reached; `--host android`
-  the attached devices and running emulators with their Android version and ABI, then the virtual devices not running.
+  the attached devices and running emulators with their Android version and ABI, then the virtual devices not running;
+  `--host web` the browsers installed, the system's own marked, each with its program - on Linux the desktop entries
+  shown on the desktop running.
 - **The VS Code extension works through `stateui`.** It finds the applications, checks the toolchain, makes a
   project group and a new application - **StateUI: New Application**, beside a workspace's applications - and checks
   their names as they are typed, all by the tool; the `stateui.cliPath` setting names it where it is not on the
-  search path. The making shows in a notification that cancels it. AppKit's, UIKit's, Android's and GTK's Debug,
-  Release, Deploy and the hosts' own suites in Run Tests go through the tool, as do the UIKit and Android device lists; a UIKit
-  or Android head's output is in **StateUI Run**, its notification stops it, and the end of a debug session ends it.
-  The other hosts go through their `.scripts` until each moves.
+  search path. The making shows in a notification that cancels it. AppKit's, UIKit's, Android's, GTK's and the Web's
+  Debug, Release, Deploy and the hosts' own suites in Run Tests go through the tool, as do the UIKit and Android device
+  lists and the browsers; a UIKit or Android head's output and a page's server are in **StateUI Run**, its
+  notification stops it, the end of a debug session ends it, and a second launch in its place replaces it. WinUI goes
+  through its `.scripts` until it moves.
 
 ### Tooling
 

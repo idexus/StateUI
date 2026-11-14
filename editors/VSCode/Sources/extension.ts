@@ -12,15 +12,15 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { Application, applicationsOf, hasHead, pathOf, readApplications } from "./applications";
 import { isCheckout } from "./checkouts";
-import { Configuration, configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
+import { Configuration, runPlace, configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
 import { AndroidLister, androidDeviceOf, askForDevice, chooseListedDevice, chosenDevice, deviceToRunOn } from "./devices";
-import { askForBrowser, Browser, browserToRunOn, chosenBrowser, webScript } from "./browsers";
+import { askForBrowser, Browser, BrowserLister, browserOf, browserToRunOn, chooseListedBrowser, chosenBrowser } from "./browsers";
 import { applyEditorMode, cleanIndex, setHostEnvironment, variablesInSettings } from "./editorMode";
 import { availableHosts, describe, Host } from "./hosts";
 import {
     askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceOf, UIKitLister, uiKitDeviceToRunOn, uiKitSimulatorToTestOn,
 } from "./uiKitDevices";
-import { readyWhen, runTask, startTask } from "./tasks";
+import { runTask } from "./tasks";
 import { findSuites, forDevice, runSuites } from "./tests";
 import { writeEditorFiles } from "./projectGroup";
 import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinstall";
@@ -32,7 +32,7 @@ import { builtByTool } from "./Tooling/migration";
 import { LaunchedApplication, NameKind } from "./Tooling/protocol";
 import { runOperation, sayProblem, toolingClients, withTool } from "./Tooling/presentation";
 import { ToolRequestError } from "./Tooling/client";
-import { Architecture, deployCommand, deployDestination, deployFolder, winUIArchitectures } from "./deploy";
+import { Architecture, deployDestination, deployFolder, winUIArchitectures, winUIDeployCommand } from "./deploy";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
@@ -44,6 +44,8 @@ export interface StateUIApi {
     selectUIKitDevice(wanted: string): Promise<string | undefined>;
     /** Chooses the Android device listed by `wanted` - its serial or its name - and answers its name. */
     selectAndroidDevice(wanted: string): Promise<string | undefined>;
+    /** Chooses the browser listed by `wanted` - its id or its name - and answers its name. */
+    selectBrowser(wanted: string): Promise<string | undefined>;
     /** The applications the stateui tool found in the workspace's folders. */
     applications(): readonly Application[];
 }
@@ -314,9 +316,21 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return id;
     };
 
+    /** The browsers the tool lists, through any folder's connection: the list names no project. */
+    const listBrowsers: BrowserLister = async () => {
+        const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+        if (!folder) {
+            void vscode.window.showErrorMessage("StateUI: the browsers are listed for a folder, and none is open.");
+            return undefined;
+        }
+        const listed = await withTool(tool, folder, "the browsers could not be listed",
+            (client) => client.request("devices/list", { host: "web" }));
+        return listed?.destinations.map(browserOf);
+    };
+
     /** The browser a Web launch opens the page in - asked for where none chosen is installed. */
-    const browser = async (checkout: string): Promise<Browser | undefined> => {
-        const found = await browserToRunOn(checkout, state);
+    const browser = async (): Promise<Browser | undefined> => {
+        const found = await browserToRunOn(state, listBrowsers);
         refresh();
         return found;
     };
@@ -330,7 +344,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             return;
         }
         if (chosen === "web") {
-            void vscode.window.showInformationMessage("StateUI: the editor makes no Web marks - .scripts/Web/test-web.sh --browser makes them, with STATEUI_UPDATE_EXPORTS=1.");
+            void vscode.window.showInformationMessage("StateUI: the editor makes no Web marks - stateui repo test --suite host:web makes them, with STATEUI_UPDATE_EXPORTS=1.");
             return;
         }
         if (chosen === "android" && rebuild === "changed") {
@@ -393,13 +407,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             refresh();
         }),
         vscode.commands.registerCommand("stateui.selectBrowser", async () => {
-            const checkout = [chosen()?.checkout, ...applications().map((each) => each.checkout)]
-                .find((each): each is string => each !== undefined && fs.existsSync(webScript(each, "browsers.sh")));
-            if (!checkout) {
-                void vscode.window.showErrorMessage("StateUI: browsers are listed by a StateUI checkout's .scripts/Web/browsers.sh, and no application here names one.");
-                return;
-            }
-            await askForBrowser(checkout, state);
+            await askForBrowser(state, listBrowsers);
             refresh();
         }),
         vscode.commands.registerCommand("stateui.runTests", async () => {
@@ -661,14 +669,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                     .then((answer) => answer && vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(destination)));
                 return destination;
             }
-            const step = deployCommand(application, forHost, destination, architecture, device);
+            const step = winUIDeployCommand(application, destination, architecture);
             if (!step || !fs.existsSync(step.script)) {
                 void vscode.window.showErrorMessage(
-                    `StateUI: ${application.name} is deployed by a StateUI checkout's .scripts/${describe(forHost).label}/${path.basename(step?.script ?? "deploy")}, which ${step ? "it does not have" : "its Package.swift names none of by path"}.`);
+                    `StateUI: ${application.name} is deployed by a StateUI checkout's .scripts/WinUI/deploy.ps1, which ${step ? "it does not have" : "its Package.swift names none of by path"}.`);
                 return undefined;
             }
             const task = new vscode.Task(
-                { type: "stateui", application: application.name, configuration: "release", device: architecture ?? device ?? forHost },
+                { type: "stateui", application: application.name, configuration: "release", device: architecture ?? forHost },
                 vscode.TaskScope.Workspace, `Deploy ${application.name} (${describe(forHost).label}${architecture ? `, ${architecture}` : ""})`,
                 "StateUI", new vscode.ProcessExecution(step.command, step.args, { cwd: deployFolder(application) }), []);
             task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
@@ -685,9 +693,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             void vscode.window.setStatusBarMessage("StateUI: the index is being built again", 4000);
         }));
 
-    // A UIKit or Android run's output, and each run a debug session's end stops, by the token its configuration carries.
+    // A UIKit, Android or Web run's output; each run a debug session's end stops, by the token its configuration
+    // carries; and each run going, by its place - a second run in one place replaces the first.
     const runOutput = vscode.window.createOutputChannel("StateUI Run");
     const runs = new Map<string, () => void>();
+    const going = new Map<string, { stop: () => void; ended: Promise<void> }>();
     context.subscriptions.push(runOutput, vscode.debug.onDidTerminateDebugSession((session) => {
         const token: unknown = session.configuration.stateuiRun;
         if (typeof token === "string") {
@@ -697,53 +707,71 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     }));
 
     /**
-     * A UIKit or Android head built and started on `device` by the tool, followed in a notification that stops it and
-     * in StateUI Run; answers, once it started, what started and the token whose debug session's end stops it.
+     * A UIKit, Android or Web head built and started on `device` by the tool, followed in a notification that stops it
+     * and in StateUI Run, a run going in its place stopped first; answers, once it started, what started and the token
+     * whose debug session's end stops it.
      */
-    const runHead = (folder: vscode.WorkspaceFolder, application: Application, forHost: Host, configuration: Configuration,
-        device: string, debug: boolean) => withTool(tool, folder.uri.fsPath, `${application.name} did not start`, (client) =>
-        new Promise<{ launched: LaunchedApplication; token: string } | undefined>((resolve, reject) => {
-            const stopping = new AbortController();
-            const token = randomUUID();
-            let started = false;
-            runOutput.clear();
-            runOutput.show(true);
-            void vscode.window.withProgress(
-                { location: vscode.ProgressLocation.Notification, title: `StateUI: ${application.name} (${describe(forHost).label}, ${configuration})`, cancellable: true },
-                (progress, cancel) => {
-                    cancel.onCancellationRequested(() => stopping.abort());
-                    return client.run("application/run", {
-                        build: { projectUri: pathToFileUri(application.directory), host: forHost, configuration, device }, debugger: debug,
-                    }, {
-                        signal: stopping.signal,
-                        onEvent: ({ event }) => {
-                            if (event.kind === "progress") {
-                                progress.report({ message: event.message ?? event.stage });
-                            } else if (event.kind === "output") {
-                                runOutput.append(event.encoding === "utf8" ? event.data : Buffer.from(event.data, "base64").toString("utf8"));
-                            } else if (event.kind === "started") {
-                                started = true;
-                                runs.set(token, () => stopping.abort());
-                                const place = event.application.build.destination?.name ?? "its device";
-                                progress.report({ message: `running on ${place}${event.application.held ? ", waiting for the debugger" : ""} - Cancel stops it` });
-                                resolve({ launched: event.application, token });
+    const runHead = async (folder: vscode.WorkspaceFolder, application: Application, forHost: Host, configuration: Configuration,
+        device: string, debug: boolean) => {
+        const place = runPlace(application.directory, forHost, device);
+        const replaced = going.get(place);
+        replaced?.stop();
+        await replaced?.ended;
+        return withTool(tool, folder.uri.fsPath, `${application.name} did not start`, (client) =>
+            new Promise<{ launched: LaunchedApplication; token: string } | undefined>((resolve, reject) => {
+                const stopping = new AbortController();
+                const token = randomUUID();
+                let started = false;
+                let end = (): void => {};
+                const run = { stop: () => stopping.abort(), ended: new Promise<void>((ended) => { end = ended; }) };
+                going.set(place, run);
+                const finished = (): void => {
+                    runs.delete(token);
+                    if (going.get(place) === run) {
+                        going.delete(place);
+                    }
+                    end();
+                };
+                runOutput.clear();
+                runOutput.show(true);
+                void vscode.window.withProgress(
+                    { location: vscode.ProgressLocation.Notification, title: `StateUI: ${application.name} (${describe(forHost).label}, ${configuration})`, cancellable: true },
+                    (progress, cancel) => {
+                        cancel.onCancellationRequested(() => stopping.abort());
+                        return client.run("application/run", {
+                            build: { projectUri: pathToFileUri(application.directory), host: forHost, configuration, device }, debugger: debug,
+                        }, {
+                            signal: stopping.signal,
+                            onEvent: ({ event }) => {
+                                if (event.kind === "progress") {
+                                    progress.report({ message: event.message ?? event.stage });
+                                } else if (event.kind === "output") {
+                                    runOutput.append(event.encoding === "utf8" ? event.data : Buffer.from(event.data, "base64").toString("utf8"));
+                                } else if (event.kind === "started") {
+                                    started = true;
+                                    runs.set(token, () => stopping.abort());
+                                    const { url, held, build } = event.application;
+                                    const where = url ? `served at ${url}` : `running on ${build.destination?.name ?? "its device"}`;
+                                    progress.report({ message: `${where}${held ? ", waiting for the debugger" : ""} - Cancel stops it` });
+                                    resolve({ launched: event.application, token });
+                                }
+                            },
+                        }).then(() => {
+                            finished();
+                            if (!started) {
+                                resolve(undefined);
                             }
-                        },
-                    }).then(() => {
-                        runs.delete(token);
-                        if (!started) {
-                            resolve(undefined);
-                        }
-                    }, (error: unknown) => {
-                        runs.delete(token);
-                        if (!started) {
-                            reject(error);
-                        } else if (!(error instanceof ToolRequestError && error.state === "cancelled")) {
-                            sayProblem(`${application.name} stopped`, error);
-                        }
+                        }, (error: unknown) => {
+                            finished();
+                            if (!started) {
+                                reject(error);
+                            } else if (!(error instanceof ToolRequestError && error.state === "cancelled")) {
+                                sayProblem(`${application.name} stopped`, error);
+                            }
+                        });
                     });
-                });
-        }));
+            }));
+    };
 
     const provider = new StateUIDebugConfigurationProvider({
         host,
@@ -760,8 +788,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             });
             return built && pathOf(built.programUri);
         },
-        start: startTask,
-        ready: (file, task) => readyWhen(file, task),
         device: androidDevice,
         uiKitDevice,
         runHead,
@@ -862,9 +888,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return name;
     };
 
+    const selectBrowser = async (wanted: string): Promise<string | undefined> => {
+        const name = await chooseListedBrowser(state, wanted, listBrowsers);
+        refresh();
+        return name;
+    };
+
     return {
         host, selectHost, application: () => state.get<string>(applicationKey), selectApplication, selectUIKitDevice, selectAndroidDevice,
-        applications,
+        selectBrowser, applications,
     };
 }
 

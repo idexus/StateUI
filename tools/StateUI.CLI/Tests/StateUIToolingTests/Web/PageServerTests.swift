@@ -84,11 +84,28 @@ final class PageServerTests: XCTestCase {
 }
 
 final class BrowsersTests: XCTestCase {
-    /// A desktop entry is a browser where it takes both https and HTML and is shown; its name is the entry's.
+    /// A desktop entry is a browser where it takes both https and HTML and is shown here; its name is the entry's.
     func testABrowserTakesBothAddressesAndPages() {
-        XCTAssertEqual(Browsers.browser("[Desktop Entry]\nName=Firefox\nMimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;\n"), "Firefox")
-        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Mail\nMimeType=x-scheme-handler/mailto;\n"))
-        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Viewer\nMimeType=text/html;\n"))
-        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Hidden\nNoDisplay=true\nMimeType=text/html;x-scheme-handler/https;\n"))
+        let https = "MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;\nExec=firefox %u\n"
+        XCTAssertEqual(Browsers.browser("[Desktop Entry]\nName=Firefox\n\(https)", on: ["GNOME"])?.name, "Firefox")
+        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Mail\nMimeType=x-scheme-handler/mailto;\nExec=mail\n", on: []))
+        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Viewer\nMimeType=text/html;\nExec=viewer\n", on: []))
+        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Hidden\nNoDisplay=true\n\(https)", on: []))
+        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Gone\nHidden=true\n\(https)", on: []))
+        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Kiosk\nOnlyShowIn=UbuntuFrame;\n\(https)", on: ["ubuntu", "GNOME"]))
+        XCTAssertNotNil(Browsers.browser("[Desktop Entry]\nName=Here\nOnlyShowIn=KDE;GNOME;\n\(https)", on: ["ubuntu", "GNOME"]))
+        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Elsewhere\nNotShowIn=GNOME;\n\(https)", on: ["ubuntu", "GNOME"]))
+        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Nothing\nMimeType=text/html;x-scheme-handler/https;\n", on: []))
+    }
+
+    /// The program is the main group's `Exec`, never an action's; its first word, past `env` and its variables.
+    func testTheProgramIsTheEntrysFirstWord() {
+        let entry = "[Desktop Entry]\nName=Chromium\nMimeType=text/html;x-scheme-handler/https;\nExec=/snap/bin/chromium %U\n"
+            + "\n[Desktop Action Incognito]\nExec=/snap/bin/chromium --incognito\n"
+        XCTAssertEqual(Browsers.browser(entry, on: [])?.program, "/snap/bin/chromium")
+        XCTAssertEqual(Browsers.program("env BAMF_DESKTOP_FILE_HINT=/x.desktop /snap/bin/firefox %u"), "/snap/bin/firefox")
+        XCTAssertEqual(Browsers.program("\"/opt/My Browser/browser\" --new-window %U"), "/opt/My Browser/browser")
+        XCTAssertEqual(Browsers.program("brave-browser"), "brave-browser")
+        XCTAssertNil(Browsers.program(""))
     }
 }

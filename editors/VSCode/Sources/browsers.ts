@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The browsers a Web head runs in: what .scripts/Web/browsers.sh lists - the
-// browsers installed on this machine - and the one chosen for the workspace.
+// The browsers a Web head runs in, as the stateui tool lists them (`devices/list`) - the browsers installed on this
+// machine - and the one chosen for the workspace.
 
-import { execFile } from "child_process";
-import * as path from "path";
 import * as vscode from "vscode";
+import { Destination } from "./Tooling/protocol";
 
 /** A browser installed on this machine. */
 export interface Browser {
@@ -14,8 +13,8 @@ export interface Browser {
     readonly id: string;
     readonly name: string;
 
-    /** The program a debugger starts it as. */
-    readonly executable: string;
+    /** The program a debugger starts it as, where the tool found it. */
+    readonly program?: string;
 
     /** Whether the system opens a web address in it. */
     readonly isDefault: boolean;
@@ -24,19 +23,17 @@ export interface Browser {
 /** The browser chosen for a workspace. */
 export type ChosenBrowser = Pick<Browser, "id" | "name">;
 
+/** The browsers as the tool lists them, or nothing, said, where it could not. */
+export type BrowserLister = () => Promise<Browser[] | undefined>;
+
 const browserKey = "stateui.browser";
 
-/** One of the scripts in `root`/.scripts/Web, which build, serve and open the Web host's page. */
-export function webScript(root: string, script: "browsers.sh" | "run-app.sh" | "deploy.sh"): string {
-    return path.join(root, ".scripts", "Web", script);
-}
-
-/** What `browsers.sh list` printed: one browser a line - id, name, executable and "default" - tab-separated. */
-export function parseBrowsers(output: string): Browser[] {
-    return output.split(/\r?\n/).flatMap((line): Browser[] => {
-        const [id, name, executable, isDefault] = line.trim().split("\t");
-        return id ? [{ id, name: name || id, executable: executable ?? "", isDefault: isDefault === "default" }] : [];
-    });
+/** A destination the tool listed, as a browser stands in the editor. */
+export function browserOf(destination: Destination): Browser {
+    return {
+        id: destination.id, name: destination.name, isDefault: destination.booted,
+        program: destination.programUri && vscode.Uri.parse(destination.programUri).fsPath,
+    };
 }
 
 /**
@@ -53,16 +50,16 @@ export function chosenBrowser(state: vscode.Memento): ChosenBrowser | undefined 
 }
 
 /** The browser a launch runs in: the one chosen, while it is installed, else asked for - or nothing, where none is picked. */
-export async function browserToRunOn(root: string, state: vscode.Memento): Promise<Browser | undefined> {
-    const listed = await listBrowsers(root);
+export async function browserToRunOn(state: vscode.Memento, list: BrowserLister): Promise<Browser | undefined> {
+    const listed = await list();
     const chosen = chosenBrowser(state);
     const installed = listed?.find((each) => each.id === chosen?.id);
-    return installed ?? (listed ? askForBrowser(root, state, listed) : undefined);
+    return installed ?? (listed ? askForBrowser(state, list, listed) : undefined);
 }
 
-/** Asks for a browser among those `browsers.sh list` lists, the system's own first, remembers it and answers it. */
-export async function askForBrowser(root: string, state: vscode.Memento, listed?: Browser[]): Promise<Browser | undefined> {
-    listed ??= await listBrowsers(root);
+/** Asks for a browser among those the tool lists, the system's own first, remembers it and answers it. */
+export async function askForBrowser(state: vscode.Memento, list: BrowserLister, listed?: Browser[]): Promise<Browser | undefined> {
+    listed ??= await list();
     if (!listed) {
         return undefined;
     }
@@ -89,14 +86,11 @@ export async function askForBrowser(root: string, state: vscode.Memento, listed?
     return picked.browser;
 }
 
-/** What `browsers.sh list` lists, or nothing, said, where it failed. */
-async function listBrowsers(root: string): Promise<Browser[] | undefined> {
-    const { failed, stdout, output } = await new Promise<{ failed: boolean; stdout: string; output: string }>((resolve) =>
-        execFile("bash", [webScript(root, "browsers.sh"), "list"], { cwd: root },
-            (error, stdout, stderr) => resolve({ failed: error !== null, stdout, output: `${stdout}${stderr}` })));
-    if (failed) {
-        void vscode.window.showErrorMessage(`StateUI: the browsers could not be listed - ${output.trim()}`);
-        return undefined;
+/** Chooses the browser `wanted` names - its id or its name - as the tool lists it; answers its name, or nothing. */
+export async function chooseListedBrowser(state: vscode.Memento, wanted: string, list: BrowserLister): Promise<string | undefined> {
+    const found = (await list())?.find((each) => each.id === wanted || each.name === wanted);
+    if (found) {
+        await state.update(browserKey, { id: found.id, name: found.name } satisfies ChosenBrowser);
     }
-    return parseBrowsers(stdout);
+    return found?.name;
 }

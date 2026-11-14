@@ -67,11 +67,6 @@ export function hasHead(application: Application, host: Host): boolean {
     return application.hosts.includes(host);
 }
 
-/** Where an application's Web page is laid out, once `.scripts/Web/run-app.sh` built it in `configuration`. */
-export function webSite(application: Application, configuration: "debug" | "release"): string {
-    return path.join(application.directory, ".build", "web", "site", configuration);
-}
-
 /**
  * Where an application's WinUI head is, once `.scripts/WinUI/run-app.ps1` built it in `configuration`: where that build
  * says it laid it - `.build/winui/<configuration>` is a link the last build of any architecture moved - else there.

@@ -5,8 +5,8 @@
 // what it runs with, in artifacts/<application>/<platform> of its workspace -
 // the folder of the stateui.json listing it - else of its own folder. A WinUI head is laid
 // per architecture - this machine's own, and on an ARM64 machine x64 too,
-// which Windows runs emulated. The host's own deploy script of the
-// application's checkout builds and lays it.
+// which Windows runs emulated. The stateui tool packages it - a WinUI head
+// its checkout's .scripts/WinUI/deploy.ps1.
 
 import * as os from "os";
 import * as path from "path";
@@ -32,25 +32,20 @@ export function deployDestination(application: Application, host: Host, architec
 }
 
 /**
- * The command that builds `application` for release on `host` and lays it at `destination`: its checkout's
- * .scripts/<Host>/deploy.ps1 or deploy.sh - for WinUI with the architecture, for Android with the device it is
- * built for. Undefined where the application names no checkout. A host the stateui tool builds packages through it.
+ * The command that builds `application`'s WinUI head for release for `architecture` and lays it at `destination`: its
+ * checkout's .scripts/WinUI/deploy.ps1. Undefined where the application names no checkout. Every other host is
+ * packaged by the stateui tool.
  */
-export function deployCommand(
-    application: Application, host: Host, destination: string, architecture?: Architecture, device?: string,
+export function winUIDeployCommand(
+    application: Application, destination: string, architecture?: Architecture,
 ): { command: string; args: string[]; script: string } | undefined {
     if (!application.checkout) {
         return undefined;
     }
-    const folder = path.join(application.checkout, ".scripts", describe(host).label);
-    if (host === "winui") {
-        const script = path.join(folder, "deploy.ps1");
-        return {
-            command: "powershell", script,
-            args: ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script, "-App", application.directory,
-                "-Destination", destination, ...(architecture ? ["-Architecture", architecture] : [])],
-        };
-    }
-    const script = path.join(folder, "deploy.sh");
-    return { command: "bash", script, args: [script, application.directory, destination, ...(device ? [device] : [])] };
+    const script = path.join(application.checkout, ".scripts", "WinUI", "deploy.ps1");
+    return {
+        command: "powershell", script,
+        args: ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script, "-App", application.directory,
+            "-Destination", destination, ...(architecture ? ["-Architecture", architecture] : [])],
+    };
 }
