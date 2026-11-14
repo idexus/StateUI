@@ -318,7 +318,7 @@ export async function run(): Promise<void> {
                     "settings set plugin.jit-loader.gdb.enable off",
                     "platform select remote-android",
                     "platform connect unix-abstract-connect://emulator-5554/com.stateui.helloworld/stateui-debugger.sock",
-                    "settings append target.exec-search-paths /build/symbols/arm64-v8a",
+                    `settings append target.exec-search-paths ${vscode.Uri.parse("file:///build/symbols/arm64-v8a").fsPath}`,
                 ])
                 && JSON.stringify(debugged.resolved.attachCommands) === JSON.stringify([
                     "process attach --pid 4242",
@@ -560,9 +560,12 @@ export async function run(): Promise<void> {
                 browserOn("firefox.desktop", "Firefox", "/usr/bin/firefox", false),
                 browserOn("chromium.desktop", "Chromium", undefined, false),
             ];
+            // A program reads as this system spells a path.
+            const spelled = (file: string): string => vscode.Uri.file(file).fsPath;
             check("the tool's browsers read by id, name and program, the system's own marked, and Chromium's told apart",
                 listed[0].isDefault && !listed[1].isDefault && listed[1].name === "Google Chrome"
-                && listed[1].program === "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" && listed[2].program === "/usr/bin/firefox"
+                && listed[1].program === spelled("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+                && listed[2].program === spelled("/usr/bin/firefox")
                 && listed[3].program === undefined
                 && !isChromium(listed[0]) && isChromium(listed[1]) && !isChromium(listed[2])
                 && isChromium({ id: "com.microsoft.edgemac" }) && isChromium({ id: "brave-browser.desktop" }));
@@ -605,7 +608,7 @@ export async function run(): Promise<void> {
             check("Web in Chrome: the page served with no browser opened, then VS Code's JavaScript debugger starts Chrome on it, its end stopping the run",
                 chrome.runs[0]?.device === "none"
                 && JSON.stringify(chrome.resolved) === JSON.stringify(
-                    { ...webLaunch("StateUI: Debug", "http://127.0.0.1:8460/", listed[1], site), stateuiRun: "RUN-3" })
+                    { ...webLaunch("StateUI: Debug", "http://127.0.0.1:8460/", listed[1], spelled(site)), stateuiRun: "RUN-3" })
                 && chrome.resolved?.type === "chrome" && chrome.resolved.runtimeExecutable === listed[1].program);
 
             const unknown = await launchOnWeb(listed[3], "debug");
@@ -683,6 +686,7 @@ export async function run(): Promise<void> {
         //     it, and each group's Notes builds.
         {
             const location = process.env.STATEUI_TEST_GROUPS ?? fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "stateui-groups-")));
+            fs.mkdirSync(location, { recursive: true });
             const taken = ["LocalGroup", "ReleaseGroup"].map((each) => path.join(location, each)).filter((each) => fs.existsSync(each));
             check(`the groups are made where nothing is yet${taken.length > 0 ? ` - remove ${taken.join(", ")} first` : ""}`, taken.length === 0);
             // The system's own spelling: the editor names a Windows folder `c:\…`, a resolved path `C:\…`.
