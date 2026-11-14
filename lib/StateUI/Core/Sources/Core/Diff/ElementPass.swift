@@ -31,6 +31,9 @@ final class ElementPass {
 
     var enablement: Enablement?
 
+    /// Whether the element put an enablement on the walk - read in a frame of its own, not the walk's.
+    var holdsEnablement: Bool { enablement != nil }
+
     var branch: [Enablement.Key] = []
 
     var views: [BuiltView] = []

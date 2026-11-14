@@ -37,17 +37,14 @@ extension Differ {
             sceneRecord = pass.outerScene
             bodies.removeLast(pass.entered)
             scope.removeLast(pass.pushed)
-            if pass.enablement != nil { enablements.removeLast() }
+            if pass.holdsEnablement { enablements.removeLast() }
             if pass.inspected { Inspection.leave() }
         }
 
         if let carried = expand(pass) { return carried }
         if pass.node.type == .page { describePage(pass) }
         prepare(pass)
-
-        // What it says of its enablement holds for everything in it.
-        pass.enablement = Enablement(pass.node)
-        if let enablement = pass.enablement { enablements.append(enablement) }
+        enterEnablement(pass)
 
         let children: [RenderedNode]
         if let described = pass.described {
@@ -63,6 +60,14 @@ extension Differ {
             describesPageRoot = false
         }
         return finish(pass, children: children)
+    }
+
+    /// What the element says of its enablement, put on the walk for everything it holds - in a frame of its own,
+    /// gone before its children are walked.
+    @inline(never)
+    private func enterEnablement(_ pass: ElementPass) {
+        pass.enablement = Enablement(pass.node)
+        if let enablement = pass.enablement { enablements.append(enablement) }
     }
 
     /// The element's composed views unwrapped, outermost first, until a real node comes out - each keeping its state
