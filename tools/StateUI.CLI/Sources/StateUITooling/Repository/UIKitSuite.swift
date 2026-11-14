@@ -30,10 +30,6 @@ struct UIKitSuite {
 
         reporter.progress("booting \(simulator.name)")
         try await ToolStep.run(.name("xcrun"), ["simctl", "bootstatus", simulator.udid, "-b"], limit: .seconds(300))
-        // The suite stands as a screen reader does: UIKit's accessibility answers for its controls as for a VoiceOver user.
-        for key in ["ApplicationAccessibilityEnabled", "AccessibilityEnabled"] {
-            try await ToolStep.run(.name("xcrun"), ["simctl", "spawn", simulator.udid, "defaults", "write", "com.apple.Accessibility", key, "-bool", "true"])
-        }
 
         let package = checkout.appendingPathComponent("lib/StateUI/StateUI.UIKit/Tests")
         let product = "StateUIUIKitTests"
@@ -65,6 +61,16 @@ struct UIKitSuite {
         let bundle = try await UIKitBundle(
             application: package, name: product, product: product, binaries: binaries, release: Release.version,
             minimumSystem: Doctor.appleFloor, platform: .iOSSimulator, work: work).assemble(in: staging, signing: .adHoc)
+
+        // The suite stands as a screen reader does: UIKit's accessibility answers for its controls as for a VoiceOver
+        // user. Written after the build, so a simulator just booted for the first time has settled.
+        // Design: docs/design/tooling/repository.md#the-uikit-hosts-suite
+        reporter.progress("turning \(simulator.name)'s accessibility on")
+        for key in ["ApplicationAccessibilityEnabled", "AccessibilityEnabled"] {
+            try await ToolStep.run(
+                .name("xcrun"), ["simctl", "spawn", simulator.udid, "defaults", "write", "com.apple.Accessibility", key, "-bool", "true"],
+                limit: .seconds(300))
+        }
 
         let summary = Summary()
         let launch = SimulatorLaunch(

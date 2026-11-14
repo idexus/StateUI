@@ -33,4 +33,18 @@ final class ToolStepTests: XCTestCase {
         }
         #endif
     }
+
+    /// A step xcrun runs is named by the program it ran and what that was asked.
+    func testAStepOfXcrunIsNamedByItsProgram() async throws {
+        #if os(macOS)
+        do {
+            try await ToolStep.run(.name("xcrun"), ["simctl", "spawn", "no-such-device", "true"])
+            XCTFail("a failing step passed")
+        } catch let error as ToolingError {
+            XCTAssertTrue(error.message.hasPrefix("xcrun simctl spawn refused - it exited with status"), error.message)
+        }
+        #else
+        throw XCTSkip("xcrun is a Mac's")
+        #endif
+    }
 }

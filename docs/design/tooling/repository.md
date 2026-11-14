@@ -29,11 +29,14 @@ UIKit's tests are an application of their own,
 `lib/StateUI/StateUI.UIKit/Tests`, its identifier in its own
 `Platforms/UIKit/Info.plist`. `--suite host:uikit` runs it on the simulator
 `--device` names - the booted one, else an iPhone; a device is refused. The
-simulator's application accessibility is turned on first, so UIKit's
+simulator is booted first and the application built for its triple and SDK
+against the simulator platform's own XCTest, read where it stands, bundled
+and signed as any UIKit head (apple-bundles.md). The simulator's application
+accessibility is turned on then, before the application starts, so UIKit's
 accessibility answers for its controls as for a VoiceOver user, whatever ran
-before. The application is built for the simulator's triple and SDK against
-the simulator platform's own XCTest, read where it stands, bundled and
-signed as any UIKit head (apple-bundles.md), and started as a run starts one
+before - after the build, as a simulator booted for the first time answers
+slowly at first: on a runner the write took more than two minutes just after
+the boot. The application is started as a run starts one
 (runs.md) - `--filter` handed to it as `STATEUI_FILTER` - its output followed
 until it ends with `Executed N tests, with M failures`, which decides the
 tests' phase. Then `StateUIUIKit` and `StateUITesting`, as that build made

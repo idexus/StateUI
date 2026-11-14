@@ -22,7 +22,9 @@ enum ToolStep {
             case .name(let name): name
             case .path(let path): URL(fileURLWithPath: path).lastPathComponent
             }
-            throw ToolingError(.toolFailed, "\(name) \(arguments.first ?? "") refused - \(ending(outcome, limit: limit)):\n\(words)")
+            // xcrun runs another's program: that one and what it was asked name the step.
+            let asked = arguments.prefix(name == "xcrun" ? 2 : 1).joined(separator: " ")
+            throw ToolingError(.toolFailed, "\(name) \(asked) refused - \(ending(outcome, limit: limit)):\n\(words)")
         }
     }
 
