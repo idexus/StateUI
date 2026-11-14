@@ -74,12 +74,10 @@ one named, else the one booted, else an iPhone:
 stateui run --project apps/HelloWorld --host uikit --device "iPhone 18 Pro"
 ```
 
-The WinUI head has a script of its own, under [Build](development.md#build);
-every other head runs from `stateui run`. Each host's suite runs from
+Every head runs from `stateui run`, and each host's suite from
 `stateui repo test` - `--suite host:appkit`, `host:uikit`, `host:android`,
-`host:gtk` and `host:web` - and WinUI's from `.scripts\WinUI\test-winui.ps1`
-on Windows, which [Test](development.md#test) lists with the arguments each
-takes.
+`host:winui`, `host:gtk` and `host:web` - which [Build](development.md#build)
+and [Test](development.md#test) list with the arguments each takes.
 
 Build the signed Gallery bundle with its resources and icon:
 

@@ -203,12 +203,12 @@ On Linux and on Windows:
 
 ```bash
 stateui run --project apps/Gallery --host gtk                  # the GTK Gallery
-.scripts/GTK/test-gtk.sh                                       # the GTK host's suite
+stateui repo test --suite host:gtk                             # the GTK host's suite
 ```
 
 ```powershell
-.scripts\WinUI\run-app.ps1 -App apps\Gallery                   # the WinUI Gallery
-.scripts\WinUI\test-winui.ps1                                  # the WinUI host's suite
+stateui run --project apps\Gallery --host winui                # the WinUI Gallery
+stateui repo test --suite host:winui                           # the WinUI host's suite
 ```
 
 [Project structure and development](docs/development.md#test) gives every

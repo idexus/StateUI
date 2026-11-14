@@ -55,7 +55,8 @@ A window whose content extends into its title bar - every window the host
 shows - leaves some forty of the process's GDI objects behind when it closes,
 some eighty on GitHub's Windows runner, and a process holds ten thousand: a
 few hundred windows end it. A family of cases shows a window a case, so the
-families run each in a process of its own (`test-winui.ps1 -Conformance`),
+families run each in a process of its own (`stateui repo test --suite host:winui
+--filter WinUIConformanceTests`),
 the largest - a view's, a visual element's, a shape's - in parts, one test
 each. Each test holds its process below six thousand GDI objects on the
 runner as on a desk, and a family past that is run in more parts. The run

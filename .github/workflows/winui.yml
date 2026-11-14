@@ -1,7 +1,8 @@
-# The WinUI host's own tests, then the contract's families on WinUI, each test
-# in a process of its own, every verdict held to lib/StateUI/exports/marks/winui: CI never
-# writes the dictionary's marks, so a family whose verdicts changed fails here
-# and its marks are written again on a Windows machine, on purpose.
+# The WinUI host's own tests through the stateui tool, then the contract's
+# families on WinUI, each test in a process of its own, every verdict held to
+# lib/StateUI/exports/marks/winui: CI never writes the dictionary's marks, so a
+# family whose verdicts changed fails here and its marks are written again on a
+# Windows machine, on purpose.
 #
 # The runner has Visual Studio and no Swift; build-windows.yml says how both
 # are set up, and why in pwsh.
@@ -93,8 +94,17 @@ jobs:
           if (-not $version) { throw 'no WebView2 runtime, installed or found' }
           Write-Host "the WebView2 runtime $($version.Name)"
 
+      - name: The stateui tool
+        run: swift build --package-path tools/StateUI.CLI --product stateui
+
       - name: WinUI host tests
-        run: .scripts/WinUI/test-winui.ps1
+        run: |
+          $stateui = Join-Path (swift build --package-path tools/StateUI.CLI --show-bin-path).Trim() 'stateui.exe'
+          & $stateui repo test --suite host:winui
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
 
       - name: WinUI conformance, every verdict held
-        run: .scripts/WinUI/test-winui.ps1 -Conformance
+        run: |
+          $stateui = Join-Path (swift build --package-path tools/StateUI.CLI --show-bin-path).Trim() 'stateui.exe'
+          & $stateui repo test --suite host:winui --filter WinUIConformanceTests
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }

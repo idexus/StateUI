@@ -25,7 +25,7 @@ lib/Backends/                      backends: one element on one host, its engine
 .scripts/AppKit/                   the AppKit host's marks and exports recorded (test-appkit.sh)
 .scripts/UIKit/                    the UIKit host's marks and exports recorded (test-uikit.sh)
 .scripts/Android/                  the Android Views host's marks and exports recorded (test-android.sh)
-.scripts/WinUI/                    WinUI builds, runs, tests and deploys, and the Windows App SDK
+.scripts/WinUI/                    the WinUI host's marks and exports recorded (test-winui.ps1)
 .scripts/GTK/                      the GTK host's marks and exports recorded (test-gtk.sh)
 .scripts/Web/                      the Web host's marks and exports recorded (test-web.sh)
 .scripts/Marks/                    the revision a conformance family's verdicts stand at
@@ -202,11 +202,11 @@ stateui run --project apps/HelloWorld --host android --device emulator-5554
 [Android Views host](hosts/android.md) lists what it needs and what it builds.
 
 The WinUI host builds on Windows with the swift.org toolchain and Visual
-Studio's C++ tools; its script fetches C++/WinRT and the Windows App SDK
-itself. An application's WinUI head is built and started by one script:
+Studio's C++ tools; the tool fetches C++/WinRT and the Windows App SDK itself.
+An application's WinUI head is built and started by the tool:
 
 ```powershell
-.scripts\WinUI\run-app.ps1 -App apps\HelloWorld
+stateui run --project apps\HelloWorld --host winui
 ```
 
 [WinUI host](hosts/winui.md) lists what it needs and what it builds.
@@ -233,8 +233,8 @@ stateui run --project apps/HelloWorld --host web
 
 ## Deploy
 
-`stateui package` - and WinUI's `deploy` script - builds an application's head
-for release and lays it, with what it runs with, in a folder it makes anew:
+`stateui package` builds an application's head for release and lays it, with
+what it runs with, in a folder it makes anew:
 
 ```bash
 stateui package --project apps/Gallery --host appkit
@@ -242,10 +242,7 @@ stateui package --project apps/Gallery --host uikit --device <device-udid>
 stateui package --project apps/Gallery --host android --device emulator-5554
 stateui package --project apps/Gallery --host gtk
 stateui package --project apps/Gallery --host web
-```
-
-```powershell
-.scripts\WinUI\deploy.ps1 -App apps\Gallery -Destination artifacts\Gallery\WinUI\x64 -Architecture x64
+stateui package --project apps/Gallery --host winui --architecture x86_64 --output artifacts/Gallery/WinUI/x64
 ```
 
 - AppKit lays the application bundle where a script beside it bundles the
@@ -331,14 +328,14 @@ stateui repo test --suite host:android --device emulator-5554
 `Case.test` name holds one of the names, split at commas.
 
 The WinUI host's suite runs on Windows, the Windows App SDK laid beside its
-test runner first, every test in a process of its own. Alone the script runs
-the host's own tests; `-Conformance` runs the conformance families - some
-fifteen minutes; `-Filter <test>` runs the tests it names:
+test runner first, every test in a process of its own: the foundation's
+Windows tests, the host's own, then its API records. The conformance families
+- some fifteen minutes - run where `--filter` names them:
 
 ```powershell
-.scripts\WinUI\test-winui.ps1
-.scripts\WinUI\test-winui.ps1 -Conformance
-.scripts\WinUI\test-winui.ps1 -Filter WinUIConformanceTests.testButton
+stateui repo test --suite host:winui
+stateui repo test --suite host:winui --filter WinUIConformanceTests
+stateui repo test --suite host:winui --filter WinUIConformanceTests.testButton
 ```
 
 The GTK host's suite runs on Linux, in a desktop session whose display shows

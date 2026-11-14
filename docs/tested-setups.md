@@ -101,8 +101,8 @@ Last verified 2026-11-13, on Swift 6.4.2: the host's own tests, 223 of 224 - `te
 | Architectures | ARM64 heads, built, run and debugged; x64 heads built here and run under Windows' emulation, unattached to a debugger |
 | A deployed head | the Swift runtime of its architecture from the Swift installer's `Redistributables\6.4.2\rtl.shared.{arm64,amd64}.msm`; Visual Studio's app-local C++ runtime 14.51.36231 (`Microsoft.VC145.CRT`) |
 
-The build scripts fetch the Windows App SDK, C++/WinRT and the WebView2 SDK
-from nuget.org at these versions, pinned in `.scripts/WinUI/tools.ps1`, and
+The stateui tool fetches the Windows App SDK, C++/WinRT and the WebView2 SDK
+from nuget.org at these versions, pinned in its `WinUIPackages`, and
 lay the Windows App SDK beside each executable: nothing of it is installed.
 **StateUI: Deploy** lays a head that runs with neither Swift nor Visual
 Studio installed: both deployed builds of a project group's application, ARM64

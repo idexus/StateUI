@@ -17,7 +17,7 @@ import StateUIFoundation
 ///     HelloWorldApp.register()
 ///     WinUIHost.run()
 ///
-/// `.scripts/WinUI/run-app.ps1` builds the head and lays the Windows App SDK
+/// `stateui run --host winui` builds the head and lays the Windows App SDK
 /// beside it. A control this host does not present yet shows its name in red
 /// where it belongs.
 public enum WinUIHost {

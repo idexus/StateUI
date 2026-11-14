@@ -49,7 +49,7 @@ before WinUI starts, and points the C runtime's streams, and its descriptors
 1 and 2, at that console. Output a caller sent elsewhere - a file, or the
 debugger F5 starts it under, which shows it in the editor's debug console -
 stays where it was sent. A windowed application is not waited for by the
-shell that starts it, so `run-app.ps1` waits for it itself.
+shell that starts it, so `stateui run` waits for it itself.
 
 ## An application with no XAML
 
@@ -323,8 +323,9 @@ An application carries the Windows App SDK beside its executable, with no
 package: the runtime of WinUI, Foundation and InteractiveExperiences, a
 manifest registering every class each component declares - the registrations
 the SDK's own build writes - and `resources.pri`, where WinUI's controls find
-their resources. `.scripts/WinUI/tools.ps1` lays them out after each build,
-the test runner's included, and owns the versions. What a backend's engine
+their resources. The stateui tool lays them out with each build, the test
+runner's included, and owns the versions
+([WinUI heads](../../tooling/winui-heads.md)). What a backend's engine
 needs beside an application the backend declares, and only one linking it
 gets it: each `lib/Backends/<Element>.WinUI/Packaging/runtime.txt` names the
 package's files and where they stand - the web view's WebView2's component

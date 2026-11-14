@@ -204,7 +204,7 @@ final class NativeProjectTests: XCTestCase {
     }
 
     /// The WinUI 3 host is a Swift package beside the others, with its C++/WinRT
-    /// relay as a C++ target of its own and its scripts under `.scripts/WinUI`;
+    /// relay as a C++ target of its own and its recording script under `.scripts/WinUI`;
     /// and every function the relay's header declares is one the relay defines -
     /// a declaration with nothing behind it is found only when a head links.
     func testTheWinUIHostIsAHostPackageBesideTheOthers() throws {
@@ -213,7 +213,7 @@ final class NativeProjectTests: XCTestCase {
         let relay = "\(host)/Sources/CStateUIWinUI"
         for relative in [
             "\(host)/Package.swift", "\(relay)/include/CStateUIWinUI.h",
-            ".scripts/WinUI/tools.ps1", ".scripts/WinUI/run-app.ps1", ".scripts/WinUI/test-winui.ps1",
+            ".scripts/WinUI/tools.ps1", ".scripts/WinUI/test-winui.ps1",
         ] {
             XCTAssertTrue(
                 FileManager.default.fileExists(atPath: repository.appendingPathComponent(relative).path),

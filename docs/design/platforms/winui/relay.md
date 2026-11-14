@@ -4,7 +4,7 @@ Swift does not call WinRT's own interfaces. Beneath the WinUI host stands a
 C++/WinRT relay, the package's C++ target `CStateUIWinUI`, behind plain C
 functions its header declares - one set per family of controls, so the host
 and the relay are each held to the types by their own compiler. SwiftPM
-compiles it as C++20 over the projection `tools.ps1` generates; it links into
+compiles it as C++20 over the projection the stateui tool generates; it links into
 the host's library.
 
 The relay holds only what Swift cannot do: WinUI's subclasses - the
