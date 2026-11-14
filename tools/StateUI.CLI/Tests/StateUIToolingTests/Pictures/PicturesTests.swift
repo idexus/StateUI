@@ -129,12 +129,13 @@ final class PicturesTests: XCTestCase {
     }
 
     /// CI installs the pinned release where a suite draws pictures: the workflows of the UIKit and Android hosts,
-    /// whose test applications carry images, take it from the action that downloads that release.
+    /// whose test applications carry images, and the tool's, whose bundles' tests draw, take it from the action that
+    /// downloads that release.
     func testCIInstallsThePinnedRelease() throws {
         let github = ProjectReaderTests.repository.appendingPathComponent(".github")
         let action = try String(contentsOf: github.appendingPathComponent("actions/resvg/action.yml"), encoding: .utf8)
         XCTAssertTrue(action.contains("/download/v\(Resvg.release)/"), "the action downloads resvg \(Resvg.release)")
-        for workflow in ["uikit.yml", "android.yml"] {
+        for workflow in ["uikit.yml", "android.yml", "cli.yml"] {
             let text = try String(contentsOf: github.appendingPathComponent("workflows/\(workflow)"), encoding: .utf8)
             XCTAssertTrue(text.contains("uses: ./.github/actions/resvg"), "\(workflow) installs resvg")
         }

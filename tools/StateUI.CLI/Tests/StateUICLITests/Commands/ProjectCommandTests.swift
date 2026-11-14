@@ -71,10 +71,21 @@ final class ProjectCommandTests: XCTestCase {
         while process.isRunning, Date() < deadline { Thread.sleep(forTimeInterval: 0.05) }
         XCTAssertFalse(process.isRunning, "the tool did not end")
         XCTAssertEqual(process.terminationStatus, 130)
-        while kill(descendant, 0) == 0, Date() < deadline { Thread.sleep(forTimeInterval: 0.05) }
-        let alive = kill(descendant, 0) == 0
+        while Self.runs(descendant), Date() < deadline { Thread.sleep(forTimeInterval: 0.05) }
+        let alive = Self.runs(descendant)
         if alive { kill(descendant, SIGKILL) }
         XCTAssertFalse(alive, "a program the work started outlived the interrupt")
+    }
+
+    /// Whether the process `identifier` still runs: on Linux an ended one no init has reaped - in a container - does not.
+    private static func runs(_ identifier: pid_t) -> Bool {
+        #if os(Linux)
+        guard let stat = try? String(contentsOfFile: "/proc/\(identifier)/stat", encoding: .utf8),
+              let name = stat.lastIndex(of: ")") else { return false }
+        return stat[stat.index(after: name)...].first { $0 != " " } != "Z"
+        #else
+        return kill(identifier, 0) == 0
+        #endif
     }
 
     private func waitForIdentifier(in file: URL) throws -> pid_t {

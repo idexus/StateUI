@@ -57,6 +57,11 @@ enum Probe {
         defer { CloseHandle(handle) }
         var code: DWORD = 0
         return GetExitCodeProcess(handle, &code) && code == DWORD(STILL_ACTIVE)
+        #elseif os(Linux)
+        // An ended program no one has reaped yet - where no init reaps an orphan, as in a container - runs no more.
+        guard let stat = try? String(contentsOfFile: "/proc/\(identifier)/stat", encoding: .utf8),
+              let name = stat.lastIndex(of: ")") else { return false }
+        return stat[stat.index(after: name)...].first { $0 != " " } != "Z"
         #else
         return kill(identifier, 0) == 0 || errno == EPERM
         #endif

@@ -30,6 +30,8 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
       - name: Report the toolchain
         run: swift --version
+      # The bundles' tests draw their pictures with resvg of the tool's release.
+      - uses: ./.github/actions/resvg
       - name: Test the stateui tool
         run: swift test --package-path tools/StateUI.CLI
       - uses: actions/setup-node@v4.4.0
@@ -54,6 +56,10 @@ jobs:
       # THE CHECKOUT DIRECTORY HAS TO BE CALLED StateUI: the tool's tests read
       # this checkout's applications, whose manifests name the library by it.
       - uses: actions/checkout@v7.0.1
+      # The container's user is not the checkout's owner, and checkout trusts it
+      # only in a git configuration of its own: the tool reads its revision.
+      - name: Trust the checkout
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Report the toolchain
         run: swift --version
       - name: Test the stateui tool
