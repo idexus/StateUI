@@ -3,7 +3,8 @@
 `stateui run` (`application/run`) builds an application, starts it on its
 destination and follows it until it ends. An AppKit head runs as the
 program its build names, in the foreground of the terminal. A UIKit head is
-installed on its simulator or device and started there.
+installed on its simulator or device and started there, an Android head on
+its device or emulator.
 
 ## The run is the session
 
@@ -46,3 +47,25 @@ process (`devicectl device process terminate --kill`), then `devicectl`.
 A debugger reaches the process through the device: `device select <id>`,
 `device process attach --pid <process>`, its symbols read from the bundle
 the build published.
+
+## On Android
+
+The device or emulator is chosen before the build (destinations.md) - a
+virtual device not running booted first - so the APK is built for its ABI.
+`adb install -r` installs it, `am force-stop` ends a copy still running, and
+`am start -W` starts the activity the APK's launcher opens, each `STATEUI_`
+variable of the tool's environment handed to it as an extra (`-e`), so a
+switch such as `STATEUI_TALLY=1` reaches the application. Its process comes
+from `pidof`; its log, `logcat --pid` in the brief format, is the run's output
+while the process stands. With `--debugger` the NDK's `lldb-server` for the
+device's ABI is pushed, copied by `run-as` into the application's own folder
+- a debug build allows it - renamed into place over one an earlier run left,
+and started there listening on the abstract socket
+`<package>/stateui-debugger.sock`, which the `started` event names beside the
+process; the build's result names the symbols (`symbols/<abi>`). A debugger
+then selects the `remote-android` platform, connects to that socket and
+attaches to the process. The run's stop is `am force-stop`, then the server
+ended and the log's follower; the application ending by itself ends the run.
+A cancelled run decides it was stopped by its cancel, not by asking the
+device, whose own answer the cancel cuts short.
+

@@ -92,19 +92,19 @@ struct PackageCommand: AsyncParsableCommand {
 }
 
 /// `stateui run`: an application built, then run in the foreground until it ends or Ctrl+C stops it - an AppKit
-/// head on this Mac, a UIKit head on its device or simulator, its output followed.
+/// head on this Mac, a UIKit or Android head on its device, simulator or emulator, its output followed.
 struct RunCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "run", abstract: "Builds an application and runs it in the foreground; Ctrl+C stops it.")
 
     @OptionGroup var build: BuildOptions
 
-    @Flag(help: "Start a UIKit head held until a debugger attaches; its process is said as it starts.")
+    @Flag(help: "Ready a debugger: a UIKit head starts held until one attaches, an Android head with the debugger's server in its sandbox; what to attach to is said as it starts.")
     var debugger = false
 
     func run() async throws {
         do {
-            if build.host == .uikit {
+            if [.uikit, .android].contains(build.host) {
                 _ = try await ToolingService().run(
                     RunRequest(build: build.request(), debugger: debugger), in: build.here, operation: BuildOptions.operation,
                     reporter: RunReporter(
@@ -130,6 +130,7 @@ struct RunCommand: AsyncParsableCommand {
     static func words(_ launched: LaunchedApplication) -> String {
         let place = launched.build.destination.map { " on \($0.name)" } ?? ""
         let process = launched.process.map { ", process \($0)" } ?? ""
-        return "stateui: started \(launched.build.application)\(place)\(process)\(launched.held ? ", held for a debugger" : "")"
+        let server = launched.debuggerSocket.map { ", the debugger's server at unix-abstract:///\($0)" } ?? ""
+        return "stateui: started \(launched.build.application)\(place)\(process)\(launched.held ? ", held for a debugger" : "")\(server)"
     }
 }

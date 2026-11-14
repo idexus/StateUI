@@ -161,7 +161,8 @@ public struct ApplicationBuilder: Sendable {
                 entry.write(output: line.text + "\n")
                 reporter.output(line)
             })
-            let (bundle, program, signing) = try await assemble(context, target, name: name, binaries: binaries, in: staging, reporter: logged)
+            let head = try await assemble(context, target, name: name, binaries: binaries, in: staging, reporter: logged)
+            let (bundle, program, signing) = (head.bundle, head.program, head.signing)
             let manifest = ArtifactManifest(
                 id: "\(context.host.rawValue)-\(context.key)-\(context.configuration.rawValue)", producerOperationId: operation,
                 createdAt: Operations.timestamp(), applicationUri: FileURI.string(context.application), host: context.host,
@@ -171,18 +172,28 @@ public struct ApplicationBuilder: Sendable {
             return BuildResult(
                 application: name, host: context.host, configuration: context.configuration, architecture: context.architecture,
                 folderUri: FileURI.string(published), programUri: FileURI.string(published.appendingPathComponent(program)),
-                bundleUri: FileURI.string(published.appendingPathComponent(bundle)), destination: target.destination)
+                bundleUri: FileURI.string(published.appendingPathComponent(bundle)), destination: target.destination,
+                identifier: head.identifier, symbolsUri: head.symbols.map { FileURI.string(published.appendingPathComponent($0)) })
         } catch {
             store.discard(staging)
             throw error
         }
     }
 
-    /// The head assembled in `staging` - an Apple bundle, an Android APK: its path there, its program's, and how it
-    /// was signed.
+    /// What an assembly laid in staging: the bundle's path there and its program's, how it was signed, what the
+    /// platform knows it by, and where a debugger reads its symbols where they stand apart.
+    private struct Head {
+        var bundle: String
+        var program: String
+        var signing: ArtifactManifest.Signing
+        var identifier: String?
+        var symbols: String?
+    }
+
+    /// The head assembled in `staging` - an Apple bundle, an Android APK.
     private func assemble(
         _ context: BuildContext, _ target: BuildTarget, name: String, binaries: URL, in staging: URL, reporter: BuildReporter
-    ) async throws -> (bundle: String, program: String, signing: ArtifactManifest.Signing) {
+    ) async throws -> Head {
         if context.host == .android, let (swiftSDK, ndk) = target.android {
             let head = AndroidHead(
                 application: context.application, name: name, product: context.product, library: context.library,
@@ -193,7 +204,7 @@ public struct ApplicationBuilder: Sendable {
             }
             let package = try await head.assemble(
                 abi: abi, binaries: binaries, swiftSDK: swiftSDK, ndk: ndk, in: staging, reporter: reporter)
-            return (package.apk, package.apk, .development)
+            return Head(bundle: package.apk, program: package.apk, signing: .development, identifier: package.package, symbols: "symbols/\(abi)")
         }
         #if canImport(AppKit)
         if context.host == .appkit {
@@ -201,7 +212,8 @@ public struct ApplicationBuilder: Sendable {
                 application: context.application, name: name, product: context.product, binaries: binaries,
                 release: Release.version, minimumSystem: Doctor.appleFloor)
             _ = try await bundle.assemble(in: staging)
-            return (bundle.bundlePath, bundle.programPath, .adHoc)
+            return Head(bundle: bundle.bundlePath, program: bundle.programPath, signing: .adHoc,
+                        identifier: Self.identifier(of: staging.appendingPathComponent(bundle.bundlePath).appendingPathComponent("Contents/Info.plist")))
         }
         let bundle = UIKitBundle(
             application: context.application, name: name, product: context.product, binaries: binaries,
@@ -210,14 +222,20 @@ public struct ApplicationBuilder: Sendable {
         switch target.signing {
         case .adHoc:
             _ = try await bundle.assemble(in: staging, signing: .adHoc)
-            return (bundle.bundlePath, bundle.programPath, .adHoc)
+            return Head(bundle: bundle.bundlePath, program: bundle.programPath, signing: .adHoc, identifier: bundle.identifier)
         case .development(let development):
             _ = try await bundle.assemble(in: staging, signing: .development(development))
-            return (bundle.bundlePath, bundle.programPath, .development)
+            return Head(bundle: bundle.bundlePath, program: bundle.programPath, signing: .development, identifier: bundle.identifier)
         }
         #else
         throw ToolingError(.invalidConfiguration, "An Apple bundle is assembled on a Mac.")
         #endif
+    }
+
+    /// The bundle identifier the property list at `plist` names.
+    private static func identifier(of plist: URL) -> String? {
+        let keys = (try? Data(contentsOf: plist)).flatMap { try? PropertyListSerialization.propertyList(from: $0, format: nil) }
+        return (keys as? [String: Any])?["CFBundleIdentifier"] as? String
     }
 
     /// The project `request` names - its `projectUri`, else `folder` - and the application in it it means.

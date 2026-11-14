@@ -7,12 +7,12 @@ import StateUIToolingProtocol
 import XCTest
 
 final class ApplicationRunnerTests: XCTestCase {
-    /// A run starts UIKit heads - another host runs from the program its build names - and holds only a debug build
-    /// for a debugger; both are refused before anything is built.
+    /// A run starts UIKit and Android heads - another host runs from the program its build names - and holds only a
+    /// debug build for a debugger; both are refused before anything is built.
     func testWhatARunCannotStartIsRefusedFirst() async throws {
         let nowhere = FileManager.default.temporaryDirectory.appendingPathComponent("run-\(UUID().uuidString)")
         for (request, said) in [
-            (RunRequest(build: BuildRequest(host: .appkit)), "starts UIKit heads"),
+            (RunRequest(build: BuildRequest(host: .appkit)), "starts UIKit and Android heads"),
             (RunRequest(build: BuildRequest(host: .uikit, configuration: .release), debugger: true), "Only a debug build"),
         ] {
             do {

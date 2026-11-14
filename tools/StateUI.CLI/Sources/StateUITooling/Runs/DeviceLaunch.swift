@@ -15,7 +15,7 @@ struct DeviceLaunch {
 
     func run(_ built: BuildResult, held: Bool, reporter: RunReporter) async throws -> RunResult {
         reporter.build.progress("installing on \(device.name)")
-        try await ToolStep.run("xcrun", ["devicectl", "device", "install", "app", "--device", device.id, bundle.path], limit: .seconds(600))
+        try await ToolStep.run(.name("xcrun"), ["devicectl", "device", "install", "app", "--device", device.id, bundle.path], limit: .seconds(600))
         reporter.build.progress("starting \(identifier)")
         let (launches, launching) = AsyncStream<Void>.makeStream()
         let console = Task {
@@ -54,7 +54,7 @@ struct DeviceLaunch {
             }
         } catch {
             if let process {
-                await ToolStep.regardless("xcrun", ["devicectl", "device", "process", "terminate", "--device", device.id, "--pid", "\(process)", "--kill"])
+                await ToolStep.regardless(.name("xcrun"), ["devicectl", "device", "process", "terminate", "--device", device.id, "--pid", "\(process)", "--kill"])
             }
             console.cancel()
             _ = try? await console.value

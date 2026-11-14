@@ -53,7 +53,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `arm64-v8a` - the APK with its native libraries and their symbols beside it in the artifact, its pictures and its
   launcher icon drawn for it; an ABI's build keeps a scratch folder of its own.
 - **`stateui run --host uikit`** installs and starts a UIKit head on its simulator or device and follows its output;
-  `--debugger` starts it held until a debugger attaches, saying its process. Ctrl+C, or an editor's cancel of
+  `--debugger` starts it held until a debugger attaches, saying its process. `--host android` does so on a device or
+  emulator - a virtual device named but not running is booted - every `STATEUI_` switch handed to the application,
+  its log followed; `--debugger` readies the NDK's `lldb-server` in its sandbox and says its socket. Ctrl+C, or an editor's cancel of
   `application/run`, ends the application and every process the launch started.
 - **`stateui devices --host uikit`** lists the iPhones and iPads paired with the Mac, then the simulators, the newest
   iOS first - each with what names it, its system, and whether it is booted or how it is reached; `--host android`

@@ -6,13 +6,6 @@ import StateUIToolingProtocol
 
 /// A program a build or a run takes as a step - `codesign`, `actool`, `simctl` - which must succeed.
 enum ToolStep {
-    /// Runs `tool` with `arguments`, for at most `limit`.
-    ///
-    /// - Throws: ``ToolingError`` `TOOL_FAILED` with the last of what it said, where it failed.
-    static func run(_ tool: String, _ arguments: [String], limit: Duration = .seconds(120)) async throws {
-        try await run(.name(tool), arguments, limit: limit)
-    }
-
     /// Runs `executable` with `arguments` in `environment`, for at most `limit`.
     ///
     /// - Throws: ``ToolingError`` `TOOL_FAILED` with the last of what it said, where it failed.
@@ -33,10 +26,10 @@ enum ToolStep {
         }
     }
 
-    /// Runs `tool` with `arguments` to its end even where the caller was cancelled: a stop's own step.
-    static func regardless(_ tool: String, _ arguments: [String]) async {
+    /// Runs `executable` with `arguments` to its end even where the caller was cancelled: a stop's own step.
+    static func regardless(_ executable: ProcessExecutable, _ arguments: [String]) async {
         await Task.detached {
-            _ = try? await ProcessRunner().run(ProcessRequest(.name(tool), arguments: arguments, timeout: .seconds(30)))
+            _ = try? await ProcessRunner().run(ProcessRequest(executable, arguments: arguments, timeout: .seconds(30)))
         }.value
     }
 }

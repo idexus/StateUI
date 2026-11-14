@@ -22,8 +22,11 @@ public struct ApplicationRunner: Sendable {
     ///   build held for a debugger, `TOOL_FAILED` where it does not start - or `CancellationError` once stopped.
     public func run(_ request: RunRequest, in folder: URL, operation: String, reporter: RunReporter = RunReporter())
         async throws -> RunResult {
+        if request.build.host == .android {
+            return try await runAndroid(request, in: folder, operation: operation, reporter: reporter)
+        }
         guard request.build.host == .uikit else {
-            throw ToolingError(.invalidConfiguration, "application/run starts UIKit heads; \(request.build.host.rawValue) runs from the program application/build names.")
+            throw ToolingError(.invalidConfiguration, "application/run starts UIKit and Android heads; \(request.build.host.rawValue) runs from the program application/build names.")
         }
         if request.debugger, request.build.configuration == .release {
             throw ToolingError(.invalidConfiguration, "Only a debug build is held for a debugger.")
@@ -53,5 +56,31 @@ public struct ApplicationRunner: Sendable {
         _ = (built, root)
         throw ToolingError(.invalidConfiguration, "A UIKit head runs from a Mac.")
         #endif
+    }
+
+    /// An Android head run on the device or emulator the request names - a virtual device not running booted first,
+    /// so the build is for its ABI.
+    private func runAndroid(_ request: RunRequest, in folder: URL, operation: String, reporter: RunReporter) async throws -> RunResult {
+        if request.debugger, request.build.configuration == .release {
+            throw ToolingError(.invalidConfiguration, "Only a debug build can be debugged.")
+        }
+        let environment = ProcessInfo.processInfo.environment
+        let tools = AndroidTools(environment: environment)
+        let destinations = AndroidDestinations(tools: tools)
+        var destination = try AndroidDestinations.choose(request.build.device, from: await destinations.list(), environment: environment)
+        if !destination.booted, destination.kind == .emulator {
+            destination = try await destinations.boot(destination.id, reporter: reporter.build)
+        }
+        var build = request.build
+        build.device = destination.id
+        let (built, _) = try await builder.built(build, in: folder, operation: operation, reporter: reporter.build)
+        guard let apk = built.bundleUri.flatMap({ try? FileURI.url($0) }) else {
+            throw ToolingError(.internalError, "The build named no APK.")
+        }
+        let (package, activity) = try await AndroidHead.badging(of: apk, tools: tools)
+        let ndk = request.debugger ? tools.ndk(for: await tools.swift()?.sdk) : nil
+        return try await AndroidLaunch(
+            device: built.destination ?? destination, apk: apk, package: package, activity: activity, ndk: ndk, tools: tools,
+            environment: environment).run(built, debugger: request.debugger, reporter: reporter)
     }
 }

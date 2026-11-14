@@ -91,15 +91,24 @@ struct AndroidHead {
         let apk = "\(name).apk"
         try files.copyItem(at: outputs.appendingPathComponent(made), to: staging.appendingPathComponent(apk))
 
+        let (package, activity) = try await Self.badging(of: staging.appendingPathComponent(apk), tools: tools)
+        return Package(apk: apk, package: package, activity: activity)
+    }
+
+    /// The package `apk` declares and the activity the launcher opens - the host's own unless the application names
+    /// another - as `aapt2 dump badging` reads them.
+    ///
+    /// - Throws: ``ToolingError`` `MISSING_TOOLCHAIN` for no aapt2, `TOOL_FAILED` where it names no package.
+    static func badging(of apk: URL, tools: AndroidTools) async throws -> (package: String, activity: String) {
         guard let aapt2 = tools.aapt2 else {
             throw ToolingError(.missingToolchain, "The Android SDK has no build tools' aapt2: install them with Android Studio's SDK Manager.")
         }
-        let badging = await ToolOutput.standardOutput(.path(aapt2.path), ["dump", "badging", staging.appendingPathComponent(apk).path]) ?? ""
+        let badging = await ToolOutput.standardOutput(.path(aapt2.path), ["dump", "badging", apk.path]) ?? ""
         guard let package = badging.firstMatch(of: /package: name='([^']+)'/).map({ String($0.1) }) else {
-            throw ToolingError(.toolFailed, "aapt2 named no package in \(apk).")
+            throw ToolingError(.toolFailed, "aapt2 named no package in \(apk.lastPathComponent).")
         }
         let activity = badging.firstMatch(of: /launchable-activity: name='([^']+)'/).map { String($0.1) } ?? "stateui.android.StateUIActivity"
-        return Package(apk: apk, package: package, activity: activity)
+        return (package, activity)
     }
 
     /// The application's pictures drawn into `images` and its launcher icon into `res`.

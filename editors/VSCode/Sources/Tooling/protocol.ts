@@ -210,17 +210,22 @@ export interface BuildResult {
     programUri: string;
     bundleUri?: string;
     destination?: Destination;
+    identifier?: string;
+    symbolsUri?: string;
 }
 export const BuildResult = object<BuildResult>({
     application: string, host: HostFamily, configuration: BuildConfiguration, architecture: Architecture, folderUri: string,
-    programUri: string, bundleUri: optional(string), destination: optional(Destination),
+    programUri: string, bundleUri: optional(string), destination: optional(Destination), identifier: optional(string),
+    symbolsUri: optional(string),
 });
 
 export interface RunRequest { build: BuildRequest; debugger: boolean }
 export const RunRequest = object<RunRequest>({ build: BuildRequest, debugger: boolean });
 
-export interface LaunchedApplication { build: BuildResult; process?: number; held: boolean }
-export const LaunchedApplication = object<LaunchedApplication>({ build: BuildResult, process: optional(number), held: boolean });
+export interface LaunchedApplication { build: BuildResult; process?: number; held: boolean; debuggerSocket?: string }
+export const LaunchedApplication = object<LaunchedApplication>({
+    build: BuildResult, process: optional(number), held: boolean, debuggerSocket: optional(string),
+});
 
 export interface RunResult { launched: LaunchedApplication; exitStatus?: number }
 export const RunResult = object<RunResult>({ launched: LaunchedApplication, exitStatus: optional(number) });

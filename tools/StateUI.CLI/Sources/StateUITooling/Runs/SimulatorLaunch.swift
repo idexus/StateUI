@@ -21,10 +21,10 @@ struct SimulatorLaunch {
 
     func run(_ built: BuildResult, held: Bool, reporter: RunReporter) async throws -> RunResult {
         reporter.build.progress("booting \(simulator.name)")
-        try await ToolStep.run("xcrun", ["simctl", "bootstatus", simulator.udid, "-b"], limit: .seconds(300))
-        try? await ToolStep.run("open", ["-a", "Simulator", "--args", "-CurrentDeviceUDID", simulator.udid])
+        try await ToolStep.run(.name("xcrun"), ["simctl", "bootstatus", simulator.udid, "-b"], limit: .seconds(300))
+        try? await ToolStep.run(.name("open"), ["-a", "Simulator", "--args", "-CurrentDeviceUDID", simulator.udid])
         reporter.build.progress("installing on \(simulator.name)")
-        try await ToolStep.run("xcrun", ["simctl", "install", simulator.udid, bundle.path], limit: .seconds(300))
+        try await ToolStep.run(.name("xcrun"), ["simctl", "install", simulator.udid, bundle.path], limit: .seconds(300))
 
         let files = FileManager.default
         try files.createDirectory(at: logs, withIntermediateDirectories: true)
@@ -47,7 +47,7 @@ struct SimulatorLaunch {
         var tails = [FileTail(out, as: .standardOutput), FileTail(err, as: .standardError)]
         while Self.alive(process) {
             if Task.isCancelled {
-                await ToolStep.regardless("xcrun", ["simctl", "terminate", simulator.udid, identifier])
+                await ToolStep.regardless(.name("xcrun"), ["simctl", "terminate", simulator.udid, identifier])
                 for index in tails.indices { tails[index].read(end: true).forEach(reporter.output) }
                 throw CancellationError()
             }

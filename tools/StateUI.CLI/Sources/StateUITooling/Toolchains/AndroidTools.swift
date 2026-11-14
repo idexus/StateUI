@@ -115,8 +115,8 @@ public struct AndroidTools: Sendable {
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let archive = folder.appendingPathComponent("gradle.zip")
         reporter.progress("downloading Gradle \(Self.gradleVersion)")
-        try await ToolStep.run("curl", ["-fsSL", "https://services.gradle.org/distributions/gradle-\(Self.gradleVersion)-bin.zip", "-o", archive.path], limit: .seconds(600))
-        try await ToolStep.run("unzip", ["-q", "-o", archive.path, "-d", folder.path], limit: .seconds(300))
+        try await ToolStep.run(.name("curl"), ["-fsSL", "https://services.gradle.org/distributions/gradle-\(Self.gradleVersion)-bin.zip", "-o", archive.path], limit: .seconds(600))
+        try await ToolStep.run(.name("unzip"), ["-q", "-o", archive.path, "-d", folder.path], limit: .seconds(300))
         try? FileManager.default.removeItem(at: archive)
         guard let cachedGradle else { throw ToolingError(.toolFailed, "Gradle \(Self.gradleVersion) unpacked into no bin/gradle.") }
         return cachedGradle

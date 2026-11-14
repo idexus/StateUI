@@ -27,10 +27,10 @@ struct UIKitSuite {
         else { throw ToolingError(.missingToolchain, "The selected Xcode holds no iphonesimulator SDK; `stateui doctor` says what to install.") }
 
         reporter.progress("booting \(simulator.name)")
-        try await ToolStep.run("xcrun", ["simctl", "bootstatus", simulator.udid, "-b"], limit: .seconds(300))
+        try await ToolStep.run(.name("xcrun"), ["simctl", "bootstatus", simulator.udid, "-b"], limit: .seconds(300))
         // The suite stands as a screen reader does: UIKit's accessibility answers for its controls as for a VoiceOver user.
         for key in ["ApplicationAccessibilityEnabled", "AccessibilityEnabled"] {
-            try await ToolStep.run("xcrun", ["simctl", "spawn", simulator.udid, "defaults", "write", "com.apple.Accessibility", key, "-bool", "true"])
+            try await ToolStep.run(.name("xcrun"), ["simctl", "spawn", simulator.udid, "defaults", "write", "com.apple.Accessibility", key, "-bool", "true"])
         }
 
         let package = checkout.appendingPathComponent("lib/StateUI/StateUI.UIKit/Tests")

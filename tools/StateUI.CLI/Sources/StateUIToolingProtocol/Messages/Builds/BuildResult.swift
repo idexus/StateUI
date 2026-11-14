@@ -13,15 +13,20 @@ public struct BuildResult: Codable, Equatable, Sendable {
     /// The program it starts by, as a file URI: an AppKit bundle's `Contents/MacOS/<Product>`, a UIKit one's
     /// `<Product>`.
     public var programUri: String
-    /// The application's bundle, as a file URI: `<Product>.app`.
+    /// The application's bundle, as a file URI: `<Product>.app`, an Android head's `<Name>.apk`.
     public var bundleUri: String?
-    /// The device or simulator a UIKit head was built for.
+    /// The device, simulator or emulator a UIKit or Android head was built for.
     public var destination: Destination?
+    /// What the platform knows the application by: a bundle's identifier, an APK's package.
+    public var identifier: String?
+    /// Where a debugger reads the head's symbols, as a file URI: an Android head's `symbols/<abi>`.
+    public var symbolsUri: String?
 
     /// A build of `application` laid in `folderUri`, started by `programUri` of `bundleUri`, for `destination`.
     public init(
         application: String, host: HostFamily, configuration: BuildConfiguration, architecture: Architecture,
-        folderUri: String, programUri: String, bundleUri: String? = nil, destination: Destination? = nil
+        folderUri: String, programUri: String, bundleUri: String? = nil, destination: Destination? = nil,
+        identifier: String? = nil, symbolsUri: String? = nil
     ) {
         self.application = application
         self.host = host
@@ -31,5 +36,7 @@ public struct BuildResult: Codable, Equatable, Sendable {
         self.programUri = programUri
         self.bundleUri = bundleUri
         self.destination = destination
+        self.identifier = identifier
+        self.symbolsUri = symbolsUri
     }
 }

@@ -11,11 +11,15 @@ public struct LaunchedApplication: Codable, Equatable, Sendable {
     public var process: Int?
     /// Whether it waits, stopped, for a debugger to attach.
     public var held: Bool
+    /// Where a debugger reaches it, where the run readied one: an Android head's `lldb-server` socket in the
+    /// application's sandbox, abstract, by its name.
+    public var debuggerSocket: String?
 
-    /// `build` started as `process`, `held` for a debugger or not.
-    public init(build: BuildResult, process: Int?, held: Bool) {
+    /// `build` started as `process`, `held` for a debugger or not, a debugger's server readied at `debuggerSocket`.
+    public init(build: BuildResult, process: Int?, held: Bool, debuggerSocket: String? = nil) {
         self.build = build
         self.process = process
         self.held = held
+        self.debuggerSocket = debuggerSocket
     }
 }
