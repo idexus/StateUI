@@ -7,7 +7,7 @@ what its hosts need ([Getting started](getting-started.md#requirements)).
 
 ## A Mac: AppKit, UIKit, Android Views, Web
 
-Last verified 2026-11-13, on Swift 6.4.2: the core, the host layer, the conformance runner, the application-testing package, the Gallery, HelloWorld and the stateui tool; AppKit's suite (621); UIKit's on the iPhone 18 Pro and the iPad Air 13-inch (M4) simulators (314 and every family); Android's on the Pixel 3a emulator and the CPH2363 (562 each); the editor extension's suite (96). The Web's own suite last on 2026-11-08.
+Last verified 2026-11-13, on Swift 6.4.2: the core, the host layer, the conformance runner, the application-testing package, the Gallery, HelloWorld and the stateui tool; AppKit's suite (621); UIKit's on the iPhone 18 Pro and the iPad Air 13-inch (M4) simulators (314 and every family; 2026-11-14 through `stateui repo test`); Android's on the Pixel 3a emulator and the CPH2363 (562 each); the editor extension's suite (111 on 2026-11-14, its UIKit debugging on a simulator and on the iPad Pro 13-inch). The Web's own suite last on 2026-11-08.
 
 | | |
 | --- | --- |
@@ -19,15 +19,17 @@ Last verified 2026-11-13, on Swift 6.4.2: the core, the host layer, the conforma
 
 ### AppKit
 
-Xcode 27's Swift 6.4, on macOS 26.6.2.
+The swift.org toolchain `swift-6.4.2-RELEASE`, which the `stateui` tool builds with, against Xcode 27's macOS SDK, on
+macOS 26.6.2.
 
 ### UIKit
 
 | | |
 | --- | --- |
-| Toolchain | Xcode 27's Swift 6.4 and its iOS SDK |
+| Toolchain | the swift.org toolchain `swift-6.4.2-RELEASE`, which the `stateui` tool builds with, against Xcode 27's iOS and simulator SDKs |
 | Simulator runtimes | iOS 26.4 (23E244), the floor; iOS 27.0 (24A434); iOS 27.1 (24A94425) |
 | Simulators | iPhone 17 Pro on 26.4; iPhone 18 Pro and iPad Air 13-inch (M4) on 27.0; iPhone Duo on 27.1 |
+| Devices | an iPad Pro 13-inch (M4) on iPadOS 27.0.1 over Wi-Fi, development-signed |
 
 The iPad Pro 13-inch (M5) simulator shows a black screen on runtime 27.0,
 Settings included; the iPad Air stands in for it.
