@@ -196,6 +196,22 @@ public struct ToolingService: Sendable {
             host, filter: filter, device: device, buildOnly: buildOnly, architecture: architecture, artifact: artifact, reporter: reporter)
     }
 
+    /// Where the conformance verdicts of `hosts` - every host where none is named - stand in the StateUI checkout
+    /// holding `folder`, as the library's own reader of a revision says.
+    ///
+    /// - Throws: ``ToolingError`` `PROJECT_NOT_FOUND` outside a checkout, `TOOL_FAILED` where the reader does not answer.
+    public func conformanceStatus(of hosts: [HostFamily], in folder: URL, reporter: BuildReporter) async throws -> [ConformanceStatus] {
+        guard let checkout = Checkout.holding(folder)?.root else {
+            throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        let metadata = ConformanceMetadata(checkout: checkout, tools: ToolResolver())
+        var statuses: [ConformanceStatus] = []
+        for host in hosts.isEmpty ? HostFamily.allCases : hosts {
+            statuses.append(try await metadata.status(of: host, reporter: reporter))
+        }
+        return statuses
+    }
+
     /// `work` given a reporter whose words reach `context` in the order they were said.
     private static func reporting<Result: Sendable>(
         _ context: OperationContext, _ work: (RunReporter) async throws -> Result

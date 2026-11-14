@@ -117,3 +117,18 @@ application's budget (`WebSizes`): past it fails; a twentieth or more under
 it is said, for the budget to come down with it. A budget is raised only in
 the change that grows the module, with the reason.
 
+## A family's revision
+
+The revision a family's verdicts on a host stand at, and whether its recorded
+files stand there, has one reader: the library's `HostVerdict` (its
+`revision(of:on:in:)` and `standing(of:family:on:in:)`, over
+`lib/StateUI/StateUI.Conformance/revisions.txt`). The tool links no StateUI
+runtime, so it asks the conformance package's helper,
+`stateui-conformance-metadata --repository <checkout> --host <host> --format
+json`, built with SwiftPM: every family of `Families`, the revision it is to
+stand at, the files recorded for it - `<Family>.txt`, else its parts
+`<Family>-1.txt` on - with the revision each names, and whether they are
+fresh, stale, missing or unreadable (`ConformanceMetadata`). `stateui repo
+conformance status [--host <host>]` says it, family by family. Which family
+a host realizes is its register's to say, never a revision's.
+

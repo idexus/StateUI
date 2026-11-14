@@ -116,6 +116,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `package.json`, the tool's release, the Android heads and the bundles are its copies, which `ReleaseTests` holds.
 - Swift 6.4.2 is the release StateUI builds with: the workflows' images and installers, the Swift SDKs for Android
   and WebAssembly and the handbook name it, and `ToolchainTests` holds one patch release everywhere.
+- `stateui repo conformance status [--host <host>]` says, family by family, whether each host's recorded verdicts
+  stand at the revision `revisions.txt` gives - read by the library's own reader through the conformance package's
+  helper `stateui-conformance-metadata`.
 - `stateui repo test --suite host:winui` runs the WinUI host's suite on Windows - the foundation's Windows tests, the
   host's tests each in a process of its own with the test runner made self-contained, both API records - and the
   conformance families only where `--filter` names them (`WinUIConformanceTests`, or one of its tests).

@@ -162,5 +162,11 @@ final class HostVerdictTests: XCTestCase {
         XCTAssertTrue(HostVerdict.isStale(held, family: "Slider", on: "winui", in: revisions), "WinUI's own was raised")
         XCTAssertTrue(HostVerdict.isStale("Slider: ✅\n", family: "Slider", on: "gtk", in: revisions), "no revision")
         XCTAssertTrue(HostVerdict.isStale(nil, family: "Slider", on: "gtk", in: revisions), "no file")
+
+        // A family in parts stands fresh only where every part does; one unread part is the family's.
+        XCTAssertEqual(HostVerdict.standing(of: [held], family: "Slider", on: "gtk", in: revisions), .fresh)
+        XCTAssertEqual(HostVerdict.standing(of: [held, "# revision 1.1\nSlider: ✅\n"], family: "Slider", on: "gtk", in: revisions), .stale)
+        XCTAssertEqual(HostVerdict.standing(of: [], family: "Slider", on: "gtk", in: revisions), .missing)
+        XCTAssertEqual(HostVerdict.standing(of: [held, "# revision 2.1\nnot a verdict\n"], family: "Slider", on: "gtk", in: revisions), .invalid)
     }
 }

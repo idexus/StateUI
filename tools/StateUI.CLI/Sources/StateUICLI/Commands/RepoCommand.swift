@@ -9,7 +9,7 @@ import StateUIToolingProtocol
 /// `stateui repo`: the StateUI checkout's own work - its suites.
 struct RepoCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self])
+        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self, Conformance.self])
 
     /// `stateui repo test --suite host:<host>`.
     struct Test: AsyncParsableCommand {
@@ -50,6 +50,36 @@ struct RepoCommand: AsyncParsableCommand {
                     + (ran.artifactUri.map { ["built   \((try? FileURI.url($0).path) ?? $0)"] } ?? [])).joined(separator: "\n")
             }
             if !passed { throw ExitCode(ExitStatus.of(ToolingError(.toolFailed, "the suite failed"))) }
+        }
+    }
+
+    /// `stateui repo conformance`: the hosts' conformance verdicts.
+    struct Conformance: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Works on the hosts' conformance verdicts.", subcommands: [Status.self])
+
+        /// `stateui repo conformance status [--host <host>]`.
+        struct Status: AsyncParsableCommand {
+            static let configuration = CommandConfiguration(
+                abstract: "Says where each host's conformance verdicts stand: fresh, stale, missing or unreadable, family by family.")
+
+            @Option(help: "The host; every host where left out.")
+            var host: HostFamily?
+
+            @OptionGroup var output: OutputOptions
+
+            func run() async throws {
+                let here = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+                try await output.answer({
+                    try await ToolingService().conformanceStatus(of: host.map { [$0] } ?? [], in: here, reporter: BuildOptions.terminal)
+                }) { (statuses: [ConformanceStatus]) in
+                    statuses.map { status in
+                        let behind = status.stale.map { "\($0.name) (\($0.status.rawValue), at \($0.files.compactMap(\.revision).joined(separator: " ")), owes \($0.revision))" }
+                        return "\(status.host.rawValue): \(status.families.count - behind.count) of \(status.families.count) fresh"
+                            + (behind.isEmpty ? "" : "\n  " + behind.joined(separator: "\n  "))
+                    }.joined(separator: "\n")
+                }
+            }
         }
     }
 }
