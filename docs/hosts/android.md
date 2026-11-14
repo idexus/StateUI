@@ -365,7 +365,7 @@ application every time, which over USB holds the UI thread for seconds. End
 a session by detaching - stopping the debugger itself leaves its breakpoints
 in the application, which the next of them then ends.
 
-## Deploying
+## Packaging
 
 ```bash
 stateui package --project apps/Gallery --host android --device emulator-5554
@@ -376,7 +376,7 @@ the device named - else the only one running, else `arm64-v8a` - and lays
 its APK, `<application>.apk`, in `--output`, else
 `artifacts/<application>/Android` of the application's workspace, made anew.
 The APK is signed as the head's `build.gradle.kts` says: HelloWorld's and
-the Gallery's sign a release with the debug key. **StateUI: Deploy** in the
+the Gallery's sign a release with the debug key. **StateUI: Package** in the
 editor does so for the application and the device chosen.
 
 ## Testing

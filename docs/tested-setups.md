@@ -105,8 +105,8 @@ Last verified 2026-11-13, on Swift 6.4.2: the host's own tests, 223 of 224 - `te
 The stateui tool fetches the Windows App SDK, C++/WinRT and the WebView2 SDK
 from nuget.org at these versions, pinned in its `WinUIPackages`, and
 lay the Windows App SDK beside each executable: nothing of it is installed.
-**StateUI: Deploy** lays a head that runs with neither Swift nor Visual
-Studio installed: both deployed builds of a project group's application, ARM64
+**StateUI: Package** lays a head that runs with neither Swift nor Visual
+Studio installed: both packaged builds of a project group's application, ARM64
 and x64, started with no Swift on the search path.
 
 ## A Linux machine: GTK 4, Web

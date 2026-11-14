@@ -83,7 +83,7 @@ and leaves Foundation's `plutil.exe` out - once a module, into the
 application's `.build/stateui/caches`, copied from there by a build and a
 package alike (`SwiftRuntime`).
 
-## Deploying
+## Packaging
 
 `stateui package --host winui` lays the release artifact in `--output`, else
 `artifacts/<Name>/WinUI`, made anew, and readies it for a machine with

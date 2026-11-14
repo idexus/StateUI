@@ -215,7 +215,7 @@ stateui repo test --suite host:winui                           # the WinUI host'
 
 [Project structure and development](docs/development.md#test) gives every
 suite's arguments and the conformance run that writes each host's marks, and
-[Deploy](docs/development.md#deploy) the release builds: **StateUI: Deploy**
+[Package](docs/development.md#package) the release builds: **StateUI: Package**
 lays one in `artifacts/<application>/<platform>` - on the Web the page, a
 folder any web server serves as it is.
 

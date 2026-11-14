@@ -313,7 +313,7 @@ In VS Code, with **GTK** chosen in the status bar, **StateUI: Debug** has the
 tool build and install the head and starts it under `lldb-dap`, so a
 breakpoint in the application's Swift holds from the first line.
 
-## Deploying
+## Packaging
 
 ```bash
 stateui package --project apps/Gallery --host gtk
@@ -323,7 +323,7 @@ stateui package --project apps/Gallery --host gtk
 `--output`, else `artifacts/<application>/GTK`, made anew: the head, the
 StateUI libraries it links, and its pictures in `Images/`. It lays nothing the system provides - GTK, libadwaita,
 WebKitGTK: the machine that runs the folder has them installed.
-**StateUI: Deploy** in the editor does so for the application chosen,
+**StateUI: Package** in the editor does so for the application chosen,
 and lays the head in `artifacts/<application>/GTK` of the application's
 workspace - the folder of the stateui.json listing it, a checkout's or a
 project group's.

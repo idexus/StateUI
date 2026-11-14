@@ -223,7 +223,7 @@ stateui run --project apps/HelloWorld --host web
 
 [Web host](hosts/web.md) lists what it needs and what it builds.
 
-## Deploy
+## Package
 
 `stateui package` builds an application's head for release and lays it, with
 what it runs with, in a folder it makes anew:
@@ -237,9 +237,7 @@ stateui package --project apps/Gallery --host web
 stateui package --project apps/Gallery --host winui --architecture x86_64 --output artifacts/Gallery/WinUI/x64
 ```
 
-- AppKit lays the application bundle where a script beside it bundles the
-  application (`build-<application>-appkit.sh`, the Gallery's), else the head
-  and the StateUI libraries it links;
+- AppKit, the application bundle;
 - UIKit, an application bundle for the device named - a simulator, or an
   iPhone or iPad it is signed for;
 - Android, the APK, for the ABI of the device named;
@@ -251,8 +249,8 @@ stateui package --project apps/Gallery --host winui --architecture x86_64 --outp
   relay and its style sheet, the module, the application's own scripts and its
   pictures - a folder any web server serves as it is.
 
-In VS Code, **StateUI: Deploy** runs the chosen host's script for the chosen
-application and lays it in `artifacts/<application>/<platform>` of its
+In VS Code, **StateUI: Package** has the tool package the chosen application
+and lays it in `artifacts/<application>/<platform>` of its
 workspace - the folder of the stateui.json listing it, a checkout's or a
 project group's. A WinUI head is laid
 per architecture, in `artifacts/<application>/WinUI/<architecture>`: this

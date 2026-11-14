@@ -155,6 +155,11 @@ helper gives its family. On UIKit and Android a family's name selects the
 tests whose names hold it, so `Button` takes `ButtonMenu` along: a family
 more, whole, never one less.
 
+An editor asks for the same run as an operation, `repository/conformance`:
+the host, the selection - `{"changed": true}`, `{"families": [...]}` or
+`{"all": true}` - whether it records, and the device; its result is the run's
+phases, which the editor names where one failed.
+
 ## The API records
 
 `stateui repo api check` holds the library's public surfaces - what an
@@ -194,3 +199,17 @@ those after it, and a suite this machine cannot run - an Android one with no
 device running - stands as not run, never as passed. `--suite <id>` runs one
 of the plan's. Full WinUI conformance is never part of a plan.
 
+## An editor's extension
+
+`stateui repo integration package --editor vscode`
+(`repository/integrationPackage`) packages the checkout's editor extension
+with its sources' own `npm run package` - their dependencies installed with
+`npm ci` first where none are - into `artifacts/<name>-<version>.vsix`, and
+says the file, the extension's identifier `<publisher>.<name>` and its
+version, read from its `package.json`. `install`
+(`repository/integrationInstall`) has the editor's own command line install
+that file over any other version, then asks the editor to list its
+extensions: an install holds only where the identifier stands there at the
+version packaged. In the terminal `install` packages first, with `code` on
+the search path unless `--editor-path` names another; the editor names its
+own command line, and offers the reload itself.

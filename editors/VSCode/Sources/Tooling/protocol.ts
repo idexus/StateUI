@@ -350,6 +350,39 @@ export const SuiteResult = object<SuiteResult>({
     suite: string, phases: array(object<SuitePhase>({ name: string, passed: boolean })), artifactUri: optional(string),
 });
 
+/** Which families a conformance run takes, whole: the stale ones, the ones named, or every one. */
+export type ConformanceSelection = { changed: true } | { families: string[] } | { all: true };
+export const ConformanceSelection: Decoder<ConformanceSelection> = (value, path) => {
+    const read = object<{ changed?: boolean; families?: string[]; all?: boolean }>({
+        changed: optional(boolean), families: optional(array(string)), all: optional(boolean),
+    })(value, path);
+    if (read.families) {
+        return { families: read.families };
+    } else if (read.all) {
+        return { all: true };
+    } else if (read.changed) {
+        return { changed: true };
+    }
+    throw new DecodingError(path, "a selection is changed, families or all");
+};
+
+export interface ConformanceRequest { host: HostFamily; selection: ConformanceSelection; record: boolean; device?: string }
+export const ConformanceRequest = object<ConformanceRequest>({
+    host: HostFamily, selection: ConformanceSelection, record: boolean, device: optional(string),
+});
+
+export type Editor = "vscode";
+export const Editor = oneOf<Editor>("vscode");
+
+export interface IntegrationPackageRequest { editor: Editor }
+export const IntegrationPackageRequest = object<IntegrationPackageRequest>({ editor: Editor });
+
+export interface EditorExtension { artifactUri: string; extensionId: string; version: string }
+export const EditorExtension = object<EditorExtension>({ artifactUri: string, extensionId: string, version: string });
+
+export interface IntegrationInstallRequest { editorExtension: EditorExtension; editorExecutableUri: string }
+export const IntegrationInstallRequest = object<IntegrationInstallRequest>({ editorExtension: EditorExtension, editorExecutableUri: string });
+
 /** The tool's methods the extension calls, by name. */
 export const methods = {
     "server/info": query(NoParameters, ServerInfo),
@@ -371,6 +404,9 @@ export const methods = {
     "workspace/create": mutation(WorkspaceRequest, WorkspaceChange),
     "workspace/useLibrary": mutation(LibraryRequest, WorkspaceChange),
     "tests/run": mutation(TestRunRequest, SuiteResult),
+    "repository/conformance": mutation(ConformanceRequest, SuiteResult),
+    "repository/integrationPackage": mutation(IntegrationPackageRequest, EditorExtension),
+    "repository/integrationInstall": mutation(IntegrationInstallRequest, EditorExtension),
 };
 
 export type Methods = typeof methods;

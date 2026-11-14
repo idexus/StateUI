@@ -215,6 +215,32 @@ final class ProtocolExamplesTests: XCTestCase {
                 ("response", try response("19", OperationHandle(operationId: operation, state: .queued))),
                 ("result", try JSONValue(encoding: SuiteResult(suite: "apps/Notes", phases: [SuiteResult.Phase(name: "tests", passed: true)]))),
             ], answeredAsWritten: false),
+            Example(name: "repository-conformance", messages: [
+                ("request", try request("20", "repository/conformance", Mutation(
+                    requestToken: "2e4a6c8e-0b1d-4f3a-9c5e-7a9b1d3f5e21",
+                    request: ConformanceRequest(host: .android, selection: .changed, record: true, device: "emulator-5554")))),
+                ("response", try response("20", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: SuiteResult(suite: "conformance:android", phases: [
+                    SuiteResult.Phase(name: "tests", passed: true), SuiteResult.Phase(name: "documents", passed: true),
+                ]))),
+            ], answeredAsWritten: false),
+            Example(name: "repository-integrationPackage", messages: [
+                ("request", try request("21", "repository/integrationPackage", Mutation(
+                    requestToken: "4c6e8a0c-2d3f-4b5a-8e7c-9b1d3f5a7c22", request: IntegrationPackageRequest(editor: .vscode)))),
+                ("response", try response("21", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: EditorExtension(
+                    artifactUri: "file:///Users/example/StateUI/artifacts/stateui-0.8.5.vsix", extensionId: "idexus.stateui", version: "0.8.5"))),
+            ], answeredAsWritten: false),
+            Example(name: "repository-integrationInstall", messages: [
+                ("request", try request("22", "repository/integrationInstall", Mutation(
+                    requestToken: "6e8a0c2e-4f5b-4d7c-9a1e-3d5f7b9c1e23", request: IntegrationInstallRequest(
+                        editorExtension: EditorExtension(
+                            artifactUri: "file:///Users/example/StateUI/artifacts/stateui-0.8.5.vsix", extensionId: "idexus.stateui", version: "0.8.5"),
+                        editorExecutableUri: "file:///Applications/Visual%20Studio%20Code.app/Contents/Resources/app/bin/code")))),
+                ("response", try response("22", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: EditorExtension(
+                    artifactUri: "file:///Users/example/StateUI/artifacts/stateui-0.8.5.vsix", extensionId: "idexus.stateui", version: "0.8.5"))),
+            ], answeredAsWritten: false),
             Example(name: "index-describe", messages: [
                 ("request", try request("16", "index/describe", IndexQuery(host: .uikit))),
                 ("response", try response("16", IndexContext(

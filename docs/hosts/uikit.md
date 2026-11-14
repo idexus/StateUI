@@ -348,7 +348,7 @@ lldb -o "device select <the device's identifier>" -o "device process attach --pi
 
 Only a debug build can be debugged.
 
-## Deploying
+## Packaging
 
 ```bash
 stateui package --project apps/Gallery --host uikit --device "My iPhone" --output artifacts/Gallery/UIKit
@@ -357,7 +357,7 @@ stateui package --project apps/Gallery --host uikit --device "My iPhone" --outpu
 `stateui package` builds an application's head for release as an
 application bundle for the device named - a simulator, by its name or UDID,
 or an iPhone or iPad, the bundle then signed for it - and lays the bundle,
-`<App>UIKit.app`, in the folder named, made anew. **StateUI: Deploy** in the
+`<App>UIKit.app`, in the folder named, made anew. **StateUI: Package** in the
 editor does so for the application and the device chosen, and lays the
 bundle in `artifacts/<application>/UIKit` of the application's workspace -
 the folder of the stateui.json listing it, a checkout's or a project

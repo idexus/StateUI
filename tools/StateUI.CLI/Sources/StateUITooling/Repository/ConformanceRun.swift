@@ -9,14 +9,6 @@ import StateUIToolingProtocol
 /// operation, each a phase of its own.
 /// Design: docs/design/tooling/repository.md#a-conformance-run
 public struct ConformanceRun: Sendable {
-    /// Which families a run takes, whole.
-    public enum Selection: Equatable, Sendable {
-        /// The families whose recorded verdicts stand at another revision, or at none.
-        case changed
-        case families([String])
-        case all
-    }
-
     private let checkout: URL
     private let suites: HostSuite
     private let tools: ToolResolver
@@ -32,7 +24,7 @@ public struct ConformanceRun: Sendable {
     /// verdicts, or writing them where `record`.
     ///
     /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a family no contract declares.
-    public func run(_ host: HostFamily, selection: Selection, record: Bool, device: String? = nil, reporter: BuildReporter) async throws
+    public func run(_ host: HostFamily, selection: ConformanceSelection, record: Bool, device: String? = nil, reporter: BuildReporter) async throws
         -> SuiteResult {
         let status = try await ConformanceMetadata(checkout: checkout, tools: tools).status(of: host, reporter: reporter)
         let known = Set(status.families.map(\.name))

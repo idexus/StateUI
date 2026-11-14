@@ -159,6 +159,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   package's by `swift test`, a host's as `stateui repo test` does. The VS Code extension's suites stand in the Testing
   view, found and run by the tool, and **StateUI: Run Tests** runs the ones picked there too, their output in Test
   Results.
+- `stateui repo integration package --editor vscode` (`repository/integrationPackage`) packages the checkout's VS Code
+  extension into `artifacts/stateui-<version>.vsix`, and `install` (`repository/integrationInstall`) has VS Code's
+  `code` install it and finds it listed at that version; **StateUI: Reinstall VS Code Extension** goes through both,
+  and **Conformance - Rebuild all** and **Rebuild changed** through `repository/conformance`, their phases named at
+  the end. **StateUI: Deploy** is titled **StateUI: Package**, as `stateui package` does the work; its command,
+  `stateui.deploy`, stays. A `swift test` a suite runs that ran no test fails, filtered or not.
 - The `stateui` tool has a workflow of its own (`cli.yml`): its suites on macOS, Linux and Windows, then the editor
   extension's client of it against a real `stateui serve --stdio`.
 

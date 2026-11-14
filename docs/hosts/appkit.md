@@ -386,7 +386,7 @@ it, and starts its program under `lldb-dap`, so a breakpoint in the
 application, in StateUI or in the host holds from the first line.
 **StateUI: Release** builds and starts the optimized head the same way.
 
-## Deploying
+## Packaging
 
 ```bash
 stateui package --project apps/Gallery --host appkit
@@ -395,7 +395,7 @@ stateui package --project apps/Gallery --host appkit
 `stateui package` builds an application's head for release and lays its
 bundle, made anew, in `artifacts/<application>/AppKit` of the application's
 workspace - the folder of the stateui.json listing it, a checkout's or a
-project group's - or in the `--output` folder named. **StateUI: Deploy** in
+project group's - or in the `--output` folder named. **StateUI: Package** in
 the editor does the same for the application chosen.
 
 ## Testing

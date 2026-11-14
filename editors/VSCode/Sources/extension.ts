@@ -20,18 +20,16 @@ import { availableHosts, describe, Host } from "./hosts";
 import {
     askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceOf, UIKitLister, uiKitDeviceToRunOn, uiKitSimulatorToTestOn,
 } from "./uiKitDevices";
-import { runTask } from "./tasks";
 import { TestSuites } from "./tests";
 import { writeEditorFiles } from "./projectGroup";
-import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinstall";
-import { Rebuild, rebuildSteps } from "./conformance";
+import { editorCommandLine, hasExtensionSources } from "./reinstall";
+import { conformanceRequest, failedPhases, Rebuild } from "./conformance";
 import { debuggerFinding, Finding, lldbDapFinding, report } from "./toolchain";
 import { pathToFileUri } from "./Tooling/client";
-import { locateTool } from "./Tooling/locate";
 import { LaunchedApplication, NameKind } from "./Tooling/protocol";
 import { runOperation, sayProblem, toolingClients, withTool } from "./Tooling/presentation";
 import { ToolRequestError } from "./Tooling/client";
-import { Architecture, deployDestination, toolArchitecture, winUIArchitectures } from "./deploy";
+import { Architecture, packageDestination, toolArchitecture, winUIArchitectures } from "./packaging";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
@@ -359,28 +357,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             return;
         }
         const device = chosen === "uikit" ? await uiKitSimulator() : chosen === "android" ? await androidDevice() : undefined;
-        const located = (() => {
-            try {
-                return locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath"));
-            } catch {
-                return "stateui";
-            }
-        })();
-        const steps = rebuildSteps(folder.uri.fsPath, chosen, rebuild, device, located);
-        if (!steps) {
+        const request = conformanceRequest(chosen, rebuild, device);
+        if (!request) {
             return;
         }
-        for (const step of steps) {
-            const task = new vscode.Task({ type: "stateui", suite: `conformance ${rebuild}` }, folder,
-                `Conformance - Rebuild ${rebuild}: ${describe(chosen).label}`, "StateUI",
-                new vscode.ShellExecution(step.command, [...step.args], { cwd: step.cwd, env: step.env }), []);
-            task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-            if ((await runTask(task)) !== 0) {
-                void vscode.window.showErrorMessage(`StateUI: ${describe(chosen).label}'s marks were not made again - the terminal says why.`);
-                return;
-            }
+        buildOutput.clear();
+        buildOutput.show(true);
+        const ran = await withTool(tool, folder.uri.fsPath, `${describe(chosen).label}'s marks were not made again`, (client) =>
+            runOperation(client, "repository/conformance", request, `StateUI: Conformance - Rebuild ${rebuild}: ${describe(chosen).label}`, buildOutput));
+        if (!ran) {
+            return;
         }
-        void vscode.window.showInformationMessage(`StateUI: ${describe(chosen).label}'s marks are made again, and the documents rendered from them.`);
+        const failed = failedPhases(ran);
+        if (failed.length === 0) {
+            void vscode.window.showInformationMessage(
+                `StateUI: ${describe(chosen).label}'s marks are made again, and the documents rendered from them - ${ran.phases.map((each) => each.name).join(", ")}.`);
+        } else {
+            void vscode.window.showErrorMessage(`StateUI: ${describe(chosen).label}'s marks were not made again - ${failed.join(", ")} failed; StateUI Build says why.`);
+        }
     };
 
     context.subscriptions.push(
@@ -578,19 +572,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 void vscode.window.showErrorMessage("StateUI: the extension is built from a StateUI checkout's editors/VSCode, which no folder here has.");
                 return;
             }
-            for (const step of reinstallSteps(folder.uri.fsPath, editorCommandLine(vscode.env.appRoot))) {
-                const task = new vscode.Task({ type: "stateui", step: path.basename(step.command) }, folder,
-                    `Reinstall the extension: ${path.basename(step.command)} ${step.args[0]}`, "StateUI",
-                    new vscode.ShellExecution({ value: step.command, quoting: vscode.ShellQuoting.Strong },
-                        step.args.map((each) => ({ value: each, quoting: vscode.ShellQuoting.Strong })), { cwd: step.cwd }), []);
-                task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-                if ((await runTask(task)) !== 0) {
-                    void vscode.window.showErrorMessage(`StateUI: the extension was not reinstalled - the terminal says why.`);
-                    return;
-                }
+            const editor = editorCommandLine(vscode.env.appRoot);
+            if (!path.isAbsolute(editor)) {
+                void vscode.window.showErrorMessage(`StateUI: the extension was not reinstalled - this editor's command line, ${editor}, is not beside it.`);
+                return;
+            }
+            buildOutput.clear();
+            buildOutput.show(true);
+            const installed = await withTool(tool, folder.uri.fsPath, "the extension was not reinstalled", async (client) => {
+                const made = await runOperation(client, "repository/integrationPackage", { editor: "vscode" },
+                    "StateUI: packaging the extension", buildOutput);
+                return runOperation(client, "repository/integrationInstall", { editorExtension: made, editorExecutableUri: pathToFileUri(editor) },
+                    `StateUI: installing ${made.extensionId} ${made.version}`, buildOutput);
+            });
+            if (!installed) {
+                return;
             }
             const answer = await vscode.window.showInformationMessage(
-                "StateUI: the extension is built and installed - reload the window to run it.", "Reload Window");
+                `StateUI: ${installed.extensionId} ${installed.version} is built and installed - reload the window to run it.`, "Reload Window");
             if (answer) {
                 await vscode.commands.executeCommand("workbench.action.reloadWindow");
             }
@@ -643,7 +642,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             const architecture = asked?.architecture ?? (offered.length > 1
                 ? (await vscode.window.showQuickPick(
                     offered.map((each, index) => ({ label: each, description: index === 0 ? "this machine's own" : "run by Windows' emulation" })),
-                    { title: `StateUI: Deploy ${application.name} for which architecture?`, ignoreFocusOut: true }))?.label as Architecture | undefined
+                    { title: `StateUI: Package ${application.name} for which architecture?`, ignoreFocusOut: true }))?.label as Architecture | undefined
                 : offered[0]);
             if (forHost === "winui" && !architecture) {
                 return undefined;
@@ -654,16 +653,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 return undefined;
             }
 
-            const destination = deployDestination(application, forHost, architecture);
-            const laid = await withTool(tool, application.directory, `${application.name} was not deployed`, (client) =>
+            const destination = packageDestination(application, forHost, architecture);
+            const laid = await withTool(tool, application.directory, `${application.name} was not packaged`, (client) =>
                 runOperation(client, "application/package", {
                     projectUri: pathToFileUri(application.directory), host: forHost, outputUri: pathToFileUri(destination),
                     device: forHost === "uikit" ? device : undefined, architecture: architecture && toolArchitecture(architecture),
-                }, `StateUI: deploying ${application.name}`, buildOutput));
+                }, `StateUI: packaging ${application.name}`, buildOutput));
             if (!laid) {
                 return undefined;
             }
-            void vscode.window.showInformationMessage(`StateUI: ${application.name} is deployed in ${destination}.`, "Reveal")
+            void vscode.window.showInformationMessage(`StateUI: ${application.name} is packaged in ${destination}.`, "Reveal")
                 .then((answer) => answer && vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(destination)));
             return destination;
         }),

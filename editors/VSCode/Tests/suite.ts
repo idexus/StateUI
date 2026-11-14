@@ -21,9 +21,9 @@ import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
 import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
 import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
-import { editorCommandLine, reinstallSteps } from "../Sources/reinstall";
-import { rebuildSteps } from "../Sources/conformance";
-import { deployDestination, toolArchitecture, winUIArchitectures } from "../Sources/deploy";
+import { editorCommandLine, hasExtensionSources } from "../Sources/reinstall";
+import { conformanceRequest, failedPhases } from "../Sources/conformance";
+import { packageDestination, toolArchitecture, winUIArchitectures } from "../Sources/packaging";
 import {
     atLeast, checkedPythonIn, debuggerFinding, Finding, lldbDapFailure, report,
 } from "../Sources/toolchain";
@@ -718,16 +718,18 @@ export async function run(): Promise<void> {
             })();
             check(`Notes' example test passes as ${testHost ?? "plain Swift"}, run by the tool`, passes);
 
-            // StateUI: Deploy in the group: Notes built for release and laid in the group's artifacts/Notes/<platform>,
+            // StateUI: Package in the group: Notes built for release and laid in the group's artifacts/Notes/<platform>,
             // on WinUI per architecture - this machine's own, and x64 too on an ARM64 machine - and run from there.
             const notes = (await described(local!)).find((each) => each.name === "Notes")!;
-            check("Deploy lays an application in artifacts/<application>/<platform> of its workspace, on WinUI per architecture - x64 the tool's x86_64",
-                commands.includes("stateui.deploy")
+            const titled = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8"))
+                .contributes.commands.find((each: { command: string }) => each.command === "stateui.deploy")?.title;
+            check("Package lays an application in artifacts/<application>/<platform> of its workspace, on WinUI per architecture - x64 the tool's x86_64",
+                commands.includes("stateui.deploy") && titled === "Package"
                 && JSON.stringify(winUIArchitectures("arm64")) === JSON.stringify(["arm64", "x64"])
                 && JSON.stringify(winUIArchitectures("x64")) === JSON.stringify(["x64"])
                 && toolArchitecture("x64") === "x86_64" && toolArchitecture("arm64") === "arm64"
-                && deployDestination(notes, "winui", "x64") === path.join(local!, "artifacts", "Notes", "WinUI", "x64")
-                && deployDestination(notes, "gtk") === path.join(local!, "artifacts", "Notes", "GTK")
+                && packageDestination(notes, "winui", "x64") === path.join(local!, "artifacts", "Notes", "WinUI", "x64")
+                && packageDestination(notes, "gtk") === path.join(local!, "artifacts", "Notes", "GTK")
                 && same(notes.checkout, root.uri.fsPath)
                 && fs.readFileSync(path.join(local!, ".gitignore"), "utf8").includes("\n/artifacts/\n"));
             const own: Record<string, Host> = { darwin: "appkit", win32: "winui", linux: "gtk" };
@@ -735,14 +737,14 @@ export async function run(): Promise<void> {
             for (const architecture of process.platform === "win32" ? winUIArchitectures() : [undefined]) {
                 const laid = await vscode.commands.executeCommand<string>("stateui.deploy", { application: notes.directory, architecture });
                 const platform = describe(own[process.platform]).label;
-                check(`Deploy lays the group's Notes in its artifacts/Notes/${platform}${architecture ? `/${architecture}` : ""}`,
+                check(`Package lays the group's Notes in its artifacts/Notes/${platform}${architecture ? `/${architecture}` : ""}`,
                     laid === path.join(local!, "artifacts", "Notes", platform, ...(architecture ? [architecture] : []))
                     && fs.readdirSync(laid).length > 0);
                 if (architecture) {
                     // Its head's architecture, from its PE header; the Swift and C++ runtimes of it beside it, and no module.
                     const head = path.join(laid!, "NotesWinUI.exe");
                     const bytes = fs.readFileSync(head);
-                    check(`the deployed head is ${architecture}, with StateUI, the Windows App SDK and the Swift and C++ runtimes of its architecture, and nothing only a build reads`,
+                    check(`the packaged head is ${architecture}, with StateUI, the Windows App SDK and the Swift and C++ runtimes of its architecture, and nothing only a build reads`,
                         bytes.readUInt16LE(bytes.readUInt32LE(0x3c) + 4) === (architecture === "x64" ? 0x8664 : 0xaa64)
                         && ["StateUI.dll", "swiftCore.dll", "Foundation.dll", "vcruntime140.dll", "Microsoft.ui.xaml.dll", "resources.pri"]
                             .every((each) => fs.existsSync(path.join(laid!, each)))
@@ -753,7 +755,7 @@ export async function run(): Promise<void> {
                     await new Promise((resume) => setTimeout(resume, 8000));
                     const runs = started.exitCode === null;
                     started.kill();
-                    check(`the deployed ${architecture} Notes runs from there with no Swift on the search path`, runs);
+                    check(`the packaged ${architecture} Notes runs from there with no Swift on the search path`, runs);
                 }
             }
 
@@ -788,37 +790,36 @@ export async function run(): Promise<void> {
             }
         }
         await tool.dispose();
-        // 7b. The extension reinstalls itself from the checkout: packed by npm, installed by the editor's command line.
+        // 7b. The extension reinstalls itself from the checkout through the stateui tool: packaged, then installed by
+        //     the running editor's command line.
         {
-            const version = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8")).version;
-            const steps = reinstallSteps(root.uri.fsPath, "/Editor/bin/code", "linux");
-            check("Reinstall VS Code Extension packs it with npm in editors/VSCode, then installs artifacts/stateui-<version>.vsix with --force",
-                commands.includes("stateui.reinstallExtension") && steps.length === 2
-                && `${steps[0].command} ${steps[0].args.join(" ")}` === "npm run package"
-                && steps[0].cwd === path.join(root.uri.fsPath, "editors", "VSCode")
-                && steps[1].command === "/Editor/bin/code"
-                && steps[1].args.join(" ") === `--install-extension ${path.join(root.uri.fsPath, "artifacts", `stateui-${version}.vsix`)} --force`);
-            check("on Windows it packs with npm.cmd, which a terminal whose policy refuses scripts (npm.ps1) still runs",
-                reinstallSteps(root.uri.fsPath, "C:\\Editor\\bin\\code.cmd", "win32")[0].command === "npm.cmd");
+            const offered = await ToolingClient.start({
+                executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
+                folder: root.uri.fsPath, clientVersion: "suite",
+            });
+            const methods = offered.initialized.capabilities.methods;
+            await offered.dispose();
+            check("Reinstall VS Code Extension packages and installs through the tool, from a checkout holding editors/VSCode",
+                commands.includes("stateui.reinstallExtension") && hasExtensionSources(root.uri.fsPath)
+                && methods.includes("repository/integrationPackage") && methods.includes("repository/integrationInstall"));
             check("the command line that installs it is the running editor's own, where its platform keeps it",
-                fs.existsSync(editorCommandLine(vscode.env.appRoot)));
+                path.isAbsolute(editorCommandLine(vscode.env.appRoot)) && fs.existsSync(editorCommandLine(vscode.env.appRoot)));
         }
         // 7c. The chosen host's marks are made again - every family, or the stale ones - then the documents rendered,
-        //     from a checkout alone.
+        //     from a checkout alone, through the tool's `repository/conformance`.
         {
             const checkout = root.uri.fsPath;
-            const all = rebuildSteps(checkout, "winui", "all");
-            const changed = rebuildSteps(checkout, "android", "changed", "serial");
             const manifest = JSON.parse(fs.readFileSync(path.join(checkout, "editors", "VSCode", "package.json"), "utf8"));
             const hidden = (command: string): boolean => manifest.contributes.menus.commandPalette
                 .some((each: { command: string; when?: string }) => each.command === command && each.when === "stateui.hasCheckout");
-            check("Conformance - Rebuild all and Rebuild changed have the stateui tool record the host's families, then render the documents",
+            check("Conformance - Rebuild all and Rebuild changed ask the tool to record the host's families, then render the documents",
                 commands.includes("stateui.conformanceRebuildAll") && commands.includes("stateui.conformanceRebuildChanged")
-                && all?.length === 1 && all[0].command === "stateui"
-                && all[0].args.join(" ") === "repo conformance run --host winui --all --record"
-                && changed?.[0].args.join(" ") === "repo conformance run --host android --changed --record --device serial"
-                && rebuildSteps(checkout, "web", "all")?.[0].args.join(" ") === "repo conformance run --host web --all --record"
-                && rebuildSteps(checkout, "uikit", "all") === undefined);
+                && JSON.stringify(conformanceRequest("winui", "all")) === JSON.stringify({ host: "winui", selection: { all: true }, record: true })
+                && JSON.stringify(conformanceRequest("android", "changed", "serial"))
+                    === JSON.stringify({ host: "android", selection: { changed: true }, record: true, device: "serial" })
+                && conformanceRequest("uikit", "all") === undefined
+                && failedPhases({ suite: "conformance:web", phases: [{ name: "tests", passed: true }, { name: "documents", passed: false }] })
+                    .join() === "documents");
             check("the conformance rebuilds and the reinstall show in a StateUI checkout alone",
                 hidden("stateui.conformanceRebuildAll") && hidden("stateui.conformanceRebuildChanged")
                 && hidden("stateui.reinstallExtension"));

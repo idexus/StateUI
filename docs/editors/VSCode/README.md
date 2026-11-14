@@ -7,24 +7,8 @@ completion, the launches, and the suites - works as that host.
 
 ## Installing
 
-The extension is built from a StateUI checkout, with Node.js 20 or newer. From
-the repository root:
-
-```bash
-cd editors/VSCode
-npm ci
-npm run package
-code --install-extension ../../artifacts/stateui-*.vsix
-```
-
-`npm run package` compiles the extension and writes `stateui-<version>.vsix`
-into `artifacts/` at the repository root. Without the `code` command on the
-path, **Extensions: Install from VSIX…** in the Command Palette installs that
-file. Build and install it again after pulling changes to the extension -
-[**StateUI: Reinstall VS Code Extension**](#the-extension-itself) does both.
-
-The extension works through the `stateui` tool, built from the same
-checkout. Build it and put it on the search path:
+The extension works through the `stateui` tool, built from a StateUI
+checkout. From the repository root, build it and put it on the search path:
 
 ```bash
 swift build -c release --package-path tools/StateUI.CLI
@@ -34,6 +18,20 @@ ln -sf "$(swift build -c release --package-path tools/StateUI.CLI --show-bin-pat
 Where it stands elsewhere, the `stateui.cliPath` setting names the program.
 A tool of another API than the extension's is refused with the version each
 speaks; what the tool says of itself shows in the **StateUI Tool** output.
+
+The tool then builds the extension, with Node.js 20 or newer, and installs it:
+
+```bash
+stateui repo integration install --editor vscode
+```
+
+It packages `editors/VSCode` into `artifacts/stateui-<version>.vsix` at the
+repository root - by its own `npm ci` and `npm run package` - and has VS Code's
+`code` install it, then finds it among VS Code's extensions at that version.
+`--editor-path` names VS Code's command line where `code` is not on the
+path; **Extensions: Install from VSIX…** in the Command Palette installs the
+file by hand. After pulling changes to the extension,
+[**StateUI: Reinstall VS Code Extension**](#the-extension-itself) does it again.
 
 The extension installs the **Swift** extension (swiftlang) with it. Install
 **LLDB DAP** for the Swift debugger.
@@ -76,7 +74,7 @@ The Command Palette offers the rest under **StateUI:**
 | [Select Browser](#the-browser) | the browser a Web head's page opens in |
 | [Select Application](#the-application) | the application F5 runs |
 | [Run Tests](#tests) | the workspace's suites, run as the chosen host |
-| [Deploy](#deploy) | the chosen application built for release and laid, with what it runs with, in `artifacts/<application>/<platform>` of its workspace - on WinUI per architecture |
+| [Package](#package) | the chosen application built for release and laid, with what it runs with, in `artifacts/<application>/<platform>` of its workspace - on WinUI per architecture |
 | [Conformance - Rebuild all / changed](#the-conformance-marks) | the chosen host's marks run again - every family, or the stale ones - and the documents rendered |
 | [New Application](#a-new-application) | a new application in a workspace, beside its applications, made by the `stateui` tool |
 | [New Project Group](#a-project-group) | a workspace of applications outside the checkout |
@@ -276,16 +274,16 @@ one ticked, and runs them AS THE HOST, one after another, each through the tool
 A suite that runs on a device asks for one once. A failure does not stop the
 suites after it; the summary names the ones that failed.
 
-## Deploy
+## Package
 
-**StateUI: Deploy** builds the chosen application for release on the chosen
+**StateUI: Package** builds the chosen application for release on the chosen
 host and lays it in `artifacts/<application>/<platform>` of its workspace - a
 project group's, or a checkout's - made anew each time.
 The `stateui` tool packages it:
 
 - **WinUI**: a folder that runs on a Windows machine with nothing installed -
   the head, StateUI, the Windows App SDK, the Swift and C++ runtimes of its
-  architecture, the pictures. Deploy asks which architecture: on an ARM64
+  architecture, the pictures. Package asks which architecture: on an ARM64
   machine arm64 or x64, which Windows runs emulated, into
   `artifacts/<application>/WinUI/arm64` or `.../x64`; an x64 machine builds x64
   without asking.
@@ -307,8 +305,9 @@ dictionary and `docs/platform-contract.md` from them again
 Rebuild changed** does the same for the families whose verdicts stand at
 another revision than `lib/StateUI/StateUI.Conformance/revisions.txt` says, or
 have none (`--changed`). UIKit runs on the simulator chosen and Android on the
-device chosen. Neither command shows outside a checkout: an application's
-workspace holds no marks.
+device chosen. The run's output is in **StateUI Build**, and its end names its
+phases - the one that failed, where one did. Neither command shows outside a
+checkout: an application's workspace holds no marks.
 
 ## The index
 
@@ -338,11 +337,12 @@ for each not found what to install. It looks where the tool's builds look
 
 ## The extension itself
 
-In a StateUI checkout, **StateUI: Reinstall VS Code Extension** builds the
-extension from `editors/VSCode` - compiled and packed into
-`artifacts/stateui-<version>.vsix` by `npm run package` - and installs it with
-`--force` through the command line of the VS Code that runs it, then offers to
-reload the window, where the new build runs.
+In a StateUI checkout, **StateUI: Reinstall VS Code Extension** has the
+`stateui` tool package the extension from `editors/VSCode` into
+`artifacts/stateui-<version>.vsix` and install it over the running one through
+the command line of the VS Code that runs it, as
+`stateui repo integration install` does, then offers to reload the window,
+where the new build runs.
 
 ## Launches
 

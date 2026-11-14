@@ -1,34 +1,16 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The extension built again from a checkout's editors/VSCode and installed over itself: compiled and packed into
-// artifacts/stateui-<version>.vsix by `npm run package`, then installed with --force by the command line of the
-// VS Code that runs it.
+// The extension built again from a checkout's editors/VSCode and installed over itself by the stateui tool
+// (`repository/integrationPackage`, `repository/integrationInstall`), with the command line of the VS Code that runs
+// it.
 
 import * as fs from "fs";
 import * as path from "path";
 
-/** One step: a command line and where it runs. */
-export interface Step {
-    readonly command: string;
-    readonly args: readonly string[];
-    readonly cwd: string;
-}
-
-/** The extension's own sources in a checkout. */
-export function extensionSources(checkout: string): string {
-    return path.join(checkout, "editors", "VSCode");
-}
-
-/** Whether `checkout` holds the extension's sources. */
+/** Whether `checkout` holds the extension's sources, editors/VSCode. */
 export function hasExtensionSources(checkout: string): boolean {
-    return fs.existsSync(path.join(extensionSources(checkout), "package.json"));
-}
-
-/** The package `npm run package` writes: artifacts/stateui-<version>.vsix at the checkout's root. */
-export function packedExtension(checkout: string): string {
-    const manifest = JSON.parse(fs.readFileSync(path.join(extensionSources(checkout), "package.json"), "utf8"));
-    return path.join(checkout, "artifacts", `stateui-${manifest.version}.vsix`);
+    return fs.existsSync(path.join(checkout, "editors", "VSCode", "package.json"));
 }
 
 /**
@@ -47,15 +29,4 @@ export function editorCommandLine(appRoot: string, platform: NodeJS.Platform = p
         }
     }
     return file;
-}
-
-/**
- * The steps that build the extension in `checkout` and install it with `editor`, the editor's command line. Windows
- * runs npm by its `npm.cmd`: a terminal's PowerShell takes `npm.ps1` first, which its default policy refuses.
- */
-export function reinstallSteps(checkout: string, editor: string, platform: NodeJS.Platform = process.platform): Step[] {
-    return [
-        { command: platform === "win32" ? "npm.cmd" : "npm", args: ["run", "package"], cwd: extensionSources(checkout) },
-        { command: editor, args: ["--install-extension", packedExtension(checkout), "--force"], cwd: checkout },
-    ];
 }

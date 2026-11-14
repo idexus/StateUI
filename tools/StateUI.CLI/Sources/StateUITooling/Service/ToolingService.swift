@@ -294,12 +294,29 @@ public struct ToolingService: Sendable {
     ///
     /// - Throws: ``ToolingError`` `PROJECT_NOT_FOUND` outside a checkout, `INVALID_CONFIGURATION` for an unknown family.
     public func runConformance(
-        _ host: HostFamily, selection: ConformanceRun.Selection, record: Bool, device: String?, in folder: URL, reporter: BuildReporter
+        _ host: HostFamily, selection: ConformanceSelection, record: Bool, device: String?, in folder: URL, reporter: BuildReporter
     ) async throws -> SuiteResult {
         guard let checkout = Checkout.holding(folder)?.root else {
             throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
         }
         return try await ConformanceRun(checkout: checkout).run(host, selection: selection, record: record, device: device, reporter: reporter)
+    }
+
+    /// Packages `editor`'s extension from the checkout holding `folder` - `repository/integrationPackage`.
+    ///
+    /// - Throws: ``ToolingError`` `PROJECT_NOT_FOUND` outside a checkout, `TOOL_FAILED` where npm failed.
+    public func packageIntegration(_ editor: Editor, in folder: URL, reporter: BuildReporter) async throws -> EditorExtension {
+        guard let checkout = Checkout.holding(folder)?.root else {
+            throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        return try await EditorIntegration(checkout: checkout).package(editor, reporter: reporter)
+    }
+
+    /// Installs a packaged extension with the editor's command line - `repository/integrationInstall`.
+    ///
+    /// - Throws: ``ToolingError`` `TOOL_FAILED` where the editor refused it, or does not list it at its version.
+    public func installIntegration(_ request: IntegrationInstallRequest, reporter: BuildReporter) async throws -> EditorExtension {
+        try await EditorIntegration.install(request.editorExtension, with: try FileURI.url(request.editorExecutableUri), reporter: reporter)
     }
 
     /// `work` given a reporter whose words reach `context` in the order they were said.
@@ -350,6 +367,21 @@ public struct ToolingService: Sendable {
             }
         }
         methods.query("index/clean") { (query: IndexQuery) in try cleanIndex(in: query.rootUris ?? []) }
+        methods.mutation("repository/conformance") { (request: ConformanceRequest, context: OperationContext, caller: RequestContext) in
+            try await Self.reporting(context) { reporter in
+                try await runConformance(
+                    request.host, selection: request.selection, record: request.record, device: request.device,
+                    in: try Self.folder(of: caller), reporter: reporter.build)
+            }
+        }
+        methods.mutation("repository/integrationPackage") { (request: IntegrationPackageRequest, context: OperationContext, caller: RequestContext) in
+            try await Self.reporting(context) { reporter in
+                try await packageIntegration(request.editor, in: try Self.folder(of: caller), reporter: reporter.build)
+            }
+        }
+        methods.mutation("repository/integrationInstall") { (request: IntegrationInstallRequest, context: OperationContext) in
+            try await Self.reporting(context) { reporter in try await installIntegration(request, reporter: reporter.build) }
+        }
         methods.mutation("application/build") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
             try await Self.reporting(context) { reporter in
                 try await build(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter.build)

@@ -356,7 +356,7 @@ on the page, in a profile of its own: the page's console is in the Debug
 Console, and ending the session stops the server. Any other browser, and
 **StateUI: Release**, the tool opens.
 
-## Deploying
+## Packaging
 
 ```bash
 stateui package --project apps/HelloWorld --host web --output artifacts/HelloWorld/Web
@@ -364,7 +364,7 @@ stateui package --project apps/HelloWorld --host web --output artifacts/HelloWor
 
 `stateui package` builds the head for release and lays its page in the
 folder named, else `artifacts/<application>/Web`, made anew: a folder any web
-server serves as it is. **StateUI: Deploy** in the editor does so for the
+server serves as it is. **StateUI: Package** in the editor does so for the
 application chosen, and lays the page in `artifacts/<application>/Web` of the
 application's workspace - the folder of the stateui.json listing it.
 

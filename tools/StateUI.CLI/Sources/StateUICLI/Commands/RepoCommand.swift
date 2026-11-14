@@ -9,7 +9,7 @@ import StateUIToolingProtocol
 /// `stateui repo`: the StateUI checkout's own work - its suites.
 struct RepoCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self, Conformance.self, API.self, Docs.self, Samples.self, WebSize.self])
+        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self, Conformance.self, API.self, Docs.self, Samples.self, WebSize.self, Integration.self])
 
     /// `stateui repo test --suite host:<host>`, `stateui repo test --plan portable | native [--suite <id>]`.
     struct Test: AsyncParsableCommand {
@@ -126,7 +126,7 @@ struct RepoCommand: AsyncParsableCommand {
 
             func run() async throws {
                 let here = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-                let selection: ConformanceRun.Selection = changed ? .changed : all ? .all : .families(family)
+                let selection: ConformanceSelection = changed ? .changed : all ? .all : .families(family)
                 var passed = true
                 try await output.answer({
                     let ran = try await ToolingService().runConformance(
