@@ -71,12 +71,12 @@ Run its UIKit head on an iOS simulator, booted first where it is not - the
 one named, else the one booted, else an iPhone:
 
 ```bash
-.scripts/UIKit/run-app.sh apps/HelloWorld debug "iPhone 18 Pro"
+stateui run --project apps/HelloWorld --host uikit --device "iPhone 18 Pro"
 ```
 
 The WinUI, GTK and Web heads have a script of their own too, under
 [Build](development.md#build). So has each host's suite -
-`stateui repo test --suite host:appkit`, `.scripts/UIKit/test-uikit.sh`,
+`stateui repo test --suite host:appkit`, `stateui repo test --suite host:uikit`,
 `.scripts/Android/test-android.sh`, `.scripts/GTK/test-gtk.sh`,
 `.scripts/Web/test-web.sh`, and `.scripts\WinUI\test-winui.ps1` on Windows -
 which [Test](development.md#test) lists with the arguments each takes.

@@ -158,13 +158,13 @@ handing off a complete vertical change. In VS Code, run **StateUI: Run Tests**
 once with each host this machine runs - AppKit, UIKit, Android and the Web on
 a Mac. From a terminal, `.scripts/test-native.sh` runs the suites of the
 library, the host layer, the conformance package, the AppKit host and the
-applications on this Mac, `.scripts/UIKit/test-uikit.sh` the UIKit host's on a
+applications on this Mac, `stateui repo test --suite host:uikit` the UIKit host's on a
 simulator, `.scripts/Android/test-android.sh <serial>` the Android host's on a
 device, and `.scripts/Web/test-web.sh` the Web host's:
 
 ```bash
 .scripts/test-native.sh
-.scripts/UIKit/test-uikit.sh "iPhone 18 Pro"
+stateui repo test --suite host:uikit --device "iPhone 18 Pro"
 .scripts/Android/test-android.sh emulator-5554
 .scripts/Web/test-web.sh
 ```

@@ -16,12 +16,7 @@ lib/StateUI/StateUI.UIKit/
   Sources/    StateUIUIKit: the renderer, scenes and windows, pages, controls and the registry
   Tests/      the host's suite - an application of tests, run on a simulator
 .scripts/UIKit/
-  build-app.sh      an application's UIKit head, bundled as an .app for a simulator or a device
-  run-app.sh        builds it, installs it on a simulator or a device and starts it
-  deploy.sh         builds it for release and lays the bundle in a folder of its own
-  test-uikit.sh     builds and runs the host's suite on a simulator
-  tools.sh          what they share: the SDK, a build, a bundle, its icon and signature, where it runs
-  draw-app-icon.swift  a head's icon, drawn from the application's Resources/AppIcon
+  test-uikit.sh     writes the host's conformance marks, until the stateui tool records them
 apps/<App>/Platforms/UIKit/
   main.swift        the application's UIKit head
   Host/             what this host answers for the application
@@ -30,14 +25,17 @@ apps/<App>/Platforms/UIKit/
 ## Requirements
 
 The host builds on macOS with Xcode, for iOS and iPadOS 26.4 or newer, and runs
-on a simulator or on an iPhone or iPad paired with the Mac. `build-app.sh`
-builds with Xcode's Swift against the simulator's SDK, for
-`arm64-apple-ios26.4-simulator`, or against the device's, for
-`arm64-apple-ios26.4`. A device runs with Developer Mode on, and its build is
+on a simulator or on an iPhone or iPad paired with the Mac. The `stateui`
+tool builds it with the Swift it builds every head with against the
+simulator's SDK, for `arm64-apple-ios26.4-simulator`, or against the
+device's, for `arm64-apple-ios26.4` - two builds of their own in
+`.build/uikit`. A device runs with Developer Mode on, and its build is
 signed with a development profile of this Mac's that provisions it - one
 Xcode makes for a team once the device is added - and a certificate of the
-keychain's that the profile names: the script picks them as Xcode does, an
-exact application identifier before a wildcard.
+keychain's that the profile names: the tool picks them as Xcode does, an
+exact application identifier before a wildcard, before it builds.
+`stateui devices --host uikit` lists the iPhones and iPads paired and the
+simulators, each with what names it.
 
 ## The head
 
@@ -63,7 +61,7 @@ GalleryEventSources.start()
 UIKitHost.run()
 ```
 
-The bundle `build-app.sh` makes carries the application's `Resources/Images`
+The bundle the tool makes carries the application's `Resources/Images`
 in `Images/`, every SVG drawn three times over as PNGs, which
 `Image("mark.png")` finds as it finds the SVG on every other host, and the
 StateUI libraries in `Frameworks/`. Its icon is drawn from
@@ -312,43 +310,41 @@ an ordinary one. The Swift side subscribes with
 ## Running
 
 ```bash
-.scripts/UIKit/run-app.sh apps/HelloWorld debug "iPhone 18 Pro"
-.scripts/UIKit/run-app.sh apps/Gallery debug "iPad Air 13-inch (M4)"
-.scripts/UIKit/run-app.sh apps/Gallery debug "My iPhone"
+stateui run --project apps/HelloWorld --host uikit --device "iPhone 18 Pro"
+stateui run --project apps/Gallery --host uikit --device "iPad Air 13-inch (M4)"
+stateui run --project apps/Gallery --host uikit --device "My iPhone"
 ```
 
-`run-app.sh` builds the head, installs the application, starts it and follows
-what it prints. Where it goes is a device's name, its identifier or its UDID,
-or a simulator's name or UDID; with none named it is the simulator booted,
-else an iPhone. A simulator is booted where it is not running and the
-Simulator opened; a device is reached over USB or Wi-Fi, its build signed for
-it. `--no-log` returns once the application has started. Everything a build
-writes stays in the application's `.build/uikit/`. On a simulator a switch
-such as `STATEUI_TALLY=1` reaches the application under the prefix `simctl`
-gives what its children are handed:
+`stateui run` builds the head, installs the application, starts it and
+follows what it prints until it ends; Ctrl+C ends the application and
+everything its start began. Where it goes is a device's name, its identifier
+or its UDID, or a simulator's name or UDID; with none named it is the
+simulator booted, else an iPhone. A simulator is booted where it is not
+running and the Simulator opened; a device is reached over USB or Wi-Fi, its
+build signed for it. `stateui build` builds and bundles without running.
+On a simulator a switch such as `STATEUI_TALLY=1` reaches the application
+under the prefix `simctl` gives what its children are handed:
 
 ```bash
-SIMCTL_CHILD_STATEUI_TALLY=1 .scripts/UIKit/run-app.sh apps/Gallery release "iPhone 18 Pro"
+SIMCTL_CHILD_STATEUI_TALLY=1 stateui run --project apps/Gallery --host uikit --configuration release --device "iPhone 18 Pro"
 ```
 
 In VS Code, choose **UIKit** as the host and an iPhone, an iPad or a
-simulator, and press **F5**.
+simulator, and press **F5**; the application's output is in **StateUI Run**,
+and the notification that follows it stops it.
 
 ## Debugging
 
-**StateUI: Debug** runs the application as `run-app.sh --debugger` does and
+**StateUI: Debug** runs the application held until a debugger attaches and
 attaches `lldb-dap` to it: a breakpoint in the application, in StateUI or in
 the host stops it from the first line, with its source, its stack and its
-variables. `--debugger` starts the application held until a debugger
-attaches, and writes where to `.build/uikit/debugger.json`: its process and,
-on a device, the device and the bundle built, whose symbols the debugger
-reads. A simulator's process is one of this Mac's; a device's is reached
-through the device:
+variables. Ending the debug session ends the application. In a terminal,
+`--debugger` starts it held and says its process; a simulator's process is
+one of this Mac's, a device's is reached through the device:
 
 ```bash
-.scripts/UIKit/run-app.sh apps/Gallery debug "My iPhone" --no-log --debugger
-lldb -o "device select <device from debugger.json>" \
-     -o "device process attach --pid <process from debugger.json>"
+stateui run --project apps/Gallery --host uikit --device "My iPhone" --debugger
+lldb -o "device select <the device's identifier>" -o "device process attach --pid <the process said>"
 ```
 
 Only a debug build can be debugged.
@@ -356,17 +352,17 @@ Only a debug build can be debugged.
 ## Deploying
 
 ```bash
-.scripts/UIKit/deploy.sh apps/Gallery artifacts/Gallery/UIKit "My iPhone"
+stateui package --project apps/Gallery --host uikit --device "My iPhone" --output artifacts/Gallery/UIKit
 ```
 
-`deploy.sh` builds an application's head for release as an application
-bundle for the device named - a simulator, by its name or UDID, or an iPhone
-or iPad, the bundle then signed for it as `build-app.sh` signs one - and lays
-the bundle, `<App>UIKit.app`, in the folder named, made anew.
-**StateUI: Deploy** in the editor runs it for the application and the device
-chosen, and lays the bundle in `artifacts/<application>/UIKit` of the
-application's workspace - the folder of the stateui.json listing it, a
-checkout's or a project group's.
+`stateui package` builds an application's head for release as an
+application bundle for the device named - a simulator, by its name or UDID,
+or an iPhone or iPad, the bundle then signed for it - and lays the bundle,
+`<App>UIKit.app`, in the folder named, made anew. **StateUI: Deploy** in the
+editor does so for the application and the device chosen, and lays the
+bundle in `artifacts/<application>/UIKit` of the application's workspace -
+the folder of the stateui.json listing it, a checkout's or a project
+group's.
 
 ## Testing
 
@@ -374,18 +370,23 @@ A view exists only in an application's process, so the host's suite is an
 application of tests, run in its own scene on a simulator:
 
 ```bash
-.scripts/UIKit/test-uikit.sh "iPhone 18 Pro"
-.scripts/UIKit/test-uikit.sh "iPad Air 13-inch (M4)"
-STATEUI_FILTER=testSlider .scripts/UIKit/test-uikit.sh
+stateui repo test --suite host:uikit --device "iPhone 18 Pro"
+stateui repo test --suite host:uikit --device "iPad Air 13-inch (M4)"
+stateui repo test --suite host:uikit --filter testSlider
 ```
 
 Each test and each conformance case says as it ends where the run stands, and
-the run ends with *Executed N tests, with M failures*. `STATEUI_FILTER` runs
-the tests whose name holds one of its comma-separated names;
-`STATEUI_UPDATE_EXPORTS=1` writes what the run says into `lib/StateUI/exports/` instead of
-holding it to them. The suite runs with the simulator's accessibility on, as
-VoiceOver stands, so UIKit's accessibility answers for its controls as it does
-for a VoiceOver user, whatever ran before.
+the run ends with *Executed N tests, with M failures*; then the facade and
+`StateUITesting` are held to their API records. `--filter` runs the tests
+whose name holds one of its comma-separated names. Every verdict is held to
+the marks recorded, nothing written. The suite runs with the simulator's
+accessibility on, as VoiceOver stands, so UIKit's accessibility answers for
+its controls as it does for a VoiceOver user, whatever ran before.
+
+Recording the marks stays with the script until the tool records them:
+`STATEUI_UPDATE_EXPORTS=1 .scripts/UIKit/test-uikit.sh "iPhone 18 Pro"`
+writes what the run says into `lib/StateUI/exports/` instead of holding it to
+them.
 
 `STATEUI_STALE_ONLY=1` runs only the conformance families whose verdicts in
 `lib/StateUI/exports/marks/uikit` stand at another revision than

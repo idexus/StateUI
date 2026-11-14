@@ -9,7 +9,7 @@ application, one test for each family of cases - the longest in parts - in
 
 A view stands in a window only in an application's process, and a window only
 in a scene iOS connected. So the host's tests are an application of their
-own, which `test-uikit.sh` builds, installs on a simulator and starts: once
+own, which `stateui repo test --suite host:uikit` builds, installs on a simulator and starts: once
 its first scene connects and stands in front, the runner reads every test case of its own binary
 by name - a class of the whole process may be no object at all - and runs
 each test in a turn of the main run loop of its own, saying each as it ends.

@@ -161,7 +161,7 @@ StateUI makes are subclasses of its own (`UIKitColorPickerView`,
 tree leaves unsaid is UIKit's. A date's or a time's picker is a container of
 its parts under VoiceOver: met through them, it is met. The host's suite runs
 as VoiceOver does, the simulator's application accessibility on
-(`test-uikit.sh`), so what it proves is what a VoiceOver user meets.
+(`stateui repo test --suite host:uikit`), so what it proves is what a VoiceOver user meets.
 
 ## A web view
 

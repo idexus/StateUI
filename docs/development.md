@@ -180,15 +180,15 @@ The UIKit host builds on macOS with the same Xcode and its iOS 26.4 or
 newer simulator runtime, for iOS and iPadOS 26.4 or newer. An application's UIKit
 head is built as an application bundle, installed on an iOS simulator -
 booted first where it is not - or on an iPhone or iPad of this Mac's, and
-started by one script:
+started by the tool:
 
 ```bash
-.scripts/UIKit/run-app.sh apps/HelloWorld debug "iPhone 18 Pro"
+stateui run --project apps/HelloWorld --host uikit --device "iPhone 18 Pro"
 ```
 
 A simulator is named by its name or its UDID, a device by its name or its
-identifier; with none named, the simulator booted runs it, else an iPhone.
-`--no-log` returns once the application has started.
+identifier (`stateui devices --host uikit` lists them); with none named, the
+simulator booted runs it, else an iPhone. Ctrl+C ends the application.
 [UIKit host](hosts/uikit.md) lists what it needs and what it builds.
 
 The Android Views host builds on macOS with the swift.org toolchain, the Swift
@@ -237,7 +237,7 @@ it, with what it runs with, in a folder it makes anew:
 
 ```bash
 stateui package --project apps/Gallery --host appkit
-.scripts/UIKit/deploy.sh apps/Gallery artifacts/Gallery/UIKit <device-udid>
+stateui package --project apps/Gallery --host uikit --device <device-udid>
 .scripts/Android/deploy.sh apps/Gallery artifacts/Gallery/Android emulator-5554
 .scripts/GTK/deploy.sh apps/Gallery artifacts/Gallery/GTK
 .scripts/Web/deploy.sh apps/Gallery artifacts/Gallery/Web
@@ -312,11 +312,11 @@ stateui repo test --suite host:appkit --filter AppKitConformanceTests
 ```
 
 The UIKit host's suite is an application of its own, built, installed on an
-iOS simulator and run there; with no simulator named, the one booted, else an
-iPhone:
+iOS simulator and run there - every verdict held, then its API records; with
+no simulator named, the one booted, else an iPhone:
 
 ```bash
-.scripts/UIKit/test-uikit.sh "iPhone 18 Pro"
+stateui repo test --suite host:uikit --device "iPhone 18 Pro"
 ```
 
 The Android Views host's suite runs on a device, in a test APK:

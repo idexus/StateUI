@@ -1,9 +1,10 @@
 # SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 # SPDX-License-Identifier: Apache-2.0
 #
-# What the UIKit scripts beside this one share: what a build is for - a
-# simulator or a device - a build for it, an application bundle assembled
-# around a build's binary, and where a run goes. Sourced, never run.
+# What test-uikit.sh takes - it records the UIKit host's marks until the
+# stateui tool does, which builds, runs and tests UIKit heads otherwise: the
+# SDK, a build, an application bundle around a build's binary, and the
+# simulator. Sourced, never run.
 
 UIKIT_TOOLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
