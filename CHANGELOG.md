@@ -108,7 +108,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   search path. The making shows in a notification that cancels it. Every host's Debug, Release, Deploy - WinUI's for
   either architecture - and own suite in Run Tests go through the tool, as do the UIKit and Android device lists and
   the browsers; a UIKit or Android head's output and a page's server are in **StateUI Run**, its notification stops
-  it, the end of a debug session ends it, and a second launch in its place replaces it.
+  it, the end of a debug session ends it, and a second launch in its place replaces it. **Conformance - Rebuild all**
+  and **Rebuild changed** have the tool record the chosen host's families - the Web's and Android's stale ones too.
 
 ### Tooling
 

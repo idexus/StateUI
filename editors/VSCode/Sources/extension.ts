@@ -342,22 +342,21 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             void vscode.window.showErrorMessage(`StateUI: the marks are made in a StateUI checkout, as the host chosen - ${folder ? noHost : "no folder here is one"}.`);
             return;
         }
-        if (chosen === "web") {
-            void vscode.window.showInformationMessage("StateUI: the editor makes no Web marks - stateui repo test --suite host:web makes them, with STATEUI_UPDATE_EXPORTS=1.");
-            return;
-        }
-        if (chosen === "android" && rebuild === "changed") {
-            void vscode.window.showInformationMessage("StateUI: Android's device reads no repository, so its marks are made again whole - Conformance - Rebuild all.");
-            return;
-        }
         const device = chosen === "uikit" ? await uiKitSimulator() : chosen === "android" ? await androidDevice() : undefined;
-        const steps = rebuildSteps(folder.uri.fsPath, chosen, rebuild, device);
+        const located = (() => {
+            try {
+                return locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath"));
+            } catch {
+                return "stateui";
+            }
+        })();
+        const steps = rebuildSteps(folder.uri.fsPath, chosen, rebuild, device, located);
         if (!steps) {
             return;
         }
         for (const step of steps) {
             const task = new vscode.Task({ type: "stateui", suite: `conformance ${rebuild}` }, folder,
-                `Conformance - Rebuild ${rebuild}: ${path.basename(step.args.find((each) => each.includes(path.sep)) ?? step.command)}`, "StateUI",
+                `Conformance - Rebuild ${rebuild}: ${describe(chosen).label}`, "StateUI",
                 new vscode.ShellExecution(step.command, [...step.args], { cwd: step.cwd, env: step.env }), []);
             task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
             if ((await runTask(task)) !== 0) {

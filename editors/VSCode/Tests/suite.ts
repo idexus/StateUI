@@ -610,7 +610,6 @@ export async function run(): Promise<void> {
                 && own?.command === "stateui" && own.args.join(" ") === "repo test --suite host:web"
                 && webSuites.filter((each) => each !== own).every((each) => each.command === "swift" && !each.onDevice)
                 && !webSuites.some((each) => ["lib/StateUI/StateUI.AppKit", "lib/StateUI/StateUI.GTK/Testing"].includes(each.label)));
-            check("the Web makes no conformance marks yet", rebuildSteps(root.uri.fsPath, "web", "all") === undefined);
         }
 
         const palette = await vscode.commands.getCommands(true);
@@ -822,19 +821,16 @@ export async function run(): Promise<void> {
         {
             const checkout = root.uri.fsPath;
             const all = rebuildSteps(checkout, "winui", "all");
-            const changed = rebuildSteps(checkout, "winui", "changed");
-            const appKit = rebuildSteps(checkout, "appkit", "changed");
+            const changed = rebuildSteps(checkout, "android", "changed", "serial");
             const manifest = JSON.parse(fs.readFileSync(path.join(checkout, "editors", "VSCode", "package.json"), "utf8"));
             const hidden = (command: string): boolean => manifest.contributes.menus.commandPalette
                 .some((each: { command: string; when?: string }) => each.command === command && each.when === "stateui.hasCheckout");
-            check("Conformance - Rebuild all and Rebuild changed run the host's families writing their verdicts, then render the documents",
+            check("Conformance - Rebuild all and Rebuild changed have the stateui tool record the host's families, then render the documents",
                 commands.includes("stateui.conformanceRebuildAll") && commands.includes("stateui.conformanceRebuildChanged")
-                && all?.length === 2 && all[0].args.slice(-1)[0] === "-Conformance" && all[0].env.STATEUI_UPDATE_EXPORTS === "1"
-                && changed?.[0].args.slice(-1)[0] === "-Stale"
-                && appKit?.[0].args.slice(-2).join(" ") === "--filter AppKitConformanceTests" && appKit[0].env.STATEUI_STALE_ONLY === "1"
-                && all[1].command === "swift" && all[1].args.join(" ") === "test --filter ControlDictionaryTests"
-                && all[1].env.STATEUI_UPDATE_DOCS === "1"
-                && rebuildSteps(checkout, "android", "changed", "serial") === undefined
+                && all?.length === 1 && all[0].command === "stateui"
+                && all[0].args.join(" ") === "repo conformance run --host winui --all --record"
+                && changed?.[0].args.join(" ") === "repo conformance run --host android --changed --record --device serial"
+                && rebuildSteps(checkout, "web", "all")?.[0].args.join(" ") === "repo conformance run --host web --all --record"
                 && rebuildSteps(checkout, "uikit", "all") === undefined);
             check("the conformance rebuilds and the reinstall show in a StateUI checkout alone",
                 hidden("stateui.conformanceRebuildAll") && hidden("stateui.conformanceRebuildChanged")

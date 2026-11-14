@@ -1,11 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The chosen host's conformance marks made again in a checkout - every family, or only those whose verdicts stand at
-// another revision than lib/StateUI/StateUI.Conformance/revisions.txt says - and the control dictionary rendered again from
-// them. A checkout's own work: an application's workspace holds no marks.
+// The chosen host's conformance marks made again in a checkout by the stateui tool - every family, or only those whose
+// verdicts stand at another revision than lib/StateUI/StateUI.Conformance/revisions.txt says - and the control dictionary
+// rendered again from them. A checkout's own work: an application's workspace holds no marks.
 
-import * as path from "path";
 import { Host } from "./hosts";
 import { Step } from "./reinstall";
 
@@ -18,52 +17,18 @@ export interface RebuildStep extends Step {
 }
 
 /**
- * The steps that make `host`'s marks again in `checkout` and render the documents from them: the host's conformance
- * families run writing their verdicts, then the dictionary's renderer. `device` - an Android serial, a simulator's
- * UDID - is where the host's suite runs on one. Undefined where the editor makes none: a device the suite needs and was
- * not given, Android asked for the changed families, as its device reads no repository, or the Web, whose marks
- * `stateui repo test --suite host:web` makes in a browser of its own.
+ * The step that makes `host`'s marks again in `checkout` and renders the documents from them: `stateui repo
+ * conformance run --record`, every family or the stale ones, through `tool` - the documents its last phase. `device` -
+ * an Android serial, a simulator's UDID - is where a UIKit or Android suite runs; undefined where it needs one and was
+ * given none.
  */
-export function rebuildSteps(checkout: string, host: Host, rebuild: Rebuild, device?: string): RebuildStep[] | undefined {
-    const scripts = path.join(checkout, ".scripts");
-    const writing: Record<string, string> = { STATEUI_UPDATE_EXPORTS: "1" };
-    const env = rebuild === "changed" ? { ...writing, STATEUI_STALE_ONLY: "1" } : writing;
-    let run: RebuildStep;
-    switch (host) {
-    case "winui":
-        run = {
-            command: "powershell",
-            args: ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path.join(scripts, "WinUI", "test-winui.ps1"),
-                rebuild === "changed" ? "-Stale" : "-Conformance"],
-            cwd: checkout, env: writing,
-        };
-        break;
-    case "appkit":
-        run = { command: "bash", args: [path.join(scripts, "AppKit", "test-appkit.sh"), "--filter", "AppKitConformanceTests"], cwd: checkout, env };
-        break;
-    case "gtk":
-        run = { command: "bash", args: [path.join(scripts, "GTK", "test-gtk.sh"), "--filter", "GTKConformanceTests"], cwd: checkout, env };
-        break;
-    case "uikit":
-        if (!device) {
-            return undefined;
-        }
-        run = {
-            command: "bash", args: [path.join(scripts, "UIKit", "test-uikit.sh"), device], cwd: checkout,
-            env: { ...env, STATEUI_FILTER: "UIKitConformanceTests" },
-        };
-        break;
-    case "web":
+export function rebuildSteps(checkout: string, host: Host, rebuild: Rebuild, device?: string, tool = "stateui"): RebuildStep[] | undefined {
+    if ((host === "uikit" || host === "android") && !device) {
         return undefined;
-    case "android":
-        if (rebuild === "changed" || !device) {
-            return undefined;
-        }
-        run = { command: "bash", args: [path.join(scripts, "Android", "test-android.sh"), device], cwd: checkout, env: writing };
-        break;
     }
-    const render: RebuildStep = {
-        command: "swift", args: ["test", "--filter", "ControlDictionaryTests"], cwd: checkout, env: { STATEUI_UPDATE_DOCS: "1" },
-    };
-    return [run, render];
+    return [{
+        command: tool, cwd: checkout, env: {},
+        args: ["repo", "conformance", "run", "--host", host, rebuild === "changed" ? "--changed" : "--all", "--record",
+            ...(device ? ["--device", device] : [])],
+    }];
 }

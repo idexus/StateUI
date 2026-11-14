@@ -297,15 +297,15 @@ The `stateui` tool packages it:
 
 ## The conformance marks
 
-In a StateUI checkout, **StateUI: Conformance - Rebuild all** runs every
-conformance family as the host chosen, writing its verdicts into
-`lib/StateUI/exports/marks/<host>`, then renders the control dictionary and
-`docs/platform-contract.md` from them again. **StateUI: Conformance - Rebuild
-changed** does the same for the families whose verdicts stand at another
-revision than `lib/StateUI/StateUI.Conformance/revisions.txt` says, or have none;
-every other family's run ends at once. UIKit runs on the simulator chosen and Android on
-the device chosen, where Android rebuilds all only, its device reading no
-repository. Neither command shows outside a checkout: an application's
+In a StateUI checkout, **StateUI: Conformance - Rebuild all** has the
+`stateui` tool run every conformance family as the host chosen, writing its
+verdicts into `lib/StateUI/exports/marks/<host>`, then render the control
+dictionary and `docs/platform-contract.md` from them again
+(`stateui repo conformance run --all --record`). **StateUI: Conformance -
+Rebuild changed** does the same for the families whose verdicts stand at
+another revision than `lib/StateUI/StateUI.Conformance/revisions.txt` says, or
+have none (`--changed`). UIKit runs on the simulator chosen and Android on the
+device chosen. Neither command shows outside a checkout: an application's
 workspace holds no marks.
 
 ## The index

@@ -402,39 +402,34 @@ two differ:
 - `lib/StateUI/exports/marks/<host>/<Family>.txt` - a family's verdicts, one a
   line, under `# revision <every>.<host>`.
 
-A run with `STATEUI_UPDATE_EXPORTS=1` writes them instead. The revision is the
-family's in `lib/StateUI/StateUI.Conformance/revisions.txt`: a line naming the
-family alone is its revision on every host, a line naming a host and the
-family that host's own, 1 where no line names it.
-`.scripts/Marks/revision.sh <host> <family>` prints it - `1.1`. A change that
+`stateui repo conformance run --record` writes them instead. The revision is
+the family's in `lib/StateUI/StateUI.Conformance/revisions.txt`: a line naming
+the family alone is its revision on every host, a line naming a host and the
+family that host's own, 1 where no line names it. `stateui repo conformance
+status` says, family by family, where each host's verdicts stand. A change that
 alters what a family's cases prove raises its revision there - the host's own
 line where one host's change alone does - and every verdict written at another
-revision shows ⌛ until its host runs the family again. `STATEUI_STALE_ONLY=1`
-(`-Stale` on Windows) runs only the families whose verdicts stand at another
-revision, or at none.
+revision shows ⌛ until its host runs the family again.
 
 A host's marks are written again, then the documents rendered from them - on
-AppKit:
+AppKit, every family, or only the stale ones, or those named:
 
 ```bash
-STATEUI_UPDATE_EXPORTS=1 .scripts/AppKit/test-appkit.sh --filter AppKitConformanceTests
-STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
+stateui repo conformance run --host appkit --all --record
+stateui repo conformance run --host appkit --changed --record
+stateui repo conformance run --host uikit --family Button --record --device "iPhone 18 Pro"
 ```
 
-The second line writes the tables of `docs/platform-contract.md` and the pages
-of `docs/controls/` from the contracts and every host's verdicts. Without the
-variable, `ControlDictionaryTests` refuses a document that differs from what
+The run's last phase writes the tables of `docs/platform-contract.md` and the
+pages of `docs/controls/` from the contracts and every host's verdicts
+(`stateui repo docs update`). Without `--record`, the verdicts are held to the
+marks, and `ControlDictionaryTests` refuses a document that differs from what
 they render, a line that is no verdict, and a verdict on what no contract
 declares.
 
-In VS Code, **StateUI: Conformance - Rebuild all** runs the chosen host's
-families writing their verdicts, then renders the documents;
-**StateUI: Conformance - Rebuild changed** runs only the stale families. A
-UIKit or an Android rebuild runs on the device chosen in the status bar; for
-Android the editor offers Rebuild all alone, and
-`STATEUI_STALE_ONLY=1 .scripts/Android/test-android.sh <serial>` runs the
-stale families. The editor makes no marks for the Web;
-`STATEUI_UPDATE_EXPORTS=1 .scripts/Web/test-web.sh --browser` writes them.
+In VS Code, **StateUI: Conformance - Rebuild all** and **Rebuild changed** run
+the same, as the chosen host - a UIKit or an Android rebuild on the device
+chosen in the status bar.
 [Reading the matrix](platform-contract.md#reading-the-matrix) says what each
 mark means.
 
