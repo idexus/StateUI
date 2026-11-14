@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Foundation
-import StateUITooling
+@testable import StateUITooling
 import StateUIToolingProtocol
 import XCTest
 
@@ -40,5 +40,13 @@ final class ArtifactStoreTests: XCTestCase {
         XCTAssertEqual(try String(contentsOf: published.appendingPathComponent("program"), encoding: .utf8), "two")
         XCTAssertEqual(
             try FileManager.default.contentsOfDirectory(atPath: published.deletingLastPathComponent().path), [manifest("op-1").id])
+    }
+
+    /// The store holding an artifact is its application's, and a cache stands apart from the artifacts.
+    func testTheStoreHoldingAnArtifactIsItsApplications() {
+        let application = URL(fileURLWithPath: "/apps/Notes")
+        let store = ArtifactStore(application: application)
+        XCTAssertEqual(ArtifactStore(holding: store.folder(of: "winui-arm64-0-debug")).application.path, application.path)
+        XCTAssertEqual(store.cache("swift-runtime-x86_64").path, "/apps/Notes/.build/stateui/caches/swift-runtime-x86_64")
     }
 }

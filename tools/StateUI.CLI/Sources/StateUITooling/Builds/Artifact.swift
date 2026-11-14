@@ -71,9 +71,19 @@ public struct ArtifactStore: Sendable {
 
     private var root: URL { application.appendingPathComponent(".build").appendingPathComponent("stateui") }
 
+    /// The store holding the published artifact in `artifact`.
+    public init(holding artifact: URL) {
+        application = artifact.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+    }
+
     /// The folder of the published artifact `id`.
     public func folder(of id: String) -> URL {
         root.appendingPathComponent("artifacts").appendingPathComponent(id)
+    }
+
+    /// A folder the builds keep what they made once in - a runtime unpacked - by `name`.
+    func cache(_ name: String) -> URL {
+        root.appendingPathComponent("caches").appendingPathComponent(name)
     }
 
     /// A staging folder of its own for operation `operation`, empty.

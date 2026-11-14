@@ -33,6 +33,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   in `.build/web/site`, and `.build/web/server.json` goes, a run saying the page's address instead; the page is served
   to this machine alone unless `--listen lan` shares it. `test-web.sh` stays only to record the host's marks and
   exports until the tool records them; `stateui repo test --suite host:web` checks them.
+- **A WinUI backend declares what it lays beside an application.** `lib/Backends/<Element>.WinUI/SelfContained.ps1`
+  is gone: a backend lists the files its engine needs in `Packaging/runtime.txt` - a line a file, the NuGet package,
+  its path there (`{architecture}` for `arm64` or `x64`) and its path beside the application - and only an application
+  that depends on the backend gets them. The web view's backend declares WebView2's component and loader.
 - **A project group is a workspace.** The VS Code extension finds applications through `stateui`: in a folder that
   is an application, that one; else the ones the nearest `stateui.json` up lists - and no longer every folder of an
   `apps/`. **StateUI: New Project Group** makes a workspace: `stateui.json`, the StateUI it builds with, and its first
@@ -77,6 +81,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **`stateui run --host web`** serves a Web head's page from its build on this machine alone - `--listen lan` shares it
   with the network - on port 8460, else a free one where another program holds it, and opens it in the system's
   browser, every `STATEUI_` switch a parameter of its address; the page's server is the tool's own, on SwiftNIO.
+- **`stateui build`, `run` and `package --host winui`** make WinUI heads on Windows, for the machine's own
+  architecture or, with `--architecture`, the other - on ARM64 x86_64 too, run by Windows' emulation: the pinned
+  NuGet packages fetched and checked against nuget.org's catalog, the C++/WinRT projection made where a pin changed,
+  the Windows App SDK laid beside the head with a manifest registering its classes and `resources.pri`, another
+  architecture's Swift runtime unpacked from the Swift installer's merge module; a package also carries the Swift and
+  C++ runtimes, so it runs where nothing is installed. A running copy is stopped before its build.
 - **`stateui run --host uikit`** installs and starts a UIKit head on its simulator or device and follows its output;
   `--debugger` starts it held until a debugger attaches, saying its process. `--host android` does so on a device or
   emulator - a virtual device named but not running is booted - every `STATEUI_` switch handed to the application,

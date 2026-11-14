@@ -38,6 +38,9 @@ writes its result as words or as the message an editor receives.
   everything it started.
 - [Android heads](android-heads.md): the Swift build of an ABI, the native
   libraries an APK ships, and the APK Gradle makes.
+- [WinUI heads](winui-heads.md): the pinned packages, the projection, a
+  self-contained head and its manifest, a backend's runtime, another
+  architecture's Swift runtime, and a deployed folder.
 - [GTK heads](gtk-heads.md): a GTK head's artifact, the desktop entry an
   install writes, and its run.
 - [Web heads](web-heads.md): a Web head's module, and the page laid beside

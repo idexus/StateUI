@@ -118,7 +118,7 @@ function Write-StateUIEditorBuilds {
 
 # Makes `Directory` self-contained for each of `Executables`, built for
 # `Architecture`: the Windows App SDK's runtime beside them, what each backend
-# linked there needs (lib\Backends\*.WinUI\SelfContained.ps1), the Swift
+# linked there needs (lib\Backends\*.WinUI\Packaging\runtime.txt), the Swift
 # runtime where the architecture is not the toolchain's, every class its
 # components declare registered in the manifest beside each one, and
 # resources.pri. An executable is never rewritten after its build: the next
@@ -132,10 +132,18 @@ function Set-StateUISelfContained([string]$Directory, [string[]]$Executables, [s
         robocopy $native $Directory /E /XO /NFL /NDL /NJH /NJS /NP | Out-Null
         if ($LASTEXITCODE -ge 8) { throw "the Windows App SDK could not be copied from $native" }
     }
-    # What a backend's engine needs beside an application linking it, each backend lays itself.
+    # What a backend's engine needs beside an application linking it, as its Packaging\runtime.txt declares - a line
+    # a file: the package, its path there ({architecture} Windows' word), its path beside the application.
     foreach ($backend in Get-ChildItem (Join-Path $StateUIRepository 'lib\Backends') -Directory -Filter '*.WinUI') {
-        $lays = Join-Path $backend.FullName 'SelfContained.ps1'
-        if (Test-Path $lays) { & $lays -Directory $Directory -Architecture $Architecture }
+        $declaration = Join-Path $backend.FullName 'Packaging\runtime.txt'
+        $library = "StateUI$($backend.Name -replace '\.', '').dll"
+        if (-not (Test-Path $declaration) -or -not (Test-Path (Join-Path $Directory $library))) { continue }
+        foreach ($line in Get-Content $declaration) {
+            $words = -split $line
+            if ($words.Count -ne 3 -or $words[0].StartsWith('#')) { continue }
+            $source = Join-Path (Get-StateUIPackage $words[0]) ($words[1] -replace '\{architecture\}', $Architecture)
+            Copy-Item $source (Join-Path $Directory $words[2]) -Force
+        }
     }
     if ($Architecture -ne $StateUIArchitecture) { Add-StateUISwiftRuntime -Directory $Directory -Architecture $Architecture }
     $global:LASTEXITCODE = 0

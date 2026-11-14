@@ -20,7 +20,7 @@ struct BuildOptions: ParsableArguments {
     @Option(help: "debug or release; debug for a build and a run, release for a package.")
     var configuration: BuildConfiguration?
 
-    @Option(help: "The architecture it is built for; left out, this machine's for AppKit, the device's for UIKit and Android.")
+    @Option(help: "The architecture it is built for; left out, this machine's for AppKit, WinUI and GTK, the device's for UIKit and Android - on Windows arm64 or x86_64, the other run by Windows' emulation.")
     var architecture: Architecture?
 
     @Option(help: "A UIKit head's device or simulator, an Android head's device or emulator, by name or id (stateui devices --host <host>); left out, the booted simulator, else an iPhone - the only Android device running.")

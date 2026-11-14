@@ -392,19 +392,18 @@ final class NativeProjectTests: XCTestCase {
         "WindowsXamlManager::InitializeForCurrentThread",
     ]
 
-    /// What a backend's engine needs beside a WinUI application is the backend's to lay there, and only beside an
-    /// application linking it: the host's scripts name no file of WebView2's, and the web view's backend lays them
-    /// where its library stands.
-    func testAWinUIBackendLaysItsOwnFilesBesideTheApplication() throws {
+    /// What a backend's engine needs beside a WinUI application is the backend's to declare, and only an
+    /// application linking it gets it: the host's scripts name no file of WebView2's, and the web view's backend
+    /// declares them in its `Packaging/runtime.txt`, which the stateui tool lays.
+    func testAWinUIBackendDeclaresItsOwnFilesBesideTheApplication() throws {
         let repository = SourceTree.repository
         let tools = try String(contentsOf: repository.appendingPathComponent(".scripts/WinUI/tools.ps1"), encoding: .utf8)
         for file in ["Microsoft.Web.WebView2.Core.dll", "WebView2Loader.dll"] {
             XCTAssertFalse(tools.contains(file), "tools.ps1 lays \(file) beside every application")
         }
-        let backend = repository.appendingPathComponent("lib/Backends/WebView.WinUI/SelfContained.ps1")
-        let text = (try? String(contentsOf: backend, encoding: .utf8)) ?? ""
-        XCTAssertTrue(text.contains("StateUIWebViewWinUI.dll"), "the backend lays nothing, or beside every application")
-        XCTAssertTrue(text.contains("WebView2Loader.dll"), "the backend lays no loader")
+        let declaration = repository.appendingPathComponent("lib/Backends/WebView.WinUI/Packaging/runtime.txt")
+        let text = (try? String(contentsOf: declaration, encoding: .utf8)) ?? ""
+        XCTAssertTrue(text.contains("WebView2Loader.dll"), "the web view's backend declares no loader")
     }
 
     /// Every WINUI HEAD is an executable its application declares exactly when a

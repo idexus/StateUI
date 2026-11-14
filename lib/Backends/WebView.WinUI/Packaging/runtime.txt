@@ -1,0 +1,7 @@
+# What the web view's backend lays beside a WinUI application linking it: the
+# WebView2 package's component, whose classes WinUI's manifest names, and its
+# loader - through them WinUI's WebView2 drives the system's WebView2 runtime.
+# A line a file: the package, its path there - {architecture} Windows' word,
+# arm64 or x64 - and its path beside the application.
+microsoft.web.webview2 runtimes/win-{architecture}/native_uap/Microsoft.Web.WebView2.Core.dll Microsoft.Web.WebView2.Core.dll
+microsoft.web.webview2 runtimes/win-{architecture}/native/WebView2Loader.dll WebView2Loader.dll

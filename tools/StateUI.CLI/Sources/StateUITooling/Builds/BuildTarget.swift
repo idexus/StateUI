@@ -43,6 +43,19 @@ struct BuildTarget: Sendable {
         return BuildTarget(architecture: architecture, arguments: [])
     }
 
+    /// A WinUI head for `architecture`: the toolchain's own built as it is, the other with `--arch` (winui-heads.md);
+    /// built on Windows alone.
+    static func winUI(_ architecture: Architecture, machine: Architecture) throws -> BuildTarget {
+        #if os(Windows)
+        guard [.arm64, .x86_64].contains(architecture) else {
+            throw ToolingError(.invalidConfiguration, "A WinUI head is built for arm64 or x86_64, not \(architecture.rawValue).")
+        }
+        return BuildTarget(architecture: architecture, arguments: architecture == machine ? [] : ["--arch", architecture == .x86_64 ? "x86_64" : "aarch64"])
+        #else
+        throw ToolingError(.invalidConfiguration, "A WinUI head is built on Windows.")
+        #endif
+    }
+
     /// A Web head: the Swift SDK `_wasm` of `compiler`'s release (web-heads.md), else `MISSING_TOOLCHAIN`.
     static func web(compiler: ProcessExecutable) async throws -> BuildTarget {
         let version = await ToolOutput.text(compiler, ["--version"]) ?? ""

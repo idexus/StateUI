@@ -66,6 +66,12 @@ public struct ApplicationBuilder: Sendable {
             for name in try files.contentsOfDirectory(atPath: artifact.path).sorted() where name != "artifact.json" {
                 try files.copyItem(at: artifact.appendingPathComponent(name), to: output.appendingPathComponent(name))
             }
+            if built.host == .winui {
+                try await WinUIHead.readyForDeployment(
+                    output, architecture: built.architecture, compiler: try Self.compilerPath(tools.swift),
+                    cache: ArtifactStore(holding: artifact).cache("swift-runtime-\(built.architecture.rawValue)"),
+                    reporter: reporter)
+            }
             var laid = built
             laid.folderUri = FileURI.string(output)
             laid.programUri = FileURI.string(output.appendingPathComponent(try FileURI.url(built.programUri).lastPathComponent))
@@ -88,7 +94,7 @@ public struct ApplicationBuilder: Sendable {
     func built(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter)
         async throws -> (result: BuildResult, root: URL) {
         let (project, application) = try await resolve(request, in: folder)
-        guard [.appkit, .uikit, .android, .gtk, .web].contains(request.host) else {
+        guard [.appkit, .uikit, .android, .winui, .gtk, .web].contains(request.host) else {
             throw ToolingError(.invalidConfiguration, "\(request.host.rawValue) is built by its .scripts until its row moves to the tool.")
         }
         guard let libraryUri = application.libraryUri else {
@@ -108,6 +114,8 @@ public struct ApplicationBuilder: Sendable {
                 tools: AndroidTools(environment: environment))
         case .gtk:
             try BuildTarget.native(request.architecture ?? machine, machine: machine, host: request.host)
+        case .winui:
+            try BuildTarget.winUI(request.architecture ?? machine, machine: machine)
         case .web:
             try await BuildTarget.web(compiler: tools.swift)
         default:
@@ -150,6 +158,11 @@ public struct ApplicationBuilder: Sendable {
             $0.setting($1.key, to: $1.value)
         }
         let compiler = target.compiler ?? tools.swift
+        if context.host == .winui {
+            // A running head holds its executable, which publishing writes again: it stops first.
+            await ToolStep.regardless(.name("taskkill"), ["/IM", "\(context.product).exe", "/F"])
+            try await WinUIProjection(library: context.library, packages: WinUIPackages(environment: self.environment)).ready(reporter: reporter)
+        }
         reporter.progress("building \(context.product)")
         let said = Gathered()
         let outcome = try await ProcessRunner().run(
@@ -177,7 +190,7 @@ public struct ApplicationBuilder: Sendable {
                 entry.write(output: line.text + "\n")
                 reporter.output(line)
             })
-            let head = try await assemble(context, target, name: name, binaries: binaries, in: staging, reporter: logged)
+            let head = try await assemble(context, target, name: name, binaries: binaries, common: common, environment: environment, in: staging, reporter: logged)
             let (bundle, program, signing) = (head.bundle, head.program, head.signing)
             let manifest = ArtifactManifest(
                 id: "\(context.host.rawValue)-\(context.key)-\(context.configuration.rawValue)", producerOperationId: operation,
@@ -209,7 +222,8 @@ public struct ApplicationBuilder: Sendable {
 
     /// The head assembled in `staging` - an Apple bundle, an Android APK.
     private func assemble(
-        _ context: BuildContext, _ target: BuildTarget, name: String, binaries: URL, in staging: URL, reporter: BuildReporter
+        _ context: BuildContext, _ target: BuildTarget, name: String, binaries: URL, common: [String], environment: ProcessEnvironment,
+        in staging: URL, reporter: BuildReporter
     ) async throws -> Head {
         if context.host == .web {
             let page = WebPage(
@@ -217,6 +231,18 @@ public struct ApplicationBuilder: Sendable {
                 stamp: Int(Date().timeIntervalSince1970))
             try page.assemble(in: staging)
             return Head(bundle: nil, program: "index.html", signing: .none)
+        }
+        if context.host == .winui {
+            let compiler = try Self.compilerPath(tools.swift)
+            let head = WinUIHead(
+                application: context.application, product: context.product, binaries: binaries, architecture: context.architecture,
+                machine: Architecture(rawValue: Machine.current.architecture) ?? .arm64,
+                dependencies: try await WinUIHead.resolvedDependencies(
+                    of: context.application, scratch: ["--scratch-path", context.scratch.path], compiler: tools.swift, environment: environment),
+                packages: WinUIPackages(environment: self.environment),
+                compiler: compiler, cache: ArtifactStore(application: context.application).cache("swift-runtime-\(context.architecture.rawValue)"))
+            try await head.assemble(in: staging, reporter: reporter)
+            return Head(bundle: nil, program: "\(context.product).exe", signing: .none)
         }
         if context.host == .gtk {
             let head = GTKHead(application: context.application, product: context.product, binaries: binaries)
@@ -227,7 +253,7 @@ public struct ApplicationBuilder: Sendable {
             let head = AndroidHead(
                 application: context.application, name: name, product: context.product, library: context.library,
                 configuration: context.configuration, work: context.scratch.appendingPathComponent("stateui"),
-                tools: AndroidTools(environment: environment))
+                tools: AndroidTools(environment: self.environment))
             guard let abi = AndroidDestinations.abi(of: context.architecture) else {
                 throw ToolingError(.invalidConfiguration, "No Android ABI is \(context.architecture.rawValue).")
             }
@@ -259,6 +285,16 @@ public struct ApplicationBuilder: Sendable {
         #else
         throw ToolingError(.invalidConfiguration, "An Apple bundle is assembled on a Mac.")
         #endif
+    }
+
+    /// Where `compiler` stands: its path, or where the search path finds it.
+    static func compilerPath(_ compiler: ProcessExecutable) throws -> URL {
+        switch compiler {
+        case .path(let path): return URL(fileURLWithPath: path)
+        case .name(let name):
+            guard let found = SearchPath().find(name) else { throw ToolingError(.missingToolchain, "No \(name) stands on the search path.") }
+            return found
+        }
     }
 
     /// The bundle identifier the property list at `plist` names.
