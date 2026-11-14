@@ -36,6 +36,8 @@ writes its result as words or as the message an editor receives.
 - [Runs](runs.md): a run as one operation from its build to its
   application's end - on a simulator, on a device - and how a stop ends
   everything it started.
+- [Android heads](android-heads.md): the Swift build of an ABI, the native
+  libraries an APK ships, and the APK Gradle makes.
 - [Apple bundles](apple-bundles.md): an Apple head's `Info.plist`, and what an
   AppKit bundle holds.
 - [The repository's own work](repository.md): a host's suite, run as its CI runs it.

@@ -24,13 +24,15 @@ public struct ApplicationBuilder: Sendable {
     private let environment: [String: String]
     private let permit: BuildPermit
     private let tools: ToolResolver
-    private let destinations: @Sendable () async -> [Destination]
+    private let destinations: @Sendable (HostFamily) async -> [Destination]
 
-    /// A builder finding its programs through `environment`, waiting on `permit`, and choosing a UIKit head's
-    /// destination among those `destinations` lists.
+    /// A builder finding its programs through `environment`, waiting on `permit`, and choosing a UIKit or Android
+    /// head's destination among those `destinations` lists for its host.
     public init(
         environment: [String: String] = ProcessInfo.processInfo.environment, permit: BuildPermit = BuildPermit(),
-        destinations: @escaping @Sendable () async -> [Destination] = { await AppleDestinations().list() }
+        destinations: @escaping @Sendable (HostFamily) async -> [Destination] = { host in
+            host == .android ? await AndroidDestinations().list() : await AppleDestinations().list()
+        }
     ) {
         self.environment = environment
         self.permit = permit
@@ -74,7 +76,7 @@ public struct ApplicationBuilder: Sendable {
     func built(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter)
         async throws -> (result: BuildResult, root: URL) {
         let (project, application) = try await resolve(request, in: folder)
-        guard [.appkit, .uikit].contains(request.host) else {
+        guard [.appkit, .uikit, .android].contains(request.host) else {
             throw ToolingError(.invalidConfiguration, "\(request.host.rawValue) is built by its .scripts until its row moves to the tool.")
         }
         guard let libraryUri = application.libraryUri else {
@@ -83,16 +85,24 @@ public struct ApplicationBuilder: Sendable {
         let folderOfApplication = try FileURI.url(application.packageUri)
         let configuration = request.configuration ?? .debug
         let machine = Architecture(rawValue: Machine.current.architecture) ?? .arm64
-        let target = request.host == .uikit
-            ? try await BuildTarget.uiKit(
-                device: request.device, listed: await destinations(), architecture: request.architecture, machine: machine,
+        let target = switch request.host {
+        case .uikit:
+            try await BuildTarget.uiKit(
+                device: request.device, listed: await destinations(.uikit), architecture: request.architecture, machine: machine,
                 application: folderOfApplication, name: application.name)
-            : await BuildTarget.appKit(request.architecture ?? machine, machine: machine)
+        case .android:
+            try await BuildTarget.android(
+                device: request.device, listed: await destinations(.android), architecture: request.architecture,
+                tools: AndroidTools(environment: environment))
+        default:
+            await BuildTarget.appKit(request.architecture ?? machine, machine: machine)
+        }
+        let compiler = target.compiler ?? tools.swift
         let context = BuildContext(
             application: folderOfApplication, product: "\(application.name)\(request.host.folder)", host: request.host,
             configuration: configuration, architecture: target.architecture,
-            compiler: (await ToolOutput.text(tools.swift, ["--version"]))?.split(separator: "\n").first.map(String.init) ?? "",
-            sdk: target.sdk?.identity ?? "", library: try FileURI.url(libraryUri))
+            compiler: (await ToolOutput.text(compiler, ["--version"]))?.split(separator: "\n").first.map(String.init) ?? "",
+            sdk: target.sdkIdentity, library: try FileURI.url(libraryUri))
 
         let lease = try await permit.acquire(for: "\(application.name) for \(request.host.rawValue), stateui \(ProcessInfo.processInfo.processIdentifier)") {
             reporter.progress("waiting for \($0)")
@@ -120,11 +130,14 @@ public struct ApplicationBuilder: Sendable {
     ) async throws -> BuildResult {
         let common = ["--package-path", context.application.path, "--scratch-path", context.scratch.path,
                       "--configuration", context.configuration.rawValue, "--disable-build-manifest-caching"] + target.arguments
-        let environment = ProcessEnvironment.inherited.setting("STATEUI_HOST", to: context.host.rawValue)
+        let environment = target.environment.reduce(ProcessEnvironment.inherited.setting("STATEUI_HOST", to: context.host.rawValue)) {
+            $0.setting($1.key, to: $1.value)
+        }
+        let compiler = target.compiler ?? tools.swift
         reporter.progress("building \(context.product)")
         let said = Gathered()
         let outcome = try await ProcessRunner().run(
-            ProcessRequest(tools.swift, arguments: ["build", "--product", context.product] + common, environment: environment),
+            ProcessRequest(compiler, arguments: ["build", "--product", context.product] + common, environment: environment),
             output: { line in
                 said.add(line)
                 entry.write(output: line.text + "\n")
@@ -135,16 +148,20 @@ public struct ApplicationBuilder: Sendable {
             let last = (said.lines(of: .standardOutput) + said.lines(of: .standardError)).suffix(12).joined(separator: "\n")
             throw ToolingError(.toolFailed, "\(context.product) did not build; nothing was published:\n\(last)")
         }
-        let binaries = (await ToolOutput.text(tools.swift, ["build", "--show-bin-path"] + common, environment: environment))?
+        let binaries = (await ToolOutput.text(compiler, ["build", "--show-bin-path"] + common, environment: environment))?
             .split(separator: "\n").last.map { URL(fileURLWithPath: String($0).trimmingCharacters(in: .whitespaces)) }
         guard let binaries else { throw ToolingError(.toolFailed, "SwiftPM did not say where it laid \(context.product).") }
 
-        #if canImport(AppKit)
-        reporter.progress("assembling \(context.product).app")
+        reporter.progress("assembling \(context.product)")
         let store = ArtifactStore(application: context.application)
         let staging = try store.staging(for: operation)
         do {
-            let (bundle, program, signing) = try await assemble(context, target, name: name, binaries: binaries, in: staging)
+            // Every line a step of the assembly writes stands in the journal too, as the compiler's does.
+            let logged = BuildReporter(progress: reporter.progress, output: { line in
+                entry.write(output: line.text + "\n")
+                reporter.output(line)
+            })
+            let (bundle, program, signing) = try await assemble(context, target, name: name, binaries: binaries, in: staging, reporter: logged)
             let manifest = ArtifactManifest(
                 id: "\(context.host.rawValue)-\(context.key)-\(context.configuration.rawValue)", producerOperationId: operation,
                 createdAt: Operations.timestamp(), applicationUri: FileURI.string(context.application), host: context.host,
@@ -159,15 +176,26 @@ public struct ApplicationBuilder: Sendable {
             store.discard(staging)
             throw error
         }
-        #else
-        throw ToolingError(.invalidConfiguration, "An Apple bundle is assembled on a Mac.")
-        #endif
     }
 
-    #if canImport(AppKit)
-    /// The head's bundle assembled in `staging`: its folder's and its program's paths there, and how it was signed.
-    private func assemble(_ context: BuildContext, _ target: BuildTarget, name: String, binaries: URL, in staging: URL)
-        async throws -> (bundle: String, program: String, signing: ArtifactManifest.Signing) {
+    /// The head assembled in `staging` - an Apple bundle, an Android APK: its path there, its program's, and how it
+    /// was signed.
+    private func assemble(
+        _ context: BuildContext, _ target: BuildTarget, name: String, binaries: URL, in staging: URL, reporter: BuildReporter
+    ) async throws -> (bundle: String, program: String, signing: ArtifactManifest.Signing) {
+        if context.host == .android, let (swiftSDK, ndk) = target.android {
+            let head = AndroidHead(
+                application: context.application, name: name, product: context.product, library: context.library,
+                configuration: context.configuration, work: context.scratch.appendingPathComponent("stateui"),
+                tools: AndroidTools(environment: environment))
+            guard let abi = AndroidDestinations.abi(of: context.architecture) else {
+                throw ToolingError(.invalidConfiguration, "No Android ABI is \(context.architecture.rawValue).")
+            }
+            let package = try await head.assemble(
+                abi: abi, binaries: binaries, swiftSDK: swiftSDK, ndk: ndk, in: staging, reporter: reporter)
+            return (package.apk, package.apk, .development)
+        }
+        #if canImport(AppKit)
         if context.host == .appkit {
             let bundle = AppKitBundle(
                 application: context.application, name: name, product: context.product, binaries: binaries,
@@ -187,8 +215,10 @@ public struct ApplicationBuilder: Sendable {
             _ = try await bundle.assemble(in: staging, signing: .development(development))
             return (bundle.bundlePath, bundle.programPath, .development)
         }
+        #else
+        throw ToolingError(.invalidConfiguration, "An Apple bundle is assembled on a Mac.")
+        #endif
     }
-    #endif
 
     /// The project `request` names - its `projectUri`, else `folder` - and the application in it it means.
     private func resolve(_ request: BuildRequest, in folder: URL) async throws -> (Project, Application) {

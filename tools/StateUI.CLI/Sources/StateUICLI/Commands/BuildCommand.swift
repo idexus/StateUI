@@ -14,16 +14,16 @@ struct BuildOptions: ParsableArguments {
     @Option(help: "The application, where the project holds more than one.")
     var application: String?
 
-    @Option(help: "The host it is built for: appkit or uikit.")
+    @Option(help: "The host it is built for: appkit, uikit or android.")
     var host: HostFamily
 
     @Option(help: "debug or release; debug for a build and a run, release for a package.")
     var configuration: BuildConfiguration?
 
-    @Option(help: "The architecture it is built for; this machine's when left out.")
+    @Option(help: "The architecture it is built for; left out, this machine's for AppKit, the device's for UIKit and Android.")
     var architecture: Architecture?
 
-    @Option(help: "A UIKit head's device or simulator, by name, identifier or UDID (stateui devices --host uikit); the booted simulator, else an iPhone, when left out.")
+    @Option(help: "A UIKit head's device or simulator, an Android head's device or emulator, by name or id (stateui devices --host <host>); left out, the booted simulator, else an iPhone - the only Android device running.")
     var device: String?
 
     /// The request these options name, laid in `output` where given.

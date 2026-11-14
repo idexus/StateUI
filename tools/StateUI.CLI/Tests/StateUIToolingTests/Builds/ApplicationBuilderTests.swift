@@ -94,7 +94,8 @@ final class ApplicationBuilderTests: XCTestCase {
     func testWhatCannotBeBuiltIsRefusedFirst() async throws {
         let bench = try bench()
         let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
-        for (request, said) in [(BuildRequest(host: .gtk), "has no gtk head"), (BuildRequest(host: .uikit, device: "Nothing"), "No iPhone")] {
+        for (request, said) in [(BuildRequest(host: .gtk), "has no gtk head"), (BuildRequest(host: .uikit, device: "Nothing"), "No iPhone"),
+                                (BuildRequest(host: .android), "has no android head")] {
             do {
                 _ = try await builder.build(request, in: bench.application, operation: "op")
                 XCTFail("\(request.host) was built")
@@ -112,7 +113,7 @@ final class ApplicationBuilderTests: XCTestCase {
             Destination(id: "PHONE", udid: "PHONE", name: "iPhone 18 Pro", kind: .simulator, version: "27.0"),
             Destination(id: "PAD", udid: "PAD", name: "iPad Air 13-inch (M4)", kind: .simulator, version: "27.0", booted: true),
         ]
-        let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit, destinations: { simulators })
+        let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit, destinations: { _ in simulators })
 
         let built = try await builder.build(BuildRequest(host: .uikit), in: bench.application, operation: "op-uikit")
 

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import Foundation
 import StateUIToolingProtocol
 
 /// A program a build or a run takes as a step - `codesign`, `actool`, `simctl` - which must succeed.
@@ -9,11 +10,26 @@ enum ToolStep {
     ///
     /// - Throws: ``ToolingError`` `TOOL_FAILED` with the last of what it said, where it failed.
     static func run(_ tool: String, _ arguments: [String], limit: Duration = .seconds(120)) async throws {
+        try await run(.name(tool), arguments, limit: limit)
+    }
+
+    /// Runs `executable` with `arguments` in `environment`, for at most `limit`.
+    ///
+    /// - Throws: ``ToolingError`` `TOOL_FAILED` with the last of what it said, where it failed.
+    static func run(
+        _ executable: ProcessExecutable, _ arguments: [String], environment: ProcessEnvironment = .inherited,
+        limit: Duration = .seconds(120)
+    ) async throws {
         let said = Gathered()
-        let outcome = try await ProcessRunner().run(ProcessRequest(.name(tool), arguments: arguments, timeout: limit), output: said.add)
+        let request = ProcessRequest(executable, arguments: arguments, environment: environment, timeout: limit)
+        let outcome = try await ProcessRunner().run(request, output: said.add)
         guard outcome.succeeded else {
             let words = (said.lines(of: .standardError) + said.lines(of: .standardOutput)).suffix(5).joined(separator: "\n")
-            throw ToolingError(.toolFailed, "\(tool) \(arguments.first ?? "") refused:\n\(words)")
+            let name = switch executable {
+            case .name(let name): name
+            case .path(let path): URL(fileURLWithPath: path).lastPathComponent
+            }
+            throw ToolingError(.toolFailed, "\(name) \(arguments.first ?? "") refused:\n\(words)")
         }
     }
 

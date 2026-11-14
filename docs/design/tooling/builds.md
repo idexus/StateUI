@@ -45,7 +45,9 @@ runs `swift build --product <Name><Host>` with exactly the host's
 `STATEUI_HOST`, `--disable-build-manifest-caching` (the manifest reads that
 variable) and the target's triple and SDK: an AppKit head's only for an
 architecture not the machine's own, a UIKit head's always - the simulator's
-or the device's the build is for (destinations.md). A device's signing is
+or the device's the build is for (destinations.md) - and an Android head's
+Swift SDK and triple, built by the swift.org compiler of the SDK's release
+(android-heads.md). A device's signing is
 found before the compile, so a device no profile provisions is refused in a
 second, not after the build; every
 line SwiftPM writes goes to the journal and, as the operation's output, to

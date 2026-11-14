@@ -89,5 +89,26 @@ final class ApplePicturesTests: XCTestCase {
         try ApplePictures.drawAppIcon(background: background, mark: mark, into: catalog)
         XCTAssertEqual(try FileManager.default.attributesOfItem(atPath: png.path)[.modificationDate] as? Date, drawn)
     }
+
+    /// An Android launcher icon is adaptive: its background and its foreground at every density, each a 108 dp canvas
+    /// in pixels, and the XML naming them - the foreground its monochrome layer too.
+    func testAnAndroidIconIsAdaptiveAtEveryDensity() throws {
+        let root = try folder()
+        let background = root.appendingPathComponent("appicon_bkg.svg")
+        let mark = root.appendingPathComponent("appicon_mark.svg")
+        try svg.write(to: background, atomically: true, encoding: .utf8)
+        try svg.write(to: mark, atomically: true, encoding: .utf8)
+        let res = root.appendingPathComponent("res")
+
+        try ApplePictures.drawAdaptiveIcon(background: background, mark: mark, into: res)
+
+        for (folder, side) in [("mipmap-mdpi", 108), ("mipmap-hdpi", 162), ("mipmap-xhdpi", 216), ("mipmap-xxhdpi", 324), ("mipmap-xxxhdpi", 432)] {
+            for layer in ["appicon_background", "appicon_foreground"] {
+                XCTAssertTrue(pixels(res.appendingPathComponent("\(folder)/\(layer).png"))! == (side, side), "\(folder)/\(layer)")
+            }
+        }
+        let xml = try String(contentsOf: res.appendingPathComponent("mipmap-anydpi-v26/appicon.xml"), encoding: .utf8)
+        XCTAssertTrue(xml.contains("<monochrome android:drawable=\"@mipmap/appicon_foreground\" />"))
+    }
 }
 #endif

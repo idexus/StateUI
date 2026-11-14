@@ -7,7 +7,7 @@ import Foundation
 import ImageIO
 
 /// Pictures drawn on a Mac for the heads that need them drawn: an SVG to a PNG at a scale, an application's pictures
-/// to a folder of PNGs, a macOS icon, and an iOS icon's asset catalog.
+/// to a folder of PNGs, a macOS icon, an iOS icon's asset catalog, and an Android launcher icon.
 /// Design: docs/design/tooling/pictures.md
 public enum ApplePictures {
     /// The picture files the folders hold and carry over; only SVGs are drawn.
@@ -72,14 +72,49 @@ public enum ApplePictures {
         try draw([background, mark], width: 1024, to: png, opaque: true)
     }
 
+    /// Android's densities: each one's mipmap folder, and its pixels to a dp.
+    static let androidDensities: [(folder: String, scale: Double)] = [
+        ("mipmap-mdpi", 1), ("mipmap-hdpi", 1.5), ("mipmap-xhdpi", 2), ("mipmap-xxhdpi", 3), ("mipmap-xxxhdpi", 4),
+    ]
+
+    /// An Android launcher icon drawn into `res`: the adaptive `@mipmap/appicon`, `background` its background and
+    /// `mark` its foreground and monochrome layer, each a 108 dp canvas at every density, the mark at two thirds of it
+    /// about its middle - where it stands as large as a launcher shows it elsewhere - drawn again only where changed.
+    public static func drawAdaptiveIcon(background: URL, mark: URL, into res: URL) throws {
+        let files = FileManager.default
+        for density in androidDensities {
+            let folder = res.appendingPathComponent(density.folder)
+            try files.createDirectory(at: folder, withIntermediateDirectories: true)
+            let pixels = Int((108 * density.scale).rounded())
+            for (artwork, name, fraction) in [(background, "appicon_background", 1.0), (mark, "appicon_foreground", 2.0 / 3)] {
+                let png = folder.appendingPathComponent("\(name).png")
+                if let drawn = modified(png), let written = modified(artwork), drawn >= written { continue }
+                try draw([artwork], width: pixels, to: png, fraction: fraction)
+            }
+        }
+        let anydpi = res.appendingPathComponent("mipmap-anydpi-v26")
+        try files.createDirectory(at: anydpi, withIntermediateDirectories: true)
+        try Data("""
+            <?xml version="1.0" encoding="utf-8"?>
+            <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+                <background android:drawable="@mipmap/appicon_background" />
+                <foreground android:drawable="@mipmap/appicon_foreground" />
+                <monochrome android:drawable="@mipmap/appicon_foreground" />
+            </adaptive-icon>
+
+            """.utf8).write(to: anydpi.appendingPathComponent("appicon.xml"))
+    }
+
     /// Draws `svg` into `png`: `width` pixels square where given, else `scale` times its own size.
     private static func draw(_ svg: URL, width: Int?, to png: URL, scale: Double = 1) throws {
         try draw([svg], width: width, to: png, scale: scale)
     }
 
-    /// Draws `layers`, the first lowest, into `png` - each over the whole picture, the first's size giving it - and
-    /// `opaque`, with no alpha.
-    private static func draw(_ layers: [URL], width: Int?, to png: URL, scale: Double = 1, opaque: Bool = false) throws {
+    /// Draws `layers`, the first lowest, into `png` - each over `fraction` of the picture about its middle, the first's
+    /// size giving it - and `opaque`, with no alpha.
+    private static func draw(
+        _ layers: [URL], width: Int?, to png: URL, scale: Double = 1, opaque: Bool = false, fraction: Double = 1
+    ) throws {
         let images = try layers.map { svg in
             guard let image = NSImage(contentsOf: svg), image.size.width > 0, image.size.height > 0 else {
                 throw CocoaError(.fileReadCorruptFile, userInfo: [NSFilePathErrorKey: svg.path])
@@ -95,7 +130,8 @@ public enum ApplePictures {
                 data: nil, width: pixelsWide, height: pixelsHigh, bitsPerComponent: 8, bytesPerRow: 0, space: space,
                 bitmapInfo: alpha.rawValue)
         else { throw CocoaError(.fileWriteUnknown, userInfo: [NSFilePathErrorKey: png.path]) }
-        let whole = NSRect(x: 0, y: 0, width: pixelsWide, height: pixelsHigh)
+        let (wide, high) = (Double(pixelsWide) * fraction, Double(pixelsHigh) * fraction)
+        let whole = NSRect(x: (Double(pixelsWide) - wide) / 2, y: (Double(pixelsHigh) - high) / 2, width: wide, height: high)
         NSGraphicsContext.saveGraphicsState()
         NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: false)
         for image in images { image.draw(in: whole) }

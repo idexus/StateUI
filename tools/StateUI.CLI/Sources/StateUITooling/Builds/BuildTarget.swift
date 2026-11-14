@@ -17,6 +17,17 @@ struct BuildTarget: Sendable {
     var signing: Signing = .adHoc
     /// `swift build`'s `--triple` and `--sdk`, where the build is not this machine's own.
     var arguments: [String]
+    /// The compiler, where the host takes another than the tool's own: Android's, of the Swift SDK's build.
+    var compiler: ProcessExecutable?
+    /// What the build's environment gains: Android's NDK.
+    var environment: [String: String] = [:]
+    /// An Android head's Swift SDK and NDK.
+    var android: (swiftSDK: String, ndk: URL)?
+
+    /// The identity of what the build compiles against, for its context: the Apple SDK, or the Swift SDK and NDK.
+    var sdkIdentity: String {
+        sdk?.identity ?? android.map { "\($0.swiftSDK) \($0.ndk.path)" } ?? ""
+    }
 
     enum Signing: Sendable {
         case adHoc
@@ -30,6 +41,32 @@ struct BuildTarget: Sendable {
         BuildTarget(
             architecture: architecture, sdk: await AppleSDK.find(.macOS),
             arguments: architecture == machine ? [] : ["--triple", AppleSDK.Platform.macOS.triple(architecture, floor: Doctor.appleFloor)])
+    }
+
+    /// The target of an Android head for the ABI of `architecture`, else of the device `device` names - or the only
+    /// one running - else `arm64-v8a`: the Swift SDK for Android of the swift.org compiler's release, the triple at
+    /// API 28, and the NDK, 30 or newer.
+    ///
+    /// - Throws: ``ToolingError`` `MISSING_TOOLCHAIN` where the compiler, the SDK or the NDK is missing,
+    ///   `INVALID_CONFIGURATION` where the device named is not here.
+    static func android(device: String?, listed: [Destination], architecture: Architecture?, tools: AndroidTools) async throws -> BuildTarget {
+        guard let (compiler, swiftSDK) = await tools.swift() else {
+            throw ToolingError(.missingToolchain, "No swift.org compiler with the Swift SDK for Android of its release: `stateui doctor --host android` says what to install.")
+        }
+        guard let ndk = tools.ndk(for: swiftSDK), let major = AndroidTools.ndkMajor(of: ndk), major >= 30 else {
+            throw ToolingError(.missingToolchain, "No Android NDK 30 or newer: install one with Android Studio's SDK Manager, or name it with ANDROID_NDK_ROOT.")
+        }
+        let destination = device.flatMap { $0.isEmpty ? nil : $0 } == nil
+            ? try? AndroidDestinations.choose(nil, from: listed) : try AndroidDestinations.choose(device, from: listed)
+        let architecture = architecture ?? destination?.architecture ?? .arm64
+        let names: [Architecture: String] = [.arm64: "aarch64", .x86_64: "x86_64"]
+        guard let name = names[architecture] else {
+            throw ToolingError(.invalidConfiguration, "An Android head is built for arm64 or x86_64, not \(architecture.rawValue).")
+        }
+        return BuildTarget(
+            architecture: architecture, destination: destination,
+            arguments: ["--swift-sdk", swiftSDK, "--triple", "\(name)-unknown-linux-android28"],
+            compiler: .path(compiler.path), environment: ["ANDROID_NDK_ROOT": ndk.path], android: (swiftSDK, ndk))
     }
 
     /// The target of a UIKit head of `application` named `name` for the destination `device` names among `listed`:

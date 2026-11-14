@@ -49,6 +49,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   booted simulator, else an iPhone, where none is named. A simulator's bundle is signed ad hoc; a device's with the
   development profile that provisions it, found before the build. A simulator's build and a device's keep scratch
   folders of their own.
+- **`stateui build` and `package` make Android applications** for the ABI asked for, else the device's named, else
+  `arm64-v8a` - the APK with its native libraries and their symbols beside it in the artifact, its pictures and its
+  launcher icon drawn for it; an ABI's build keeps a scratch folder of its own.
 - **`stateui run --host uikit`** installs and starts a UIKit head on its simulator or device and follows its output;
   `--debugger` starts it held until a debugger attaches, saying its process. Ctrl+C, or an editor's cancel of
   `application/run`, ends the application and every process the launch started.
