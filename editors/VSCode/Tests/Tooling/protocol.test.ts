@@ -82,6 +82,23 @@ function builtTool(): string | undefined {
     return fs.existsSync(program) ? program : undefined;
 }
 
+test("a folder the tool holds a connection for can be removed: the tool runs from outside it", async (context) => {
+    const executable = builtTool();
+    if (!executable) {
+        context.skip("no Swift to build the tool");
+        return;
+    }
+    const folder = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-vscode-"));
+    const client = await ToolingClient.start({ executable, folder, clientVersion: "test" });
+    try {
+        assert.strictEqual(client.initialized.workspace.uri, pathToFileUri(folder));
+        fs.rmSync(folder, { recursive: true });
+        assert.strictEqual(fs.existsSync(folder), false);
+    } finally {
+        await client.dispose();
+    }
+});
+
 test("the extension's client speaks to the tool: queries, an operation's events and result, a refusal", async (context) => {
     const executable = builtTool();
     if (!executable) {

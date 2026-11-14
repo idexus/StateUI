@@ -165,6 +165,14 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   and **Conformance - Rebuild all** and **Rebuild changed** through `repository/conformance`, their phases named at
   the end. **StateUI: Deploy** is titled **StateUI: Package**, as `stateui package` does the work; its command,
   `stateui.deploy`, stays. A `swift test` a suite runs that ran no test fails, filtered or not.
+- One package is indexed as one host at a time: `index/acquire` holds a window's packages as its host for the
+  connection's life, and answers the package and host where another window holds one as another host. The VS Code
+  extension takes the lease before it writes a package's `.sourcekit-lsp/config.json` - a host another window holds
+  is refused, the one before kept, and a window opening on such a package works as that host. `STATEUI_STATE` names
+  the tool's state folder - its build permit and index leases - which the extension's suite gives its own. The
+  extension declares no `stateui` task type any more: it made its own tasks with it, and no task of a `tasks.json` ever
+  ran by it. The extension runs the tool from the user's home, so on Windows a folder it holds a connection for can be
+  removed or renamed.
 - The `stateui` tool has a workflow of its own (`cli.yml`): its suites on macOS, Linux and Windows, then the editor
   extension's client of it against a real `stateui serve --stdio`.
 

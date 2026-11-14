@@ -1,0 +1,27 @@
+{
+  "request" : {
+    "id" : "23",
+    "jsonrpc" : "2.0",
+    "method" : "index/acquire",
+    "params" : {
+      "host" : "uikit",
+      "rootUris" : [
+        "file:///Users/example/Projects/Demo/Notes"
+      ]
+    }
+  },
+  "response" : {
+    "id" : "23",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "conflict" : {
+        "host" : "appkit",
+        "rootUri" : "file:///Users/example/Projects/Demo/Notes"
+      },
+      "host" : "uikit",
+      "rootUris" : [
+
+      ]
+    }
+  }
+}

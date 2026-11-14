@@ -7,8 +7,13 @@ import StateUIToolingProtocol
 /// The work every client of the tool asks for, by the tooling API's methods: the terminal's commands and an
 /// editor's JSON-RPC requests both call it.
 public struct ToolingService: Sendable {
-    /// A service for this process.
-    public init() {}
+    /// The packages this connection indexes, and as which host.
+    private let indexLeases: IndexLeases
+
+    /// A service for this process, its index leases kept in `leases`.
+    public init(leases: IndexLeases = IndexLeases()) {
+        indexLeases = leases
+    }
 
     /// The tool's name and release.
     public static let identity = ToolIdentity(name: "stateui", version: Release.version)
@@ -155,6 +160,12 @@ public struct ToolingService: Sendable {
     /// triple and SDK a host whose heads run elsewhere compiles for.
     public func describeIndex(of host: HostFamily?) async -> IndexContext {
         await IndexContexts(tools: ToolResolver()).describe(host)
+    }
+
+    /// Holds the packages `rootUris` names as `host` for this connection - `index/acquire` - or names the package
+    /// another connection indexes as another host.
+    public func acquireIndex(_ host: HostFamily?, rootUris: [String]) async throws -> IndexLease {
+        try await indexLeases.acquire(host, roots: try rootUris.map(FileURI.url))
     }
 
     /// Takes every index's scratch folder away from the folders `rootUris` name - `index/clean`.
@@ -367,6 +378,7 @@ public struct ToolingService: Sendable {
             }
         }
         methods.query("index/clean") { (query: IndexQuery) in try cleanIndex(in: query.rootUris ?? []) }
+        methods.query("index/acquire") { (query: IndexQuery) in try await acquireIndex(query.host, rootUris: query.rootUris ?? []) }
         methods.mutation("repository/conformance") { (request: ConformanceRequest, context: OperationContext, caller: RequestContext) in
             try await Self.reporting(context) { reporter in
                 try await runConformance(

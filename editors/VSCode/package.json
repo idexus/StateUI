@@ -193,37 +193,6 @@
         ]
       }
     ],
-    "taskDefinitions": [
-      {
-        "type": "stateui",
-        "required": [],
-        "properties": {
-          "application": {
-            "type": "string",
-            "description": "The application whose head is built or run."
-          },
-          "configuration": {
-            "type": "string",
-            "enum": [
-              "debug",
-              "release"
-            ]
-          },
-          "suite": {
-            "type": "string",
-            "description": "The test suite run."
-          },
-          "device": {
-            "type": "string",
-            "description": "The serial of the Android device the head runs on."
-          },
-          "launch": {
-            "type": "boolean",
-            "description": "A head run until stopped, which a launch of the same application on the same device replaces."
-          }
-        }
-      }
-    ],
     "menus": {
       "commandPalette": [
         {

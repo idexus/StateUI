@@ -15,7 +15,7 @@ import { isCheckout } from "./checkouts";
 import { Configuration, runPlace, configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
 import { AndroidLister, androidDeviceOf, askForDevice, chooseListedDevice, chosenDevice, deviceToRunOn } from "./devices";
 import { askForBrowser, Browser, BrowserLister, browserOf, browserToRunOn, chooseListedBrowser, chosenBrowser } from "./browsers";
-import { applyEditorMode, cleanIndex, IndexDescriber, setHostEnvironment, variablesInSettings } from "./editorMode";
+import { applyEditorMode, cleanIndex, IndexAcquirer, IndexConflictError, IndexDescriber, setHostEnvironment, variablesInSettings } from "./editorMode";
 import { availableHosts, describe, Host } from "./hosts";
 import {
     askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceOf, UIKitLister, uiKitDeviceToRunOn, uiKitSimulatorToTestOn,
@@ -71,6 +71,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
         return folder === undefined ? undefined : withTool(tool, folder, "the index could not be described",
             (client) => client.request("index/describe", forHost ? { host: forHost } : {}));
+    };
+    // This window's lease of the packages it indexes, held by the first folder's connection while the window lives.
+    const acquireIndex: IndexAcquirer = async (forHost, folders) => {
+        const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+        return folder === undefined ? undefined : withTool(tool, folder, "the packages' index could not be leased",
+            (client) => client.request("index/acquire", { ...(forHost ? { host: forHost } : {}), rootUris: folders.map(pathToFileUri) }));
     };
     const cleanIndexes = (folders: readonly string[]) => withTool(tool, folders[0] ?? ".", "the index was not cleaned",
         (client) => client.request("index/clean", { rootUris: folders.map(pathToFileUri) }));
@@ -238,13 +244,38 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         ["android", "uikit", "web"].includes(described.id) ? deviceItem.show() : deviceItem.hide();
     };
 
+    /** The editor made to work as `forHost` - false where another window indexes a package as another host, said. */
+    const workAs = async (forHost: Host | undefined): Promise<boolean> => {
+        try {
+            return await applyEditorMode(forHost, roots(), describeIndex, acquireIndex);
+        } catch (error) {
+            if (!(error instanceof IndexConflictError)) {
+                throw error;
+            }
+            void vscode.window.showWarningMessage(`StateUI: ${error.message}, so this window's index stays as it was.`);
+            return false;
+        }
+    };
+
+    // A host another window indexes a package as is refused, the host chosen before kept.
     const selectHost = async (picked: Host): Promise<void> => {
+        const previous = state.get<Host>(hostKey);
         await state.update(hostKey, picked);
         refresh();
         testSuites.changed();
 
-        if (await applyEditorMode(picked, roots(), describeIndex)) {
-            void vscode.window.setStatusBarMessage(`StateUI: the editor works as ${describe(picked).label}`, 4000);
+        try {
+            if (await applyEditorMode(picked, roots(), describeIndex, acquireIndex)) {
+                void vscode.window.setStatusBarMessage(`StateUI: the editor works as ${describe(picked).label}`, 4000);
+            }
+        } catch (error) {
+            if (!(error instanceof IndexConflictError)) {
+                throw error;
+            }
+            await state.update(hostKey, previous);
+            refresh();
+            testSuites.changed();
+            void vscode.window.showErrorMessage(`StateUI: ${error.message}: this window stays ${runningAs()}.`);
         }
     };
 
@@ -481,7 +512,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             await discover();
             await selectApplication(name);
             updateFolderContexts();
-            await applyEditorMode(host(), roots(), describeIndex);
+            await workAs(host());
             void vscode.window.showInformationMessage(
                 `StateUI: ${vscode.workspace.asRelativePath(directory)} is made and chosen - StateUI: Debug runs it.`);
             return directory;
@@ -834,7 +865,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             updateFolderContexts();
             testSuites.changed();
             if (roots().join("\n") !== before) {
-                await applyEditorMode(host(), roots(), describeIndex);
+                await workAs(host());
             }
         }, 500);
     };
@@ -852,7 +883,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     await discover();
     updateFolderContexts();
     refresh();
-    await applyEditorMode(host(), roots(), describeIndex);
+    // A window opening on a package another window indexes as another host works as that host.
+    try {
+        await applyEditorMode(host(), roots(), describeIndex, acquireIndex);
+    } catch (error) {
+        if (!(error instanceof IndexConflictError)) {
+            throw error;
+        }
+        const held = error.conflict.host;
+        if (held && availableHosts().some((each) => each.id === held)) {
+            await state.update(hostKey, held);
+            refresh();
+            testSuites.changed();
+            await workAs(held);
+            void vscode.window.showInformationMessage(`StateUI: ${error.message}, so this window works as ${describe(held).label} too.`);
+        } else {
+            void vscode.window.showWarningMessage(`StateUI: ${error.message}, so this window's index stays as it was.`);
+        }
+    }
 
     const selectUIKitDevice = async (wanted: string): Promise<string | undefined> => {
         const name = await chooseListedUIKitDevice(state, wanted, listUIKit);

@@ -27,8 +27,8 @@ run stale output, so a machine builds one application at a time
 (`BuildPermit`): a lock the system holds on `build.lock` in the user's state
 folder - `~/Library/Application Support/stateui` on macOS,
 `$XDG_STATE_HOME/stateui` (else `~/.local/state/stateui`) on Linux,
-`%LOCALAPPDATA%\stateui` on Windows - shared by every `stateui` of every
-checkout. `flock` holds it on macOS and Linux, `LockFileEx` on Windows; the
+`%LOCALAPPDATA%\stateui` on Windows, or the folder `STATEUI_STATE` names -
+shared by every `stateui` of every checkout. `flock` holds it on macOS and Linux, `LockFileEx` on Windows; the
 system lets go of it when the holding process ends however it ends, so a crash
 leaves no lock behind. A waiter tries again every quarter second, is told who
 holds it as the holder wrote in `build.owner` beside it, and can be cancelled

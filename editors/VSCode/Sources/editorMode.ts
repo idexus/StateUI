@@ -35,6 +35,12 @@
 // apart. Switches therefore run one at a time, and each waits until no build is
 // running in the directories its server is about to build in.
 //
+// ONE PACKAGE IS INDEXED AS ONE HOST AT A TIME: its .sourcekit-lsp/config.json is
+// one file, which two windows working as two hosts would write in turn - each
+// server then building as its own host in the other's scratch folder. Before it
+// writes, the editor takes the tool's lease of its packages (`index/acquire`);
+// where another window holds one as another host, it writes nothing.
+//
 // A HOST WHOSE HEADS RUN ON ANOTHER PLATFORM IS INDEXED FOR THAT PLATFORM, as
 // the stateui tool says (`index/describe`): its scratch folder, and for Android
 // and the Web the Swift SDK of the toolchain's release and the triple, for UIKit
@@ -48,11 +54,22 @@ import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
+import { pathOf } from "./applications";
 import { describe, environment, Host, HostDescription, hostVariable, hosts } from "./hosts";
-import { IndexContext } from "./Tooling/protocol";
+import { IndexConflict, IndexContext, IndexLease } from "./Tooling/protocol";
 
 /** What the stateui tool says `host`'s code is indexed with - nothing where it could not say, which it said. */
 export type IndexDescriber = (host: Host | undefined) => Promise<IndexContext | undefined>;
+
+/** The tool's lease of `roots` as `host` for this window - nothing where it could not answer, which it said. */
+export type IndexAcquirer = (host: Host | undefined, roots: readonly string[]) => Promise<IndexLease | undefined>;
+
+/** Another window indexes a package as another host: the editor's mode was left as it was. */
+export class IndexConflictError extends Error {
+    constructor(readonly conflict: IndexConflict) {
+        super(`another window indexes ${pathOf(conflict.rootUri)} as ${conflict.host ? describe(conflict.host).label : "plain Swift"}`);
+    }
+}
 
 let queue: Promise<unknown> = Promise.resolve();
 
@@ -65,14 +82,21 @@ let queue: Promise<unknown> = Promise.resolve();
  * Calls are queued, so a second switch waits for the first to finish.
  *
  * @returns whether anything changed.
+ * @throws IndexConflictError where another window indexes one of `roots` as another host, nothing changed.
  */
-export function applyEditorMode(host: Host | undefined, roots: readonly string[], describeIndex: IndexDescriber): Promise<boolean> {
-    const next = queue.then(() => apply(host, roots, describeIndex));
+export function applyEditorMode(host: Host | undefined, roots: readonly string[], describeIndex: IndexDescriber,
+    acquireIndex: IndexAcquirer): Promise<boolean> {
+    const next = queue.then(() => apply(host, roots, describeIndex, acquireIndex));
     queue = next.catch(() => undefined);
     return next;
 }
 
-async function apply(host: Host | undefined, roots: readonly string[], describeIndex: IndexDescriber): Promise<boolean> {
+async function apply(host: Host | undefined, roots: readonly string[], describeIndex: IndexDescriber,
+    acquireIndex: IndexAcquirer): Promise<boolean> {
+    const conflict = roots.length > 0 ? (await acquireIndex(host, roots))?.conflict : undefined;
+    if (conflict) {
+        throw new IndexConflictError(conflict);
+    }
     let changed = setHostEnvironment(host);
     const context = roots.length > 0 ? await describeIndex(host) : undefined;
     if (!context) {

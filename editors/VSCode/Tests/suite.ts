@@ -27,7 +27,7 @@ import { packageDestination, toolArchitecture, winUIArchitectures } from "../Sou
 import {
     atLeast, checkedPythonIn, debuggerFinding, Finding, lldbDapFailure, report,
 } from "../Sources/toolchain";
-import { ToolingClient } from "../Sources/Tooling/client";
+import { pathToFileUri, ToolingClient } from "../Sources/Tooling/client";
 import { TestSuiteDescription } from "../Sources/Tooling/protocol";
 import { locateTool } from "../Sources/Tooling/locate";
 
@@ -148,6 +148,36 @@ export async function run(): Promise<void> {
                 (await resolves(plain, "Palette.accent")) && !(await appKitOnly()) && !(await uiKitOnly()), 900);
         } else {
             say("skip the language server as AppKit and Android: only macOS builds those hosts");
+        }
+
+        // 3c. Two windows on one package: another window's connection shares this window's host on its packages, is
+        //     refused another, and while it lives keeps this window from switching to one.
+        {
+            const current = api.host()!;
+            const rootUris = api.applications().map((each) => pathToFileUri(each.directory));
+            const second = await ToolingClient.start({
+                executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
+                folder: root.uri.fsPath, clientVersion: "suite",
+            });
+            const other: Host = current === "uikit" ? "android" : "uikit";
+            const refused = await second.request("index/acquire", { host: other, rootUris });
+            const shared = await second.request("index/acquire", { host: current, rootUris });
+            check(`another window is refused ${other} on this window's packages - held as ${current} - and shares ${current}`,
+                refused.conflict?.host === current && refused.rootUris.length === 0
+                && shared.conflict === undefined && shared.rootUris.length === rootUris.length);
+            const switchable = availableHosts().map((each) => each.id).find((each) => each !== current);
+            if (switchable) {
+                await api.selectHost(switchable);
+                check(`while that window works as ${current}, this one is refused ${switchable} and stays ${current}`, api.host() === current);
+            }
+            await second.dispose();
+            if (switchable) {
+                await until(`once that window is gone, this one works as ${switchable}`, async () => {
+                    await api.selectHost(switchable);
+                    return api.host() === switchable;
+                }, 60);
+                await api.selectHost(current);
+            }
         }
 
         // 4. The hosts a machine is offered: AppKit, UIKit and Android on macOS,
@@ -616,9 +646,11 @@ export async function run(): Promise<void> {
             executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
             folder: root.uri.fsPath, clientVersion: "suite",
         });
-        check("the suite's editor works through the stateui tool of this checkout, named by stateui.cliPath",
-            fs.realpathSync.native(locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")))
-                .startsWith(fs.realpathSync.native(path.join(root.uri.fsPath, "tools", "StateUI.CLI", ".build"))));
+        const reached = fs.realpathSync.native(locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")));
+        const named = process.env.STATEUI_SUITE_CLI;
+        check(`the suite's editor works through ${named ? "the stateui STATEUI_SUITE_CLI names" : "the stateui tool of this checkout"}, named by stateui.cliPath`,
+            named ? reached === fs.realpathSync.native(named)
+                : reached.startsWith(fs.realpathSync.native(path.join(root.uri.fsPath, "tools", "StateUI.CLI", ".build"))));
         const described = async (folder: string): Promise<Application[]> => {
             const project = await readApplications(tool, folder);
             return project ? applicationsOf(project) : [];
@@ -786,7 +818,8 @@ export async function run(): Promise<void> {
                 check("the release group's application builds", builds(releaseNotes));
             }
             if (!process.env.STATEUI_TEST_GROUPS) {
-                fs.rmSync(location, { recursive: true, force: true });
+                // On Windows a process the last build started may hold a file there a moment longer.
+                fs.rmSync(location, { recursive: true, force: true, maxRetries: 20, retryDelay: 1000 });
             }
         }
         await tool.dispose();

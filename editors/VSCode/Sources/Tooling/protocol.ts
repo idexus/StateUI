@@ -316,6 +316,12 @@ export const IndexContext = object<IndexContext>({
     fallback: optional(string),
 });
 
+export interface IndexConflict { rootUri: string; host?: HostFamily }
+export const IndexConflict = object<IndexConflict>({ rootUri: string, host: optional(HostFamily) });
+
+export interface IndexLease { host?: HostFamily; rootUris: string[]; conflict?: IndexConflict }
+export const IndexLease = object<IndexLease>({ host: optional(HostFamily), rootUris: array(string), conflict: optional(IndexConflict) });
+
 export interface IndexCleaning { removedUris: string[] }
 export const IndexCleaning = object<IndexCleaning>({ removedUris: array(string) });
 
@@ -392,6 +398,7 @@ export const methods = {
     "devices/list": query(DestinationQuery, DestinationList),
     "index/describe": query(IndexQuery, IndexContext),
     "index/clean": query(IndexQuery, IndexCleaning),
+    "index/acquire": query(IndexQuery, IndexLease),
     "tests/discover": query(TestDiscoveryQuery, TestSuiteList),
     "releases/list": query(ReleaseQuery, ReleaseList),
     "operation/get": query(OperationReference, OperationSnapshot),

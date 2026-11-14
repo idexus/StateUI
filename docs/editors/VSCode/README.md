@@ -318,6 +318,12 @@ host SwiftPM's own `.build/index-build` - set in the application's
 `.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
 them and restarts the server, for an index a failed build left inconsistent.
 
+A package is indexed as one host at a time. Where another window works on
+one of this window's applications as another host, a host chosen here is
+refused - the message names the application and the host it is held as -
+and the host before stays; a window opening on such an application works as
+that host.
+
 ## The toolchain
 
 **StateUI: Check Toolchain** asks the `stateui` tool what this machine has of

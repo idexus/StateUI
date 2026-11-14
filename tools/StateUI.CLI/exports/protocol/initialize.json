@@ -30,6 +30,7 @@
           "application/package",
           "application/run",
           "devices/list",
+          "index/acquire",
           "index/clean",
           "index/describe",
           "name/check",

@@ -5,6 +5,7 @@
 // they take and answered with the types they give - the operations of the extension's that run through the tool.
 
 import { spawn } from "child_process";
+import * as os from "os";
 import { randomUUID } from "crypto";
 import { decode, Decoder, DecodingError } from "./decoding";
 import { encodeFrame, FrameReader } from "./frames";
@@ -81,7 +82,9 @@ export class ToolingClient {
 
     /** Starts `stateui serve --stdio` and opens the connection. */
     static start(options: ConnectionOptions): Promise<ToolingClient> {
-        const child = spawn(options.executable, ["serve", "--stdio"], { cwd: options.folder, stdio: ["pipe", "pipe", "pipe"] });
+        // The folder reaches the tool as the connection's workspace; it runs from the user's home, as a process's
+        // working directory keeps its folder from being removed or renamed on Windows.
+        const child = spawn(options.executable, ["serve", "--stdio"], { cwd: os.homedir(), stdio: ["pipe", "pipe", "pipe"] });
         child.stderr.on("data", (chunk: Buffer) => options.log?.(chunk.toString("utf8").trimEnd()));
         return ToolingClient.open({
             write: (bytes) => child.stdin.write(bytes),

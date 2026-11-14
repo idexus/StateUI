@@ -247,6 +247,11 @@ final class ProtocolExamplesTests: XCTestCase {
                     host: .uikit, scratchPath: ".build/uikit/index-build", triple: "arm64-apple-ios26.4-simulator",
                     sdk: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk"))),
             ], answeredAsWritten: false),
+            Example(name: "index-acquire", messages: [
+                ("request", try request("23", "index/acquire", IndexQuery(host: .uikit, rootUris: ["file:///Users/example/Projects/Demo/Notes"]))),
+                ("response", try response("23", IndexLease(host: .uikit, rootUris: [], conflict: IndexConflict(
+                    rootUri: "file:///Users/example/Projects/Demo/Notes", host: .appkit)))),
+            ], answeredAsWritten: false),
             Example(name: "index-clean", messages: [
                 ("request", try request("17", "index/clean", IndexQuery(host: nil, rootUris: ["file:///Users/example/Projects/Demo/Notes"]))),
                 ("response", try response("17", IndexCleaning(removedUris: ["file:///Users/example/Projects/Demo/Notes/.build/uikit/index-build"]))),

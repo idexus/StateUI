@@ -24,10 +24,14 @@ public struct BuildPermit: Sendable {
         self.folder = folder
     }
 
-    /// The user's state folder of the tool: `~/Library/Application Support/stateui` on macOS,
-    /// `$XDG_STATE_HOME/stateui` (else `~/.local/state/stateui`) elsewhere, `%LOCALAPPDATA%\stateui` on Windows.
+    /// The user's state folder of the tool: the folder `STATEUI_STATE` names, else
+    /// `~/Library/Application Support/stateui` on macOS, `$XDG_STATE_HOME/stateui` (else `~/.local/state/stateui`)
+    /// elsewhere, `%LOCALAPPDATA%\stateui` on Windows.
     public static var userFolder: URL {
         let environment = ProcessInfo.processInfo.environment
+        if let named = environment["STATEUI_STATE"], !named.isEmpty {
+            return URL(fileURLWithPath: named)
+        }
         let home = FileManager.default.homeDirectoryForCurrentUser
         #if os(Windows)
         let base = environment["LOCALAPPDATA"].map { URL(fileURLWithPath: $0) } ?? home.appendingPathComponent("AppData/Local")

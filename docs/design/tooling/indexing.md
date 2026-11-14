@@ -23,3 +23,25 @@ context into the server's file, keeping whatever else the file says, prepares
 the index by building (`backgroundPreparationMode: build`), waits for a build
 still running in a package's `.build` before it restarts the server, and
 cleans through the tool.
+
+## Two windows on one package
+
+A package holds one `.sourcekit-lsp/config.json`, so two windows indexing it
+as two hosts would write it in turn, each server then building as its own
+host in the other's scratch folder. A connection therefore holds the
+packages it indexes as one host, its life long (`IndexLeases`,
+`index/acquire`): a lock the system keeps on a file of the package and the
+host under `index-leases` in the user's state folder - the build permit's
+folder ([Builds](builds.md#one-application-build-at-a-time)) - let go of when
+the connection's process ends, however it ends. Connections share a package
+as one host; another host - plain Swift is one - is answered with the
+package and the host that holds it (`conflict`), and the connection keeps
+what it held. A lease whose process ended is taken away by the next that
+looks.
+
+The editor takes the lease before it writes a package's configuration. Where
+another window holds one as another host it writes nothing: a host chosen is
+refused and the one before kept; a window opening on such a package works as
+the host it is held as. The extension's own suite names a state folder of its
+own (`STATEUI_STATE`), so it switches hosts on the checkout's packages while
+a window of the user's works on them.
