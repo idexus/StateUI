@@ -76,7 +76,8 @@ struct UIKitSuite {
             summary.read(line.text)
             reporter.output(line)
         }))
-        var phases = [SuiteResult.Phase(name: "tests", passed: summary.passed)]
+        // A filter that matched nothing proves nothing.
+        var phases = [SuiteResult.Phase(name: "tests", passed: summary.passed && !(filter != nil && summary.ranNone))]
 
         reporter.progress("checking the API records")
         for module in ["StateUIUIKit", "StateUITesting"] {
@@ -105,6 +106,9 @@ struct UIKitSuite {
 
         /// Whether it said its tests ran with no failure.
         var passed: Bool { last.withLock { $0?.contains(" with 0 failures") ?? false } }
+
+        /// Whether it said no test ran.
+        var ranNone: Bool { last.withLock { $0?.hasPrefix("Executed 0 tests") ?? false } }
     }
 }
 #endif

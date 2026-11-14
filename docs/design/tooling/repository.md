@@ -17,9 +17,9 @@ did. Nothing is written: `STATEUI_UPDATE_EXPORTS`, `STATEUI_UPDATE_DOCS`,
 `STATEUI_STALE_ONLY` and `STATEUI_FILTER` are taken out of what the suite
 inherits - recording marks and exports is a request of its own (the
 migration's M11), never a variable left in a shell. The suite builds a test
-application, so it waits for the machine's one application build. AppKit's
-and UIKit's suites run this way (`appkit.yml`, `uikit.yml`); every other
-host's moves with its row.
+application, so it waits for the machine's one application build. AppKit's,
+UIKit's and Android's suites run this way (`appkit.yml`, `uikit.yml`,
+`android.yml`); every other host's moves with its row.
 
 ## The UIKit host's suite
 
@@ -37,3 +37,34 @@ signed as any UIKit head (apple-bundles.md), and started as a run starts one
 until it ends with `Executed N tests, with M failures`, which decides the
 tests' phase. Then `StateUIUIKit` and `StateUITesting`, as that build made
 them, are held to their API records for the simulator's triple and SDK.
+
+## The Android host's suite
+
+A view exists only in an application's process, so Android's tests are a
+test APK, `lib/StateUI/StateUI.Android/Tests`, run by its instrumentation.
+Before anything is built, every `func test` must stand in its file's
+`allTests` and every case in the runner's list: one no list names would
+never run, and the suite refuses to start. `--suite host:android` builds the
+test APK for the device's ABI - an Android head (android-heads.md) - installs
+it on the device or emulator `--device` names (a virtual device not running
+booted first), clears the verdicts an earlier run left, keeps the screen on
+for the run - a phone whose screen goes off freezes the tests - and puts the
+setting back after, as it was. The device's log says each test as it ends;
+`am instrument` says `Executed N tests, with M failures`, which decides the
+tests' phase, and a failure is followed by what the system did to the tests'
+window. `--filter` is handed to the runner and stops the run there: a part
+of the suite proves only part of what the host declares; a filter that
+matched no test fails, as it does on UIKit - a run of none proves nothing. Unfiltered, what
+the host declares (`files/android.txt`) and every family's verdicts
+(`files/marks/android`) are taken off the device and held to
+`lib/StateUI/exports/android.txt` and `exports/marks/android` - verdict by
+verdict, whatever revision each stood at - and the facade the build made is
+held to its API record for the ABI's triple and the Swift SDK.
+
+The pictures are drawn on a Mac, while a Linux machine runs emulators well:
+`--build-only --architecture x86_64` builds the test APK alone into a folder
+with its identity (`suite.json`: the suite, the architecture, the checkout's
+commit, the Swift SDK) and says the folder; `--artifact <folder>` runs that
+APK instead of building one, and refuses it where it was built for another
+suite or ABI, or from another commit than the checkout's.
+

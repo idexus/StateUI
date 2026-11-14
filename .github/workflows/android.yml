@@ -4,15 +4,16 @@
 # whose verdicts changed fails here and its marks are written again on a Mac,
 # on purpose.
 #
-# TWO MACHINES. The APK is built on macOS, where the build draws the pictures
-# (`xcrun swiftc`); an emulator runs only where the runner can
-# virtualize - GitHub's Linux runners with KVM, not its Apple silicon ones - so
-# the APK is built for x86_64 and handed over.
+# TWO MACHINES. The APK is built on macOS, where the build draws the pictures;
+# an emulator runs only where the runner can virtualize - GitHub's Linux
+# runners with KVM, not its Apple silicon ones - so the stateui tool builds the
+# test APK for x86_64 with its identity (--build-only), and the Linux job runs
+# it (--artifact), which refuses one built for another ABI or commit.
 #
 # THE TOOLCHAIN IS swift.org's, not Xcode's: the Swift SDK for Android ships
 # its Foundation as binary modules only the compiler that wrote them reads
-# (platform-traps.md). build-swift.sh finds the toolchain whose build matches
-# the SDK's and names the SDK by its id.
+# (platform-traps.md). The tool finds the toolchain whose build matches the
+# SDK's and names the SDK by its id.
 
 name: Android
 
@@ -73,7 +74,7 @@ jobs:
             --checksum "$ANDROID_SDK_CHECKSUM"
           swift sdk list
 
-      # build-swift.sh reads ANDROID_NDK_ROOT before ANDROID_NDK_HOME, and the
+      # The tool reads ANDROID_NDK_ROOT before ANDROID_NDK_HOME, and the
       # image names its own older NDK there: both name this one. The SDK's own
       # setup script is not needed (platform-traps.md).
       - name: Install NDK ${{ env.ANDROID_NDK_VERSION }}
@@ -94,13 +95,16 @@ jobs:
       - name: Build the test APK for x86_64
         run: |
           set -euo pipefail
-          apk="$(.scripts/Android/test-android.sh --build x86_64 | tail -n 1)"
-          cp "$apk" "$RUNNER_TEMP/StateUIAndroidTests.apk"
+          swift run --quiet --package-path tools/StateUI.CLI stateui repo test --suite host:android --build-only --architecture x86_64 \
+            --format json > "$RUNNER_TEMP/built.json"
+          folder="$(python3 -c 'import json, sys, urllib.parse; print(urllib.parse.urlparse(json.load(open(sys.argv[1]))["result"]["artifactUri"]).path)' "$RUNNER_TEMP/built.json")"
+          mkdir -p "$RUNNER_TEMP/android-tests"
+          cp "$folder/StateUIAndroidTests.apk" "$folder/suite.json" "$RUNNER_TEMP/android-tests/"
 
       - uses: actions/upload-artifact@v5
         with:
           name: android-tests
-          path: ${{ runner.temp }}/StateUIAndroidTests.apk
+          path: ${{ runner.temp }}/android-tests
           retention-days: 3
 
   test:
@@ -117,6 +121,21 @@ jobs:
           path: ${{ runner.temp }}/android-tests
 
       # The emulator needs KVM, which the runner has but does not open to its user.
+      # The stateui tool runs the suite; it is built before the emulator starts.
+      - name: Install the swift.org toolchain
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/swift.tar.gz" \
+            "https://download.swift.org/$SWIFT_CHANNEL/ubuntu2404/$SWIFT_TAG/$SWIFT_TAG-ubuntu24.04.tar.gz"
+          mkdir -p "$RUNNER_TEMP/swift"
+          tar -xzf "$RUNNER_TEMP/swift.tar.gz" -C "$RUNNER_TEMP/swift" --strip-components=1
+          echo "$RUNNER_TEMP/swift/usr/bin" >> "$GITHUB_PATH"
+
+      - name: Build the stateui tool
+        run: |
+          swift --version
+          swift build --package-path tools/StateUI.CLI --product stateui
+
       - name: Open KVM to the runner
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
@@ -140,4 +159,4 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
           script: |
             "$ANDROID_HOME/platform-tools/adb" shell settings put global hide_error_dialogs 1
-            STATEUI_TEST_APK="${{ runner.temp }}/android-tests/StateUIAndroidTests.apk" .scripts/Android/test-android.sh
+            swift run --quiet --package-path tools/StateUI.CLI stateui repo test --suite host:android --artifact "${{ runner.temp }}/android-tests"

@@ -51,7 +51,7 @@ final class HostSuiteTests: XCTestCase {
         let permit = BuildPermit(folder: root.appendingPathComponent("state"))
         let pad = Destination(id: "PAD", udid: "U-PAD", name: "Pad", kind: .device, version: "27.0")
         do {
-            _ = try await HostSuite(checkout: root, permit: permit, destinations: { [pad] }).run(.uikit, device: "Pad")
+            _ = try await HostSuite(checkout: root, permit: permit, destinations: { _ in [pad] }).run(.uikit, device: "Pad")
             XCTFail("a device ran the suite")
         } catch let error as ToolingError {
             XCTAssertEqual(error.code, .invalidConfiguration)
@@ -72,6 +72,10 @@ final class HostSuiteTests: XCTestCase {
         let failed = UIKitSuite.Summary()
         failed.read("Executed 314 tests, with 2 failures (0 unexpected)")
         XCTAssertFalse(failed.passed)
+        let none = UIKitSuite.Summary()
+        none.read("Executed 0 tests, with 0 failures")
+        XCTAssertTrue(none.passed && none.ranNone)
+        XCTAssertFalse(passed.ranNone)
     }
     #endif
 }
