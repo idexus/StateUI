@@ -100,9 +100,17 @@ struct WebSuite {
         guard let filter else {
             return (listed.filter { !needsBrowser($0) }, listed.filter { $0.hasPrefix(conformance + "/") } + inBrowser.map { "StateUIWebTests.\($0)" })
         }
-        let named = filter.hasPrefix("StateUIWebTests.") ? filter : "StateUIWebTests.\(filter)"
-        if listed.contains("\(conformance)/test\(filter)") { return ([], ["\(conformance)/test\(filter)"]) }
-        return needsBrowser(named) ? ([], [named]) : ([named], [])
+        var node: [String] = []
+        var browser: [String] = []
+        for name in filter.split(separator: ",").map({ $0.trimmingCharacters(in: .whitespaces) }) where !name.isEmpty {
+            // A family's name selects its test, or each of its parts: `testVisualElement1`, …
+            let family = listed.filter { test in
+                test.hasPrefix("\(conformance)/test\(name)") && test.dropFirst("\(conformance)/test\(name)".count).allSatisfy(\.isNumber)
+            }
+            let named = name.hasPrefix("StateUIWebTests.") ? name : "StateUIWebTests.\(name)"
+            if !family.isEmpty { browser += family } else if needsBrowser(named) { browser.append(named) } else { node.append(named) }
+        }
+        return (node, browser)
     }
 
     /// Google Chrome or Chromium, as the browser tests drive them over DevTools - or the one `STATEUI_BROWSER` names.
@@ -129,7 +137,7 @@ struct WebSuite {
             shown.split(separator: "\n").first { $0.hasPrefix("\(key): ") }.map { String($0.dropFirst(key.count + 2)) } ?? ""
         }
         let map = checkout.appendingPathComponent("lib/StateUI/StateUI.Web/Sources/CStateUIWeb/module.modulemap").path
-        let held = environment.removing("STATEUI_HOST").setting("STATEUI_API_MODULE", to: "StateUIWeb")
+        let held = environment.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY").setting("STATEUI_API_MODULE", to: "StateUIWeb")
             .setting("STATEUI_API_MODULES", to: products).setting("STATEUI_API_TRIPLE", to: "wasm32-unknown-wasip1")
             .setting("STATEUI_API_SDK", to: value("sdkRootPath"))
             .setting("STATEUI_API_ARGUMENTS", to: ["-resource-dir", value("swiftResourcesPath"), "-Xcc", "-fmodule-map-file=\(map)"].joined(separator: "\n"))

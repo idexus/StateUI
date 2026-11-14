@@ -21,7 +21,7 @@ final class HostSuiteTests: XCTestCase {
         let script = """
             #!/bin/sh
             echo "$* update=${STATEUI_UPDATE_EXPORTS:-none} module=${STATEUI_API_MODULE:-none}" >> '\(asked.path)'
-            case "$*" in *--show-bin-path*) echo '\(root.path)/bin' ;; esac
+            case "$*" in *--show-bin-path*) echo '\(root.path)/bin' ;; test*) echo 'Executed 1 test, with 0 failures' ;; esac
             [ "$STATEUI_API_MODULE" = StateUIAppKit ] && exit 1
             exit 0
             """

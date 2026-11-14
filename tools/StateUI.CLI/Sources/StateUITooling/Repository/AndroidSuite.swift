@@ -28,7 +28,7 @@ struct AndroidSuite {
 
     func run(
         device: String?, filter: String?, buildOnly: Bool, architecture: Architecture?, artifact: URL?,
-        environment: ProcessEnvironment, reporter: BuildReporter
+        recording revisions: [String: String]? = nil, environment: ProcessEnvironment, reporter: BuildReporter
     ) async throws -> SuiteResult {
         let unlisted = try Self.unlisted(in: tests.appendingPathComponent("Sources"))
         guard unlisted.isEmpty else {
@@ -58,7 +58,9 @@ struct AndroidSuite {
         let (package, _) = try await AndroidHead.badging(of: apk, tools: android)
         let passed = try await runTests(apk, package: package, on: target, filter: filter, reporter: reporter)
         var phases = [SuiteResult.Phase(name: "tests", passed: passed)]
-        if passed, filter == nil {
+        if passed, let revisions {
+            phases.append(try await recordMarks(package: package, on: target, revisions: revisions, reporter: reporter))
+        } else if passed, filter == nil {
             phases += try await holdRecords(package: package, on: target, reporter: reporter)
         }
         if let built {
@@ -258,6 +260,33 @@ struct AndroidSuite {
                 SuiteResult.Phase(name: "marks android", passed: differ.isEmpty)]
     }
 
+    /// Every family's verdicts the run proved, taken off the device and written into the repository's marks, each
+    /// under the revision `revisions` gives its family - the device reads no repository.
+    private func recordMarks(
+        package: String, on device: Destination, revisions: [String: String], reporter: BuildReporter
+    ) async throws -> SuiteResult.Phase {
+        let adb = ProcessExecutable.path(android.adb.path)
+        let marks = checkout.appendingPathComponent("lib/StateUI/exports/marks/android")
+        let names = (await ToolOutput.standardOutput(adb, ["-s", device.id, "exec-out", "run-as", package, "ls", "files/marks/android"]) ?? "")
+            .split(whereSeparator: \.isWhitespace).map(String.init).filter { $0.hasSuffix(".txt") }.sorted()
+        for name in names {
+            let proved = await ToolOutput.standardOutput(
+                adb, ["-s", device.id, "exec-out", "run-as", package, "cat", "files/marks/android/\(name)"], limit: .seconds(60)) ?? ""
+            let revision = revisions[Self.family(of: name)] ?? "1.1"
+            // Read line by line, the text lost the line end every verdict file closes with.
+            try Data("# revision \(revision)\n\(proved)\(proved.hasSuffix("\n") ? "" : "\n")".utf8).write(to: marks.appendingPathComponent(name))
+        }
+        reporter.progress("recorded \(names.count) verdict files of Android's")
+        return SuiteResult.Phase(name: "marks android recorded", passed: !names.isEmpty)
+    }
+
+    /// The family a verdict file is of: `Button.txt`, a part's `VisualElement-3.txt`.
+    static func family(of file: String) -> String {
+        let name = String(file.dropLast(file.hasSuffix(".txt") ? 4 : 0))
+        guard let dash = name.lastIndex(of: "-"), Int(name[name.index(after: dash)...]) != nil else { return name }
+        return String(name[..<dash])
+    }
+
     /// A verdict file's verdicts, the line naming its revision aside: two runs at other revisions compare by them.
     static func verdicts(_ text: String) -> String {
         text.split(separator: "\n", omittingEmptySubsequences: false).filter { !$0.hasPrefix("# revision ") }.joined(separator: "\n")
@@ -280,7 +309,7 @@ struct AndroidSuite {
         let android = checkout.appendingPathComponent("lib/StateUI/StateUI.Android/Sources/CStateUIAndroid/include/module.modulemap").path
         let host = checkout.appendingPathComponent("lib/StateUI/StateUI.Host/CStateUIHost/module.modulemap").path
         let arguments = ["-resource-dir", value("swiftResourcesPath"), "-Xcc", "-fmodule-map-file=\(android)", "-Xcc", "-fmodule-map-file=\(host)"]
-        let held = environment.removing("STATEUI_HOST").setting("STATEUI_API_MODULE", to: "StateUIAndroid")
+        let held = environment.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY").setting("STATEUI_API_MODULE", to: "StateUIAndroid")
             .setting("STATEUI_API_MODULES", to: built.binaries.path).setting("STATEUI_API_TRIPLE", to: built.triple)
             .setting("STATEUI_API_SDK", to: value("sdkRootPath")).setting("STATEUI_API_ARGUMENTS", to: arguments.joined(separator: "\n"))
         let outcome = try await ProcessRunner().run(ProcessRequest(tools.swift, arguments: [

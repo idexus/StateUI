@@ -132,3 +132,25 @@ fresh, stale, missing or unreadable (`ConformanceMetadata`). `stateui repo
 conformance status [--host <host>]` says it, family by family. Which family
 a host realizes is its register's to say, never a revision's.
 
+## A conformance run
+
+`stateui repo conformance run --host <host>` runs a host's conformance
+families whole - exactly one of `--changed`, the families whose verdicts
+stand at another revision or at none; `--family <name>`, one option a family;
+`--all` - through the host's suite, a test and every part of each family
+(`ConformanceRun`). A filter that runs no test fails: a run of none proves
+nothing. The verdicts are held to `lib/StateUI/exports/marks/<host>`, and the
+control dictionary and the platform contract to them (`ControlDictionaryTests`);
+`--record` writes the verdicts instead - `STATEUI_UPDATE_EXPORTS=1` handed to
+the host's driver, the UIKit test application included - and renders the
+documents (`STATEUI_UPDATE_DOCS=1`), each a phase of its own. An API record is
+never written by a conformance run: its phases hold.
+
+A driver that reads the repository tells the stale families itself
+(`STATEUI_STALE_ONLY=1`). Android's device reads none: the tool names the
+stale families from the helper ([A family's revision](#a-familys-revision)),
+and writes each verdict file it takes off the device under the revision the
+helper gives its family. On UIKit and Android a family's name selects the
+tests whose names hold it, so `Button` takes `ButtonMenu` along: a family
+more, whole, never one less.
+

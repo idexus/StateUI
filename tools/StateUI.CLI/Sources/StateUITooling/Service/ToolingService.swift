@@ -212,6 +212,19 @@ public struct ToolingService: Sendable {
         return statuses
     }
 
+    /// Runs `host`'s conformance families `selection` takes in the StateUI checkout holding `folder`, recording their
+    /// verdicts and rendering the documents where `record`.
+    ///
+    /// - Throws: ``ToolingError`` `PROJECT_NOT_FOUND` outside a checkout, `INVALID_CONFIGURATION` for an unknown family.
+    public func runConformance(
+        _ host: HostFamily, selection: ConformanceRun.Selection, record: Bool, device: String?, in folder: URL, reporter: BuildReporter
+    ) async throws -> SuiteResult {
+        guard let checkout = Checkout.holding(folder)?.root else {
+            throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        return try await ConformanceRun(checkout: checkout).run(host, selection: selection, record: record, device: device, reporter: reporter)
+    }
+
     /// `work` given a reporter whose words reach `context` in the order they were said.
     private static func reporting<Result: Sendable>(
         _ context: OperationContext, _ work: (RunReporter) async throws -> Result

@@ -25,5 +25,11 @@ final class WebSuiteTests: XCTestCase {
         XCTAssertTrue(WebSuite.split(listed, filter: "Button") == ([], ["StateUIWebTests.WebConformanceTests/testButton"]))
         XCTAssertTrue(WebSuite.split(listed, filter: "WebLookTests") == ([], ["StateUIWebTests.WebLookTests"]))
         XCTAssertTrue(WebSuite.split(listed, filter: "WebRelayTests/testOne") == (["StateUIWebTests.WebRelayTests/testOne"], []))
+        // Families, a list of them: each its test, or its parts.
+        let parted = listed + ["StateUIWebTests.WebConformanceTests/testVisualElement1", "StateUIWebTests.WebConformanceTests/testVisualElement2",
+                               "StateUIWebTests.WebConformanceTests/testButtonMenu"]
+        XCTAssertTrue(WebSuite.split(parted, filter: "Button,VisualElement") == ([], [
+            "StateUIWebTests.WebConformanceTests/testButton", "StateUIWebTests.WebConformanceTests/testVisualElement1",
+            "StateUIWebTests.WebConformanceTests/testVisualElement2"]))
     }
 }

@@ -40,9 +40,14 @@ public struct HostSuite: Sendable {
     /// the folder such a build made (`artifact`).
     ///
     /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose suite has not moved to the tool.
+    ///
+    /// A conformance run may record what it proves instead (`recording`): each family's verdicts written, at the
+    /// revision `revisions` gives a run on a device that reads no repository - and only the stale families
+    /// (`staleOnly`), where the host's own driver reads the repository to tell them.
     public func run(
         _ host: HostFamily, filter: String? = nil, device: String? = nil, buildOnly: Bool = false, architecture: Architecture? = nil,
-        artifact: URL? = nil, reporter: BuildReporter = BuildReporter()
+        artifact: URL? = nil, recording: Bool = false, staleOnly: Bool = false, revisions: [String: String] = [:],
+        reporter: BuildReporter = BuildReporter()
     ) async throws -> SuiteResult {
         guard [.appkit, .uikit, .android, .winui, .gtk, .web].contains(host) else {
             throw ToolingError(.invalidConfiguration, "\(host.rawValue)'s suite runs by its .scripts until its row moves to the tool.")
@@ -52,8 +57,10 @@ public struct HostSuite: Sendable {
         }
         defer { lease.release() }
 
-        // Checked, never recorded: what writes marks and exports is asked by name (M11), never inherited.
-        let checked = ProcessEnvironment.inherited.removing("STATEUI_UPDATE_EXPORTS", "STATEUI_UPDATE_DOCS", "STATEUI_STALE_ONLY", "STATEUI_FILTER")
+        // What writes marks and exports is asked by name, never inherited; an API phase never records.
+        var checked = ProcessEnvironment.inherited.removing("STATEUI_UPDATE_EXPORTS", "STATEUI_UPDATE_DOCS", "STATEUI_STALE_ONLY", "STATEUI_FILTER")
+        if recording { checked = checked.setting("STATEUI_UPDATE_EXPORTS", to: "1") }
+        if staleOnly { checked = checked.setting("STATEUI_STALE_ONLY", to: "1") }
         if buildOnly || artifact != nil, host != .android {
             throw ToolingError(.invalidConfiguration, "A suite is built alone, or run from what such a build made, for host:android.")
         }
@@ -87,7 +94,7 @@ public struct HostSuite: Sendable {
             return try await AndroidSuite(
                 checkout: checkout, tools: tools, android: AndroidTools(environment: environment), destinations: { await destinations(.android) }
             ).run(device: device, filter: filter, buildOnly: buildOnly, architecture: architecture, artifact: artifact,
-                  environment: checked, reporter: reporter)
+                  recording: recording ? revisions : nil, environment: checked, reporter: reporter)
         }
         if host == .uikit {
             #if os(macOS)
@@ -108,7 +115,7 @@ public struct HostSuite: Sendable {
         let modules = (await ToolOutput.text(tools.swift, ["build", "--package-path", package, "--show-bin-path"], environment: checked))?
             .split(separator: "\n").last.map { String($0).trimmingCharacters(in: .whitespaces) } ?? ""
         for module in ["StateUIAppKit", "StateUITesting"] {
-            let environment = checked.removing("STATEUI_HOST").setting("STATEUI_API_MODULE", to: module)
+            let environment = checked.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY").setting("STATEUI_API_MODULE", to: module)
                 .setting("STATEUI_API_MODULES", to: modules).setting("STATEUI_API_TRIPLE", to: "").setting("STATEUI_API_SDK", to: "")
                 .setting("STATEUI_API_ARGUMENTS", to: "")
             let held = try await run(
@@ -120,9 +127,6 @@ public struct HostSuite: Sendable {
     }
 
     private func run(_ arguments: [String], _ environment: ProcessEnvironment, _ reporter: BuildReporter) async throws -> Bool {
-        let outcome = try await ProcessRunner().run(
-            ProcessRequest(tools.swift, arguments: arguments, environment: environment), output: reporter.output)
-        try Task.checkCancellation()
-        return outcome.succeeded
+        try await TestRun.swift(tools.swift, arguments, environment, reporter)
     }
 }

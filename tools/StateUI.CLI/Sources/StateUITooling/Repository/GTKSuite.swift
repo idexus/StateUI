@@ -36,7 +36,7 @@ struct GTKSuite {
             .split(whereSeparator: \.isWhitespace).map(String.init)
         let arguments = (maps + flags).flatMap { ["-Xcc", $0] }
         for module in ["StateUIGTK", "StateUIWebViewGTK"] {
-            let held = environment.removing("STATEUI_HOST").setting("STATEUI_API_MODULE", to: module)
+            let held = environment.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY").setting("STATEUI_API_MODULE", to: module)
                 .setting("STATEUI_API_MODULES", to: modules).setting("STATEUI_API_TRIPLE", to: "").setting("STATEUI_API_SDK", to: "")
                 .setting("STATEUI_API_ARGUMENTS", to: arguments.joined(separator: "\n"))
             phases.append(SuiteResult.Phase(name: "api \(module)", passed: try await swift(
@@ -46,8 +46,6 @@ struct GTKSuite {
     }
 
     private func swift(_ arguments: [String], _ environment: ProcessEnvironment, _ reporter: BuildReporter) async throws -> Bool {
-        let outcome = try await ProcessRunner().run(ProcessRequest(tools.swift, arguments: arguments, environment: environment), output: reporter.output)
-        try Task.checkCancellation()
-        return outcome.succeeded
+        try await TestRun.swift(tools.swift, arguments, environment, reporter)
     }
 }

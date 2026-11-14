@@ -119,6 +119,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - `stateui repo conformance status [--host <host>]` says, family by family, whether each host's recorded verdicts
   stand at the revision `revisions.txt` gives - read by the library's own reader through the conformance package's
   helper `stateui-conformance-metadata`.
+- `stateui repo conformance run --host <host> (--changed | --family <name> | --all) [--record]` runs a host's
+  families whole through its suite - a run of no test fails - holding the verdicts and the control dictionary to the
+  marks, or with `--record` writing the verdicts and rendering the dictionary and the platform contract, each a phase
+  of its own; on Android the stale families and each file's revision come from the conformance package's helper.
 - `stateui repo test --suite host:winui` runs the WinUI host's suite on Windows - the foundation's Windows tests, the
   host's tests each in a process of its own with the test runner made self-contained, both API records - and the
   conformance families only where `--filter` names them (`WinUIConformanceTests`, or one of its tests).

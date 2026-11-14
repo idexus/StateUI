@@ -56,7 +56,7 @@ struct RepoCommand: AsyncParsableCommand {
     /// `stateui repo conformance`: the hosts' conformance verdicts.
     struct Conformance: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
-            abstract: "Works on the hosts' conformance verdicts.", subcommands: [Status.self])
+            abstract: "Works on the hosts' conformance verdicts.", subcommands: [Status.self, Run.self])
 
         /// `stateui repo conformance status [--host <host>]`.
         struct Status: AsyncParsableCommand {
@@ -79,6 +79,53 @@ struct RepoCommand: AsyncParsableCommand {
                             + (behind.isEmpty ? "" : "\n  " + behind.joined(separator: "\n  "))
                     }.joined(separator: "\n")
                 }
+            }
+        }
+    
+        /// `stateui repo conformance run --host <host> (--changed | --family <name>... | --all) [--record]`.
+        struct Run: AsyncParsableCommand {
+            static let configuration = CommandConfiguration(
+                abstract: "Runs a host's conformance families whole - the stale ones, the ones named or every one - holding their verdicts to the marks, or recording them and rendering the dictionary.")
+
+            @Option(help: "The host.")
+            var host: HostFamily
+
+            @Flag(help: "The families whose verdicts stand at another revision, or at none.")
+            var changed = false
+
+            @Option(help: "A family, by name; one option a family.")
+            var family: [String] = []
+
+            @Flag(help: "Every family.")
+            var all = false
+
+            @Flag(help: "Write the verdicts into lib/StateUI/exports/marks and render the control dictionary and the platform contract from them, instead of holding them.")
+            var record = false
+
+            @Option(help: "UIKit's simulator or Android's device or emulator, by name or id.")
+            var device: String?
+
+            @OptionGroup var output: OutputOptions
+
+            func validate() throws {
+                guard [changed, !family.isEmpty, all].filter({ $0 }).count == 1 else {
+                    throw ValidationError("Name exactly one of --changed, --family or --all.")
+                }
+            }
+
+            func run() async throws {
+                let here = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+                let selection: ConformanceRun.Selection = changed ? .changed : all ? .all : .families(family)
+                var passed = true
+                try await output.answer({
+                    let ran = try await ToolingService().runConformance(
+                        host, selection: selection, record: record, device: device, in: here, reporter: BuildOptions.terminal)
+                    passed = ran.passed
+                    return ran
+                }) { (ran: SuiteResult) in
+                    ran.phases.map { "\($0.passed ? "passed" : "FAILED")  \($0.name)" }.joined(separator: "\n")
+                }
+                if !passed { throw ExitCode(ExitStatus.of(ToolingError(.toolFailed, "the run failed"))) }
             }
         }
     }

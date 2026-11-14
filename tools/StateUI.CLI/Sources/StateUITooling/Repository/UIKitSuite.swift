@@ -67,7 +67,7 @@ struct UIKitSuite {
         let summary = Summary()
         let launch = SimulatorLaunch(
             simulator: simulator, bundle: bundle, identifier: UIKitBundle.identifier(of: package, name: product),
-            logs: work.appendingPathComponent("logs"), environment: filter.map { ["STATEUI_FILTER": $0] } ?? [:])
+            logs: work.appendingPathComponent("logs"), environment: Self.launched(filter: filter, environment: environment))
         let suite = BuildResult(
             application: product, host: .uikit, configuration: .debug, architecture: architecture,
             folderUri: FileURI.string(staging), programUri: FileURI.string(bundle.appendingPathComponent(product)),
@@ -81,7 +81,7 @@ struct UIKitSuite {
 
         reporter.progress("checking the API records")
         for module in ["StateUIUIKit", "StateUITesting"] {
-            let held = environment.removing("STATEUI_HOST").setting("STATEUI_API_MODULE", to: module)
+            let held = environment.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY").setting("STATEUI_API_MODULE", to: module)
                 .setting("STATEUI_API_MODULES", to: binaries.path).setting("STATEUI_API_TRIPLE", to: triple)
                 .setting("STATEUI_API_SDK", to: sdk.path).setting("STATEUI_API_ARGUMENTS", to: "")
             let outcome = try await ProcessRunner().run(
@@ -109,6 +109,17 @@ struct UIKitSuite {
 
         /// Whether it said no test ran.
         var ranNone: Bool { last.withLock { $0?.hasPrefix("Executed 0 tests") ?? false } }
+    }
+}
+
+extension UIKitSuite {
+    /// What the test application is handed: the filter, and what a recording run asks of it.
+    static func launched(filter: String?, environment: ProcessEnvironment) -> [String: String] {
+        var handed = filter.map { ["STATEUI_FILTER": $0] } ?? [:]
+        for name in ["STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY"] {
+            if let value = environment.set[name] { handed[name] = value }
+        }
+        return handed
     }
 }
 #endif
