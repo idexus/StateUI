@@ -5,8 +5,7 @@
 // what it runs with, in artifacts/<application>/<platform> of its workspace -
 // the folder of the stateui.json listing it - else of its own folder. A WinUI head is laid
 // per architecture - this machine's own, and on an ARM64 machine x64 too,
-// which Windows runs emulated. The stateui tool packages it - a WinUI head
-// its checkout's .scripts/WinUI/deploy.ps1.
+// which Windows runs emulated. The stateui tool packages it.
 
 import * as os from "os";
 import * as path from "path";
@@ -31,21 +30,7 @@ export function deployDestination(application: Application, host: Host, architec
     return path.join(deployFolder(application), "artifacts", application.name, describe(host).label, ...(architecture ? [architecture] : []));
 }
 
-/**
- * The command that builds `application`'s WinUI head for release for `architecture` and lays it at `destination`: its
- * checkout's .scripts/WinUI/deploy.ps1. Undefined where the application names no checkout. Every other host is
- * packaged by the stateui tool.
- */
-export function winUIDeployCommand(
-    application: Application, destination: string, architecture?: Architecture,
-): { command: string; args: string[]; script: string } | undefined {
-    if (!application.checkout) {
-        return undefined;
-    }
-    const script = path.join(application.checkout, ".scripts", "WinUI", "deploy.ps1");
-    return {
-        command: "powershell", script,
-        args: ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script, "-App", application.directory,
-            "-Destination", destination, ...(architecture ? ["-Architecture", architecture] : [])],
-    };
+/** Windows' word for an architecture, as the stateui tool names it: `x64` is `x86_64`. */
+export function toolArchitecture(architecture: Architecture): "arm64" | "x86_64" {
+    return architecture === "x64" ? "x86_64" : "arm64";
 }

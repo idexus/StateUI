@@ -28,11 +28,10 @@ import { Rebuild, rebuildSteps } from "./conformance";
 import { debuggerFinding, Finding, lldbDapFinding, report } from "./toolchain";
 import { pathToFileUri } from "./Tooling/client";
 import { locateTool } from "./Tooling/locate";
-import { builtByTool } from "./Tooling/migration";
 import { LaunchedApplication, NameKind } from "./Tooling/protocol";
 import { runOperation, sayProblem, toolingClients, withTool } from "./Tooling/presentation";
 import { ToolRequestError } from "./Tooling/client";
-import { Architecture, deployDestination, deployFolder, winUIArchitectures, winUIDeployCommand } from "./deploy";
+import { Architecture, deployDestination, toolArchitecture, winUIArchitectures } from "./deploy";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
@@ -656,32 +655,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             }
 
             const destination = deployDestination(application, forHost, architecture);
-            if (builtByTool(forHost)) {
-                const laid = await withTool(tool, application.directory, `${application.name} was not deployed`, (client) =>
-                    runOperation(client, "application/package", {
-                        projectUri: pathToFileUri(application.directory), host: forHost, outputUri: pathToFileUri(destination),
-                        device: forHost === "uikit" ? device : undefined,
-                    }, `StateUI: deploying ${application.name}`, buildOutput));
-                if (!laid) {
-                    return undefined;
-                }
-                void vscode.window.showInformationMessage(`StateUI: ${application.name} is deployed in ${destination}.`, "Reveal")
-                    .then((answer) => answer && vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(destination)));
-                return destination;
-            }
-            const step = winUIDeployCommand(application, destination, architecture);
-            if (!step || !fs.existsSync(step.script)) {
-                void vscode.window.showErrorMessage(
-                    `StateUI: ${application.name} is deployed by a StateUI checkout's .scripts/WinUI/deploy.ps1, which ${step ? "it does not have" : "its Package.swift names none of by path"}.`);
-                return undefined;
-            }
-            const task = new vscode.Task(
-                { type: "stateui", application: application.name, configuration: "release", device: architecture ?? forHost },
-                vscode.TaskScope.Workspace, `Deploy ${application.name} (${describe(forHost).label}${architecture ? `, ${architecture}` : ""})`,
-                "StateUI", new vscode.ProcessExecution(step.command, step.args, { cwd: deployFolder(application) }), []);
-            task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-            if ((await runTask(task)) !== 0) {
-                void vscode.window.showErrorMessage(`StateUI: ${application.name} was not deployed - the terminal says why.`);
+            const laid = await withTool(tool, application.directory, `${application.name} was not deployed`, (client) =>
+                runOperation(client, "application/package", {
+                    projectUri: pathToFileUri(application.directory), host: forHost, outputUri: pathToFileUri(destination),
+                    device: forHost === "uikit" ? device : undefined, architecture: architecture && toolArchitecture(architecture),
+                }, `StateUI: deploying ${application.name}`, buildOutput));
+            if (!laid) {
                 return undefined;
             }
             void vscode.window.showInformationMessage(`StateUI: ${application.name} is deployed in ${destination}.`, "Reveal")
@@ -775,7 +754,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
 
     const provider = new StateUIDebugConfigurationProvider({
         host,
-        run: runTask,
         build: async (folder, application, forHost, configuration) => {
             const built = await withTool(tool, folder.uri.fsPath, `${application.name} was not built`, async (client) => {
                 const made = await runOperation(client, "application/build", { projectUri: pathToFileUri(application.directory), host: forHost, configuration },

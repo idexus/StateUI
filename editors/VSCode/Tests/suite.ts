@@ -13,7 +13,7 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, applicationsOf, hasHead, readApplications, winUIProgram } from "../Sources/applications";
+import { Application, applicationsOf, hasHead, readApplications } from "../Sources/applications";
 import { Configuration, configurations, runPlace, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
 import { androidDeviceOf, deviceAmong } from "../Sources/devices";
 import { browserOf, isChromium } from "../Sources/browsers";
@@ -24,7 +24,7 @@ import { availableHosts, describe, environment, Host, hosts } from "../Sources/h
 import { StateUIApi } from "../Sources/extension";
 import { editorCommandLine, reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
-import { deployDestination, winUIArchitectures, winUIDeployCommand } from "../Sources/deploy";
+import { deployDestination, toolArchitecture, winUIArchitectures } from "../Sources/deploy";
 import {
     atLeast, checkedPythonIn, debuggerFinding, Finding, lldbDapFailure, report,
 } from "../Sources/toolchain";
@@ -162,9 +162,8 @@ export async function run(): Promise<void> {
         {
             const ran: string[] = [];
             const provider = new StateUIDebugConfigurationProvider({
-                build: async () => undefined,
+                build: async (_folder, application) => { ran.push(application.name); return undefined; },
                 host: () => undefined, application: async () => gallery_,
-                run: async (task) => { ran.push(task.name); return 0; },
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
                 runHead: async () => undefined,
@@ -271,7 +270,6 @@ export async function run(): Promise<void> {
                 const provider = new StateUIDebugConfigurationProvider({
                     build: async () => undefined,
                     host: () => "android", application: async () => helloWorld,
-                    run: async () => 0,
                     device: async () => serial,
                     uiKitDevice: async () => undefined,
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
@@ -357,17 +355,6 @@ export async function run(): Promise<void> {
                 JSON.stringify(serverSettings("uikit", undefined, undefined)) === JSON.stringify({ scratchPath: ".build/uikit/index-build" }));
         }
         {
-            const directory = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-winui-"));
-            const notes = { name: "Notes", directory } as Parameters<typeof winUIProgram>[0];
-            const before = winUIProgram(notes, "release");
-            fs.mkdirSync(path.join(directory, ".build", "winui"), { recursive: true });
-            fs.writeFileSync(path.join(directory, ".build", "winui", "release.program"), "C:\\built\\NotesWinUI.exe");
-            check("a WinUI launch runs the head where its build says it laid it, not where the link last pointed",
-                before === path.join(directory, ".build", "winui", "release", "NotesWinUI.exe")
-                && winUIProgram(notes, "release") === "C:\\built\\NotesWinUI.exe");
-            fs.rmSync(directory, { recursive: true, force: true });
-        }
-        {
             const windows = buildingCommand("C:\\Users\\O'Neil\\apps\\Notes\\.build", "win32");
             check("a build is looked for with pgrep, and on Windows - which has no pgrep - with PowerShell's process list",
                 JSON.stringify(buildingCommand("/apps/Notes/.build", "darwin")) === JSON.stringify({ command: "pgrep", args: ["-f", "/apps/Notes/.build"] })
@@ -415,7 +402,6 @@ export async function run(): Promise<void> {
                 const provider = new StateUIDebugConfigurationProvider({
                     build: async () => undefined,
                     host: () => "uikit", application: async () => helloWorldHere,
-                    run: async () => 0,
                     device: async () => undefined,
                     uiKitDevice: async () => udid,
                     runHead: async (_folder, _application, _host, asked, device, debug) => {
@@ -473,17 +459,20 @@ export async function run(): Promise<void> {
                 && !uiKitSuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit" || each.label === "lib/StateUI/StateUI.Android/Tests"));
         }
 
-        // 6b. WinUI: HelloWorld's head, built by run-app.ps1 -BuildOnly and
-        //     launched under lldb-dap, and the host's own package through test-winui.ps1.
+        // 6b. WinUI: HelloWorld's head, built by the stateui tool and launched under lldb-dap, and the host's own
+        //     package through stateui repo test.
         check("HelloWorld has a WinUI head, and as WinUI the language server indexes in .build/winui/index-build",
             hasHead(helloWorld, "winui")
             && JSON.stringify(serverSettings("winui", undefined)) === JSON.stringify({ scratchPath: ".build/winui/index-build" }));
         {
-            const ran: vscode.Task[] = [];
+            const built: string[] = [];
+            const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "winui-release", "HelloWorldWinUI.exe");
             const provider = new StateUIDebugConfigurationProvider({
-                build: async () => undefined,
+                build: async (_folder, application, forHost, configuration) => {
+                    built.push(`${application.name} ${forHost} ${configuration}`);
+                    return program;
+                },
                 host: () => "winui", application: async () => helloWorld,
-                run: async (task) => { ran.push(task); return 0; },
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
                 runHead: async () => undefined,
@@ -491,22 +480,17 @@ export async function run(): Promise<void> {
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
-            const process_ = ran[0]?.execution as vscode.ProcessExecution | undefined;
-            const line = process_ ? [process_.process, ...process_.args].join(" ") : "";
-            say(`     winui built: ${line}`);
-            check("WinUI: run-app.ps1 -App <HelloWorld> -Configuration release -BuildOnly ran as a task, then lldb-dap launches HelloWorldWinUI.exe",
-                ran.length === 1
-                && line === `powershell -NoProfile -ExecutionPolicy Bypass -File ${path.join(root.uri.fsPath, ".scripts", "WinUI", "run-app.ps1")} -App ${helloWorld.directory} -Configuration release -BuildOnly`
-                && resolved?.type === "lldb-dap" && resolved.request === "launch"
-                && resolved.program === path.join(helloWorld.directory, ".build", "winui", "release", "HelloWorldWinUI.exe"));
+            check("WinUI: the tool builds HelloWorld for release, then lldb-dap launches the program it published",
+                JSON.stringify(built) === JSON.stringify(["HelloWorld winui release"])
+                && resolved?.type === "lldb-dap" && resolved.request === "launch" && resolved.program === program);
         }
         {
             const winUISuites = findSuites(root.uri.fsPath, "winui", api.applications());
             say(`winui suites: ${winUISuites.map((each) => each.label).join(", ")}`);
             const own = winUISuites.find((each) => each.label === "lib/StateUI/StateUI.WinUI/Testing");
-            check("winui runs the core and the Gallery as plain Swift, its own package by test-winui.ps1, and no AppKit or Android",
+            check("winui runs the core and the Gallery as plain Swift, its own package by stateui repo test --suite host:winui, and no AppKit or Android",
                 winUISuites.some((each) => each.label === core)
-                && own?.command === "powershell" && own.args[own.args.length - 1].endsWith("test-winui.ps1")
+                && own?.command === "stateui" && own.args.join(" ") === "repo test --suite host:winui"
                 && !winUISuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit" || each.label === "lib/StateUI/StateUI.Android/Tests"));
         }
 
@@ -521,7 +505,6 @@ export async function run(): Promise<void> {
             const provider = new StateUIDebugConfigurationProvider({
                 build: async (_folder, _application, forHost, configuration) => { built.push(`${forHost} ${configuration}`); return program; },
                 host: () => "gtk", application: async () => helloWorld,
-                run: async () => 0,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
                 runHead: async () => undefined,
@@ -576,7 +559,6 @@ export async function run(): Promise<void> {
                 const provider = new StateUIDebugConfigurationProvider({
                     build: async () => undefined,
                     host: () => "web", application: async () => helloWorld,
-                    run: async () => 0,
                     device: async () => undefined,
                     uiKitDevice: async () => undefined,
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
@@ -753,16 +735,14 @@ export async function run(): Promise<void> {
             // StateUI: Deploy in the group: Notes built for release and laid in the group's artifacts/Notes/<platform>,
             // on WinUI per architecture - this machine's own, and x64 too on an ARM64 machine - and run from there.
             const notes = (await described(local!)).find((each) => each.name === "Notes")!;
-            const winUIDeploy = winUIDeployCommand(notes, "D", "x64");
-            check("Deploy lays an application in artifacts/<application>/<platform> of its workspace, on WinUI per architecture by its checkout's deploy.ps1",
+            check("Deploy lays an application in artifacts/<application>/<platform> of its workspace, on WinUI per architecture - x64 the tool's x86_64",
                 commands.includes("stateui.deploy")
                 && JSON.stringify(winUIArchitectures("arm64")) === JSON.stringify(["arm64", "x64"])
                 && JSON.stringify(winUIArchitectures("x64")) === JSON.stringify(["x64"])
+                && toolArchitecture("x64") === "x86_64" && toolArchitecture("arm64") === "arm64"
                 && deployDestination(notes, "winui", "x64") === path.join(local!, "artifacts", "Notes", "WinUI", "x64")
                 && deployDestination(notes, "gtk") === path.join(local!, "artifacts", "Notes", "GTK")
                 && same(notes.checkout, root.uri.fsPath)
-                && winUIDeploy?.script === path.join(notes.checkout!, ".scripts", "WinUI", "deploy.ps1")
-                && winUIDeploy.args.slice(-6).join(" ") === `-App ${notes.directory} -Destination D -Architecture x64`
                 && fs.readFileSync(path.join(local!, ".gitignore"), "utf8").includes("\n/artifacts/\n"));
             const own: Record<string, Host> = { darwin: "appkit", win32: "winui", linux: "gtk" };
             await api.selectHost(own[process.platform]);
@@ -1197,12 +1177,12 @@ export async function run(): Promise<void> {
             check("StateUI: Debug starts", await vscode.debug.startDebugging(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
             const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
-            // Where the build laid it - SwiftPM's own layout under .build/winui - in the system's spelling of the drive.
+            // The program the stateui tool published, in the system's spelling of the drive.
             const program = String(running?.configuration.program ?? "");
-            const builds = path.join(api.applications().find((each) => each.name === "HelloWorld")?.directory ?? "", ".build", "winui");
-            check(`an lldb-dap session starts on HelloWorldWinUI.exe as its build laid it under .build\\winui - ${program}`,
+            const builds = path.join(api.applications().find((each) => each.name === "HelloWorld")?.directory ?? "", ".build", "stateui", "artifacts", "winui-");
+            check(`an lldb-dap session starts on HelloWorldWinUI.exe as the stateui tool published it - ${program}`,
                 path.basename(program) === "HelloWorldWinUI.exe" && fs.existsSync(program)
-                && program.toLowerCase().startsWith(builds.toLowerCase()));
+                && program.toLowerCase().startsWith(builds.toLowerCase()) && fs.existsSync(`${program}.manifest`));
             const alive = (): boolean => {
                 try {
                     return execSync('tasklist /FI "IMAGENAME eq HelloWorldWinUI.exe" /NH').toString().includes("HelloWorldWinUI.exe");

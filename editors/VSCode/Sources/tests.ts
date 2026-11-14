@@ -9,7 +9,6 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { Application } from "./applications";
 import { describe, environment, Host } from "./hosts";
-import { builtByTool } from "./Tooling/migration";
 import { runTask } from "./tasks";
 
 /** One suite, and the command that runs it. */
@@ -45,7 +44,7 @@ export interface Suite {
  *   tests - an application, `lib/StateUI/StateUI.UIKit/Tests` - run on the simulator
  *   chosen, by `stateui repo test --suite host:uikit`.
  * - For the WinUI host an application runs as plain Swift, and the host's own
- *   package runs by `.scripts/WinUI/test-winui.ps1`, which lays the Windows
+ *   package by `stateui repo test --suite host:winui`, which lays the Windows
  *   App SDK beside its test runner first.
  * - For the GTK host an application runs as plain Swift, and the host's own
  *   tests' package - which tests its backends too - by
@@ -84,19 +83,11 @@ export function findSuites(root: string, host: Host | undefined, applications: r
         const hostPackage = forHost;
 
         const base = ["test", "--package-path", directory];
-        const winUITests = path.join(root, ".scripts", "WinUI", "test-winui.ps1");
-        if (hostPackage === "winui" && fs.existsSync(winUITests)) {
-            suites.push({
-                label: name, detail: "test-winui.ps1 - the WinUI host's own package, the Windows App SDK beside its runner",
-                command: "powershell", args: ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", winUITests], env: {},
-            });
-        } else if (hostPackage && host && builtByTool(host)) {
+        if (hostPackage && host) {
             suites.push({
                 label: name, detail: `stateui repo test - the ${describe(host).label} host's tests, every verdict held, then its API records`,
                 command: tool, args: ["repo", "test", "--suite", `host:${host}`], env: {},
             });
-        } else if (hostPackage && host) {
-            suites.push({ label: name, detail: `swift test - the ${describe(host).label} host's own package`, command: "swift", args: base, env: {} });
         } else if (host === "appkit" && owned.includes(directory)) {
             suites.push({
                 label: name, detail: "swift test as an AppKit build, on .build/appkit", command: "swift",

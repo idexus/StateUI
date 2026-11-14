@@ -26,9 +26,9 @@
 // still running stopped, and launched by lldb-dap: the debugger is the
 // application's parent, which is what Ubuntu's ptrace scope permits.
 //
-// A WinUI head is built by .scripts/WinUI/run-app.ps1 -BuildOnly, as a task -
-// which stops a running copy first, its executable written again - and
-// launched by lldb-dap, which reads the DWARF the head carries.
+// A WinUI head is built by the stateui tool - a running copy stopped first, its
+// executable written again - for this machine's architecture, and launched by
+// lldb-dap, which reads the DWARF the head carries.
 //
 // A Web head is built, laid out and served by the stateui tool
 // (`application/run`), which opens the page in the browser chosen. A Debug
@@ -42,10 +42,8 @@
 // naming its `application` runs that one instead.
 
 import { execFile } from "child_process";
-import * as fs from "fs";
-import * as path from "path";
 import * as vscode from "vscode";
-import { Application, pathOf, winUIProgram } from "./applications";
+import { Application, pathOf } from "./applications";
 import { Browser, isChromium } from "./browsers";
 import { lldbDapFinding } from "./toolchain";
 import { environment, Host } from "./hosts";
@@ -64,9 +62,6 @@ export interface Choices {
      * else asked for - or nothing, where there is none or the user declined.
      */
     application(folder: vscode.WorkspaceFolder, host: Host, named?: string): Promise<Application | undefined>;
-
-    /** Runs a build as a task and answers its exit code. */
-    run(task: vscode.Task): Promise<number | undefined>;
 
     /**
      * Has the stateui tool build `application` for `host` in `configuration` and answers the program its build
@@ -105,11 +100,6 @@ export interface Choices {
 
 /** What a machine that runs no host is told, wherever a host is asked for. */
 export const noHost = "no StateUI host runs on this machine yet - AppKit, UIKit and Android are built and run on macOS, WinUI on Windows, GTK on Linux, Web on macOS and Linux.";
-
-/** A script of the StateUI checkout's .scripts/WinUI, the checkout at `checkout`. */
-export function winUIScript(checkout: string, name: string): string {
-    return path.join(checkout, ".scripts", "WinUI", name);
-}
 
 
 /** The two configurations every workspace offers. */
@@ -173,16 +163,12 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return this.uiKit(root, application, configuration, name);
         }
 
-        if (host === "winui") {
-            return this.winUI(root, application, configuration, name);
-        }
-
         if (host === "gtk") {
             return this.gtk(root, application, configuration, name);
         }
 
-        // AppKit: built by the stateui tool, lldb-dap launching the bundle's program it published.
-        const program = await this.choices.build(root, application, "appkit", configuration);
+        // AppKit and WinUI: built by the stateui tool, lldb-dap launching the program it published.
+        const program = await this.choices.build(root, application, host, configuration);
         if (!program) {
             return undefined;
         }
@@ -267,46 +253,6 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         };
     }
 
-    /**
-     * A WinUI head, built by run-app.ps1 -BuildOnly in a task - which stops a running copy first, its executable
-     * written again - and launched by lldb-dap.
-     */
-    private async winUI(
-        root: vscode.WorkspaceFolder,
-        application: Application,
-        configuration: Configuration,
-        name: string,
-    ): Promise<vscode.DebugConfiguration | undefined> {
-        const script = application.checkout && winUIScript(application.checkout, "run-app.ps1");
-        if (!script || !fs.existsSync(script)) {
-            void vscode.window.showErrorMessage(
-                `StateUI: a WinUI head is built by a StateUI checkout's .scripts/WinUI/run-app.ps1, and ${application.name}'s Package.swift names none by path.`);
-            return undefined;
-        }
-
-        const task = new vscode.Task(
-            { type: "stateui", application: application.name, configuration, device: "windows" }, root,
-            `Build ${application.name} (WinUI, ${configuration})`, "StateUI",
-            new vscode.ProcessExecution("powershell",
-                ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script,
-                    "-App", application.directory, "-Configuration", configuration, "-BuildOnly"],
-                { cwd: root.uri.fsPath }), []);
-        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-        if ((await this.choices.run(task)) !== 0) {
-            void vscode.window.showErrorMessage(
-                `StateUI: the WinUI build of ${application.name} failed - its output is in the terminal.`);
-            return undefined;
-        }
-
-        return {
-            type: "lldb-dap",
-            request: "launch",
-            name,
-            program: winUIProgram(application, configuration),
-            cwd: root.uri.fsPath,
-            stopOnEntry: false,
-        };
-    }
     /**
      * A GTK head, built and installed by the stateui tool, a copy still running stopped - a GTK application being one
      * instance - and launched by lldb-dap.

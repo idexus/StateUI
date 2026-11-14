@@ -128,9 +128,9 @@ says **no host**, a launch says why it runs nothing, and the editor and
   that follows it stops it. StateUI: Debug starts it held until `lldb-dap`
   attaches - to a simulator's process, one of this Mac's, or through the
   device - and a breakpoint holds from the first line; ending the session
-  ends the application. On WinUI `.scripts/WinUI/run-app.ps1`
-  builds the head, stopping a running copy first, and lays the Windows App SDK
-  beside it, and `lldb-dap` starts it: a breakpoint holds from the first line.
+  ends the application. On WinUI the `stateui` tool builds the head, stopping
+  a running copy first, and lays the Windows App SDK beside it, and `lldb-dap`
+  starts it: a breakpoint holds from the first line.
   On GTK the `stateui` tool builds the head and installs it for the user, a
   running copy is stopped, and `lldb-dap` starts it: a breakpoint holds from
   the first line.
@@ -259,8 +259,9 @@ them AS THE HOST, one after another, each in a terminal of its own:
   `lib/StateUI/StateUI.Android/Tests`, built into a test APK and run on the device
   chosen by `stateui repo test --suite host:android`.
 - **WinUI**: the library and each application as plain Swift, and the WinUI
-  host's own tests, `lib/StateUI/StateUI.WinUI/Testing`, by `.scripts/WinUI/test-winui.ps1`,
-  which lays the Windows App SDK beside its test runner first.
+  host's own tests, `lib/StateUI/StateUI.WinUI/Testing`, by
+  `stateui repo test --suite host:winui`, which lays the Windows App SDK
+  beside its test runner first.
 - **GTK**: the library and each application as plain Swift, and the GTK host's
   own tests, `lib/StateUI/StateUI.GTK/Testing`, by
   `stateui repo test --suite host:gtk`, its windows on the desktop's display.
@@ -278,8 +279,7 @@ failed.
 **StateUI: Deploy** builds the chosen application for release on the chosen
 host and lays it in `artifacts/<application>/<platform>` of its workspace - a
 project group's, or a checkout's - made anew each time.
-The `stateui` tool packages it - a WinUI head the `deploy.ps1` script of the
-application's checkout:
+The `stateui` tool packages it:
 
 - **WinUI**: a folder that runs on a Windows machine with nothing installed -
   the head, StateUI, the Windows App SDK, the Swift and C++ runtimes of its
@@ -367,13 +367,12 @@ launch file at all:
   of the same release; the Android NDK r30 or newer; JDK 21; and the Android
   SDK with platform 36 and its build tools, in `ANDROID_HOME` or
   `~/Library/Android/sdk`. The tool fetches Gradle itself.
-- For WinUI: Windows and a StateUI checkout, whose `.scripts/WinUI` builds the
-  head; Swift 6.4 from swift.org; Visual Studio's C++ tools and the Windows
-  SDK; the WebView2 runtime for the web view's backend (Windows 11 has it);
+- For WinUI: Windows; Swift 6.4 from swift.org; Visual Studio's C++ tools and
+  the Windows SDK; the WebView2 runtime for the web view's backend (Windows 11 has it);
   and the `lldb-dap` extension, with the toolchain's `lldb-dap`, which loads
   the Python the Swift installer lays beside the toolchain (Check Toolchain
-  asks it, `lldb-dap --check-python`). The scripts fetch C++/WinRT and the
-  Windows App SDK themselves.
+  asks it, `lldb-dap --check-python`). The tool fetches C++/WinRT and the
+  Windows App SDK itself.
 - For the Web: macOS or Linux; Swift 6.4 and the Swift SDK for WebAssembly
   of the same release (`swift sdk install`,
   [Getting started with WebAssembly](https://www.swift.org/documentation/articles/wasm-getting-started.html));

@@ -4,8 +4,6 @@
 // The applications the stateui tool finds in a folder (`project/describe`): the nearest application up from it, else
 // the ones its workspace's stateui.json lists.
 
-import * as fs from "fs";
-import * as path from "path";
 import * as vscode from "vscode";
 import { pathToFileUri, ToolingClient, toolingErrorCode, ToolRequestError } from "./Tooling/client";
 import { Project } from "./Tooling/protocol";
@@ -65,14 +63,4 @@ export async function readApplications(client: ToolingClient, folder?: string): 
 /** Whether `application` has a head for `host`. */
 export function hasHead(application: Application, host: Host): boolean {
     return application.hosts.includes(host);
-}
-
-/**
- * Where an application's WinUI head is, once `.scripts/WinUI/run-app.ps1` built it in `configuration`: where that build
- * says it laid it - `.build/winui/<configuration>` is a link the last build of any architecture moved - else there.
- */
-export function winUIProgram(application: Application, configuration: "debug" | "release"): string {
-    const build = path.join(application.directory, ".build", "winui");
-    const said = path.join(build, `${configuration}.program`);
-    return fs.existsSync(said) ? fs.readFileSync(said, "utf8").trim() : path.join(build, configuration, `${application.name}WinUI.exe`);
 }

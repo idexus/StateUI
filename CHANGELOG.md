@@ -100,11 +100,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **The VS Code extension works through `stateui`.** It finds the applications, checks the toolchain, makes a
   project group and a new application - **StateUI: New Application**, beside a workspace's applications - and checks
   their names as they are typed, all by the tool; the `stateui.cliPath` setting names it where it is not on the
-  search path. The making shows in a notification that cancels it. AppKit's, UIKit's, Android's, GTK's and the Web's
-  Debug, Release, Deploy and the hosts' own suites in Run Tests go through the tool, as do the UIKit and Android device
-  lists and the browsers; a UIKit or Android head's output and a page's server are in **StateUI Run**, its
-  notification stops it, the end of a debug session ends it, and a second launch in its place replaces it. WinUI goes
-  through its `.scripts` until it moves.
+  search path. The making shows in a notification that cancels it. Every host's Debug, Release, Deploy - WinUI's for
+  either architecture - and own suite in Run Tests go through the tool, as do the UIKit and Android device lists and
+  the browsers; a UIKit or Android head's output and a page's server are in **StateUI Run**, its notification stops
+  it, the end of a debug session ends it, and a second launch in its place replaces it.
 
 ### Tooling
 
