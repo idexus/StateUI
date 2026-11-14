@@ -13,7 +13,7 @@ import * as vscode from "vscode";
 import { Application, applicationsOf, hasHead, pathOf, readApplications } from "./applications";
 import { isCheckout } from "./checkouts";
 import { Configuration, configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
-import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
+import { AndroidLister, androidDeviceOf, askForDevice, chooseListedDevice, chosenDevice, deviceToRunOn } from "./devices";
 import { askForBrowser, Browser, browserToRunOn, chosenBrowser, webScript } from "./browsers";
 import { applyEditorMode, cleanIndex, setHostEnvironment, variablesInSettings } from "./editorMode";
 import { availableHosts, describe, Host } from "./hosts";
@@ -42,6 +42,8 @@ export interface StateUIApi {
     selectApplication(name: string): Promise<void>;
     /** Chooses the iPhone, iPad or simulator listed by `wanted` - its id or its name - and answers its name. */
     selectUIKitDevice(wanted: string): Promise<string | undefined>;
+    /** Chooses the Android device listed by `wanted` - its serial or its name - and answers its name. */
+    selectAndroidDevice(wanted: string): Promise<string | undefined>;
     /** The applications the stateui tool found in the workspace's folders. */
     applications(): readonly Application[];
 }
@@ -267,9 +269,21 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return picked?.application;
     };
 
-    /** The Android device a launch or a suite runs on - asked for where none chosen is attached. */
-    const androidDevice = async (root: string): Promise<string | undefined> => {
-        const serial = await deviceToRunOn(root, state);
+    /** The Android devices, emulators and virtual devices the tool lists, through any folder's connection. */
+    const listAndroid: AndroidLister = async () => {
+        const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+        if (!folder) {
+            void vscode.window.showErrorMessage("StateUI: the Android devices are listed for a folder, and none is open.");
+            return undefined;
+        }
+        const listed = await withTool(tool, folder, "the Android devices could not be listed",
+            (client) => client.request("devices/list", { host: "android" }));
+        return listed?.destinations.map(androidDeviceOf);
+    };
+
+    /** The Android device a launch or a suite runs on - asked for where none chosen is listed. */
+    const androidDevice = async (): Promise<string | undefined> => {
+        const serial = await deviceToRunOn(state, listAndroid);
         refresh();
         return serial;
     };
@@ -323,7 +337,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             void vscode.window.showInformationMessage("StateUI: Android's device reads no repository, so its marks are made again whole - Conformance - Rebuild all.");
             return;
         }
-        const device = chosen === "uikit" ? await uiKitSimulator() : chosen === "android" ? await androidDevice(folder.uri.fsPath) : undefined;
+        const device = chosen === "uikit" ? await uiKitSimulator() : chosen === "android" ? await androidDevice() : undefined;
         const steps = rebuildSteps(folder.uri.fsPath, chosen, rebuild, device);
         if (!steps) {
             return;
@@ -371,13 +385,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             return askForApplication(chosenHost);
         }),
         vscode.commands.registerCommand("stateui.selectAndroidDevice", async () => {
-            const checkout = [chosen()?.checkout, ...applications().map((each) => each.checkout)]
-                .find((each): each is string => each !== undefined && fs.existsSync(androidScript(each, "devices.sh")));
-            if (!checkout) {
-                void vscode.window.showErrorMessage("StateUI: Android devices are listed by a StateUI checkout's .scripts/Android/devices.sh, and no application here names one.");
-                return;
-            }
-            await askForDevice(checkout, state);
+            await askForDevice(state, listAndroid);
             refresh();
         }),
         vscode.commands.registerCommand("stateui.selectUIKitDevice", async () => {
@@ -418,7 +426,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
 
             let chosenSuites = picked.map((each) => each.suite);
             if (chosenSuites.some((each) => each.onDevice)) {
-                const serial = host() === "uikit" ? await uiKitSimulator() : await androidDevice(folder.uri.fsPath);
+                const serial = host() === "uikit" ? await uiKitSimulator() : await androidDevice();
                 if (!serial) {
                     return;
                 }
@@ -633,7 +641,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             if (forHost === "winui" && !architecture) {
                 return undefined;
             }
-            const device = forHost === "android" && application.checkout ? await androidDevice(application.checkout)
+            const device = forHost === "android" ? await androidDevice()
                 : forHost === "uikit" ? await uiKitDevice() : undefined;
             if ((forHost === "android" || forHost === "uikit") && !device) {
                 return undefined;
@@ -677,7 +685,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             void vscode.window.setStatusBarMessage("StateUI: the index is being built again", 4000);
         }));
 
-    // A UIKit run's output, and each run a debug session's end stops, by the token its configuration carries.
+    // A UIKit or Android run's output, and each run a debug session's end stops, by the token its configuration carries.
     const runOutput = vscode.window.createOutputChannel("StateUI Run");
     const runs = new Map<string, () => void>();
     context.subscriptions.push(runOutput, vscode.debug.onDidTerminateDebugSession((session) => {
@@ -689,11 +697,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     }));
 
     /**
-     * A UIKit head built and started on `device` by the tool, followed in a notification that stops it and in
-     * StateUI Run; answers, once it started, what started and the token whose debug session's end stops it.
+     * A UIKit or Android head built and started on `device` by the tool, followed in a notification that stops it and
+     * in StateUI Run; answers, once it started, what started and the token whose debug session's end stops it.
      */
-    const uiKitRun = (folder: vscode.WorkspaceFolder, application: Application, configuration: Configuration, device: string,
-        debug: boolean) => withTool(tool, folder.uri.fsPath, `${application.name} did not start`, (client) =>
+    const runHead = (folder: vscode.WorkspaceFolder, application: Application, forHost: Host, configuration: Configuration,
+        device: string, debug: boolean) => withTool(tool, folder.uri.fsPath, `${application.name} did not start`, (client) =>
         new Promise<{ launched: LaunchedApplication; token: string } | undefined>((resolve, reject) => {
             const stopping = new AbortController();
             const token = randomUUID();
@@ -701,11 +709,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             runOutput.clear();
             runOutput.show(true);
             void vscode.window.withProgress(
-                { location: vscode.ProgressLocation.Notification, title: `StateUI: ${application.name} (UIKit, ${configuration})`, cancellable: true },
+                { location: vscode.ProgressLocation.Notification, title: `StateUI: ${application.name} (${describe(forHost).label}, ${configuration})`, cancellable: true },
                 (progress, cancel) => {
                     cancel.onCancellationRequested(() => stopping.abort());
                     return client.run("application/run", {
-                        build: { projectUri: pathToFileUri(application.directory), host: "uikit", configuration, device }, debugger: debug,
+                        build: { projectUri: pathToFileUri(application.directory), host: forHost, configuration, device }, debugger: debug,
                     }, {
                         signal: stopping.signal,
                         onEvent: ({ event }) => {
@@ -750,7 +758,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         ready: (file, task) => readyWhen(file, task),
         device: androidDevice,
         uiKitDevice,
-        uiKitRun,
+        runHead,
         browser,
         application: async (_folder, forHost, named) => {
             const candidates = runnable(forHost);
@@ -842,7 +850,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return name;
     };
 
-    return { host, selectHost, application: () => state.get<string>(applicationKey), selectApplication, selectUIKitDevice, applications };
+    const selectAndroidDevice = async (wanted: string): Promise<string | undefined> => {
+        const name = await chooseListedDevice(state, wanted, listAndroid);
+        refresh();
+        return name;
+    };
+
+    return {
+        host, selectHost, application: () => state.get<string>(applicationKey), selectApplication, selectUIKitDevice, selectAndroidDevice,
+        applications,
+    };
 }
 
 export function deactivate(): void {}

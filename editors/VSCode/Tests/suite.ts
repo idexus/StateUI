@@ -15,7 +15,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { Application, applicationsOf, hasHead, readApplications, winUIProgram } from "../Sources/applications";
 import { Configuration, configurations, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
-import { parseDevices } from "../Sources/devices";
+import { androidDeviceOf, deviceAmong } from "../Sources/devices";
 import { isChromium, parseBrowsers } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
 import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
@@ -170,7 +170,7 @@ export async function run(): Promise<void> {
                 ready: async () => false,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
-                uiKitRun: async () => undefined,
+                runHead: async () => undefined,
                 browser: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
@@ -245,73 +245,80 @@ export async function run(): Promise<void> {
                 swiftSDKOf("6.4.2", wasm, "wasm") === "swift-6.4.2-RELEASE_wasm"
                 && swiftSDKOf("6.4.2", "swift-6.4.2-RELEASE_wasm-embedded\n", "wasm") === undefined);
         }
-        check("devices.sh list reads as the devices attached, by serial and name, and the emulators not running",
-            JSON.stringify(parseDevices("device\t190a991d\tCPH2363\r\ndevice\temulator-5554\tPixel_3a_API_34\ndevice\tR5CT\navd\tMedium_Phone_API_36\n\nnoise\n"))
-            === JSON.stringify([
-                { kind: "device", serial: "190a991d", name: "CPH2363" },
-                { kind: "device", serial: "emulator-5554", name: "Pixel_3a_API_34" },
-                { kind: "device", serial: "R5CT", name: "R5CT" },
-                { kind: "avd", name: "Medium_Phone_API_36" },
-            ]));
+        {
+            const listed = [
+                androidDeviceOf({ id: "190a991d", udid: "190a991d", name: "CPH2363", kind: "device", version: "13", booted: false, connection: "USB", architecture: "arm64" }),
+                androidDeviceOf({ id: "emulator-5554", udid: "emulator-5554", name: "Pixel_3a", kind: "emulator", version: "14", booted: true, architecture: "arm64" }),
+                androidDeviceOf({ id: "Medium_Phone", udid: "Medium_Phone", name: "Medium_Phone", kind: "emulator", version: "", booted: false }),
+            ];
+            check("the tool's list reads as the devices attached and running, by serial and name, and the virtual devices not running",
+                JSON.stringify(listed) === JSON.stringify([
+                    { kind: "device", serial: "190a991d", name: "CPH2363" },
+                    { kind: "device", serial: "emulator-5554", name: "Pixel_3a" },
+                    { kind: "avd", name: "Medium_Phone" },
+                ]));
+            check("a device chosen is known by its serial while it runs - an emulator chosen when it was not, by its name - else by its virtual device's name",
+                deviceAmong(listed, { serial: "190a991d", name: "CPH2363" }) === "190a991d"
+                && deviceAmong(listed, { serial: "Pixel_3a", name: "Pixel_3a" }) === "emulator-5554"
+                && deviceAmong(listed, { serial: "Medium_Phone", name: "Medium_Phone" }) === "Medium_Phone"
+                && deviceAmong(listed, { serial: "gone", name: "Gone" }) === undefined);
+        }
 
         const helloWorld = api.applications().find((each) => each.name === "HelloWorld")!;
         check("HelloWorld and the Gallery have Android heads",
             hasHead(helloWorld, "android") && hasHead(gallery_, "android"));
         {
-            // What run-app.sh --debugger writes once the application runs, faked
-            // by the task's start - or not, where the application never starts.
-            const facts = path.join(helloWorld.directory, ".build", "android", "debugger.json");
+            // What the tool's run says once the application runs, faked - or nothing, where it never starts.
             const launchOnAndroid = async (serial: string | undefined, configuration = "release", starts = true) => {
-                const started: vscode.Task[] = [];
-                const ran: string[] = [];
+                const runs: { host: string; device: string; debug: boolean; configuration: string }[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
                     build: async () => undefined,
                     host: () => "android", application: async () => helloWorld,
-                    run: async (task) => { ran.push(task.name); return 0; },
-                    start: async (task) => {
-                        started.push(task);
-                        if (configuration === "debug" && starts) {
-                            fs.mkdirSync(path.dirname(facts), { recursive: true });
-                            fs.writeFileSync(facts, JSON.stringify({
-                                serial, package: "com.stateui.helloworld", process: 4242,
-                                socket: "com.stateui.helloworld/stateui-debugger.sock", symbols: "/build/symbols/arm64-v8a",
-                            }));
-                        }
-                    },
-                    ready: async (file) => fs.existsSync(file),
+                    run: async () => 0,
+                    start: async () => {},
+                    ready: async () => false,
                     device: async () => serial,
                     uiKitDevice: async () => undefined,
-                uiKitRun: async () => undefined,
+                    runHead: async (_folder, _application, forHost, asked, device, debug) => {
+                        runs.push({ host: forHost, device, debug, configuration: asked });
+                        if (!starts) {
+                            return undefined;
+                        }
+                        const destination = { id: device, udid: device, name: "Pixel_3a", kind: "emulator" as const, version: "14", booted: true, architecture: "arm64" as const };
+                        return {
+                            token: "RUN-2",
+                            launched: {
+                                held: false, process: 4242, debuggerSocket: debug ? "com.stateui.helloworld/stateui-debugger.sock" : undefined,
+                                build: {
+                                    application: "HelloWorld", host: "android" as const, configuration: asked as Configuration, architecture: "arm64" as const,
+                                    folderUri: "file:///build", programUri: "file:///build/HelloWorld.apk", bundleUri: "file:///build/HelloWorld.apk",
+                                    destination, identifier: "com.stateui.helloworld", symbolsUri: "file:///build/symbols/arm64-v8a",
+                                },
+                            },
+                        };
+                    },
                     browser: async () => undefined,
                 });
                 const resolved = await provider.resolveDebugConfiguration(root, {
                     name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
                     request: "launch", configuration,
                 });
-                fs.rmSync(facts, { force: true });
-                return { resolved, started, ran };
+                return { resolved, runs };
             };
 
-            const { resolved, started, ran } = await launchOnAndroid("emulator-5554");
-            const shell = started[0]?.execution as vscode.ShellExecution | undefined;
-            const line = shell ? [shell.command, ...(shell.args ?? [])].map(String).join(" ") : "";
-            say(`     android started: ${line}`);
-            check("Android: run-app.sh <HelloWorld> release <serial> started as a task on that device, nothing waited for, and no session",
-                resolved === undefined && ran.length === 0 && started.length === 1
-                && line === `bash ${path.join(root.uri.fsPath, ".scripts", "Android", "run-app.sh")} ${helloWorld.directory} release emulator-5554`
-                && started[0].definition.application === "HelloWorld" && started[0].definition.device === "emulator-5554");
+            const released = await launchOnAndroid("emulator-5554");
+            check("Android Release: the tool runs HelloWorld on that device, no debugger readied, and no session",
+                released.resolved === undefined
+                && JSON.stringify(released.runs) === JSON.stringify([{ host: "android", device: "emulator-5554", debug: false, configuration: "release" }]));
 
             const declined = await launchOnAndroid(undefined);
             check("Android with no device picked starts nothing and opens no session",
-                declined.resolved === undefined && declined.started.length === 0);
+                declined.resolved === undefined && declined.runs.length === 0);
 
             const debugged = await launchOnAndroid("emulator-5554", "debug");
-            const debugShell = debugged.started[0]?.execution as vscode.ShellExecution | undefined;
-            const debugLine = debugShell ? [debugShell.command, ...(debugShell.args ?? [])].map(String).join(" ") : "";
             say(`     android debugged: ${JSON.stringify(debugged.resolved)}`);
-            check("Android Debug: run-app.sh ... debug <serial> --debugger, then lldb-dap attached through the device's lldb-server to the process started",
-                debugLine.endsWith(`${helloWorld.directory} debug emulator-5554 --debugger`)
-                && debugged.resolved?.type === "lldb-dap" && debugged.resolved.request === "attach"
+            check("Android Debug: the tool readies the debugger's server, then lldb-dap attaches through it to the process started, the session carrying the run",
+                debugged.resolved?.type === "lldb-dap" && debugged.resolved.request === "attach" && debugged.resolved.stateuiRun === "RUN-2"
                 && JSON.stringify(debugged.resolved.initCommands) === JSON.stringify([
                     "settings set plugin.jit-loader.gdb.enable off",
                     "platform select remote-android",
@@ -325,8 +332,7 @@ export async function run(): Promise<void> {
                 ]));
 
             const failed = await launchOnAndroid("emulator-5554", "debug", false);
-            check("Android Debug whose application never starts opens no session",
-                failed.resolved === undefined && failed.started.length === 1);
+            check("Android Debug whose application never starts opens no session", failed.resolved === undefined && failed.runs.length === 1);
         }
         {
             const androidSuites = findSuites(root.uri.fsPath, "android", api.applications());
@@ -337,9 +343,9 @@ export async function run(): Promise<void> {
                 androidSuites.some((each) => each.label === core && forDevice(each, "emulator-5554") === each)
                 && galleryRun?.args.join(" ") === `test --package-path ${gallery}` && Object.keys(galleryRun.env).length === 0
                 && !androidSuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit"));
-            check("android runs test-android.sh <serial> on the device, and only android does",
+            check("android runs stateui repo test --suite host:android --device <serial> on the device, and only android does",
                 onDevice.length === 1 && onDevice[0].label === "lib/StateUI/StateUI.Android/Tests"
-                && [onDevice[0].command, ...onDevice[0].args].join(" ") === `bash ${path.join(root.uri.fsPath, ".scripts", "Android", "test-android.sh")} emulator-5554`
+                && [onDevice[0].command, ...onDevice[0].args].join(" ") === "stateui repo test --suite host:android --device emulator-5554"
                 && !appkitSuites.includes("lib/StateUI/StateUI.Android/Tests"));
         }
         // 6a. UIKit: the language server's file, the simulators, and the
@@ -421,7 +427,7 @@ export async function run(): Promise<void> {
                     ready: async () => false,
                     device: async () => undefined,
                     uiKitDevice: async () => udid,
-                    uiKitRun: async (_folder, _application, asked, device, debug) => {
+                    runHead: async (_folder, _application, _host, asked, device, debug) => {
                         runs.push({ device, debug, configuration: asked });
                         if (!starts) {
                             return undefined;
@@ -491,7 +497,7 @@ export async function run(): Promise<void> {
                 ready: async () => false,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
-                uiKitRun: async () => undefined,
+                runHead: async () => undefined,
                 browser: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
@@ -530,7 +536,7 @@ export async function run(): Promise<void> {
                 ready: async () => false,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
-                uiKitRun: async () => undefined,
+                runHead: async () => undefined,
                 browser: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
@@ -588,7 +594,7 @@ export async function run(): Promise<void> {
                     ready: async (file) => fs.existsSync(file),
                     device: async () => undefined,
                     uiKitDevice: async () => undefined,
-                uiKitRun: async () => undefined,
+                runHead: async () => undefined,
                     browser: async () => browser,
                 });
                 const resolved = await provider.resolveDebugConfiguration(root,
@@ -938,7 +944,7 @@ export async function run(): Promise<void> {
             // The stop at the breakpoint, its frame and locals checked, the breakpoint taken away and the run let go.
             const stopsInCaption = async (running: vscode.DebugSession | undefined, stop: Promise<number>, on: string): Promise<void> => {
                 const thread = await Promise.race([stop, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 180_000))]);
-                check(`the breakpoint in the button's caption stops the first render${on}`, thread !== undefined && running !== undefined);
+                check(`the breakpoint in the button's caption stops a render of it${on}`, thread !== undefined && running !== undefined);
                 if (thread !== undefined && running) {
                     const trace = await running.customRequest("stackTrace", { threadId: thread, levels: 1 });
                     const frame = trace.stackFrames?.[0];
@@ -1078,6 +1084,63 @@ export async function run(): Promise<void> {
                 check("no devicectl console outlives the session", consoles === "");
             } else {
                 say("skip a real device: STATEUI_UIKIT_DEVICE names none");
+            }
+
+            // And on Android, where STATEUI_ANDROID_DEVICE names a device or emulator running: the tool builds the
+            // APK for its ABI and readies the debugger's server, lldb-dap attaches through it, a press reaches the
+            // breakpoint, and Stop ends it all.
+            const android = process.env.STATEUI_ANDROID_DEVICE;
+            if (android) {
+                const adb = path.join(os.homedir(), "Library", "Android", "sdk", "platform-tools", "adb");
+                const pidOf = (): string => { try { return execSync(`${adb} -s ${android} shell pidof com.stateui.helloworld`).toString().trim(); } catch { return ""; } };
+                await api.selectHost("android");
+                await api.selectApplication("HelloWorld");
+                check("the Android device chosen by its serial is named by its name", (await api.selectAndroidDevice(android)) !== undefined);
+                const attachedOnAndroid = new Promise<vscode.DebugSession>((resolve) => {
+                    const listener = vscode.debug.onDidStartDebugSession((each) => {
+                        if (each.type === "lldb-dap") {
+                            listener.dispose();
+                            resolve(each);
+                        }
+                    });
+                });
+                vscode.debug.addBreakpoints([breakpoint]);
+                const stoppedOnAndroid = breakpointStop();
+                check("StateUI: Debug starts on Android", await vscode.debug.startDebugging(root,
+                    { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
+                const session = await Promise.race([attachedOnAndroid, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
+                check("an lldb-dap session attaches through the device's lldb-server",
+                    JSON.stringify(session?.configuration.initCommands ?? []).includes(`unix-abstract-connect://${android}/`));
+                // The debugger attaches to the application running, after its first render: a press on the button
+                // renders its caption again, where the breakpoint stands.
+                await new Promise((resume) => setTimeout(resume, 4000));
+                const screen = (() => { try { return execSync(`${adb} -s ${android} exec-out uiautomator dump /dev/tty`).toString(); } catch { return ""; } })();
+                const bounds = /resource-id="main\.click"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/.exec(screen);
+                check("the button stands on the Android device's screen", bounds !== null);
+                if (bounds) {
+                    const [left, top, right, bottom] = bounds.slice(1).map(Number);
+                    execSync(`${adb} -s ${android} shell input tap ${(left + right) / 2} ${(top + bottom) / 2}`);
+                }
+                await stopsInCaption(session, stoppedOnAndroid, " on Android");
+                await new Promise((resume) => setTimeout(resume, 4000));
+                check("the HelloWorld process runs on the Android device", pidOf() !== "");
+                const androidSessionEnded = new Promise<boolean>((resolve) => {
+                    const listener = vscode.debug.onDidTerminateDebugSession((each) => {
+                        if (each.id === session?.id) {
+                            listener.dispose();
+                            resolve(true);
+                        }
+                    });
+                    setTimeout(() => resolve(false), 30_000);
+                });
+                await vscode.debug.stopDebugging(session);
+                check("Stop ends the lldb-dap session on Android", await androidSessionEnded);
+                await new Promise((resume) => setTimeout(resume, 6000));
+                check("Stop ends HelloWorld on the Android device", pidOf() === "");
+                const server = (() => { try { return execSync(`${adb} -s ${android} shell ps -A`).toString().includes("lldb-server"); } catch { return false; } })();
+                check("no lldb-server outlives the session", !server);
+            } else {
+                say("skip Android: STATEUI_ANDROID_DEVICE names no device");
             }
         } else if (process.platform === "win32") {
             await api.selectHost("winui");

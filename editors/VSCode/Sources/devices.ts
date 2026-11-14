@@ -1,42 +1,35 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The Android devices a head runs on: what .scripts/Android/devices.sh lists,
-// the one chosen for the workspace, and an emulator started when one is picked.
+// The Android devices a head runs on, as the stateui tool lists them (`devices/list`), and the one chosen for the
+// workspace. An emulator not running is named by its virtual device; the tool boots it when a run or a suite needs it.
 
-import { execFile } from "child_process";
-import * as path from "path";
 import * as vscode from "vscode";
+import { Destination } from "./Tooling/protocol";
 
-/** A place an Android head can run: a device attached and ready, or an emulator not running. */
+/** A place an Android head can run: a device attached and ready - a running emulator among them - or a virtual device. */
 export type AndroidDevice = AttachedDevice | { readonly kind: "avd"; readonly name: string };
 
-/** A device attached and ready, named by its model - a running emulator by its AVD. */
+/** A device attached and ready, named by its model - a running emulator by its virtual device. */
 export interface AttachedDevice {
     readonly kind: "device";
     readonly serial: string;
     readonly name: string;
 }
 
-/** The device chosen for a workspace. */
+/** The device chosen for a workspace: what the tool knows it by - a serial, or a virtual device's name - and its name. */
 export type ChosenDevice = Omit<AttachedDevice, "kind">;
+
+/** The devices and virtual devices as the tool lists them, or nothing, said, where it could not. */
+export type AndroidLister = () => Promise<AndroidDevice[] | undefined>;
 
 const deviceKey = "stateui.androidDevice";
 
-/** One of the scripts in `root`/.scripts/Android, which build and run the Android host. */
-export function androidScript(root: string, script: "devices.sh" | "run-app.sh" | "test-android.sh"): string {
-    return path.join(root, ".scripts", "Android", script);
-}
-
-/** What `devices.sh list` printed: one place a line, tab-separated. */
-export function parseDevices(output: string): AndroidDevice[] {
-    return output.split(/\r?\n/).flatMap((line): AndroidDevice[] => {
-        const [kind, first, second] = line.trim().split("\t");
-        if (kind === "device" && first) {
-            return [{ kind, serial: first, name: second || first }];
-        }
-        return kind === "avd" && first ? [{ kind, name: first }] : [];
-    });
+/** A destination the tool listed, as an Android device stands in the editor. */
+export function androidDeviceOf(destination: Destination): AndroidDevice {
+    return destination.kind === "emulator" && !destination.booted
+        ? { kind: "avd", name: destination.name }
+        : { kind: "device", serial: destination.id, name: destination.name };
 }
 
 /** The device chosen for the workspace, where one is. */
@@ -45,25 +38,35 @@ export function chosenDevice(state: vscode.Memento): ChosenDevice | undefined {
 }
 
 /**
- * The serial of the device a launch or a suite runs on: the one chosen, while
- * it is attached, else asked for - or nothing, where none is picked.
+ * What the tool knows the device `chosen` by among `listed`: its serial while it runs - an emulator started since it
+ * was chosen too, by its virtual device's name - else the virtual device's name, which the tool boots; nothing where
+ * it is listed no more.
  */
-export async function deviceToRunOn(root: string, state: vscode.Memento): Promise<string | undefined> {
-    const listed = await listDevices(root);
-    const chosen = chosenDevice(state);
-
-    if (chosen && listed?.some((each) => each.kind === "device" && each.serial === chosen.serial)) {
-        return chosen.serial;
+export function deviceAmong(listed: AndroidDevice[], chosen: ChosenDevice | undefined): string | undefined {
+    if (!chosen) {
+        return undefined;
     }
-    return listed ? askForDevice(root, state, listed) : undefined;
+    const running = listed.find((each): each is AttachedDevice =>
+        each.kind === "device" && (each.serial === chosen.serial || each.name === chosen.name));
+    return running?.serial ?? listed.find((each) => each.kind === "avd" && each.name === chosen.name)?.name;
 }
 
 /**
- * Asks for a device among those `devices.sh list` lists - an emulator picked
- * is started first - remembers it, and answers its serial.
+ * The device a launch or a suite runs on: the one chosen, while it is listed, else asked for - or nothing, where none
+ * is picked.
  */
-export async function askForDevice(root: string, state: vscode.Memento, listed?: AndroidDevice[]): Promise<string | undefined> {
-    listed ??= await listDevices(root);
+export async function deviceToRunOn(state: vscode.Memento, list: AndroidLister): Promise<string | undefined> {
+    const listed = await list();
+    const found = listed && deviceAmong(listed, chosenDevice(state));
+    if (found) {
+        return found;
+    }
+    return listed ? askForDevice(state, list, listed) : undefined;
+}
+
+/** Asks for a device among those the tool lists, remembers it, and answers what the tool knows it by. */
+export async function askForDevice(state: vscode.Memento, list: AndroidLister, listed?: AndroidDevice[]): Promise<string | undefined> {
+    listed ??= await list();
     if (!listed) {
         return undefined;
     }
@@ -82,7 +85,7 @@ export async function askForDevice(root: string, state: vscode.Memento, listed?:
             label: `$(device-mobile) ${device.name}`, description: device.serial === current ? `${device.serial} · current` : device.serial, device,
         })),
         ...(emulators.length > 0 ? [{ label: "Emulators not running", kind: vscode.QuickPickItemKind.Separator }] : []),
-        ...emulators.map((device): Item => ({ label: `$(vm) ${device.name}`, description: "started when picked", device })),
+        ...emulators.map((device): Item => ({ label: `$(vm) ${device.name}`, description: "started when it runs", device })),
     ];
 
     const device = (await vscode.window.showQuickPick(items,
@@ -90,39 +93,17 @@ export async function askForDevice(root: string, state: vscode.Memento, listed?:
     if (!device) {
         return undefined;
     }
-
-    const serial = device.kind === "device" ? device.serial : await boot(root, device.name);
-    if (serial) {
-        await state.update(deviceKey, { serial, name: device.name } satisfies ChosenDevice);
-    }
-    return serial;
+    const known = device.kind === "device" ? device.serial : device.name;
+    await state.update(deviceKey, { serial: known, name: device.name } satisfies ChosenDevice);
+    return known;
 }
 
-/** What `devices.sh list` lists, or nothing, said, where it failed. */
-async function listDevices(root: string): Promise<AndroidDevice[] | undefined> {
-    const { failed, stdout, output } = await devicesScript(root, ["list"]);
-    if (failed) {
-        void vscode.window.showErrorMessage(`StateUI: the Android devices could not be listed - ${output.trim()}`);
+/** Chooses the device `wanted` names - its serial or its name - as the tool lists it; answers its name, or nothing. */
+export async function chooseListedDevice(state: vscode.Memento, wanted: string, list: AndroidLister): Promise<string | undefined> {
+    const found = (await list())?.find((each) => (each.kind === "device" && each.serial === wanted) || each.name === wanted);
+    if (!found) {
         return undefined;
     }
-    return parseDevices(stdout);
-}
-
-/** Starts the emulator `avd` and answers its serial once it has booted, or nothing, said, where it did not. */
-async function boot(root: string, avd: string): Promise<string | undefined> {
-    const { failed, stdout, output } = await vscode.window.withProgress(
-        { location: vscode.ProgressLocation.Notification, title: `StateUI: starting ${avd}` },
-        () => devicesScript(root, ["boot", avd]));
-
-    const serial = stdout.trim().split(/\r?\n/).pop()?.trim();
-    if (failed || !serial) {
-        void vscode.window.showErrorMessage(`StateUI: ${avd} did not start - ${output.trim() || "devices.sh said nothing"}`);
-        return undefined;
-    }
-    return serial;
-}
-
-function devicesScript(root: string, args: string[]): Promise<{ failed: boolean; stdout: string; output: string }> {
-    return new Promise((resolve) => execFile("bash", [androidScript(root, "devices.sh"), ...args], { cwd: root },
-        (error, stdout, stderr) => resolve({ failed: error !== null, stdout, output: `${stdout}${stderr}` })));
+    await state.update(deviceKey, { serial: found.kind === "device" ? found.serial : found.name, name: found.name } satisfies ChosenDevice);
+    return found.name;
 }

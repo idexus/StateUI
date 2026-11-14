@@ -8,7 +8,6 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { Application } from "./applications";
-import { androidScript } from "./devices";
 import { describe, environment, Host } from "./hosts";
 import { builtByTool } from "./Tooling/migration";
 import { runTask } from "./tasks";
@@ -41,7 +40,7 @@ export interface Suite {
  * - For the Android host an application runs as plain Swift, its Android build
  *   running only on a device, and the host's own tests -
  *   `lib/StateUI/StateUI.Android/Tests` - run on the device chosen, by
- *   `.scripts/Android/test-android.sh`.
+ *   `stateui repo test --suite host:android`.
  * - For the UIKit host an application runs as plain Swift, and the host's own
  *   tests - an application, `lib/StateUI/StateUI.UIKit/Tests` - run on the simulator
  *   chosen, by `stateui repo test --suite host:uikit`.
@@ -112,11 +111,12 @@ export function findSuites(root: string, host: Host | undefined, applications: r
         }
     }
 
-    const testScript = androidScript(root, "test-android.sh");
-    if (host === "android" && fs.existsSync(testScript)) {
+    // The device's serial, appended once one is chosen, follows --device.
+    if (host === "android" && fs.existsSync(path.join(root, "lib", "StateUI", "StateUI.Android", "Tests", "Package.swift"))) {
         suites.push({
-            label: "lib/StateUI/StateUI.Android/Tests", detail: "test-android.sh - the Android host's own tests, on the device chosen",
-            command: "bash", args: [testScript], env: {}, onDevice: true,
+            label: "lib/StateUI/StateUI.Android/Tests",
+            detail: "stateui repo test - the Android host's own tests on the device chosen, every verdict held, then its API record",
+            command: tool, args: ["repo", "test", "--suite", "host:android", "--device"], env: {}, onDevice: true,
         });
     }
 

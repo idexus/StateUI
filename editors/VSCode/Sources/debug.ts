@@ -9,12 +9,11 @@
 // resolvers still run over it. On a machine that runs no host, nothing is
 // resolved and the launch says so.
 //
-// An Android head is run by .scripts/Android/run-app.sh, which builds, installs
-// and starts it on the device chosen, in a task whose terminal then follows its
-// log. A Debug launch is then attached to by lldb-dap: the script readies the
-// NDK's lldb-server in the application's sandbox and writes where it listens to
-// .build/android/debugger.json. A Release build cannot be debugged, and
-// resolves to no session.
+// An Android head is built and started by the stateui tool (`application/run`)
+// on the device chosen, its log followed in StateUI Run. A Debug launch readies
+// the NDK's lldb-server in the application's sandbox; the run's `started` event
+// says its socket and the process, and lldb-dap attaches through it. The debug
+// session's end stops the run. A Release build has no session.
 //
 // A UIKit head is built and started by the stateui tool (`application/run`) on
 // the iPhone, iPad or simulator chosen, its output followed in StateUI Run. A
@@ -47,7 +46,6 @@ import * as vscode from "vscode";
 import { Application, gtkProgram, pathOf, webSite, winUIProgram } from "./applications";
 import { Browser, isChromium, webScript } from "./browsers";
 import { lldbDapFinding } from "./toolchain";
-import { androidScript } from "./devices";
 import { environment, Host } from "./hosts";
 import { LaunchedApplication } from "./Tooling/protocol";
 
@@ -84,11 +82,11 @@ export interface Choices {
     ready(file: string, task: vscode.Task): Promise<boolean>;
 
     /**
-     * The serial of the Android device a launch runs on - the one chosen while
-     * it is attached, else asked for, as `checkout`'s devices.sh lists them -
-     * or nothing, where none is picked.
+     * What the tool knows the Android device a launch runs on by - the one
+     * chosen while it is listed, else asked for - or nothing, where none is
+     * picked.
      */
-    device(checkout: string): Promise<string | undefined>;
+    device(): Promise<string | undefined>;
 
     /**
      * The iPhone, iPad or simulator a UIKit launch runs on - the one chosen
@@ -97,12 +95,13 @@ export interface Choices {
     uiKitDevice(): Promise<string | undefined>;
 
     /**
-     * Has the stateui tool build `application` in `configuration` and start it on `device` - held for a debugger
-     * where `debug` - following its output; once it started, what started and the token a debug session carries,
-     * whose end stops the run - nothing where it failed or was cancelled, which the tool's error said.
+     * Has the stateui tool build `application` for `host` in `configuration` and start it on `device` - a debugger
+     * readied where `debug` - following its output; once it started, what started and the token a debug session
+     * carries, whose end stops the run - nothing where it failed or was cancelled, which the tool's error said.
      */
-    uiKitRun(folder: vscode.WorkspaceFolder, application: Application, configuration: Configuration, device: string, debug: boolean):
-        Promise<{ launched: LaunchedApplication; token: string } | undefined>;
+    runHead(
+        folder: vscode.WorkspaceFolder, application: Application, host: Host, configuration: Configuration, device: string, debug: boolean,
+    ): Promise<{ launched: LaunchedApplication; token: string } | undefined>;
 
     /**
      * The browser a Web launch opens the page in - the one chosen while it is installed, else asked for, as
@@ -210,9 +209,9 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
     }
 
     /**
-     * An Android head, started by run-app.sh in a task that follows its log;
-     * a Debug build then attached to by lldb-dap, through the lldb-server the
-     * script readied - a Release build has no session.
+     * An Android head, built and started on the device chosen by the stateui tool, which follows its log; a Debug
+     * build's debugger server readied in its sandbox and attached to by lldb-dap, the session's end stopping the run -
+     * a Release build has no session.
      */
     private async android(
         root: vscode.WorkspaceFolder,
@@ -220,40 +219,27 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const checkout = application.checkout;
-        const script = checkout && androidScript(checkout, "run-app.sh");
-        if (!checkout || !script || !fs.existsSync(script)) {
-            void vscode.window.showErrorMessage(
-                `StateUI: an Android head runs through a StateUI checkout's .scripts/Android/run-app.sh, and ${application.name}'s Package.swift names none by path.`);
+        const device = await this.choices.device();
+        if (!device) {
             return undefined;
         }
-
-        const serial = await this.choices.device(checkout);
-        if (!serial) {
-            return undefined;
-        }
-
         const debug = configuration === "debug";
-        const facts = path.join(application.directory, ".build", "android", "debugger.json");
-        fs.rmSync(facts, { force: true });
-        const task = new vscode.Task(
-            { type: "stateui", launch: true, application: application.name, configuration, device: serial }, root,
-            `Run ${application.name} (Android, ${configuration})`, "StateUI",
-            new vscode.ShellExecution("bash",
-                [script, application.directory, configuration, serial, ...(debug ? ["--debugger"] : [])],
-                { cwd: root.uri.fsPath }), []);
-        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-        await this.choices.start(task);
-        if (!debug) {
+        const running = await this.choices.runHead(root, application, "android", configuration, device, debug);
+        if (!running || !debug) {
             return undefined;
         }
-
-        if (!(await this.choices.ready(facts, task))) {
-            void vscode.window.showErrorMessage(
-                `StateUI: ${application.name} did not start for the debugger on ${serial} - the terminal says why.`);
+        const { launched, token } = running;
+        const serial = launched.build.destination?.id;
+        if (launched.process === undefined || !launched.debuggerSocket || !serial || !launched.build.symbolsUri) {
+            void vscode.window.showErrorMessage(`StateUI: ${application.name} started, but where a debugger attaches is not known.`);
             return undefined;
         }
-        return androidAttach(name, serial, JSON.parse(fs.readFileSync(facts, "utf8")));
+        return {
+            ...androidAttach(name, serial, {
+                process: launched.process, socket: launched.debuggerSocket, symbols: pathOf(launched.build.symbolsUri),
+            }),
+            stateuiRun: token,
+        };
     }
 
     /**
@@ -272,7 +258,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
         const debug = configuration === "debug";
-        const running = await this.choices.uiKitRun(root, application, configuration, device, debug);
+        const running = await this.choices.runHead(root, application, "uikit", configuration, device, debug);
         if (!running || !debug) {
             return undefined;
         }
@@ -425,10 +411,9 @@ export function webLaunch(name: string, url: string, browser: Browser, site: str
     return { type: "chrome", request: "launch", name, url, runtimeExecutable: browser.executable, webRoot: site };
 }
 
-/** Where run-app.sh --debugger left the application, and its debugger's server. */
+/** Where a run readied an Android head for a debugger: its process, the debugger server's socket, its symbols. */
 export interface AndroidDebugger {
-    /** The package, the process started, the server's socket, and the libraries unstripped. */
-    package: string;
+    /** The process started, the server's socket, and the libraries unstripped. */
     process: number;
     socket: string;
     symbols: string;

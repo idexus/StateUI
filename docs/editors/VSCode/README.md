@@ -51,8 +51,8 @@ Press **F5** to run **StateUI: Debug**, or choose **StateUI: Release** in Run
 and Debug. The application's head is built, installed where the host needs
 it, and started under `lldb-dap`, a breakpoint holding from the first line -
 on Android `lldb-dap` attaches once the application has started, and a
-breakpoint holds from then on; on UIKit and Android its terminal follows the
-application's log. On UIKit, Android and the Web a Release launch runs
+breakpoint holds from then on; on UIKit and Android **StateUI Run** follows the
+application's output, and the notification that follows it stops it. On UIKit, Android and the Web a Release launch runs
 without a debugger; on AppKit, WinUI and GTK `lldb-dap` starts the optimized
 build. A Web head is built, its page served and opened in the chosen browser;
 StateUI: Debug in Chrome, Edge or another of Chromium's browsers opens it
@@ -114,15 +114,14 @@ says **no host**, a launch says why it runs nothing, and the editor and
 - **StateUI: Debug and StateUI: Release run on it.** On AppKit the `stateui`
   tool builds the application's bundle - its progress in a notification that
   cancels it, SwiftPM's words in the **StateUI Build** output - and its
-  program is started under `lldb-dap`. On Android
-  `.scripts/Android/run-app.sh` builds the head, installs it on the device
-  chosen below and starts it, and its terminal then follows the application's
-  log, in color, until the task is stopped. StateUI:
-  Debug then attaches `lldb-dap` to the application through the NDK's
-  `lldb-server`, which the script starts in the application's sandbox: a
-  breakpoint is reached from the moment it attaches. StateUI: Release, and Run
-  Without Debugging, run it without a debugger. A second launch stops the first
-  one's log before it starts again. On UIKit the `stateui` tool builds the
+  program is started under `lldb-dap`. On Android the `stateui` tool builds
+  the APK for the device chosen below - an emulator not running booted first
+  - installs it and starts it; **StateUI Run** follows the application's log,
+  and the notification that follows it stops it. StateUI: Debug readies the
+  NDK's `lldb-server` in the application's sandbox and attaches `lldb-dap`
+  through it: a breakpoint is reached from the moment it attaches, and ending
+  the session ends the application. StateUI: Release, and Run Without
+  Debugging, run it without a debugger. On UIKit the `stateui` tool builds the
   head, installs it on the iPhone, iPad or simulator chosen below - a
   simulator booted first, a device's build signed for it - and starts it;
   **StateUI Run** follows what the application prints, and the notification
@@ -145,9 +144,10 @@ says **no host**, a launch says why it runs nothing, and the editor and
 
 While the host is Android, a third status bar item shows the device - click it,
 or run **StateUI: Select Android Device**. It offers the devices attached and
-the emulators set up; picking an emulator starts it and waits until it has
-booted. The device is remembered for the workspace, so a launch or a run of the
-tests asks only when none is chosen or the one chosen is no longer attached.
+the emulators set up, as the `stateui` tool lists them; an emulator picked that
+is not running is started when a launch or the tests need it. The device is
+remembered for the workspace, so a launch or a run of the tests asks only when
+none is chosen or the one chosen is no longer listed.
 
 ## The UIKit device
 
@@ -254,7 +254,7 @@ them AS THE HOST, one after another, each in a terminal of its own:
 - **Android**: the library and each application as plain Swift - an Android
   build runs only on a device - and the Android host's own tests,
   `lib/StateUI/StateUI.Android/Tests`, built into a test APK and run on the device
-  chosen by `.scripts/Android/test-android.sh`.
+  chosen by `stateui repo test --suite host:android`.
 - **WinUI**: the library and each application as plain Swift, and the WinUI
   host's own tests, `lib/StateUI/StateUI.WinUI/Testing`, by `.scripts/WinUI/test-winui.ps1`,
   which lays the Windows App SDK beside its test runner first.
