@@ -103,15 +103,33 @@ public struct ArtifactStore: Sendable {
         let destination = folder(of: manifest.id)
         try files.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
         let previous = destination.deletingLastPathComponent().appendingPathComponent(".\(manifest.id).old-\(UUID().uuidString)")
-        if files.fileExists(atPath: destination.path) { try files.moveItem(at: destination, to: previous) }
+        if files.fileExists(atPath: destination.path) { try Self.move(destination, to: previous) }
         do {
-            try files.moveItem(at: staging, to: destination)
+            try Self.move(staging, to: destination)
         } catch {
             if files.fileExists(atPath: previous.path) { try? files.moveItem(at: previous, to: destination) }
             throw error
         }
         try? files.removeItem(at: previous)
         return destination
+    }
+
+    /// `folder` moved to `target` - on Windows asked again for up to 30 s where it is refused, as a scanner reading a
+    /// program just written refuses its folder's move for a moment.
+    /// Design: docs/design/tooling/builds.md#an-artifact-published-whole
+    static func move(_ folder: URL, to target: URL, patience: Duration = .seconds(30)) throws {
+        #if os(Windows)
+        let deadline = ContinuousClock.now + patience
+        while true {
+            do {
+                return try FileManager.default.moveItem(at: folder, to: target)
+            } catch let error as CocoaError where error.code == .fileWriteNoPermission && ContinuousClock.now < deadline {
+                Thread.sleep(forTimeInterval: 0.25)
+            }
+        }
+        #else
+        try FileManager.default.moveItem(at: folder, to: target)
+        #endif
     }
 
     /// The published artifact `id`'s manifest, where one stands.

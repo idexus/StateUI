@@ -5,6 +5,9 @@ import Foundation
 @testable import StateUITooling
 import StateUIToolingProtocol
 import XCTest
+#if os(Windows)
+import WinSDK
+#endif
 
 final class ArtifactStoreTests: XCTestCase {
     private func manifest(_ operation: String) -> ArtifactManifest {
@@ -48,5 +51,29 @@ final class ArtifactStoreTests: XCTestCase {
         let store = ArtifactStore(application: application)
         XCTAssertEqual(ArtifactStore(holding: store.folder(of: "winui-arm64-0-debug")).application.path, application.path)
         XCTAssertEqual(store.cache("swift-runtime-x86_64").path, "/apps/Notes/.build/stateui/caches/swift-runtime-x86_64")
+    }
+
+    /// On Windows a folder whose file another holds for a moment - a scanner reading a program just written - is
+    /// published once it is let go.
+    func testAFolderHeldForAMomentIsPublishedOnceLetGo() throws {
+        #if os(Windows)
+        let application = FileManager.default.temporaryDirectory.appendingPathComponent("artifacts-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: application) }
+        let store = ArtifactStore(application: application)
+        let staging = try store.staging(for: "op-1")
+        let program = staging.appendingPathComponent("program.exe")
+        try Data("one".utf8).write(to: program)
+        let held = program.path.withCString(encodedAs: UTF16.self) {
+            CreateFileW($0, DWORD(GENERIC_READ), DWORD(FILE_SHARE_READ), nil, DWORD(OPEN_EXISTING), DWORD(FILE_ATTRIBUTE_NORMAL), nil)
+        }
+        XCTAssertNotEqual(held, INVALID_HANDLE_VALUE)
+        let handle = UInt(bitPattern: held)
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) { _ = CloseHandle(HANDLE(bitPattern: handle)) }
+
+        let published = try store.publish(staging, as: manifest("op-1"))
+        XCTAssertEqual(try String(contentsOf: published.appendingPathComponent("program.exe"), encoding: .utf8), "one")
+        #else
+        throw XCTSkip("a folder whose file is open moves at once off Windows")
+        #endif
     }
 }

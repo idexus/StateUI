@@ -84,4 +84,7 @@ starts by and how it is signed - and moved into
 `.build/stateui/artifacts/<identifier>/` in place of the last, which waits
 aside until the new one stands. A failed operation drops its staging and
 never touches the last artifact, so nothing ever runs or packages what an
-earlier build left after a later one failed.
+earlier build left after a later one failed. On Windows a folder's move is
+asked again, every quarter second for up to 30 s, where the system refuses
+it: a scanner reading a program just written holds it for a moment, and the
+move is refused for as long.
