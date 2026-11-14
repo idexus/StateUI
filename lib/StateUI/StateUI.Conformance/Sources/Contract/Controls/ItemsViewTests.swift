@@ -33,7 +33,11 @@
             },
             ConformanceCase("aRowLaysItsItemsAcross", proves: [Covered(ItemsViewContract.itemsLayout)]) { s in
                 s.start { VStack { numbers().itemsLayout(.row(spacing: 8)).width(300).height(60).id("list") } }
-                s.settle { (try? item(1, in: s)) != nil }
+                // The toolkit's scroller may take its bar's room for a moment as it is made: the row is read once
+                // its items stand as tall as it.
+                s.settle {
+                    (try? item(1, in: s)) != nil && ((try? s.place(of: item(0, in: s)))?.height ?? 0) > 59.5
+                }
                 let (first, second) = (try s.place(of: item(0, in: s)), try s.place(of: item(1, in: s)))
 
                 s.expect(second.y, first.y, within: 0.5, "one beside another")
