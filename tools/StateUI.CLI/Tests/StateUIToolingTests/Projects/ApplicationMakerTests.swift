@@ -107,6 +107,18 @@ final class ApplicationMakerTests: XCTestCase {
         }
     }
 
+    /// On Windows a folder on another drive has no path from here but its own - the drive and its folders - and one
+    /// on the same drive is reached by the path between them.
+    func testAFolderOnAnotherDriveIsNamedByItsWholePath() throws {
+        #if os(Windows)
+        let notes = URL(fileURLWithPath: #"C:\work\Notes"#)
+        XCTAssertEqual(ApplicationMaker.relativePath(from: notes, to: URL(fileURLWithPath: #"D:\a\StateUI"#)), "D:/a/StateUI")
+        XCTAssertEqual(ApplicationMaker.relativePath(from: notes, to: URL(fileURLWithPath: #"C:\a\StateUI"#)), "../../a/StateUI")
+        #else
+        throw XCTSkip("a drive is Windows'")
+        #endif
+    }
+
     /// A made application is a project of its own, reading the checkout it was made from.
     func testAMadeApplicationReadsAsAProject() async throws {
         let parent = try folder()

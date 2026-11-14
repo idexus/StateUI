@@ -83,6 +83,11 @@ public struct ApplicationMaker: Sendable {
         let source = RealPath.of(from.deletingLastPathComponent()).appendingPathComponent(from.lastPathComponent)
             .pathComponents
         let target = RealPath.of(to).pathComponents
+        #if os(Windows)
+        // A folder on another drive has no path from here but its own.
+        let drive = { (parts: [String]) in parts.first { $0 != "/" }?.lowercased() }
+        if drive(source) != drive(target) { return target.filter { $0 != "/" }.joined(separator: "/") }
+        #endif
         var shared = 0
         while shared < min(source.count, target.count), source[shared] == target[shared] { shared += 1 }
         guard shared > 0 else { return target.joined(separator: "/") }

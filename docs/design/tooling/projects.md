@@ -95,7 +95,9 @@ lists the new application.
 
 On macOS `URL.resolvingSymlinksInPath` leaves `/private` off a temporary
 folder's path while SwiftPM keeps it, so a path from it would climb one folder
-short; real paths come from `realpath` (`RealPath`).
+short; real paths come from `realpath` (`RealPath`). On Windows a checkout on
+another drive than the application has no path from it: the manifest names it
+whole, `D:/a/StateUI`.
 
 ## A new workspace
 
