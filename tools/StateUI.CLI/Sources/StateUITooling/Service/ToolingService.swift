@@ -212,6 +212,19 @@ public struct ToolingService: Sendable {
         return statuses
     }
 
+    /// Holds the API records of the StateUI checkout holding `folder` - the library's, or with `host` its facade's,
+    /// backends' and testing module's, after the host's suite builds and runs them - or writes them where `record`.
+    public func apiRecords(
+        host: HostFamily?, record: Bool, device: String?, in folder: URL, reporter: BuildReporter
+    ) async throws -> SuiteResult {
+        guard let checkout = Checkout.holding(folder)?.root else {
+            throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        let suites = HostSuite(checkout: checkout)
+        guard let host else { return try await suites.runLibraryAPI(recording: record, reporter: reporter) }
+        return try await suites.run(host, device: device, recordingAPI: record, reporter: reporter)
+    }
+
     /// Runs `host`'s conformance families `selection` takes in the StateUI checkout holding `folder`, recording their
     /// verdicts and rendering the documents where `record`.
     ///

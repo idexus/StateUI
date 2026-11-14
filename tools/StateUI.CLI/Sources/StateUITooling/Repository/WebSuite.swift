@@ -11,6 +11,8 @@ import StateUIToolingProtocol
 struct WebSuite {
     let checkout: URL
     let tools: ToolResolver
+    /// Whether the API phase writes its records rather than holds them.
+    var recordingAPI = false
 
     /// The host's own test classes that need a browser's own page: they run a host.
     static let inBrowser = [
@@ -137,7 +139,7 @@ struct WebSuite {
             shown.split(separator: "\n").first { $0.hasPrefix("\(key): ") }.map { String($0.dropFirst(key.count + 2)) } ?? ""
         }
         let map = checkout.appendingPathComponent("lib/StateUI/StateUI.Web/Sources/CStateUIWeb/module.modulemap").path
-        let held = environment.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY").setting("STATEUI_API_MODULE", to: "StateUIWeb")
+        let held = environment.forAPIRecord(recording: recordingAPI).setting("STATEUI_API_MODULE", to: "StateUIWeb")
             .setting("STATEUI_API_MODULES", to: products).setting("STATEUI_API_TRIPLE", to: "wasm32-unknown-wasip1")
             .setting("STATEUI_API_SDK", to: value("sdkRootPath"))
             .setting("STATEUI_API_ARGUMENTS", to: ["-resource-dir", value("swiftResourcesPath"), "-Xcc", "-fmodule-map-file=\(map)"].joined(separator: "\n"))

@@ -11,6 +11,8 @@ import StateUIToolingProtocol
 struct GTKSuite {
     let checkout: URL
     let tools: ToolResolver
+    /// Whether the API phase writes its records rather than holds them.
+    var recordingAPI = false
 
     func run(filter: String?, environment: ProcessEnvironment, reporter: BuildReporter) async throws -> [SuiteResult.Phase] {
         // Every machine meets one desktop: a user who chose the accent, as GNOME's from 47 on.
@@ -36,7 +38,7 @@ struct GTKSuite {
             .split(whereSeparator: \.isWhitespace).map(String.init)
         let arguments = (maps + flags).flatMap { ["-Xcc", $0] }
         for module in ["StateUIGTK", "StateUIWebViewGTK"] {
-            let held = environment.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY").setting("STATEUI_API_MODULE", to: module)
+            let held = environment.forAPIRecord(recording: recordingAPI).setting("STATEUI_API_MODULE", to: module)
                 .setting("STATEUI_API_MODULES", to: modules).setting("STATEUI_API_TRIPLE", to: "").setting("STATEUI_API_SDK", to: "")
                 .setting("STATEUI_API_ARGUMENTS", to: arguments.joined(separator: "\n"))
             phases.append(SuiteResult.Phase(name: "api \(module)", passed: try await swift(

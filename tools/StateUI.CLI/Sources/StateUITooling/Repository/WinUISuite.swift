@@ -12,6 +12,8 @@ import StateUIToolingProtocol
 struct WinUISuite {
     let checkout: URL
     let tools: ToolResolver
+    /// Whether the API phase writes its records rather than holds them.
+    var recordingAPI = false
     let packages: WinUIPackages
 
     /// The conformance suite, some fifteen minutes: run only where a filter names it.
@@ -56,7 +58,7 @@ struct WinUISuite {
             .map { "-fmodule-map-file=\(checkout.appendingPathComponent("lib/\($0)/module.modulemap").path)" }
         let arguments = maps.flatMap { ["-Xcc", $0] }
         for module in ["StateUIWinUI", "StateUIWebViewWinUI"] {
-            let held = environment.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY").setting("STATEUI_API_MODULE", to: module)
+            let held = environment.forAPIRecord(recording: recordingAPI).setting("STATEUI_API_MODULE", to: module)
                 .setting("STATEUI_API_MODULES", to: modules).setting("STATEUI_API_TRIPLE", to: "").setting("STATEUI_API_SDK", to: "")
                 .setting("STATEUI_API_ARGUMENTS", to: arguments.joined(separator: "\n"))
             phases.append(SuiteResult.Phase(name: "api \(module)", passed: try await swift(

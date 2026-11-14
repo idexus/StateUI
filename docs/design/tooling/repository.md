@@ -154,3 +154,15 @@ helper gives its family. On UIKit and Android a family's name selects the
 tests whose names hold it, so `Button` takes `ButtonMenu` along: a family
 more, whole, never one less.
 
+## The API records
+
+`stateui repo api check` holds the library's public surfaces - what an
+application writes and what an extension writes - to
+`lib/StateUI/exports/api` through the root package's `APISurfaceTests`;
+`stateui repo api record` writes them (`STATEUI_UPDATE_EXPORTS=1`). With
+`--host <host>` the host's suite runs - its build is what the records are
+read from - and its API phase alone records: the facade's, its backends' and
+`StateUITesting`'s. A suite's tests and a conformance run never write an API
+record: the variables that record are taken from an API phase unless it is
+asked to.
+

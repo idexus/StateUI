@@ -9,7 +9,7 @@ import StateUIToolingProtocol
 /// `stateui repo`: the StateUI checkout's own work - its suites.
 struct RepoCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self, Conformance.self])
+        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self, Conformance.self, API.self])
 
     /// `stateui repo test --suite host:<host>`.
     struct Test: AsyncParsableCommand {
@@ -126,6 +126,49 @@ struct RepoCommand: AsyncParsableCommand {
                     ran.phases.map { "\($0.passed ? "passed" : "FAILED")  \($0.name)" }.joined(separator: "\n")
                 }
                 if !passed { throw ExitCode(ExitStatus.of(ToolingError(.toolFailed, "the run failed"))) }
+            }
+        }
+    }
+
+    /// `stateui repo api check | record [--host <host>]`.
+    struct API: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            commandName: "api", abstract: "Holds the public API to lib/StateUI/exports/api, or records it.", subcommands: [Check.self, Record.self])
+
+        struct Check: AsyncParsableCommand {
+            static let configuration = CommandConfiguration(
+                abstract: "Holds the library's public API to its records - with --host, the host's facade, backends and testing module, after the host's suite.")
+            @OptionGroup var options: Options
+            func run() async throws { try await options.answer(record: false) }
+        }
+
+        struct Record: AsyncParsableCommand {
+            static let configuration = CommandConfiguration(
+                abstract: "Writes the library's public API into its records - with --host, the host's facade, backends and testing module, after the host's suite.")
+            @OptionGroup var options: Options
+            func run() async throws { try await options.answer(record: true) }
+        }
+
+        struct Options: ParsableArguments {
+            @Option(help: "The host whose modules' records are meant; the library's when left out.")
+            var host: HostFamily?
+
+            @Option(help: "UIKit's simulator or Android's device or emulator, by name or id.")
+            var device: String?
+
+            @OptionGroup var output: OutputOptions
+
+            func answer(record: Bool) async throws {
+                let here = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+                var passed = true
+                try await output.answer({
+                    let ran = try await ToolingService().apiRecords(host: host, record: record, device: device, in: here, reporter: BuildOptions.terminal)
+                    passed = ran.passed
+                    return ran
+                }) { (ran: SuiteResult) in
+                    ran.phases.map { "\($0.passed ? "passed" : "FAILED")  \($0.name)" }.joined(separator: "\n")
+                }
+                if !passed { throw ExitCode(ExitStatus.of(ToolingError(.toolFailed, "the records do not hold"))) }
             }
         }
     }

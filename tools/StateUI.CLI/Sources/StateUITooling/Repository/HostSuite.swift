@@ -30,6 +30,16 @@ public struct HostSuite: Sendable {
         tools = ToolResolver(environment: environment)
     }
 
+    /// Holds the library's public surfaces to `lib/StateUI/exports/api` - what an application writes and what an
+    /// extension writes - or writes them there where `recording`.
+    public func runLibraryAPI(recording: Bool, reporter: BuildReporter = BuildReporter()) async throws -> SuiteResult {
+        reporter.progress(recording ? "recording the library's API" : "checking the library's API")
+        let environment = ProcessEnvironment.inherited.forAPIRecord(recording: recording)
+            .removing("STATEUI_API_MODULE", "STATEUI_API_MODULES", "STATEUI_API_ARGUMENTS")
+        let held = try await TestRun.swift(tools.swift, ["test", "--package-path", checkout.path, "--filter", "APISurfaceTests"], environment, reporter)
+        return SuiteResult(suite: "api:StateUI", phases: [SuiteResult.Phase(name: recording ? "api StateUI recorded" : "api StateUI", passed: held)])
+    }
+
     /// Holds each application's release Web module within its size budget.
     public func runWebSizes(reporter: BuildReporter = BuildReporter()) async throws -> SuiteResult {
         SuiteResult(suite: "sizes:web", phases: try await WebSizes(checkout: checkout).run(reporter: reporter))
@@ -47,7 +57,7 @@ public struct HostSuite: Sendable {
     public func run(
         _ host: HostFamily, filter: String? = nil, device: String? = nil, buildOnly: Bool = false, architecture: Architecture? = nil,
         artifact: URL? = nil, recording: Bool = false, staleOnly: Bool = false, revisions: [String: String] = [:],
-        reporter: BuildReporter = BuildReporter()
+        recordingAPI: Bool = false, reporter: BuildReporter = BuildReporter()
     ) async throws -> SuiteResult {
         guard [.appkit, .uikit, .android, .winui, .gtk, .web].contains(host) else {
             throw ToolingError(.invalidConfiguration, "\(host.rawValue)'s suite runs by its .scripts until its row moves to the tool.")
@@ -66,7 +76,7 @@ public struct HostSuite: Sendable {
         }
         if host == .web {
             #if os(macOS) || os(Linux)
-            let phases = try await WebSuite(checkout: checkout, tools: tools).run(filter: filter, environment: checked, reporter: reporter)
+            let phases = try await WebSuite(checkout: checkout, tools: tools, recordingAPI: recordingAPI).run(filter: filter, environment: checked, reporter: reporter)
             return SuiteResult(suite: "host:web", phases: phases)
             #else
             throw ToolingError(.invalidConfiguration, "The Web host's suite runs on macOS and Linux.")
@@ -74,7 +84,7 @@ public struct HostSuite: Sendable {
         }
         if host == .winui {
             #if os(Windows)
-            let phases = try await WinUISuite(checkout: checkout, tools: tools, packages: WinUIPackages(environment: environment))
+            let phases = try await WinUISuite(checkout: checkout, tools: tools, recordingAPI: recordingAPI, packages: WinUIPackages(environment: environment))
                 .run(filter: filter, environment: checked, reporter: reporter)
             return SuiteResult(suite: "host:winui", phases: phases)
             #else
@@ -83,7 +93,7 @@ public struct HostSuite: Sendable {
         }
         if host == .gtk {
             #if os(Linux)
-            let phases = try await GTKSuite(checkout: checkout, tools: tools).run(filter: filter, environment: checked, reporter: reporter)
+            let phases = try await GTKSuite(checkout: checkout, tools: tools, recordingAPI: recordingAPI).run(filter: filter, environment: checked, reporter: reporter)
             return SuiteResult(suite: "host:gtk", phases: phases)
             #else
             throw ToolingError(.invalidConfiguration, "The GTK host's suite runs on Linux.")
@@ -92,14 +102,15 @@ public struct HostSuite: Sendable {
         if host == .android {
             let destinations = self.destinations
             return try await AndroidSuite(
-                checkout: checkout, tools: tools, android: AndroidTools(environment: environment), destinations: { await destinations(.android) }
+                checkout: checkout, tools: tools, recordingAPI: recordingAPI, android: AndroidTools(environment: environment),
+                destinations: { await destinations(.android) }
             ).run(device: device, filter: filter, buildOnly: buildOnly, architecture: architecture, artifact: artifact,
                   recording: recording ? revisions : nil, environment: checked, reporter: reporter)
         }
         if host == .uikit {
             #if os(macOS)
             let destinations = self.destinations
-            let phases = try await UIKitSuite(checkout: checkout, tools: tools, destinations: { await destinations(.uikit) })
+            let phases = try await UIKitSuite(checkout: checkout, tools: tools, recordingAPI: recordingAPI, destinations: { await destinations(.uikit) })
                 .run(device: device, filter: filter, environment: checked, reporter: reporter)
             return SuiteResult(suite: "host:uikit", phases: phases)
             #else
@@ -115,7 +126,7 @@ public struct HostSuite: Sendable {
         let modules = (await ToolOutput.text(tools.swift, ["build", "--package-path", package, "--show-bin-path"], environment: checked))?
             .split(separator: "\n").last.map { String($0).trimmingCharacters(in: .whitespaces) } ?? ""
         for module in ["StateUIAppKit", "StateUITesting"] {
-            let environment = checked.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY").setting("STATEUI_API_MODULE", to: module)
+            let environment = checked.forAPIRecord(recording: recordingAPI).setting("STATEUI_API_MODULE", to: module)
                 .setting("STATEUI_API_MODULES", to: modules).setting("STATEUI_API_TRIPLE", to: "").setting("STATEUI_API_SDK", to: "")
                 .setting("STATEUI_API_ARGUMENTS", to: "")
             let held = try await run(

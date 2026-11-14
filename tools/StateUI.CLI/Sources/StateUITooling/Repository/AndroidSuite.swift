@@ -11,6 +11,8 @@ import StateUIToolingProtocol
 struct AndroidSuite {
     let checkout: URL
     let tools: ToolResolver
+    /// Whether the API phase writes its records rather than holds them.
+    var recordingAPI = false
     let android: AndroidTools
     let destinations: @Sendable () async -> [Destination]
 
@@ -309,7 +311,7 @@ struct AndroidSuite {
         let android = checkout.appendingPathComponent("lib/StateUI/StateUI.Android/Sources/CStateUIAndroid/include/module.modulemap").path
         let host = checkout.appendingPathComponent("lib/StateUI/StateUI.Host/CStateUIHost/module.modulemap").path
         let arguments = ["-resource-dir", value("swiftResourcesPath"), "-Xcc", "-fmodule-map-file=\(android)", "-Xcc", "-fmodule-map-file=\(host)"]
-        let held = environment.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY").setting("STATEUI_API_MODULE", to: "StateUIAndroid")
+        let held = environment.forAPIRecord(recording: recordingAPI).setting("STATEUI_API_MODULE", to: "StateUIAndroid")
             .setting("STATEUI_API_MODULES", to: built.binaries.path).setting("STATEUI_API_TRIPLE", to: built.triple)
             .setting("STATEUI_API_SDK", to: value("sdkRootPath")).setting("STATEUI_API_ARGUMENTS", to: arguments.joined(separator: "\n"))
         let outcome = try await ProcessRunner().run(ProcessRequest(tools.swift, arguments: [

@@ -13,6 +13,8 @@ import Synchronization
 struct UIKitSuite {
     let checkout: URL
     let tools: ToolResolver
+    /// Whether the API phase writes its records rather than holds them.
+    var recordingAPI = false
     let destinations: @Sendable () async -> [Destination]
 
     func run(device: String?, filter: String?, environment: ProcessEnvironment, reporter: BuildReporter) async throws
@@ -81,7 +83,7 @@ struct UIKitSuite {
 
         reporter.progress("checking the API records")
         for module in ["StateUIUIKit", "StateUITesting"] {
-            let held = environment.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY").setting("STATEUI_API_MODULE", to: module)
+            let held = environment.forAPIRecord(recording: recordingAPI).setting("STATEUI_API_MODULE", to: module)
                 .setting("STATEUI_API_MODULES", to: binaries.path).setting("STATEUI_API_TRIPLE", to: triple)
                 .setting("STATEUI_API_SDK", to: sdk.path).setting("STATEUI_API_ARGUMENTS", to: "")
             let outcome = try await ProcessRunner().run(
