@@ -69,6 +69,21 @@ commit, the Swift SDK) and says the folder; `--artifact <folder>` runs that
 APK instead of building one, and refuses it where it was built for another
 suite or ABI, or from another commit than the checkout's.
 
+## The WinUI host's suite
+
+`--suite host:winui` runs on Windows. The projection is made first where a
+pin changed ([WinUI heads](winui-heads.md#the-projection)). Unfiltered, the
+foundation's own tests run first - the branches no other machine runs; then
+`lib/StateUI/StateUI.WinUI/Testing` is built, its test runner made
+self-contained as an application is - the Windows App SDK's runtime, a
+manifest naming its classes, `resources.pri`, what the backends among the
+package's dependencies declare - and its tests run, every test in a process
+of its own: WinUI keeps the GDI objects of every window a test closes, and a
+process holds only so many. The conformance families - some fifteen minutes
+- run only where `--filter` names them (`WinUIConformanceTests`, or one of
+its tests); then `StateUIWinUI` and `StateUIWebViewWinUI` are held to their
+API records, their C modules found by their module maps.
+
 ## The GTK host's suite
 
 `--suite host:gtk` runs on Linux, on the display the session gives it, as a

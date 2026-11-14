@@ -44,7 +44,7 @@ public struct HostSuite: Sendable {
         _ host: HostFamily, filter: String? = nil, device: String? = nil, buildOnly: Bool = false, architecture: Architecture? = nil,
         artifact: URL? = nil, reporter: BuildReporter = BuildReporter()
     ) async throws -> SuiteResult {
-        guard [.appkit, .uikit, .android, .gtk, .web].contains(host) else {
+        guard [.appkit, .uikit, .android, .winui, .gtk, .web].contains(host) else {
             throw ToolingError(.invalidConfiguration, "\(host.rawValue)'s suite runs by its .scripts until its row moves to the tool.")
         }
         let lease = try await permit.acquire(for: "the \(host.folder) host's suite, stateui \(ProcessInfo.processInfo.processIdentifier)") {
@@ -63,6 +63,15 @@ public struct HostSuite: Sendable {
             return SuiteResult(suite: "host:web", phases: phases)
             #else
             throw ToolingError(.invalidConfiguration, "The Web host's suite runs on macOS and Linux.")
+            #endif
+        }
+        if host == .winui {
+            #if os(Windows)
+            let phases = try await WinUISuite(checkout: checkout, tools: tools, packages: WinUIPackages(environment: environment))
+                .run(filter: filter, environment: checked, reporter: reporter)
+            return SuiteResult(suite: "host:winui", phases: phases)
+            #else
+            throw ToolingError(.invalidConfiguration, "The WinUI host's suite runs on Windows.")
             #endif
         }
         if host == .gtk {
