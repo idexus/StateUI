@@ -91,24 +91,45 @@ struct PackageCommand: AsyncParsableCommand {
     }
 }
 
-/// `stateui run`: an application built, then run in the foreground until it ends or Ctrl+C stops it.
+/// `stateui run`: an application built, then run in the foreground until it ends or Ctrl+C stops it - an AppKit
+/// head on this Mac, a UIKit head on its device or simulator, its output followed.
 struct RunCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "run", abstract: "Builds an application and runs it in the foreground; Ctrl+C stops it.")
 
     @OptionGroup var build: BuildOptions
 
+    @Flag(help: "Start a UIKit head held until a debugger attaches; its process is said as it starts.")
+    var debugger = false
+
     func run() async throws {
-        let built: BuildResult
         do {
-            built = try await ToolingService().build(build.request(), in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
+            if build.host == .uikit {
+                _ = try await ToolingService().run(
+                    RunRequest(build: build.request(), debugger: debugger), in: build.here, operation: BuildOptions.operation,
+                    reporter: RunReporter(
+                        build: BuildOptions.terminal, started: { FileHandle.standardError.write(Data((Self.words($0) + "\n").utf8)) },
+                        output: { line in
+                            (line.stream == .standardError ? FileHandle.standardError : FileHandle.standardOutput)
+                                .write(Data((line.text + "\n").utf8))
+                        }))
+                return
+            }
+            let built = try await ToolingService().build(build.request(), in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
+            let program = try FileURI.url(built.programUri)
+            FileHandle.standardError.write(Data("stateui: running \(program.path)\n".utf8))
+            let outcome = try await ProcessRunner().run(ProcessRequest(.path(program.path), streams: .terminal))
+            if case .exited(let status) = outcome.termination, status != 0 { throw ExitCode(Int32(status)) }
         } catch let error as ToolingError {
             try OutputFormat.text.write(error)
             throw ExitCode(ExitStatus.of(error))
         }
-        let program = try FileURI.url(built.programUri)
-        FileHandle.standardError.write(Data("stateui: running \(program.path)\n".utf8))
-        let outcome = try await ProcessRunner().run(ProcessRequest(.path(program.path), streams: .terminal))
-        if case .exited(let status) = outcome.termination, status != 0 { throw ExitCode(Int32(status)) }
+    }
+
+    /// What a run says as its application starts: where, as which process, and whether it waits for a debugger.
+    static func words(_ launched: LaunchedApplication) -> String {
+        let place = launched.build.destination.map { " on \($0.name)" } ?? ""
+        let process = launched.process.map { ", process \($0)" } ?? ""
+        return "stateui: started \(launched.build.application)\(place)\(process)\(launched.held ? ", held for a debugger" : "")"
     }
 }

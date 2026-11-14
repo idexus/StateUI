@@ -71,7 +71,7 @@ public struct ApplicationBuilder: Sendable {
     }
 
     /// The build, and the project root its records stand in: the workspace's folder, else the application's.
-    private func built(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter)
+    func built(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter)
         async throws -> (result: BuildResult, root: URL) {
         let (project, application) = try await resolve(request, in: folder)
         guard [.appkit, .uikit].contains(request.host) else {

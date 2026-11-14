@@ -153,6 +153,11 @@ public struct ToolingService: Sendable {
         try await ApplicationBuilder().package(request, in: folder, operation: operation, reporter: reporter)
     }
 
+    /// Builds `request`'s application, starts it and follows it until it ends - `application/run`.
+    public func run(_ request: RunRequest, in folder: URL, operation: String, reporter: RunReporter) async throws -> RunResult {
+        try await ApplicationRunner().run(request, in: folder, operation: operation, reporter: reporter)
+    }
+
     /// Runs suite `suite` - `host:<host>` - of the StateUI checkout holding `folder`, `filter`ed where given.
     ///
     /// - Throws: ``ToolingError`` `PROJECT_NOT_FOUND` outside a checkout, `INVALID_CONFIGURATION` for a suite there is
@@ -169,7 +174,7 @@ public struct ToolingService: Sendable {
 
     /// `work` given a reporter whose words reach `context` in the order they were said.
     private static func reporting<Result: Sendable>(
-        _ context: OperationContext, _ work: (BuildReporter) async throws -> Result
+        _ context: OperationContext, _ work: (RunReporter) async throws -> Result
     ) async throws -> Result {
         let (said, saying) = AsyncStream<Reported>.makeStream()
         let telling = Task {
@@ -177,11 +182,14 @@ public struct ToolingService: Sendable {
                 switch each {
                 case .progress(let words): await context.progress(OperationProgress(stage: words))
                 case .output(let line): await context.output(Array((line.text + "\n").utf8), on: line.stream == .standardError ? .stderr : .stdout)
+                case .started(let application): await context.started(application)
                 }
             }
         }
         defer { saying.finish() }
-        let reporter = BuildReporter(progress: { saying.yield(.progress($0)) }, output: { saying.yield(.output($0)) })
+        let reporter = RunReporter(
+            build: BuildReporter(progress: { saying.yield(.progress($0)) }, output: { saying.yield(.output($0)) }),
+            started: { saying.yield(.started($0)) }, output: { saying.yield(.output($0)) })
         let result = try await work(reporter)
         saying.finish()
         await telling.value
@@ -204,12 +212,17 @@ public struct ToolingService: Sendable {
         methods.query("devices/list") { (query: DestinationQuery) in try await listDestinations(of: query.host) }
         methods.mutation("application/build") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
             try await Self.reporting(context) { reporter in
-                try await build(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter)
+                try await build(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter.build)
             }
         }
         methods.mutation("application/package") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
             try await Self.reporting(context) { reporter in
-                try await package(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter)
+                try await package(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter.build)
+            }
+        }
+        methods.mutation("application/run") { (request: RunRequest, context: OperationContext, caller: RequestContext) in
+            try await Self.reporting(context) { reporter in
+                try await run(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter)
             }
         }
         methods.query("name/check") { (check: NameCheck) in
@@ -249,4 +262,5 @@ public struct ToolingService: Sendable {
 private enum Reported: Sendable {
     case progress(String)
     case output(ProcessOutput)
+    case started(LaunchedApplication)
 }

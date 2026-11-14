@@ -12,6 +12,11 @@ public struct OperationContext: Sendable {
         await operations.progress(operationId, progress)
     }
 
+    /// Tells that a run started its application.
+    public func started(_ application: LaunchedApplication) async {
+        await operations.started(operationId, application)
+    }
+
     /// Passes on what a program wrote on `stream`.
     public func output(_ bytes: [UInt8], on stream: StandardStream) async {
         await operations.output(operationId, bytes, on: stream)

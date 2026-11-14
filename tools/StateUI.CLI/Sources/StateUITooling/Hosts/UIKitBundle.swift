@@ -85,7 +85,7 @@ public struct UIKitBundle: Sendable {
             try files.copyItem(at: binaries.appendingPathComponent(library), to: frameworks.appendingPathComponent(library))
         }
         // SwiftPM's rpaths point into its own folders; the bundle's libraries stand in Frameworks.
-        try? await BundleStep.run("install_name_tool", ["-add_rpath", "@executable_path/Frameworks", program.path])
+        try? await ToolStep.run("install_name_tool", ["-add_rpath", "@executable_path/Frameworks", program.path])
 
         let images = application.appendingPathComponent("Resources/Images")
         if files.fileExists(atPath: images.path) {
@@ -109,15 +109,15 @@ public struct UIKitBundle: Sendable {
         case .none:
             break
         case .adHoc:
-            if !signed.isEmpty { try await BundleStep.run("codesign", ["--force", "--sign", "-"] + signed) }
-            try await BundleStep.run("codesign", ["--force", "--sign", "-", bundle.path])
+            if !signed.isEmpty { try await ToolStep.run("codesign", ["--force", "--sign", "-"] + signed) }
+            try await ToolStep.run("codesign", ["--force", "--sign", "-", bundle.path])
         case .development(let development):
             try files.copyItem(at: development.profile.file, to: bundle.appendingPathComponent("embedded.mobileprovision"))
             let entitlements = work.appendingPathComponent("entitlements.plist")
             try development.profile.entitlements(for: identifier).write(to: entitlements)
             let sign = ["--force", "--sign", development.identity, "--timestamp=none"]
-            if !signed.isEmpty { try await BundleStep.run("codesign", sign + signed) }
-            try await BundleStep.run("codesign", sign + ["--entitlements", entitlements.path, bundle.path])
+            if !signed.isEmpty { try await ToolStep.run("codesign", sign + signed) }
+            try await ToolStep.run("codesign", sign + ["--entitlements", entitlements.path, bundle.path])
         }
         return bundle
     }
@@ -128,7 +128,7 @@ public struct UIKitBundle: Sendable {
         let catalog = work.appendingPathComponent("Assets.xcassets")
         let keys = work.appendingPathComponent("icon.plist")
         try ApplePictures.drawAppIcon(background: background, mark: mark, into: catalog)
-        try await BundleStep.run("xcrun", [
+        try await ToolStep.run("xcrun", [
             "actool", catalog.path, "--compile", bundle.path, "--platform", platform.rawValue,
             "--minimum-deployment-target", minimumSystem, "--target-device", "iphone", "--target-device", "ipad",
             "--app-icon", "AppIcon", "--output-partial-info-plist", keys.path, "--output-format", "human-readable-text",

@@ -112,6 +112,11 @@ public actor Operations {
         emit(id, .progress(progress))
     }
 
+    func started(_ id: String, _ application: LaunchedApplication) {
+        guard records[id]?.snapshot.state.isTerminal == false else { return }
+        emit(id, .started(application))
+    }
+
     func output(_ id: String, _ bytes: [UInt8], on stream: StandardStream) {
         guard let record = records[id], !record.snapshot.state.isTerminal else { return }
         for chunk in OutputChunker.chunks(of: bytes) {

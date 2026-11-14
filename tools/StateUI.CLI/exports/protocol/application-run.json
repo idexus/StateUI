@@ -1,0 +1,80 @@
+{
+  "notification" : {
+    "jsonrpc" : "2.0",
+    "method" : "operation/event",
+    "params" : {
+      "event" : {
+        "application" : {
+          "build" : {
+            "application" : "Notes",
+            "architecture" : "arm64",
+            "bundleUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/uikit-arm64-b0d562ff4ef0-debug/NotesUIKit.app",
+            "configuration" : "debug",
+            "destination" : {
+              "booted" : true,
+              "id" : "C8992893-1166-4CDF-AF44-2169C94EE53B",
+              "kind" : "simulator",
+              "name" : "iPhone 18 Pro",
+              "udid" : "C8992893-1166-4CDF-AF44-2169C94EE53B",
+              "version" : "27.0"
+            },
+            "folderUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/uikit-arm64-b0d562ff4ef0-debug",
+            "host" : "uikit",
+            "programUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/uikit-arm64-b0d562ff4ef0-debug/NotesUIKit.app/NotesUIKit"
+          },
+          "held" : true,
+          "process" : 33316
+        },
+        "kind" : "started"
+      },
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "sequence" : 9,
+      "timestamp" : "2026-11-14T12:00:00.000Z"
+    }
+  },
+  "request" : {
+    "id" : "16",
+    "jsonrpc" : "2.0",
+    "method" : "application/run",
+    "params" : {
+      "build" : {
+        "device" : "iPhone 18 Pro",
+        "host" : "uikit",
+        "projectUri" : "file:///Users/example/Projects/Demo/apps/Notes"
+      },
+      "debugger" : true,
+      "requestToken" : "9d2b4f6a-8c1e-4a3b-b5d7-2e4f6a8c0b30"
+    }
+  },
+  "response" : {
+    "id" : "16",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "launched" : {
+      "build" : {
+        "application" : "Notes",
+        "architecture" : "arm64",
+        "bundleUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/uikit-arm64-b0d562ff4ef0-debug/NotesUIKit.app",
+        "configuration" : "debug",
+        "destination" : {
+          "booted" : true,
+          "id" : "C8992893-1166-4CDF-AF44-2169C94EE53B",
+          "kind" : "simulator",
+          "name" : "iPhone 18 Pro",
+          "udid" : "C8992893-1166-4CDF-AF44-2169C94EE53B",
+          "version" : "27.0"
+        },
+        "folderUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/uikit-arm64-b0d562ff4ef0-debug",
+        "host" : "uikit",
+        "programUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/uikit-arm64-b0d562ff4ef0-debug/NotesUIKit.app/NotesUIKit"
+      },
+      "held" : true,
+      "process" : 33316
+    }
+  }
+}

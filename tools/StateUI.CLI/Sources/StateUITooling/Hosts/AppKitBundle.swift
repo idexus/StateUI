@@ -64,7 +64,7 @@ public struct AppKitBundle: Sendable {
             let iconset = staging.appendingPathComponent("StateUI.iconset")
             defer { try? files.removeItem(at: iconset) }
             try ApplePictures.drawIconSet(icon, into: iconset)
-            try await BundleStep.run("iconutil", ["-c", "icns", iconset.path, "-o", resources.appendingPathComponent("StateUI.icns").path])
+            try await ToolStep.run("iconutil", ["-c", "icns", iconset.path, "-o", resources.appendingPathComponent("StateUI.icns").path])
         } else {
             keys["CFBundleIconFile"] = nil
         }
@@ -72,7 +72,7 @@ public struct AppKitBundle: Sendable {
         try InfoPlist.compose(keys, over: files.fileExists(atPath: own.path) ? own : nil)
             .write(to: contents.appendingPathComponent("Info.plist"))
 
-        if sign { try await BundleStep.run("codesign", ["--force", "--deep", "--sign", "-", bundle.path]) }
+        if sign { try await ToolStep.run("codesign", ["--force", "--deep", "--sign", "-", bundle.path]) }
         return bundle
     }
 }

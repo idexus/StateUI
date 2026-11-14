@@ -44,6 +44,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   booted simulator, else an iPhone, where none is named. A simulator's bundle is signed ad hoc; a device's with the
   development profile that provisions it, found before the build. A simulator's build and a device's keep scratch
   folders of their own.
+- **`stateui run --host uikit`** installs and starts a UIKit head on its simulator or device and follows its output;
+  `--debugger` starts it held until a debugger attaches, saying its process. Ctrl+C, or an editor's cancel of
+  `application/run`, ends the application and every process the launch started.
 - **`stateui devices --host uikit`** lists the iPhones and iPads paired with the Mac, then the simulators, the newest
   iOS first - each with what names it, its system, and whether it is booted or how it is reached.
 - **The VS Code extension works through `stateui`.** It finds the applications, checks the toolchain, makes a

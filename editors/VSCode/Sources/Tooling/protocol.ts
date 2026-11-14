@@ -97,7 +97,8 @@ export type OperationEventBody =
     | { kind: "state"; state: OperationState }
     | ({ kind: "progress" } & OperationProgress)
     | ({ kind: "output" } & OutputChunk)
-    | ({ kind: "outputGap" } & OutputGap);
+    | ({ kind: "outputGap" } & OutputGap)
+    | { kind: "started"; application: LaunchedApplication };
 
 const stream = oneOf<StandardStream>("stdout", "stderr");
 const eventBodies: Record<OperationEventBody["kind"], Decoder<OperationEventBody>> = {
@@ -105,6 +106,8 @@ const eventBodies: Record<OperationEventBody["kind"], Decoder<OperationEventBody
     progress: object({ kind: oneOf("progress"), ...progressFields }),
     output: object({ kind: oneOf("output"), stream, encoding: oneOf("utf8", "base64"), data: string, cursor: string }),
     outputGap: object({ kind: oneOf("outputGap"), stream, fromCursor: string, toCursor: string, replayAvailable: boolean }),
+    // Read when an event comes: the run's types stand below.
+    started: (value, path) => object({ kind: oneOf("started"), application: LaunchedApplication })(value, path),
 };
 /** An event by its `kind`; a kind the extension does not know is an error its caller may pass over. */
 export const OperationEventBody: Decoder<OperationEventBody> = (value, path) => {
@@ -212,6 +215,15 @@ export const BuildResult = object<BuildResult>({
     programUri: string, bundleUri: optional(string), destination: optional(Destination),
 });
 
+export interface RunRequest { build: BuildRequest; debugger: boolean }
+export const RunRequest = object<RunRequest>({ build: BuildRequest, debugger: boolean });
+
+export interface LaunchedApplication { build: BuildResult; process?: number; held: boolean }
+export const LaunchedApplication = object<LaunchedApplication>({ build: BuildResult, process: optional(number), held: boolean });
+
+export interface RunResult { launched: LaunchedApplication; exitStatus?: number }
+export const RunResult = object<RunResult>({ launched: LaunchedApplication, exitStatus: optional(number) });
+
 export type NameKind = "application" | "workspace";
 export const NameKind = oneOf<NameKind>("application", "workspace");
 
@@ -288,6 +300,7 @@ export const methods = {
     "project/create": mutation(ApplicationRequest, ProjectCreation),
     "application/build": mutation(BuildRequest, BuildResult),
     "application/package": mutation(BuildRequest, BuildResult),
+    "application/run": mutation(RunRequest, RunResult),
     "workspace/create": mutation(WorkspaceRequest, WorkspaceChange),
     "workspace/useLibrary": mutation(LibraryRequest, WorkspaceChange),
 };

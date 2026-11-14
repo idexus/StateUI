@@ -33,6 +33,9 @@ writes its result as words or as the message an editor receives.
   an SVG, an application's pictures and a macOS icon are drawn.
 - [Destinations](destinations.md): where a head runs - the iPhones, iPads
   and simulators - which one a run means, and the SDK each is built against.
+- [Runs](runs.md): a run as one operation from its build to its
+  application's end - on a simulator, on a device - and how a stop ends
+  everything it started.
 - [Apple bundles](apple-bundles.md): an Apple head's `Info.plist`, and what an
   AppKit bundle holds.
 - [The repository's own work](repository.md): a host's suite, run as its CI runs it.

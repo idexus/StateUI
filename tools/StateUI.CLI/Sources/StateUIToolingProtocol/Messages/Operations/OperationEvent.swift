@@ -13,10 +13,13 @@ public struct OperationEvent: Codable, Equatable, Sendable {
         case output(OutputChunk)
         /// Output a client was not sent.
         case outputGap(OutputGap)
+        /// A run started its application.
+        case started(LaunchedApplication)
 
         private enum Field: String, CodingKey {
             case kind, state, stage, message, completed, total
             case stream, encoding, data, cursor, fromCursor, toCursor, replayAvailable
+            case application
         }
 
         /// Reads an event by its `kind`.
@@ -43,6 +46,8 @@ public struct OperationEvent: Codable, Equatable, Sendable {
                     fromCursor: try event.decode(String.self, forKey: .fromCursor),
                     toCursor: try event.decode(String.self, forKey: .toCursor),
                     replayAvailable: try event.decode(Bool.self, forKey: .replayAvailable)))
+            case "started":
+                self = .started(try event.decode(LaunchedApplication.self, forKey: .application))
             case let kind:
                 throw DecodingError.dataCorruptedError(forKey: .kind, in: event, debugDescription: "No event \(kind).")
             }
@@ -73,6 +78,9 @@ public struct OperationEvent: Codable, Equatable, Sendable {
                 try event.encode(gap.fromCursor, forKey: .fromCursor)
                 try event.encode(gap.toCursor, forKey: .toCursor)
                 try event.encode(gap.replayAvailable, forKey: .replayAvailable)
+            case .started(let application):
+                try event.encode("started", forKey: .kind)
+                try event.encode(application, forKey: .application)
             }
         }
     }

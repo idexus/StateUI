@@ -81,6 +81,15 @@ final class ProtocolExamplesTests: XCTestCase {
         let built = BuildResult(
             application: "Notes", host: .appkit, configuration: .debug, architecture: .arm64, folderUri: artifact,
             programUri: artifact + "/NotesAppKit.app/Contents/MacOS/NotesAppKit", bundleUri: artifact + "/NotesAppKit.app")
+        let simulator = Destination(
+            id: "C8992893-1166-4CDF-AF44-2169C94EE53B", udid: "C8992893-1166-4CDF-AF44-2169C94EE53B", name: "iPhone 18 Pro",
+            kind: .simulator, version: "27.0", booted: true)
+        let ran = demo + "/apps/Notes/.build/stateui/artifacts/uikit-arm64-b0d562ff4ef0-debug"
+        let launched = LaunchedApplication(
+            build: BuildResult(
+                application: "Notes", host: .uikit, configuration: .debug, architecture: .arm64, folderUri: ran,
+                programUri: ran + "/NotesUIKit.app/NotesUIKit", bundleUri: ran + "/NotesUIKit.app", destination: simulator),
+            process: 33316, held: true)
         let laid = demo + "/artifacts/Notes/UIKit"
         let packaged = BuildResult(
             application: "Notes", host: .uikit, configuration: .release, architecture: .arm64, folderUri: laid,
@@ -151,6 +160,19 @@ final class ProtocolExamplesTests: XCTestCase {
                                           device: "Example iPad", outputUri: demo + "/artifacts/Notes/UIKit")))),
                 ("response", try response("14", OperationHandle(operationId: operation, state: .queued))),
                 ("result", try JSONValue(encoding: packaged)),
+            ], answeredAsWritten: false),
+            Example(name: "application-run", messages: [
+                ("request", try request("16", "application/run", Mutation(
+                    requestToken: "9d2b4f6a-8c1e-4a3b-b5d7-2e4f6a8c0b30",
+                    request: RunRequest(build: BuildRequest(projectUri: demo + "/apps/Notes", host: .uikit, device: "iPhone 18 Pro"),
+                                        debugger: true)))),
+                ("response", try response("16", OperationHandle(operationId: operation, state: .queued))),
+                ("notification", try JSONValue(encoding: OutgoingMessage.notification(
+                    method: "operation/event",
+                    params: try JSONValue(encoding: OperationEvent(
+                        operationId: operation, sequence: 9, timestamp: "2026-11-14T12:00:00.000Z",
+                        event: .started(launched)))))),
+                ("result", try JSONValue(encoding: RunResult(launched: launched, exitStatus: nil))),
             ], answeredAsWritten: false),
             Example(name: "name-check", messages: [
                 ("request", try request("12", "name/check", NameCheck(kind: .application, name: "My-App", parentUri: demo + "/apps"))),
