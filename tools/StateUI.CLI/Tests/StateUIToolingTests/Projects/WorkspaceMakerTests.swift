@@ -27,6 +27,25 @@ final class WorkspaceMakerTests: XCTestCase {
 
     /// A workspace building with a checkout names it by the path from the workspace, lists its first application,
     /// and ignores what builds write.
+    /// A path written for a folder reads back as that folder: one beside the workspace from the workspace's own, and
+    /// a whole path - a checkout on another drive, on Windows - by itself.
+    func testAWrittenPathReadsBackAsItsFolder() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("written-\(UUID().uuidString)")
+        let (demo, near) = (root.appendingPathComponent("work/Demo"), root.appendingPathComponent("a/StateUI"))
+        let written = ApplicationMaker.relativePath(from: demo, to: near)
+        XCTAssertEqual(written, "../../a/StateUI")
+        XCTAssertEqual(ApplicationMaker.folder(named: written, from: demo).path, RealPath.lexical(near).path)
+        #if os(Windows)
+        let far = URL(fileURLWithPath: #"D:\a\StateUI"#)
+        let home = URL(fileURLWithPath: #"C:\work\Demo"#)
+        XCTAssertEqual(ApplicationMaker.folder(named: ApplicationMaker.relativePath(from: home, to: far), from: home).path, far.path)
+        let workspace = Workspace(folder: home, file: WorkspaceFile(library: .init(path: "D:/a/StateUI"), projects: []))
+        XCTAssertEqual(workspace.library?.path, far.path)
+        #else
+        XCTAssertEqual(ApplicationMaker.folder(named: "/a/StateUI", from: demo).path, "/a/StateUI")
+        #endif
+    }
+
     func testAWorkspaceOfACheckoutListsItsFirstApplication() async throws {
         let parent = try folder()
         let change = try await WorkspaceMaker().make(

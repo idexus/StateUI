@@ -95,4 +95,11 @@ public struct ApplicationMaker: Sendable {
         let down = Array(target[shared...])
         return (up + down).isEmpty ? "." : (up + down).joined(separator: "/")
     }
+
+    /// The folder `path` names from `folder` - what ``relativePath(from:to:)`` wrote, read back: a whole path, another
+    /// drive's on Windows, names it by itself.
+    static func folder(named path: String, from folder: URL) -> URL {
+        let whole = path.hasPrefix("/") || (Machine.current.system == "windows" && path.dropFirst().hasPrefix(":"))
+        return RealPath.lexical(whole ? URL(fileURLWithPath: path) : folder.appendingPathComponent(path))
+    }
 }
