@@ -8,16 +8,11 @@ completion, the launches, and the suites - works as that host.
 ## Installing
 
 The extension works through the `stateui` tool, built from a StateUI
-checkout. From the repository root, build it and put it on the search path:
-
-```bash
-swift build -c release --package-path tools/StateUI.CLI
-ln -sf "$(swift build -c release --package-path tools/StateUI.CLI --show-bin-path)/stateui" ~/.local/bin/stateui
-```
-
-Where it stands elsewhere, the `stateui.cliPath` setting names the program.
-A tool of another API than the extension's is refused with the version each
-speaks; what the tool says of itself shows in the **StateUI Tool** output.
+checkout and put on the search path, or unpacked from its distribution
+([The tool](../../development.md#the-tool)). Where it stands elsewhere, the
+`stateui.cliPath` setting names the program. A tool of another API than the
+extension's is refused with the version each speaks; what the tool says of
+itself shows in the **StateUI Tool** output.
 
 The tool then builds the extension, with Node.js 20 or newer, and installs it:
 

@@ -90,7 +90,7 @@ links it with an 8 MB stack. Swift written for this host alone stands under
 `#if WEB`.
 
 A new application - **StateUI: New Application**, `stateui new`, or
-`.scripts/new-app.sh` - has a Web head, as HelloWorld does.
+`stateui new` - has a Web head, as HelloWorld does.
 
 ## The page
 

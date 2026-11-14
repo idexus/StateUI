@@ -94,9 +94,6 @@ public struct ApplicationBuilder: Sendable {
     func built(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter)
         async throws -> (result: BuildResult, root: URL) {
         let (project, application) = try await resolve(request, in: folder)
-        guard [.appkit, .uikit, .android, .winui, .gtk, .web].contains(request.host) else {
-            throw ToolingError(.invalidConfiguration, "\(request.host.rawValue) is built by its .scripts until its row moves to the tool.")
-        }
         guard let libraryUri = application.libraryUri else {
             throw ToolingError(.projectNotFound, "\(application.name) names no StateUI checkout in its Package.swift.")
         }

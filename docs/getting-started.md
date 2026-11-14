@@ -17,7 +17,8 @@ the selected host, and any backends are built from that same checkout.
 ## Requirements
 
 - macOS 26.4 or newer, with Xcode 27 and its Swift 6.4, for the AppKit host;
-- a checkout of this repository;
+- a checkout of this repository, and the `stateui` tool built from it
+  ([The tool](development.md#the-tool));
 - VS Code and Node.js 20 or newer, for the StateUI extension.
 
 [UIKit host](hosts/uikit.md#requirements) lists what the UIKit host needs for
@@ -88,11 +89,10 @@ stateui build --project apps/Gallery --host appkit
 A new application is HelloWorld under another name, with every head
 HelloWorld has and its example test in `Tests/` - its page shown in a test
 window, its button clicked ([Testing an application](interface/testing.md)) -
-which `swift test` and **StateUI: Run Tests** run. This makes `apps/Notes`
-(`.scripts/new-app.ps1 -Name Notes` on Windows):
+which `swift test` and **StateUI: Run Tests** run. This makes `apps/Notes`:
 
 ```bash
-.scripts/new-app.sh Notes
+stateui new Notes --directory apps
 ```
 
 Test it, then build and start its AppKit head from the same repository root:
@@ -286,7 +286,7 @@ Package.swift, on a GTK build
 
 An application showing no web page names no backend and links no engine.
 
-A new application has this directory shape (`.scripts/new-app.sh Notes`):
+A new application has this directory shape (`stateui new Notes --directory apps`):
 
 ```text
 apps/Notes/

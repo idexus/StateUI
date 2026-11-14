@@ -133,17 +133,35 @@ Public API declarations provide the focused reference beside the code.
 ## Quick start
 
 StateUI is developed and used in VS Code, through the StateUI extension in
-`editors/VSCode` ([StateUI for VS Code](docs/editors/VSCode/README.md)). Clone
-the repository, then build and install the extension from the checkout
-(Node.js 20 or newer):
+`editors/VSCode` ([StateUI for VS Code](docs/editors/VSCode/README.md)), which
+works through the `stateui` tool. Clone the repository, build the tool with
+Swift 6.4 and put it on the search path, then have it build and install the
+extension (Node.js 20 or newer). On macOS and Linux the tool is linked into
+`~/.local/bin`, a folder the search path has to hold:
 
 ```bash
 git clone https://github.com/idexus/StateUI.git
-cd StateUI/editors/VSCode
-npm ci
-npm run package
-code --install-extension ../../artifacts/stateui-*.vsix
+cd StateUI
+swift build -c release --package-path tools/StateUI.CLI
+mkdir -p ~/.local/bin
+ln -sf "$(swift build -c release --package-path tools/StateUI.CLI --show-bin-path)/stateui" ~/.local/bin/stateui
+stateui repo integration install --editor vscode
 ```
+
+On Windows its folder joins the user's search path:
+
+```powershell
+git clone https://github.com/idexus/StateUI.git
+cd StateUI
+swift build -c release --package-path tools\StateUI.CLI
+$bin = swift build -c release --package-path tools\StateUI.CLI --show-bin-path
+[Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";$bin", "User")
+$env:Path += ";$bin"
+stateui repo integration install --editor vscode
+```
+
+The link and the folder name the build, so after pulling, the `swift build`
+line alone renews the tool.
 
 The AppKit host needs only Xcode 27, on macOS 26.4 or newer, and the UIKit
 host adds Xcode's iOS 26.4 or newer simulator runtime. StateUI builds with one Swift
@@ -189,7 +207,8 @@ From a terminal, the same builds and suites are:
 stateui build --project apps/Gallery --host appkit            # the AppKit Gallery bundle
 stateui run --project apps/Gallery --host uikit --device "iPhone 18 Pro"   # the UIKit Gallery, on a simulator
 stateui run --project apps/Gallery --host android --device emulator-5554   # the Android Gallery
-.scripts/test-native.sh                                        # the Swift suites, the AppKit host's among them
+stateui repo test --plan portable                              # the Swift suites every machine runs
+stateui repo test --suite host:appkit                          # the AppKit host's suite
 stateui repo test --suite host:uikit --device "iPhone 18 Pro"   # the UIKit host's suite
 stateui repo test --suite host:android --device emulator-5554   # the Android host's suite, on a device
 ```

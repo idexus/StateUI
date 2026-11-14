@@ -117,7 +117,7 @@ so started by itself it opens no console; started from a terminal it writes
 there. Swift written for this host
 alone stands under `#if WINUI`.
 
-A new application made in `apps/` - `.scripts/new-app.ps1` - has a WinUI
+A new application made in `apps/` - `stateui new` - has a WinUI
 head, as HelloWorld does.
 
 ## Controls, acts, and events registered in Swift

@@ -97,7 +97,7 @@ manifest reads it, declares its `Platforms/UIKit` head, and defines the
 under `#if UIKIT`.
 
 A new application - **StateUI: New Application**, `stateui new`, or
-`.scripts/new-app.sh` - has a UIKit head, as HelloWorld does.
+`stateui new` - has a UIKit head, as HelloWorld does.
 
 ## Scenes and windows
 

@@ -25,7 +25,7 @@ export interface Application {
 
     /**
      * The StateUI checkout its Package.swift names by path - the library it
-     * builds with, whose `.scripts` build and run its heads - where it names one.
+     * builds with - where it names one.
      */
     readonly checkout?: string;
 }

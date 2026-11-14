@@ -179,7 +179,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             title: "Where is the StateUI checkout? (stateui.checkout in Settings saves this question)", openLabel: "Use This Checkout",
         }))?.[0]?.fsPath;
         if (picked && !isCheckout(picked)) {
-            void vscode.window.showErrorMessage(`StateUI: ${picked} is not a StateUI checkout - it has no .scripts/new-app.sh and apps/HelloWorld.`);
+            void vscode.window.showErrorMessage(`StateUI: ${picked} is not a StateUI checkout - it has no Package.swift, lib/StateUI.Head and apps/HelloWorld.`);
             return undefined;
         }
         return picked;

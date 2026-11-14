@@ -10,9 +10,8 @@
 // tests read the paths out of the manifests and resolve them here, so a moved
 // directory names the file that still points at the old place.
 //
-// What makes a new application - `stateui new`, which .scripts/new-app.sh and
-// new-app.ps1 run - is the tool's, tested in tools/StateUI.CLI
-// (ApplicationMakerTests).
+// What makes a new application - `stateui new` - is the tool's, tested in
+// tools/StateUI.CLI (ApplicationMakerTests).
 
 import Foundation
 import XCTest
@@ -97,7 +96,7 @@ final class AppsTests: XCTestCase {
         for application in try SourceTree.applications() {
             let name = application.lastPathComponent
             let vectors = SourceTree.files(
-                under: application, leavingOut: { SourceTree.isByproduct($0) || $0 == ".scripts" })
+                under: application, leavingOut: SourceTree.isByproduct)
                 .filter { $0.hasSuffix(".svg") }
 
             XCTAssertFalse(

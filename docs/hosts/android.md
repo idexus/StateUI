@@ -89,7 +89,7 @@ under `#if ANDROID`. The `stateui` tool sets it for the Android build, and
 nothing else: the library itself is built as every host builds it.
 
 A new application - **StateUI: New Application**, `stateui new`, or
-`.scripts/new-app.sh` - has an Android head, as HelloWorld does, and runs and
+`stateui new` - has an Android head, as HelloWorld does, and runs and
 is debugged as soon as it is made.
 
 ## Controls, acts, and events registered in Swift

@@ -54,9 +54,6 @@ public struct HostSuite: Sendable {
         artifact: URL? = nil, recording: Bool = false, staleOnly: Bool = false, revisions: [String: String] = [:],
         recordingAPI: Bool = false, reporter: BuildReporter = BuildReporter()
     ) async throws -> SuiteResult {
-        guard [.appkit, .uikit, .android, .winui, .gtk, .web].contains(host) else {
-            throw ToolingError(.invalidConfiguration, "\(host.rawValue)'s suite runs by its .scripts until its row moves to the tool.")
-        }
         let lease = try await permit.acquire(for: "the \(host.folder) host's suite, stateui \(ProcessInfo.processInfo.processIdentifier)") {
             reporter.progress("waiting for \($0)")
         }

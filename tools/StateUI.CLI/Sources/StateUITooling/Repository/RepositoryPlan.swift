@@ -6,7 +6,8 @@ import StateUIToolingProtocol
 
 /// The owner packages' suites run in their order, each apart: `portable`, those every machine runs - the library,
 /// the host layer, the conformance runner, application testing, the Gallery, HelloWorld, the tool; `native`, the
-/// host suites this machine runs, a suite it cannot listed with why. A suite failing never stops those after it.
+/// host suites this machine runs - on a Mac the applications built as AppKit heads too - a suite it cannot listed
+/// with why. A suite failing never stops those after it.
 /// Design: docs/design/tooling/repository.md#a-plan
 public struct RepositoryPlan: Sendable {
     /// Which suites a plan holds.
@@ -21,12 +22,13 @@ public struct RepositoryPlan: Sendable {
         ("tool", "tools/StateUI.CLI"),
     ]
 
-    /// The host suites a machine of `system` runs, in the matrix's order.
-    static func native(on system: String) -> [HostFamily] {
+    /// The native suites a machine of `system` runs, in the matrix's order: each host's, and after AppKit's the
+    /// applications built as AppKit heads (`apps:appkit`).
+    static func native(on system: String) -> [String] {
         switch system {
-        case "macos": [.appkit, .uikit, .android, .web]
-        case "linux": [.gtk, .web]
-        case "windows": [.winui]
+        case "macos": ["host:appkit", "apps:appkit", "host:uikit", "host:android", "host:web"]
+        case "linux": ["host:gtk", "host:web"]
+        case "windows": ["host:winui"]
         default: []
         }
     }
@@ -44,7 +46,7 @@ public struct RepositoryPlan: Sendable {
 
     /// The ids `kind` holds on this machine.
     public static func suites(of kind: Kind) -> [String] {
-        kind == .portable ? portable.map(\.0) : native(on: Machine.current.system).map { "host:\($0.rawValue)" }
+        kind == .portable ? portable.map(\.0) : native(on: Machine.current.system)
     }
 
     /// Runs `kind`'s suites - `only` that one where named - each a phase or phases under its id; a UIKit or Android
@@ -63,6 +65,15 @@ public struct RepositoryPlan: Sendable {
                 let passed = try await TestRun.swift(
                     tools.swift, ["test", "--package-path", checkout.appendingPathComponent(package).path], environment, reporter)
                 phases.append(SuiteResult.Phase(name: id, passed: passed))
+                continue
+            }
+            if id == "apps:appkit" {
+                for (name, package) in Self.portable where package.hasPrefix("apps/") {
+                    let application = TestSuiteDescription(
+                        id: package, detail: "", kind: .package, packageUri: FileURI.string(checkout.appendingPathComponent(package)), host: .appkit)
+                    let ran = try await TestRunner(tools: tools).run(application, device: nil, checkout: checkout, reporter: reporter)
+                    phases.append(SuiteResult.Phase(name: "\(id) \(name)", passed: ran.passed))
+                }
                 continue
             }
             guard let host = HostFamily(rawValue: String(id.dropFirst("host:".count))) else { continue }

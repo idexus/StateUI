@@ -22,8 +22,7 @@ lib/StateUI/StateUI.Web/           Web host package, Swift for WebAssembly over 
 lib/StateUI/StateUI.Web/Testing/   its tests, and the driver its conformance runs go through
 lib/StateUI.Head/                  the package that brings each application's head its host
 lib/Backends/                      backends: one element on one host, its engine not shipped - WebView.GTK, WebView.WinUI
-.scripts/new-app.sh                a new application in apps/ (new-app.ps1 on Windows)
-.scripts/test-native.sh            the Swift suites on macOS, the AppKit host's among them
+tools/StateUI.CLI/                 the stateui tool: making, building, running, testing and packaging applications
 apps/Gallery/Sources/              platform-neutral Gallery application
 apps/Gallery/Platforms/AppKit/     Gallery AppKit entry point
 apps/Gallery/Platforms/UIKit/      Gallery UIKit head
@@ -145,6 +144,44 @@ Removing a capability follows the same path: remove stale vocabulary, host
 branches, tests, samples, and documentation together. Do not leave an inert
 modifier or compatibility alias unless compatibility is itself an explicit
 contract.
+
+## The tool
+
+`stateui` makes, builds, runs, tests and packages applications, and does the
+repository's own work - its suites, marks, API records and documents. It is
+the package `tools/StateUI.CLI`, built from the checkout and put on the search
+path:
+
+```bash
+swift build -c release --package-path tools/StateUI.CLI
+mkdir -p ~/.local/bin
+ln -sf "$(swift build -c release --package-path tools/StateUI.CLI --show-bin-path)/stateui" ~/.local/bin/stateui
+```
+
+`~/.local/bin` is a folder the search path has to hold. On Windows the program
+is `stateui.exe`, and its folder joins the user's search path:
+
+```powershell
+swift build -c release --package-path tools\StateUI.CLI
+$bin = swift build -c release --package-path tools\StateUI.CLI --show-bin-path
+[Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";$bin", "User")
+$env:Path += ";$bin"
+```
+
+The link and the folder name the build, so after pulling, the first command
+alone renews the tool. Its distribution -
+the program for one system and architecture with its license and notices, the
+Swift runtime linked in where the system has none - is made and read back by
+
+```bash
+stateui repo distribution package
+```
+
+into `artifacts/stateui`: `stateui-<release>-<system>-<architecture>.tar.gz`
+(`.zip` on Windows) and its `.sha256`. Unpacked anywhere, its `bin` on the
+search path, it needs no Swift; the tool's workflow keeps one for macOS, Linux
+and Windows from every run. `stateui doctor` says what each host needs of the
+machine.
 
 ## Build
 
@@ -271,11 +308,15 @@ swift test --package-path apps/Gallery
 swift test --package-path apps/HelloWorld
 ```
 
-`.scripts/test-native.sh` runs these Swift suites, then the Gallery again as an
-AppKit build (`STATEUI_HOST=appkit`), on a build directory of its own:
+`stateui repo test --plan portable` runs the owner packages' suites every
+machine runs, each apart; `--plan native` this machine's host suites, and on a
+Mac the Gallery and HelloWorld again as AppKit builds (`STATEUI_HOST=appkit`),
+on a build directory of their own:
 
 ```bash
-.scripts/test-native.sh
+stateui repo test --plan portable
+stateui repo test --plan native --suite host:appkit
+stateui repo test --plan native --suite apps:appkit
 ```
 
 The first suite covers core semantics and the typed boundary. The host
@@ -529,17 +570,17 @@ installation is a complete checkout of a release tag or a local development
 tree. Each host and backend uses the root checkout as a local dependency, and
 `StateUI.Head` selects the application's host. A
 [project group](editors/VSCode/README.md#a-project-group)
-keeps applications outside the checkout while naming it by path; it uses the
-checkout's build scripts too.
+keeps applications outside the checkout while naming it by path, and the
+`stateui` tool builds them with it.
 
 Every native head and its host link the same dynamic `StateUI` product, so one
 process holds one runtime. The Web build compiles the application, StateUI and
 its host into one WebAssembly module.
 
-A release has one version, stated in the editor extension's
-`editors/VSCode/package.json`. Every other place that names it - the
-published-package line in the root `Package.swift`, the library's own
-`application.info.libraryVersion`, each application's Android
-head's version and the Android host's test head's, the Gallery's AppKit
-bundle, every UIKit bundle (the stateui tool's `Release.version`), the bug report's
+A release has one version, stated in the library's own
+`ApplicationInfo.libraryVersion`. Every other place that names it - the
+editor extension's `editors/VSCode/package.json`, the published-package line
+in the root `Package.swift`, each application's Android head's version and the
+Android host's test head's, the Gallery's AppKit bundle, the `stateui` tool's
+`Release.version` that every bundle it makes carries, the bug report's
 example - names the same one, and `ReleaseTests` holds them to it.

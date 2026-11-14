@@ -687,44 +687,9 @@ final class NativeProjectTests: XCTestCase {
             }
         }
 
-        for relative in [".scripts/test-native.sh"] {
-            let commands = try text(relative)
-                .replacingOccurrences(of: "\\\n", with: " ")
-                .components(separatedBy: "\n")
-                .map { $0.trimmingCharacters(in: .whitespaces) }
-                .filter { Self.runsSwift($0) }
-
-            for command in commands {
-                XCTAssertFalse(
-                    command.contains("-DAPPKIT"),
-                    "\(relative) still gives -DAPPKIT, which the manifest now defines: \(command)")
-            }
-        }
-
         XCTAssertFalse(
             try text(".vscode/tasks.json").contains("\"-DAPPKIT\""),
             ".vscode/tasks.json still gives -DAPPKIT, which the manifest now defines")
-    }
-
-    /// Whether a line RUNS SwiftPM, read past any variables it sets first.
-    ///
-    /// An AppKit head needs one set - see the test below - and a command that
-    /// sets it inline is still that command, so the name is looked for after
-    /// each leading `NAME=value`. Without this, prefixing a command would drop
-    /// it out of the list above and the guard would stop asking anything of it.
-    private static func runsSwift(_ line: String) -> Bool {
-        var rest = line
-
-        while let space = rest.firstIndex(of: " ") {
-            let first = String(rest[rest.startIndex..<space])
-
-            guard first.contains("="), !first.contains("/"), !first.contains("\"") else { break }
-
-            rest = String(rest[rest.index(after: space)...]).trimmingCharacters(in: .whitespaces)
-        }
-
-        return rest.hasPrefix("swift build") || rest.hasPrefix("swift run")
-            || rest.contains("$(swift build")
     }
 
     /// Every build of an application's AppKit head TELLS ITS MANIFEST there is
@@ -744,13 +709,7 @@ final class NativeProjectTests: XCTestCase {
             try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
         }
 
-        // The stateui tool's AppKit builds set it too: ApplicationBuilderTests' SwiftPM refuses a build without it.
-        for relative in [".scripts/test-native.sh"] {
-            XCTAssertTrue(
-                try text(relative).contains("STATEUI_HOST=appkit"),
-                "\(relative) builds an AppKit head without telling the manifest there is one")
-        }
-
+        // The stateui tool's AppKit builds and tests set it too: ApplicationBuilderTests and TestRunnerTests.
         // A task builds an AppKit head through the tool, which names the host - or sets it where it runs SwiftPM.
         let tasks = try text(".vscode/tasks.json").components(separatedBy: "\"label\"").filter { $0.contains("(AppKit,") }
 

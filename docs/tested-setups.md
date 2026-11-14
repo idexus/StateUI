@@ -7,7 +7,7 @@ what its hosts need ([Getting started](getting-started.md#requirements)).
 
 ## A Mac: AppKit, UIKit, Android Views, Web
 
-Last verified 2026-11-13, on Swift 6.4.2: the core, the host layer, the conformance runner, the application-testing package, the Gallery, HelloWorld and the stateui tool; AppKit's suite (621); UIKit's on the iPhone 18 Pro and the iPad Air 13-inch (M4) simulators (314 and every family; 2026-11-14 through `stateui repo test`); Android's on the Pixel 3a emulator and the CPH2363 (562 each; 2026-11-14 through `stateui repo test`); the editor extension's suite (111 on 2026-11-14, its UIKit debugging on a simulator and on the iPad Pro 13-inch; 113 with Android's debugging on the Pixel 3a emulator). The Web's own suite last on 2026-11-08.
+Last verified 2026-11-14, on Swift 6.4.2, through `stateui repo test`: the portable plan - the core (1669), the host layer (782), the conformance runner, the application-testing package, the Gallery, HelloWorld and the stateui tool; the Gallery and HelloWorld as AppKit builds; AppKit's suite (621; once 620, a footprint test watched in the notes, its class alone green); UIKit's on the iPhone 18 Pro and the iPad Air 13-inch (M4) simulators (314 each, every family); Android's on the Pixel 3a emulator and the CPH2363 (562 each); the Web's own suite, in Node and in Chrome; the editor extension's suite (105), on the installed Release `stateui` too; the tool's distribution packaged, read back and run with no Swift on the search path.
 
 | | |
 | --- | --- |
@@ -78,7 +78,7 @@ It stands for CI, not for a desktop: X11, no portals, no GNOME Shell.
 
 ## A Windows machine: WinUI 3
 
-Last verified 2026-11-13, on Swift 6.4.2: the host's own tests, 223 of 224 - `testAChoiceOfActionsLetsGoOfItsDialog` lost a race in the whole run and passed alone five times in five; the stateui tool's suites; the editor extension's suite (89: project groups, both architectures deployed and run with no Swift on the search path, F5 on HelloWorldWinUI). The whole conformance run last on 2026-11-12.
+Last verified 2026-11-14, on Swift 6.4.2, through `stateui repo test`: the portable plan (the core, the host layer, the conformance runner, application testing, the Gallery, HelloWorld, the stateui tool); the host's own tests, 223 of 224 - `testAPressWhoseViewLeftLeavesTheMouseFree` clicked a window not in front, its class alone 7 of 7; the editor extension's suite (83: project groups, both architectures packaged and run with no Swift on the search path, F5 on HelloWorldWinUI); the tool's distribution packaged, read back and run with no Swift on the search path. The whole conformance run last on 2026-11-12.
 
 | | |
 | --- | --- |
@@ -111,7 +111,7 @@ and x64, started with no Swift on the search path.
 
 ## A Linux machine: GTK 4, Web
 
-Last verified 2026-11-13, on Swift 6.4.2: GTK's suite (342) and the stateui tool's suites; the editor extension 0.8.5's suite that day (84, F5 on HelloWorldGTK).
+Last verified 2026-11-14, on Swift 6.4.2, through `stateui repo test`: the portable plan (the core 1669, the host layer, the conformance runner, application testing, the Gallery, HelloWorld, the stateui tool); GTK's suite (342); the editor extension's suite (82, F5 on HelloWorldGTK); the tool's distribution packaged, read back and run with no Swift on the search path. The Web's suite in Node; in Chromium three of its browser cases differ from the Mac's marks (owed).
 
 | | |
 | --- | --- |

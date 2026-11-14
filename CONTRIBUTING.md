@@ -85,7 +85,7 @@ Code under `lib/StateUI/Core/Sources` and `lib/StateUI/StateUI.Host/Sources` doe
 import Foundation or a platform UI framework. Each host is a sibling package of
 its own - `lib/StateUI/StateUI.AppKit`, `lib/StateUI/StateUI.UIKit`, `lib/StateUI/StateUI.Android`,
 `lib/StateUI/StateUI.WinUI`, `lib/StateUI/StateUI.GTK`, `lib/StateUI/StateUI.Web` - standing on the
-host layer, with its build in `.scripts/<Platform>`. Swift written for one host alone stands under
+host layer, built by the `stateui` tool. Swift written for one host alone stands under
 that host's condition - `#if APPKIT`, `#if UIKIT`, `#if ANDROID`, `#if WINUI`,
 `#if GTK`, `#if WEB` - which its builds define.
 
@@ -156,14 +156,16 @@ the rule as the test reads it.
 Run the suite owned by the area while iterating, then every suite before
 handing off a complete vertical change. In VS Code, run **StateUI: Run Tests**
 once with each host this machine runs - AppKit, UIKit, Android and the Web on
-a Mac. From a terminal, `.scripts/test-native.sh` runs the suites of the
-library, the host layer, the conformance package, the AppKit host and the
-applications on this Mac, `stateui repo test --suite host:uikit` the UIKit host's on a
+a Mac. From a terminal, `stateui repo test --plan portable` runs the suites
+of the library, the host layer, the conformance package, application testing,
+the applications and the tool, `stateui repo test --suite host:appkit` the
+AppKit host's, `stateui repo test --suite host:uikit` the UIKit host's on a
 simulator, `stateui repo test --suite host:android --device <serial>` the Android host's on a
 device, and `stateui repo test --suite host:web` the Web host's:
 
 ```bash
-.scripts/test-native.sh
+stateui repo test --plan portable
+stateui repo test --suite host:appkit
 stateui repo test --suite host:uikit --device "iPhone 18 Pro"
 stateui repo test --suite host:android --device emulator-5554
 stateui repo test --suite host:web

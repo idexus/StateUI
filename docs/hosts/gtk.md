@@ -91,7 +91,7 @@ application; `lib/StateUI.Head` brings the `StateUIGTK` host to the head. Swift 
 `#if GTK`.
 
 A new application - **StateUI: New Application**, `stateui new`, or
-`.scripts/new-app.sh` - has a GTK head,
+`stateui new` - has a GTK head,
 as HelloWorld does.
 
 ## Controls, acts, and events registered in Swift

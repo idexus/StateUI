@@ -40,6 +40,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `stateui repo conformance run --host <host> --all | --changed | --family <name> --record` writes a host's verdicts
   - with `--all` what it declares too - and renders the documents, `stateui repo api record [--host <host>]` writes
   the API records, and `stateui repo conformance status` says where each family's verdicts stand.
+- **`.scripts` is gone.** `.scripts/test-native.sh` is `stateui repo test --plan portable` and `--plan native` - on a
+  Mac the native plan tests the Gallery and HelloWorld as AppKit builds too (`apps:appkit`) - and `new-app.sh` and
+  `new-app.ps1` are `stateui new <Name> --directory apps`. The VS Code extension knows a checkout by its
+  `Package.swift`, `lib/StateUI.Head` and `apps/HelloWorld`, as the tool does.
 - **A WinUI backend declares what it lays beside an application.** `lib/Backends/<Element>.WinUI/SelfContained.ps1`
   is gone: a backend lists the files its engine needs in `Packaging/runtime.txt` - a line a file, the NuGet package,
   its path there (`{architecture}` for `arm64` or `x64`) and its path beside the application - and only an application

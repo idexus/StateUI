@@ -204,7 +204,7 @@ export async function run(): Promise<void> {
             check("with no host a launch runs nothing and opens no session", resolved === undefined && ran.length === 0);
         }
 
-        // 5. The suites, found for each host the way test-native.sh runs them; the core's is named by the checkout's folder.
+        // 5. The suites, found for each host as the stateui tool runs them; the core's is named by the checkout's folder.
         const core = path.basename(root.uri.fsPath);
         // The suites as the stateui tool discovers them (`tests/discover`), for a host or as plain Swift.
         const discover = async (forHost?: Host, folder = root.uri.fsPath): Promise<TestSuiteDescription[]> => {
@@ -726,7 +726,7 @@ export async function run(): Promise<void> {
             check("with the local checkout its application names this checkout by the path from its own folder, and nothing is copied",
                 same(await libraryOf(localNotes), root.uri.fsPath) && wired(localNotes)
                 && !fs.readFileSync(path.join(localNotes, "Package.swift"), "utf8").includes('path: "../.."')
-                && !fs.existsSync(path.join(local!, "StateUI")) && !fs.existsSync(path.join(local!, ".scripts")));
+                && !fs.existsSync(path.join(local!, "StateUI")) && !fs.existsSync(path.join(local!, "lib")));
             const tasks = await vscode.commands.executeCommand<string>("stateui.newApplicationInApps", { folder: local, name: "Tasks" });
             check("New Application in that group makes it beside Notes, listed, naming the same checkout",
                 same(tasks, path.join(local!, "Tasks")) && listed(local!) === "Notes Tasks"
@@ -818,8 +818,21 @@ export async function run(): Promise<void> {
                 check("the release group's application builds", builds(releaseNotes));
             }
             if (!process.env.STATEUI_TEST_GROUPS) {
-                // On Windows a process the last build started may hold a file there a moment longer.
-                fs.rmSync(location, { recursive: true, force: true, maxRetries: 20, retryDelay: 1000 });
+                // A folder something still holds stays, said with the processes that load a module from it on Windows:
+                // the suite's checks are elsewhere (platform-traps.md, THE SUITE'S GROUPS FOLDER).
+                try {
+                    fs.rmSync(location, { recursive: true, force: true, maxRetries: 5, retryDelay: 1000 });
+                } catch (error) {
+                    const holders = process.platform !== "win32" ? "" : (() => {
+                        try {
+                            return execSync(`powershell -NoProfile -Command "Get-Process | Where-Object { $_.Modules.FileName -like '${location}*' } | ForEach-Object { $_.Id.ToString() + ' ' + $_.ProcessName }"`,
+                                { stdio: "pipe" }).toString().trim().split(/\r?\n/).join(", ");
+                        } catch {
+                            return "unread";
+                        }
+                    })();
+                    say(`     the groups' folder stays - ${String(error)}${holders ? ` - modules from it in ${holders}` : ""}`);
+                }
             }
         }
         await tool.dispose();
