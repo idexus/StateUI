@@ -200,6 +200,21 @@ final class ProtocolExamplesTests: XCTestCase {
                         name: "iPhone 18 Pro", kind: .simulator, version: "27.0", booted: true),
                 ]))),
             ], answeredAsWritten: false),
+            Example(name: "tests-discover", messages: [
+                ("request", try request("18", "tests/discover", TestDiscoveryQuery(host: .appkit))),
+                ("response", try response("18", TestSuiteList(host: .appkit, suites: [
+                    TestSuiteDescription(id: "Demo", detail: "swift test", kind: .package, packageUri: demo),
+                    TestSuiteDescription(id: "apps/Notes", detail: "swift test as an AppKit build, on .build/appkit", kind: .package,
+                                         packageUri: demo + "/apps/Notes", host: .appkit),
+                ]))),
+            ], answeredAsWritten: false),
+            Example(name: "tests-run", messages: [
+                ("request", try request("19", "tests/run", Mutation(
+                    requestToken: "7c1d9e3b-5a2f-4c6d-8e0b-1f3a5c7e9b20",
+                    request: TestRunRequest(suite: "apps/Notes", host: .appkit)))),
+                ("response", try response("19", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: SuiteResult(suite: "apps/Notes", phases: [SuiteResult.Phase(name: "tests", passed: true)]))),
+            ], answeredAsWritten: false),
             Example(name: "index-describe", messages: [
                 ("request", try request("16", "index/describe", IndexQuery(host: .uikit))),
                 ("response", try response("16", IndexContext(

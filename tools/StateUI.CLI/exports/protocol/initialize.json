@@ -39,6 +39,8 @@
           "project/describe",
           "releases/list",
           "server/info",
+          "tests/discover",
+          "tests/run",
           "toolchain/check",
           "workspace/create",
           "workspace/useLibrary"

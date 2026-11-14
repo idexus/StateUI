@@ -319,6 +319,37 @@ export const IndexContext = object<IndexContext>({
 export interface IndexCleaning { removedUris: string[] }
 export const IndexCleaning = object<IndexCleaning>({ removedUris: array(string) });
 
+export interface TestDiscoveryQuery { host?: HostFamily; folderUri?: string }
+export const TestDiscoveryQuery = object<TestDiscoveryQuery>({ host: optional(HostFamily), folderUri: optional(string) });
+
+export type TestSuiteKind = "package" | "host";
+export interface TestSuiteDescription {
+    id: string;
+    detail: string;
+    kind: TestSuiteKind;
+    packageUri: string;
+    host?: HostFamily;
+    onDevice: boolean;
+}
+export const TestSuiteDescription = object<TestSuiteDescription>({
+    id: string, detail: string, kind: oneOf<TestSuiteKind>("package", "host"), packageUri: string, host: optional(HostFamily),
+    onDevice: boolean,
+});
+
+export interface TestSuiteList { host?: HostFamily; suites: TestSuiteDescription[] }
+export const TestSuiteList = object<TestSuiteList>({ host: optional(HostFamily), suites: array(TestSuiteDescription) });
+
+export interface TestRunRequest { suite: string; host?: HostFamily; device?: string; folderUri?: string }
+export const TestRunRequest = object<TestRunRequest>({
+    suite: string, host: optional(HostFamily), device: optional(string), folderUri: optional(string),
+});
+
+export interface SuitePhase { name: string; passed: boolean }
+export interface SuiteResult { suite: string; phases: SuitePhase[]; artifactUri?: string }
+export const SuiteResult = object<SuiteResult>({
+    suite: string, phases: array(object<SuitePhase>({ name: string, passed: boolean })), artifactUri: optional(string),
+});
+
 /** The tool's methods the extension calls, by name. */
 export const methods = {
     "server/info": query(NoParameters, ServerInfo),
@@ -328,6 +359,7 @@ export const methods = {
     "devices/list": query(DestinationQuery, DestinationList),
     "index/describe": query(IndexQuery, IndexContext),
     "index/clean": query(IndexQuery, IndexCleaning),
+    "tests/discover": query(TestDiscoveryQuery, TestSuiteList),
     "releases/list": query(ReleaseQuery, ReleaseList),
     "operation/get": query(OperationReference, OperationSnapshot),
     "operation/cancel": query(OperationReference, CancelResult),
@@ -338,6 +370,7 @@ export const methods = {
     "application/install": mutation(InstallRequest, InstallResult),
     "workspace/create": mutation(WorkspaceRequest, WorkspaceChange),
     "workspace/useLibrary": mutation(LibraryRequest, WorkspaceChange),
+    "tests/run": mutation(TestRunRequest, SuiteResult),
 };
 
 export type Methods = typeof methods;

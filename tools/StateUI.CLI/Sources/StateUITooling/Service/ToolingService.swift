@@ -127,6 +127,30 @@ public struct ToolingService: Sendable {
         await Doctor().check()
     }
 
+    /// The suites the folder holding `folder` - a checkout, a workspace, an application - holds for `host`, in the
+    /// order they are best run - `tests/discover`.
+    public func discoverTests(for host: HostFamily?, in folder: URL) async throws -> TestSuiteList {
+        let project = try await describeProject(containing: folder)
+        let root = try project.workspaceUri.map(FileURI.url) ?? FileURI.url(project.rootUri)
+        let applications = try project.applications.map { try FileURI.url($0.packageUri) }
+        return TestSuiteList(host: host, suites: TestDiscovery.suites(in: root, host: host, applications: applications))
+    }
+
+    /// Runs suite `request.suite` of the folder holding `folder` - `tests/run`.
+    ///
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a suite the folder does not hold for the host.
+    public func runTests(_ request: TestRunRequest, in folder: URL, reporter: BuildReporter) async throws -> SuiteResult {
+        let listed = try await discoverTests(for: request.host, in: folder)
+        guard let suite = listed.suites.first(where: { $0.id == request.suite }) else {
+            throw ToolingError(.invalidConfiguration, "No suite \(request.suite) here for \(request.host?.rawValue ?? "plain Swift"): \(listed.suites.map(\.id).joined(separator: ", ")).")
+        }
+        if suite.onDevice, request.device == nil {
+            throw ToolingError(.invalidConfiguration, "\(suite.id) runs on a device: name it.")
+        }
+        return try await TestRunner(tools: ToolResolver()).run(
+            suite, device: request.device, checkout: Checkout.holding(folder)?.root, reporter: reporter)
+    }
+
     /// What an editor's language server indexes `host`'s code with - `index/describe`: its scratch folder, and the
     /// triple and SDK a host whose heads run elsewhere compiles for.
     public func describeIndex(of host: HostFamily?) async -> IndexContext {
@@ -317,6 +341,14 @@ public struct ToolingService: Sendable {
         methods.query("toolchain/check") { (_: NoParameters) in await checkToolchain() }
         methods.query("devices/list") { (query: DestinationQuery) in try await listDestinations(of: query.host) }
         methods.query("index/describe") { (query: IndexQuery) in await describeIndex(of: query.host) }
+        methods.query("tests/discover") { (query: TestDiscoveryQuery, caller: RequestContext) in
+            try await discoverTests(for: query.host, in: try query.folderUri.map(FileURI.url) ?? Self.folder(of: caller))
+        }
+        methods.mutation("tests/run") { (request: TestRunRequest, context: OperationContext, caller: RequestContext) in
+            try await Self.reporting(context) { reporter in
+                try await runTests(request, in: try request.folderUri.map(FileURI.url) ?? Self.folder(of: caller), reporter: reporter.build)
+            }
+        }
         methods.query("index/clean") { (query: IndexQuery) in try cleanIndex(in: query.rootUris ?? []) }
         methods.mutation("application/build") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
             try await Self.reporting(context) { reporter in

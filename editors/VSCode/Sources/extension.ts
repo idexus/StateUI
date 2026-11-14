@@ -21,7 +21,7 @@ import {
     askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceOf, UIKitLister, uiKitDeviceToRunOn, uiKitSimulatorToTestOn,
 } from "./uiKitDevices";
 import { runTask } from "./tasks";
-import { findSuites, forDevice, runSuites } from "./tests";
+import { TestSuites } from "./tests";
 import { writeEditorFiles } from "./projectGroup";
 import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinstall";
 import { Rebuild, rebuildSteps } from "./conformance";
@@ -243,6 +243,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     const selectHost = async (picked: Host): Promise<void> => {
         await state.update(hostKey, picked);
         refresh();
+        testSuites.changed();
 
         if (await applyEditorMode(picked, roots(), describeIndex)) {
             void vscode.window.setStatusBarMessage(`StateUI: the editor works as ${describe(picked).label}`, 4000);
@@ -323,6 +324,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         refresh();
         return id;
     };
+
+    // The suites in the Testing view, found and run by the tool as the chosen host.
+    const testSuites = new TestSuites({
+        tool, host, device: (forHost) => forHost === "uikit" ? uiKitSimulator() : androidDevice(),
+    });
+    context.subscriptions.push(testSuites);
 
     /** The browsers the tool lists, through any folder's connection: the list names no project. */
     const listBrowsers: BrowserLister = async () => {
@@ -418,42 +425,27 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             refresh();
         }),
         vscode.commands.registerCommand("stateui.runTests", async () => {
-            const folder = vscode.workspace.workspaceFolders?.[0];
-            const located = (() => {
-                try {
-                    return locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath"));
-                } catch {
-                    return "stateui";
-                }
-            })();
-            const suites = folder ? findSuites(folder.uri.fsPath, host(), applications(), located) : [];
-            if (!folder || suites.length === 0) {
+            const suites = vscode.workspace.workspaceFolders ? (await testSuites.discover(), testSuites.suites()) : [];
+            if (suites.length === 0) {
                 void vscode.window.showInformationMessage(`StateUI: no test suite here runs as ${runningAs()}.`);
                 return;
             }
 
             const picked = await vscode.window.showQuickPick(
-                suites.map((suite) => ({ label: suite.label, detail: suite.detail, picked: true, suite })),
+                suites.map(({ item, suite }) => ({ label: suite.id, detail: suite.detail, picked: true, item })),
                 { canPickMany: true, placeHolder: `The suites to run as ${runningAs()}` });
             if (!picked || picked.length === 0) {
                 return;
             }
 
-            let chosenSuites = picked.map((each) => each.suite);
-            if (chosenSuites.some((each) => each.onDevice)) {
-                const serial = host() === "uikit" ? await uiKitSimulator() : await androidDevice();
-                if (!serial) {
-                    return;
-                }
-                chosenSuites = chosenSuites.map((each) => forDevice(each, serial));
-            }
-
-            const failed = await runSuites(folder, chosenSuites);
+            const cancelling = new vscode.CancellationTokenSource();
+            const failed = await testSuites.run(new vscode.TestRunRequest(picked.map((each) => each.item)), cancelling.token);
+            cancelling.dispose();
             if (failed.length === 0) {
                 void vscode.window.showInformationMessage(`StateUI: all ${picked.length} suites passed as ${runningAs()}.`);
             } else {
                 void vscode.window.showErrorMessage(
-                    `StateUI: ${failed.length} of ${picked.length} suites failed as ${runningAs()}: ${failed.join(", ")}. Their output is in the terminal.`);
+                    `StateUI: ${failed.length} of ${picked.length} suites failed as ${runningAs()}: ${failed.join(", ")}. Their output is in Test Results.`);
             }
         }),
         // A new application in a workspace, beside its applications - or at its root where it lists none yet - building
@@ -841,6 +833,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             await discover();
             refresh();
             updateFolderContexts();
+            testSuites.changed();
             if (roots().join("\n") !== before) {
                 await applyEditorMode(host(), roots(), describeIndex);
             }

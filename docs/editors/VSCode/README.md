@@ -245,8 +245,11 @@ stateui workspace library --release <release>
 
 ## Tests
 
-**StateUI: Run Tests** offers the workspace's suites, every one ticked, and runs
-them AS THE HOST, one after another, each in a terminal of its own:
+The workspace's suites stand in the Testing view, found by the stateui tool
+for the chosen host (`stateui test list --host <host>` lists the same) and
+found again when the host changes. **StateUI: Run Tests** offers them, every
+one ticked, and runs them AS THE HOST, one after another, each through the tool
+(`stateui test run --suite <suite>`), its output in Test Results:
 
 - **AppKit**: the library, `lib/StateUI/StateUI.AppKit`, and each application as an
   AppKit build (`STATEUI_HOST=appkit`, on `.build/appkit`).
@@ -270,8 +273,8 @@ them AS THE HOST, one after another, each in a terminal of its own:
   and runs them in Node, then what needs a browser in Chrome.
 - **No host**: the library and each application as plain Swift.
 
-A failure does not stop the suites after it; the summary names the ones that
-failed.
+A suite that runs on a device asks for one once. A failure does not stop the
+suites after it; the summary names the ones that failed.
 
 ## Deploy
 

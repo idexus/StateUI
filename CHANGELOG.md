@@ -154,6 +154,11 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   simulator - and `uikit.yml` runs it; the test application's identifier stands in its own `Platforms/UIKit/Info.plist`.
 - `stateui repo test --suite host:appkit` runs the AppKit host's suite - its tests, every conformance verdict held, then
   its API records, each a phase of the result - and the AppKit workflow runs it.
+- `stateui test list [--host <host>]` (`tests/discover`) lists a folder's suites for a host, in the order they are
+  best run, and `stateui test run --suite <suite> [--host <host>] [--device <device>]` (`tests/run`) runs one - a
+  package's by `swift test`, a host's as `stateui repo test` does. The VS Code extension's suites stand in the Testing
+  view, found and run by the tool, and **StateUI: Run Tests** runs the ones picked there too, their output in Test
+  Results.
 - The `stateui` tool has a workflow of its own (`cli.yml`): its suites on macOS, Linux and Windows, then the editor
   extension's client of it against a real `stateui serve --stdio`.
 

@@ -49,4 +49,6 @@ writes its result as words or as the message an editor receives.
   it.
 - [Apple bundles](apple-bundles.md): an Apple head's `Info.plist`, and what an
   AppKit bundle holds.
+- [Tests](tests.md): the suites a folder holds for a host, in their order,
+  and how each runs.
 - [The repository's own work](repository.md): a host's suite, run as its CI runs it.

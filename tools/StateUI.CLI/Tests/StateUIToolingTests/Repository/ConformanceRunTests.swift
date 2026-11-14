@@ -6,9 +6,12 @@ import Foundation
 import XCTest
 
 final class TestRunTests: XCTestCase {
-    /// A filtered run counts where XCTest says a test ran, or a parallel run says it tests one; a run of none does not.
+    /// A run counts where XCTest or Swift Testing says a test ran, or a parallel run says it tests one; a run of none
+    /// does not.
     func testARunOfNoneIsNoRun() {
         XCTAssertTrue(TestRun.ranAny(["\t Executed 0 tests, with 0 failures", "\t Executed 2 tests, with 0 failures (0 unexpected)"]))
+        XCTAssertTrue(TestRun.ranAny(["✔ Test run with 3 tests in 1 suite passed after 0.002 seconds."]))
+        XCTAssertFalse(TestRun.ranAny(["\t Executed 0 tests, with 0 failures", "✔ Test run with 0 tests in 0 suites passed after 0.001 seconds."]))
         XCTAssertTrue(TestRun.ranAny(["[1/3] Testing StateUIWinUITests.WinUIConformanceTests/testButton"]))
         XCTAssertFalse(TestRun.ranAny(["\t Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds"]))
         XCTAssertFalse(TestRun.ranAny(["Build complete!"]))

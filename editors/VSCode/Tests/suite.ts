@@ -19,7 +19,6 @@ import { androidDeviceOf, deviceAmong } from "../Sources/devices";
 import { browserOf, isChromium } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
 import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
-import { findSuites, forDevice } from "../Sources/tests";
 import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { editorCommandLine, reinstallSteps } from "../Sources/reinstall";
@@ -29,6 +28,7 @@ import {
     atLeast, checkedPythonIn, debuggerFinding, Finding, lldbDapFailure, report,
 } from "../Sources/toolchain";
 import { ToolingClient } from "../Sources/Tooling/client";
+import { TestSuiteDescription } from "../Sources/Tooling/protocol";
 import { locateTool } from "../Sources/Tooling/locate";
 
 const started = Date.now();
@@ -176,23 +176,33 @@ export async function run(): Promise<void> {
 
         // 5. The suites, found for each host the way test-native.sh runs them; the core's is named by the checkout's folder.
         const core = path.basename(root.uri.fsPath);
-        const appkitSuites = findSuites(root.uri.fsPath, "appkit", api.applications()).map((each) => each.label);
-        const plainSuites = findSuites(root.uri.fsPath, undefined, api.applications());
+        // The suites as the stateui tool discovers them (`tests/discover`), for a host or as plain Swift.
+        const discover = async (forHost?: Host, folder = root.uri.fsPath): Promise<TestSuiteDescription[]> => {
+            const asking = await ToolingClient.start({
+                executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
+                folder, clientVersion: "suite",
+            });
+            try {
+                return (await asking.request("tests/discover", forHost ? { host: forHost } : {})).suites;
+            } finally {
+                await asking.dispose();
+            }
+        };
+        const appkitDiscovered = await discover("appkit");
+        const appkitSuites = appkitDiscovered.map((each) => each.id);
+        const plainSuites = await discover();
         say(`appkit suites: ${appkitSuites.join(", ")}`);
-        say(`suites with no host: ${plainSuites.map((each) => each.label).join(", ")}`);
-        check("appkit runs the core, StateUI.AppKit and the Gallery, and no device",
-            appkitSuites.includes(core) && appkitSuites.includes("lib/StateUI/StateUI.AppKit")
-            && findSuites(root.uri.fsPath, "appkit", api.applications(), "/bin/stateui").some((each) => each.label === "lib/StateUI/StateUI.AppKit"
-                && each.command === "/bin/stateui" && each.args.join(" ") === "repo test --suite host:appkit")
-            && appkitSuites.includes("apps/Gallery") && !appkitSuites.some((each) => each.endsWith("Tests")));
-        check("HelloWorld's example test runs with the rest - as an AppKit build on its .build/appkit, or as plain Swift",
-            findSuites(root.uri.fsPath, "appkit", api.applications()).some((each) => each.label === "apps/HelloWorld"
-                && each.args.join(" ").endsWith(`--scratch-path ${path.join(root.uri.fsPath, "apps", "HelloWorld", ".build", "appkit")}`))
-            && plainSuites.some((each) => each.label === "apps/HelloWorld"));
+        say(`suites with no host: ${plainSuites.map((each) => each.id).join(", ")}`);
+        check("appkit runs the core, StateUI.AppKit as its host's suite and the Gallery, and no device",
+            appkitSuites.includes(core) && appkitSuites.includes("apps/Gallery") && !appkitSuites.some((each) => each.endsWith("Tests"))
+            && appkitDiscovered.some((each) => each.id === "lib/StateUI/StateUI.AppKit" && each.kind === "host" && each.host === "appkit"));
+        check("HelloWorld's example test runs with the rest - as an AppKit build, or as plain Swift",
+            appkitDiscovered.some((each) => each.id === "apps/HelloWorld" && each.kind === "package" && each.host === "appkit")
+            && plainSuites.some((each) => each.id === "apps/HelloWorld" && each.host === undefined));
         check("with no host the core and the Gallery run as plain Swift, and no host's own package",
-            plainSuites.some((each) => each.label === core) && plainSuites.some((each) => each.label === "apps/Gallery")
-            && plainSuites.every((each) => each.command === "swift" && Object.keys(each.env).length === 0 && !each.onDevice)
-            && !plainSuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit" || each.label === "lib/StateUI/StateUI.Android/Tests"));
+            plainSuites.some((each) => each.id === core) && plainSuites.some((each) => each.id === "apps/Gallery")
+            && plainSuites.every((each) => each.kind === "package" && each.host === undefined && !each.onDevice)
+            && !plainSuites.some((each) => each.id === "lib/StateUI/StateUI.AppKit" || each.id === "lib/StateUI/StateUI.Android/Tests"));
 
         // 6. Android: the environment, the language server's file, the
         //    devices, and the commands a launch and a suite run - captured,
@@ -329,17 +339,16 @@ export async function run(): Promise<void> {
             check("Android Debug whose application never starts opens no session", failed.resolved === undefined && failed.runs.length === 1);
         }
         {
-            const androidSuites = findSuites(root.uri.fsPath, "android", api.applications());
-            say(`android suites: ${androidSuites.map((each) => each.label).join(", ")}`);
-            const onDevice = androidSuites.filter((each) => each.onDevice).map((each) => forDevice(each, "emulator-5554"));
-            const galleryRun = androidSuites.find((each) => each.label === "apps/Gallery");
+            const androidSuites = await discover("android");
+            say(`android suites: ${androidSuites.map((each) => each.id).join(", ")}`);
+            const onDevice = androidSuites.filter((each) => each.onDevice);
             check("android runs the core and the Gallery as plain Swift, and no AppKit",
-                androidSuites.some((each) => each.label === core && forDevice(each, "emulator-5554") === each)
-                && galleryRun?.args.join(" ") === `test --package-path ${gallery}` && Object.keys(galleryRun.env).length === 0
-                && !androidSuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit"));
-            check("android runs stateui repo test --suite host:android --device <serial> on the device, and only android does",
-                onDevice.length === 1 && onDevice[0].label === "lib/StateUI/StateUI.Android/Tests"
-                && [onDevice[0].command, ...onDevice[0].args].join(" ") === "stateui repo test --suite host:android --device emulator-5554"
+                androidSuites.some((each) => each.id === core && !each.onDevice)
+                && androidSuites.some((each) => each.id === "apps/Gallery" && each.kind === "package" && each.host === undefined)
+                && !androidSuites.some((each) => each.id === "lib/StateUI/StateUI.AppKit"));
+            check("android runs the host's suite on the device, and only android does",
+                onDevice.length === 1 && onDevice[0].id === "lib/StateUI/StateUI.Android/Tests"
+                && onDevice[0].kind === "host" && onDevice[0].host === "android"
                 && !appkitSuites.includes("lib/StateUI/StateUI.Android/Tests"));
         }
         // 6a. UIKit: the language server's file, the simulators, and the
@@ -439,14 +448,13 @@ export async function run(): Promise<void> {
             check("UIKit Debug whose application never starts opens no session", failed.resolved === undefined && failed.runs.length === 1);
         }
         {
-            const uiKitSuites = findSuites(root.uri.fsPath, "uikit", api.applications());
-            say(`uikit suites: ${uiKitSuites.map((each) => each.label).join(", ")}`);
-            const onSimulator = uiKitSuites.filter((each) => each.onDevice).map((each) => forDevice(each, "SIM-1"));
-            check("uikit runs the core and the Gallery as plain Swift, and stateui repo test --suite host:uikit --device <udid> on the simulator",
-                uiKitSuites.some((each) => each.label === core)
-                && onSimulator.length === 1 && onSimulator[0].label === "lib/StateUI/StateUI.UIKit/Tests"
-                && [onSimulator[0].command, ...onSimulator[0].args].join(" ") === "stateui repo test --suite host:uikit --device SIM-1"
-                && !uiKitSuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit" || each.label === "lib/StateUI/StateUI.Android/Tests"));
+            const uiKitSuites = await discover("uikit");
+            say(`uikit suites: ${uiKitSuites.map((each) => each.id).join(", ")}`);
+            const onSimulator = uiKitSuites.filter((each) => each.onDevice);
+            check("uikit runs the core and the Gallery as plain Swift, and the host's suite on the simulator",
+                uiKitSuites.some((each) => each.id === core)
+                && onSimulator.length === 1 && onSimulator[0].id === "lib/StateUI/StateUI.UIKit/Tests" && onSimulator[0].host === "uikit"
+                && !uiKitSuites.some((each) => each.id === "lib/StateUI/StateUI.AppKit" || each.id === "lib/StateUI/StateUI.Android/Tests"));
         }
 
         // 6b. WinUI: HelloWorld's head, built by the stateui tool and launched under lldb-dap, and the host's own
@@ -473,13 +481,12 @@ export async function run(): Promise<void> {
                 && resolved?.type === "lldb-dap" && resolved.request === "launch" && resolved.program === program);
         }
         {
-            const winUISuites = findSuites(root.uri.fsPath, "winui", api.applications());
-            say(`winui suites: ${winUISuites.map((each) => each.label).join(", ")}`);
-            const own = winUISuites.find((each) => each.label === "lib/StateUI/StateUI.WinUI/Testing");
-            check("winui runs the core and the Gallery as plain Swift, its own package by stateui repo test --suite host:winui, and no AppKit or Android",
-                winUISuites.some((each) => each.label === core)
-                && own?.command === "stateui" && own.args.join(" ") === "repo test --suite host:winui"
-                && !winUISuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit" || each.label === "lib/StateUI/StateUI.Android/Tests"));
+            const winUISuites = await discover("winui");
+            say(`winui suites: ${winUISuites.map((each) => each.id).join(", ")}`);
+            const own = winUISuites.find((each) => each.id === "lib/StateUI/StateUI.WinUI/Testing");
+            check("winui runs the core and the Gallery as plain Swift, its own package as the host's suite, and no AppKit or Android",
+                winUISuites.some((each) => each.id === core) && own?.kind === "host" && own.host === "winui"
+                && !winUISuites.some((each) => each.id === "lib/StateUI/StateUI.AppKit" || each.id === "lib/StateUI/StateUI.Android/Tests"));
         }
 
         // 6c. GTK: HelloWorld's head, built and installed by the stateui tool and
@@ -503,15 +510,13 @@ export async function run(): Promise<void> {
                 && resolved?.type === "lldb-dap" && resolved.request === "launch" && resolved.program === program);
         }
         {
-            const gtkSuites = findSuites(root.uri.fsPath, "gtk", api.applications());
-            say(`gtk suites: ${gtkSuites.map((each) => each.label).join(", ")}`);
-            const own = gtkSuites.find((each) => each.label === "lib/StateUI/StateUI.GTK/Testing");
-            const testing = path.join(root.uri.fsPath, "lib", "StateUI", "StateUI.GTK", "Testing");
-            check("gtk runs the core and the Gallery as plain Swift, its own suite by stateui repo test, and no other host's",
-                gtkSuites.some((each) => each.label === core) && testing.length > 0
-                && own?.command === "stateui" && own.args.join(" ") === "repo test --suite host:gtk"
+            const gtkSuites = await discover("gtk");
+            say(`gtk suites: ${gtkSuites.map((each) => each.id).join(", ")}`);
+            const own = gtkSuites.find((each) => each.id === "lib/StateUI/StateUI.GTK/Testing");
+            check("gtk runs the core and the Gallery as plain Swift, its own suite as the host's, and no other host's",
+                gtkSuites.some((each) => each.id === core) && own?.kind === "host" && own.host === "gtk"
                 && !gtkSuites.some((each) => ["lib/StateUI/StateUI.AppKit", "lib/StateUI/StateUI.WinUI", "lib/StateUI/StateUI.Android/Tests",
-                    "lib/Backends/WebView.WinUI"].includes(each.label)));
+                    "lib/Backends/WebView.WinUI"].includes(each.id)));
         }
 
         // 6d. Web: HelloWorld's head, built, served and opened in the browser chosen by the tool; a Debug launch in
@@ -585,14 +590,14 @@ export async function run(): Promise<void> {
                 released.resolved === undefined && released.runs[0]?.device === "com.google.Chrome" && released.runs[0]?.configuration === "release");
         }
         {
-            const webSuites = findSuites(root.uri.fsPath, "web", api.applications());
-            say(`web suites: ${webSuites.map((each) => each.label).join(", ")}`);
-            const own = webSuites.find((each) => each.label === "lib/StateUI/StateUI.Web/Testing");
-            check("web runs the core and the Gallery as plain Swift, its own tests' package by stateui repo test --suite host:web, and no other host's",
-                webSuites.some((each) => each.label === core) && webSuites.some((each) => each.label === "apps/Gallery")
-                && own?.command === "stateui" && own.args.join(" ") === "repo test --suite host:web"
-                && webSuites.filter((each) => each !== own).every((each) => each.command === "swift" && !each.onDevice)
-                && !webSuites.some((each) => ["lib/StateUI/StateUI.AppKit", "lib/StateUI/StateUI.GTK/Testing"].includes(each.label)));
+            const webSuites = await discover("web");
+            say(`web suites: ${webSuites.map((each) => each.id).join(", ")}`);
+            const own = webSuites.find((each) => each.id === "lib/StateUI/StateUI.Web/Testing");
+            check("web runs the core and the Gallery as plain Swift, its own tests' package as the host's suite, and no other host's",
+                webSuites.some((each) => each.id === core) && webSuites.some((each) => each.id === "apps/Gallery")
+                && own?.kind === "host" && own.host === "web"
+                && webSuites.filter((each) => each !== own).every((each) => each.kind === "package" && !each.onDevice)
+                && !webSuites.some((each) => ["lib/StateUI/StateUI.AppKit", "lib/StateUI/StateUI.GTK/Testing"].includes(each.id)));
         }
 
         const palette = await vscode.commands.getCommands(true);
@@ -697,22 +702,21 @@ export async function run(): Promise<void> {
             check("the local group's application builds", builds(localNotes));
             // StateUI: Run Tests in the group: each application's example test, run as the command runs it.
             const testHost = process.platform === "darwin" ? "appkit" : undefined;
-            const groupSuites = findSuites(local!, testHost, await described(local!));
-            const notesSuite = groupSuites.find((each) => each.label === "Notes");
+            const groupSuites = await discover(testHost, local!);
             check("Run Tests in a group finds each application's tests",
-                groupSuites.map((each) => each.label).join(" ") === "Notes Tasks" && notesSuite !== undefined);
+                groupSuites.map((each) => each.id).join(" ") === "Notes Tasks");
             const passes = (() => {
                 try {
-                    const env = Object.fromEntries(Object.entries({ ...process.env, ...environment(testHost), ...notesSuite!.env })
-                        .filter((entry): entry is [string, string] => entry[1] !== undefined));
-                    execSync([notesSuite!.command, ...notesSuite!.args].map((each) => `"${each}"`).join(" "), { cwd: local, env, stdio: "pipe" });
+                    const tool = locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath"));
+                    execSync([tool, "test", "run", "--suite", "Notes", ...(testHost ? ["--host", testHost] : [])].map((each) => `"${each}"`).join(" "),
+                        { cwd: local, stdio: "pipe" });
                     return true;
                 } catch (error) {
                     say(`     ${String((error as { stdout?: Buffer }).stdout ?? error).split("\n").slice(-8).join("\n     ")}`);
                     return false;
                 }
             })();
-            check(`Notes' example test passes as ${testHost ?? "plain Swift"}`, passes);
+            check(`Notes' example test passes as ${testHost ?? "plain Swift"}, run by the tool`, passes);
 
             // StateUI: Deploy in the group: Notes built for release and laid in the group's artifacts/Notes/<platform>,
             // on WinUI per architecture - this machine's own, and x64 too on an ARM64 machine - and run from there.
