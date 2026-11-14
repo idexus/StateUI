@@ -14,9 +14,9 @@ struct RepoCommand: AsyncParsableCommand {
     /// `stateui repo test --suite host:<host>`.
     struct Test: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
-            abstract: "Runs a suite of the checkout's own: host:appkit, host:uikit or host:android - the host's tests, every conformance verdict held, then its API records.")
+            abstract: "Runs a suite of the checkout's own: host:appkit, host:uikit, host:android or host:gtk - the host's tests, every conformance verdict held, then its API records.")
 
-        @Option(help: "The suite: host:appkit, host:uikit or host:android.")
+        @Option(help: "The suite: host:appkit, host:uikit, host:android or host:gtk.")
         var suite: String
 
         @Option(help: "host:uikit's simulator, by name or UDID - the booted one, else an iPhone, when left out; host:android's device or emulator.")

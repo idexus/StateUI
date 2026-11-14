@@ -18,8 +18,8 @@ did. Nothing is written: `STATEUI_UPDATE_EXPORTS`, `STATEUI_UPDATE_DOCS`,
 inherits - recording marks and exports is a request of its own (the
 migration's M11), never a variable left in a shell. The suite builds a test
 application, so it waits for the machine's one application build. AppKit's,
-UIKit's and Android's suites run this way (`appkit.yml`, `uikit.yml`,
-`android.yml`); every other host's moves with its row.
+UIKit's, Android's and GTK's suites run this way (`appkit.yml`, `uikit.yml`,
+`android.yml`, `gtk.yml`); every other host's moves with its row.
 
 ## The UIKit host's suite
 
@@ -67,4 +67,15 @@ with its identity (`suite.json`: the suite, the architecture, the checkout's
 commit, the Swift SDK) and says the folder; `--artifact <folder>` runs that
 APK instead of building one, and refuses it where it was built for another
 suite or ABI, or from another commit than the checkout's.
+
+## The GTK host's suite
+
+`--suite host:gtk` runs on Linux, on the display the session gives it, as a
+user who chose the accent (`ADW_DEBUG_ACCENT_COLOR=blue`, as GNOME's from 47
+on), so every machine meets one desktop. Unfiltered, the foundation's own
+tests run first - the C library's Glibc branches, which no other machine
+runs; then the host's `Testing` package, every conformance family held to
+its marks; then `StateUIGTK` and `StateUIWebViewGTK`, as that build made
+them, held to their API records, their C modules found by their module maps
+and `pkg-config --cflags libadwaita-1 libsoup-3.0 webkitgtk-6.0`.
 

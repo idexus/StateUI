@@ -180,7 +180,7 @@ public struct ToolingService: Sendable {
             throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
         }
         guard suite.hasPrefix("host:"), let host = HostFamily(rawValue: String(suite.dropFirst("host:".count))) else {
-            throw ToolingError(.invalidConfiguration, "No suite \(suite): host:appkit, host:uikit and host:android are.")
+            throw ToolingError(.invalidConfiguration, "No suite \(suite): host:appkit, host:uikit, host:android and host:gtk are.")
         }
         return try await HostSuite(checkout: checkout).run(
             host, filter: filter, device: device, buildOnly: buildOnly, architecture: architecture, artifact: artifact, reporter: reporter)

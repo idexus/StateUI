@@ -39,7 +39,7 @@ public struct HostSuite: Sendable {
         _ host: HostFamily, filter: String? = nil, device: String? = nil, buildOnly: Bool = false, architecture: Architecture? = nil,
         artifact: URL? = nil, reporter: BuildReporter = BuildReporter()
     ) async throws -> SuiteResult {
-        guard [.appkit, .uikit, .android].contains(host) else {
+        guard [.appkit, .uikit, .android, .gtk].contains(host) else {
             throw ToolingError(.invalidConfiguration, "\(host.rawValue)'s suite runs by its .scripts until its row moves to the tool.")
         }
         let lease = try await permit.acquire(for: "the \(host.folder) host's suite, stateui \(ProcessInfo.processInfo.processIdentifier)") {
@@ -51,6 +51,14 @@ public struct HostSuite: Sendable {
         let checked = ProcessEnvironment.inherited.removing("STATEUI_UPDATE_EXPORTS", "STATEUI_UPDATE_DOCS", "STATEUI_STALE_ONLY", "STATEUI_FILTER")
         if buildOnly || artifact != nil, host != .android {
             throw ToolingError(.invalidConfiguration, "A suite is built alone, or run from what such a build made, for host:android.")
+        }
+        if host == .gtk {
+            #if os(Linux)
+            let phases = try await GTKSuite(checkout: checkout, tools: tools).run(filter: filter, environment: checked, reporter: reporter)
+            return SuiteResult(suite: "host:gtk", phases: phases)
+            #else
+            throw ToolingError(.invalidConfiguration, "The GTK host's suite runs on Linux.")
+            #endif
         }
         if host == .android {
             let destinations = self.destinations
