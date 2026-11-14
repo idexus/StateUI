@@ -78,7 +78,7 @@ It stands for CI, not for a desktop: X11, no portals, no GNOME Shell.
 
 ## A Windows machine: WinUI 3
 
-Last verified 2026-11-14, on Swift 6.4.2, through `stateui repo test`: the portable plan (the core, the host layer, the conformance runner, application testing, the Gallery, HelloWorld, the stateui tool); the host's own tests, 223 of 224 - `testAPressWhoseViewLeftLeavesTheMouseFree` clicked a window not in front, its class alone 7 of 7; the editor extension's suite (83: project groups, both architectures packaged and run with no Swift on the search path, F5 on HelloWorldWinUI); the tool's distribution packaged, read back and run with no Swift on the search path. The whole conformance run last on 2026-11-12.
+Last verified 2026-11-14, on Swift 6.4.2, through `stateui repo test`: the portable plan (the core, the host layer, the conformance runner, application testing, the Gallery, HelloWorld, the stateui tool); the host's own tests (225), the test window brought in front before the system's keys or mouse reach it; the editor extension's suite (83: project groups, both architectures packaged and run with no Swift on the search path, F5 on HelloWorldWinUI); the tool's distribution packaged, read back and run with no Swift on the search path. The whole conformance run last on 2026-11-12.
 
 | | |
 | --- | --- |
