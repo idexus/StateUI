@@ -1238,6 +1238,10 @@ void stateui_winui_items_move_to(StateUIObjectRef items, double x, double y);
 
 /// Where the list's view stands, then the farthest it reaches across and down, in DIPs: four values.
 void stateui_winui_items_offset(StateUIObjectRef items, double *offset);
+/// What the list's scroller shows of its room, eight numbers, for a test: its viewport's width and height, the
+/// list's own, the horizontal scroll bar's visibility as asked and as computed, whether the system hides scroll
+/// bars by itself (1) and the scale the list is drawn at.
+void stateui_winui_items_scroller_state(StateUIObjectRef items, double *state);
 
 /// Names the row holding the cell numbered `cell` `words`: what Narrator reads of it, which reads no further.
 void stateui_winui_items_name(StateUIObjectRef items, int64_t cell, char const *words);
