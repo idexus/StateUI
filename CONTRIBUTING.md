@@ -159,13 +159,13 @@ once with each host this machine runs - AppKit, UIKit, Android and the Web on
 a Mac. From a terminal, `.scripts/test-native.sh` runs the suites of the
 library, the host layer, the conformance package, the AppKit host and the
 applications on this Mac, `stateui repo test --suite host:uikit` the UIKit host's on a
-simulator, `.scripts/Android/test-android.sh <serial>` the Android host's on a
+simulator, `stateui repo test --suite host:android --device <serial>` the Android host's on a
 device, and `.scripts/Web/test-web.sh` the Web host's:
 
 ```bash
 .scripts/test-native.sh
 stateui repo test --suite host:uikit --device "iPhone 18 Pro"
-.scripts/Android/test-android.sh emulator-5554
+stateui repo test --suite host:android --device emulator-5554
 .scripts/Web/test-web.sh
 ```
 
@@ -177,7 +177,7 @@ terminal:
 
 ```bash
 stateui build --project apps/Gallery --host appkit
-.scripts/Android/run-app.sh apps/Gallery debug emulator-5554
+stateui run --project apps/Gallery --host android --device emulator-5554
 ```
 
 Run one application build at a time. Concurrent application builds share Swift

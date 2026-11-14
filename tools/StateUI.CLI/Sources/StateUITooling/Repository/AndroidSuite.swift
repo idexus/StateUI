@@ -246,8 +246,8 @@ struct AndroidSuite {
         var differ: [String] = []
         if names != recorded { differ.append("the families run (\(names.count)) are not those recorded (\(recorded.count))") }
         for name in names {
-            let run = Verdicts.alone(await read("files/marks/android/\(name)"))
-            let held = Verdicts.alone((try? String(contentsOf: marks.appendingPathComponent(name), encoding: .utf8)) ?? "")
+            let run = Self.verdicts(await read("files/marks/android/\(name)"))
+            let held = Self.verdicts((try? String(contentsOf: marks.appendingPathComponent(name), encoding: .utf8)) ?? "")
             if Self.lines(run) != Self.lines(held) { differ.append(name) }
         }
         if !differ.isEmpty {
@@ -256,6 +256,11 @@ struct AndroidSuite {
         }
         return [SuiteResult.Phase(name: "declarations android.txt", passed: declarationsHeld),
                 SuiteResult.Phase(name: "marks android", passed: differ.isEmpty)]
+    }
+
+    /// A verdict file's verdicts, the line naming its revision aside: two runs at other revisions compare by them.
+    static func verdicts(_ text: String) -> String {
+        text.split(separator: "\n", omittingEmptySubsequences: false).filter { !$0.hasPrefix("# revision ") }.joined(separator: "\n")
     }
 
     /// `text`'s lines, line ends and a last empty line aside: a device's answer ends lines as it does.

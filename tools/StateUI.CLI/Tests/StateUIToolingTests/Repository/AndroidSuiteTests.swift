@@ -23,7 +23,7 @@ final class AndroidSuiteTests: XCTestCase {
 
     /// Two verdict files compare by their verdicts, whatever revision each stood at.
     func testVerdictsCompareWithoutTheirRevision() {
-        XCTAssertEqual(Verdicts.alone("# revision 2.1\nButton.title ✅\n"), Verdicts.alone("# revision 3.1\nButton.title ✅\n"))
-        XCTAssertNotEqual(Verdicts.alone("Button.title ✅"), Verdicts.alone("Button.title ❌"))
+        XCTAssertEqual(AndroidSuite.verdicts("# revision 2.1\nButton.title ✅\n"), AndroidSuite.verdicts("# revision 3.1\nButton.title ✅\n"))
+        XCTAssertNotEqual(AndroidSuite.verdicts("Button.title ✅"), AndroidSuite.verdicts("Button.title ❌"))
     }
 }

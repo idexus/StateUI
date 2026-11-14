@@ -1,9 +1,10 @@
 # SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 # SPDX-License-Identifier: Apache-2.0
 #
-# The Android tools the scripts beside this one share: the checkout they stand
-# in, the SDK, adb, aapt2, JDK 21, Gradle, and the device a run goes to.
-# Sourced, never run.
+# What test-android.sh takes - it records the Android host's marks until the
+# stateui tool does, which builds, runs and tests Android heads otherwise: the
+# checkout, the SDK, adb, aapt2, JDK 21, Gradle, and the device. Sourced, never
+# run.
 
 repository_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 

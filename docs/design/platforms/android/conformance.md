@@ -3,7 +3,7 @@
 How the conformance suite drives Android Views: `AndroidDriver` in the host's
 test APK, one test for each family of cases in `AndroidConformanceTests`,
 their verdicts written into the APK's files and held to `lib/StateUI/exports/marks/android`
-by `test-android.sh`.
+by `stateui repo test --suite host:android`.
 
 ## What the driver does
 

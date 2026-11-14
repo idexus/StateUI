@@ -186,10 +186,10 @@ From a terminal, the same builds and suites are:
 ```bash
 stateui build --project apps/Gallery --host appkit            # the AppKit Gallery bundle
 stateui run --project apps/Gallery --host uikit --device "iPhone 18 Pro"   # the UIKit Gallery, on a simulator
-.scripts/Android/run-app.sh apps/Gallery debug emulator-5554   # the Android Gallery
+stateui run --project apps/Gallery --host android --device emulator-5554   # the Android Gallery
 .scripts/test-native.sh                                        # the Swift suites, the AppKit host's among them
 stateui repo test --suite host:uikit --device "iPhone 18 Pro"   # the UIKit host's suite
-.scripts/Android/test-android.sh emulator-5554                 # the Android host's suite, on a device
+stateui repo test --suite host:android --device emulator-5554   # the Android host's suite, on a device
 ```
 
 On macOS or Linux, the Web:

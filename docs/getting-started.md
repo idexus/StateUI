@@ -60,11 +60,11 @@ application in a directory of its own inside the application's `.build` -
 `.build/gtk`, `.build/web` - beside SwiftPM's plain build, so switching hosts
 rebuilds nothing. `swift package clean` empties all of them.
 
-Run HelloWorld's Android head on a device - `.scripts/Android/devices.sh list`
+Run HelloWorld's Android head on a device - `stateui devices --host android`
 names the devices:
 
 ```bash
-.scripts/Android/run-app.sh apps/HelloWorld debug emulator-5554
+stateui run --project apps/HelloWorld --host android --device emulator-5554
 ```
 
 Run its UIKit head on an iOS simulator, booted first where it is not - the
@@ -77,7 +77,7 @@ stateui run --project apps/HelloWorld --host uikit --device "iPhone 18 Pro"
 The WinUI, GTK and Web heads have a script of their own too, under
 [Build](development.md#build). So has each host's suite -
 `stateui repo test --suite host:appkit`, `stateui repo test --suite host:uikit`,
-`.scripts/Android/test-android.sh`, `.scripts/GTK/test-gtk.sh`,
+`stateui repo test --suite host:android`, `.scripts/GTK/test-gtk.sh`,
 `.scripts/Web/test-web.sh`, and `.scripts\WinUI\test-winui.ps1` on Windows -
 which [Test](development.md#test) lists with the arguments each takes.
 

@@ -193,10 +193,10 @@ simulator booted runs it, else an iPhone. Ctrl+C ends the application.
 
 The Android Views host builds on macOS with the swift.org toolchain, the Swift
 SDK for Android, the NDK r30 and JDK 21. An application's Android head is
-built, installed and started on a device by one script:
+built, installed and started on a device by the tool:
 
 ```bash
-.scripts/Android/run-app.sh apps/HelloWorld debug emulator-5554
+stateui run --project apps/HelloWorld --host android --device emulator-5554
 ```
 
 [Android Views host](hosts/android.md) lists what it needs and what it builds.
@@ -238,7 +238,7 @@ it, with what it runs with, in a folder it makes anew:
 ```bash
 stateui package --project apps/Gallery --host appkit
 stateui package --project apps/Gallery --host uikit --device <device-udid>
-.scripts/Android/deploy.sh apps/Gallery artifacts/Gallery/Android emulator-5554
+stateui package --project apps/Gallery --host android --device emulator-5554
 .scripts/GTK/deploy.sh apps/Gallery artifacts/Gallery/GTK
 .scripts/Web/deploy.sh apps/Gallery artifacts/Gallery/Web
 ```
@@ -319,13 +319,14 @@ no simulator named, the one booted, else an iPhone:
 stateui repo test --suite host:uikit --device "iPhone 18 Pro"
 ```
 
-The Android Views host's suite runs on a device, in a test APK:
+The Android Views host's suite runs on a device, in a test APK - every
+verdict held, then its API record:
 
 ```bash
-.scripts/Android/test-android.sh emulator-5554
+stateui repo test --suite host:android --device emulator-5554
 ```
 
-`STATEUI_FILTER=<names>` narrows a UIKit or an Android run to the tests whose
+`--filter <names>` narrows a UIKit or an Android run to the tests whose
 `Case.test` name holds one of the names, split at commas.
 
 The WinUI host's suite runs on Windows, the Windows App SDK laid beside its

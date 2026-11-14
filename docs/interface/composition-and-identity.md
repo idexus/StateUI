@@ -404,12 +404,11 @@ the numbers that tell a page left in memory from one let go. A line prints as
 a render is applied, and a platform may let a page's views go as its
 transition ends, after that: read what a page let go on a render that follows
 its leaving. Both go to the
-standard error, which an Android application sends to logcat;
-`.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the shell
-that runs it to the application:
+standard error, which an Android application sends to logcat; `stateui run`
+hands every `STATEUI_` variable of its environment to the application:
 
 ```bash
-STATEUI_TALLY=1 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554
+STATEUI_TALLY=1 stateui run --project apps/Gallery --host android --device emulator-5554
 ```
 
 ### Complaints

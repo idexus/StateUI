@@ -170,8 +170,8 @@ final class NativeProjectTests: XCTestCase {
     }
 
     /// The Android Views host is a Swift package beside AppKit's, with its Java
-    /// layer, its tests in a package of their own and the scripts under
-    /// `.scripts/Android`; and every native method the Java layer declares is
+    /// layer, its tests in a package of their own and the script that records
+    /// its marks; and every native method the Java layer declares is
     /// one the host registers, by name - one left out is found only on a
     /// device, as an `UnsatisfiedLinkError`.
     func testTheAndroidViewsHostIsAHostPackageBesideAppKit() throws {
@@ -181,8 +181,7 @@ final class NativeProjectTests: XCTestCase {
             "\(host)/Package.swift", "\(host)/Tests/Package.swift",
             "\(host)/Tests/Platforms/Android/build.gradle.kts",
             "\(host)/Java/stateui/android/StateUIActivity.java",
-            ".scripts/Android/build-swift.sh", ".scripts/Android/run-app.sh",
-            ".scripts/Android/test-android.sh", ".scripts/Android/devices.sh",
+            ".scripts/Android/test-android.sh",
         ] {
             XCTAssertTrue(
                 FileManager.default.fileExists(atPath: repository.appendingPathComponent(relative).path),
