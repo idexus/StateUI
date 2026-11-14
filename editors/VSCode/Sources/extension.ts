@@ -5,18 +5,21 @@
 // device, for UIKit an iPhone, an iPad or a simulator, for the Web a browser - the editor working as that host, one Debug and
 // one Release that run the application on it, and the suites run as it.
 
+import { randomUUID } from "crypto";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 import { Application, applicationsOf, hasHead, pathOf, readApplications } from "./applications";
 import { isCheckout } from "./checkouts";
-import { configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
+import { Configuration, configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
 import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
 import { askForBrowser, Browser, browserToRunOn, chosenBrowser, webScript } from "./browsers";
 import { applyEditorMode, cleanIndex, setHostEnvironment, variablesInSettings } from "./editorMode";
 import { availableHosts, describe, Host } from "./hosts";
-import { askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceToRunOn, uiKitSimulatorToTestOn } from "./uiKitDevices";
+import {
+    askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceOf, UIKitLister, uiKitDeviceToRunOn, uiKitSimulatorToTestOn,
+} from "./uiKitDevices";
 import { readyWhen, runTask, startTask } from "./tasks";
 import { findSuites, forDevice, runSuites } from "./tests";
 import { writeEditorFiles } from "./projectGroup";
@@ -26,8 +29,9 @@ import { debuggerFinding, Finding, lldbDapFinding, report } from "./toolchain";
 import { pathToFileUri } from "./Tooling/client";
 import { locateTool } from "./Tooling/locate";
 import { builtByTool } from "./Tooling/migration";
-import { NameKind } from "./Tooling/protocol";
+import { LaunchedApplication, NameKind } from "./Tooling/protocol";
 import { runOperation, sayProblem, toolingClients, withTool } from "./Tooling/presentation";
+import { ToolRequestError } from "./Tooling/client";
 import { Architecture, deployCommand, deployDestination, deployFolder, winUIArchitectures } from "./deploy";
 
 /** What the extension answers to another extension - and to its own tests. */
@@ -270,16 +274,28 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return serial;
     };
 
+    /** The iPhones, iPads and simulators the tool lists, through any folder's connection: the list names no project. */
+    const listUIKit: UIKitLister = async () => {
+        const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+        if (!folder) {
+            void vscode.window.showErrorMessage("StateUI: the iPhones, iPads and simulators are listed for a folder, and none is open.");
+            return undefined;
+        }
+        const listed = await withTool(tool, folder, "the iPhones, iPads and simulators could not be listed",
+            (client) => client.request("devices/list", { host: "uikit" }));
+        return listed?.destinations.map(uiKitDeviceOf);
+    };
+
     /** The iPhone, iPad or simulator a UIKit launch or suite runs on - asked for where none chosen is listed. */
     const uiKitDevice = async (): Promise<string | undefined> => {
-        const id = await uiKitDeviceToRunOn(state);
+        const id = await uiKitDeviceToRunOn(state, listUIKit);
         refresh();
         return id;
     };
 
     /** The simulator a UIKit suite runs on - the host's suite runs on no device - leaving a launch's device as it is. */
     const uiKitSimulator = async (): Promise<string | undefined> => {
-        const id = await uiKitSimulatorToTestOn(state);
+        const id = await uiKitSimulatorToTestOn(state, listUIKit);
         refresh();
         return id;
     };
@@ -365,7 +381,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             refresh();
         }),
         vscode.commands.registerCommand("stateui.selectUIKitDevice", async () => {
-            await askForUIKitDevice(state);
+            await askForUIKitDevice(state, listUIKit);
             refresh();
         }),
         vscode.commands.registerCommand("stateui.selectBrowser", async () => {
@@ -628,6 +644,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 const laid = await withTool(tool, application.directory, `${application.name} was not deployed`, (client) =>
                     runOperation(client, "application/package", {
                         projectUri: pathToFileUri(application.directory), host: forHost, outputUri: pathToFileUri(destination),
+                        device: forHost === "uikit" ? device : undefined,
                     }, `StateUI: deploying ${application.name}`, buildOutput));
                 if (!laid) {
                     return undefined;
@@ -660,6 +677,66 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             void vscode.window.setStatusBarMessage("StateUI: the index is being built again", 4000);
         }));
 
+    // A UIKit run's output, and each run a debug session's end stops, by the token its configuration carries.
+    const runOutput = vscode.window.createOutputChannel("StateUI Run");
+    const runs = new Map<string, () => void>();
+    context.subscriptions.push(runOutput, vscode.debug.onDidTerminateDebugSession((session) => {
+        const token: unknown = session.configuration.stateuiRun;
+        if (typeof token === "string") {
+            runs.get(token)?.();
+            runs.delete(token);
+        }
+    }));
+
+    /**
+     * A UIKit head built and started on `device` by the tool, followed in a notification that stops it and in
+     * StateUI Run; answers, once it started, what started and the token whose debug session's end stops it.
+     */
+    const uiKitRun = (folder: vscode.WorkspaceFolder, application: Application, configuration: Configuration, device: string,
+        debug: boolean) => withTool(tool, folder.uri.fsPath, `${application.name} did not start`, (client) =>
+        new Promise<{ launched: LaunchedApplication; token: string } | undefined>((resolve, reject) => {
+            const stopping = new AbortController();
+            const token = randomUUID();
+            let started = false;
+            runOutput.clear();
+            runOutput.show(true);
+            void vscode.window.withProgress(
+                { location: vscode.ProgressLocation.Notification, title: `StateUI: ${application.name} (UIKit, ${configuration})`, cancellable: true },
+                (progress, cancel) => {
+                    cancel.onCancellationRequested(() => stopping.abort());
+                    return client.run("application/run", {
+                        build: { projectUri: pathToFileUri(application.directory), host: "uikit", configuration, device }, debugger: debug,
+                    }, {
+                        signal: stopping.signal,
+                        onEvent: ({ event }) => {
+                            if (event.kind === "progress") {
+                                progress.report({ message: event.message ?? event.stage });
+                            } else if (event.kind === "output") {
+                                runOutput.append(event.encoding === "utf8" ? event.data : Buffer.from(event.data, "base64").toString("utf8"));
+                            } else if (event.kind === "started") {
+                                started = true;
+                                runs.set(token, () => stopping.abort());
+                                const place = event.application.build.destination?.name ?? "its device";
+                                progress.report({ message: `running on ${place}${event.application.held ? ", waiting for the debugger" : ""} - Cancel stops it` });
+                                resolve({ launched: event.application, token });
+                            }
+                        },
+                    }).then(() => {
+                        runs.delete(token);
+                        if (!started) {
+                            resolve(undefined);
+                        }
+                    }, (error: unknown) => {
+                        runs.delete(token);
+                        if (!started) {
+                            reject(error);
+                        } else if (!(error instanceof ToolRequestError && error.state === "cancelled")) {
+                            sayProblem(`${application.name} stopped`, error);
+                        }
+                    });
+                });
+        }));
+
     const provider = new StateUIDebugConfigurationProvider({
         host,
         run: runTask,
@@ -673,6 +750,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         ready: (file, task) => readyWhen(file, task),
         device: androidDevice,
         uiKitDevice,
+        uiKitRun,
         browser,
         application: async (_folder, forHost, named) => {
             const candidates = runnable(forHost);
@@ -759,7 +837,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     await applyEditorMode(host(), roots());
 
     const selectUIKitDevice = async (wanted: string): Promise<string | undefined> => {
-        const name = await chooseListedUIKitDevice(state, wanted);
+        const name = await chooseListedUIKitDevice(state, wanted, listUIKit);
         refresh();
         return name;
     };

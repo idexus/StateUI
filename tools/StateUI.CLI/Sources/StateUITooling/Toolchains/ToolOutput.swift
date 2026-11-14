@@ -16,12 +16,13 @@ enum ToolOutput {
     }
 
     /// What `executable` run with `arguments` printed to its standard output, a line each, or `nil` where it did not
-    /// run or failed.
+    /// run, failed, or ran past `limit`.
     static func standardOutput(
-        _ executable: ProcessExecutable, _ arguments: [String], environment: ProcessEnvironment = .inherited
+        _ executable: ProcessExecutable, _ arguments: [String], environment: ProcessEnvironment = .inherited,
+        limit: Duration = .seconds(30)
     ) async -> String? {
         let output = Gathered()
-        let request = ProcessRequest(executable, arguments: arguments, environment: environment, timeout: .seconds(30))
+        let request = ProcessRequest(executable, arguments: arguments, environment: environment, timeout: limit)
         guard let outcome = try? await ProcessRunner().run(request, output: output.add), outcome.succeeded else { return nil }
         return output.lines(of: .standardOutput).joined(separator: "\n")
     }

@@ -16,12 +16,12 @@
 // .build/android/debugger.json. A Release build cannot be debugged, and
 // resolves to no session.
 //
-// A UIKit head is run by .scripts/UIKit/run-app.sh on the iPhone, iPad or
-// simulator chosen, in a task whose terminal follows what it prints. A Debug
-// launch starts it held until a debugger attaches, and the script writes where
-// to .build/uikit/debugger.json: a simulator's process is one of this Mac's, a
-// device's is reached through the device. lldb-dap attaches, which lets it run.
-// A Release launch has no session.
+// A UIKit head is built and started by the stateui tool (`application/run`) on
+// the iPhone, iPad or simulator chosen, its output followed in StateUI Run. A
+// Debug launch starts it held until a debugger attaches; the run's `started`
+// event says its process - on a simulator one of this Mac's, a device's
+// reached through the device - and lldb-dap attaches, which lets it run. The
+// debug session's end stops the run. A Release launch has no session.
 //
 // A GTK head is built by .scripts/GTK/run-app.sh --build-only, as a task, and
 // launched by lldb-dap: the debugger is the application's parent, which is what
@@ -44,12 +44,12 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, gtkProgram, webSite, winUIProgram } from "./applications";
+import { Application, gtkProgram, pathOf, webSite, winUIProgram } from "./applications";
 import { Browser, isChromium, webScript } from "./browsers";
 import { lldbDapFinding } from "./toolchain";
 import { androidScript } from "./devices";
 import { environment, Host } from "./hosts";
-import { uiKitScript } from "./uiKitDevices";
+import { LaunchedApplication } from "./Tooling/protocol";
 
 /** Which build a launch runs. */
 export type Configuration = "debug" | "release";
@@ -95,6 +95,14 @@ export interface Choices {
      * while it is listed, else asked for - or nothing, where none is picked.
      */
     uiKitDevice(): Promise<string | undefined>;
+
+    /**
+     * Has the stateui tool build `application` in `configuration` and start it on `device` - held for a debugger
+     * where `debug` - following its output; once it started, what started and the token a debug session carries,
+     * whose end stops the run - nothing where it failed or was cancelled, which the tool's error said.
+     */
+    uiKitRun(folder: vscode.WorkspaceFolder, application: Application, configuration: Configuration, device: string, debug: boolean):
+        Promise<{ launched: LaunchedApplication; token: string } | undefined>;
 
     /**
      * The browser a Web launch opens the page in - the one chosen while it is installed, else asked for, as
@@ -249,9 +257,9 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
     }
 
     /**
-     * A UIKit head, started by run-app.sh on the device chosen in a task that
-     * follows what it prints; a Debug build started held and attached to by
-     * lldb-dap - a Release build has no session.
+     * A UIKit head, built and started on the device chosen by the stateui tool, which follows its output; a Debug
+     * build started held and attached to by lldb-dap, the session's end stopping the run - a Release build has no
+     * session.
      */
     private async uiKit(
         root: vscode.WorkspaceFolder,
@@ -259,39 +267,29 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const script = application.checkout && uiKitScript(application.checkout, "run-app.sh");
-        if (!script || !fs.existsSync(script)) {
-            void vscode.window.showErrorMessage(
-                `StateUI: a UIKit head runs through a StateUI checkout's .scripts/UIKit/run-app.sh, and ${application.name}'s Package.swift names none by path.`);
-            return undefined;
-        }
-
         const device = await this.choices.uiKitDevice();
         if (!device) {
             return undefined;
         }
-
         const debug = configuration === "debug";
-        const facts = path.join(application.directory, ".build", "uikit", "debugger.json");
-        fs.rmSync(facts, { force: true });
-        const task = new vscode.Task(
-            { type: "stateui", launch: true, application: application.name, configuration, device }, root,
-            `Run ${application.name} (UIKit, ${configuration})`, "StateUI",
-            new vscode.ShellExecution("bash",
-                [script, application.directory, configuration, device, ...(debug ? ["--debugger"] : [])],
-                { cwd: root.uri.fsPath }), []);
-        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-        await this.choices.start(task);
-        if (!debug) {
+        const running = await this.choices.uiKitRun(root, application, configuration, device, debug);
+        if (!running || !debug) {
             return undefined;
         }
-
-        if (!(await this.choices.ready(facts, task))) {
-            void vscode.window.showErrorMessage(
-                `StateUI: ${application.name} did not start for the debugger on ${device} - the terminal says why.`);
+        const { launched, token } = running;
+        if (launched.process === undefined) {
+            void vscode.window.showErrorMessage(`StateUI: ${application.name} started, but its process is not known to attach to.`);
             return undefined;
         }
-        return uiKitAttach(name, JSON.parse(fs.readFileSync(facts, "utf8")));
+        const destination = launched.build.destination;
+        return {
+            ...uiKitAttach(name, {
+                process: launched.process,
+                device: destination?.kind === "device" ? destination.id : undefined,
+                symbols: launched.build.bundleUri && pathOf(launched.build.bundleUri),
+            }),
+            stateuiRun: token,
+        };
     }
 
     /**
@@ -467,8 +465,8 @@ export function androidAttach(name: string, serial: string, server: AndroidDebug
 }
 
 /**
- * Where run-app.sh --debugger left a UIKit head: its process, held until a
- * debugger attaches, and on a device the device and the bundle built.
+ * Where a UIKit head waits for a debugger: its process, held until one
+ * attaches, and on a device the device and the bundle built.
  */
 export interface UIKitDebugger {
     process: number;
@@ -480,16 +478,20 @@ export interface UIKitDebugger {
  * lldb-dap attached to a UIKit head's process, which lets it run: on a
  * simulator a process of this Mac, found by its number; on a device through
  * the device, its symbols read from the bundle built rather than copied back.
+ * The session's end kills the process through the debugger.
  */
 export function uiKitAttach(name: string, facts: UIKitDebugger): vscode.DebugConfiguration {
+    // The session's end ends the application by the debugger itself, which then lets go of it whole.
+    const terminateCommands = ["process kill"];
     if (!facts.device) {
-        return { type: "lldb-dap", request: "attach", name, pid: facts.process, stopOnEntry: false };
+        return { type: "lldb-dap", request: "attach", name, pid: facts.process, stopOnEntry: false, terminateCommands };
     }
     return {
         type: "lldb-dap",
         request: "attach",
         name,
         stopOnEntry: false,
+        terminateCommands,
         initCommands: facts.symbols
             ? [`settings append target.exec-search-paths ${facts.symbols}`,
                 `settings append target.exec-search-paths ${facts.symbols}/Frameworks`]

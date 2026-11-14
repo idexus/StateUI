@@ -122,12 +122,14 @@ says **no host**, a launch says why it runs nothing, and the editor and
   `lldb-server`, which the script starts in the application's sandbox: a
   breakpoint is reached from the moment it attaches. StateUI: Release, and Run
   Without Debugging, run it without a debugger. A second launch stops the first
-  one's log before it starts again. On UIKit `.scripts/UIKit/run-app.sh`
-  builds the head, installs it on the iPhone, iPad or simulator chosen below -
-  a simulator booted first, a device's build signed for it - and starts it, and
-  its terminal follows what the application prints. StateUI: Debug starts it
-  held until `lldb-dap` attaches - to a simulator's process, one of this Mac's,
-  or through the device - and a breakpoint holds from the first line. On WinUI `.scripts/WinUI/run-app.ps1`
+  one's log before it starts again. On UIKit the `stateui` tool builds the
+  head, installs it on the iPhone, iPad or simulator chosen below - a
+  simulator booted first, a device's build signed for it - and starts it;
+  **StateUI Run** follows what the application prints, and the notification
+  that follows it stops it. StateUI: Debug starts it held until `lldb-dap`
+  attaches - to a simulator's process, one of this Mac's, or through the
+  device - and a breakpoint holds from the first line; ending the session
+  ends the application. On WinUI `.scripts/WinUI/run-app.ps1`
   builds the head, stopping a running copy first, and lays the Windows App SDK
   beside it, and `lldb-dap` starts it: a breakpoint holds from the first line.
   On GTK `.scripts/GTK/run-app.sh` builds the head, stopping a running copy
@@ -248,7 +250,7 @@ them AS THE HOST, one after another, each in a terminal of its own:
   AppKit build (`STATEUI_HOST=appkit`, on `.build/appkit`).
 - **UIKit**: the library and each application as plain Swift, and the UIKit
   host's own tests, `lib/StateUI/StateUI.UIKit/Tests` - an application of tests - run
-  on the simulator chosen by `.scripts/UIKit/test-uikit.sh`.
+  on the simulator chosen by `stateui repo test --suite host:uikit`.
 - **Android**: the library and each application as plain Swift - an Android
   build runs only on a device - and the Android host's own tests,
   `lib/StateUI/StateUI.Android/Tests`, built into a test APK and run on the device

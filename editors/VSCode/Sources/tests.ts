@@ -11,7 +11,6 @@ import { Application } from "./applications";
 import { androidScript } from "./devices";
 import { describe, environment, Host } from "./hosts";
 import { builtByTool } from "./Tooling/migration";
-import { uiKitScript } from "./uiKitDevices";
 import { runTask } from "./tasks";
 
 /** One suite, and the command that runs it. */
@@ -45,7 +44,7 @@ export interface Suite {
  *   `.scripts/Android/test-android.sh`.
  * - For the UIKit host an application runs as plain Swift, and the host's own
  *   tests - an application, `lib/StateUI/StateUI.UIKit/Tests` - run on the simulator
- *   chosen, by `.scripts/UIKit/test-uikit.sh`.
+ *   chosen, by `stateui repo test --suite host:uikit`.
  * - For the WinUI host an application runs as plain Swift, and the host's own
  *   package runs by `.scripts/WinUI/test-winui.ps1`, which lays the Windows
  *   App SDK beside its test runner first.
@@ -121,11 +120,12 @@ export function findSuites(root: string, host: Host | undefined, applications: r
         });
     }
 
-    const uiKitTests = uiKitScript(root, "test-uikit.sh");
-    if (host === "uikit" && fs.existsSync(uiKitTests)) {
+    // The simulator's UDID, appended once one is chosen, follows --device.
+    if (host === "uikit" && fs.existsSync(path.join(root, "lib", "StateUI", "StateUI.UIKit", "Tests", "Package.swift"))) {
         suites.push({
-            label: "lib/StateUI/StateUI.UIKit/Tests", detail: "test-uikit.sh - the UIKit host's own tests, on the simulator chosen",
-            command: "bash", args: [uiKitTests], env: {}, onDevice: true,
+            label: "lib/StateUI/StateUI.UIKit/Tests",
+            detail: "stateui repo test - the UIKit host's own tests on the simulator chosen, every verdict held, then its API records",
+            command: tool, args: ["repo", "test", "--suite", "host:uikit", "--device"], env: {}, onDevice: true,
         });
     }
 

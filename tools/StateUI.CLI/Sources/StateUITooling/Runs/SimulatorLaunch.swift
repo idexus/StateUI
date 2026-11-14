@@ -35,9 +35,11 @@ struct SimulatorLaunch {
         let handed = environment.reduce(ProcessEnvironment.inherited) { $0.setting("SIMCTL_CHILD_\($1.key)", to: $1.value) }
         let said = await ToolOutput.standardOutput(.name("xcrun"), ["simctl", "launch", "--terminate-running-process"]
             + (held ? ["--wait-for-debugger"] : []) + ["--stdout=\(out.path)", "--stderr=\(err.path)", simulator.udid, identifier],
-            environment: handed)
+            environment: handed, limit: .seconds(60))
         guard let process = said.flatMap({ $0.split(separator: ":").last.flatMap { Int($0.trimmingCharacters(in: .whitespaces)) } }) else {
-            throw ToolingError(.toolFailed, "\(identifier) did not start on \(simulator.name).")
+            throw ToolingError(.toolFailed, "\(identifier) did not start on \(simulator.name): simctl launch named no process"
+                + " within a minute. Where `xcrun simctl spawn \(simulator.udid) launchctl list` still lists it, an earlier"
+                + " process of it never ended - one a stopped debugserver holds.")
         }
         let launched = LaunchedApplication(build: built, process: process, held: held)
         reporter.started(launched)
