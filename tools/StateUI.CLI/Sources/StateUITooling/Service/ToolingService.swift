@@ -127,7 +127,8 @@ public struct ToolingService: Sendable {
         await Doctor().check()
     }
 
-    /// Where `host`'s heads can run on this machine - `devices/list`: UIKit's iPhones, iPads and simulators on a Mac.
+    /// Where `host`'s heads can run on this machine - `devices/list`: UIKit's iPhones, iPads and simulators on a Mac,
+    /// Android's devices and emulators.
     ///
     /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose heads run on this machine itself.
     public func listDestinations(of host: HostFamily) async throws -> DestinationList {
@@ -138,8 +139,10 @@ public struct ToolingService: Sendable {
             #else
             return DestinationList(host: host, destinations: [])
             #endif
+        case .android:
+            return DestinationList(host: host, destinations: await AndroidDestinations().list())
         default:
-            throw ToolingError(.invalidConfiguration, "Heads of \(host.rawValue) run on this machine itself; uikit's run on devices and simulators.")
+            throw ToolingError(.invalidConfiguration, "Heads of \(host.rawValue) run on this machine itself; uikit's and android's run on devices.")
         }
     }
 

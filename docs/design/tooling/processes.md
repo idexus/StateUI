@@ -74,3 +74,12 @@ A program writing one long line - a minified document, a long command -
 never ends a run: swift-subprocess's own line reader fails a run on a line
 past its limit, so the runner reads bytes and cuts them itself
 (`OutputLines`).
+
+## A program the machine keeps
+
+An emulator the tool boots belongs to the machine, as a booted simulator
+does, not to the run that asked for it: it is started in a session of its own,
+its streams on the null device (`DetachedProcess`, `posix_spawn` with
+`POSIX_SPAWN_SETSID`), so a terminal's interrupt that stops the run never
+reaches it, and nothing the tool reads waits on its output. Everything else
+the tool starts is the run's and ends with it.

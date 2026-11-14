@@ -53,7 +53,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `--debugger` starts it held until a debugger attaches, saying its process. Ctrl+C, or an editor's cancel of
   `application/run`, ends the application and every process the launch started.
 - **`stateui devices --host uikit`** lists the iPhones and iPads paired with the Mac, then the simulators, the newest
-  iOS first - each with what names it, its system, and whether it is booted or how it is reached.
+  iOS first - each with what names it, its system, and whether it is booted or how it is reached; `--host android`
+  the attached devices and running emulators with their Android version and ABI, then the virtual devices not running.
 - **The VS Code extension works through `stateui`.** It finds the applications, checks the toolchain, makes a
   project group and a new application - **StateUI: New Application**, beside a workspace's applications - and checks
   their names as they are typed, all by the tool; the `stateui.cliPath` setting names it where it is not on the

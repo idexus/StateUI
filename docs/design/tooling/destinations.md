@@ -17,6 +17,20 @@ saying whether it is booted. A destination is known by `id` - a device's
 apart, the one a development profile provisions. A host whose heads run on
 the machine itself has no destinations, and asking for them is refused.
 
+## Android
+
+`stateui devices --host android` lists what `adb devices -l` says is attached
+and ready - an unauthorized or offline device is not - each with its model,
+its Android version and its ABI as StateUI names an architecture
+(`arm64-v8a` is `arm64`); a running emulator by its virtual device's name;
+then the virtual devices the emulator knows that are not running. A run names
+one by its serial or name, a running one before a virtual device of that
+name; naming none means the one `ANDROID_SERIAL` names, else the only one
+running, and none or several are refused. A virtual device named that is not
+running is booted - the emulator started apart from the tool, which it
+outlives as a booted simulator does - and waited for until Android says it
+booted, four minutes at most.
+
 ## The one meant
 
 A run names its destination by any of the three: a device's identifier, UDID

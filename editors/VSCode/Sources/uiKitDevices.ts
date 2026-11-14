@@ -40,7 +40,7 @@ export type UIKitLister = () => Promise<UIKitDevice[] | undefined>;
 /** A destination the tool listed, as a UIKit device stands in the editor. */
 export function uiKitDeviceOf(destination: Destination): UIKitDevice {
     return {
-        id: destination.id, name: destination.name, kind: destination.kind, os: destination.version,
+        id: destination.id, name: destination.name, kind: destination.kind === "device" ? "device" : "simulator", os: destination.version,
         state: destination.kind === "device" ? destination.connection ?? "" : destination.booted ? "booted" : "",
     };
 }

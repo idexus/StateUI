@@ -163,8 +163,8 @@ export const Architecture = oneOf<Architecture>("arm64", "x86_64", "armv7", "x86
 export type BuildConfiguration = "debug" | "release";
 export const BuildConfiguration = oneOf<BuildConfiguration>("debug", "release");
 
-export type DestinationKind = "device" | "simulator";
-export const DestinationKind = oneOf<DestinationKind>("device", "simulator");
+export type DestinationKind = "device" | "simulator" | "emulator";
+export const DestinationKind = oneOf<DestinationKind>("device", "simulator", "emulator");
 
 export interface Destination {
     id: string;
@@ -174,10 +174,11 @@ export interface Destination {
     version: string;
     booted: boolean;
     connection?: string;
+    architecture?: Architecture;
 }
 export const Destination = object<Destination>({
     id: string, udid: string, name: string, kind: DestinationKind, version: string, booted: boolean,
-    connection: optional(string),
+    connection: optional(string), architecture: optional(Architecture),
 });
 
 export interface DestinationQuery { host: HostFamily }
