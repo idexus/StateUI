@@ -27,6 +27,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   does, and `run` installs - and `run --debugger` runs the head under gdb with every GTK critical's stack said.
   `test-gtk.sh` stays only to record the host's marks and exports until the tool records them; `stateui repo test
   --suite host:gtk` checks them.
+- **Web builds through `stateui`.** `.scripts/Web/run-app.sh`, `deploy.sh`, `page.sh`, `serve.py`, `browsers.sh` and
+  `size-budgets.sh` are gone: `stateui run`, `stateui build`, `stateui package --host web`, `stateui devices --host
+  web` and `stateui repo test --suite sizes:web` take their place. A page is laid in the build's artifact, no longer
+  in `.build/web/site`, and `.build/web/server.json` goes, a run saying the page's address instead; the page is served
+  to this machine alone unless `--listen lan` shares it. `test-web.sh` stays only to record the host's marks and
+  exports until the tool records them; `stateui repo test --suite host:web` checks them.
 - **A project group is a workspace.** The VS Code extension finds applications through `stateui`: in a folder that
   is an application, that one; else the ones the nearest `stateui.json` up lists - and no longer every folder of an
   `apps/`. **StateUI: New Project Group** makes a workspace: `stateui.json`, the StateUI it builds with, and its first

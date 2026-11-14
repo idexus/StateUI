@@ -24,12 +24,10 @@ lib/StateUI/StateUI.GTK/
   Sources/StateUIGTK/        the host: its runtime, elements, registrations, layout and window
   Sources/CStateUIGTK/       GTK's and libadwaita's headers, found by pkg-config, and GLib's flags
                              by names every GLib resolves: the C module a head imports too
-  Testing/                   a package of its own: the host's suite, run by swift test, in Tests/,
-                             and the driver every conformance run on GTK goes through
+  Testing/                   a package of its own: the host's suite, run by stateui repo test, in
+                             Tests/, and the driver every conformance run on GTK goes through
 .scripts/GTK/
-  run-app.sh                 builds an application's GTK head and starts it
-  deploy.sh                  builds it for release and lays it in a folder of its own
-  test-gtk.sh                runs the host's suite
+  test-gtk.sh                records the host's marks and exports (STATEUI_UPDATE_EXPORTS=1)
 apps/<App>/Platforms/GTK/
   main.swift                 the application's GTK head
   Host/                      what this host answers for the application
@@ -94,7 +92,8 @@ and defines the `GTK` compilation condition for every module of the
 application; `lib/StateUI.Head` brings the `StateUIGTK` host to the head. Swift written for this host alone stands under
 `#if GTK`.
 
-A new application made in `apps/` - `.scripts/new-app.sh` - has a GTK head,
+A new application - **StateUI: New Application**, `stateui new`, or
+`.scripts/new-app.sh` - has a GTK head,
 as HelloWorld does.
 
 ## Controls, acts, and events registered in Swift
@@ -334,22 +333,23 @@ project group's.
 ## Testing
 
 ```bash
-swift test --package-path lib/StateUI/StateUI.GTK/Testing
-.scripts/GTK/test-gtk.sh --filter GTKConformanceTests/testButton
+stateui repo test --suite host:gtk
+stateui repo test --suite host:gtk --filter GTKConformanceTests/testButton
 ```
 
 The suite is XCTest. GTK's widgets stand on the test thread with no main loop
 running: the suite starts libadwaita once, registers an application for its
 windows, and turns GLib's loop itself where GTK lays out and draws. The
 windows open on the desktop's display, so the suite runs in a desktop
-session. `.scripts/GTK/test-gtk.sh` runs the same `swift test`, handing it
-its arguments.
+session. Unfiltered, the foundation's own Linux tests run first, and the
+host's facade and its web view's backend are held to their API records last.
 
 The suite runs the conformance families too, one test a family -
 `GTKConformanceTests/testButton` - with the web view's backend registered.
 A run holds what it says to `lib/StateUI/exports/`: what the host declares to
 `gtk.txt`, and each family's verdicts to `marks/gtk/<Family>.txt`; a run that
-says otherwise fails. `STATEUI_UPDATE_EXPORTS=1` writes them instead, each
+says otherwise fails. Recording stays with the script until the tool records
+them: `STATEUI_UPDATE_EXPORTS=1 .scripts/GTK/test-gtk.sh` writes them instead, each
 verdict file under the revision its family stands at in
 `lib/StateUI/StateUI.Conformance/revisions.txt`, and `STATEUI_STALE_ONLY=1`
 runs only the families whose verdicts stand at another revision, or at none:

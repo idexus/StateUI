@@ -23,11 +23,11 @@ lib/StateUI/StateUI.Web/Testing/   its tests, and the driver its conformance run
 lib/StateUI.Head/                  the package that brings each application's head its host
 lib/Backends/                      backends: one element on one host, its engine not shipped - WebView.GTK, WebView.WinUI
 .scripts/AppKit/                   the AppKit host's marks and exports recorded (test-appkit.sh)
-.scripts/UIKit/                    UIKit bundles, runs on a simulator or a device, tests and deploys
-.scripts/Android/                  Android Views builds, runs, devices, tests and deploys
+.scripts/UIKit/                    the UIKit host's marks and exports recorded (test-uikit.sh)
+.scripts/Android/                  the Android Views host's marks and exports recorded (test-android.sh)
 .scripts/WinUI/                    WinUI builds, runs, tests and deploys, and the Windows App SDK
-.scripts/GTK/                      GTK builds, runs, tests and deploys
-.scripts/Web/                      Web builds, pages, runs, tests and deploys, and the Swift SDK for WebAssembly
+.scripts/GTK/                      the GTK host's marks and exports recorded (test-gtk.sh)
+.scripts/Web/                      the Web host's marks and exports recorded (test-web.sh)
 .scripts/Marks/                    the revision a conformance family's verdicts stand at
 .scripts/new-app.sh                a new application in apps/ (new-app.ps1 on Windows)
 .scripts/test-native.sh            the Swift suites on macOS, the AppKit host's among them
@@ -223,25 +223,25 @@ stateui run --project apps/HelloWorld --host gtk
 
 The Web host builds on macOS and Linux with swift.org's Swift 6.4.2
 toolchain and its Swift SDK for WebAssembly. An application's Web head is
-built, served and opened in a browser by one script:
+built, its page served and opened in a browser by the tool:
 
 ```bash
-.scripts/Web/run-app.sh apps/HelloWorld
+stateui run --project apps/HelloWorld --host web
 ```
 
 [Web host](hosts/web.md) lists what it needs and what it builds.
 
 ## Deploy
 
-Each host's `deploy` script builds an application's head for release and lays
-it, with what it runs with, in a folder it makes anew:
+`stateui package` - and WinUI's `deploy` script - builds an application's head
+for release and lays it, with what it runs with, in a folder it makes anew:
 
 ```bash
 stateui package --project apps/Gallery --host appkit
 stateui package --project apps/Gallery --host uikit --device <device-udid>
 stateui package --project apps/Gallery --host android --device emulator-5554
 stateui package --project apps/Gallery --host gtk
-.scripts/Web/deploy.sh apps/Gallery artifacts/Gallery/Web
+stateui package --project apps/Gallery --host web
 ```
 
 ```powershell
@@ -342,23 +342,23 @@ fifteen minutes; `-Filter <test>` runs the tests it names:
 ```
 
 The GTK host's suite runs on Linux, in a desktop session whose display shows
-its windows. Its script runs `swift test` in
-`lib/StateUI/StateUI.GTK/Testing` and hands on `swift test`'s arguments:
+its windows - the foundation's Linux tests, the host's, every verdict held,
+then its API records:
 
 ```bash
-.scripts/GTK/test-gtk.sh
+stateui repo test --suite host:gtk
 ```
 
 The Web host's suite is built for WebAssembly from
-`lib/StateUI/StateUI.Web/Testing`. Alone its script runs the host's own tests
-in Node; `--browser` runs the conformance families - every family, or those
-named - and the host's tests that need a browser's own page, in a headless
-Google Chrome or Chromium; `--browser --host` runs only those tests of the
-host's:
+`lib/StateUI/StateUI.Web/Testing`: its API record held, the host's own tests
+run in Node, then the conformance families and the host's tests that need a
+browser's own page in a headless Google Chrome or Chromium, every verdict
+held. `--suite sizes:web` builds each application's release module and holds
+it within its budget:
 
 ```bash
-.scripts/Web/test-web.sh
-.scripts/Web/test-web.sh --browser
+stateui repo test --suite host:web
+stateui repo test --suite sizes:web
 ```
 
 A passing unit suite does not prove native drawing or interaction. Exercise a
@@ -493,9 +493,7 @@ The core's suite also guards the project itself, in
   NDK and the oldest system names the same one;
 - `VsCodeTests` - every name the VS Code configurations point at, in another
   file or a script, exists;
-- `WaitTests` - a wait asks its condition once a step and stops as it holds;
-- `WebPageTests` - the page `.scripts/Web/page.sh` lays out for a Web head
-  holds the application's names and what its `Page` folder adds.
+- `WaitTests` - a wait asks its condition once a step and stops as it holds.
 
 ## Diagnostics
 

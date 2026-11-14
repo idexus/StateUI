@@ -195,9 +195,8 @@ stateui repo test --suite host:android --device emulator-5554   # the Android ho
 On macOS or Linux, the Web:
 
 ```bash
-.scripts/Web/run-app.sh apps/Gallery                           # the Web Gallery, served and opened in a browser
-.scripts/Web/test-web.sh                                       # the Web host's suite, in Node
-.scripts/Web/test-web.sh --browser                             # its conformance run, in a headless browser
+stateui run --project apps/Gallery --host web                # the Web Gallery, served and opened in a browser
+stateui repo test --suite host:web                             # the Web host's suite, in Node and a headless browser
 ```
 
 On Linux and on Windows:

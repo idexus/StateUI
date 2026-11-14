@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 # SPDX-License-Identifier: Apache-2.0
 #
-# Sourced by the Web scripts: sets `sdk` to the Swift SDK for WebAssembly of the
+# Sourced by test-web.sh: sets `sdk` to the Swift SDK for WebAssembly of the
 # compiler's release - the one whose id ends in _wasm, as its _wasm-embedded
 # sibling is Embedded Swift, which StateUI is not written for - or stops,
 # saying where to get it.

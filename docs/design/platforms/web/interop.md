@@ -14,7 +14,7 @@ language - which knows nothing of StateUI. The control tells it what it is
 through its attributes, which a custom element hears in its
 `attributeChangedCallback`, and hears what it does through the events it
 raises. The page loads the application's scripts - its head's `Page` folder,
-which `run-app.sh` lays beside the page - before the module starts, so an
+which a build lays beside the page - before the module starts, so an
 element a control makes is already the application's when the browser makes
 it.
 

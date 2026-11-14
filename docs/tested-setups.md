@@ -53,9 +53,10 @@ itself.
 
 ### Web
 
-Verified 2026-10-05: HelloWorld and the Gallery served and run; the host's own
-suite in Node, and the conformance suite in a headless browser
-(`test-web.sh --browser`), its verdicts the Web's column.
+Verified 2026-11-14: HelloWorld and the Gallery served by `stateui run` and
+run, HelloWorld under VS Code's debugger in Chrome; the host's own suite in
+Node, and the conformance suite in a headless browser
+(`stateui repo test --suite host:web`), its verdicts the Web's column.
 
 | | |
 | --- | --- |

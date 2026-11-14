@@ -35,14 +35,8 @@ lib/StateUI/StateUI.Web/
   Testing/                   a package of its own: the host's suite, compiled for WebAssembly, the page in
                              Node it runs over, and what it runs in a browser
 .scripts/Web/
-  run-app.sh                 builds an application's Web head, lays its page out, serves it and opens it
-  page.sh                    lays an application's page out beside its module
-  serve.py                   serves the page on this machine
-  browsers.sh                lists the browsers installed, and opens a page in one
-  deploy.sh                  builds it for release and lays the page in a folder of its own
-  test-web.sh                runs the host's suite, or what of it needs a browser
-  swift-sdk.sh               names the Swift SDK for WebAssembly of the compiler's release
-  size-budgets.sh            builds each application's release module and holds it within its budget
+  test-web.sh                records the host's marks and exports (STATEUI_UPDATE_EXPORTS=1)
+  swift-sdk.sh               names the Swift SDK for WebAssembly of the compiler's release, for test-web.sh
 apps/<App>/Platforms/Web/
   main.swift                 the application's Web head
   Host/                      what this host answers for the application
@@ -58,9 +52,9 @@ The host builds on macOS and on Linux:
   `swift-6.4.2-RELEASE_wasm`, which `swift sdk install` installs
   ([Getting started with WebAssembly](https://www.swift.org/documentation/articles/wasm-getting-started.html));
   its `_wasm-embedded` sibling is Embedded Swift, which StateUI does not use;
-- Python 3, which serves the page on this machine;
 - a browser;
-- Node.js 20 or newer for the host's own suite.
+- Node.js 20 or newer, and Google Chrome or Chromium, for the host's own
+  suite.
 
 ## The head
 
@@ -98,8 +92,8 @@ application; `lib/StateUI.Head` brings the `StateUIWeb` host to the head and
 links it with an 8 MB stack. Swift written for this host alone stands under
 `#if WEB`.
 
-A new application made in `apps/` - `.scripts/new-app.sh` - has a Web head,
-as HelloWorld does.
+A new application - **StateUI: New Application**, `stateui new`, or
+`.scripts/new-app.sh` - has a Web head, as HelloWorld does.
 
 ## The page
 
@@ -324,29 +318,32 @@ browser that says nothing of its battery answers 0 and tells nothing.
 ## Running
 
 ```bash
-.scripts/Web/run-app.sh apps/HelloWorld
+stateui run --project apps/HelloWorld --host web
+stateui run --project apps/Gallery --host web --configuration release --device com.google.Chrome
+stateui run --project apps/Gallery --host web --listen lan
 ```
 
-`run-app.sh` builds the head, lays its page out in the application's
-`.build/web/site/<configuration>` - `index.html`, the relay and its
-stylesheet, the module and the pictures in `Images/` - serves it at
-`http://127.0.0.1:8460/` and opens it in the system's browser. The server
-listens on every interface of this machine, so a phone or a tablet on its
-network opens the page too. The port stays the same from run to run, so the
-page's address, and what the browser keeps for it, does too; `--port <port>`
-names another, and where the port is taken the server listens on a free one.
-A server the script started for the application before is stopped first.
+`stateui run` builds the head, lays its page out beside the module -
+`index.html`, the relay and its stylesheet, the module and the pictures in
+`Images/` - serves it at `http://127.0.0.1:8460/` and opens it in the
+system's browser; Ctrl+C stops the server. The port stays the same from run
+to run, so the page's address, and what the browser keeps for it, does too;
+where another program holds it, the page is served on a free port, and the
+address said is the one to open. `--port <port>` names another, refused where
+it is taken. The page is served to this machine alone; `--listen lan` serves
+it on every interface, so a phone or a tablet on its network opens it, each
+address said. `--device` names the browser - `stateui devices --host web`
+lists those installed, the system's own marked - and `--device none` opens
+none. Every `STATEUI_` variable of the shell that runs it but the build's own
+`STATEUI_HOST` - `STATEUI_TALLY=1` - reaches the application as a parameter
+of the page's address, which the application reads as its environment.
+`stateui build` builds and lays the page out, serving nothing.
+
 Safari on iOS and iPadOS 27 runs a page served over plain http with no JIT
 while its feature flag *Enable EnhancedSecurity Heuristics* is on (Settings ▸
 Apps ▸ Safari ▸ Advanced ▸ Feature Flags): the module is interpreted, several
 times slower. To judge how fast a page runs on such a device, turn the flag
 off while testing, or serve the page over https, as a deployed page is.
-`release` builds the optimized module, `--browser <id>` opens another
-browser - `.scripts/Web/browsers.sh list` lists them - and `--browser none`
-none, and `--build-only` builds and lays the page out, serving nothing. Every
-`STATEUI_` variable of the shell that runs it but the build's own
-`STATEUI_HOST` - `STATEUI_TALLY=1` - reaches the application as a parameter
-of the page's address, which the application reads as its environment.
 
 What the application prints goes to the browser's console, and so does a
 failure; one that stops the module as it starts also shows in red on the
@@ -355,47 +352,49 @@ page.
 In VS Code, with **Web** chosen in the status bar, a third item shows the
 browser - click it, or run **StateUI: Select Browser**, which offers the
 browsers installed on this machine, the system's own first. **StateUI: Debug**
-builds and serves the page in a task whose terminal follows the server. In
-Chrome, Edge or another of Chromium's browsers, VS Code's own JavaScript
-debugger then starts the browser on the page, in a profile of its own: the
-page's console is in the Debug Console, and closing the browser ends the
-session. Any other browser, and **StateUI: Release**, the script opens itself.
+has the tool build and serve the page; **StateUI Run** follows the server, and
+the notification that follows it stops it. In Chrome, Edge or another of
+Chromium's browsers, VS Code's own JavaScript debugger then starts the browser
+on the page, in a profile of its own: the page's console is in the Debug
+Console, and ending the session stops the server. Any other browser, and
+**StateUI: Release**, the tool opens.
 
 ## Deploying
 
 ```bash
-.scripts/Web/deploy.sh apps/HelloWorld artifacts/HelloWorld/Web
+stateui package --project apps/HelloWorld --host web --output artifacts/HelloWorld/Web
 ```
 
-`deploy.sh` builds the head for release, as `run-app.sh release --build-only`
-does, and lays its page in the folder named, made anew: a folder any web
-server serves as it is. **StateUI: Deploy** in the editor runs it for the
+`stateui package` builds the head for release and lays its page in the
+folder named, else `artifacts/<application>/Web`, made anew: a folder any web
+server serves as it is. **StateUI: Deploy** in the editor does so for the
 application chosen, and lays the page in `artifacts/<application>/Web` of the
 application's workspace - the folder of the stateui.json listing it.
 
 ## Testing
 
 ```bash
-.scripts/Web/test-web.sh
-.scripts/Web/test-web.sh WebLayoutViewTests/testAReorderedLayoutStandsItsChildrenInTheirNewOrder
+stateui repo test --suite host:web
+stateui repo test --suite host:web --filter WebLayoutViewTests/testAReorderedLayoutStandsItsChildrenInTheirNewOrder
+stateui repo test --suite host:web --filter Button
 ```
 
 The suite is XCTest, in `lib/StateUI/StateUI.Web/Testing`, compiled for
-WebAssembly and run in Node - Node 20 or newer - over a page with just enough
-of a DOM: elements holding their children in order, their attributes, style
-and listeners. The host's own relay stands beneath it, and the suite reads
-what the page holds through functions of its own. It proves what the host
-does to the page's elements, not how a browser draws them.
+WebAssembly; its facade is held to its API record first. The host's own tests
+run in Node - Node 20 or newer - over a page with just enough of a DOM:
+elements holding their children in order, their attributes, style and
+listeners. The host's own relay stands beneath it, and the suite reads what
+the page holds through functions of its own. It proves what the host does to
+the page's elements, not how a browser draws them.
 
-```bash
-.scripts/Web/test-web.sh --browser
-.scripts/Web/test-web.sh --browser Button TextField
-```
+What needs a browser's own page runs next in Google Chrome or Chromium,
+headless - or the browser `STATEUI_BROWSER` names: the conformance suite,
+with the user's input as the browser takes it - every family, or the one
+`--filter` names - and the host's tests that run a host. Every verdict is held
+to the marks recorded, nothing written.
 
-What needs a browser's own page runs in Google Chrome or Chromium, headless -
-or the browser `STATEUI_BROWSER` names: the conformance suite, with the user's
-input as the browser takes it - every family, or those named - and the host's
-tests that run a host, which `--browser --host` runs alone. A run with `STATEUI_UPDATE_EXPORTS=1` writes
-each family's verdicts under `lib/StateUI/exports/marks/web`, and
+Recording the marks stays with the script until the tool records them:
+`STATEUI_UPDATE_EXPORTS=1 .scripts/Web/test-web.sh --browser` writes each
+family's verdicts under `lib/StateUI/exports/marks/web`, and
 `STATEUI_STALE_ONLY=1` runs only the families whose verdicts stand at another
 revision.

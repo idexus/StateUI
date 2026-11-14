@@ -42,4 +42,51 @@ final class WebPageTests: XCTestCase {
         let quoted = WebPage.index(template, head: "<title>The \"Notes\"</title>", application: "Notes", module: "m.wasm", scripts: [], stamp: 7)
         XCTAssertTrue(quoted.contains("aria-label=\"The &quot;Notes&quot;\""), quoted)
     }
+
+    /// On the library's own template: the head's head stands as written - the characters a substitution reads as its
+    /// own included - its title the page's only one, no mark left; a `Page` script is laid beside the page and loaded
+    /// once, and `head.html` is written in, never laid beside.
+    func testTheLibrarysPageHoldsTheHeadAsWritten() throws {
+        let head = #"""
+            <title>Notes - kept & found</title>
+            <meta name="description" content="Notes \ kept # and / found &amp; read">
+            <link rel="canonical" href="https://example.com/notes/#top">
+            """#
+        let (page, staging) = try assembled(head: head, scripts: ["notes.js"])
+        XCTAssertTrue(page.contains(head), page)
+        XCTAssertEqual(page.components(separatedBy: "<title>").count - 1, 1, page)
+        XCTAssertFalse(page.contains("{{"), page)
+        XCTAssertEqual(page.components(separatedBy: "src=\"./notes.js?v=").count - 1, 1, page)
+        XCTAssertTrue(page.contains(#"<div class="stateui-loading-name">Notes - kept & found</div>"#), page)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: staging.appendingPathComponent("notes.js").path))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: staging.appendingPathComponent("head.html").path))
+
+        let (plain, _) = try assembled(head: nil, scripts: [])
+        XCTAssertTrue(plain.contains("<title>Notes</title>"), plain)
+        XCTAssertTrue(plain.contains(#"aria-label="Notes""#), plain)
+        XCTAssertFalse(plain.contains("{{"), plain)
+    }
+
+    /// The page of an application named Notes, its module an empty file, laid on this checkout's template.
+    private func assembled(head: String?, scripts: [String]) throws -> (page: String, staging: URL) {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("WebPageTests-\(UUID().uuidString)")
+        addTeardownBlock { try? FileManager.default.removeItem(at: folder) }
+        let application = folder.appendingPathComponent("Notes")
+        let page = application.appendingPathComponent("Platforms/Web/Page")
+        let binaries = folder.appendingPathComponent("products")
+        let staging = folder.appendingPathComponent("site")
+        for each in [page, binaries, staging] {
+            try FileManager.default.createDirectory(at: each, withIntermediateDirectories: true)
+        }
+        try Data().write(to: binaries.appendingPathComponent("NotesWeb.wasm"))
+        if let head {
+            try Data(head.utf8).write(to: page.appendingPathComponent("head.html"))
+        }
+        for script in scripts {
+            try Data("// \(script)\n".utf8).write(to: page.appendingPathComponent(script))
+        }
+        try WebPage(application: application, name: "Notes", product: "NotesWeb", binaries: binaries,
+                    library: ProjectReaderTests.repository, stamp: 7).assemble(in: staging)
+        return (try String(contentsOf: staging.appendingPathComponent("index.html"), encoding: .utf8), staging)
+    }
 }

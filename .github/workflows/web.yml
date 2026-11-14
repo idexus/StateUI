@@ -8,7 +8,7 @@
 # at the sizes the system's fonts give them.
 #
 # THE TOOLCHAIN IS swift.org's, not Xcode's: the Swift SDK for WebAssembly is
-# built with it, and swift-sdk.sh names the SDK of the release first on PATH.
+# built with it, and the tool takes the SDK of the release first on PATH.
 
 name: Web
 

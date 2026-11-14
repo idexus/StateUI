@@ -113,7 +113,7 @@ The application handles `open` (`G_APPLICATION_HANDLES_OPEN`): started with a
 link, it starts as an activation would and hears the link; a second start with
 one hands it to the first through GApplication's own uniqueness. The desktop
 finds the application for a scheme by its entry's `MimeType`, which
-`run-app.sh` writes from the head's `Platforms/GTK/link-schemes`.
+`stateui install` writes from the head's `Platforms/GTK/link-schemes`.
 
 ## The environment
 

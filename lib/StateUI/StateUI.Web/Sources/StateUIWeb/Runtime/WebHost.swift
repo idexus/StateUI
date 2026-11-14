@@ -13,7 +13,7 @@
 ///     HelloWorldApp.register()
 ///     WebHost.run(name: "HelloWorld", applicationID: "com.stateui.helloworld")
 ///
-/// `.scripts/Web/run-app.sh` builds the head, lays the page out beside it
+/// `stateui run --host web` builds the head, lays the page out beside it
 /// and serves it. A control this host does not present yet shows its name in
 /// red where it belongs.
 public enum WebHost {
