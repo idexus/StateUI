@@ -60,8 +60,8 @@ public struct ApplicationRunner: Sendable {
         case .device:
             return try await DeviceLaunch(device: destination, bundle: bundle, identifier: identifier)
                 .run(built, held: request.debugger, reporter: reporter)
-        case .emulator:
-            throw ToolingError(.internalError, "A UIKit head has no emulator.")
+        case .emulator, .browser:
+            throw ToolingError(.internalError, "A UIKit head runs on no \(destination.kind.rawValue).")
         }
         #else
         _ = (built, root)

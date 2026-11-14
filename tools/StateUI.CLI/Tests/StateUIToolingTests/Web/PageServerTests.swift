@@ -82,3 +82,13 @@ final class PageServerTests: XCTestCase {
     }
     #endif
 }
+
+final class BrowsersTests: XCTestCase {
+    /// A desktop entry is a browser where it takes both https and HTML and is shown; its name is the entry's.
+    func testABrowserTakesBothAddressesAndPages() {
+        XCTAssertEqual(Browsers.browser("[Desktop Entry]\nName=Firefox\nMimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;\n"), "Firefox")
+        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Mail\nMimeType=x-scheme-handler/mailto;\n"))
+        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Viewer\nMimeType=text/html;\n"))
+        XCTAssertNil(Browsers.browser("[Desktop Entry]\nName=Hidden\nNoDisplay=true\nMimeType=text/html;x-scheme-handler/https;\n"))
+    }
+}

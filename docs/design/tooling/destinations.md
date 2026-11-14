@@ -33,8 +33,13 @@ booted, four minutes at most.
 
 ## Browsers
 
-A Web head's page opens in a browser: the system's own unless the run names
-another by its id, or `none`.
+A Web head's page opens in a browser. `stateui devices --host web` lists
+what the system opens both a web address and a web page with: on macOS every
+application Launch Services offers for `https` and for an HTML file, by its
+bundle id; on Linux every shown desktop entry taking `x-scheme-handler/https`
+and `text/html`, by its file's name - the system's own marked. A run opens
+the page in the one it names, the system's own where it names none, and no
+browser for `none`.
 
 ## The one meant
 

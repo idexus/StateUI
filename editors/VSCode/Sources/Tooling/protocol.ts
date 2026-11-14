@@ -163,8 +163,8 @@ export const Architecture = oneOf<Architecture>("arm64", "x86_64", "armv7", "x86
 export type BuildConfiguration = "debug" | "release";
 export const BuildConfiguration = oneOf<BuildConfiguration>("debug", "release");
 
-export type DestinationKind = "device" | "simulator" | "emulator";
-export const DestinationKind = oneOf<DestinationKind>("device", "simulator", "emulator");
+export type DestinationKind = "device" | "simulator" | "emulator" | "browser";
+export const DestinationKind = oneOf<DestinationKind>("device", "simulator", "emulator", "browser");
 
 export interface Destination {
     id: string;

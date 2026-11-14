@@ -9,10 +9,10 @@ import StateUIToolingProtocol
 struct DevicesCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "devices",
-        abstract: "Lists the devices, simulators and emulators a host's heads run on here: --host uikit or android."
+        abstract: "Lists the devices, simulators, emulators and browsers a host's heads run on here: --host uikit, android or web."
     )
 
-    @Option(help: "The host whose devices to list: uikit or android.")
+    @Option(help: "The host whose devices to list: uikit, android or web.")
     var host: HostFamily
 
     @OptionGroup var output: OutputOptions
@@ -25,7 +25,8 @@ struct DevicesCommand: AsyncParsableCommand {
     static func words(_ list: DestinationList) -> String {
         if list.destinations.isEmpty { return "No device or simulator for \(list.host.rawValue) here." }
         return list.destinations.map { each in
-            let state = each.kind == .device ? each.connection ?? "" : each.booted ? "booted" : "not running"
+            let state = each.kind == .browser ? (each.booted ? "the system's own" : "")
+                : each.kind == .device ? each.connection ?? "" : each.booted ? "booted" : "not running"
             let facts = [each.kind.rawValue, each.version, each.architecture?.rawValue ?? "", state].filter { !$0.isEmpty }.joined(separator: ", ")
             return "\(each.name) (\(facts)) \(each.id)"
         }.joined(separator: "\n")

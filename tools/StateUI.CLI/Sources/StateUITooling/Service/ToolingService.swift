@@ -141,8 +141,10 @@ public struct ToolingService: Sendable {
             #endif
         case .android:
             return DestinationList(host: host, destinations: await AndroidDestinations().list())
+        case .web:
+            return DestinationList(host: host, destinations: await Browsers.list())
         default:
-            throw ToolingError(.invalidConfiguration, "Heads of \(host.rawValue) run on this machine itself; uikit's and android's run on devices.")
+            throw ToolingError(.invalidConfiguration, "Heads of \(host.rawValue) run on this machine itself; uikit's and android's run on devices, web's in browsers.")
         }
     }
 
