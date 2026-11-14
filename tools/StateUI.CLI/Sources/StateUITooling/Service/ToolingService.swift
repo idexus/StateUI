@@ -156,6 +156,11 @@ public struct ToolingService: Sendable {
         try await ApplicationBuilder().package(request, in: folder, operation: operation, reporter: reporter)
     }
 
+    /// gdb's commands for a GTK head run under it on `architecture`.
+    public static func gdbCommands(for architecture: Architecture) -> String {
+        GTKHead.gdbCommands(for: architecture)
+    }
+
     /// Installs the artifact at `artifact` where its host shows it - `application/install`.
     public func install(_ artifact: URL) async throws -> InstallResult {
         try await ApplicationInstaller().install(artifact)

@@ -506,7 +506,7 @@ final class NativeProjectTests: XCTestCase {
         let repository = SourceTree.repository
         let host = "lib/StateUI/StateUI.GTK"
         let module = "\(host)/Sources/CStateUIGTK"
-        for relative in ["\(host)/Package.swift", ".scripts/GTK/run-app.sh"] {
+        for relative in ["\(host)/Package.swift"] {
             XCTAssertTrue(
                 FileManager.default.fileExists(atPath: repository.appendingPathComponent(relative).path),
                 "missing \(relative)")
@@ -955,11 +955,6 @@ final class NativeProjectTests: XCTestCase {
         }
 
         XCTAssertGreaterThan(heads, 1, "no GTK head found")
-        let script = try String(
-            contentsOf: SourceTree.repository.appendingPathComponent(".scripts/GTK/run-app.sh"), encoding: .utf8)
-        for installed in ["appicon_gnome.svg", "/apps/$application_id.svg", "Icon=$application_id"] {
-            XCTAssertTrue(script.contains(installed), "the GTK run script does not install \(installed)")
-        }
     }
 
     func testGalleryOwnsItsAcceptanceTests() {

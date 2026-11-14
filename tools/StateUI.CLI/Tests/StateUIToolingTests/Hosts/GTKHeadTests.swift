@@ -105,4 +105,14 @@ final class GTKHeadTests: XCTestCase {
             }
         }
     }
+
+    /// Under gdb a GTK critical's domain and expression are read from the architecture's argument registers, the
+    /// run going on past it, and a crash's stack is said whole.
+    func testGdbTrapsEveryCriticalOnTheArchitecturesRegisters() {
+        let arm = GTKHead.gdbCommands(for: .arm64)
+        XCTAssertTrue(arm.contains("break g_return_if_fail_warning"))
+        XCTAssertTrue(arm.contains("(char *)$x1, (char *)$x2"))
+        XCTAssertTrue(arm.contains("continue\nend\nrun\nprintf \"=== STOPPED\\n\""))
+        XCTAssertTrue(GTKHead.gdbCommands(for: .x86_64).contains("(char *)$rsi, (char *)$rdx"))
+    }
 }

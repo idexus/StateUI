@@ -22,6 +22,11 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   artifact; `.build/android/debugger.json` goes, a run saying its process and the debugger's socket instead.
   `test-android.sh` stays only to record the host's marks and exports until the tool records them; `stateui repo test
   --suite host:android` checks them.
+- **GTK builds through `stateui`.** `.scripts/GTK/run-app.sh` and `deploy.sh` are gone: `stateui run`, `build`,
+  `install` and `package --host gtk` take their place; a build no longer writes the user's desktop entry - `install`
+  does, and `run` installs - and `run --debugger` runs the head under gdb with every GTK critical's stack said.
+  `test-gtk.sh` stays only to record the host's marks and exports until the tool records them; `stateui repo test
+  --suite host:gtk` checks them.
 - **A project group is a workspace.** The VS Code extension finds applications through `stateui`: in a folder that
   is an application, that one; else the ones the nearest `stateui.json` up lists - and no longer every folder of an
   `apps/`. **StateUI: New Project Group** makes a workspace: `stateui.json`, the StateUI it builds with, and its first
@@ -72,8 +77,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **The VS Code extension works through `stateui`.** It finds the applications, checks the toolchain, makes a
   project group and a new application - **StateUI: New Application**, beside a workspace's applications - and checks
   their names as they are typed, all by the tool; the `stateui.cliPath` setting names it where it is not on the
-  search path. The making shows in a notification that cancels it. AppKit's, UIKit's and Android's Debug, Release,
-  Deploy and the hosts' own suites in Run Tests go through the tool, as do the UIKit and Android device lists; a UIKit
+  search path. The making shows in a notification that cancels it. AppKit's, UIKit's, Android's and GTK's Debug,
+  Release, Deploy and the hosts' own suites in Run Tests go through the tool, as do the UIKit and Android device lists; a UIKit
   or Android head's output is in **StateUI Run**, its notification stops it, and the end of a debug session ends it.
   The other hosts go through their `.scripts` until each moves.
 

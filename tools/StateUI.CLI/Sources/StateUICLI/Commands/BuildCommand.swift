@@ -99,7 +99,7 @@ struct RunCommand: AsyncParsableCommand {
 
     @OptionGroup var build: BuildOptions
 
-    @Flag(help: "Ready a debugger: a UIKit head starts held until one attaches, an Android head with the debugger's server in its sandbox; what to attach to is said as it starts.")
+    @Flag(help: "Ready a debugger: a UIKit head starts held until one attaches, an Android head with the debugger's server in its sandbox - what to attach to said as it starts; a GTK head runs under gdb, each GTK critical's stack and a crash's said as they come.")
     var debugger = false
 
     func run() async throws {
@@ -123,7 +123,17 @@ struct RunCommand: AsyncParsableCommand {
                 _ = try? await ProcessRunner().run(ProcessRequest(.name("pkill"), arguments: ["-f", "^\(program.path)( |$)"]))
             }
             FileHandle.standardError.write(Data("stateui: running \(program.path)\n".utf8))
-            let outcome = try await ProcessRunner().run(ProcessRequest(.path(program.path), streams: .terminal))
+            var started = ProcessRequest(.path(program.path), streams: .terminal)
+            let commands = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-gdb-\(UUID().uuidString).cmd")
+            defer { try? FileManager.default.removeItem(at: commands) }
+            if build.host == .gtk, debugger {
+                // Under gdb, each GTK critical's stack and a crash's are said as they come.
+                try Data(ToolingService.gdbCommands(for: built.architecture).utf8).write(to: commands)
+                started = ProcessRequest(
+                    .name("gdb"), arguments: ["-batch", "-x", commands.path, "--args", program.path],
+                    environment: ProcessEnvironment.inherited.setting("SWIFT_BACKTRACE", to: "enable=no"), streams: .terminal)
+            }
+            let outcome = try await ProcessRunner().run(started)
             if case .exited(let status) = outcome.termination, status != 0 { throw ExitCode(Int32(status)) }
         } catch let error as ToolingError {
             try OutputFormat.text.write(error)

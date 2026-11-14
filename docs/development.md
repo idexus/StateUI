@@ -212,10 +212,11 @@ itself. An application's WinUI head is built and started by one script:
 [WinUI host](hosts/winui.md) lists what it needs and what it builds.
 
 The GTK host builds on Linux with the swift.org toolchain, GTK 4 and
-libadwaita. An application's GTK head is built and started by one script:
+libadwaita. An application's GTK head is built, installed for the user and
+started by the tool:
 
 ```bash
-.scripts/GTK/run-app.sh apps/HelloWorld
+stateui run --project apps/HelloWorld --host gtk
 ```
 
 [GTK host](hosts/gtk.md) lists what it needs and what it builds.
@@ -239,7 +240,7 @@ it, with what it runs with, in a folder it makes anew:
 stateui package --project apps/Gallery --host appkit
 stateui package --project apps/Gallery --host uikit --device <device-udid>
 stateui package --project apps/Gallery --host android --device emulator-5554
-.scripts/GTK/deploy.sh apps/Gallery artifacts/Gallery/GTK
+stateui package --project apps/Gallery --host gtk
 .scripts/Web/deploy.sh apps/Gallery artifacts/Gallery/Web
 ```
 
@@ -527,11 +528,12 @@ an Android application sends to logcat:
 
 The host layer's runtime reads them from the process's environment as it
 starts (`DiagnosticText`), so they hold on every host. The Android, WinUI,
-GTK and Web run scripts hand every `STATEUI_` variable of the shell that runs
-them to the application - the Web's as a parameter of the page's address:
+`stateui run` and the Web's run script hand every `STATEUI_` variable of the
+shell that runs them to the application - the Web's as a parameter of the
+page's address:
 
 ```bash
-STATEUI_TALLY=1 .scripts/GTK/run-app.sh apps/Gallery
+STATEUI_TALLY=1 stateui run --project apps/Gallery --host gtk
 ```
 
 [Build diagnostics](interface/composition-and-identity.md#build-diagnostics)

@@ -203,7 +203,7 @@ On macOS or Linux, the Web:
 On Linux and on Windows:
 
 ```bash
-.scripts/GTK/run-app.sh apps/Gallery                           # the GTK Gallery
+stateui run --project apps/Gallery --host gtk                  # the GTK Gallery
 .scripts/GTK/test-gtk.sh                                       # the GTK host's suite
 ```
 
