@@ -174,6 +174,16 @@ final class ProtocolExamplesTests: XCTestCase {
                         event: .started(launched)))))),
                 ("result", try JSONValue(encoding: RunResult(launched: launched, exitStatus: nil))),
             ], answeredAsWritten: false),
+            Example(name: "application-install", messages: [
+                ("request", try request("17", "application/install", Mutation(
+                    requestToken: "2e6a8c0b-4d1f-4b3e-9a5c-7e9b1d3f5a40",
+                    request: InstallRequest(artifactUri: demo + "/apps/Notes/.build/stateui/artifacts/gtk-arm64-1b2c3d4e5f60-debug")))),
+                ("response", try response("17", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: InstallResult(
+                    artifactUri: demo + "/apps/Notes/.build/stateui/artifacts/gtk-arm64-1b2c3d4e5f60-debug",
+                    writtenUris: ["file:///home/example/.local/share/applications/com.stateui.notes.desktop",
+                                  "file:///home/example/.local/share/icons/hicolor/scalable/apps/com.stateui.notes.svg"]))),
+            ], answeredAsWritten: false),
             Example(name: "name-check", messages: [
                 ("request", try request("12", "name/check", NameCheck(kind: .application, name: "My-App", parentUri: demo + "/apps"))),
                 ("response", try response("12", NameVerdict(

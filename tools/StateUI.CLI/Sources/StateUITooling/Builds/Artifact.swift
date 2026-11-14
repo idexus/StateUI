@@ -30,12 +30,16 @@ public struct ArtifactManifest: Codable, Equatable, Sendable {
     /// The programs it starts by, relative to its folder: `GalleryAppKit.app/Contents/MacOS/GalleryAppKit`.
     public var entryPoints: [String]
     public var signing: Signing
+    /// The application's name: `Gallery`.
+    public var applicationName: String?
+    /// What the platform knows the application by: a bundle's identifier, an APK's package, a GTK application ID.
+    public var identifier: String?
 
     /// The manifest of artifact `id`, made by operation `producerOperationId`.
     public init(
         schemaVersion: Int = ArtifactManifest.currentVersion, id: String, producerOperationId: String, createdAt: String,
         applicationUri: String, host: HostFamily, configuration: BuildConfiguration, architecture: Architecture,
-        productName: String, entryPoints: [String], signing: Signing
+        productName: String, entryPoints: [String], signing: Signing, applicationName: String? = nil, identifier: String? = nil
     ) {
         self.schemaVersion = schemaVersion
         self.id = id
@@ -48,6 +52,8 @@ public struct ArtifactManifest: Codable, Equatable, Sendable {
         self.productName = productName
         self.entryPoints = entryPoints
         self.signing = signing
+        self.applicationName = applicationName
+        self.identifier = identifier
     }
 }
 

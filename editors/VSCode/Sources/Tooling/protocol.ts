@@ -230,6 +230,12 @@ export const LaunchedApplication = object<LaunchedApplication>({
 export interface RunResult { launched: LaunchedApplication; exitStatus?: number }
 export const RunResult = object<RunResult>({ launched: LaunchedApplication, exitStatus: optional(number) });
 
+export interface InstallRequest { artifactUri: string }
+export const InstallRequest = object<InstallRequest>({ artifactUri: string });
+
+export interface InstallResult { artifactUri: string; writtenUris: string[] }
+export const InstallResult = object<InstallResult>({ artifactUri: string, writtenUris: array(string) });
+
 export type NameKind = "application" | "workspace";
 export const NameKind = oneOf<NameKind>("application", "workspace");
 
@@ -307,6 +313,7 @@ export const methods = {
     "application/build": mutation(BuildRequest, BuildResult),
     "application/package": mutation(BuildRequest, BuildResult),
     "application/run": mutation(RunRequest, RunResult),
+    "application/install": mutation(InstallRequest, InstallResult),
     "workspace/create": mutation(WorkspaceRequest, WorkspaceChange),
     "workspace/useLibrary": mutation(LibraryRequest, WorkspaceChange),
 };

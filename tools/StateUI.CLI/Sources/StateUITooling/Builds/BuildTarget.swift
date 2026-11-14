@@ -36,6 +36,16 @@ struct BuildTarget: Sendable {
         #endif
     }
 
+    /// The target of a head built for this machine itself - GTK's: its own architecture, nothing for SwiftPM to be told.
+    ///
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for another architecture than the machine's.
+    static func native(_ architecture: Architecture, machine: Architecture, host: HostFamily) throws -> BuildTarget {
+        guard architecture == machine else {
+            throw ToolingError(.invalidConfiguration, "A \(host.rawValue) head is built for this machine's architecture, \(machine.rawValue).")
+        }
+        return BuildTarget(architecture: architecture, arguments: [])
+    }
+
     /// The target of an AppKit head for `architecture`: this Mac's SDK, a triple where it is not the machine's own.
     static func appKit(_ architecture: Architecture, machine: Architecture) async -> BuildTarget {
         BuildTarget(

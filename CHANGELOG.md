@@ -58,6 +58,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **`stateui build` and `package` make Android applications** for the ABI asked for, else the device's named, else
   `arm64-v8a` - the APK with its native libraries and their symbols beside it in the artifact, its pictures and its
   launcher icon drawn for it; an ABI's build keeps a scratch folder of its own.
+- **`stateui build`, `install` and `run` make GTK applications** on Linux: the program, its libraries and its
+  pictures published as the build's artifact; `stateui install --artifact` writes the desktop entry and icon for the
+  user - no longer a build's side effect - and `run` builds, installs, stops a copy still running and runs it.
 - **`stateui run --host uikit`** installs and starts a UIKit head on its simulator or device and follows its output;
   `--debugger` starts it held until a debugger attaches, saying its process. `--host android` does so on a device or
   emulator - a virtual device named but not running is booted - every `STATEUI_` switch handed to the application,

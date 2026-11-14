@@ -58,7 +58,19 @@ public struct ApplicationBuilder: Sendable {
         let output = try request.outputUri.map(FileURI.url)
             ?? root.appendingPathComponent("artifacts").appendingPathComponent(built.application).appendingPathComponent(built.host.folder)
         let artifact = try FileURI.url(built.folderUri)
-        guard let bundleUri = built.bundleUri else { return built }
+        guard let bundleUri = built.bundleUri else {
+            // A head with no bundle is its artifact's folder: the program, its libraries, its pictures.
+            let files = FileManager.default
+            try? files.removeItem(at: output)
+            try files.createDirectory(at: output, withIntermediateDirectories: true)
+            for name in try files.contentsOfDirectory(atPath: artifact.path).sorted() where name != "artifact.json" {
+                try files.copyItem(at: artifact.appendingPathComponent(name), to: output.appendingPathComponent(name))
+            }
+            var laid = built
+            laid.folderUri = FileURI.string(output)
+            laid.programUri = FileURI.string(output.appendingPathComponent(try FileURI.url(built.programUri).lastPathComponent))
+            return laid
+        }
         let bundle = try FileURI.url(bundleUri)
         let program = try FileURI.url(built.programUri).path.dropFirst(artifact.path.count + 1)
         let files = FileManager.default
@@ -76,7 +88,7 @@ public struct ApplicationBuilder: Sendable {
     func built(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter)
         async throws -> (result: BuildResult, root: URL) {
         let (project, application) = try await resolve(request, in: folder)
-        guard [.appkit, .uikit, .android].contains(request.host) else {
+        guard [.appkit, .uikit, .android, .gtk].contains(request.host) else {
             throw ToolingError(.invalidConfiguration, "\(request.host.rawValue) is built by its .scripts until its row moves to the tool.")
         }
         guard let libraryUri = application.libraryUri else {
@@ -94,6 +106,8 @@ public struct ApplicationBuilder: Sendable {
             try await BuildTarget.android(
                 device: request.device, listed: await destinations(.android), architecture: request.architecture,
                 tools: AndroidTools(environment: environment))
+        case .gtk:
+            try BuildTarget.native(request.architecture ?? machine, machine: machine, host: request.host)
         default:
             await BuildTarget.appKit(request.architecture ?? machine, machine: machine)
         }
@@ -167,12 +181,12 @@ public struct ApplicationBuilder: Sendable {
                 id: "\(context.host.rawValue)-\(context.key)-\(context.configuration.rawValue)", producerOperationId: operation,
                 createdAt: Operations.timestamp(), applicationUri: FileURI.string(context.application), host: context.host,
                 configuration: context.configuration, architecture: context.architecture, productName: context.product,
-                entryPoints: [program], signing: signing)
+                entryPoints: [program], signing: signing, applicationName: name, identifier: head.identifier)
             let published = try store.publish(staging, as: manifest)
             return BuildResult(
                 application: name, host: context.host, configuration: context.configuration, architecture: context.architecture,
                 folderUri: FileURI.string(published), programUri: FileURI.string(published.appendingPathComponent(program)),
-                bundleUri: FileURI.string(published.appendingPathComponent(bundle)), destination: target.destination,
+                bundleUri: bundle.map { FileURI.string(published.appendingPathComponent($0)) }, destination: target.destination,
                 identifier: head.identifier, symbolsUri: head.symbols.map { FileURI.string(published.appendingPathComponent($0)) })
         } catch {
             store.discard(staging)
@@ -183,7 +197,8 @@ public struct ApplicationBuilder: Sendable {
     /// What an assembly laid in staging: the bundle's path there and its program's, how it was signed, what the
     /// platform knows it by, and where a debugger reads its symbols where they stand apart.
     private struct Head {
-        var bundle: String
+        /// The bundle's path, where the head is one; a GTK head is its folder.
+        var bundle: String?
         var program: String
         var signing: ArtifactManifest.Signing
         var identifier: String?
@@ -194,6 +209,11 @@ public struct ApplicationBuilder: Sendable {
     private func assemble(
         _ context: BuildContext, _ target: BuildTarget, name: String, binaries: URL, in staging: URL, reporter: BuildReporter
     ) async throws -> Head {
+        if context.host == .gtk {
+            let head = GTKHead(application: context.application, product: context.product, binaries: binaries)
+            try head.assemble(in: staging)
+            return Head(bundle: nil, program: context.product, signing: .none, identifier: GTKHead.applicationID(of: context.application))
+        }
         if context.host == .android, let (swiftSDK, ndk) = target.android {
             let head = AndroidHead(
                 application: context.application, name: name, product: context.product, library: context.library,

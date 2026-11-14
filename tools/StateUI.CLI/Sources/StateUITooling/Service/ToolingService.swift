@@ -156,6 +156,11 @@ public struct ToolingService: Sendable {
         try await ApplicationBuilder().package(request, in: folder, operation: operation, reporter: reporter)
     }
 
+    /// Installs the artifact at `artifact` where its host shows it - `application/install`.
+    public func install(_ artifact: URL) async throws -> InstallResult {
+        try await ApplicationInstaller().install(artifact)
+    }
+
     /// Builds `request`'s application, starts it and follows it until it ends - `application/run`.
     public func run(_ request: RunRequest, in folder: URL, operation: String, reporter: RunReporter) async throws -> RunResult {
         try await ApplicationRunner().run(request, in: folder, operation: operation, reporter: reporter)
@@ -228,6 +233,9 @@ public struct ToolingService: Sendable {
             try await Self.reporting(context) { reporter in
                 try await package(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter.build)
             }
+        }
+        methods.mutation("application/install") { (request: InstallRequest, _: OperationContext) in
+            try await install(try FileURI.url(request.artifactUri))
         }
         methods.mutation("application/run") { (request: RunRequest, context: OperationContext, caller: RequestContext) in
             try await Self.reporting(context) { reporter in

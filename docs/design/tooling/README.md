@@ -38,6 +38,8 @@ writes its result as words or as the message an editor receives.
   everything it started.
 - [Android heads](android-heads.md): the Swift build of an ABI, the native
   libraries an APK ships, and the APK Gradle makes.
+- [GTK heads](gtk-heads.md): a GTK head's artifact, the desktop entry an
+  install writes, and its run.
 - [Apple bundles](apple-bundles.md): an Apple head's `Info.plist`, and what an
   AppKit bundle holds.
 - [The repository's own work](repository.md): a host's suite, run as its CI runs it.

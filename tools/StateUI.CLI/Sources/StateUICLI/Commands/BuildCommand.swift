@@ -14,7 +14,7 @@ struct BuildOptions: ParsableArguments {
     @Option(help: "The application, where the project holds more than one.")
     var application: String?
 
-    @Option(help: "The host it is built for: appkit, uikit or android.")
+    @Option(help: "The host it is built for: appkit, uikit, android or gtk.")
     var host: HostFamily
 
     @Option(help: "debug or release; debug for a build and a run, release for a package.")
@@ -117,6 +117,11 @@ struct RunCommand: AsyncParsableCommand {
             }
             let built = try await ToolingService().build(build.request(), in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
             let program = try FileURI.url(built.programUri)
+            if build.host == .gtk {
+                // A GTK application is one instance: a second start would only bring a running copy forward.
+                _ = try await ToolingService().install(try FileURI.url(built.folderUri))
+                _ = try? await ProcessRunner().run(ProcessRequest(.name("pkill"), arguments: ["-f", "^\(program.path)( |$)"]))
+            }
             FileHandle.standardError.write(Data("stateui: running \(program.path)\n".utf8))
             let outcome = try await ProcessRunner().run(ProcessRequest(.path(program.path), streams: .terminal))
             if case .exited(let status) = outcome.termination, status != 0 { throw ExitCode(Int32(status)) }
@@ -132,5 +137,23 @@ struct RunCommand: AsyncParsableCommand {
         let process = launched.process.map { ", process \($0)" } ?? ""
         let server = launched.debuggerSocket.map { ", the debugger's server at unix-abstract:///\($0)" } ?? ""
         return "stateui: started \(launched.build.application)\(place)\(process)\(launched.held ? ", held for a debugger" : "")\(server)"
+    }
+}
+
+/// `stateui install`: a built application installed where its host shows it, never built again - a GTK head's desktop
+/// entry and icon for the user.
+struct InstallCommand: AsyncParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "install", abstract: "Installs a built application where its host shows it: a GTK head's desktop entry and icon.")
+
+    @Option(help: "The artifact's folder, as stateui build said it.")
+    var artifact: String
+
+    @OptionGroup var output: OutputOptions
+
+    func run() async throws {
+        try await output.answer({ try await ToolingService().install(URL(fileURLWithPath: artifact)) }) { installed in
+            installed.writtenUris.isEmpty ? "Nothing to install." : installed.writtenUris.map { "Wrote \((try? FileURI.url($0).path) ?? $0)" }.joined(separator: "\n")
+        }
     }
 }

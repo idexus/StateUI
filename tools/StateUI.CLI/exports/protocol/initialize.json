@@ -26,6 +26,7 @@
       "capabilities" : {
         "methods" : [
           "application/build",
+          "application/install",
           "application/package",
           "application/run",
           "devices/list",
