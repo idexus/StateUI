@@ -1,8 +1,10 @@
 # The UIKit host's suite, an application of tests on an iOS simulator - an
 # iPhone and an iPad, whose windows are scene sessions: its own tests, then
 # every conformance family on UIKit, each verdict held to the marks under
-# lib/StateUI/exports/marks/uikit. CI never writes the marks, so a family whose verdicts
-# changed fails here and its marks are written again on a Mac, on purpose.
+# lib/StateUI/exports/marks/uikit, then the facade's and StateUITesting's API
+# records - through the stateui tool. CI never writes the marks, so a family
+# whose verdicts changed fails here and its marks are written again on a Mac,
+# on purpose.
 
 name: UIKit
 
@@ -62,5 +64,5 @@ jobs:
           xcrun simctl list devices available | grep "$udid"
           echo "udid=$udid" >> "$GITHUB_OUTPUT"
 
-      - name: UIKit host tests, every verdict held
-        run: .scripts/UIKit/test-uikit.sh "${{ steps.simulator.outputs.udid }}"
+      - name: UIKit host tests, every verdict held, then the API records
+        run: swift run --quiet --package-path tools/StateUI.CLI stateui repo test --suite host:uikit --device "${{ steps.simulator.outputs.udid }}"

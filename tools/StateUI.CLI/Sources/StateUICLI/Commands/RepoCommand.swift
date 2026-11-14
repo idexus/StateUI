@@ -14,10 +14,13 @@ struct RepoCommand: AsyncParsableCommand {
     /// `stateui repo test --suite host:<host>`.
     struct Test: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
-            abstract: "Runs a suite of the checkout's own: host:appkit - the host's tests, every conformance verdict held, then its API records.")
+            abstract: "Runs a suite of the checkout's own: host:appkit or host:uikit - the host's tests, every conformance verdict held, then its API records.")
 
-        @Option(help: "The suite: host:appkit.")
+        @Option(help: "The suite: host:appkit or host:uikit.")
         var suite: String
+
+        @Option(help: "host:uikit's simulator, by name or UDID; the booted one, else an iPhone, when left out.")
+        var device: String?
 
         @Option(help: "Only the tests whose names this matches, as swift test --filter takes it.")
         var filter: String?
@@ -28,7 +31,7 @@ struct RepoCommand: AsyncParsableCommand {
             let here = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
             var passed = true
             try await output.answer({
-                let ran = try await ToolingService().testSuite(suite, filter: filter, in: here, reporter: BuildOptions.terminal)
+                let ran = try await ToolingService().testSuite(suite, filter: filter, device: device, in: here, reporter: BuildOptions.terminal)
                 passed = ran.passed
                 return ran
             }) { (ran: SuiteResult) in

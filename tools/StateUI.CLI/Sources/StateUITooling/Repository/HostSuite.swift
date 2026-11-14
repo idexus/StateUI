@@ -12,29 +12,45 @@ public struct HostSuite: Sendable {
     private let checkout: URL
     private let permit: BuildPermit
     private let tools: ToolResolver
+    private let destinations: @Sendable () async -> [Destination]
 
-    /// The suites of the checkout at `checkout`.
-    public init(checkout: URL, environment: [String: String] = ProcessInfo.processInfo.environment, permit: BuildPermit = BuildPermit()) {
+    /// The suites of the checkout at `checkout`, a UIKit suite's simulator chosen among those `destinations` lists.
+    public init(
+        checkout: URL, environment: [String: String] = ProcessInfo.processInfo.environment, permit: BuildPermit = BuildPermit(),
+        destinations: @escaping @Sendable () async -> [Destination] = { await AppleDestinations().list() }
+    ) {
         self.checkout = checkout
         self.permit = permit
+        self.destinations = destinations
         tools = ToolResolver(environment: environment)
     }
 
-    /// Runs the suite of `host` - `--filter`ed where given - and answers each phase.
+    /// Runs the suite of `host` - `--filter`ed where given, a UIKit one on the simulator `device` names - and answers
+    /// each phase.
     ///
     /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose suite has not moved to the tool.
-    public func run(_ host: HostFamily, filter: String? = nil, reporter: BuildReporter = BuildReporter()) async throws -> SuiteResult {
-        guard host == .appkit else {
+    public func run(_ host: HostFamily, filter: String? = nil, device: String? = nil, reporter: BuildReporter = BuildReporter())
+        async throws -> SuiteResult {
+        guard [.appkit, .uikit].contains(host) else {
             throw ToolingError(.invalidConfiguration, "\(host.rawValue)'s suite runs by its .scripts until its row moves to the tool.")
         }
-        let package = checkout.appendingPathComponent("lib/StateUI/StateUI.AppKit").path
-        let lease = try await permit.acquire(for: "the AppKit host's suite, stateui \(ProcessInfo.processInfo.processIdentifier)") {
+        let lease = try await permit.acquire(for: "the \(host.folder) host's suite, stateui \(ProcessInfo.processInfo.processIdentifier)") {
             reporter.progress("waiting for \($0)")
         }
         defer { lease.release() }
 
         // Checked, never recorded: what writes marks and exports is asked by name (M11), never inherited.
         let checked = ProcessEnvironment.inherited.removing("STATEUI_UPDATE_EXPORTS", "STATEUI_UPDATE_DOCS", "STATEUI_STALE_ONLY", "STATEUI_FILTER")
+        if host == .uikit {
+            #if os(macOS)
+            let phases = try await UIKitSuite(checkout: checkout, tools: tools, destinations: destinations)
+                .run(device: device, filter: filter, environment: checked, reporter: reporter)
+            return SuiteResult(suite: "host:uikit", phases: phases)
+            #else
+            throw ToolingError(.invalidConfiguration, "The UIKit host's suite runs on a Mac.")
+            #endif
+        }
+        let package = checkout.appendingPathComponent("lib/StateUI/StateUI.AppKit").path
         reporter.progress("testing the AppKit host")
         let tests = try await run(["test", "--package-path", package] + (filter.map { ["--filter", $0] } ?? []), checked, reporter)
         var phases = [SuiteResult.Phase(name: "tests", passed: tests)]

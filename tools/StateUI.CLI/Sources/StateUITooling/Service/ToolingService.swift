@@ -158,18 +158,20 @@ public struct ToolingService: Sendable {
         try await ApplicationRunner().run(request, in: folder, operation: operation, reporter: reporter)
     }
 
-    /// Runs suite `suite` - `host:<host>` - of the StateUI checkout holding `folder`, `filter`ed where given.
+    /// Runs suite `suite` - `host:<host>` - of the StateUI checkout holding `folder`, `filter`ed where given, a UIKit
+    /// one on the simulator `device` names.
     ///
     /// - Throws: ``ToolingError`` `PROJECT_NOT_FOUND` outside a checkout, `INVALID_CONFIGURATION` for a suite there is
     ///   none of.
-    public func testSuite(_ suite: String, filter: String?, in folder: URL, reporter: BuildReporter) async throws -> SuiteResult {
+    public func testSuite(_ suite: String, filter: String?, device: String? = nil, in folder: URL, reporter: BuildReporter)
+        async throws -> SuiteResult {
         guard let checkout = Checkout.holding(folder)?.root else {
             throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
         }
         guard suite.hasPrefix("host:"), let host = HostFamily(rawValue: String(suite.dropFirst("host:".count))) else {
-            throw ToolingError(.invalidConfiguration, "No suite \(suite): host:appkit is one.")
+            throw ToolingError(.invalidConfiguration, "No suite \(suite): host:appkit and host:uikit are.")
         }
-        return try await HostSuite(checkout: checkout).run(host, filter: filter, reporter: reporter)
+        return try await HostSuite(checkout: checkout).run(host, filter: filter, device: device, reporter: reporter)
     }
 
     /// `work` given a reporter whose words reach `context` in the order they were said.

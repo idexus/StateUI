@@ -3,7 +3,7 @@
 
 #if !os(Windows)
 import Foundation
-import StateUITooling
+@testable import StateUITooling
 import StateUIToolingProtocol
 import XCTest
 
@@ -41,5 +41,38 @@ final class HostSuiteTests: XCTestCase {
         XCTAssertTrue(lines.first?.hasPrefix("test --package-path \(root.path)/lib/StateUI/StateUI.AppKit") == true)
         XCTAssertNil(permit.holder)
     }
+
+    /// The UIKit suite runs on a simulator: a device named is refused before anything is built, and the machine's
+    /// permit is let go.
+    func testTheUIKitSuiteRefusesADevice() async throws {
+        #if os(macOS)
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("suite-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let permit = BuildPermit(folder: root.appendingPathComponent("state"))
+        let pad = Destination(id: "PAD", udid: "U-PAD", name: "Pad", kind: .device, version: "27.0")
+        do {
+            _ = try await HostSuite(checkout: root, permit: permit, destinations: { [pad] }).run(.uikit, device: "Pad")
+            XCTFail("a device ran the suite")
+        } catch let error as ToolingError {
+            XCTAssertEqual(error.code, .invalidConfiguration)
+            XCTAssertTrue(error.message.contains("runs on a simulator"), error.message)
+        }
+        XCTAssertNil(permit.holder)
+        #endif
+    }
+
+    #if os(macOS)
+    /// The tests' phase is the test application's last word: no failure passes, a failure or no word at all fails.
+    func testTheUIKitSuitesTestsAreItsLastWord() {
+        let passed = UIKitSuite.Summary()
+        passed.read("[1/2] ButtonTests.testTitle passed")
+        XCTAssertFalse(passed.passed)
+        passed.read("Executed 314 tests, with 0 failures (0 unexpected) in 81.2 (81.3) seconds\r")
+        XCTAssertTrue(passed.passed)
+        let failed = UIKitSuite.Summary()
+        failed.read("Executed 314 tests, with 2 failures (0 unexpected)")
+        XCTAssertFalse(failed.passed)
+    }
+    #endif
 }
 #endif

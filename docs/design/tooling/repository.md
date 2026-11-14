@@ -18,4 +18,22 @@ did. Nothing is written: `STATEUI_UPDATE_EXPORTS`, `STATEUI_UPDATE_DOCS`,
 inherits - recording marks and exports is a request of its own (the
 migration's M11), never a variable left in a shell. The suite builds a test
 application, so it waits for the machine's one application build. AppKit's
-suite runs this way (`appkit.yml`); every other host's moves with its row.
+and UIKit's suites run this way (`appkit.yml`, `uikit.yml`); every other
+host's moves with its row.
+
+## The UIKit host's suite
+
+A view stands in a window scene only in an application's process, so
+UIKit's tests are an application of their own,
+`lib/StateUI/StateUI.UIKit/Tests`, its identifier in its own
+`Platforms/UIKit/Info.plist`. `--suite host:uikit` runs it on the simulator
+`--device` names - the booted one, else an iPhone; a device is refused. The
+simulator's application accessibility is turned on first, so UIKit's
+accessibility answers for its controls as for a VoiceOver user, whatever ran
+before. The application is built for the simulator's triple and SDK against
+the simulator platform's own XCTest, read where it stands, bundled and
+signed as any UIKit head (apple-bundles.md), and started as a run starts one
+(runs.md) - `--filter` handed to it as `STATEUI_FILTER` - its output followed
+until it ends with `Executed N tests, with M failures`, which decides the
+tests' phase. Then `StateUIUIKit` and `StateUITesting`, as that build made
+them, are held to their API records for the simulator's triple and SDK.

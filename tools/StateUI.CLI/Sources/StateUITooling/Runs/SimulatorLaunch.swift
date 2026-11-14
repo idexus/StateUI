@@ -16,6 +16,8 @@ struct SimulatorLaunch {
     var identifier: String
     /// The folder the application's two streams are written in.
     var logs: URL
+    /// What the application's environment gains.
+    var environment: [String: String] = [:]
 
     func run(_ built: BuildResult, held: Bool, reporter: RunReporter) async throws -> RunResult {
         reporter.build.progress("booting \(simulator.name)")
@@ -29,8 +31,11 @@ struct SimulatorLaunch {
         let (out, err) = (logs.appendingPathComponent("stdout.log"), logs.appendingPathComponent("stderr.log"))
         for file in [out, err] { try? files.removeItem(at: file) }
         reporter.build.progress("starting \(identifier)")
+        // simctl hands the application each variable named SIMCTL_CHILD_<name> as <name>.
+        let handed = environment.reduce(ProcessEnvironment.inherited) { $0.setting("SIMCTL_CHILD_\($1.key)", to: $1.value) }
         let said = await ToolOutput.standardOutput(.name("xcrun"), ["simctl", "launch", "--terminate-running-process"]
-            + (held ? ["--wait-for-debugger"] : []) + ["--stdout=\(out.path)", "--stderr=\(err.path)", simulator.udid, identifier])
+            + (held ? ["--wait-for-debugger"] : []) + ["--stdout=\(out.path)", "--stderr=\(err.path)", simulator.udid, identifier],
+            environment: handed)
         guard let process = said.flatMap({ $0.split(separator: ":").last.flatMap { Int($0.trimmingCharacters(in: .whitespaces)) } }) else {
             throw ToolingError(.toolFailed, "\(identifier) did not start on \(simulator.name).")
         }
