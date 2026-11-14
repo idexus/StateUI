@@ -64,7 +64,7 @@ public struct AppKitBundle: Sendable {
             let iconset = staging.appendingPathComponent("StateUI.iconset")
             defer { try? files.removeItem(at: iconset) }
             try ApplePictures.drawIconSet(icon, into: iconset)
-            try await Self.run("iconutil", ["-c", "icns", iconset.path, "-o", resources.appendingPathComponent("StateUI.icns").path])
+            try await BundleStep.run("iconutil", ["-c", "icns", iconset.path, "-o", resources.appendingPathComponent("StateUI.icns").path])
         } else {
             keys["CFBundleIconFile"] = nil
         }
@@ -72,17 +72,8 @@ public struct AppKitBundle: Sendable {
         try InfoPlist.compose(keys, over: files.fileExists(atPath: own.path) ? own : nil)
             .write(to: contents.appendingPathComponent("Info.plist"))
 
-        if sign { try await Self.run("codesign", ["--force", "--deep", "--sign", "-", bundle.path]) }
+        if sign { try await BundleStep.run("codesign", ["--force", "--deep", "--sign", "-", bundle.path]) }
         return bundle
-    }
-
-    private static func run(_ tool: String, _ arguments: [String]) async throws {
-        let said = Gathered()
-        let outcome = try await ProcessRunner().run(ProcessRequest(.name(tool), arguments: arguments, timeout: .seconds(120)), output: said.add)
-        guard outcome.succeeded else {
-            let words = (said.lines(of: .standardError) + said.lines(of: .standardOutput)).suffix(5).joined(separator: "\n")
-            throw ToolingError(.toolFailed, "\(tool) refused:\n\(words)")
-        }
     }
 }
 #endif

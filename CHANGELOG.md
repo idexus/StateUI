@@ -40,6 +40,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   identifier `com.stateui.<name>` and icon - with its own `Platforms/AppKit/Info.plist` keys laid over the host's;
   a failed build never runs or packages an older one; one application builds at a time on a machine. The Gallery's
   name, links and location purpose stand in its own `Info.plist`.
+- **`stateui build` and `package` make UIKit applications** for the simulator or device `--device` names - the
+  booted simulator, else an iPhone, where none is named. A simulator's bundle is signed ad hoc; a device's with the
+  development profile that provisions it, found before the build. A simulator's build and a device's keep scratch
+  folders of their own.
 - **`stateui devices --host uikit`** lists the iPhones and iPads paired with the Mac, then the simulators, the newest
   iOS first - each with what names it, its system, and whether it is booted or how it is reached.
 - **The VS Code extension works through `stateui`.** It finds the applications, checks the toolchain, makes a

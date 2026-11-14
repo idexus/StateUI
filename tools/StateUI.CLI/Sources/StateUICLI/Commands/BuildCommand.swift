@@ -6,7 +6,7 @@ import Foundation
 import StateUITooling
 import StateUIToolingProtocol
 
-/// What names one build: the project, the application, its host, configuration and architecture.
+/// What names one build: the project, the application, its host, configuration, architecture and device.
 struct BuildOptions: ParsableArguments {
     @Option(help: "A folder of the project; the working directory when left out.")
     var project: String?
@@ -14,7 +14,7 @@ struct BuildOptions: ParsableArguments {
     @Option(help: "The application, where the project holds more than one.")
     var application: String?
 
-    @Option(help: "The host it is built for: appkit.")
+    @Option(help: "The host it is built for: appkit or uikit.")
     var host: HostFamily
 
     @Option(help: "debug or release; debug for a build and a run, release for a package.")
@@ -23,11 +23,14 @@ struct BuildOptions: ParsableArguments {
     @Option(help: "The architecture it is built for; this machine's when left out.")
     var architecture: Architecture?
 
+    @Option(help: "A UIKit head's device or simulator, by name, identifier or UDID (stateui devices --host uikit); the booted simulator, else an iPhone, when left out.")
+    var device: String?
+
     /// The request these options name, laid in `output` where given.
     func request(output: String? = nil) -> BuildRequest {
         BuildRequest(
             projectUri: project.map { FileURI.string(URL(fileURLWithPath: $0)) }, application: application, host: host,
-            configuration: configuration, architecture: architecture, outputUri: output.map { FileURI.string(URL(fileURLWithPath: $0)) })
+            configuration: configuration, architecture: architecture, device: device, outputUri: output.map { FileURI.string(URL(fileURLWithPath: $0)) })
     }
 
     /// The folder a project is read from where none is named.
@@ -39,6 +42,11 @@ struct BuildOptions: ParsableArguments {
         BuildReporter(
             progress: { FileHandle.standardError.write(Data("stateui: \($0)\n".utf8)) },
             output: { FileHandle.standardError.write(Data(($0.text + "\n").utf8)) })
+    }
+
+    /// The words naming the device or simulator a build was for, where it was for one.
+    static func destination(of built: BuildResult) -> String {
+        built.destination.map { " for \($0.name) (\($0.kind.rawValue), \($0.version))" } ?? ""
     }
 
     /// An operation's id of its own.
@@ -59,7 +67,7 @@ struct BuildCommand: AsyncParsableCommand {
     func run() async throws {
         try await output.answer({
             try await ToolingService().build(build.request(), in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
-        }) { built in "Built \((try? FileURI.url(built.programUri).path) ?? built.programUri)" }
+        }) { built in "Built \((try? FileURI.url(built.programUri).path) ?? built.programUri)\(BuildOptions.destination(of: built))" }
     }
 }
 
@@ -79,7 +87,7 @@ struct PackageCommand: AsyncParsableCommand {
         try await format.answer({
             try await ToolingService().package(
                 build.request(output: output), in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
-        }) { laid in "Packaged \((try? FileURI.url(laid.folderUri).path) ?? laid.folderUri)" }
+        }) { laid in "Packaged \((try? FileURI.url(laid.folderUri).path) ?? laid.folderUri)\(BuildOptions.destination(of: laid))" }
     }
 }
 

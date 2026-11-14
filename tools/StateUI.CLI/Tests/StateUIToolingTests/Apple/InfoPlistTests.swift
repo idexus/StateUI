@@ -31,4 +31,28 @@ final class InfoPlistTests: XCTestCase {
             try PropertyListSerialization.propertyList(from: try InfoPlist.compose(keys, over: nil), format: nil) as? NSDictionary,
             keys as NSDictionary)
     }
+
+    /// An iOS bundle's keys say the platform it was built for - a simulator's or a device's - and the many scenes,
+    /// both families and every orientation an iPad's windows take, the same keys a head of the baseline had.
+    func testAnIOSBundlesKeysSayItsPlatformAndScenes() throws {
+        let simulator = InfoPlist.iOS(
+            name: "HelloWorld", product: "HelloWorldUIKit", release: "0.8.5", minimumSystem: "26.4", platform: .iOSSimulator)
+        let device = InfoPlist.iOS(
+            name: "HelloWorld", product: "HelloWorldUIKit", release: "0.8.5", minimumSystem: "26.4", platform: .iOS)
+        XCTAssertEqual(simulator["CFBundleSupportedPlatforms"] as? [String], ["iPhoneSimulator"])
+        XCTAssertEqual(device["CFBundleSupportedPlatforms"] as? [String], ["iPhoneOS"])
+        XCTAssertEqual(simulator["CFBundleIdentifier"] as? String, "com.stateui.helloworld")
+        XCTAssertEqual(simulator["MinimumOSVersion"] as? String, "26.4")
+        XCTAssertEqual(simulator["UIDeviceFamily"] as? [Int], [1, 2])
+        XCTAssertEqual((simulator["UIApplicationSceneManifest"] as? [String: Bool])?["UIApplicationSupportsMultipleScenes"], true)
+        XCTAssertEqual((simulator["UISupportedInterfaceOrientations"] as? [String])?.count, 4)
+        XCTAssertEqual(Set(simulator.keys), [
+            "CADisableMinimumFrameDurationOnPhone", "CFBundleDevelopmentRegion", "CFBundleDisplayName", "CFBundleExecutable",
+            "CFBundleIdentifier", "CFBundleInfoDictionaryVersion", "CFBundleName", "CFBundlePackageType",
+            "CFBundleShortVersionString", "CFBundleSupportedPlatforms", "CFBundleVersion", "LSRequiresIPhoneOS",
+            "MinimumOSVersion", "UIApplicationSceneManifest", "UIDeviceFamily", "UILaunchScreen",
+            "UISupportedInterfaceOrientations",
+        ])
+        XCTAssertNoThrow(try InfoPlist.compose(device, over: nil))
+    }
 }

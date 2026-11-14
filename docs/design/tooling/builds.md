@@ -43,14 +43,20 @@ application with no head for it, one naming no checkout. It resolves the
 build's context, waits for the machine's permit, journals the operation, and
 runs `swift build --product <Name><Host>` with exactly the host's
 `STATEUI_HOST`, `--disable-build-manifest-caching` (the manifest reads that
-variable) and a triple only for an architecture not the machine's own; every
+variable) and the target's triple and SDK: an AppKit head's only for an
+architecture not the machine's own, a UIKit head's always - the simulator's
+or the device's the build is for (destinations.md). A device's signing is
+found before the compile, so a device no profile provisions is refused in a
+second, not after the build; every
 line SwiftPM writes goes to the journal and, as the operation's output, to
 the client. A failed compile publishes nothing and says SwiftPM's last
 lines. Then it asks SwiftPM where it laid the product (`--show-bin-path`),
 assembles the host's artifact in staging and publishes it whole
 (apple-bundles.md). `stateui package` (`application/package`) builds for
 release unless told otherwise and lays the bundle, made anew, in its
-`--output`, else `<workspace>/artifacts/<Name>/<Host>`. `stateui run` builds,
+`--output`, else `<workspace>/artifacts/<Name>/<Host>`; a UIKit package is
+for the device or simulator `--device` names. A result names the bundle, the
+program it starts by, and for a UIKit head the destination it was built for. `stateui run` builds,
 then runs the program in the foreground, sharing the terminal, until it ends
 or Ctrl+C stops it with everything it started; standard output keeps the
 result alone, the build's words going to standard error.

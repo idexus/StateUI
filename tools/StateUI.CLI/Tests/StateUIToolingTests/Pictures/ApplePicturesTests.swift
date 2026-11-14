@@ -17,6 +17,10 @@ final class ApplePicturesTests: XCTestCase {
         return folder
     }
 
+    private func image(_ png: URL) -> CGImage? {
+        CGImageSourceCreateWithURL(png as CFURL, nil).flatMap { CGImageSourceCreateImageAtIndex($0, 0, nil) }
+    }
+
     private func pixels(_ png: URL) -> (Int, Int)? {
         guard let source = CGImageSourceCreateWithURL(png as CFURL, nil),
               let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else { return nil }
@@ -58,6 +62,32 @@ final class ApplePicturesTests: XCTestCase {
         XCTAssertEqual(names.count, 10)
         XCTAssertTrue(pixels(iconset.appendingPathComponent("icon_16x16.png"))! == (16, 16))
         XCTAssertTrue(pixels(iconset.appendingPathComponent("icon_512x512@2x.png"))! == (1024, 1024))
+    }
+
+    /// An iOS icon is one opaque 1024-pixel square in an asset catalog, the mark over the background, and drawn
+    /// again only where its artwork changed.
+    func testAnIOSIconIsTheMarkOverTheBackgroundOpaque() throws {
+        let root = try folder()
+        let background = root.appendingPathComponent("appicon_bkg.svg")
+        let mark = root.appendingPathComponent("appicon_mark.svg")
+        try svg.write(to: background, atomically: true, encoding: .utf8)
+        try #"<svg xmlns="http://www.w3.org/2000/svg" width="20" height="10"><rect x="5" width="10" height="10" fill="red"/></svg>"#
+            .write(to: mark, atomically: true, encoding: .utf8)
+        let catalog = root.appendingPathComponent("Assets.xcassets")
+
+        try ApplePictures.drawAppIcon(background: background, mark: mark, into: catalog)
+
+        let png = catalog.appendingPathComponent("AppIcon.appiconset/appicon.png")
+        let icon = try XCTUnwrap(image(png))
+        XCTAssertEqual(icon.width, 1024)
+        XCTAssertEqual(icon.height, 1024)
+        XCTAssertFalse([.premultipliedLast, .premultipliedFirst, .last, .first].contains(icon.alphaInfo))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: catalog.appendingPathComponent("Contents.json").path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: catalog.appendingPathComponent("AppIcon.appiconset/Contents.json").path))
+
+        let drawn = try FileManager.default.attributesOfItem(atPath: png.path)[.modificationDate] as? Date
+        try ApplePictures.drawAppIcon(background: background, mark: mark, into: catalog)
+        XCTAssertEqual(try FileManager.default.attributesOfItem(atPath: png.path)[.modificationDate] as? Date, drawn)
     }
 }
 #endif

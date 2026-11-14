@@ -16,18 +16,25 @@ public struct BuildReporter: Sendable {
     }
 }
 
-/// An application built for a host and published as an artifact - for the machine one application build at a
-/// time, its operation journaled, and nothing published unless every step succeeded.
+/// An application built for a host - AppKit, or UIKit for a simulator or a device - and published as an artifact: for
+/// the machine one application build at a time, its operation journaled, and nothing published unless every step
+/// succeeded.
 /// Design: docs/design/tooling/builds.md#an-application-build
 public struct ApplicationBuilder: Sendable {
     private let environment: [String: String]
     private let permit: BuildPermit
     private let tools: ToolResolver
+    private let destinations: @Sendable () async -> [Destination]
 
-    /// A builder finding its programs through `environment` and waiting on `permit`.
-    public init(environment: [String: String] = ProcessInfo.processInfo.environment, permit: BuildPermit = BuildPermit()) {
+    /// A builder finding its programs through `environment`, waiting on `permit`, and choosing a UIKit head's
+    /// destination among those `destinations` lists.
+    public init(
+        environment: [String: String] = ProcessInfo.processInfo.environment, permit: BuildPermit = BuildPermit(),
+        destinations: @escaping @Sendable () async -> [Destination] = { await AppleDestinations().list() }
+    ) {
         self.environment = environment
         self.permit = permit
+        self.destinations = destinations
         tools = ToolResolver(environment: environment)
     }
 
@@ -47,16 +54,19 @@ public struct ApplicationBuilder: Sendable {
         release.configuration = request.configuration ?? .release
         let (built, root) = try await built(release, in: folder, operation: operation, reporter: reporter)
         let output = try request.outputUri.map(FileURI.url)
-            ?? root.appendingPathComponent("artifacts").appendingPathComponent(built.application).appendingPathComponent("AppKit")
+            ?? root.appendingPathComponent("artifacts").appendingPathComponent(built.application).appendingPathComponent(built.host.folder)
         let artifact = try FileURI.url(built.folderUri)
-        let bundle = "\(built.application)AppKit.app"
+        guard let bundleUri = built.bundleUri else { return built }
+        let bundle = try FileURI.url(bundleUri)
+        let program = try FileURI.url(built.programUri).path.dropFirst(artifact.path.count + 1)
         let files = FileManager.default
         try? files.removeItem(at: output)
         try files.createDirectory(at: output, withIntermediateDirectories: true)
-        try files.copyItem(at: artifact.appendingPathComponent(bundle), to: output.appendingPathComponent(bundle))
+        try files.copyItem(at: bundle, to: output.appendingPathComponent(bundle.lastPathComponent))
         var laid = built
         laid.folderUri = FileURI.string(output)
-        laid.programUri = FileURI.string(output.appendingPathComponent("\(bundle)/Contents/MacOS/\(built.application)AppKit"))
+        laid.bundleUri = FileURI.string(output.appendingPathComponent(bundle.lastPathComponent))
+        laid.programUri = FileURI.string(output.appendingPathComponent(String(program)))
         return laid
     }
 
@@ -64,7 +74,7 @@ public struct ApplicationBuilder: Sendable {
     private func built(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter)
         async throws -> (result: BuildResult, root: URL) {
         let (project, application) = try await resolve(request, in: folder)
-        guard request.host == .appkit else {
+        guard [.appkit, .uikit].contains(request.host) else {
             throw ToolingError(.invalidConfiguration, "\(request.host.rawValue) is built by its .scripts until its row moves to the tool.")
         }
         guard let libraryUri = application.libraryUri else {
@@ -73,13 +83,16 @@ public struct ApplicationBuilder: Sendable {
         let folderOfApplication = try FileURI.url(application.packageUri)
         let configuration = request.configuration ?? .debug
         let machine = Architecture(rawValue: Machine.current.architecture) ?? .arm64
-        let architecture = request.architecture ?? machine
+        let target = request.host == .uikit
+            ? try await BuildTarget.uiKit(
+                device: request.device, listed: await destinations(), architecture: request.architecture, machine: machine,
+                application: folderOfApplication, name: application.name)
+            : await BuildTarget.appKit(request.architecture ?? machine, machine: machine)
         let context = BuildContext(
-            application: folderOfApplication, product: "\(application.name)AppKit", host: .appkit,
-            configuration: configuration, architecture: architecture,
+            application: folderOfApplication, product: "\(application.name)\(request.host.folder)", host: request.host,
+            configuration: configuration, architecture: target.architecture,
             compiler: (await ToolOutput.text(tools.swift, ["--version"]))?.split(separator: "\n").first.map(String.init) ?? "",
-            sdk: await AppleSDK.find(.macOS)?.identity ?? "",
-            library: try FileURI.url(libraryUri))
+            sdk: target.sdk?.identity ?? "", library: try FileURI.url(libraryUri))
 
         let lease = try await permit.acquire(for: "\(application.name) for \(request.host.rawValue), stateui \(ProcessInfo.processInfo.processIdentifier)") {
             reporter.progress("waiting for \($0)")
@@ -89,7 +102,7 @@ public struct ApplicationBuilder: Sendable {
         let root = try project.workspaceUri.map(FileURI.url) ?? folderOfApplication
         let entry = try OperationJournal(root: root).open(id: operation, kind: "application/build", request: try JSONValue(encoding: request))
         do {
-            let result = try await compileAndPublish(context, name: application.name, operation: operation, entry: entry, reporter: reporter, machine: machine)
+            let result = try await compileAndPublish(context, target, name: application.name, operation: operation, entry: entry, reporter: reporter)
             try entry.finish(.succeeded)
             return (result, root)
         } catch let error as ToolingError {
@@ -102,12 +115,11 @@ public struct ApplicationBuilder: Sendable {
     }
 
     private func compileAndPublish(
-        _ context: BuildContext, name: String, operation: String, entry: OperationJournal.Entry, reporter: BuildReporter,
-        machine: Architecture
+        _ context: BuildContext, _ target: BuildTarget, name: String, operation: String, entry: OperationJournal.Entry,
+        reporter: BuildReporter
     ) async throws -> BuildResult {
-        let triple = context.architecture == machine ? [] : ["--triple", AppleSDK.Platform.macOS.triple(context.architecture, floor: Doctor.appleFloor)]
         let common = ["--package-path", context.application.path, "--scratch-path", context.scratch.path,
-                      "--configuration", context.configuration.rawValue, "--disable-build-manifest-caching"] + triple
+                      "--configuration", context.configuration.rawValue, "--disable-build-manifest-caching"] + target.arguments
         let environment = ProcessEnvironment.inherited.setting("STATEUI_HOST", to: context.host.rawValue)
         reporter.progress("building \(context.product)")
         let said = Gathered()
@@ -131,28 +143,52 @@ public struct ApplicationBuilder: Sendable {
         reporter.progress("assembling \(context.product).app")
         let store = ArtifactStore(application: context.application)
         let staging = try store.staging(for: operation)
-        let bundle = AppKitBundle(
-            application: context.application, name: name, product: context.product, binaries: binaries,
-            release: Release.version, minimumSystem: Doctor.appleFloor)
         do {
-            _ = try await bundle.assemble(in: staging)
+            let (bundle, program, signing) = try await assemble(context, target, name: name, binaries: binaries, in: staging)
             let manifest = ArtifactManifest(
                 id: "\(context.host.rawValue)-\(context.key)-\(context.configuration.rawValue)", producerOperationId: operation,
                 createdAt: Operations.timestamp(), applicationUri: FileURI.string(context.application), host: context.host,
                 configuration: context.configuration, architecture: context.architecture, productName: context.product,
-                entryPoints: [bundle.programPath], signing: .adHoc)
+                entryPoints: [program], signing: signing)
             let published = try store.publish(staging, as: manifest)
             return BuildResult(
                 application: name, host: context.host, configuration: context.configuration, architecture: context.architecture,
-                folderUri: FileURI.string(published), programUri: FileURI.string(published.appendingPathComponent(bundle.programPath)))
+                folderUri: FileURI.string(published), programUri: FileURI.string(published.appendingPathComponent(program)),
+                bundleUri: FileURI.string(published.appendingPathComponent(bundle)), destination: target.destination)
         } catch {
             store.discard(staging)
             throw error
         }
         #else
-        throw ToolingError(.invalidConfiguration, "An AppKit bundle is assembled on a Mac.")
+        throw ToolingError(.invalidConfiguration, "An Apple bundle is assembled on a Mac.")
         #endif
     }
+
+    #if canImport(AppKit)
+    /// The head's bundle assembled in `staging`: its folder's and its program's paths there, and how it was signed.
+    private func assemble(_ context: BuildContext, _ target: BuildTarget, name: String, binaries: URL, in staging: URL)
+        async throws -> (bundle: String, program: String, signing: ArtifactManifest.Signing) {
+        if context.host == .appkit {
+            let bundle = AppKitBundle(
+                application: context.application, name: name, product: context.product, binaries: binaries,
+                release: Release.version, minimumSystem: Doctor.appleFloor)
+            _ = try await bundle.assemble(in: staging)
+            return (bundle.bundlePath, bundle.programPath, .adHoc)
+        }
+        let bundle = UIKitBundle(
+            application: context.application, name: name, product: context.product, binaries: binaries,
+            release: Release.version, minimumSystem: Doctor.appleFloor, platform: target.sdk?.platform ?? .iOSSimulator,
+            work: context.scratch.appendingPathComponent("stateui"))
+        switch target.signing {
+        case .adHoc:
+            _ = try await bundle.assemble(in: staging, signing: .adHoc)
+            return (bundle.bundlePath, bundle.programPath, .adHoc)
+        case .development(let development):
+            _ = try await bundle.assemble(in: staging, signing: .development(development))
+            return (bundle.bundlePath, bundle.programPath, .development)
+        }
+    }
+    #endif
 
     /// The project `request` names - its `projectUri`, else `folder` - and the application in it it means.
     private func resolve(_ request: BuildRequest, in folder: URL) async throws -> (Project, Application) {

@@ -5,7 +5,8 @@ formats. AppKit, GTK, WinUI and the Web draw SVG themselves and get the
 folder as it is; a head whose toolkit draws no SVG - UIKit's, Android's - gets
 each SVG drawn, and every macOS bundle gets an icon drawn from
 `Resources/AppIcon/appicon_macos.svg`, the artwork already on macOS's icon
-grid.
+grid; every iOS bundle one composed of `appicon_bkg.svg` and
+`appicon_mark.svg`, which iOS rounds itself.
 
 `ApplePictures` draws on a Mac, through AppKit's own SVG reading into a
 Core Graphics bitmap in sRGB: one SVG at a scale of its own size; a folder's
@@ -17,3 +18,9 @@ at one and two pixels a point, which `iconutil` makes the bundle's `.icns`.
 `iconutil` stays: the system's own icon format is its to write, and ImageIO's
 ICNS writer cannot tell a point size at two pixels a point from the size twice
 as large at one.
+
+An iOS icon is an asset catalog whose `AppIcon` is one 1024-pixel square,
+opaque as iOS asks: the background drawn over the whole of it, the mark over
+that - the mark takes as much of the square as it takes of what a launcher
+shows elsewhere - drawn again only where either layer changed. `actool`
+compiles the catalog into the bundle (apple-bundles.md).

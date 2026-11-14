@@ -16,6 +16,7 @@ final class ApplicationBuilderTests: XCTestCase {
         var environment: [String: String]
         var permit: BuildPermit
         var failing: URL
+        var arguments: URL
     }
 
     private func bench() throws -> Bench {
@@ -29,11 +30,14 @@ final class ApplicationBuilderTests: XCTestCase {
         }
         try Data().write(to: checkout.appendingPathComponent("Package.swift"))
         let application = root.appendingPathComponent("Notes")
-        try files.createDirectory(at: application.appendingPathComponent("Platforms/AppKit"), withIntermediateDirectories: true)
+        for host in ["AppKit", "UIKit"] {
+            try files.createDirectory(at: application.appendingPathComponent("Platforms/\(host)"), withIntermediateDirectories: true)
+            try Data().write(to: application.appendingPathComponent("Platforms/\(host)/main.swift"))
+        }
         try Data().write(to: application.appendingPathComponent("Package.swift"))
-        try Data().write(to: application.appendingPathComponent("Platforms/AppKit/main.swift"))
         let bin = root.appendingPathComponent("bin")
         let failing = root.appendingPathComponent("FAIL")
+        let arguments = root.appendingPathComponent("arguments")
         let swift = root.appendingPathComponent("swift")
         let describe = #"{"dependencies":[{"identity":"stateui","path":"\#(checkout.path)"}],"products":[{"name":"NotesUI"}],"targets":[{"name":"NotesTests","type":"test"}]}"#
         let script = """
@@ -44,15 +48,16 @@ final class ApplicationBuilderTests: XCTestCase {
               "build --show-bin-path") echo '\(bin.path)' ;;
               "build --product")
                 if [ -e '\(failing.path)' ]; then echo 'error: the compiler stopped'; exit 1; fi
-                [ "$STATEUI_HOST" = appkit ] || { echo 'no host'; exit 1; }
-                mkdir -p '\(bin.path)' && cp /usr/bin/true '\(bin.path)/NotesAppKit' && echo 'Build complete!' ;;
+                [ "Notes$STATEUI_HOST" = "$(echo "$3" | tr '[:upper:]' '[:lower:]' | sed 's/^notes/Notes/')" ] || { echo 'no host'; exit 1; }
+                echo "$@" > '\(arguments.path)'
+                mkdir -p '\(bin.path)' && cp /usr/bin/true "\(bin.path)/$3" && echo 'Build complete!' ;;
             esac
             """
         try script.write(to: swift, atomically: true, encoding: .utf8)
         try files.setAttributes([.posixPermissions: 0o755], ofItemAtPath: swift.path)
         let permit = BuildPermit(folder: root.appendingPathComponent("state"))
         return Bench(root: root, application: application, environment: ["SWIFT_BIN": swift.path, "PATH": "/usr/bin:/bin"],
-                     permit: permit, failing: failing)
+                     permit: permit, failing: failing, arguments: arguments)
     }
 
     /// A build publishes its bundle and journals its operation; a later build that fails publishes nothing, says
@@ -89,7 +94,7 @@ final class ApplicationBuilderTests: XCTestCase {
     func testWhatCannotBeBuiltIsRefusedFirst() async throws {
         let bench = try bench()
         let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
-        for (request, said) in [(BuildRequest(host: .gtk), "has no gtk head"), (BuildRequest(host: .uikit), "has no uikit head")] {
+        for (request, said) in [(BuildRequest(host: .gtk), "has no gtk head"), (BuildRequest(host: .uikit, device: "Nothing"), "No iPhone")] {
             do {
                 _ = try await builder.build(request, in: bench.application, operation: "op")
                 XCTFail("\(request.host) was built")
@@ -97,6 +102,39 @@ final class ApplicationBuilderTests: XCTestCase {
                 XCTAssertTrue(error.message.contains(said), error.message)
             }
         }
+    }
+
+    /// A UIKit head is built for the destination chosen - the booted simulator where none is named - with its triple
+    /// and SDK, then bundled and signed ad hoc; the result says the bundle, its program and the destination.
+    func testAUIKitHeadIsBuiltForTheSimulatorChosen() async throws {
+        let bench = try bench()
+        let simulators = [
+            Destination(id: "PHONE", udid: "PHONE", name: "iPhone 18 Pro", kind: .simulator, version: "27.0"),
+            Destination(id: "PAD", udid: "PAD", name: "iPad Air 13-inch (M4)", kind: .simulator, version: "27.0", booted: true),
+        ]
+        let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit, destinations: { simulators })
+
+        let built = try await builder.build(BuildRequest(host: .uikit), in: bench.application, operation: "op-uikit")
+
+        XCTAssertEqual(built.destination?.id, "PAD")
+        XCTAssertTrue(built.programUri.hasSuffix("NotesUIKit.app/NotesUIKit"), built.programUri)
+        XCTAssertTrue(try XCTUnwrap(built.bundleUri).hasSuffix("NotesUIKit.app"))
+        let said = try String(contentsOf: bench.arguments, encoding: .utf8)
+        XCTAssertTrue(said.contains("--triple arm64-apple-ios26.4-simulator"), said)
+        XCTAssertTrue(said.contains("--sdk ") && said.contains("iPhoneSimulator"), said)
+        let plist = try XCTUnwrap(try PropertyListSerialization.propertyList(
+            from: Data(contentsOf: try FileURI.url(XCTUnwrap(built.bundleUri)).appendingPathComponent("Info.plist")), format: nil)
+            as? [String: Any])
+        XCTAssertEqual(plist["CFBundleSupportedPlatforms"] as? [String], ["iPhoneSimulator"])
+
+        let laid = bench.root.appendingPathComponent("laid")
+        let packaged = try await builder.package(
+            BuildRequest(host: .uikit, device: "iPhone 18 Pro", outputUri: FileURI.string(laid)), in: bench.application,
+            operation: "op-package")
+        XCTAssertEqual(packaged.destination?.id, "PHONE")
+        XCTAssertEqual(packaged.configuration, .release)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: laid.appendingPathComponent("NotesUIKit.app/NotesUIKit").path))
+        XCTAssertEqual(try FileURI.url(packaged.programUri).path, laid.appendingPathComponent("NotesUIKit.app/NotesUIKit").path)
     }
 }
 #endif

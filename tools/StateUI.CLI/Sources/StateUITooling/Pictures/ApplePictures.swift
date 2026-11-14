@@ -7,7 +7,7 @@ import Foundation
 import ImageIO
 
 /// Pictures drawn on a Mac for the heads that need them drawn: an SVG to a PNG at a scale, an application's pictures
-/// to a folder of PNGs, and a macOS icon.
+/// to a folder of PNGs, a macOS icon, and an iOS icon's asset catalog.
 /// Design: docs/design/tooling/pictures.md
 public enum ApplePictures {
     /// The picture files the folders hold and carry over; only SVGs are drawn.
@@ -54,22 +54,51 @@ public enum ApplePictures {
         }
     }
 
+    /// An iOS icon's asset catalog drawn into `catalog`: its `AppIcon` one opaque 1024-pixel square, `background` over
+    /// the whole of it and `mark` over that - drawn again only where either changed since.
+    public static func drawAppIcon(background: URL, mark: URL, into catalog: URL) throws {
+        let files = FileManager.default
+        let iconSet = catalog.appendingPathComponent("AppIcon.appiconset")
+        let png = iconSet.appendingPathComponent("appicon.png")
+        try files.createDirectory(at: iconSet, withIntermediateDirectories: true)
+        try Data(#"{ "info" : { "author" : "stateui", "version" : 1 } }"#.utf8 + [10])
+            .write(to: catalog.appendingPathComponent("Contents.json"))
+        try Data(#"""
+            { "images" : [ { "filename" : "appicon.png", "idiom" : "universal", "platform" : "ios", "size" : "1024x1024" } ],
+              "info" : { "author" : "stateui", "version" : 1 } }
+
+            """#.utf8).write(to: iconSet.appendingPathComponent("Contents.json"))
+        if let drawn = modified(png), let newest = [background, mark].compactMap(modified).max(), drawn >= newest { return }
+        try draw([background, mark], width: 1024, to: png, opaque: true)
+    }
+
     /// Draws `svg` into `png`: `width` pixels square where given, else `scale` times its own size.
     private static func draw(_ svg: URL, width: Int?, to png: URL, scale: Double = 1) throws {
-        guard let image = NSImage(contentsOf: svg), image.size.width > 0, image.size.height > 0 else {
-            throw CocoaError(.fileReadCorruptFile, userInfo: [NSFilePathErrorKey: svg.path])
+        try draw([svg], width: width, to: png, scale: scale)
+    }
+
+    /// Draws `layers`, the first lowest, into `png` - each over the whole picture, the first's size giving it - and
+    /// `opaque`, with no alpha.
+    private static func draw(_ layers: [URL], width: Int?, to png: URL, scale: Double = 1, opaque: Bool = false) throws {
+        let images = try layers.map { svg in
+            guard let image = NSImage(contentsOf: svg), image.size.width > 0, image.size.height > 0 else {
+                throw CocoaError(.fileReadCorruptFile, userInfo: [NSFilePathErrorKey: svg.path])
+            }
+            return image
         }
+        let size = images[0].size
         let (pixelsWide, pixelsHigh) = width.map { ($0, $0) }
-            ?? (Int((image.size.width * scale).rounded()), Int((image.size.height * scale).rounded()))
+            ?? (Int((size.width * scale).rounded()), Int((size.height * scale).rounded()))
+        let alpha = opaque ? CGImageAlphaInfo.noneSkipLast : .premultipliedLast
         guard let space = CGColorSpace(name: CGColorSpace.sRGB),
               let context = CGContext(
                 data: nil, width: pixelsWide, height: pixelsHigh, bitsPerComponent: 8, bytesPerRow: 0, space: space,
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+                bitmapInfo: alpha.rawValue)
         else { throw CocoaError(.fileWriteUnknown, userInfo: [NSFilePathErrorKey: png.path]) }
-        context.scaleBy(x: CGFloat(pixelsWide) / image.size.width, y: CGFloat(pixelsHigh) / image.size.height)
+        let whole = NSRect(x: 0, y: 0, width: pixelsWide, height: pixelsHigh)
         NSGraphicsContext.saveGraphicsState()
         NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: false)
-        image.draw(in: NSRect(origin: .zero, size: image.size))
+        for image in images { image.draw(in: whole) }
         NSGraphicsContext.restoreGraphicsState()
         guard let drawn = context.makeImage(),
               let destination = CGImageDestinationCreateWithURL(png as CFURL, "public.png" as CFString, 1, nil)

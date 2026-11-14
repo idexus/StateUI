@@ -26,6 +26,35 @@ public enum InfoPlist {
         ]
     }
 
+    /// The keys of an iOS application's bundle for `platform` - a simulator's or a device's: its executable `product`,
+    /// identifier `com.stateui.<name>`, its name shown and spoken, StateUI's `release`, the oldest iOS it runs on, both
+    /// families, every orientation, and many scenes - an iPad's windows.
+    public static func iOS(name: String, product: String, release: String, minimumSystem: String, platform: AppleSDK.Platform)
+        -> [String: Any] {
+        [
+            "CADisableMinimumFrameDurationOnPhone": true,
+            "CFBundleDevelopmentRegion": "en",
+            "CFBundleDisplayName": name,
+            "CFBundleExecutable": product,
+            "CFBundleIdentifier": "com.stateui.\(name.lowercased())",
+            "CFBundleInfoDictionaryVersion": "6.0",
+            "CFBundleName": name,
+            "CFBundlePackageType": "APPL",
+            "CFBundleShortVersionString": release,
+            "CFBundleSupportedPlatforms": [platform.bundleName],
+            "CFBundleVersion": "1",
+            "LSRequiresIPhoneOS": true,
+            "MinimumOSVersion": minimumSystem,
+            "UIApplicationSceneManifest": ["UIApplicationSupportsMultipleScenes": true],
+            "UIDeviceFamily": [1, 2],
+            "UILaunchScreen": [String: Any](),
+            "UISupportedInterfaceOrientations": [
+                "UIInterfaceOrientationPortrait", "UIInterfaceOrientationLandscapeLeft",
+                "UIInterfaceOrientationLandscapeRight", "UIInterfaceOrientationPortraitUpsideDown",
+            ],
+        ]
+    }
+
     /// `keys` with the dictionary of the property list at `own` laid over - each of its keys replacing the same key
     /// whole - written as an XML property list. No `own`, the keys alone.
     ///

@@ -20,6 +20,7 @@
   "result" : {
     "application" : "Notes",
     "architecture" : "arm64",
+    "bundleUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug/NotesAppKit.app",
     "configuration" : "debug",
     "folderUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug",
     "host" : "appkit",

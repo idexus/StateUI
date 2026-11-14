@@ -160,17 +160,41 @@ export const Architecture = oneOf<Architecture>("arm64", "x86_64", "armv7", "x86
 export type BuildConfiguration = "debug" | "release";
 export const BuildConfiguration = oneOf<BuildConfiguration>("debug", "release");
 
+export type DestinationKind = "device" | "simulator";
+export const DestinationKind = oneOf<DestinationKind>("device", "simulator");
+
+export interface Destination {
+    id: string;
+    udid: string;
+    name: string;
+    kind: DestinationKind;
+    version: string;
+    booted: boolean;
+    connection?: string;
+}
+export const Destination = object<Destination>({
+    id: string, udid: string, name: string, kind: DestinationKind, version: string, booted: boolean,
+    connection: optional(string),
+});
+
+export interface DestinationQuery { host: HostFamily }
+export const DestinationQuery = object<DestinationQuery>({ host: HostFamily });
+
+export interface DestinationList { host: HostFamily; destinations: Destination[] }
+export const DestinationList = object<DestinationList>({ host: HostFamily, destinations: array(Destination) });
+
 export interface BuildRequest {
     projectUri?: string;
     application?: string;
     host: HostFamily;
     configuration?: BuildConfiguration;
     architecture?: Architecture;
+    device?: string;
     outputUri?: string;
 }
 export const BuildRequest = object<BuildRequest>({
     projectUri: optional(string), application: optional(string), host: HostFamily, configuration: optional(BuildConfiguration),
-    architecture: optional(Architecture), outputUri: optional(string),
+    architecture: optional(Architecture), device: optional(string), outputUri: optional(string),
 });
 
 export interface BuildResult {
@@ -180,10 +204,12 @@ export interface BuildResult {
     architecture: Architecture;
     folderUri: string;
     programUri: string;
+    bundleUri?: string;
+    destination?: Destination;
 }
 export const BuildResult = object<BuildResult>({
     application: string, host: HostFamily, configuration: BuildConfiguration, architecture: Architecture, folderUri: string,
-    programUri: string,
+    programUri: string, bundleUri: optional(string), destination: optional(Destination),
 });
 
 export type NameKind = "application" | "workspace";
@@ -213,29 +239,6 @@ export const ToolFinding = object<ToolFinding>({
 
 export interface ToolchainReport { findings: ToolFinding[] }
 export const ToolchainReport = object<ToolchainReport>({ findings: array(ToolFinding) });
-
-export type DestinationKind = "device" | "simulator";
-export const DestinationKind = oneOf<DestinationKind>("device", "simulator");
-
-export interface Destination {
-    id: string;
-    udid: string;
-    name: string;
-    kind: DestinationKind;
-    version: string;
-    booted: boolean;
-    connection?: string;
-}
-export const Destination = object<Destination>({
-    id: string, udid: string, name: string, kind: DestinationKind, version: string, booted: boolean,
-    connection: optional(string),
-});
-
-export interface DestinationQuery { host: HostFamily }
-export const DestinationQuery = object<DestinationQuery>({ host: HostFamily });
-
-export interface DestinationList { host: HostFamily; destinations: Destination[] }
-export const DestinationList = object<DestinationList>({ host: HostFamily, destinations: array(Destination) });
 
 export interface ReleaseQuery { minimum?: string; repository?: string }
 export const ReleaseQuery = object<ReleaseQuery>({ minimum: optional(string), repository: optional(string) });

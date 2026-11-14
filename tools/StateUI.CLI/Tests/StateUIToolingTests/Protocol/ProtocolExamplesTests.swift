@@ -80,11 +80,14 @@ final class ProtocolExamplesTests: XCTestCase {
         let artifact = demo + "/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug"
         let built = BuildResult(
             application: "Notes", host: .appkit, configuration: .debug, architecture: .arm64, folderUri: artifact,
-            programUri: artifact + "/NotesAppKit.app/Contents/MacOS/NotesAppKit")
+            programUri: artifact + "/NotesAppKit.app/Contents/MacOS/NotesAppKit", bundleUri: artifact + "/NotesAppKit.app")
+        let laid = demo + "/artifacts/Notes/UIKit"
         let packaged = BuildResult(
-            application: "Notes", host: .appkit, configuration: .release, architecture: .arm64,
-            folderUri: demo + "/artifacts/Notes/AppKit",
-            programUri: demo + "/artifacts/Notes/AppKit/NotesAppKit.app/Contents/MacOS/NotesAppKit")
+            application: "Notes", host: .uikit, configuration: .release, architecture: .arm64, folderUri: laid,
+            programUri: laid + "/NotesUIKit.app/NotesUIKit", bundleUri: laid + "/NotesUIKit.app",
+            destination: Destination(
+                id: "0B05862F-1427-5E93-AFC2-5FEAA82B99FB", udid: "00008132-001808DC3C03001C", name: "Example iPad",
+                kind: .device, version: "27.0", connection: "USB"))
         return [
             Example(name: "initialize", messages: [
                 ("request", try request("1", "initialize", initialize)), ("response", try response("1", initialized)),
@@ -144,8 +147,8 @@ final class ProtocolExamplesTests: XCTestCase {
             Example(name: "application-package", messages: [
                 ("request", try request("14", "application/package", Mutation(
                     requestToken: "4c1e8a2d-6b3f-4e5a-9c7d-1b3e5f7a9c20",
-                    request: BuildRequest(projectUri: demo + "/apps/Notes", host: .appkit, configuration: .release,
-                                          architecture: .arm64, outputUri: demo + "/artifacts/Notes/AppKit")))),
+                    request: BuildRequest(projectUri: demo + "/apps/Notes", host: .uikit, configuration: .release,
+                                          device: "Example iPad", outputUri: demo + "/artifacts/Notes/UIKit")))),
                 ("response", try response("14", OperationHandle(operationId: operation, state: .queued))),
                 ("result", try JSONValue(encoding: packaged)),
             ], answeredAsWritten: false),
