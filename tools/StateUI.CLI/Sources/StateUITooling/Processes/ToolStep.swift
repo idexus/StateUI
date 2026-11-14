@@ -22,7 +22,17 @@ enum ToolStep {
             case .name(let name): name
             case .path(let path): URL(fileURLWithPath: path).lastPathComponent
             }
-            throw ToolingError(.toolFailed, "\(name) \(arguments.first ?? "") refused:\n\(words)")
+            throw ToolingError(.toolFailed, "\(name) \(arguments.first ?? "") refused - \(ending(outcome, limit: limit)):\n\(words)")
+        }
+    }
+
+    /// How a step that failed ended, in words: a step saying nothing is still told apart.
+    static func ending(_ outcome: ProcessOutcome, limit: Duration) -> String {
+        switch (outcome.stop, outcome.termination) {
+        case (.timeout?, _): "it ran past \(limit)"
+        case (.cancellation?, _): "it was cancelled"
+        case (nil, .exited(let status)): "it exited with status \(status)"
+        case (nil, .signaled(let signal)): "signal \(signal) ended it"
         }
     }
 
