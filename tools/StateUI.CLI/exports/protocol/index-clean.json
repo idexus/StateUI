@@ -1,0 +1,21 @@
+{
+  "request" : {
+    "id" : "17",
+    "jsonrpc" : "2.0",
+    "method" : "index/clean",
+    "params" : {
+      "rootUris" : [
+        "file:///Users/example/Projects/Demo/Notes"
+      ]
+    }
+  },
+  "response" : {
+    "id" : "17",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "removedUris" : [
+        "file:///Users/example/Projects/Demo/Notes/.build/uikit/index-build"
+      ]
+    }
+  }
+}

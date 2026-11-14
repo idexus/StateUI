@@ -200,6 +200,16 @@ final class ProtocolExamplesTests: XCTestCase {
                         name: "iPhone 18 Pro", kind: .simulator, version: "27.0", booted: true),
                 ]))),
             ], answeredAsWritten: false),
+            Example(name: "index-describe", messages: [
+                ("request", try request("16", "index/describe", IndexQuery(host: .uikit))),
+                ("response", try response("16", IndexContext(
+                    host: .uikit, scratchPath: ".build/uikit/index-build", triple: "arm64-apple-ios26.4-simulator",
+                    sdk: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk"))),
+            ], answeredAsWritten: false),
+            Example(name: "index-clean", messages: [
+                ("request", try request("17", "index/clean", IndexQuery(host: nil, rootUris: ["file:///Users/example/Projects/Demo/Notes"]))),
+                ("response", try response("17", IndexCleaning(removedUris: ["file:///Users/example/Projects/Demo/Notes/.build/uikit/index-build"]))),
+            ], answeredAsWritten: false),
             Example(name: "workspace-create", messages: [
                 ("request", try request("10", "workspace/create", Mutation(
                     requestToken: "0b6f2c8e-3d1a-4f5b-8c7e-9a2d4b6c8e10",

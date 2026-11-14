@@ -119,6 +119,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `package.json`, the tool's release, the Android heads and the bundles are its copies, which `ReleaseTests` holds.
 - Swift 6.4.2 is the release StateUI builds with: the workflows' images and installers, the Swift SDKs for Android
   and WebAssembly and the handbook name it, and `ToolchainTests` holds one patch release everywhere.
+- `stateui index describe [--host <host>]` (`index/describe`) says what a language server indexes a host's code with -
+  its scratch folder, and the triple and SDK where its heads run elsewhere, or why it falls back to this machine - and
+  `stateui index clean` (`index/clean`) takes every index's scratch folder away; the VS Code extension takes both from
+  the tool instead of reading the Swift SDKs and Xcode itself.
 - `stateui repo conformance status [--host <host>]` says, family by family, whether each host's recorded verdicts
   stand at the revision `revisions.txt` gives - read by the library's own reader through the conformance package's
   helper `stateui-conformance-metadata`.

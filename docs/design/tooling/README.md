@@ -27,6 +27,8 @@ writes its result as words or as the message an editor receives.
   checkouts are read.
 - [Doctor](doctor.md): what the machine is checked for, and how the hosts'
   tools are found.
+- [Indexing](indexing.md): what an editor's language server indexes each
+  host's code with, and its scratch folders taken away.
 - [Builds](builds.md): what one build is and where it writes, one
   application build at a time on a machine, and the operation journal.
 - [Pictures](pictures.md): which heads get their pictures drawn, and how

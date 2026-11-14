@@ -300,6 +300,25 @@ export interface Mutation<P, R> { readonly kind: "mutation"; readonly params: De
 const query = <P, R>(params: Decoder<P>, result: Decoder<R>): Query<P, R> => ({ kind: "query", params, result });
 const mutation = <P, R>(params: Decoder<P>, result: Decoder<R>): Mutation<P, R> => ({ kind: "mutation", params, result });
 
+export interface IndexQuery { host?: HostFamily; rootUris?: string[] }
+export const IndexQuery = object<IndexQuery>({ host: optional(HostFamily), rootUris: optional(array(string)) });
+
+export interface IndexContext {
+    host?: HostFamily;
+    scratchPath: string;
+    triple?: string;
+    sdk?: string;
+    swiftSDK?: string;
+    fallback?: string;
+}
+export const IndexContext = object<IndexContext>({
+    host: optional(HostFamily), scratchPath: string, triple: optional(string), sdk: optional(string), swiftSDK: optional(string),
+    fallback: optional(string),
+});
+
+export interface IndexCleaning { removedUris: string[] }
+export const IndexCleaning = object<IndexCleaning>({ removedUris: array(string) });
+
 /** The tool's methods the extension calls, by name. */
 export const methods = {
     "server/info": query(NoParameters, ServerInfo),
@@ -307,6 +326,8 @@ export const methods = {
     "toolchain/check": query(NoParameters, ToolchainReport),
     "name/check": query(NameCheck, NameVerdict),
     "devices/list": query(DestinationQuery, DestinationList),
+    "index/describe": query(IndexQuery, IndexContext),
+    "index/clean": query(IndexQuery, IndexCleaning),
     "releases/list": query(ReleaseQuery, ReleaseList),
     "operation/get": query(OperationReference, OperationSnapshot),
     "operation/cancel": query(OperationReference, CancelResult),

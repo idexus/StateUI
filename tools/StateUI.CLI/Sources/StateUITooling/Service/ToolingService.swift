@@ -127,6 +127,17 @@ public struct ToolingService: Sendable {
         await Doctor().check()
     }
 
+    /// What an editor's language server indexes `host`'s code with - `index/describe`: its scratch folder, and the
+    /// triple and SDK a host whose heads run elsewhere compiles for.
+    public func describeIndex(of host: HostFamily?) async -> IndexContext {
+        await IndexContexts(tools: ToolResolver()).describe(host)
+    }
+
+    /// Takes every index's scratch folder away from the folders `rootUris` name - `index/clean`.
+    public func cleanIndex(in rootUris: [String]) throws -> IndexCleaning {
+        IndexCleaning(removedUris: IndexContexts.clean(try rootUris.map(FileURI.url)).map(FileURI.string))
+    }
+
     /// Where `host`'s heads can run on this machine - `devices/list`: UIKit's iPhones, iPads and simulators on a Mac,
     /// Android's devices and emulators.
     ///
@@ -305,6 +316,8 @@ public struct ToolingService: Sendable {
         methods.query("server/info") { (_: NoParameters) in serverInfo() }
         methods.query("toolchain/check") { (_: NoParameters) in await checkToolchain() }
         methods.query("devices/list") { (query: DestinationQuery) in try await listDestinations(of: query.host) }
+        methods.query("index/describe") { (query: IndexQuery) in await describeIndex(of: query.host) }
+        methods.query("index/clean") { (query: IndexQuery) in try cleanIndex(in: query.rootUris ?? []) }
         methods.mutation("application/build") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
             try await Self.reporting(context) { reporter in
                 try await build(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter.build)

@@ -35,21 +35,24 @@
 // apart. Switches therefore run one at a time, and each waits until no build is
 // running in the directories its server is about to build in.
 //
-// A HOST WHOSE HEADS RUN ON ANOTHER PLATFORM IS INDEXED FOR THAT PLATFORM. For
-// Android the same file names the Swift SDK of the toolchain's release and the
-// triple, found as the stateui tool's Android build finds them. With no such SDK
-// installed the editor still works as the host, compiling for this Mac, and
-// says so. For UIKit it names the triple and the iOS simulator's SDK, which
-// Xcode ships - found as the stateui tool's UIKit build finds it. SwiftPM's own
-// command infers that SDK from the triple, but the server's SwiftPM does not:
-// measured, it compiled for the simulator against the macOS SDK, and nothing
-// in a UIKit head resolved.
+// A HOST WHOSE HEADS RUN ON ANOTHER PLATFORM IS INDEXED FOR THAT PLATFORM, as
+// the stateui tool says (`index/describe`): its scratch folder, and for Android
+// and the Web the Swift SDK of the toolchain's release and the triple, for UIKit
+// the triple and the iOS simulator's SDK - SwiftPM's own command infers that
+// SDK from the triple, but the server's SwiftPM does not: measured, it compiled
+// for the simulator against the macOS SDK, and nothing in a UIKit head
+// resolved. Where the SDK is missing the editor still works as the host,
+// compiling for this machine, and says why.
 
 import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { describe, environment, Host, HostDescription, hostVariable, hosts, plainIndexPath } from "./hosts";
+import { describe, environment, Host, HostDescription, hostVariable, hosts } from "./hosts";
+import { IndexContext } from "./Tooling/protocol";
+
+/** What the stateui tool says `host`'s code is indexed with - nothing where it could not say, which it said. */
+export type IndexDescriber = (host: Host | undefined) => Promise<IndexContext | undefined>;
 
 let queue: Promise<unknown> = Promise.resolve();
 
@@ -63,16 +66,24 @@ let queue: Promise<unknown> = Promise.resolve();
  *
  * @returns whether anything changed.
  */
-export function applyEditorMode(host: Host | undefined, roots: readonly string[]): Promise<boolean> {
-    const next = queue.then(() => apply(host, roots));
+export function applyEditorMode(host: Host | undefined, roots: readonly string[], describeIndex: IndexDescriber): Promise<boolean> {
+    const next = queue.then(() => apply(host, roots, describeIndex));
     queue = next.catch(() => undefined);
     return next;
 }
 
-async function apply(host: Host | undefined, roots: readonly string[]): Promise<boolean> {
+async function apply(host: Host | undefined, roots: readonly string[], describeIndex: IndexDescriber): Promise<boolean> {
     let changed = setHostEnvironment(host);
-    const settings = serverSettings(host, roots.length > 0 ? await installedSwiftSDK(host) : undefined,
-        roots.length > 0 ? await xcodeSDKPath(host) : undefined);
+    const context = roots.length > 0 ? await describeIndex(host) : undefined;
+    if (!context) {
+        await excludeOtherHosts(host);
+        return changed;
+    }
+    if (context.fallback && host) {
+        void vscode.window.showWarningMessage(
+            `StateUI: ${context.fallback}, so the editor compiles the code for this machine rather than for ${describe(host).label}.`);
+    }
+    const settings = serverSettings(context);
 
     for (const root of roots) {
         changed = writeServerConfig(root, settings) || changed;
@@ -185,14 +196,9 @@ export function buildingCommand(directory: string, platform: NodeJS.Platform = p
  * Removes every host's index directory under `roots`, for an index a failed
  * build left inconsistent. The language server builds it again when restarted.
  */
-export async function cleanIndex(roots: readonly string[]): Promise<void> {
-    const directories = roots.flatMap((root) =>
-        [...hosts.map((each) => each.indexPath), plainIndexPath].map((indexPath) => path.join(root, indexPath)));
-
-    await settle(directories);
-    for (const directory of directories) {
-        fs.rmSync(directory, { recursive: true, force: true });
-    }
+export async function cleanIndex(roots: readonly string[], clean: (roots: readonly string[]) => Promise<unknown>): Promise<void> {
+    await settle(roots.map((root) => path.join(root, ".build")));
+    await clean(roots);
     await restartServer();
 }
 
@@ -243,22 +249,11 @@ export interface ServerConfig {
     [key: string]: unknown;
 }
 
-/**
- * What the language server is told while the editor works as `host`: the
- * host's index directory and - for a host compiled for another platform, where
- * its Swift SDK `swiftSDK` is installed, or Xcode's SDK is found at `sdk` -
- * that SDK and the triple. With no host, SwiftPM's own index directory and no
- * SDK.
- */
-export function serverSettings(host: Host | undefined, swiftSDK?: string, sdk?: string): ServerSettings {
-    if (!host) {
-        return { scratchPath: plainIndexPath };
-    }
-    const { indexPath, target } = describe(host);
-    if (target?.xcodeSDK) {
-        return sdk ? { scratchPath: indexPath, sdk, triple: target.triple } : { scratchPath: indexPath };
-    }
-    return target && swiftSDK ? { scratchPath: indexPath, swiftSDK, triple: target.triple } : { scratchPath: indexPath };
+/** What the language server is told for an index `context`: its scratch folder, and its SDK and triple where it has them. */
+export function serverSettings(context: IndexContext): ServerSettings {
+    return Object.fromEntries(Object.entries({
+        scratchPath: context.scratchPath, swiftSDK: context.swiftSDK, sdk: context.sdk, triple: context.triple,
+    }).filter((entry) => entry[1] !== undefined)) as unknown as ServerSettings;
 }
 
 /**
@@ -268,70 +263,6 @@ export function serverSettings(host: Host | undefined, swiftSDK?: string, sdk?: 
 export function serverConfig(config: ServerConfig, settings: ServerSettings): ServerConfig {
     const kept = Object.entries(config.swiftPM ?? {}).filter(([key]) => !["swiftSDK", "sdk", "triple"].includes(key));
     return { ...config, swiftPM: { ...Object.fromEntries(kept), ...settings }, backgroundPreparationMode: "build" };
-}
-
-/**
- * The release a Swift version names - `6.4` in `swift --version`'s "Swift
- * version 6.4" or in the SDK id `swift-6.4.2-RELEASE_android`: a release
- * ending in `.0` is the release without it, as the stateui tool reads it.
- */
-export function swiftRelease(text: string): string | undefined {
-    const version = text.match(/Swift version (\d+\.\d+(\.\d+)?)/)?.[1] ?? text.match(/\d+\.\d+(\.\d+)?/)?.[0];
-    return version?.replace(/^(\d+\.\d+)\.0$/, "$1");
-}
-
-/**
- * The Swift SDK of `release` whose id ends in `_<family>`, among the ids
- * `swift sdk list` printed as `list` - the last one, as the stateui tool takes it.
- * `wasm` is `swift-6.4.2-RELEASE_wasm`, never its Embedded Swift sibling `_wasm-embedded`.
- */
-export function swiftSDKOf(release: string | undefined, list: string, family: string): string | undefined {
-    return release === undefined
-        ? undefined
-        : list.split(/\s+/).filter((id) => id.toLowerCase().endsWith(`_${family}`) && swiftRelease(id) === release).pop();
-}
-
-/**
- * The Swift SDK the language server compiles `host` with - or nothing, for a
- * host of this machine and, said in a warning, where none is installed.
- */
-async function installedSwiftSDK(host: Host | undefined): Promise<string | undefined> {
-    const { label, target } = host ? describe(host) : { label: "", target: undefined };
-    if (!target?.swiftSDK) {
-        return undefined;
-    }
-
-    const swift = (args: string[]): Promise<string> => new Promise((resolve) =>
-        execFile("swift", args, (_error, stdout, stderr) => resolve(`${stdout}${stderr}`)));
-    const release = swiftRelease(await swift(["--version"]));
-    const found = swiftSDKOf(release, await swift(["sdk", "list"]), target.swiftSDK);
-
-    if (!found) {
-        void vscode.window.showWarningMessage(
-            `StateUI: no Swift SDK for ${label} of ${release ? `Swift ${release}` : "this toolchain's release"} is installed, `
-            + `so the editor compiles the code for this Mac rather than for ${label}. [Install the Swift SDK for ${label}](${target.swiftSDKGuide}).`);
-    }
-    return found;
-}
-
-/**
- * Where Xcode's SDK for `host` is - or nothing, for a host with none and, said in a warning, where Xcode has not
- * got it.
- */
-async function xcodeSDKPath(host: Host | undefined): Promise<string | undefined> {
-    const { label, target } = host ? describe(host) : { label: "", target: undefined };
-    if (!target?.xcodeSDK) {
-        return undefined;
-    }
-
-    const found = await new Promise<string | undefined>((resolve) =>
-        execFile("xcrun", ["--sdk", target.xcodeSDK!, "--show-sdk-path"], (error, stdout) =>
-            resolve(error ? undefined : stdout.trim() || undefined)));
-    if (!found) {
-        void vscode.window.showWarningMessage(
-            `StateUI: Xcode's ${target.xcodeSDK} SDK was not found, so the editor compiles the code for this Mac rather than for ${label}.`);
-    }
-    return found;
 }
 
 /**

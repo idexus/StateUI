@@ -18,7 +18,7 @@ import { Configuration, configurations, runPlace, StateUIDebugConfigurationProvi
 import { androidDeviceOf, deviceAmong } from "../Sources/devices";
 import { browserOf, isChromium } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
-import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
+import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
 import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
@@ -212,34 +212,35 @@ export async function run(): Promise<void> {
                 hosts.every((host) => fs.existsSync(path.join(root.uri.fsPath, "lib", "StateUI", `StateUI.${host.label}`, "Package.swift"))));
         }
         {
+            // The index's settings are the tool's context (`index/describe`), the server's file keeping the rest.
             const sdk = "swift-6.4.2-RELEASE_android";
             const android = serverConfig(
                 { swiftPM: { scratchPath: ".build/appkit/index-build", configuration: "debug" }, index: { indexStorePath: "x" } },
-                serverSettings("android", sdk));
-            const back = serverConfig(android, serverSettings("appkit", sdk));
-            check("as Android the language server indexes in .build/android/index-build with the Swift SDK and aarch64-unknown-linux-android28, by building",
+                serverSettings({ host: "android", scratchPath: ".build/android/index-build", swiftSDK: sdk, triple: "aarch64-unknown-linux-android28" }));
+            const back = serverConfig(android, serverSettings({ host: "appkit", scratchPath: ".build/appkit/index-build" }));
+            check("as Android the language server indexes where the tool says, with the Swift SDK and the triple, by building",
                 android.swiftPM?.scratchPath === ".build/android/index-build" && android.swiftPM?.swiftSDK === sdk
                 && android.swiftPM?.triple === "aarch64-unknown-linux-android28" && android.backgroundPreparationMode === "build");
             check("the rest of the file is kept, and back on AppKit the SDK and the triple are gone",
                 android.swiftPM?.configuration === "debug" && JSON.stringify(android.index) === JSON.stringify({ indexStorePath: "x" })
                 && back.swiftPM?.scratchPath === ".build/appkit/index-build" && back.swiftPM?.configuration === "debug"
                 && !("swiftSDK" in back.swiftPM!) && !("triple" in back.swiftPM!));
-            check("with no Swift SDK installed Android indexes for this Mac, and with no host the index is SwiftPM's own, with no SDK",
-                JSON.stringify(serverSettings("android", undefined)) === JSON.stringify({ scratchPath: ".build/android/index-build" })
-                && JSON.stringify(serverSettings(undefined, sdk)) === JSON.stringify({ scratchPath: ".build/index-build" }));
-
-            // The other releases are assembled, so the repository's one-release guard reads no second one here.
-            const older = ["6", "3", "3"].join("."), newer = ["6", "5"].join(".");
-            const list = `swift-${older}-RELEASE_android\nswift-6.4.2-RELEASE_android\nswift-6.4.2-RELEASE_static-linux-0.1.0\n`;
-            const sdkOf = (version: string) => swiftSDKOf(swiftRelease(version), list, "android");
-            check("the Swift SDK for Android is the one of the toolchain's release, as the stateui tool finds it",
-                sdkOf("Apple Swift version 6.4.2 (swift-6.4.2-RELEASE)\nTarget: arm64-apple-macosx26.0") === sdk
-                && sdkOf(`Apple Swift version ${older} (swift-${older}-RELEASE)`) === `swift-${older}-RELEASE_android`
-                && sdkOf(`Apple Swift version ${newer} (swift-${newer}-RELEASE)`) === undefined && sdkOf("") === undefined);
-            const wasm = "swift-6.4.2-RELEASE_wasm\nswift-6.4.2-RELEASE_wasm-embedded\n";
-            check("the Swift SDK for WebAssembly is the one whose id ends in _wasm, never its Embedded Swift sibling",
-                swiftSDKOf("6.4.2", wasm, "wasm") === "swift-6.4.2-RELEASE_wasm"
-                && swiftSDKOf("6.4.2", "swift-6.4.2-RELEASE_wasm-embedded\n", "wasm") === undefined);
+            // What the tool answers here, for each host this machine runs and for plain Swift.
+            const asked = await ToolingClient.start({
+                executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
+                folder: root.uri.fsPath, clientVersion: "suite",
+            });
+            const contexts = await Promise.all([undefined, ...availableHosts().map((each) => each.id)].map((each) =>
+                asked.request("index/describe", each ? { host: each } : {})));
+            await asked.dispose();
+            say(`     index: ${contexts.map((each) => `${each.host ?? "plain"} ${each.scratchPath} ${each.triple ?? ""} ${each.swiftSDK ?? each.sdk ?? ""}`).join("; ")}`);
+            check("the tool says each host's index: its own scratch folder, and a triple and an SDK where its heads run elsewhere",
+                contexts[0].scratchPath === ".build/index-build"
+                && contexts.slice(1).every((each) => each.scratchPath === `.build/${each.host}/index-build`)
+                && contexts.every((each) => each.fallback === undefined)
+                && contexts.filter((each) => each.host === "android").every((each) => each.triple === "aarch64-unknown-linux-android28" && each.swiftSDK?.endsWith("_android"))
+                && contexts.filter((each) => each.host === "web").every((each) => each.triple === "wasm32-unknown-wasip1" && each.swiftSDK?.endsWith("_wasm"))
+                && contexts.filter((each) => each.host === "uikit").every((each) => each.triple?.endsWith("-apple-ios26.4-simulator") && each.sdk?.includes("iPhoneSimulator")));
         }
         {
             const listed = [
@@ -343,17 +344,6 @@ export async function run(): Promise<void> {
         }
         // 6a. UIKit: the language server's file, the simulators, and the
         //     commands a launch and a suite run - captured, not run.
-        {
-            const simulatorSDK = "/Xcode/SDKs/iPhoneSimulator.sdk";
-            const uiKit = serverConfig({ swiftPM: { scratchPath: ".build/appkit/index-build" } }, serverSettings("uikit", undefined, simulatorSDK));
-            const back = serverConfig(uiKit, serverSettings("appkit", undefined));
-            check("as UIKit the language server indexes in .build/uikit/index-build for arm64-apple-ios26.4-simulator against Xcode's simulator SDK - and back on AppKit both are gone",
-                uiKit.swiftPM?.scratchPath === ".build/uikit/index-build" && uiKit.swiftPM?.triple === "arm64-apple-ios26.4-simulator"
-                && uiKit.swiftPM?.sdk === simulatorSDK && !("swiftSDK" in uiKit.swiftPM!)
-                && back.swiftPM?.scratchPath === ".build/appkit/index-build" && !("triple" in back.swiftPM!) && !("sdk" in back.swiftPM!));
-            check("with no simulator SDK found UIKit indexes for this Mac",
-                JSON.stringify(serverSettings("uikit", undefined, undefined)) === JSON.stringify({ scratchPath: ".build/uikit/index-build" }));
-        }
         {
             const windows = buildingCommand("C:\\Users\\O'Neil\\apps\\Notes\\.build", "win32");
             check("a build is looked for with pgrep, and on Windows - which has no pgrep - with PowerShell's process list",
@@ -461,9 +451,7 @@ export async function run(): Promise<void> {
 
         // 6b. WinUI: HelloWorld's head, built by the stateui tool and launched under lldb-dap, and the host's own
         //     package through stateui repo test.
-        check("HelloWorld has a WinUI head, and as WinUI the language server indexes in .build/winui/index-build",
-            hasHead(helloWorld, "winui")
-            && JSON.stringify(serverSettings("winui", undefined)) === JSON.stringify({ scratchPath: ".build/winui/index-build" }));
+        check("HelloWorld has a WinUI head", hasHead(helloWorld, "winui"));
         {
             const built: string[] = [];
             const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "winui-release", "HelloWorldWinUI.exe");
@@ -496,9 +484,7 @@ export async function run(): Promise<void> {
 
         // 6c. GTK: HelloWorld's head, built and installed by the stateui tool and
         //     launched under lldb-dap, and the host's own suite by the tool.
-        check("HelloWorld has a GTK head, and as GTK the language server indexes in .build/gtk/index-build",
-            hasHead(helloWorld, "gtk")
-            && JSON.stringify(serverSettings("gtk", undefined)) === JSON.stringify({ scratchPath: ".build/gtk/index-build" }));
+        check("HelloWorld has a GTK head", hasHead(helloWorld, "gtk"));
         {
             const built: string[] = [];
             const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "gtk-arm64-x-debug", "HelloWorldGTK");
@@ -530,10 +516,7 @@ export async function run(): Promise<void> {
 
         // 6d. Web: HelloWorld's head, built, served and opened in the browser chosen by the tool; a Debug launch in
         //     one of Chromium's VS Code's JavaScript debugger on the page the run's `started` event names.
-        check("HelloWorld has a Web head, and as the Web the language server indexes in .build/web/index-build for wasm32-unknown-wasip1",
-            hasHead(helloWorld, "web")
-            && JSON.stringify(serverSettings("web", "swift-6.4.2-RELEASE_wasm")) === JSON.stringify(
-                { scratchPath: ".build/web/index-build", swiftSDK: "swift-6.4.2-RELEASE_wasm", triple: "wasm32-unknown-wasip1" }));
+        check("HelloWorld has a Web head", hasHead(helloWorld, "web"));
         {
             const browserOn = (id: string, name: string, program: string | undefined, booted: boolean) =>
                 browserOf({ id, udid: id, name, kind: "browser", version: "", booted, programUri: program && vscode.Uri.file(program).toString() });

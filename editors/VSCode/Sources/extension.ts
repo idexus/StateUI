@@ -15,7 +15,7 @@ import { isCheckout } from "./checkouts";
 import { Configuration, runPlace, configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
 import { AndroidLister, androidDeviceOf, askForDevice, chooseListedDevice, chosenDevice, deviceToRunOn } from "./devices";
 import { askForBrowser, Browser, BrowserLister, browserOf, browserToRunOn, chooseListedBrowser, chosenBrowser } from "./browsers";
-import { applyEditorMode, cleanIndex, setHostEnvironment, variablesInSettings } from "./editorMode";
+import { applyEditorMode, cleanIndex, IndexDescriber, setHostEnvironment, variablesInSettings } from "./editorMode";
 import { availableHosts, describe, Host } from "./hosts";
 import {
     askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceOf, UIKitLister, uiKitDeviceToRunOn, uiKitSimulatorToTestOn,
@@ -67,6 +67,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
 
     // The stateui tool, one connection per folder.
     const tool = toolingClients(context);
+
+    // What a host's code is indexed with, and every index taken away - the tool's facts, through the first folder.
+    const describeIndex: IndexDescriber = async (forHost) => {
+        const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+        return folder === undefined ? undefined : withTool(tool, folder, "the index could not be described",
+            (client) => client.request("index/describe", forHost ? { host: forHost } : {}));
+    };
+    const cleanIndexes = (folders: readonly string[]) => withTool(tool, folders[0] ?? ".", "the index was not cleaned",
+        (client) => client.request("index/clean", { rootUris: folders.map(pathToFileUri) }));
 
     // What the tool's builds and packages said: SwiftPM's words, the bundle's assembly.
     const buildOutput = vscode.window.createOutputChannel("StateUI Build");
@@ -235,7 +244,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         await state.update(hostKey, picked);
         refresh();
 
-        if (await applyEditorMode(picked, roots())) {
+        if (await applyEditorMode(picked, roots(), describeIndex)) {
             void vscode.window.setStatusBarMessage(`StateUI: the editor works as ${describe(picked).label}`, 4000);
         }
     };
@@ -486,7 +495,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             await discover();
             await selectApplication(name);
             updateFolderContexts();
-            await applyEditorMode(host(), roots());
+            await applyEditorMode(host(), roots(), describeIndex);
             void vscode.window.showInformationMessage(
                 `StateUI: ${vscode.workspace.asRelativePath(directory)} is made and chosen - StateUI: Debug runs it.`);
             return directory;
@@ -667,7 +676,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             return destination;
         }),
         vscode.commands.registerCommand("stateui.cleanIndex", async () => {
-            await cleanIndex(roots());
+            await cleanIndex(roots(), cleanIndexes);
             void vscode.window.setStatusBarMessage("StateUI: the index is being built again", 4000);
         }));
 
@@ -833,7 +842,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             refresh();
             updateFolderContexts();
             if (roots().join("\n") !== before) {
-                await applyEditorMode(host(), roots());
+                await applyEditorMode(host(), roots(), describeIndex);
             }
         }, 500);
     };
@@ -851,7 +860,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     await discover();
     updateFolderContexts();
     refresh();
-    await applyEditorMode(host(), roots());
+    await applyEditorMode(host(), roots(), describeIndex);
 
     const selectUIKitDevice = async (wanted: string): Promise<string | undefined> => {
         const name = await chooseListedUIKitDevice(state, wanted, listUIKit);
