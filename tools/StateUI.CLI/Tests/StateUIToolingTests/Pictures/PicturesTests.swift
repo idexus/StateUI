@@ -128,6 +128,18 @@ final class PicturesTests: XCTestCase {
         XCTAssertTrue(held.contains(#"xlink:href="/m.svg" x="25.0" y="25.0" width="50.0" height="50.0""#), held)
     }
 
+    /// CI installs the pinned release where a suite draws pictures: the workflows of the UIKit and Android hosts,
+    /// whose test applications carry images, take it from the action that downloads that release.
+    func testCIInstallsThePinnedRelease() throws {
+        let github = ProjectReaderTests.repository.appendingPathComponent(".github")
+        let action = try String(contentsOf: github.appendingPathComponent("actions/resvg/action.yml"), encoding: .utf8)
+        XCTAssertTrue(action.contains("/download/v\(Resvg.release)/"), "the action downloads resvg \(Resvg.release)")
+        for workflow in ["uikit.yml", "android.yml"] {
+            let text = try String(contentsOf: github.appendingPathComponent("workflows/\(workflow)"), encoding: .utf8)
+            XCTAssertTrue(text.contains("uses: ./.github/actions/resvg"), "\(workflow) installs resvg")
+        }
+    }
+
     /// Another release of resvg than the pinned one is refused, with how to get the pinned one.
     func testAnotherReleaseIsRefused() async throws {
         #if os(Windows)

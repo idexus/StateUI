@@ -92,11 +92,15 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      # The test application's pictures are drawn by resvg of the tool's release.
+      - uses: ./.github/actions/resvg
+
+      # The JSON on standard output says why a build failed: it is shown then.
       - name: Build the test APK for x86_64
         run: |
           set -euo pipefail
           swift run --quiet --package-path tools/StateUI.CLI stateui repo test --suite host:android --build-only --architecture x86_64 \
-            --format json > "$RUNNER_TEMP/built.json"
+            --format json > "$RUNNER_TEMP/built.json" || { cat "$RUNNER_TEMP/built.json"; exit 1; }
           folder="$(python3 -c 'import json, sys, urllib.parse; print(urllib.parse.urlparse(json.load(open(sys.argv[1]))["result"]["artifactUri"]).path)' "$RUNNER_TEMP/built.json")"
           mkdir -p "$RUNNER_TEMP/android-tests"
           cp "$folder/StateUIAndroidTests.apk" "$folder/suite.json" "$RUNNER_TEMP/android-tests/"

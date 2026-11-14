@@ -17,7 +17,11 @@ it; another release, or none, is refused with how to get the pinned one
 (`brew install resvg`, `cargo install resvg --version 0.50.0`, its release
 archive). Nothing of it is shipped or checked in, so a built application
 carries only what it drew. `stateui doctor` checks it on a Mac, for the heads
-a Mac builds.
+a Mac builds. CI takes the pinned release from its own action
+(`.github/actions/resvg`: the release archive for the runner, checked by its
+SHA-256) in every workflow whose suite draws pictures - the UIKit and Android
+hosts' test applications carry images; `PicturesTests` holds the action's
+release equal to the tool's.
 
 ## What StateUI draws
 

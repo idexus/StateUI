@@ -36,6 +36,8 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
       - name: Report the toolchain
         run: swift --version
+      # The test application's pictures are drawn by resvg of the tool's release.
+      - uses: ./.github/actions/resvg
 
       # The image names its simulators by the devices of its day, so one of the
       # family on the newest iOS is found rather than named: an iPhone Pro and
