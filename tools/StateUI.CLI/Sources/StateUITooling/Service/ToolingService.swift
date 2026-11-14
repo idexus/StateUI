@@ -330,6 +330,19 @@ public struct ToolingService: Sendable {
         try await EditorIntegration.install(request.editorExtension, with: try FileURI.url(request.editorExecutableUri), reporter: reporter)
     }
 
+    /// Packages the tool's own distribution from the checkout holding `folder` into `output` - its
+    /// `artifacts/stateui` where none is named - and reads the archive back, each a phase.
+    ///
+    /// - Throws: ``ToolingError`` `PROJECT_NOT_FOUND` outside a checkout.
+    public func packageDistribution(into output: URL?, in folder: URL, reporter: BuildReporter) async throws -> SuiteResult {
+        guard let checkout = Checkout.holding(folder)?.root else {
+            throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        let target = output ?? checkout.appendingPathComponent("artifacts/stateui")
+        try FileManager.default.createDirectory(at: target, withIntermediateDirectories: true)
+        return try await ToolDistribution(checkout: checkout, tools: ToolResolver()).package(into: target, reporter: reporter)
+    }
+
     /// `work` given a reporter whose words reach `context` in the order they were said.
     private static func reporting<Result: Sendable>(
         _ context: OperationContext, _ work: (RunReporter) async throws -> Result

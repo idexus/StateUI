@@ -9,7 +9,7 @@ import StateUIToolingProtocol
 /// `stateui repo`: the StateUI checkout's own work - its suites.
 struct RepoCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self, Conformance.self, API.self, Docs.self, Samples.self, WebSize.self, Integration.self])
+        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self, Conformance.self, API.self, Docs.self, Samples.self, WebSize.self, Integration.self, Distribution.self])
 
     /// `stateui repo test --suite host:<host>`, `stateui repo test --plan portable | native [--suite <id>]`.
     struct Test: AsyncParsableCommand {

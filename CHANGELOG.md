@@ -173,6 +173,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   extension declares no `stateui` task type any more: it made its own tasks with it, and no task of a `tasks.json` ever
   ran by it. The extension runs the tool from the user's home, so on Windows a folder it holds a connection for can be
   removed or renamed.
+- `stateui repo distribution package [--output <folder>]` builds the tool for release - the Swift runtime linked in on
+  Linux and Windows - and archives it for this system and architecture with its license, NOTICE and the notices of the
+  packages built into it, its SHA-256 beside it; then reads the archive back: what it holds, the libraries its program
+  loads, and the program run with no Swift on the search path. The tool's workflow keeps one per system from every run.
 - The `stateui` tool has a workflow of its own (`cli.yml`): its suites on macOS, Linux and Windows, then the editor
   extension's client of it against a real `stateui serve --stdio`.
 

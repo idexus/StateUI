@@ -58,6 +58,15 @@ application has no singleton for (`PushNotificationsLongRunningTask`, the
 Widgets'), and gives the application per-monitor DPI and Windows 10 and later
 (`WinUIManifest`).
 
+A fragment is read by the tool's own XML reader (`XMLEvents`): elements,
+attributes, text with its references and character data, in order;
+declarations and comments are skipped. It refuses a document that leaves an
+element open, closes one it did not open, or holds anything but one root - an
+unfinished fragment is said, never written as an empty registration. The tool
+links no XML library, so its distribution carries the Swift runtime linked in
+on Windows, where Swift has no static libxml2 ([the tool's
+distribution](repository.md#the-tools-distribution)).
+
 ## A backend's runtime
 
 A backend whose engine needs files beside the application declares them in

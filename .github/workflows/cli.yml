@@ -1,7 +1,8 @@
 # The stateui tool on each machine it serves - its own suites, then the editor
 # extension's client of it: the recorded examples read with the extension's
 # types, and a real `stateui serve --stdio` answering it (npm run test:tooling
-# in editors/VSCode).
+# in editors/VSCode) - and its distribution for that system, read back and kept
+# as the run's artifact (`stateui repo distribution package`).
 
 name: stateui tool
 
@@ -22,7 +23,7 @@ jobs:
   macos:
     name: macOS
     runs-on: xcode-27
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Use Xcode 27.0
@@ -37,11 +38,17 @@ jobs:
       - name: Test the extension's client of the tool
         working-directory: editors/VSCode
         run: npm ci && npm run test:tooling
+      - name: Package the tool's distribution, then read it back
+        run: swift run --quiet --package-path tools/StateUI.CLI stateui repo distribution package --output artifacts/stateui
+      - uses: actions/upload-artifact@v5
+        with:
+          name: stateui-macos
+          path: artifacts/stateui/
 
   linux:
     name: Linux
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     container: swift:6.4.2-noble
     steps:
       # THE CHECKOUT DIRECTORY HAS TO BE CALLED StateUI: the tool's tests read
@@ -57,6 +64,12 @@ jobs:
       - name: Test the extension's client of the tool
         working-directory: editors/VSCode
         run: npm ci && npm run test:tooling
+      - name: Package the tool's distribution, then read it back
+        run: swift run --quiet --package-path tools/StateUI.CLI stateui repo distribution package --output artifacts/stateui
+      - uses: actions/upload-artifact@v5
+        with:
+          name: stateui-linux
+          path: artifacts/stateui/
 
   # Visual Studio's environment and the toolchain set up as in build-windows.yml,
   # whose notes say why each step stands.
@@ -100,3 +113,9 @@ jobs:
       - name: Test the extension's client of the tool
         working-directory: editors/VSCode
         run: npm ci; if ($LASTEXITCODE -eq 0) { npm run test:tooling }
+      - name: Package the tool's distribution, then read it back
+        run: swift run --quiet --package-path tools/StateUI.CLI stateui repo distribution package --output artifacts/stateui
+      - uses: actions/upload-artifact@v5
+        with:
+          name: stateui-windows
+          path: artifacts/stateui/

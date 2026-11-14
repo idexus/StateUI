@@ -213,3 +213,28 @@ extensions: an install holds only where the identifier stands there at the
 version packaged. In the terminal `install` packages first, with `code` on
 the search path unless `--editor-path` names another; the editor names its
 own command line, and offers the reload itself.
+
+## The tool's distribution
+
+`stateui repo distribution package [--output <folder>]` builds the tool for
+release - on Linux and Windows with the Swift runtime linked in
+(`--static-swift-stdlib`), as those systems have none; macOS carries its own -
+and archives it for this system and architecture,
+`stateui-<release>-<system>-<architecture>.tar.gz` (a `.zip` on Windows, by its
+own `tar -a`): the program in `bin/`, the project's `LICENSE` and `NOTICE`, and
+`THIRD-PARTY-NOTICES` - every package `Package.resolved` pins, in order, with
+the license and notice files its checkout holds; a package holding none is
+refused. Beside the archive stands its SHA-256 (`<archive>.sha256`, the digest
+and the name), computed by the tool itself, the same on every system.
+
+The archive is then read back, unpacked in a folder of its own, each a phase:
+it holds exactly those four files; its program loads no library from outside
+the system - on macOS none but `/usr/lib` and `/System/Library`, on Linux no
+Swift runtime, Foundation, dispatch or libxml2 - and it answers `version` with
+the search path holding no folder of a toolchain. The tool links no XML
+library: Windows' Swift has no static libxml2, so the Windows App SDK's
+fragments are read by the tool's own reader (`XMLEvents`). On Linux the program
+still loads the system's C and C++ libraries at the versions of the system it
+was built on: an archive serves the systems of that generation, as the tool's
+workflow builds it on the one it names. The checkout's `artifacts/stateui`
+holds it where no folder is named.

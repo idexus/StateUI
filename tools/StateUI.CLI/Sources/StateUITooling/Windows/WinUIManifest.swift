@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Foundation
-#if canImport(FoundationXML)
-import FoundationXML
-#endif
 import StateUIToolingProtocol
 
 /// The manifest a self-contained WinUI application carries beside its executable, `<name>.exe.manifest`: every class
@@ -68,55 +65,39 @@ enum WinUIManifest {
         }
     }
 
-    /// A fragment's in-process servers and proxy stubs, read as XML.
-    private final class Fragment: NSObject, XMLParserDelegate {
-        private var servers: [Server] = []
-        private var path = ""
-        private var classes: [String] = []
-        private var classID: String?
-        private var interfaces: [(name: String, id: String)] = []
-        private var text = ""
-        /// The elements open: a fragment read whole closes every one it opened.
-        private var open = 0
-        private var closedRoot = false
-
+    /// A fragment's in-process servers and proxy stubs, in its order.
+    private enum Fragment {
         static func read(_ data: Data) throws -> [Server] {
-            let parser = XMLParser(data: data)
-            let fragment = Fragment()
-            parser.delegate = fragment
-            // libxml2 on Windows ends an unfinished document with no error: the root's close is asked for too.
-            guard parser.parse(), fragment.closedRoot else {
-                throw ToolingError(.toolFailed, "A Windows App SDK fragment is not XML: \(parser.parserError.map(String.init(describing:)) ?? "it ends unfinished")")
+            let events: [XMLEvents.Event]
+            do { events = try XMLEvents.read(data) } catch let refusal as XMLEvents.Refusal {
+                throw ToolingError(.toolFailed, "A Windows App SDK fragment is not XML: \(refusal.reason).")
             }
-            return fragment.servers
-        }
-
-        func parser(_ parser: XMLParser, didStartElement name: String, namespaceURI: String?, qualifiedName: String?,
-                    attributes: [String: String]) {
-            open += 1
-            text = ""
-            switch name {
-            case "InProcessServer": (path, classes, classID) = ("", [], nil)
-            case "ActivatableClass": attributes["ActivatableClassId"].map { classes.append($0) }
-            case "ProxyStub": (path, classID, interfaces) = ("", attributes["ClassId"] ?? "", [])
-            case "Interface": interfaces.append((attributes["Name"] ?? "", attributes["InterfaceId"] ?? ""))
-            default: break
+            var servers: [Server] = []
+            var (path, text, classes, classID) = ("", "", [String](), "")
+            var interfaces: [(name: String, id: String)] = []
+            for event in events {
+                switch event {
+                case .start(let name, let attributes):
+                    text = ""
+                    switch name {
+                    case "InProcessServer": (path, classes) = ("", [])
+                    case "ActivatableClass": attributes["ActivatableClassId"].map { classes.append($0) }
+                    case "ProxyStub": (path, classID, interfaces) = ("", attributes["ClassId"] ?? "", [])
+                    case "Interface": interfaces.append((attributes["Name"] ?? "", attributes["InterfaceId"] ?? ""))
+                    default: break
+                    }
+                case .text(let string):
+                    text += string
+                case .end(let name):
+                    switch name {
+                    case "Path": path = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                    case "InProcessServer": servers.append(.inProcess(path: path, classes: classes))
+                    case "ProxyStub": servers.append(.proxyStub(path: path, classID: classID, interfaces: interfaces))
+                    default: break
+                    }
+                }
             }
-        }
-
-        func parser(_ parser: XMLParser, foundCharacters string: String) {
-            text += string
-        }
-
-        func parser(_ parser: XMLParser, didEndElement name: String, namespaceURI: String?, qualifiedName: String?) {
-            open -= 1
-            closedRoot = open == 0
-            switch name {
-            case "Path": path = text.trimmingCharacters(in: .whitespacesAndNewlines)
-            case "InProcessServer": servers.append(.inProcess(path: path, classes: classes))
-            case "ProxyStub": servers.append(.proxyStub(path: path, classID: classID ?? "", interfaces: interfaces))
-            default: break
-            }
+            return servers
         }
     }
 }
