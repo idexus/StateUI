@@ -40,6 +40,8 @@ writes its result as words or as the message an editor receives.
   libraries an APK ships, and the APK Gradle makes.
 - [GTK heads](gtk-heads.md): a GTK head's artifact, the desktop entry an
   install writes, and its run.
+- [Web heads](web-heads.md): a Web head's module, and the page laid beside
+  it.
 - [Apple bundles](apple-bundles.md): an Apple head's `Info.plist`, and what an
   AppKit bundle holds.
 - [The repository's own work](repository.md): a host's suite, run as its CI runs it.

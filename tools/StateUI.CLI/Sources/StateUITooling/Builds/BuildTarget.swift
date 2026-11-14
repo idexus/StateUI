@@ -17,16 +17,15 @@ struct BuildTarget: Sendable {
     var signing: Signing = .adHoc
     /// `swift build`'s `--triple` and `--sdk`, where the build is not this machine's own.
     var arguments: [String]
-    /// The compiler, where the host takes another than the tool's own: Android's, of the Swift SDK's build.
+    /// Android's compiler, of its Swift SDK's build, and what its build's environment gains.
     var compiler: ProcessExecutable?
-    /// What the build's environment gains: Android's NDK.
     var environment: [String: String] = [:]
-    /// An Android head's Swift SDK and NDK.
     var android: (swiftSDK: String, ndk: URL)?
+    var webSDK: String?
 
     /// The identity of what the build compiles against, for its context: the Apple SDK, or the Swift SDK and NDK.
     var sdkIdentity: String {
-        sdk?.identity ?? android.map { "\($0.swiftSDK) \($0.ndk.path)" } ?? ""
+        sdk?.identity ?? android.map { "\($0.swiftSDK) \($0.ndk.path)" } ?? webSDK ?? ""
     }
 
     enum Signing: Sendable {
@@ -36,14 +35,24 @@ struct BuildTarget: Sendable {
         #endif
     }
 
-    /// The target of a head built for this machine itself - GTK's: its own architecture, nothing for SwiftPM to be told.
-    ///
-    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for another architecture than the machine's.
+    /// A head built for this machine itself, GTK's; another architecture is refused.
     static func native(_ architecture: Architecture, machine: Architecture, host: HostFamily) throws -> BuildTarget {
         guard architecture == machine else {
             throw ToolingError(.invalidConfiguration, "A \(host.rawValue) head is built for this machine's architecture, \(machine.rawValue).")
         }
         return BuildTarget(architecture: architecture, arguments: [])
+    }
+
+    /// A Web head: the Swift SDK `_wasm` of `compiler`'s release (web-heads.md), else `MISSING_TOOLCHAIN`.
+    static func web(compiler: ProcessExecutable) async throws -> BuildTarget {
+        let version = await ToolOutput.text(compiler, ["--version"]) ?? ""
+        let list = await ToolOutput.standardOutput(compiler, ["sdk", "list"]) ?? ""
+        guard let sdk = Versions.swiftSDK(of: Versions.swiftRelease(in: version), in: list, family: "wasm") else {
+            throw ToolingError(.missingToolchain, "No Swift SDK for WebAssembly of this compiler's release is installed: https://www.swift.org/documentation/articles/wasm-getting-started.html")
+        }
+        var target = BuildTarget(architecture: .wasm32, arguments: ["--swift-sdk", sdk])
+        target.webSDK = sdk
+        return target
     }
 
     /// The target of an AppKit head for `architecture`: this Mac's SDK, a triple where it is not the machine's own.
@@ -53,12 +62,8 @@ struct BuildTarget: Sendable {
             arguments: architecture == machine ? [] : ["--triple", AppleSDK.Platform.macOS.triple(architecture, floor: Doctor.appleFloor)])
     }
 
-    /// The target of an Android head for the ABI of `architecture`, else of the device `device` names - or the only
-    /// one running - else `arm64-v8a`: the Swift SDK for Android of the swift.org compiler's release, the triple at
-    /// API 28, and the NDK, 30 or newer.
-    ///
-    /// - Throws: ``ToolingError`` `MISSING_TOOLCHAIN` where the compiler, the SDK or the NDK is missing,
-    ///   `INVALID_CONFIGURATION` where the device named is not here.
+    /// An Android head for `architecture`'s ABI, else the device's, else `arm64-v8a` (android-heads.md); a missing
+    /// compiler, SDK or NDK is `MISSING_TOOLCHAIN`, a device named not here `INVALID_CONFIGURATION`.
     static func android(device: String?, listed: [Destination], architecture: Architecture?, tools: AndroidTools) async throws -> BuildTarget {
         guard let (compiler, swiftSDK) = await tools.swift() else {
             throw ToolingError(.missingToolchain, "No swift.org compiler with the Swift SDK for Android of its release: `stateui doctor --host android` says what to install.")
@@ -79,11 +84,8 @@ struct BuildTarget: Sendable {
             compiler: .path(compiler.path), environment: ["ANDROID_NDK_ROOT": ndk.path], android: (swiftSDK, ndk))
     }
 
-    /// The target of a UIKit head of `application` named `name` for the destination `device` names among `listed`:
-    /// its SDK and triple - an arm64 device's, a simulator's of `architecture` - and a device's signing.
-    ///
-    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` where no destination or signing is found,
-    ///   `MISSING_TOOLCHAIN` where Xcode holds no SDK for it.
+    /// A UIKit head for the destination `device` names among `listed`: its SDK, triple and a device's signing; no
+    /// destination or signing is `INVALID_CONFIGURATION`, no SDK `MISSING_TOOLCHAIN`.
     static func uiKit(
         device: String?, listed: [Destination], architecture: Architecture?, machine: Architecture, application: URL, name: String
     ) async throws -> BuildTarget {

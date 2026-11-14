@@ -88,7 +88,7 @@ public struct ApplicationBuilder: Sendable {
     func built(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter)
         async throws -> (result: BuildResult, root: URL) {
         let (project, application) = try await resolve(request, in: folder)
-        guard [.appkit, .uikit, .android, .gtk].contains(request.host) else {
+        guard [.appkit, .uikit, .android, .gtk, .web].contains(request.host) else {
             throw ToolingError(.invalidConfiguration, "\(request.host.rawValue) is built by its .scripts until its row moves to the tool.")
         }
         guard let libraryUri = application.libraryUri else {
@@ -108,6 +108,8 @@ public struct ApplicationBuilder: Sendable {
                 tools: AndroidTools(environment: environment))
         case .gtk:
             try BuildTarget.native(request.architecture ?? machine, machine: machine, host: request.host)
+        case .web:
+            try await BuildTarget.web(compiler: tools.swift)
         default:
             await BuildTarget.appKit(request.architecture ?? machine, machine: machine)
         }
@@ -209,6 +211,13 @@ public struct ApplicationBuilder: Sendable {
     private func assemble(
         _ context: BuildContext, _ target: BuildTarget, name: String, binaries: URL, in staging: URL, reporter: BuildReporter
     ) async throws -> Head {
+        if context.host == .web {
+            let page = WebPage(
+                application: context.application, name: name, product: context.product, binaries: binaries, library: context.library,
+                stamp: Int(Date().timeIntervalSince1970))
+            try page.assemble(in: staging)
+            return Head(bundle: nil, program: "index.html", signing: .none)
+        }
         if context.host == .gtk {
             let head = GTKHead(application: context.application, product: context.product, binaries: binaries)
             try head.assemble(in: staging)

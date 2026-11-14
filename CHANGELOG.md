@@ -66,6 +66,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **`stateui build`, `install` and `run` make GTK applications** on Linux: the program, its libraries and its
   pictures published as the build's artifact; `stateui install --artifact` writes the desktop entry and icon for the
   user - no longer a build's side effect - and `run` builds, installs, stops a copy still running and runs it.
+- **`stateui build` and `package --host web`** build a Web head's module with the Swift SDK for WebAssembly of the
+  compiler's release and lay its page beside it - the same page the scripts laid.
 - **`stateui run --host uikit`** installs and starts a UIKit head on its simulator or device and follows its output;
   `--debugger` starts it held until a debugger attaches, saying its process. `--host android` does so on a device or
   emulator - a virtual device named but not running is booted - every `STATEUI_` switch handed to the application,
