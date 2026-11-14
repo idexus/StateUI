@@ -923,8 +923,7 @@ export async function run(): Promise<void> {
             // A breakpoint the first render reaches - the button's caption - and the stop lldb-dap reports.
             const page = vscode.Uri.file(path.join(root.uri.fsPath, "apps", "HelloWorld", "Sources", "MainPage.swift"));
             const breakpoint = new vscode.SourceBreakpoint(new vscode.Location(page, new vscode.Position(40, 0)));
-            vscode.debug.addBreakpoints([breakpoint]);
-            const stopped = new Promise<number>((resolve) => {
+            const breakpointStop = () => new Promise<number>((resolve) => {
                 const tracking = vscode.debug.registerDebugAdapterTrackerFactory("lldb-dap", {
                     createDebugAdapterTracker: () => ({
                         onDidSendMessage: (message: { type?: string; event?: string; body?: { reason?: string; threadId?: number } }) => {
@@ -936,6 +935,27 @@ export async function run(): Promise<void> {
                     }),
                 });
             });
+            // The stop at the breakpoint, its frame and locals checked, the breakpoint taken away and the run let go.
+            const stopsInCaption = async (running: vscode.DebugSession | undefined, stop: Promise<number>, on: string): Promise<void> => {
+                const thread = await Promise.race([stop, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 180_000))]);
+                check(`the breakpoint in the button's caption stops the first render${on}`, thread !== undefined && running !== undefined);
+                if (thread !== undefined && running) {
+                    const trace = await running.customRequest("stackTrace", { threadId: thread, levels: 1 });
+                    const frame = trace.stackFrames?.[0];
+                    const scopes = await running.customRequest("scopes", { frameId: frame?.id });
+                    const locals = (scopes.scopes ?? []).find((each: { name: string }) => /local/i.test(each.name));
+                    const variables = locals ? await running.customRequest("variables", { variablesReference: locals.variablesReference }) : {};
+                    check(`it stops in MainPage.caption(clicks:) at line 41, its locals holding count${on} - ${frame?.name} ${frame?.source?.path}:${frame?.line}`,
+                        String(frame?.name ?? "").includes("caption") && String(frame?.source?.path ?? "").endsWith("MainPage.swift")
+                        && frame?.line === 41 && (variables.variables ?? []).some((each: { name: string }) => each.name === "count"));
+                    vscode.debug.removeBreakpoints([breakpoint]);
+                    await running.customRequest("continue", { threadId: thread });
+                } else {
+                    vscode.debug.removeBreakpoints([breakpoint]);
+                }
+            };
+            vscode.debug.addBreakpoints([breakpoint]);
+            const stopped = breakpointStop();
             const session = new Promise<vscode.DebugSession>((resolve) => {
                 const listener = vscode.debug.onDidStartDebugSession((each) => {
                     if (each.type === "lldb-dap") {
@@ -952,22 +972,7 @@ export async function run(): Promise<void> {
             check(`an lldb-dap session starts on HelloWorldAppKit as the stateui tool published it - ${program}`,
                 program.includes("/apps/HelloWorld/.build/stateui/artifacts/appkit-")
                 && program.endsWith("-debug/HelloWorldAppKit.app/Contents/MacOS/HelloWorldAppKit") && fs.existsSync(program));
-            const thread = await Promise.race([stopped, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 120_000))]);
-            check("the breakpoint in the button's caption stops the first render", thread !== undefined && running !== undefined);
-            if (thread !== undefined && running) {
-                const trace = await running.customRequest("stackTrace", { threadId: thread, levels: 1 });
-                const frame = trace.stackFrames?.[0];
-                const scopes = await running.customRequest("scopes", { frameId: frame?.id });
-                const locals = (scopes.scopes ?? []).find((each: { name: string }) => /local/i.test(each.name));
-                const variables = locals ? await running.customRequest("variables", { variablesReference: locals.variablesReference }) : {};
-                check(`it stops in MainPage.caption(clicks:) at line 41, its locals holding count - ${frame?.name} ${frame?.source?.path}:${frame?.line}`,
-                    String(frame?.name ?? "").includes("caption") && String(frame?.source?.path ?? "").endsWith("MainPage.swift")
-                    && frame?.line === 41 && (variables.variables ?? []).some((each: { name: string }) => each.name === "count"));
-                vscode.debug.removeBreakpoints([breakpoint]);
-                await running.customRequest("continue", { threadId: thread });
-            } else {
-                vscode.debug.removeBreakpoints([breakpoint]);
-            }
+            await stopsInCaption(running, stopped, "");
             await new Promise((resume) => setTimeout(resume, 4000));
             const alive = (() => { try { return execSync("pgrep -f HelloWorldAppKit.app/Contents/MacOS/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
             check("the HelloWorldAppKit process is running", alive);
@@ -976,7 +981,7 @@ export async function run(): Promise<void> {
             const gone = (() => { try { return execSync("pgrep -f HelloWorldAppKit.app/Contents/MacOS/HelloWorldAppKit").toString().trim().length === 0; } catch { return true; } })();
             check("Stop ends the HelloWorldAppKit process", gone);
 
-            // And on the iOS simulator: run-app.sh starts HelloWorld held, and lldb-dap attaches and lets it run.
+            // And on the iOS simulator: the stateui tool starts HelloWorld held, and lldb-dap attaches and lets it run.
             const lister = await ToolingClient.start({
                 executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
                 folder: root.uri.fsPath, clientVersion: "suite",
@@ -997,10 +1002,13 @@ export async function run(): Promise<void> {
                     }
                 });
             });
+            vscode.debug.addBreakpoints([breakpoint]);
+            const stoppedOnSimulator = breakpointStop();
             check("StateUI: Debug starts on UIKit", await vscode.debug.startDebugging(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
             const onSimulator = await Promise.race([attached, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
             check("an lldb-dap session attaches to HelloWorldUIKit's process", typeof onSimulator?.configuration.pid === "number");
+            await stopsInCaption(onSimulator, stoppedOnSimulator, " on the simulator");
             await new Promise((resume) => setTimeout(resume, 4000));
             const onDevice = (() => { try { return execSync(`pgrep -f ${iPhone!.id}.*HelloWorldUIKit`).toString().trim().length > 0; } catch { return false; } })();
             check("the HelloWorldUIKit process runs on the simulator", onDevice);
@@ -1037,14 +1045,37 @@ export async function run(): Promise<void> {
                         }
                     });
                 });
+                vscode.debug.addBreakpoints([breakpoint]);
+                const stoppedOnDevice = breakpointStop();
                 check("StateUI: Debug starts on the device", await vscode.debug.startDebugging(root,
                     { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
                 const session = await Promise.race([attachedOnDevice, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
                 check("an lldb-dap session attaches through the device", JSON.stringify(session?.configuration.attachCommands ?? []).includes(`device select ${real}`));
+                await stopsInCaption(session, stoppedOnDevice, " on the device");
                 await new Promise((resume) => setTimeout(resume, 8000));
-                const running = (() => { try { return execSync(`xcrun devicectl device info processes --device ${real}`).toString().includes("HelloWorldUIKit"); } catch { return false; } })();
-                check("the HelloWorldUIKit process runs on the device", running);
+                const onTheDevice = (): boolean => {
+                    try {
+                        return execSync(`xcrun devicectl device info processes --device ${real}`).toString().includes("HelloWorldUIKit.app/HelloWorldUIKit");
+                    } catch {
+                        return false;
+                    }
+                };
+                check("the HelloWorldUIKit process runs on the device", onTheDevice());
+                const deviceSessionEnded = new Promise<boolean>((resolve) => {
+                    const listener = vscode.debug.onDidTerminateDebugSession((each) => {
+                        if (each.id === session?.id) {
+                            listener.dispose();
+                            resolve(true);
+                        }
+                    });
+                    setTimeout(() => resolve(false), 30_000);
+                });
                 await vscode.debug.stopDebugging(session);
+                check("Stop ends the lldb-dap session on the device", await deviceSessionEnded);
+                await new Promise((resume) => setTimeout(resume, 8000));
+                check("Stop ends HelloWorldUIKit on the device", !onTheDevice());
+                const consoles = (() => { try { return execSync("pgrep -f 'devicectl device process launch'").toString().trim(); } catch { return ""; } })();
+                check("no devicectl console outlives the session", consoles === "");
             } else {
                 say("skip a real device: STATEUI_UIKIT_DEVICE names none");
             }
