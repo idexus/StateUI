@@ -46,7 +46,12 @@ struct MetadataCommand {
                 part += 1
             }
         }
-        let status = HostVerdict.standing(of: files.map(\.text), family: name, on: host, in: revisions).rawValue
+        let status = switch HostVerdict.standing(of: files.map(\.text), family: name, on: host, in: revisions) {
+        case .fresh: "fresh"
+        case .stale: "stale"
+        case .missing: "missing"
+        case .invalid: "invalid"
+        }
         let listed = files.map { "{\"name\":\(quoted($0.name)),\"revision\":\(HostVerdict.revision(of: $0.text).map(quoted) ?? "null")}" }
         return "{\"name\":\(quoted(name)),\"revision\":\(quoted(expected)),\"status\":\(quoted(status)),\"files\":[\(listed.joined(separator: ","))]}"
     }

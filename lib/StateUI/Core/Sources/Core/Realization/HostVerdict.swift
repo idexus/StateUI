@@ -227,8 +227,15 @@
 
     /// How a family's recorded verdicts stand on a host: at the revision `revisions.txt` gives, at another, not
     /// recorded, or not read.
-    public enum Standing: String, Sendable {
-        case fresh, stale, missing, invalid
+    public enum Standing: Sendable {
+        /// At the revision `revisions.txt` gives.
+        case fresh
+        /// At another revision, or at none.
+        case stale
+        /// Not recorded.
+        case missing
+        /// Not read: a line of a file is no verdict.
+        case invalid
     }
 
     /// How `files` - the texts of `family`'s verdict files on `host`, a part each where it runs in parts - stand.
