@@ -30,6 +30,11 @@ public struct HostSuite: Sendable {
         tools = ToolResolver(environment: environment)
     }
 
+    /// Holds each application's release Web module within its size budget.
+    public func runWebSizes(reporter: BuildReporter = BuildReporter()) async throws -> SuiteResult {
+        SuiteResult(suite: "sizes:web", phases: try await WebSizes(checkout: checkout).run(reporter: reporter))
+    }
+
     /// Runs the suite of `host` - `--filter`ed where given, a UIKit or Android one on the device `device` names - and
     /// answers each phase. An Android suite may instead be built alone for `architecture` (`buildOnly`), or run from
     /// the folder such a build made (`artifact`).
@@ -39,7 +44,7 @@ public struct HostSuite: Sendable {
         _ host: HostFamily, filter: String? = nil, device: String? = nil, buildOnly: Bool = false, architecture: Architecture? = nil,
         artifact: URL? = nil, reporter: BuildReporter = BuildReporter()
     ) async throws -> SuiteResult {
-        guard [.appkit, .uikit, .android, .gtk].contains(host) else {
+        guard [.appkit, .uikit, .android, .gtk, .web].contains(host) else {
             throw ToolingError(.invalidConfiguration, "\(host.rawValue)'s suite runs by its .scripts until its row moves to the tool.")
         }
         let lease = try await permit.acquire(for: "the \(host.folder) host's suite, stateui \(ProcessInfo.processInfo.processIdentifier)") {
@@ -51,6 +56,14 @@ public struct HostSuite: Sendable {
         let checked = ProcessEnvironment.inherited.removing("STATEUI_UPDATE_EXPORTS", "STATEUI_UPDATE_DOCS", "STATEUI_STALE_ONLY", "STATEUI_FILTER")
         if buildOnly || artifact != nil, host != .android {
             throw ToolingError(.invalidConfiguration, "A suite is built alone, or run from what such a build made, for host:android.")
+        }
+        if host == .web {
+            #if os(macOS) || os(Linux)
+            let phases = try await WebSuite(checkout: checkout, tools: tools).run(filter: filter, environment: checked, reporter: reporter)
+            return SuiteResult(suite: "host:web", phases: phases)
+            #else
+            throw ToolingError(.invalidConfiguration, "The Web host's suite runs on macOS and Linux.")
+            #endif
         }
         if host == .gtk {
             #if os(Linux)

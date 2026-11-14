@@ -73,12 +73,13 @@ jobs:
           node --version
           "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --version
 
-      - name: Web host tests, in Node
-        run: .scripts/Web/test-web.sh
+      - name: Build the stateui tool
+        run: swift build --package-path tools/StateUI.CLI --product stateui
 
-      - name: The conformance families and the host's tests that run a host, in a browser
-        run: .scripts/Web/test-web.sh --browser
+      - name: Web host tests in Node and in a browser, every verdict held, then the API record
+        run: tools/StateUI.CLI/.build/debug/stateui repo test --suite host:web
+
 
       # Each application's release module, gzipped, within its budget.
       - name: Size budgets of the release modules
-        run: .scripts/Web/size-budgets.sh
+        run: tools/StateUI.CLI/.build/debug/stateui repo test --suite sizes:web

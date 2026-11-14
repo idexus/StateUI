@@ -18,8 +18,9 @@ did. Nothing is written: `STATEUI_UPDATE_EXPORTS`, `STATEUI_UPDATE_DOCS`,
 inherits - recording marks and exports is a request of its own (the
 migration's M11), never a variable left in a shell. The suite builds a test
 application, so it waits for the machine's one application build. AppKit's,
-UIKit's, Android's and GTK's suites run this way (`appkit.yml`, `uikit.yml`,
-`android.yml`, `gtk.yml`); every other host's moves with its row.
+UIKit's, Android's, GTK's and the Web's suites run this way (`appkit.yml`,
+`uikit.yml`, `android.yml`, `gtk.yml`, `web.yml`); WinUI's moves with its
+row.
 
 ## The UIKit host's suite
 
@@ -78,4 +79,26 @@ runs; then the host's `Testing` package, every conformance family held to
 its marks; then `StateUIGTK` and `StateUIWebViewGTK`, as that build made
 them, held to their API records, their C modules found by their module maps
 and `pkg-config --cflags libadwaita-1 libsoup-3.0 webkitgtk-6.0`.
+
+## The Web host's suite
+
+`--suite host:web` builds `lib/StateUI/StateUI.Web/Testing` for WebAssembly
+with the Swift SDK of the compiler's release - the tests' archive made anew,
+since it only gains members and one of a source since gone would link twice
+- and holds the facade to its API record for `wasm32-unknown-wasip1`. The
+host's own tests run in Node over a page with just enough of a DOM, through
+the host's relay; the conformance families and the host's tests that run a
+host - their classes listed in `WebSuite`, each needing a browser's layout,
+focus, dialogs and input - run headless in Google Chrome or Chromium (or the
+browser `STATEUI_BROWSER` names), each in a program of its own. `--filter`
+names a class, a class's test, or a conformance family, which then runs
+where it belongs.
+
+## The Web modules' sizes
+
+`--suite sizes:web` builds each application's Web head for release and
+holds its module, gzipped at level 9 - what a page downloads - within the
+application's budget (`WebSizes`): past it fails; a twentieth or more under
+it is said, for the budget to come down with it. A budget is raised only in
+the change that grows the module, with the reason.
 

@@ -186,8 +186,11 @@ public struct ToolingService: Sendable {
         guard let checkout = Checkout.holding(folder)?.root else {
             throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
         }
+        if suite == "sizes:web" {
+            return try await HostSuite(checkout: checkout).runWebSizes(reporter: reporter)
+        }
         guard suite.hasPrefix("host:"), let host = HostFamily(rawValue: String(suite.dropFirst("host:".count))) else {
-            throw ToolingError(.invalidConfiguration, "No suite \(suite): host:appkit, host:uikit, host:android and host:gtk are.")
+            throw ToolingError(.invalidConfiguration, "No suite \(suite): host:appkit, host:uikit, host:android, host:gtk, host:web and sizes:web are.")
         }
         return try await HostSuite(checkout: checkout).run(
             host, filter: filter, device: device, buildOnly: buildOnly, architecture: architecture, artifact: artifact, reporter: reporter)
