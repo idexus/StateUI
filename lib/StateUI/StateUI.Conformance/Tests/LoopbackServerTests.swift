@@ -13,13 +13,18 @@ import WinSDK
 /// The request cases' server answers connection after connection, each on a thread of its own, keeping nothing of
 /// one once it is answered.
 final class LoopbackServerTests: XCTestCase {
-    /// A hundred requests answered leave the process holding no more than ten did: a thread answering one gives back
-    /// what it took - its stack, its handle - as it ends.
+    /// A hundred requests answered leave the process holding no more than those before them did: a thread answering
+    /// one gives back what it took - its stack, its handle - as it ends. Two rounds of a hundred, each counted, go
+    /// first: a runtime keeps something for itself of its first threads and of the first counts - the thread
+    /// sanitizer's regions grow through two such rounds, then stand.
     func testAnsweredRequestsLeaveNothingHeld() throws {
         let server = try XCTUnwrap(LoopbackServer.shared, "this platform opens no socket")
         let port = try XCTUnwrap(server.address.split(separator: ":").last.flatMap { UInt16($0) })
-        for _ in 0..<10 { try Self.ask(port) }
-        Self.waitForThreadsToEnd()
+        for _ in 0..<2 {
+            for _ in 0..<100 { try Self.ask(port) }
+            Self.waitForThreadsToEnd()
+            _ = Self.held()
+        }
         let before = try XCTUnwrap(Self.held())
 
         for _ in 0..<100 { try Self.ask(port) }
