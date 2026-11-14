@@ -149,6 +149,8 @@ The AppKit host needs only Xcode 27, on macOS 26.4 or newer, and the UIKit
 host adds Xcode's iOS 26.4 or newer simulator runtime. StateUI builds with one Swift
 release everywhere, Swift 6.4: Xcode 27's for AppKit and UIKit; swift.org's
 6.4.2 toolchain for Android and the Web on macOS, and on the other platforms.
+On a Mac, `resvg` 0.50.0 (`brew install resvg`) draws the AppKit, UIKit and
+Android heads' pictures and icons.
 WinUI builds on Windows, GTK on Linux, and the Web on macOS and Linux; their
 pages say what each needs:
 [WinUI host](docs/hosts/winui.md#requirements), [GTK host](docs/hosts/gtk.md#requirements),

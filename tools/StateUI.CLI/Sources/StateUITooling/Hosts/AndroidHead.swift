@@ -51,7 +51,7 @@ struct AndroidHead {
 
         let assets = work.appendingPathComponent("assets")
         let res = work.appendingPathComponent("res")
-        try drawPictures(into: assets.appendingPathComponent("images"), res: res, reporter: reporter)
+        try await drawPictures(into: assets.appendingPathComponent("images"), res: res, reporter: reporter)
         let drawables = res.appendingPathComponent("drawable")
         try? files.removeItem(at: drawables)
         try files.createDirectory(at: drawables, withIntermediateDirectories: true)
@@ -112,23 +112,18 @@ struct AndroidHead {
     }
 
     /// The application's pictures drawn into `images` and its launcher icon into `res`.
-    private func drawPictures(into images: URL, res: URL, reporter: BuildReporter) throws {
+    private func drawPictures(into images: URL, res: URL, reporter: BuildReporter) async throws {
         let files = FileManager.default
         let source = application.appendingPathComponent("Resources/Images")
         let artwork = application.appendingPathComponent("Resources/AppIcon")
         let (background, mark) = (artwork.appendingPathComponent("appicon_bkg.svg"), artwork.appendingPathComponent("appicon_mark.svg"))
         let icon = files.fileExists(atPath: background.path) && files.fileExists(atPath: mark.path)
-        #if canImport(AppKit)
+        guard files.fileExists(atPath: source.path) || icon else { return }
+        let pictures = Pictures(renderer: try await Resvg.find())
         if files.fileExists(atPath: source.path) {
             reporter.progress("drawing the pictures")
-            try ApplePictures.draw(source, into: images)
+            try await pictures.draw(source, into: images)
         }
-        if icon { try ApplePictures.drawAdaptiveIcon(background: background, mark: mark, into: res) }
-        #else
-        let drawn = ((try? files.contentsOfDirectory(atPath: source.path)) ?? []).contains { $0.lowercased().hasSuffix(".svg") }
-        if drawn || icon {
-            throw ToolingError(.invalidConfiguration, "\(name)'s SVG pictures and launcher icon are drawn for Android on a Mac for now.")
-        }
-        #endif
+        if icon { try await pictures.drawAdaptiveIcon(background: background, mark: mark, into: res) }
     }
 }

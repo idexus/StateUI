@@ -24,7 +24,6 @@ lib/StateUI.Head/                  the package that brings each application's he
 lib/Backends/                      backends: one element on one host, its engine not shipped - WebView.GTK, WebView.WinUI
 .scripts/new-app.sh                a new application in apps/ (new-app.ps1 on Windows)
 .scripts/test-native.sh            the Swift suites on macOS, the AppKit host's among them
-.scripts/rasterize-images.swift    an application's SVGs drawn as PNGs for a head whose toolkit draws none
 apps/Gallery/Sources/              platform-neutral Gallery application
 apps/Gallery/Platforms/AppKit/     Gallery AppKit entry point
 apps/Gallery/Platforms/UIKit/      Gallery UIKit head

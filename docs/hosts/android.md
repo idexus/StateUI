@@ -36,7 +36,9 @@ The host builds on macOS, for Android 9 (API 28) or newer:
   one the Swift SDK's setup linked into its bundle, else the Android SDK's
   newest;
 - the Android SDK with platform 36 and its build tools, and JDK 21 for
-  Gradle. The tool fetches Gradle itself the first time.
+  Gradle. The tool fetches Gradle itself the first time;
+- `resvg` 0.50.0, which draws the application's pictures and launcher icon
+  (`brew install resvg`, or `cargo install resvg --version 0.50.0`).
 
 `stateui doctor --host android` says what of them this machine has.
 

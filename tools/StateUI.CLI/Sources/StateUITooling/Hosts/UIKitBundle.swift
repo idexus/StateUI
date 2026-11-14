@@ -90,7 +90,7 @@ public struct UIKitBundle: Sendable {
         let images = application.appendingPathComponent("Resources/Images")
         if files.fileExists(atPath: images.path) {
             let drawn = work.appendingPathComponent("Images")
-            try ApplePictures.draw(images, into: drawn)
+            try await Pictures(renderer: try await Resvg.find()).draw(images, into: drawn)
             try files.copyItem(at: drawn, to: bundle.appendingPathComponent("Images"))
         }
 
@@ -127,7 +127,7 @@ public struct UIKitBundle: Sendable {
     private func compileIcon(background: URL, mark: URL, into bundle: URL) async throws -> [String: Any] {
         let catalog = work.appendingPathComponent("Assets.xcassets")
         let keys = work.appendingPathComponent("icon.plist")
-        try ApplePictures.drawAppIcon(background: background, mark: mark, into: catalog)
+        try await Pictures(renderer: try await Resvg.find()).drawAppIcon(background: background, mark: mark, into: catalog)
         try await ToolStep.run(.name("xcrun"), [
             "actool", catalog.path, "--compile", bundle.path, "--platform", platform.rawValue,
             "--minimum-deployment-target", minimumSystem, "--target-device", "iphone", "--target-device", "ipad",

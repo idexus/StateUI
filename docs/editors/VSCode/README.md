@@ -357,15 +357,16 @@ launch file at all:
   installed with StateUI.
 - The `stateui` tool of the same release, on the search path or named by
   `stateui.cliPath` ([Installing](#installing)).
-- For AppKit: macOS 26.4 or newer and the `lldb-dap` extension.
-- For UIKit: macOS with Xcode, the `lldb-dap` extension, and an iOS 26.4 or
+- For AppKit: macOS 26.4 or newer, `resvg` 0.50.0 (`brew install resvg`),
+  which draws its icon, and the `lldb-dap` extension.
+- For UIKit: macOS with Xcode, `resvg` 0.50.0, the `lldb-dap` extension, and an iOS 26.4 or
   newer simulator or device - a device with Developer Mode on and a
   development profile of this Mac's that provisions it.
 - For Android: macOS; Swift 6.4 from swift.org with the
   [Swift SDK for Android](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html)
   of the same release; the Android NDK r30 or newer; JDK 21; and the Android
   SDK with platform 36 and its build tools, in `ANDROID_HOME` or
-  `~/Library/Android/sdk`. The tool fetches Gradle itself.
+  `~/Library/Android/sdk`; and `resvg` 0.50.0. The tool fetches Gradle itself.
 - For WinUI: Windows; Swift 6.4 from swift.org; Visual Studio's C++ tools and
   the Windows SDK; the WebView2 runtime for the web view's backend (Windows 11 has it);
   and the `lldb-dap` extension, with the toolchain's `lldb-dap`, which loads

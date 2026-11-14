@@ -29,6 +29,11 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   web` and `stateui repo web-size check` take their place. A page is laid in the build's artifact, no longer
   in `.build/web/site`, and `.build/web/server.json` goes, a run saying the page's address instead; the page is served
   to this machine alone unless `--listen lan` shares it.
+- **`resvg` draws every picture.** The AppKit, UIKit and Android heads' pictures and icons are drawn by `resvg` of the
+  pinned release, 0.50.0, on every machine - the same pixels wherever a head is built - no longer by AppKit: install it
+  (`brew install resvg`, `cargo install resvg --version 0.50.0`, or its release archive), or name it with
+  `STATEUI_RESVG`; `stateui doctor` checks it. The asset catalog and `.icns` stay Apple's tools' to write.
+  `.scripts/rasterize-images.swift` is gone.
 - **The hosts' marks, declarations and API records are recorded by `stateui`.** `test-appkit.sh`, `test-uikit.sh`,
   `test-android.sh`, `test-gtk.sh`, `test-web.sh` and `test-winui.ps1`, their `tools.sh`, `tools.ps1`, `build-swift.sh`
   and `swift-sdk.sh`, `.scripts/API/record.sh` and `record.ps1`, and `.scripts/Marks/revision.sh` are gone:

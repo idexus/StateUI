@@ -23,7 +23,8 @@ apps/<App>/Platforms/UIKit/
 ## Requirements
 
 The host builds on macOS with Xcode, for iOS and iPadOS 26.4 or newer, and runs
-on a simulator or on an iPhone or iPad paired with the Mac. The `stateui`
+on a simulator or on an iPhone or iPad paired with the Mac; `resvg` 0.50.0
+(`brew install resvg`) draws the application's pictures and icon. The `stateui`
 tool builds it with the Swift it builds every head with against the
 simulator's SDK, for `arm64-apple-ios26.4-simulator`, or against the
 device's, for `arm64-apple-ios26.4` - two builds of their own in

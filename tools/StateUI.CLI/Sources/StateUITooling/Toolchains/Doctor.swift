@@ -68,7 +68,27 @@ public struct Doctor: Sendable {
         #else
         let own: [Check] = []
         #endif
-        return [swiftCheck()] + own + [lldbDapCheck(), gitCheck(), nodeCheck()]
+        #if os(macOS)
+        let drawing = [resvgCheck()]
+        #else
+        let drawing: [Check] = []
+        #endif
+        return [swiftCheck()] + own + drawing + [lldbDapCheck(), gitCheck(), nodeCheck()]
+    }
+
+    /// The pinned resvg, which draws the pictures of the heads a Mac builds: AppKit's and UIKit's icons, UIKit's and
+    /// Android's pictures.
+    private func resvgCheck() -> Check {
+        let environment = environment
+        let hosts: [HostFamily] = [.appkit, .uikit, .android]
+        return Check(
+            component: "resvg \(Resvg.release)", neededBy: "the pictures and icons a head is given", hosts: hosts, advice: Resvg.advice) {
+                let named = environment["STATEUI_RESVG"].flatMap { $0.isEmpty ? nil : $0 }
+                guard let program = named ?? SearchPath(environment: environment).find("resvg")?.path else { return .missing }
+                let version = (await ToolOutput.text(.path(program), ["--version"]))?.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard let version, !version.isEmpty else { return .missing }
+                return version == Resvg.release ? .found("\(version) (\(program))") : .tooOld(version)
+            }
     }
 
     /// A version found where it is `minimum` or newer, said with where it stands; one older, as too old.

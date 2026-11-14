@@ -16,6 +16,7 @@ Last verified 2026-11-13, on Swift 6.4.2: the core, the host layer, the conforma
 | Xcode | 27.1 (27A9275), with its Swift 6.4 (`swiftlang-6.4.0.34.1`) |
 | Editor | VS Code 1.144.0; the StateUI extension 0.8.5, Swift (`swiftlang.swift-vscode`) 2.18.0, LLDB DAP 0.4.1 |
 | Node.js | 26.10.0, for building and testing the extension |
+| resvg | 0.50.0 (Homebrew), drawing the AppKit, UIKit and Android heads' pictures and icons since 2026-11-14 |
 
 ### AppKit
 

@@ -62,7 +62,8 @@ the host declares (`files/android.txt`) and every family's verdicts
 verdict, whatever revision each stood at - and the facade the build made is
 held to its API record for the ABI's triple and the Swift SDK.
 
-The pictures are drawn on a Mac, while a Linux machine runs emulators well:
+A Mac builds the Android test APK - the machine with the Android SDK here - while a Linux machine runs emulators
+well:
 `--build-only --architecture x86_64` builds the test APK alone into a folder
 with its identity (`suite.json`: the suite, the architecture, the checkout's
 commit, the Swift SDK) and says the folder; `--artifact <folder>` runs that

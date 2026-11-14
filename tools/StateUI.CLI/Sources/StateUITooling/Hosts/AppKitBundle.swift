@@ -63,7 +63,7 @@ public struct AppKitBundle: Sendable {
         if files.fileExists(atPath: icon.path) {
             let iconset = staging.appendingPathComponent("StateUI.iconset")
             defer { try? files.removeItem(at: iconset) }
-            try ApplePictures.drawIconSet(icon, into: iconset)
+            try await Pictures(renderer: try await Resvg.find()).drawIconSet(icon, into: iconset)
             try await ToolStep.run(.name("iconutil"), ["-c", "icns", iconset.path, "-o", resources.appendingPathComponent("StateUI.icns").path])
         } else {
             keys["CFBundleIconFile"] = nil
