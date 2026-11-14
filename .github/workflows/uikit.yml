@@ -40,22 +40,24 @@ jobs:
       - uses: ./.github/actions/resvg
 
       # The image names its simulators by the devices of its day, so one of the
-      # family on the newest iOS is found rather than named: an iPhone Pro and
-      # an iPad Air, as the suite is walked on, where the image has them (an
-      # iPad Pro simulator has drawn nothing - build-run-device.md).
+      # family is found rather than named: an iPhone Pro and an iPad Air
+      # 13-inch, as the suite is walked on, on the newest iOS that has one - a
+      # newer runtime holding only another model (the iPhone Duo's) is passed
+      # over - else the family's newest (an iPad Pro simulator has drawn
+      # nothing - build-run-device.md).
       - name: The ${{ matrix.family }} simulator
         id: simulator
         run: |
           udid="$(xcrun simctl list devices available -j | python3 -c '
           import json, re, sys
           family = sys.argv[1]
-          liked = {"iPhone": lambda name: name.endswith(" Pro"), "iPad": lambda name: name.startswith("iPad Air")}
+          liked = {"iPhone": lambda name: name.endswith(" Pro"), "iPad": lambda name: name.startswith("iPad Air 13")}
           version = lambda runtime: [int(part) for part in re.findall(r"\d+", runtime.split(".")[-1])]
           found = sorted(
               ((version(runtime), liked[family](device["name"]), device)
                for runtime, devices in json.load(sys.stdin)["devices"].items()
                if "iOS" in runtime for device in devices if device["name"].startswith(family + " ")),
-              key=lambda each: each[:2])
+              key=lambda each: (each[1], each[0]))
           print(found[-1][2]["udid"] if found else "")
           ' "${{ matrix.family }}")"
           if [[ -z "$udid" ]]; then
