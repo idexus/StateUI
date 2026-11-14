@@ -521,17 +521,18 @@ export async function run(): Promise<void> {
                 && !winUISuites.some((each) => each.label === "lib/StateUI/StateUI.AppKit" || each.label === "lib/StateUI/StateUI.Android/Tests"));
         }
 
-        // 6c. GTK: HelloWorld's head, built by run-app.sh --build-only and
-        //     launched under lldb-dap, and the host's own package by swift test.
+        // 6c. GTK: HelloWorld's head, built and installed by the stateui tool and
+        //     launched under lldb-dap, and the host's own suite by the tool.
         check("HelloWorld has a GTK head, and as GTK the language server indexes in .build/gtk/index-build",
             hasHead(helloWorld, "gtk")
             && JSON.stringify(serverSettings("gtk", undefined)) === JSON.stringify({ scratchPath: ".build/gtk/index-build" }));
         {
-            const ran: vscode.Task[] = [];
+            const built: string[] = [];
+            const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "gtk-arm64-x-debug", "HelloWorldGTK");
             const provider = new StateUIDebugConfigurationProvider({
-                build: async () => undefined,
+                build: async (_folder, _application, forHost, configuration) => { built.push(`${forHost} ${configuration}`); return program; },
                 host: () => "gtk", application: async () => helloWorld,
-                run: async (task) => { ran.push(task); return 0; },
+                run: async () => 0,
                 start: async () => {},
                 ready: async () => false,
                 device: async () => undefined,
@@ -541,23 +542,18 @@ export async function run(): Promise<void> {
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
-            const shell = ran[0]?.execution as vscode.ShellExecution | undefined;
-            const line = shell ? [shell.command, ...shell.args].join(" ") : "";
-            say(`     gtk built: ${line}`);
-            check("GTK: run-app.sh <HelloWorld> debug --build-only ran as a task, then lldb-dap launches HelloWorldGTK",
-                ran.length === 1
-                && line === `bash ${path.join(root.uri.fsPath, ".scripts", "GTK", "run-app.sh")} ${helloWorld.directory} debug --build-only`
-                && resolved?.type === "lldb-dap" && resolved.request === "launch"
-                && resolved.program === path.join(helloWorld.directory, ".build", "gtk", "debug", "HelloWorldGTK"));
+            check("GTK: the tool builds HelloWorld for GTK, then lldb-dap launches the program it published",
+                JSON.stringify(built) === JSON.stringify(["gtk debug"])
+                && resolved?.type === "lldb-dap" && resolved.request === "launch" && resolved.program === program);
         }
         {
             const gtkSuites = findSuites(root.uri.fsPath, "gtk", api.applications());
             say(`gtk suites: ${gtkSuites.map((each) => each.label).join(", ")}`);
             const own = gtkSuites.find((each) => each.label === "lib/StateUI/StateUI.GTK/Testing");
             const testing = path.join(root.uri.fsPath, "lib", "StateUI", "StateUI.GTK", "Testing");
-            check("gtk runs the core and the Gallery as plain Swift, its own tests' package by swift test, and no other host's",
-                gtkSuites.some((each) => each.label === core)
-                && own?.command === "swift" && own.args.join(" ") === `test --package-path ${testing}`
+            check("gtk runs the core and the Gallery as plain Swift, its own suite by stateui repo test, and no other host's",
+                gtkSuites.some((each) => each.label === core) && testing.length > 0
+                && own?.command === "stateui" && own.args.join(" ") === "repo test --suite host:gtk"
                 && !gtkSuites.some((each) => ["lib/StateUI/StateUI.AppKit", "lib/StateUI/StateUI.WinUI", "lib/StateUI/StateUI.Android/Tests",
                     "lib/Backends/WebView.WinUI"].includes(each.label)));
         }
@@ -1187,12 +1183,20 @@ export async function run(): Promise<void> {
             check("StateUI: Debug starts", await vscode.debug.startDebugging(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
             const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
-            check("an lldb-dap session starts on HelloWorldGTK",
-                String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build/gtk/debug/HelloWorldGTK"));
+            const program = String(running?.configuration.program ?? "");
+            check(`an lldb-dap session starts on HelloWorldGTK as the stateui tool published it - ${program}`,
+                program.includes("/apps/HelloWorld/.build/stateui/artifacts/gtk-") && program.endsWith("-debug/HelloWorldGTK") && fs.existsSync(program));
+            const entry = path.join(os.homedir(), ".local", "share", "applications", "com.stateui.helloworld.desktop");
+            check("the install wrote HelloWorld's desktop entry naming that program",
+                fs.existsSync(entry) && fs.readFileSync(entry, "utf8").includes(`Exec=${program} %u`));
             await new Promise((resume) => setTimeout(resume, 4000));
-            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/gtk/debug/HelloWorldGTK").toString().trim().length > 0; } catch { return false; } })();
+            // Anchored at the start of a command line: Linux's sh running pgrep stays its parent, its own line naming the program too.
+            const alive = (() => { try { return execSync(`pgrep -f '^${program}'`).toString().trim().length > 0; } catch { return false; } })();
             check("the HelloWorldGTK process is running", alive);
             await vscode.debug.stopDebugging(running);
+            await new Promise((resume) => setTimeout(resume, 3000));
+            const gone = (() => { try { return execSync(`pgrep -f '^${program}'`).toString().trim().length === 0; } catch { return true; } })();
+            check("Stop ends the HelloWorldGTK process", gone);
         }
 
         say("PASS");

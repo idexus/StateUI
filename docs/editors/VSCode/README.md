@@ -131,8 +131,9 @@ says **no host**, a launch says why it runs nothing, and the editor and
   ends the application. On WinUI `.scripts/WinUI/run-app.ps1`
   builds the head, stopping a running copy first, and lays the Windows App SDK
   beside it, and `lldb-dap` starts it: a breakpoint holds from the first line.
-  On GTK `.scripts/GTK/run-app.sh` builds the head, stopping a running copy
-  first, and `lldb-dap` starts it: a breakpoint holds from the first line.
+  On GTK the `stateui` tool builds the head and installs it for the user, a
+  running copy is stopped, and `lldb-dap` starts it: a breakpoint holds from
+  the first line.
   On the Web `.scripts/Web/run-app.sh` builds the head, lays its page out and
   serves it, in a task whose terminal follows the server; a second launch
   stops the first one's server. StateUI: Debug in Chrome, Edge or another of

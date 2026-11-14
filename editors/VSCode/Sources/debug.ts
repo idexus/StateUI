@@ -22,9 +22,9 @@
 // reached through the device - and lldb-dap attaches, which lets it run. The
 // debug session's end stops the run. A Release launch has no session.
 //
-// A GTK head is built by .scripts/GTK/run-app.sh --build-only, as a task, and
-// launched by lldb-dap: the debugger is the application's parent, which is what
-// Ubuntu's ptrace scope permits.
+// A GTK head is built and installed for the user by the stateui tool, a copy
+// still running stopped, and launched by lldb-dap: the debugger is the
+// application's parent, which is what Ubuntu's ptrace scope permits.
 //
 // A WinUI head is built by .scripts/WinUI/run-app.ps1 -BuildOnly, as a task -
 // which stops a running copy first, its executable written again - and
@@ -40,10 +40,11 @@
 // The application is the one chosen with StateUI: Select Application; a launch
 // naming its `application` runs that one instead.
 
+import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, gtkProgram, pathOf, webSite, winUIProgram } from "./applications";
+import { Application, pathOf, webSite, winUIProgram } from "./applications";
 import { Browser, isChromium, webScript } from "./browsers";
 import { lldbDapFinding } from "./toolchain";
 import { environment, Host } from "./hosts";
@@ -118,10 +119,6 @@ export function winUIScript(checkout: string, name: string): string {
     return path.join(checkout, ".scripts", "WinUI", name);
 }
 
-/** A script of the StateUI checkout's .scripts/GTK, the checkout at `checkout`. */
-export function gtkScript(checkout: string, name: string): string {
-    return path.join(checkout, ".scripts", "GTK", name);
-}
 
 /** The two configurations every workspace offers. */
 export function configurations(): vscode.DebugConfiguration[] {
@@ -319,8 +316,8 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         };
     }
     /**
-     * A GTK head, built by run-app.sh --build-only in a task - which stops a running copy first, a GTK application
-     * being one instance - and launched by lldb-dap.
+     * A GTK head, built and installed by the stateui tool, a copy still running stopped - a GTK application being one
+     * instance - and launched by lldb-dap.
      */
     private async gtk(
         root: vscode.WorkspaceFolder,
@@ -328,30 +325,18 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const script = application.checkout && gtkScript(application.checkout, "run-app.sh");
-        if (!script || !fs.existsSync(script)) {
-            void vscode.window.showErrorMessage(
-                `StateUI: a GTK head is built by a StateUI checkout's .scripts/GTK/run-app.sh, and ${application.name}'s Package.swift names none by path.`);
+        const program = await this.choices.build(root, application, "gtk", configuration);
+        if (!program) {
             return undefined;
         }
-
-        const task = new vscode.Task(
-            { type: "stateui", application: application.name, configuration }, root,
-            `Build ${application.name} (GTK, ${configuration})`, "StateUI",
-            new vscode.ShellExecution("bash", [script, application.directory, configuration, "--build-only"],
-                { cwd: root.uri.fsPath }), []);
-        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-        if ((await this.choices.run(task)) !== 0) {
-            void vscode.window.showErrorMessage(
-                `StateUI: the GTK build of ${application.name} failed - its output is in the terminal.`);
-            return undefined;
-        }
+        // A GTK application is one instance: a copy still running would only be brought forward.
+        await new Promise((resolve) => execFile("pkill", ["-f", `^${program}( |$)`], () => resolve(undefined)));
 
         return {
             type: "lldb-dap",
             request: "launch",
             name,
-            program: gtkProgram(application, configuration),
+            program,
             cwd: root.uri.fsPath,
             stopOnEntry: false,
         };

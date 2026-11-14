@@ -749,9 +749,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         host,
         run: runTask,
         build: async (folder, application, forHost, configuration) => {
-            const built = await withTool(tool, folder.uri.fsPath, `${application.name} was not built`, (client) =>
-                runOperation(client, "application/build", { projectUri: pathToFileUri(application.directory), host: forHost, configuration },
-                    `StateUI: building ${application.name}`, buildOutput));
+            const built = await withTool(tool, folder.uri.fsPath, `${application.name} was not built`, async (client) => {
+                const made = await runOperation(client, "application/build", { projectUri: pathToFileUri(application.directory), host: forHost, configuration },
+                    `StateUI: building ${application.name}`, buildOutput);
+                // A GTK head is installed for the user, its desktop entry naming the program just built.
+                if (forHost === "gtk") {
+                    await client.run("application/install", { artifactUri: made.folderUri });
+                }
+                return made;
+            });
             return built && pathOf(built.programUri);
         },
         start: startTask,

@@ -67,11 +67,6 @@ export function hasHead(application: Application, host: Host): boolean {
     return application.hosts.includes(host);
 }
 
-/** Where an application's GTK head is, once `.scripts/GTK/run-app.sh` built it in `configuration`. */
-export function gtkProgram(application: Application, configuration: "debug" | "release"): string {
-    return path.join(application.directory, ".build", "gtk", configuration, `${application.name}GTK`);
-}
-
 /** Where an application's Web page is laid out, once `.scripts/Web/run-app.sh` built it in `configuration`. */
 export function webSite(application: Application, configuration: "debug" | "release"): string {
     return path.join(application.directory, ".build", "web", "site", configuration);
