@@ -7,8 +7,9 @@ on a real iPhone or iPad paired with the Mac.
 ## Listing them
 
 `stateui devices --host uikit` (`devices/list`) lists the real devices first,
-as `devicectl list devices` writes them - physical, iOS, paired, of iOS 26.4
-or newer - each with how it is reached, `USB` or `Wi-Fi`; then the
+as `devicectl list devices` writes them - iOS, paired, of iOS 26.4 or newer,
+and not `simulated`, which `devicectl` says of a simulator while it at times
+leaves a real device's `reality` unsaid - each with how it is reached, `USB` or `Wi-Fi`; then the
 simulators `simctl list devices available` gives, of the iOS runtimes 26.4 or
 newer, the newest runtime first and each runtime's in its own order, each
 saying whether it is booted. A destination is known by `id` - a device's

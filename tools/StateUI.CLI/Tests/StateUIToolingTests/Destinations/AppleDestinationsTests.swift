@@ -8,11 +8,11 @@ import XCTest
 
 final class AppleDestinationsTests: XCTestCase {
     private func device(
-        _ id: String, _ name: String, reality: String = "physical", platform: String = "iOS", version: String = "27.0",
+        _ id: String, _ name: String, reality: String? = "physical", platform: String = "iOS", version: String = "27.0",
         pairing: String = "paired", transport: String = "wired"
     ) -> String {
         """
-        {"identifier": "\(id)", "hardwareProperties": {"reality": "\(reality)", "platform": "\(platform)", "udid": "U-\(id)"},
+        {"identifier": "\(id)", "hardwareProperties": {\(reality.map { #""reality": "\#($0)", "# } ?? "")"platform": "\(platform)", "udid": "U-\(id)"},
          "deviceProperties": {"name": "\(name)", "osVersionNumber": "\(version)"},
          "connectionProperties": {"pairingState": "\(pairing)", "transportType": "\(transport)"}}
         """
@@ -32,7 +32,8 @@ final class AppleDestinationsTests: XCTestCase {
         """.utf8)
 
     /// The devices kept are the real iPhones and iPads paired with this Mac, of Apple's floor or newer - a watch, a
-    /// simulator devicectl lists, an unpaired device and an older system are not - each with how it is reached.
+    /// simulator devicectl lists, an unpaired device and an older system are not - each with how it is reached. A
+    /// real device is any not `simulated`: devicectl at times leaves `reality` out for one (build-run-device.md).
     func testTheDevicesKeptArePairedIPhonesAndIPadsOfTheFloor() {
         let json = Data("""
             {"result": {"devices": [
@@ -41,12 +42,14 @@ final class AppleDestinationsTests: XCTestCase {
               \(device("SIM", "Simulator", reality: "simulated", transport: "sameMachine")),
               \(device("LONELY", "Unpaired", pairing: "unpaired")),
               \(device("OLD", "Old", version: "26.3")),
-              \(device("PAD", "Pad", transport: "localNetwork"))
+              \(device("PAD", "Pad", transport: "localNetwork")),
+              \(device("UNSAID", "Unsaid", reality: nil))
             ]}}
             """.utf8)
         XCTAssertEqual(AppleDestinations.devices(fromDevicectl: json), [
             Destination(id: "PHONE", udid: "U-PHONE", name: "Phone", kind: .device, version: "26.6.2", connection: "USB"),
             Destination(id: "PAD", udid: "U-PAD", name: "Pad", kind: .device, version: "27.0", connection: "Wi-Fi"),
+            Destination(id: "UNSAID", udid: "U-UNSAID", name: "Unsaid", kind: .device, version: "27.0", connection: "USB"),
         ])
         XCTAssertEqual(AppleDestinations.devices(fromDevicectl: Data("not json".utf8)), [])
     }

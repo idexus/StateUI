@@ -22,8 +22,8 @@ public struct AppleDestinations: Sendable {
         return devices + simulators
     }
 
-    /// What `devicectl list devices --json-output` wrote: the real iPhones and iPads paired with this Mac, of an iOS
-    /// a head installs on, in the order listed.
+    /// What `devicectl list devices --json-output` wrote: the real iPhones and iPads paired with this Mac - every iOS
+    /// entry not `simulated` - of an iOS a head installs on, in the order listed.
     public static func devices(fromDevicectl json: Data) -> [Destination] {
         guard let root = try? JSONSerialization.jsonObject(with: json) as? [String: Any],
               let listed = (root["result"] as? [String: Any])?["devices"] as? [[String: Any]]
@@ -33,7 +33,8 @@ public struct AppleDestinations: Sendable {
             let hardware = device["hardwareProperties"] as? [String: Any] ?? [:]
             let properties = device["deviceProperties"] as? [String: Any] ?? [:]
             let connection = device["connectionProperties"] as? [String: Any] ?? [:]
-            guard hardware["reality"] as? String == "physical", hardware["platform"] as? String == "iOS",
+            // A real device is any not simulated: devicectl at times leaves `reality` out for one.
+            guard hardware["reality"] as? String != "simulated", hardware["platform"] as? String == "iOS",
                   connection["pairingState"] as? String == "paired",
                   let version = properties["osVersionNumber"] as? String, Versions.atLeast(version, Doctor.appleFloor),
                   let id = device["identifier"] as? String
