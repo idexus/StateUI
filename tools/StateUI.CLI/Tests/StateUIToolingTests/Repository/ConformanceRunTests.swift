@@ -34,3 +34,13 @@ final class ConformanceRunTests: XCTestCase {
         XCTAssertEqual(AndroidSuite.family(of: "Date-Picker.txt"), "Date-Picker")
     }
 }
+
+final class RepositoryPlanTests: XCTestCase {
+    /// The portable plan holds the owner packages in their order; the native one the host suites a machine runs.
+    func testAPlanHoldsItsSuitesInOrder() {
+        XCTAssertEqual(RepositoryPlan.portable.map(\.0), ["core", "host-layer", "conformance", "testing", "gallery", "helloworld", "tool"])
+        XCTAssertEqual(RepositoryPlan.native(on: "macos"), [.appkit, .uikit, .android, .web])
+        XCTAssertEqual(RepositoryPlan.native(on: "linux"), [.gtk, .web])
+        XCTAssertEqual(RepositoryPlan.native(on: "windows"), [.winui])
+    }
+}

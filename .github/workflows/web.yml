@@ -82,4 +82,4 @@ jobs:
 
       # Each application's release module, gzipped, within its budget.
       - name: Size budgets of the release modules
-        run: tools/StateUI.CLI/.build/debug/stateui repo test --suite sizes:web
+        run: tools/StateUI.CLI/.build/debug/stateui repo web-size check

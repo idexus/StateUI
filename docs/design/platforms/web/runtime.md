@@ -308,7 +308,7 @@ is the Web's first cost. A release head links with `--strip-debug`
 names its functions. A server sends the module compressed; the size that
 counts is the module gzipped.
 
-`stateui repo test --suite sizes:web` builds each application's release head
+`stateui repo web-size check` builds each application's release head
 and holds its module, gzipped at level 9, within the application's budget -
 HelloWorld's and the Gallery's - and CI runs it after the Web tests. A module
 past its budget fails the run: what grew it is found, or the budget is raised

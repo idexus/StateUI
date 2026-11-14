@@ -14,9 +14,13 @@ struct WebSizes {
     /// change that grows the module, with the reason (docs/design/platforms/web/runtime.md, The module's size).
     static let budgets = [("HelloWorld", 5_060_000), ("Gallery", 6_170_000)]
 
-    func run(reporter: BuildReporter) async throws -> [SuiteResult.Phase] {
+    /// Each application's - or `application`'s alone - module held to its budget.
+    func run(application only: String? = nil, reporter: BuildReporter) async throws -> [SuiteResult.Phase] {
+        if let only, !Self.budgets.contains(where: { $0.0 == only }) {
+            throw ToolingError(.invalidConfiguration, "No Web module of \(only) has a budget: \(Self.budgets.map(\.0).joined(separator: ", ")) have.")
+        }
         var phases: [SuiteResult.Phase] = []
-        for (application, budget) in Self.budgets {
+        for (application, budget) in Self.budgets where only == nil || only == application {
             let folder = checkout.appendingPathComponent("apps/\(application)")
             let built = try await ApplicationBuilder().build(
                     BuildRequest(projectUri: FileURI.string(folder), host: .web, configuration: .release),

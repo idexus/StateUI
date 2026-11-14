@@ -111,8 +111,8 @@ where it belongs.
 
 ## The Web modules' sizes
 
-`--suite sizes:web` builds each application's Web head for release and
-holds its module, gzipped at level 9 - what a page downloads - within the
+`stateui repo web-size check [--application <name>]` builds each
+application's Web head for release - or the one named - and holds its module, gzipped at level 9 - what a page downloads - within the
 application's budget (`WebSizes`): past it fails; a twentieth or more under
 it is said, for the budget to come down with it. A budget is raised only in
 the change that grows the module, with the reason.
@@ -179,4 +179,17 @@ every sample's review to its sources and every listing to compiling
 writes the listings and records the review (`STATEUI_UPDATE_SAMPLES=1`) - the
 act that says each changed sample's notes and its listings' comments were
 read against the change, which the tool does not do for the reader.
+
+## A plan
+
+`stateui repo test --plan portable` runs the owner packages' suites every
+machine runs, in their order - the library, the host layer, the conformance
+runner, application testing, the Gallery, HelloWorld, the tool
+(`RepositoryPlan`); `--plan native` this machine's host suites - AppKit,
+UIKit, Android and the Web on a Mac, GTK and the Web on Linux, WinUI on
+Windows - a UIKit or Android suite on the `--device` named. Each suite is a
+phase of its own, a host suite's phases under its id; one failing never stops
+those after it, and a suite this machine cannot run - an Android one with no
+device running - stands as not run, never as passed. `--suite <id>` runs one
+of the plan's. Full WinUI conformance is never part of a plan.
 

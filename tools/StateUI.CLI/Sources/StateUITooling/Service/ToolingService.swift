@@ -186,11 +186,8 @@ public struct ToolingService: Sendable {
         guard let checkout = Checkout.holding(folder)?.root else {
             throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
         }
-        if suite == "sizes:web" {
-            return try await HostSuite(checkout: checkout).runWebSizes(reporter: reporter)
-        }
         guard suite.hasPrefix("host:"), let host = HostFamily(rawValue: String(suite.dropFirst("host:".count))) else {
-            throw ToolingError(.invalidConfiguration, "No suite \(suite): host:appkit, host:uikit, host:android, host:gtk, host:web and sizes:web are.")
+            throw ToolingError(.invalidConfiguration, "No suite \(suite): host:appkit, host:uikit, host:android, host:winui, host:gtk and host:web are.")
         }
         return try await HostSuite(checkout: checkout).run(
             host, filter: filter, device: device, buildOnly: buildOnly, architecture: architecture, artifact: artifact, reporter: reporter)
@@ -223,6 +220,26 @@ public struct ToolingService: Sendable {
         let suites = HostSuite(checkout: checkout)
         guard let host else { return try await suites.runLibraryAPI(recording: record, reporter: reporter) }
         return try await suites.run(host, device: device, recordingAPI: record, reporter: reporter)
+    }
+
+    /// Runs the `kind` plan of the StateUI checkout holding `folder` - its suite `only` where named - on the device
+    /// `device` names for UIKit and Android.
+    public func runPlan(
+        _ kind: RepositoryPlan.Kind, only: String?, device: String?, in folder: URL, reporter: BuildReporter
+    ) async throws -> SuiteResult {
+        guard let checkout = Checkout.holding(folder)?.root else {
+            throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        return try await RepositoryPlan(checkout: checkout).run(kind, only: only, device: device, reporter: reporter)
+    }
+
+    /// Holds each application's release Web module of the StateUI checkout holding `folder` - `application`'s alone
+    /// where named - within its size budget.
+    public func checkWebSizes(application: String?, in folder: URL, reporter: BuildReporter) async throws -> SuiteResult {
+        guard let checkout = Checkout.holding(folder)?.root else {
+            throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        return SuiteResult(suite: "web-size", phases: try await WebSizes(checkout: checkout).run(application: application, reporter: reporter))
     }
 
     /// Holds the handbook's own outputs of the StateUI checkout holding `folder` - the dictionary and the platform

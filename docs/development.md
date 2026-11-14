@@ -350,12 +350,12 @@ The Web host's suite is built for WebAssembly from
 `lib/StateUI/StateUI.Web/Testing`: its API record held, the host's own tests
 run in Node, then the conformance families and the host's tests that need a
 browser's own page in a headless Google Chrome or Chromium, every verdict
-held. `--suite sizes:web` builds each application's release module and holds
+held. `stateui repo web-size check` builds each application's release module and holds
 it within its budget:
 
 ```bash
 stateui repo test --suite host:web
-stateui repo test --suite sizes:web
+stateui repo web-size check
 ```
 
 A passing unit suite does not prove native drawing or interaction. Exercise a

@@ -9,15 +9,18 @@ import StateUIToolingProtocol
 /// `stateui repo`: the StateUI checkout's own work - its suites.
 struct RepoCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self, Conformance.self, API.self, Docs.self, Samples.self])
+        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self, Conformance.self, API.self, Docs.self, Samples.self, WebSize.self])
 
-    /// `stateui repo test --suite host:<host>`.
+    /// `stateui repo test --suite host:<host>`, `stateui repo test --plan portable | native [--suite <id>]`.
     struct Test: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
-            abstract: "Runs a suite of the checkout's own: host:appkit, host:uikit, host:android, host:winui, host:gtk or host:web - the host's tests, every conformance verdict held, then its API records; sizes:web, the release Web modules' size budgets.")
+            abstract: "Runs a suite of the checkout's own - host:appkit, host:uikit, host:android, host:winui, host:gtk or host:web: the host's tests, every conformance verdict held, then its API records - or a plan of them in order: portable, the owner packages every machine runs; native, this machine's host suites.")
 
-        @Option(help: "The suite: host:appkit, host:uikit, host:android, host:winui, host:gtk, host:web or sizes:web.")
-        var suite: String
+        @Option(help: "The suite: host:appkit, host:uikit, host:android, host:winui, host:gtk or host:web; with --plan, one of the plan's.")
+        var suite: String?
+
+        @Option(help: "portable (the library, the host layer, the conformance runner, application testing, the Gallery, HelloWorld, the tool) or native (this machine's host suites): each run apart, in order.")
+        var plan: RepositoryPlan.Kind?
 
         @Option(help: "host:uikit's simulator, by name or UDID - the booted one, else an iPhone, when left out; host:android's device or emulator.")
         var device: String?
@@ -36,13 +39,21 @@ struct RepoCommand: AsyncParsableCommand {
 
         @OptionGroup var output: OutputOptions
 
+        func validate() throws {
+            guard plan != nil || suite != nil else { throw ValidationError("Name a --suite, or a --plan.") }
+        }
+
         func run() async throws {
             let here = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
             var passed = true
             try await output.answer({
-                let ran = try await ToolingService().testSuite(
-                    suite, filter: filter, device: device, buildOnly: buildOnly, architecture: architecture,
-                    artifact: artifact.map { URL(fileURLWithPath: $0) }, in: here, reporter: BuildOptions.terminal)
+                let ran = if let plan {
+                    try await ToolingService().runPlan(plan, only: suite, device: device, in: here, reporter: BuildOptions.terminal)
+                } else {
+                    try await ToolingService().testSuite(
+                        suite ?? "", filter: filter, device: device, buildOnly: buildOnly, architecture: architecture,
+                        artifact: artifact.map { URL(fileURLWithPath: $0) }, in: here, reporter: BuildOptions.terminal)
+                }
                 passed = ran.passed
                 return ran
             }) { (ran: SuiteResult) in
@@ -219,4 +230,30 @@ struct RepoCommand: AsyncParsableCommand {
         }
         if !passed { throw ExitCode(ExitStatus.of(ToolingError(.toolFailed, "they do not hold"))) }
     }
+
+    /// `stateui repo web-size check [--application <name>]`.
+    struct WebSize: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            commandName: "web-size", abstract: "Holds each application's release Web module within its size budget.", subcommands: [Check.self])
+        struct Check: AsyncParsableCommand {
+            static let configuration = CommandConfiguration(
+                abstract: "Builds each application's release Web module - or the one named - and holds it, gzipped, within its budget.")
+            @Option(help: "The application, HelloWorld or Gallery; each when left out.")
+            var application: String?
+            @OptionGroup var output: OutputOptions
+            func run() async throws {
+                let here = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+                var passed = true
+                try await output.answer({
+                    let ran = try await ToolingService().checkWebSizes(application: application, in: here, reporter: BuildOptions.terminal)
+                    passed = ran.passed
+                    return ran
+                }) { (ran: SuiteResult) in
+                    ran.phases.map { "\($0.passed ? "passed" : "FAILED")  \($0.name)" }.joined(separator: "\n")
+                }
+                if !passed { throw ExitCode(ExitStatus.of(ToolingError(.toolFailed, "a module is over its budget"))) }
+            }
+        }
+    }
 }
+extension RepositoryPlan.Kind: ExpressibleByArgument {}

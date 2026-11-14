@@ -34,7 +34,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   checks them, the conformance families with `--filter WinUIConformanceTests`.
 - **Web builds through `stateui`.** `.scripts/Web/run-app.sh`, `deploy.sh`, `page.sh`, `serve.py`, `browsers.sh` and
   `size-budgets.sh` are gone: `stateui run`, `stateui build`, `stateui package --host web`, `stateui devices --host
-  web` and `stateui repo test --suite sizes:web` take their place. A page is laid in the build's artifact, no longer
+  web` and `stateui repo web-size check` take their place. A page is laid in the build's artifact, no longer
   in `.build/web/site`, and `.build/web/server.json` goes, a run saying the page's address instead; the page is served
   to this machine alone unless `--listen lan` shares it. `test-web.sh` stays only to record the host's marks and
   exports until the tool records them; `stateui repo test --suite host:web` checks them.
@@ -128,11 +128,14 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - `stateui repo docs check | update` holds the control dictionary and the platform contract to the marks or renders
   them; `stateui repo samples check | update` holds the Gallery's and the handbook's listings to their code, the
   review standing, or writes them once the notes were read.
+- `stateui repo test --plan portable | native [--suite <id>]` runs the owner packages' suites in order, each apart -
+  portable: the library, the host layer, the conformance runner, application testing, the Gallery, HelloWorld and the
+  tool; native: this machine's host suites, one with no device listed as not run - a failure never stopping the rest.
 - `stateui repo test --suite host:winui` runs the WinUI host's suite on Windows - the foundation's Windows tests, the
   host's tests each in a process of its own with the test runner made self-contained, both API records - and the
   conformance families only where `--filter` names them (`WinUIConformanceTests`, or one of its tests).
 - `stateui repo test --suite host:web` runs the Web host's suite - the facade's API record, the host's tests in Node, the
-  conformance families and the host's browser tests headless in Chrome or Chromium - and `--suite sizes:web` holds each
+  conformance families and the host's browser tests headless in Chrome or Chromium - and `stateui repo web-size check` holds each
   release module within its budget; `web.yml` runs both. `--suite host:gtk` runs the GTK host's - the foundation's Linux
   tests, the host's, every verdict held, both API records - and `gtk.yml` runs it.
 - `stateui repo test --suite host:android --device <device>` runs the Android host's suite - every test listed, the test

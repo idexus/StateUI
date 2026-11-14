@@ -40,11 +40,6 @@ public struct HostSuite: Sendable {
         return SuiteResult(suite: "api:StateUI", phases: [SuiteResult.Phase(name: recording ? "api StateUI recorded" : "api StateUI", passed: held)])
     }
 
-    /// Holds each application's release Web module within its size budget.
-    public func runWebSizes(reporter: BuildReporter = BuildReporter()) async throws -> SuiteResult {
-        SuiteResult(suite: "sizes:web", phases: try await WebSizes(checkout: checkout).run(reporter: reporter))
-    }
-
     /// Runs the suite of `host` - `--filter`ed where given, a UIKit or Android one on the device `device` names - and
     /// answers each phase. An Android suite may instead be built alone for `architecture` (`buildOnly`), or run from
     /// the folder such a build made (`artifact`).
