@@ -55,8 +55,7 @@ public struct ConformanceRun: Sendable {
             staleOnly: selection == .changed && host != .android,
             revisions: Dictionary(uniqueKeysWithValues: status.families.map { ($0.name, $0.revision) }), reporter: reporter)
         var phases = suite.phases
-        reporter.progress(record ? "rendering the control dictionary and the platform contract" : "holding the documents to the marks")
-        phases.append(SuiteResult.Phase(name: record ? "documents rendered" : "documents held", passed: try await documents(record: record, reporter: reporter)))
+        phases.append(try await Handbook(checkout: checkout, tools: tools).documents(update: record, reporter: reporter))
         return SuiteResult(suite: "conformance:\(host.rawValue)", phases: phases)
     }
 
@@ -74,17 +73,5 @@ public struct ConformanceRun: Sendable {
         default:
             return "\(tests)/test(\(families.joined(separator: "|")))[0-9]*$"
         }
-    }
-
-    /// The control dictionary and the platform contract held to the marks, or rendered from them.
-    private func documents(record: Bool, reporter: BuildReporter) async throws -> Bool {
-        var environment = ProcessEnvironment.inherited.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY")
-        environment = record ? environment.setting("STATEUI_UPDATE_DOCS", to: "1") : environment.removing("STATEUI_UPDATE_DOCS")
-        let outcome = try await ProcessRunner().run(
-            ProcessRequest(tools.swift, arguments: ["test", "--package-path", checkout.path, "--filter", "ControlDictionaryTests"],
-                           environment: environment),
-            output: reporter.output)
-        try Task.checkCancellation()
-        return outcome.succeeded
     }
 }

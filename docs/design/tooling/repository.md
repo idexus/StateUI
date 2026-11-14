@@ -166,3 +166,17 @@ read from - and its API phase alone records: the facade's, its backends' and
 record: the variables that record are taken from an API phase unless it is
 asked to.
 
+## The handbook's own outputs
+
+Some of the handbook is written by the repository's own tests, and the tool
+runs them, never a second writer (`Handbook`). `stateui repo docs check`
+holds `docs/controls` and `docs/platform-contract.md` to the marks
+(`ControlDictionaryTests`); `update` renders them (`STATEUI_UPDATE_DOCS=1`) -
+a conformance run's last phase is the same. `stateui repo samples check`
+holds the Gallery's listings and the handbook's to the code they are cut from,
+every sample's review to its sources and every listing to compiling
+(`SampleListingsTests`, `SampleReviewTests`, `SampleCodeTests`); `update`
+writes the listings and records the review (`STATEUI_UPDATE_SAMPLES=1`) - the
+act that says each changed sample's notes and its listings' comments were
+read against the change, which the tool does not do for the reader.
+

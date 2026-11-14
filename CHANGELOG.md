@@ -125,6 +125,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   of its own; on Android the stale families and each file's revision come from the conformance package's helper.
 - `stateui repo api check | record [--host <host>]` holds the public API to `lib/StateUI/exports/api` or writes it:
   the library's surfaces, or with `--host` the host's facade, backends and testing module after its suite.
+- `stateui repo docs check | update` holds the control dictionary and the platform contract to the marks or renders
+  them; `stateui repo samples check | update` holds the Gallery's and the handbook's listings to their code, the
+  review standing, or writes them once the notes were read.
 - `stateui repo test --suite host:winui` runs the WinUI host's suite on Windows - the foundation's Windows tests, the
   host's tests each in a process of its own with the test runner made self-contained, both API records - and the
   conformance families only where `--filter` names them (`WinUIConformanceTests`, or one of its tests).

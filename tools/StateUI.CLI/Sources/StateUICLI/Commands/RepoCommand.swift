@@ -9,7 +9,7 @@ import StateUIToolingProtocol
 /// `stateui repo`: the StateUI checkout's own work - its suites.
 struct RepoCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self, Conformance.self, API.self])
+        commandName: "repo", abstract: "Works on a StateUI checkout itself.", subcommands: [Test.self, Conformance.self, API.self, Docs.self, Samples.self])
 
     /// `stateui repo test --suite host:<host>`.
     struct Test: AsyncParsableCommand {
@@ -171,5 +171,52 @@ struct RepoCommand: AsyncParsableCommand {
                 if !passed { throw ExitCode(ExitStatus.of(ToolingError(.toolFailed, "the records do not hold"))) }
             }
         }
+    }
+
+    /// `stateui repo docs check | update`.
+    struct Docs: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Holds the control dictionary and the platform contract to the marks, or renders them.", subcommands: [Check.self, Update.self])
+        struct Check: AsyncParsableCommand {
+            static let configuration = CommandConfiguration(abstract: "Holds docs/controls and docs/platform-contract.md to the marks.")
+            @OptionGroup var output: OutputOptions
+            func run() async throws { try await RepoCommand.handbook(samples: false, update: false, output) }
+        }
+        struct Update: AsyncParsableCommand {
+            static let configuration = CommandConfiguration(abstract: "Renders docs/controls and docs/platform-contract.md from the marks.")
+            @OptionGroup var output: OutputOptions
+            func run() async throws { try await RepoCommand.handbook(samples: false, update: true, output) }
+        }
+    }
+
+    /// `stateui repo samples check | update`.
+    struct Samples: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Holds the Gallery's listings and the handbook's to the code they are cut from, or writes them.", subcommands: [Check.self, Update.self])
+        struct Check: AsyncParsableCommand {
+            static let configuration = CommandConfiguration(abstract: "Holds the listings to their code, every sample's review standing, every listing compiling.")
+            @OptionGroup var output: OutputOptions
+            func run() async throws { try await RepoCommand.handbook(samples: true, update: false, output) }
+        }
+        struct Update: AsyncParsableCommand {
+            static let configuration = CommandConfiguration(
+                abstract: "Writes the listings and records the review - only once each changed sample's notes and its listings' comments were read against the change.")
+            @OptionGroup var output: OutputOptions
+            func run() async throws { try await RepoCommand.handbook(samples: true, update: true, output) }
+        }
+    }
+
+    /// Runs one of the handbook's own outputs' checks or updates, its phase said.
+    static func handbook(samples: Bool, update: Bool, _ output: OutputOptions) async throws {
+        let here = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+        var passed = true
+        try await output.answer({
+            let ran = try await ToolingService().handbook(samples: samples, update: update, in: here, reporter: BuildOptions.terminal)
+            passed = ran.passed
+            return ran
+        }) { (ran: SuiteResult) in
+            ran.phases.map { "\($0.passed ? "passed" : "FAILED")  \($0.name)" }.joined(separator: "\n")
+        }
+        if !passed { throw ExitCode(ExitStatus.of(ToolingError(.toolFailed, "they do not hold"))) }
     }
 }

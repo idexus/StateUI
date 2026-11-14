@@ -225,6 +225,18 @@ public struct ToolingService: Sendable {
         return try await suites.run(host, device: device, recordingAPI: record, reporter: reporter)
     }
 
+    /// Holds the handbook's own outputs of the StateUI checkout holding `folder` - the dictionary and the platform
+    /// contract (`documents`), else the samples' listings and review - to what stands, or writes them where `update`.
+    public func handbook(samples: Bool, update: Bool, in folder: URL, reporter: BuildReporter) async throws -> SuiteResult {
+        guard let checkout = Checkout.holding(folder)?.root else {
+            throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        let handbook = Handbook(checkout: checkout, tools: ToolResolver())
+        let phase = samples ? try await handbook.samples(update: update, reporter: reporter)
+            : try await handbook.documents(update: update, reporter: reporter)
+        return SuiteResult(suite: samples ? "samples" : "docs", phases: [phase])
+    }
+
     /// Runs `host`'s conformance families `selection` takes in the StateUI checkout holding `folder`, recording their
     /// verdicts and rendering the documents where `record`.
     ///
