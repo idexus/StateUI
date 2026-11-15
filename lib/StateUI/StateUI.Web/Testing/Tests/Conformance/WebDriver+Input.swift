@@ -204,13 +204,16 @@ extension WebDriver {
     }
 
     /// Where the element `e` - or its part `part` names - stands in the browser's window, brought into it first, once
-    /// the page's pictures have come and stand at their size: one coming moves what stands after it, as the user sees.
+    /// what moves it has come: the page's pictures, standing at their size, and every animation of the page's on it or
+    /// on what holds it - a sheet rising. The mouse reaches the page a moment after the measure.
+    /// Design: docs/design/platforms/web/runtime.md#the-conformance-run
     func box(of e: Int32, part: String? = nil) throws -> Rect {
         // A picture is come once loaded and sized by it - the host sizes it as it hears it loaded.
         let come = "[...document.images].every((i) => i.complete && (!i.classList.contains('stateui-picture') "
             + "|| !i.getAttribute('src') || i.style.containIntrinsicSize !== ''))"
+        let still = "((t) => !t || stateui.still(t))(\(target(part)))"
         for _ in 0..<150 {
-            guard try !WebBrowser.truth(come, on: 0) else { break }
+            guard try !(WebBrowser.truth(come, on: 0) && WebBrowser.truth(still, on: e)) else { break }
             WebBrowser.pause()
         }
         let numbers = try numbers(

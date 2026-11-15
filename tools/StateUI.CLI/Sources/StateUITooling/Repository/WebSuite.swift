@@ -49,6 +49,7 @@ struct WebSuite {
         "WebBoxBlurTests",
         "WebTextRunsTests",
         "WebDriverBarMenuTests",
+        "WebDriverAimTests",
     ]
 
     private var testing: URL { checkout.appendingPathComponent("lib/StateUI/StateUI.Web/Testing") }

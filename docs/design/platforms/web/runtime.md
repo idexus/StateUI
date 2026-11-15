@@ -289,6 +289,14 @@ tells it - the visible part of the page that much shorter than the page's
 viewport, at its own scale (`WebRenderer.viewportMoved`) - and a case that
 told of one leaves none to the next.
 
+The driver measures an element where the mouse will find it. The mouse
+reaches the page a moment after the measure - the controller's answer, then
+the browser's own input - so what still moves is measured once it has come:
+every picture loaded and standing at its size, and every animation of the
+page's that ends, on the element or on one holding it, changing where or how
+large it stands - a sheet rising, a page arriving (`stateui.still`). A press
+aimed at a button on a sheet still rising lands where the button stood.
+
 XCTest's own loop runs on Swift's cooperative executor and awaits MainActor
 between its tests. Once a host runs, MainActor's executor is the UI thread's,
 which only an entry of the page drains, so a task of the suite's own drains
