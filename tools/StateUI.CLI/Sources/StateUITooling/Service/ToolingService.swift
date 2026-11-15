@@ -168,9 +168,13 @@ public struct ToolingService: Sendable {
         try await indexLeases.acquire(host, roots: try rootUris.map(FileURI.url))
     }
 
-    /// Takes every index's scratch folder away from the folders `rootUris` name - `index/clean`.
-    public func cleanIndex(in rootUris: [String]) throws -> IndexCleaning {
-        IndexCleaning(removedUris: IndexContexts.clean(try rootUris.map(FileURI.url)).map(FileURI.string))
+    /// Takes every index's scratch folder away from the folders `rootUris` name - `index/clean` - but for those
+    /// another connection indexes, answered as conflicts and left as they stand.
+    public func cleanIndex(in rootUris: [String]) async throws -> IndexCleaning {
+        let roots = try rootUris.map(FileURI.url)
+        let held = try await indexLeases.heldElsewhere(roots)
+        let free = roots.filter { root in !held.contains { $0.rootUri == FileURI.string(root) } }
+        return IndexCleaning(removedUris: IndexContexts.clean(free).map(FileURI.string), conflicts: held.isEmpty ? nil : held)
     }
 
     /// Where `host`'s heads can run on this machine - `devices/list`: UIKit's iPhones, iPads and simulators on a Mac,
@@ -390,7 +394,7 @@ public struct ToolingService: Sendable {
                 try await runTests(request, in: try request.folderUri.map(FileURI.url) ?? Self.folder(of: caller), reporter: reporter.build)
             }
         }
-        methods.query("index/clean") { (query: IndexQuery) in try cleanIndex(in: query.rootUris ?? []) }
+        methods.query("index/clean") { (query: IndexQuery) in try await cleanIndex(in: query.rootUris ?? []) }
         methods.query("index/acquire") { (query: IndexQuery) in try await acquireIndex(query.host, rootUris: query.rootUris ?? []) }
         methods.mutation("repository/conformance") { (request: ConformanceRequest, context: OperationContext, caller: RequestContext) in
             try await Self.reporting(context) { reporter in

@@ -698,7 +698,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             return destination;
         }),
         vscode.commands.registerCommand("stateui.cleanIndex", async () => {
-            await cleanIndex(roots(), cleanIndexes);
+            try {
+                await cleanIndex(roots(), cleanIndexes);
+            } catch (error) {
+                if (!(error instanceof IndexConflictError)) {
+                    throw error;
+                }
+                void vscode.window.showWarningMessage(`StateUI: the index stays - ${error.message}.`);
+                return;
+            }
             void vscode.window.setStatusBarMessage("StateUI: the index is being built again", 4000);
         }));
 

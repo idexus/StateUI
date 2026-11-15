@@ -26,22 +26,13 @@ public final class IndexLeases: Sendable {
     /// connection holds as another host, keeping what it held. A lease whose connection ended is taken away.
     public func acquire(_ host: HostFamily?, roots: [URL]) async throws -> IndexLease {
         let name = host?.rawValue ?? "plain"
-        var seen = Set<String>()
-        let places = roots.map { (root: $0, place: folder.appendingPathComponent(BuildContext.digest(RealPath.of($0).path))) }
-            .filter { seen.insert($0.place.path).inserted }
+        let places = places(of: roots)
         let guards = try await places.map(\.place).sorted { $0.path < $1.path }.asyncMap(guarded)
         defer { guards.forEach { $0.close() } }
         let own = Set(held.withLock { $0.map(\.file.path) })
         for (root, place) in places {
-            let files = (try? FileManager.default.contentsOfDirectory(atPath: place.path)) ?? []
-            for file in files.sorted() where file.hasSuffix(".lock") && !own.contains(place.appendingPathComponent(file).path) {
-                let other = String(file.prefix { $0 != "-" })
-                guard other != name else { continue }
-                guard let stale = try Lock(file: place.appendingPathComponent(file)) else {
-                    return IndexLease(host: host, rootUris: [], conflict: IndexConflict(rootUri: FileURI.string(root), host: HostFamily(rawValue: other)))
-                }
-                stale.close()
-                try? FileManager.default.removeItem(at: place.appendingPathComponent(file))
+            if let other = try holder(in: place, besides: own, sharing: name) {
+                return IndexLease(host: host, rootUris: [], conflict: IndexConflict(rootUri: FileURI.string(root), host: HostFamily(rawValue: other)))
             }
         }
         let taken = try places.map { _, place in
@@ -51,6 +42,39 @@ public final class IndexLeases: Sendable {
         }
         drop(held.withLock { held in defer { held = taken }; return held })
         return IndexLease(host: host, rootUris: roots.map(FileURI.string))
+    }
+
+    /// The roots of `roots` another living connection holds, as any host, each with the host it holds it as - what
+    /// this connection holds is none of them; a lease whose connection ended is taken away.
+    public func heldElsewhere(_ roots: [URL]) async throws -> [IndexConflict] {
+        let places = places(of: roots)
+        let guards = try await places.map(\.place).sorted { $0.path < $1.path }.asyncMap(guarded)
+        defer { guards.forEach { $0.close() } }
+        let own = Set(held.withLock { $0.map(\.file.path) })
+        return try places.compactMap { root, place in
+            try holder(in: place, besides: own, sharing: nil).map { IndexConflict(rootUri: FileURI.string(root), host: HostFamily(rawValue: $0)) }
+        }
+    }
+
+    /// Each root once, with the folder of its leases.
+    private func places(of roots: [URL]) -> [(root: URL, place: URL)] {
+        var seen = Set<String>()
+        return roots.map { (root: $0, place: folder.appendingPathComponent(BuildContext.digest(RealPath.of($0).path))) }
+            .filter { seen.insert($0.place.path).inserted }
+    }
+
+    /// The host of a lease in `place` another living connection holds - not `own`, and not one as `sharing` - each
+    /// lease whose connection ended taken away; the guard of `place` held.
+    private func holder(in place: URL, besides own: Set<String>, sharing name: String?) throws -> String? {
+        let files = (try? FileManager.default.contentsOfDirectory(atPath: place.path)) ?? []
+        for file in files.sorted() where file.hasSuffix(".lock") && !own.contains(place.appendingPathComponent(file).path) {
+            let other = String(file.prefix { $0 != "-" })
+            guard other != name else { continue }
+            guard let stale = try Lock(file: place.appendingPathComponent(file)) else { return other }
+            stale.close()
+            try? FileManager.default.removeItem(at: place.appendingPathComponent(file))
+        }
+        return nil
     }
 
     /// The lock of `place`'s guard, waited for: the one connection at a time that reads and writes its leases.

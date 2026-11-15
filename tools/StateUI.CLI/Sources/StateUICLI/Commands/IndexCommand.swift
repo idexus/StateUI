@@ -38,9 +38,14 @@ struct IndexCommand: AsyncParsableCommand {
         func run() async throws {
             let folders = project.isEmpty ? [FileManager.default.currentDirectoryPath] : project
             try await output.answer({
-                try ToolingService().cleanIndex(in: folders.map { FileURI.string(URL(fileURLWithPath: $0)) })
+                try await ToolingService().cleanIndex(in: folders.map { FileURI.string(URL(fileURLWithPath: $0)) })
             }) { (cleaning: IndexCleaning) in
-                cleaning.removedUris.isEmpty ? "No index here." : cleaning.removedUris.map { "Removed \((try? FileURI.url($0).path) ?? $0)" }.joined(separator: "\n")
+                let path = { (uri: String) in (try? FileURI.url(uri).path) ?? uri }
+                let removed = cleaning.removedUris.map { "Removed \(path($0))" }
+                let left = (cleaning.conflicts ?? []).map {
+                    "Left \(path($0.rootUri)): another window indexes it as \($0.host?.rawValue ?? "plain Swift")."
+                }
+                return removed.isEmpty && left.isEmpty ? "No index here." : (removed + left).joined(separator: "\n")
             }
         }
     }

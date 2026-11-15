@@ -48,4 +48,20 @@ final class IndexLeasesTests: XCTestCase {
         }
         XCTAssertEqual(files.filter { $0.hasSuffix(".lock") }.map { $0.prefix { $0 != "-" } }, ["uikit"])
     }
+
+    /// An index another connection holds is left as it stands: cleaning takes away only what no other connection
+    /// indexes, and says who holds the rest. A connection cleans what it holds itself.
+    func testCleaningLeavesAnIndexAnotherConnectionHolds() async throws {
+        let index = package.appendingPathComponent(".build/appkit/index-build")
+        try FileManager.default.createDirectory(at: index, withIntermediateDirectories: true)
+        let holder = IndexLeases(folder: state)
+        _ = try await holder.acquire(.appkit, roots: [package])
+
+        let cleaned = try await ToolingService(leases: IndexLeases(folder: state)).cleanIndex(in: [FileURI.string(package)])
+        XCTAssertEqual(cleaned, IndexCleaning(removedUris: [], conflicts: [IndexConflict(rootUri: FileURI.string(package), host: .appkit)]))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: index.path), "another connection's index stands")
+
+        let own = try await ToolingService(leases: holder).cleanIndex(in: [FileURI.string(package)])
+        XCTAssertEqual(own, IndexCleaning(removedUris: [FileURI.string(index)]))
+    }
 }

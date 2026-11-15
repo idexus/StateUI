@@ -43,9 +43,12 @@ public struct IndexContext: Codable, Equatable, Sendable {
 /// The scratch folders `index/clean` took away.
 public struct IndexCleaning: Codable, Equatable, Sendable {
     public var removedUris: [String]
+    /// The roots another connection indexes, left as they stand; nil where there is none.
+    public var conflicts: [IndexConflict]?
 
-    /// The folders removed.
-    public init(removedUris: [String]) {
+    /// The folders removed, and the roots left to the connections holding them.
+    public init(removedUris: [String], conflicts: [IndexConflict]? = nil) {
         self.removedUris = removedUris
+        self.conflicts = conflicts
     }
 }

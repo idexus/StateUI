@@ -39,6 +39,12 @@ package and the host that holds it (`conflict`), and the connection keeps
 what it held. A lease whose process ended is taken away by the next that
 looks.
 
+Cleaning an index (`index/clean`) takes away only what no other connection
+indexes, as any host - the same host too, whose server builds in that
+folder: a package another connection holds is left as it stands and
+answered with its host (`conflicts`); a connection cleans what it holds
+itself. The editor then restarts no server and says which window holds it.
+
 The editor takes the lease before it writes a package's configuration. Where
 another window holds one as another host it writes nothing: a host chosen is
 refused and the one before kept; a window opening on such a package works as

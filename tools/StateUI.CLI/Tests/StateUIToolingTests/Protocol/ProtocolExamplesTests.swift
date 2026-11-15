@@ -253,8 +253,12 @@ final class ProtocolExamplesTests: XCTestCase {
                     rootUri: "file:///Users/example/Projects/Demo/Notes", host: .appkit)))),
             ], answeredAsWritten: false),
             Example(name: "index-clean", messages: [
-                ("request", try request("17", "index/clean", IndexQuery(host: nil, rootUris: ["file:///Users/example/Projects/Demo/Notes"]))),
-                ("response", try response("17", IndexCleaning(removedUris: ["file:///Users/example/Projects/Demo/Notes/.build/uikit/index-build"]))),
+                ("request", try request("17", "index/clean", IndexQuery(host: nil, rootUris: [
+                    "file:///Users/example/Projects/Demo/Notes", "file:///Users/example/Projects/Demo/Other",
+                ]))),
+                ("response", try response("17", IndexCleaning(
+                    removedUris: ["file:///Users/example/Projects/Demo/Notes/.build/uikit/index-build"],
+                    conflicts: [IndexConflict(rootUri: "file:///Users/example/Projects/Demo/Other", host: .appkit)]))),
             ], answeredAsWritten: false),
             Example(name: "workspace-create", messages: [
                 ("request", try request("10", "workspace/create", Mutation(

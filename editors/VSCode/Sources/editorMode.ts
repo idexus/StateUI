@@ -56,7 +56,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { pathOf } from "./applications";
 import { describe, environment, Host, HostDescription, hostVariable, hosts } from "./hosts";
-import { IndexConflict, IndexContext, IndexLease } from "./Tooling/protocol";
+import { IndexCleaning, IndexConflict, IndexContext, IndexLease } from "./Tooling/protocol";
 
 /** What the stateui tool says `host`'s code is indexed with - nothing where it could not say, which it said. */
 export type IndexDescriber = (host: Host | undefined) => Promise<IndexContext | undefined>;
@@ -219,10 +219,18 @@ export function buildingCommand(directory: string, platform: NodeJS.Platform = p
 /**
  * Removes every host's index directory under `roots`, for an index a failed
  * build left inconsistent. The language server builds it again when restarted.
+ *
+ * @throws IndexConflictError where another window indexes one of `roots`: the tool left it, and the server is not
+ * restarted.
  */
-export async function cleanIndex(roots: readonly string[], clean: (roots: readonly string[]) => Promise<unknown>): Promise<void> {
+export async function cleanIndex(
+    roots: readonly string[], clean: (roots: readonly string[]) => Promise<IndexCleaning | undefined>): Promise<void> {
     await settle(roots.map((root) => path.join(root, ".build")));
-    await clean(roots);
+    const cleaning = await clean(roots);
+    const conflict = cleaning?.conflicts?.[0];
+    if (conflict) {
+        throw new IndexConflictError(conflict);
+    }
     await restartServer();
 }
 

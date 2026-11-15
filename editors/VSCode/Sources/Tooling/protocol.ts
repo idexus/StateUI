@@ -322,8 +322,8 @@ export const IndexConflict = object<IndexConflict>({ rootUri: string, host: opti
 export interface IndexLease { host?: HostFamily; rootUris: string[]; conflict?: IndexConflict }
 export const IndexLease = object<IndexLease>({ host: optional(HostFamily), rootUris: array(string), conflict: optional(IndexConflict) });
 
-export interface IndexCleaning { removedUris: string[] }
-export const IndexCleaning = object<IndexCleaning>({ removedUris: array(string) });
+export interface IndexCleaning { removedUris: string[]; conflicts?: IndexConflict[] }
+export const IndexCleaning = object<IndexCleaning>({ removedUris: array(string), conflicts: optional(array(IndexConflict)) });
 
 export interface TestDiscoveryQuery { host?: HostFamily; folderUri?: string }
 export const TestDiscoveryQuery = object<TestDiscoveryQuery>({ host: optional(HostFamily), folderUri: optional(string) });
