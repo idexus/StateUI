@@ -63,11 +63,17 @@ final class ServeCommandTests: XCTestCase {
     }
 
     /// A client that stops reading is lost once more than the limit it may leave unread has stood unread for the
-    /// time allowed: the service says so on standard error, and ends as a client lost once its input closes.
-    func testAClientThatStopsReadingIsLost() throws {
+    /// time allowed: the service says so on standard error and ends there as a client lost - its input still open,
+    /// its output still unread - and a package it indexed as one host is another connection's to index as another.
+    func testAClientThatStopsReadingIsLost() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("lost-\(UUID().uuidString)")
+        addTeardownBlock { try? FileManager.default.removeItem(at: root) }
+        let (state, package) = (root.appendingPathComponent("state"), root.appendingPathComponent("Notes"))
+        try FileManager.default.createDirectory(at: package, withIntermediateDirectories: true)
         let process = Process()
         process.executableURL = URL(fileURLWithPath: Stateui.path)
         process.arguments = ["serve", "--stdio"]
+        process.environment = ProcessInfo.processInfo.environment.merging(["STATEUI_STATE": state.path]) { $1 }
         let (standardInput, standardOutput, standardError) = (Pipe(), Pipe(), Pipe())
         process.standardInput = standardInput
         process.standardOutput = standardOutput
@@ -78,16 +84,30 @@ final class ServeCommandTests: XCTestCase {
         standardError.fileHandleForReading.readabilityHandler = { said.add($0.availableData) }
 
         var asked = frame(Self.initialize) + frame(#"{"jsonrpc":"2.0","method":"initialized"}"#)
+        asked += frame(#"{"jsonrpc":"2.0","id":"lease","method":"index/acquire","params":{"host":"appkit","rootUris":["\#(FileURI.string(package))"]}}"#)
         for id in 2..<40_002 { asked += frame(#"{"jsonrpc":"2.0","id":\#(id),"method":"server/info"}"#) }
         try standardInput.fileHandleForWriting.write(contentsOf: asked)
-        let deadline = Date().addingTimeInterval(50)
-        while !said.text.contains("is lost"), Date() < deadline { Thread.sleep(forTimeInterval: 0.25) }
+        let leases = state.appendingPathComponent("index-leases")
+        let leased = {
+            let places = (try? FileManager.default.contentsOfDirectory(atPath: leases.path)) ?? []
+            return places.contains { place in
+                ((try? FileManager.default.contentsOfDirectory(atPath: leases.appendingPathComponent(place).path)) ?? [])
+                    .contains { $0.hasPrefix("appkit-") }
+            }
+        }
+        let lost = Date().addingTimeInterval(50)
+        while !leased(), Date() < lost { try await Task.sleep(for: .milliseconds(50)) }
+        XCTAssertTrue(leased(), "the client holds the package while it lives")
+        while !said.text.contains("is lost"), Date() < lost { try await Task.sleep(for: .milliseconds(250)) }
         XCTAssertTrue(said.text.contains("is lost"), "the client was never lost: \(said.text)")
 
-        try standardInput.fileHandleForWriting.close()
-        _ = standardOutput.fileHandleForReading.readDataToEndOfFile()
-        process.waitUntilExit()
+        let ended = Date().addingTimeInterval(20)
+        while process.isRunning, Date() < ended { try await Task.sleep(for: .milliseconds(100)) }
+        XCTAssertFalse(process.isRunning, "the service outlived the client it lost")
+        guard !process.isRunning else { return }
         XCTAssertEqual(process.terminationStatus, 6)
+        let taken = try await IndexLeases(folder: leases).acquire(.gtk, roots: [package])
+        XCTAssertNil(taken.conflict, "what the lost client held is free")
     }
 
     /// Bytes that are no frame end the service, said on standard error alone.

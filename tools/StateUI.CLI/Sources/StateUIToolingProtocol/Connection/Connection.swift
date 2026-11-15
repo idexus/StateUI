@@ -24,6 +24,8 @@ public actor Connection {
     public private(set) var state = State.created
     /// Whether the client shut the service down before the connection ended - the clean end.
     public private(set) var shutDown = false
+    /// Whether the connection ended on a client that read nothing for the time allowed: nothing more reaches it.
+    public private(set) var lost = false
 
     private enum Answer: Sendable {
         case now(OutgoingMessage)
@@ -134,6 +136,7 @@ public actor Connection {
                 congestedSince = since
                 if ContinuousClock.now - since >= lostAfter {
                     diagnose("stateui: the client read nothing for \(lostAfter); it is lost")
+                    lost = true
                     close()
                     await methods.operations.stop(ownedBy: caller.owner, within: Self.stopLimit)
                     return

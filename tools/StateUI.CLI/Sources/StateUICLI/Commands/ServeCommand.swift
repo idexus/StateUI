@@ -30,11 +30,17 @@ struct ServeCommand: AsyncParsableCommand {
             diagnose: StandardOutput.diagnose,
             backlog: output.backlog
         )
-        for await bytes in StandardInput.chunks() {
-            guard await connection.receive(bytes) else { break }
+        // The input is read beside the connection's life: a client lost may never close it.
+        // Design: docs/design/tooling/protocol.md#a-client-that-reads-too-slowly
+        Task {
+            for await bytes in StandardInput.chunks() {
+                guard await connection.receive(bytes) else { break }
+            }
+            await connection.end()
         }
+        await connection.closed()
         await connection.end()
-        output.flush()
+        if await !connection.lost { output.flush() }
         throw ExitCode(await connection.shutDown ? 0 : ExitStatus.lostClient)
     }
 }

@@ -124,6 +124,14 @@ since a write to a pipe its reader does not empty waits. A connection is
 made with its writer's count - there is no default - so no writer is
 silently taken for one that never waits.
 
+A lost client ends the service there (`Connection.lost`): `serve --stdio`
+waits neither for its input to close - a client that stopped reading may
+never close it - nor for what it was not read to be written, and ends with
+the status of a client lost. What the connection held goes with its process:
+a package it indexed is another connection's to take. The input is read
+beside the connection's life, so its end, an `exit` and a client lost all
+end the service the same way.
+
 ## The recorded examples
 
 `tools/StateUI.CLI/exports/protocol` holds one example a method - its request
