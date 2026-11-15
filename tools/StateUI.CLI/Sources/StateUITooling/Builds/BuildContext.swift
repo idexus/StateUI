@@ -44,6 +44,9 @@ public struct BuildContext: Hashable, Sendable {
         return "\(architecture.rawValue)-\(Self.digest(identity))"
     }
 
+    /// The published artifact this build replaces: its host, its key and its configuration.
+    public var artifact: String { "\(host.rawValue)-\(key)-\(configuration.rawValue)" }
+
     /// The SwiftPM scratch folder this build writes: `<application>/.build/<host>/<key>`.
     public var scratch: URL {
         application.appendingPathComponent(".build").appendingPathComponent(host.rawValue).appendingPathComponent(key)

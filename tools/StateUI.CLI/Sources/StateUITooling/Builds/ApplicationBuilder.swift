@@ -171,7 +171,7 @@ public struct ApplicationBuilder: Sendable {
         let compiler = target.compiler ?? tools.swift
         if context.host == .winui {
             // A running head holds its executable, which publishing writes again: it stops first.
-            await ToolStep.regardless(.name("taskkill"), ["/IM", "\(context.product).exe", "/F"])
+            RunningPrograms.stop(runningFrom: ArtifactStore(application: context.application).folder(of: context.artifact))
             try await WinUIProjection(library: context.library, packages: WinUIPackages(environment: self.environment)).ready(reporter: reporter)
         }
         reporter.progress("building \(context.product)")
@@ -204,7 +204,7 @@ public struct ApplicationBuilder: Sendable {
             let head = try await assemble(context, target, name: name, binaries: binaries, common: common, environment: environment, in: staging, reporter: logged)
             let (bundle, program, signing) = (head.bundle, head.program, head.signing)
             let manifest = ArtifactManifest(
-                id: "\(context.host.rawValue)-\(context.key)-\(context.configuration.rawValue)", producerOperationId: operation,
+                id: context.artifact, producerOperationId: operation,
                 createdAt: Operations.timestamp(), applicationUri: FileURI.string(context.application), host: context.host,
                 configuration: context.configuration, architecture: context.architecture, productName: context.product,
                 entryPoints: [program], signing: signing, applicationName: name, identifier: head.identifier)

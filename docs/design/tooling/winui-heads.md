@@ -48,6 +48,15 @@ The program runs from the artifact, its own architecture's Swift runtime the
 toolchain's on the search path. The executable is the one SwiftPM linked,
 never rewritten: the manifest stands beside it.
 
+## A running head
+
+A running program holds its executable, and a build publishes its artifact's
+folder again: before it builds, the build stops the programs running from the
+folder it replaces - those alone, found by the path each process was started
+from (`RunningPrograms`). A program of the same name running from another
+folder - another checkout's, another architecture's or configuration's, a
+package laid elsewhere - runs on.
+
 ## The manifest
 
 A self-contained application has no package registering the Windows App SDK's
