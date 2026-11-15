@@ -127,7 +127,10 @@ silently taken for one that never waits.
 A lost client ends the service there (`Connection.lost`): `serve --stdio`
 waits neither for its input to close - a client that stopped reading may
 never close it - nor for what it was not read to be written, and ends with
-the status of a client lost. What the connection held goes with its process:
+the status of a client lost. Its requests still waiting are called off, as
+its operations are stopped: the work they do ends and the programs they
+started end with it, and one that hears no call is waited for no longer than
+a stop may take. What the connection held goes with its process:
 a package it indexed is another connection's to take. The input is read
 beside the connection's life, so its end, an `exit` and a client lost all
 end the service the same way.

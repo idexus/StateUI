@@ -207,6 +207,53 @@ final class OperationTests: XCTestCase {
         XCTAssertTrue(client.diagnosed.contains { $0.contains("lost") })
     }
 
+    /// A request of a lost client is called off - no answer reaches a client that reads nothing - and the
+    /// connection's end waits for none.
+    func testARequestOfALostClientIsCalledOff() async throws {
+        let client = Client(lostAfter: .milliseconds(200))
+        try await client.open()
+        await client.request("1", "test/waits", #"{"text":"x"}"#)
+        let service = client.service
+        try await wait { service.waits.withLock { $0.began } }
+        client.leaveUnread(EventChannel.backlogLimit + 1)
+        try await wait { service.waits.withLock { $0.calledOff } }
+        let calledOff = service.waits.withLock { $0.calledOff }
+        XCTAssertTrue(calledOff, "the request went on for a client that reads nothing")
+        guard calledOff else { return }
+
+        let began = ContinuousClock.now
+        await client.connection.end()
+        XCTAssertLessThan(ContinuousClock.now - began, .seconds(2))
+        let lost = await client.connection.lost
+        XCTAssertTrue(lost)
+    }
+
+    /// A request that hears no call keeps no lost client's connection: its end goes on without the request once a
+    /// stop's limit has passed.
+    func testALostClientsConnectionEndsWithoutARequestThatHearsNoCall() async throws {
+        let client = Client(lostAfter: .milliseconds(200), stopLimit: .milliseconds(300))
+        try await client.open()
+        await client.request("1", "test/slow", #"{"text":"x"}"#)
+        client.leaveUnread(EventChannel.backlogLimit + 1)
+        let ended = Flag()
+        let ending = Task {
+            await client.connection.closed()
+            await client.connection.end()
+            ended.raise()
+        }
+        try await wait { ended.isRaised }
+        XCTAssertTrue(ended.isRaised, "the connection waited for a request that hears no call")
+
+        await client.service.gate.release()
+        await ending.value
+    }
+
+    /// Waits, up to five seconds, until `done` holds.
+    private func wait(until done: () -> Bool) async throws {
+        let deadline = ContinuousClock.now + .seconds(5)
+        while !done(), ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(5)) }
+    }
+
     /// A stream's bytes come in chunks below 64 KiB cut where a character ends; bytes not UTF-8 come as Base64.
     func testOutputComesInChunksCutAtCharacters() {
         let text = Array(String(repeating: "ż", count: 40000).utf8)
@@ -219,4 +266,14 @@ final class OperationTests: XCTestCase {
         XCTAssertEqual(binary.map(\.encoding), [.base64])
         XCTAssertEqual(binary.map(\.data), ["/wBB"])
     }
+}
+
+/// Something that happened, said from any task.
+private final class Flag: @unchecked Sendable {
+    private let lock = NSLock()
+    private var raised = false
+
+    func raise() { lock.withLock { raised = true } }
+
+    var isRaised: Bool { lock.withLock { raised } }
 }

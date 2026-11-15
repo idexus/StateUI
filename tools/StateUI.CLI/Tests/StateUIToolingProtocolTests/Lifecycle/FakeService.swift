@@ -23,11 +23,23 @@ final class FakeService: Sendable {
     let counted = Mutex(0)
     /// Opens when the test lets a holding `test/work` end.
     let hold = Gate()
+    /// Whether `test/waits` began, and whether it was called off before its minute passed.
+    let waits = Mutex((began: false, calledOff: false))
 
     var methods: Methods {
         var methods = Methods()
         methods.query("test/echo") { (text: Text) in text }
         methods.query("test/slow") { (text: Text) in await self.gate.wait(); return text }
+        methods.query("test/waits") { (text: Text) in
+            self.waits.withLock { $0.began = true }
+            do {
+                try await Task.sleep(for: .seconds(60))
+            } catch {
+                self.waits.withLock { $0.calledOff = true }
+                throw error
+            }
+            return text
+        }
         methods.query("test/refuse") { (_: NoParameters) -> NoParameters in
             throw ToolingError(.notFound, "No such thing.")
         }

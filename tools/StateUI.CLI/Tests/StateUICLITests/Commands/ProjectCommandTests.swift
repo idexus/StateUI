@@ -65,36 +65,16 @@ final class ProjectCommandTests: XCTestCase {
         process.standardError = FileHandle.nullDevice
         try process.run()
 
-        let descendant = try waitForIdentifier(in: file)
+        let descendant = try Stateui.identifier(writtenTo: file)
         process.interrupt()
         let deadline = Date().addingTimeInterval(20)
         while process.isRunning, Date() < deadline { Thread.sleep(forTimeInterval: 0.05) }
         XCTAssertFalse(process.isRunning, "the tool did not end")
         XCTAssertEqual(process.terminationStatus, 130)
-        while Self.runs(descendant), Date() < deadline { Thread.sleep(forTimeInterval: 0.05) }
-        let alive = Self.runs(descendant)
+        while Stateui.runs(descendant), Date() < deadline { Thread.sleep(forTimeInterval: 0.05) }
+        let alive = Stateui.runs(descendant)
         if alive { kill(descendant, SIGKILL) }
         XCTAssertFalse(alive, "a program the work started outlived the interrupt")
-    }
-
-    /// Whether the process `identifier` still runs: on Linux an ended one no init has reaped - in a container - does not.
-    private static func runs(_ identifier: pid_t) -> Bool {
-        #if os(Linux)
-        guard let stat = try? String(contentsOfFile: "/proc/\(identifier)/stat", encoding: .utf8),
-              let name = stat.lastIndex(of: ")") else { return false }
-        return stat[stat.index(after: name)...].first { $0 != " " } != "Z"
-        #else
-        return kill(identifier, 0) == 0
-        #endif
-    }
-
-    private func waitForIdentifier(in file: URL) throws -> pid_t {
-        let deadline = Date().addingTimeInterval(20)
-        while Date() < deadline {
-            if let text = try? String(contentsOf: file, encoding: .utf8), let identifier = pid_t(text) { return identifier }
-            Thread.sleep(forTimeInterval: 0.05)
-        }
-        throw XCTSkip("the probe wrote no process identifier")
     }
     #endif
 }

@@ -27,7 +27,7 @@ final class ConnectionTests: XCTestCase {
             messages[1]["result"]?["capabilities"]?["methods"],
             .array(
                 ["operation/cancel", "operation/get", "test/count", "test/echo", "test/fail", "test/refuse", "test/slow",
-                 "test/work"].map(JSONValue.string)))
+                 "test/waits", "test/work"].map(JSONValue.string)))
         XCTAssertEqual(messages[1]["result"]?["capabilities"]?["notifications"], .array([.string("operation/event")]))
         XCTAssertEqual(messages[1]["result"]?["workspace"], .object(["uri": .string("file:///w")]))
         XCTAssertEqual(error(messages[2]), -32002)

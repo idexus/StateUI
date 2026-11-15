@@ -41,18 +41,17 @@ public actor Connection {
     private let diagnose: @Sendable (String) -> Void
     private let backlog: @Sendable () -> Int
     private let lostAfter: Duration
+    private let stopLimit: Duration
     private var caller: Methods.Caller
     private var pending: [Int: Task<Void, Never>] = [:]
     private var nextPending = 0
     private var watchdog: Task<Void, Never>?
 
-    /// How long a stop of the client's operations may take before the connection goes on without them.
-    static let stopLimit = Duration.seconds(10)
-
     /// A connection of the service `server`, speaking `apiVersions` and answering `methods`, which writes each
     /// frame through `send` and each diagnostic - never a frame - through `diagnose`; `backlog` gives the bytes
     /// `send` was given but has not yet written - a writer must say it - and a client leaving more than the
-    /// backlog's limit unread for `lostAfter` is lost.
+    /// backlog's limit unread for `lostAfter` is lost. A stop of the client's work may take `stopLimit` before the
+    /// connection goes on without it.
     public init(
         server: ToolIdentity,
         apiVersions: [APIVersionRange],
@@ -60,7 +59,8 @@ public actor Connection {
         send: @escaping @Sendable (Data) -> Void,
         diagnose: @escaping @Sendable (String) -> Void,
         backlog: @escaping @Sendable () -> Int,
-        lostAfter: Duration = .seconds(30)
+        lostAfter: Duration = .seconds(30),
+        stopLimit: Duration = .seconds(10)
     ) {
         self.server = server
         self.apiVersions = apiVersions
@@ -69,6 +69,7 @@ public actor Connection {
         self.diagnose = diagnose
         self.backlog = backlog
         self.lostAfter = lostAfter
+        self.stopLimit = stopLimit
         let channel = EventChannel(
             deliver: { event in
                 guard let params = try? JSONValue(encoding: event) else { return }
@@ -101,11 +102,25 @@ public actor Connection {
     }
 
     /// The client's end of the connection closed: its operations are stopped, and every request accepted is
-    /// answered before this returns.
+    /// answered before this returns - but a lost client's, called off and waited for no longer than a stop may take.
+    /// Design: docs/design/tooling/protocol.md#a-client-that-reads-too-slowly
     public func end() async {
         close()
-        await methods.operations.stop(ownedBy: caller.owner, within: Self.stopLimit)
-        await settle()
+        guard lost else {
+            await methods.operations.stop(ownedBy: caller.owner, within: stopLimit)
+            return await settle()
+        }
+        callOff()
+        await methods.operations.stop(ownedBy: caller.owner, within: stopLimit)
+        let deadline = ContinuousClock.now + stopLimit
+        while !pending.isEmpty, ContinuousClock.now < deadline {
+            try? await Task.sleep(for: .milliseconds(20))
+        }
+    }
+
+    /// Calls off every request not answered yet: the work it does stops, the programs it started with it.
+    private func callOff() {
+        pending.values.forEach { $0.cancel() }
     }
 
     /// Returns once the connection has ended, or once the calling task is cancelled.
@@ -138,7 +153,8 @@ public actor Connection {
                     diagnose("stateui: the client read nothing for \(lostAfter); it is lost")
                     lost = true
                     close()
-                    await methods.operations.stop(ownedBy: caller.owner, within: Self.stopLimit)
+                    callOff()
+                    await methods.operations.stop(ownedBy: caller.owner, within: stopLimit)
                     return
                 }
             } else {
@@ -157,7 +173,7 @@ public actor Connection {
             if batch, !ready.isEmpty { write(.batch(ready)) } else { ready.forEach(write) }
             return
         }
-        let (methods, caller, send, diagnose) = (methods, caller, send, diagnose)
+        let (methods, caller, send, diagnose, stopLimit) = (methods, caller, send, diagnose, stopLimit)
         let earlier = Array(pending.values)
         let key = nextPending
         nextPending += 1
@@ -174,7 +190,7 @@ public actor Connection {
                     if let start = reply.then { then.append(start) }
                 case .afterPending(let message):
                     for task in earlier { await task.value }
-                    await methods.operations.stop(ownedBy: caller.owner, within: Self.stopLimit)
+                    await methods.operations.stop(ownedBy: caller.owner, within: stopLimit)
                     written.append(message)
                 }
             }

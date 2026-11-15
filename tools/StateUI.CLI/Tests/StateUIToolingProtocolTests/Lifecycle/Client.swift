@@ -17,7 +17,8 @@ final class Client: Sendable {
 
     init(
         apiVersions: [APIVersionRange] = [APIVersionRange(major: 1, minMinor: 0, maxMinor: 2)],
-        lostAfter: Duration = .seconds(30)
+        lostAfter: Duration = .seconds(30),
+        stopLimit: Duration = .seconds(10)
     ) {
         let backlog = Backlog()
         self.backlogSource = backlog
@@ -32,7 +33,8 @@ final class Client: Sendable {
             send: { frame in transcript.written.withLock { $0 += Array(frame) } },
             diagnose: { line in transcript.diagnostics.withLock { $0.append(line) } },
             backlog: { backlog.bytes.withLock { $0 } },
-            lostAfter: lostAfter
+            lostAfter: lostAfter,
+            stopLimit: stopLimit
         )
     }
 

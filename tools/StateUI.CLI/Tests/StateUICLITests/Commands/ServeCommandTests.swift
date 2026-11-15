@@ -64,16 +64,25 @@ final class ServeCommandTests: XCTestCase {
 
     /// A client that stops reading is lost once more than the limit it may leave unread has stood unread for the
     /// time allowed: the service says so on standard error and ends there as a client lost - its input still open,
-    /// its output still unread - and a package it indexed as one host is another connection's to index as another.
+    /// its output still unread, a request of its still waiting. The request is called off and the programs it
+    /// started stop with it, and a package the client indexed as one host is another connection's to index as another.
     func testAClientThatStopsReadingIsLost() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("lost-\(UUID().uuidString)")
         addTeardownBlock { try? FileManager.default.removeItem(at: root) }
         let (state, package) = (root.appendingPathComponent("state"), root.appendingPathComponent("Notes"))
-        try FileManager.default.createDirectory(at: package, withIntermediateDirectories: true)
+        for path in ["Package.swift", "Platforms/AppKit/main.swift"] {
+            let file = package.appendingPathComponent(path)
+            try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try Data().write(to: file)
+        }
+        // Swift asked to describe the package starts a program and waits for it, as a slow manifest does.
+        let started = root.appendingPathComponent("descendant")
         let process = Process()
         process.executableURL = URL(fileURLWithPath: Stateui.path)
         process.arguments = ["serve", "--stdio"]
-        process.environment = ProcessInfo.processInfo.environment.merging(["STATEUI_STATE": state.path]) { $1 }
+        process.environment = ProcessInfo.processInfo.environment.merging([
+            "STATEUI_STATE": state.path, "SWIFT_BIN": Stateui.probe, "STATEUI_PROBE_FILE": started.path,
+        ]) { $1 }
         let (standardInput, standardOutput, standardError) = (Pipe(), Pipe(), Pipe())
         process.standardInput = standardInput
         process.standardOutput = standardOutput
@@ -83,8 +92,10 @@ final class ServeCommandTests: XCTestCase {
         let said = Said()
         standardError.fileHandleForReading.readabilityHandler = { said.add($0.availableData) }
 
+        let uri = FileURI.string(package)
         var asked = frame(Self.initialize) + frame(#"{"jsonrpc":"2.0","method":"initialized"}"#)
-        asked += frame(#"{"jsonrpc":"2.0","id":"lease","method":"index/acquire","params":{"host":"appkit","rootUris":["\#(FileURI.string(package))"]}}"#)
+        asked += frame(#"{"jsonrpc":"2.0","id":"lease","method":"index/acquire","params":{"host":"appkit","rootUris":["\#(uri)"]}}"#)
+        asked += frame(#"{"jsonrpc":"2.0","id":"waits","method":"project/describe","params":{"projectUri":"\#(uri)"}}"#)
         for id in 2..<40_002 { asked += frame(#"{"jsonrpc":"2.0","id":\#(id),"method":"server/info"}"#) }
         try standardInput.fileHandleForWriting.write(contentsOf: asked)
         let leases = state.appendingPathComponent("index-leases")
@@ -98,14 +109,18 @@ final class ServeCommandTests: XCTestCase {
         let lost = Date().addingTimeInterval(50)
         while !leased(), Date() < lost { try await Task.sleep(for: .milliseconds(50)) }
         XCTAssertTrue(leased(), "the client holds the package while it lives")
+        let descendant = try Stateui.identifier(writtenTo: started)
+        XCTAssertTrue(Stateui.runs(descendant), "the request waits on the program it started")
         while !said.text.contains("is lost"), Date() < lost { try await Task.sleep(for: .milliseconds(250)) }
         XCTAssertTrue(said.text.contains("is lost"), "the client was never lost: \(said.text)")
 
-        let ended = Date().addingTimeInterval(20)
+        let ended = Date().addingTimeInterval(15)
         while process.isRunning, Date() < ended { try await Task.sleep(for: .milliseconds(100)) }
         XCTAssertFalse(process.isRunning, "the service outlived the client it lost")
         guard !process.isRunning else { return }
         XCTAssertEqual(process.terminationStatus, 6)
+        while Stateui.runs(descendant), Date() < ended { try await Task.sleep(for: .milliseconds(100)) }
+        XCTAssertFalse(Stateui.runs(descendant), "a program the request started outlived the client")
         let taken = try await IndexLeases(folder: leases).acquire(.gtk, roots: [package])
         XCTAssertNil(taken.conflict, "what the lost client held is free")
     }
