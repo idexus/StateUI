@@ -15,7 +15,7 @@ final class ProjectServiceTests: XCTestCase {
         let frames = Frames()
         let connection = Connection(
             server: ToolingService.identity, apiVersions: Release.apiVersions, methods: ToolingService().methods,
-            send: frames.add, diagnose: { _ in })
+            send: frames.add, diagnose: { _ in }, backlog: { 0 })
         let messages = [
             #"{"jsonrpc":"2.0","id":"1","method":"initialize","params":{"apiVersions":[{"major":1,"minMinor":0,"maxMinor":0}],"#
                 + #""client":{"name":"test","version":"1"},"workspaceUri":"\#(FileURI.string(hello))"}}"#,

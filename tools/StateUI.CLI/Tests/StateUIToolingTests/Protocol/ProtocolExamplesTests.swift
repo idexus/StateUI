@@ -343,7 +343,7 @@ final class ProtocolExamplesTests: XCTestCase {
         let written = Written()
         let connection = Connection(
             server: Self.tool, apiVersions: Release.apiVersions, methods: ToolingService().methods,
-            send: { frame in written.bytes.withLock { $0 += Array(frame) } }, diagnose: { _ in })
+            send: { frame in written.bytes.withLock { $0 += Array(frame) } }, diagnose: { _ in }, backlog: { 0 })
         var expected: [JSONValue] = []
         for example in try Self.examples() where example.answeredAsWritten {
             for (role, message) in example.messages {

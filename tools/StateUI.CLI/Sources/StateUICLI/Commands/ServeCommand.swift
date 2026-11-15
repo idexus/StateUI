@@ -27,7 +27,8 @@ struct ServeCommand: AsyncParsableCommand {
             apiVersions: Release.apiVersions,
             methods: ToolingService().methods,
             send: output.write,
-            diagnose: StandardOutput.diagnose
+            diagnose: StandardOutput.diagnose,
+            backlog: output.backlog
         )
         for await bytes in StandardInput.chunks() {
             guard await connection.receive(bytes) else { break }

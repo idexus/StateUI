@@ -62,6 +62,34 @@ final class ServeCommandTests: XCTestCase {
         XCTAssertEqual(messages.count, 2)
     }
 
+    /// A client that stops reading is lost once more than the limit it may leave unread has stood unread for the
+    /// time allowed: the service says so on standard error, and ends as a client lost once its input closes.
+    func testAClientThatStopsReadingIsLost() throws {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: Stateui.path)
+        process.arguments = ["serve", "--stdio"]
+        let (standardInput, standardOutput, standardError) = (Pipe(), Pipe(), Pipe())
+        process.standardInput = standardInput
+        process.standardOutput = standardOutput
+        process.standardError = standardError
+        try process.run()
+        defer { if process.isRunning { process.terminate() } }
+        let said = Said()
+        standardError.fileHandleForReading.readabilityHandler = { said.add($0.availableData) }
+
+        var asked = frame(Self.initialize) + frame(#"{"jsonrpc":"2.0","method":"initialized"}"#)
+        for id in 2..<40_002 { asked += frame(#"{"jsonrpc":"2.0","id":\#(id),"method":"server/info"}"#) }
+        try standardInput.fileHandleForWriting.write(contentsOf: asked)
+        let deadline = Date().addingTimeInterval(50)
+        while !said.text.contains("is lost"), Date() < deadline { Thread.sleep(forTimeInterval: 0.25) }
+        XCTAssertTrue(said.text.contains("is lost"), "the client was never lost: \(said.text)")
+
+        try standardInput.fileHandleForWriting.close()
+        _ = standardOutput.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        XCTAssertEqual(process.terminationStatus, 6)
+    }
+
     /// Bytes that are no frame end the service, said on standard error alone.
     func testBytesThatAreNoFrameEndTheService() throws {
         let (status, messages, errors) = try serve(Data("Content-Length: many\r\n\r\n{}".utf8))
@@ -70,4 +98,14 @@ final class ServeCommandTests: XCTestCase {
         XCTAssertEqual(messages, [])
         XCTAssertTrue(errors.contains("no frame"), errors)
     }
+}
+
+/// What a stream said, gathered as it comes.
+private final class Said: @unchecked Sendable {
+    private let lock = NSLock()
+    private var data = Data()
+
+    func add(_ more: Data) { lock.withLock { data.append(more) } }
+
+    var text: String { lock.withLock { String(decoding: data, as: UTF8.self) } }
 }

@@ -118,6 +118,12 @@ and before its next event of any other kind - its end included - it sends
 progress are always sent. A client leaving more than 8 MiB unread for 30
 seconds is lost: the connection ends and its operations stop.
 
+What stands unread is what the connection's writer was given and has not
+written yet: `serve --stdio`'s writer counts it (`StandardOutput.backlog`),
+since a write to a pipe its reader does not empty waits. A connection is
+made with its writer's count - there is no default - so no writer is
+silently taken for one that never waits.
+
 ## The recorded examples
 
 `tools/StateUI.CLI/exports/protocol` holds one example a method - its request

@@ -49,14 +49,15 @@ public actor Connection {
 
     /// A connection of the service `server`, speaking `apiVersions` and answering `methods`, which writes each
     /// frame through `send` and each diagnostic - never a frame - through `diagnose`; `backlog` gives the bytes
-    /// written but not yet read, and a client leaving more than the backlog's limit unread for `lostAfter` is lost.
+    /// `send` was given but has not yet written - a writer must say it - and a client leaving more than the
+    /// backlog's limit unread for `lostAfter` is lost.
     public init(
         server: ToolIdentity,
         apiVersions: [APIVersionRange],
         methods: Methods,
         send: @escaping @Sendable (Data) -> Void,
         diagnose: @escaping @Sendable (String) -> Void,
-        backlog: @escaping @Sendable () -> Int = { 0 },
+        backlog: @escaping @Sendable () -> Int,
         lostAfter: Duration = .seconds(30)
     ) {
         self.server = server

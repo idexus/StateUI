@@ -3,16 +3,19 @@
 
 import Dispatch
 import Foundation
+import Synchronization
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Glibc)
 import Glibc
 #endif
 
-/// This process's standard output as one writer: each frame written whole, in the order given.
-/// Design: docs/design/tooling/protocol.md#a-connections-life
+/// This process's standard output as one writer: each frame written whole, in the order given, and the bytes given
+/// but not yet written counted - what a client that stops reading leaves.
+/// Design: docs/design/tooling/protocol.md#a-client-that-reads-too-slowly
 final class StandardOutput: Sendable {
     private let queue = DispatchQueue(label: "stateui standard output")
+    private let unwritten = Mutex(0)
 
     init() {
         #if !os(Windows)
@@ -22,7 +25,16 @@ final class StandardOutput: Sendable {
 
     /// Writes `frame` after every frame given before it.
     @Sendable func write(_ frame: Data) {
-        queue.async { try? FileHandle.standardOutput.write(contentsOf: frame) }
+        unwritten.withLock { $0 += frame.count }
+        queue.async { [self] in
+            try? FileHandle.standardOutput.write(contentsOf: frame)
+            unwritten.withLock { $0 -= frame.count }
+        }
+    }
+
+    /// The bytes given but not yet written.
+    @Sendable func backlog() -> Int {
+        unwritten.withLock { $0 }
     }
 
     /// Returns once every frame given is written.
