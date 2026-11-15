@@ -63,14 +63,15 @@ public struct ApplicationBuilder: Sendable {
         let root = try project.workspaceUri.map(FileURI.url) ?? folderOfApplication
         let output = try request.outputUri.map(FileURI.url)
             ?? root.appendingPathComponent("artifacts").appendingPathComponent(application.name).appendingPathComponent(release.host.folder)
-        try PackageOutput.check(output, keeping: [folderOfApplication, root] + (try application.libraryUri.map { [try FileURI.url($0)] } ?? []))
+        let keeping = [folderOfApplication, root] + (try application.libraryUri.map { [try FileURI.url($0)] } ?? [])
+        try PackageOutput.check(output, keeping: keeping)
         let (built, _) = try await built(release, project: project, application: application, operation: operation, reporter: reporter)
         let artifact = try FileURI.url(built.folderUri)
         let head = "\(application.name) \(release.host.folder)"
         guard let bundleUri = built.bundleUri else {
             // A head with no bundle is its artifact's folder: the program, its libraries, its pictures.
             let files = FileManager.default
-            try PackageOutput.lay(output, head: head)
+            try PackageOutput.lay(output, keeping: keeping, head: head)
             for name in try files.contentsOfDirectory(atPath: artifact.path).sorted() where name != "artifact.json" {
                 try files.copyItem(at: artifact.appendingPathComponent(name), to: output.appendingPathComponent(name))
             }
@@ -88,7 +89,7 @@ public struct ApplicationBuilder: Sendable {
         let bundle = try FileURI.url(bundleUri)
         let program = try FileURI.url(built.programUri).path.dropFirst(artifact.path.count + 1)
         let files = FileManager.default
-        try PackageOutput.lay(output, head: head)
+        try PackageOutput.lay(output, keeping: keeping, head: head)
         try files.copyItem(at: bundle, to: output.appendingPathComponent(bundle.lastPathComponent))
         var laid = built
         laid.folderUri = FileURI.string(output)

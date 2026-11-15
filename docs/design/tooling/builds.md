@@ -72,8 +72,11 @@ package was laid before - the `.stateui-package` it holds names the head
 laid there. A folder holding anything else is refused (`ALREADY_EXISTS`),
 and so is the application's folder, its project's or its checkout's, or a
 folder holding one of them (`INVALID_CONFIGURATION`): what stood there stays.
-The folder is checked before the build, so a refused package costs no
-build and leaves no half-laid folder (`PackageOutput`).
+The folder is judged before the build, so a refused package costs no
+build and leaves no half-laid folder, and again as the package is laid: what
+came to stand in it while the build ran stays, and the package is refused.
+Only a package's own folder is taken away; an empty one is kept and filled
+(`PackageOutput`).
 
 ## The operation journal
 

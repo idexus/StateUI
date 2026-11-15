@@ -17,6 +17,8 @@ final class ApplicationBuilderTests: XCTestCase {
         var permit: BuildPermit
         var failing: URL
         var arguments: URL
+        /// A script the build runs as it builds, where one stands.
+        var during: URL
     }
 
     private func bench() throws -> Bench {
@@ -38,6 +40,7 @@ final class ApplicationBuilderTests: XCTestCase {
         let bin = root.appendingPathComponent("bin")
         let failing = root.appendingPathComponent("FAIL")
         let arguments = root.appendingPathComponent("arguments")
+        let during = root.appendingPathComponent("DURING")
         let swift = root.appendingPathComponent("swift")
         let describe = #"{"dependencies":[{"identity":"stateui","path":"\#(checkout.path)"}],"products":[{"name":"NotesUI"}],"targets":[{"name":"NotesTests","type":"test"}]}"#
         let script = """
@@ -50,6 +53,7 @@ final class ApplicationBuilderTests: XCTestCase {
                 if [ -e '\(failing.path)' ]; then echo 'error: the compiler stopped'; exit 1; fi
                 [ "Notes$STATEUI_HOST" = "$(echo "$3" | tr '[:upper:]' '[:lower:]' | sed 's/^notes/Notes/')" ] || { echo 'no host'; exit 1; }
                 echo "$@" > '\(arguments.path)'
+                if [ -e '\(during.path)' ]; then sh '\(during.path)'; fi
                 mkdir -p '\(bin.path)' && cp /usr/bin/true "\(bin.path)/$3" && echo 'Build complete!' ;;
             esac
             """
@@ -57,7 +61,7 @@ final class ApplicationBuilderTests: XCTestCase {
         try files.setAttributes([.posixPermissions: 0o755], ofItemAtPath: swift.path)
         let permit = BuildPermit(folder: root.appendingPathComponent("state"))
         return Bench(root: root, application: application, environment: ["SWIFT_BIN": swift.path, "PATH": "/usr/bin:/bin"],
-                     permit: permit, failing: failing, arguments: arguments)
+                     permit: permit, failing: failing, arguments: arguments, during: during)
     }
 
     /// A build publishes its bundle and journals its operation; a later build that fails publishes nothing, says
@@ -184,6 +188,30 @@ final class ApplicationBuilderTests: XCTestCase {
                 BuildRequest(host: .appkit, outputUri: FileURI.string(laid)), in: bench.application, operation: "op-laid")
         }
         XCTAssertTrue(files.fileExists(atPath: laid.appendingPathComponent("NotesAppKit.app").path))
+    }
+
+    /// A folder is judged again as the package is laid: what came to stand in it while the build ran - in one that
+    /// stood empty, in one that did not stand - stays, and the package is refused.
+    func testAPackageLeavesWhatCameToItsFolderWhileItWasBuilt() async throws {
+        let bench = try bench()
+        let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
+        let files = FileManager.default
+        let empty = bench.root.appendingPathComponent("empty")
+        try files.createDirectory(at: empty, withIntermediateDirectories: true)
+
+        for output in [empty, bench.root.appendingPathComponent("absent")] {
+            try "mkdir -p '\(output.path)' && echo mine > '\(output.path)/keep.txt'"
+                .write(to: bench.during, atomically: true, encoding: .utf8)
+            do {
+                _ = try await builder.package(
+                    BuildRequest(host: .appkit, outputUri: FileURI.string(output)), in: bench.application, operation: "op-during")
+                XCTFail("\(output.lastPathComponent) was laid over")
+            } catch let error as ToolingError {
+                XCTAssertEqual(error.code, .alreadyExists, error.message)
+            }
+            XCTAssertEqual(try files.contentsOfDirectory(atPath: output.path), ["keep.txt"], output.lastPathComponent)
+            XCTAssertEqual(try String(contentsOf: output.appendingPathComponent("keep.txt"), encoding: .utf8), "mine\n")
+        }
     }
 }
 #endif
