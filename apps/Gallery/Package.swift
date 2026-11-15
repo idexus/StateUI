@@ -92,7 +92,7 @@ case "GTK"?:
         .executableTarget(
             name: "GalleryGTK",
             dependencies: head + webBackend + ["CGalleryOpenGL"],
-            path: "Platforms/GTK", exclude: ["OpenGL"], swiftSettings: settings),
+            path: "Platforms/GTK", exclude: ["OpenGL", "link-schemes"], swiftSettings: settings),
         // OpenGL for the cube, through libepoxy - the loader GTK itself draws with.
         .systemLibrary(name: "CGalleryOpenGL", path: "Platforms/GTK/OpenGL", pkgConfig: "epoxy"),
     ])
