@@ -30,7 +30,7 @@ public struct ApplicationRunner: Sendable {
             let (built, _) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
             return try await WebLaunch(
                 site: try FileURI.url(built.folderUri), port: request.port, lan: request.lan ?? false, browser: request.build.device,
-                environment: ProcessInfo.processInfo.environment
+                environment: HandedEnvironment(of: ProcessInfo.processInfo.environment)
             ).run(built, reporter: reporter)
             #else
             throw ToolingError(.invalidConfiguration, "A Web head's page is served on macOS and Linux.")
@@ -55,10 +55,14 @@ public struct ApplicationRunner: Sendable {
         switch destination.kind {
         case .simulator:
             let logs = root.appendingPathComponent(".stateui/operations").appendingPathComponent(operation)
-            return try await SimulatorLaunch(simulator: destination, bundle: bundle, identifier: identifier, logs: logs)
+            return try await SimulatorLaunch(
+                simulator: destination, bundle: bundle, identifier: identifier, logs: logs,
+                environment: HandedEnvironment(of: ProcessInfo.processInfo.environment))
                 .run(built, held: request.debugger, reporter: reporter)
         case .device:
-            return try await DeviceLaunch(device: destination, bundle: bundle, identifier: identifier)
+            return try await DeviceLaunch(
+                device: destination, bundle: bundle, identifier: identifier,
+                environment: HandedEnvironment(of: ProcessInfo.processInfo.environment))
                 .run(built, held: request.debugger, reporter: reporter)
         case .emulator, .browser:
             throw ToolingError(.internalError, "A UIKit head runs on no \(destination.kind.rawValue).")
@@ -92,6 +96,6 @@ public struct ApplicationRunner: Sendable {
         let ndk = request.debugger ? tools.ndk(for: await tools.swift()?.sdk) : nil
         return try await AndroidLaunch(
             device: built.destination ?? destination, apk: apk, package: package, activity: activity, ndk: ndk, tools: tools,
-            environment: environment).run(built, debugger: request.debugger, reporter: reporter)
+            environment: HandedEnvironment(of: environment)).run(built, debugger: request.debugger, reporter: reporter)
     }
 }

@@ -7,8 +7,8 @@ import NIOCore
 import StateUIToolingProtocol
 
 /// A Web head's page served from its artifact while the run lasts, opened in a browser - the system's own unless the
-/// run names one, or none - every `STATEUI_` variable of the tool's environment handed to the application as a
-/// parameter of the page's address. A stop closes the server; the browser and its tab are the user's.
+/// run names one, or none - what the run hands the application of the tool's environment each a parameter of the
+/// page's address. A stop closes the server; the browser and its tab are the user's.
 /// Design: docs/design/tooling/runs.md#on-the-web
 struct WebLaunch {
     var site: URL
@@ -16,7 +16,8 @@ struct WebLaunch {
     var lan: Bool
     /// The browser the page opens in: `default` the system's own, `none` none, else a browser's id.
     var browser: String?
-    var environment: [String: String]
+    /// What the run hands the application of the tool's environment.
+    var environment: HandedEnvironment
 
     func run(_ built: BuildResult, reporter: RunReporter) async throws -> RunResult {
         let server = try await PageServer.start(site, port: port, lan: lan, said: { line in
@@ -35,10 +36,10 @@ struct WebLaunch {
         throw CancellationError()
     }
 
-    /// The page address's query: every `STATEUI_` variable but the host's, as a parameter.
-    static func query(of environment: [String: String]) -> String {
-        let parameters = environment.filter { $0.key.hasPrefix("STATEUI_") && $0.key != "STATEUI_HOST" }.sorted { $0.key < $1.key }
-        return parameters.isEmpty ? "" : "?" + parameters.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
+    /// The page address's query: what the run hands the application, each a parameter.
+    static func query(of environment: HandedEnvironment) -> String {
+        let parameters = environment.sorted
+        return parameters.isEmpty ? "" : "?" + parameters.map { "\($0.name)=\($0.value)" }.joined(separator: "&")
     }
 
     /// This machine's IPv4 addresses on its networks, the loopback aside.

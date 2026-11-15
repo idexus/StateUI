@@ -4,7 +4,7 @@
 import Foundation
 import StateUIToolingProtocol
 
-/// An Android head installed on a device or emulator, started with every `STATEUI_` switch of the tool's environment,
+/// An Android head installed on a device or emulator, started with what the run hands it of the tool's environment,
 /// its log followed until it ends; for a debugger, the NDK's `lldb-server` readied in the application's sandbox. A stop
 /// ends the application, the log's follower and the server.
 /// Design: docs/design/tooling/runs.md#on-android
@@ -16,7 +16,13 @@ struct AndroidLaunch {
     /// The NDK the build used: its `lldb-server` for the device's ABI.
     var ndk: URL?
     var tools: AndroidTools
-    var environment: [String: String]
+    /// What the run hands the application of the tool's environment.
+    var environment: HandedEnvironment
+
+    /// `am start`'s words handing the application `environment`: each variable an extra.
+    static func switches(_ environment: HandedEnvironment) -> [String] {
+        environment.sorted.flatMap { ["-e", $0.name, $0.value] }
+    }
 
     func run(_ built: BuildResult, debugger: Bool, reporter: RunReporter) async throws -> RunResult {
         let adb = ProcessExecutable.path(tools.adb.path)
@@ -25,7 +31,7 @@ struct AndroidLaunch {
         try await ToolStep.run(adb, ["-s", serial, "install", "-r", apk.path], limit: .seconds(600))
         try await ToolStep.run(adb, ["-s", serial, "shell", "am", "force-stop", package])
         reporter.build.progress("starting \(package)")
-        let switches = environment.keys.filter { $0.hasPrefix("STATEUI_") }.sorted().flatMap { ["-e", $0, environment[$0] ?? ""] }
+        let switches = Self.switches(environment)
         try await ToolStep.run(adb, ["-s", serial, "shell", "am", "start", "-W", "-n", "\(package)/\(activity)"] + switches, limit: .seconds(120))
         var process: Int?
         for _ in 0..<10 where process == nil {

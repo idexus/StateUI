@@ -16,8 +16,14 @@ struct SimulatorLaunch {
     var identifier: String
     /// The folder the application's two streams are written in.
     var logs: URL
-    /// What the application's environment gains.
-    var environment: [String: String] = [:]
+    /// What the run hands the application of the tool's environment.
+    var environment: HandedEnvironment
+
+    /// `simctl`'s own environment, handing the application `environment`: simctl hands it each variable named
+    /// `SIMCTL_CHILD_<name>` as `<name>`.
+    static func environment(handing environment: HandedEnvironment) -> ProcessEnvironment {
+        environment.sorted.reduce(ProcessEnvironment.inherited) { $0.setting("SIMCTL_CHILD_\($1.name)", to: $1.value) }
+    }
 
     func run(_ built: BuildResult, held: Bool, reporter: RunReporter) async throws -> RunResult {
         reporter.build.progress("booting \(simulator.name)")
@@ -31,8 +37,7 @@ struct SimulatorLaunch {
         let (out, err) = (logs.appendingPathComponent("stdout.log"), logs.appendingPathComponent("stderr.log"))
         for file in [out, err] { try? files.removeItem(at: file) }
         reporter.build.progress("starting \(identifier)")
-        // simctl hands the application each variable named SIMCTL_CHILD_<name> as <name>.
-        let handed = environment.reduce(ProcessEnvironment.inherited) { $0.setting("SIMCTL_CHILD_\($1.key)", to: $1.value) }
+        let handed = Self.environment(handing: environment)
         let said = await ToolOutput.standardOutput(.name("xcrun"), ["simctl", "launch", "--terminate-running-process"]
             + (held ? ["--wait-for-debugger"] : []) + ["--stdout=\(out.path)", "--stderr=\(err.path)", simulator.udid, identifier],
             environment: handed, limit: .seconds(60))

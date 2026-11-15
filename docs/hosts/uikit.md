@@ -321,11 +321,11 @@ or its UDID, or a simulator's name or UDID; with none named it is the
 simulator booted, else an iPhone. A simulator is booted where it is not
 running and the Simulator opened; a device is reached over USB or Wi-Fi, its
 build signed for it. `stateui build` builds and bundles without running.
-On a simulator a switch such as `STATEUI_TALLY=1` reaches the application
-under the prefix `simctl` gives what its children are handed:
+Every `STATEUI_` variable of the shell that runs it but the build's own
+`STATEUI_HOST` reaches the application, on a simulator and on a device:
 
 ```bash
-SIMCTL_CHILD_STATEUI_TALLY=1 stateui run --project apps/Gallery --host uikit --configuration release --device "iPhone 18 Pro"
+STATEUI_TALLY=1 stateui run --project apps/Gallery --host uikit --configuration release --device "iPhone 18 Pro"
 ```
 
 In VS Code, choose **UIKit** as the host and an iPhone, an iPad or a

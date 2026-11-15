@@ -75,7 +75,8 @@ struct UIKitSuite {
         let summary = Summary()
         let launch = SimulatorLaunch(
             simulator: simulator, bundle: bundle, identifier: UIKitBundle.identifier(of: package, name: product),
-            logs: work.appendingPathComponent("logs"), environment: Self.launched(filter: filter, environment: environment))
+            logs: work.appendingPathComponent("logs"),
+            environment: HandedEnvironment(of: Self.launched(filter: filter, environment: environment)))
         let suite = BuildResult(
             application: product, host: .uikit, configuration: .debug, architecture: architecture,
             folderUri: FileURI.string(staging), programUri: FileURI.string(bundle.appendingPathComponent(product)),

@@ -326,8 +326,8 @@ are drawn for it as the APK is built: an SVG three times over, as a PNG,
 which `Image("mark.png")` finds as it does on UIKit, and as it finds the SVG
 on the hosts that draw one. An application's `print` reaches logcat under
 the tag `StateUI`, and so does what `STATEUI_TALLY=1` and `STATEUI_INSPECT=1`
-write: the run hands every `STATEUI_` variable of its environment to the
-application's. A head's manifest asks for `ACCESS_NETWORK_STATE`, which the
+write: the run hands the application every `STATEUI_` variable of its
+environment but the build's own `STATEUI_HOST`. A head's manifest asks for `ACCESS_NETWORK_STATE`, which the
 host needs to report the network to the application's views.
 
 In VS Code, choose **Android** as the host and a device, and press **F5**.

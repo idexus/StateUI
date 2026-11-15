@@ -548,10 +548,10 @@ an Android application sends to logcat:
   second by second, as `?STATEUI_PROBE=1` in its address.
 
 The host layer's runtime reads them from the process's environment as it
-starts (`DiagnosticText`), so they hold on every host. The Android, WinUI,
-`stateui run` and the Web's run script hand every `STATEUI_` variable of the
-shell that runs them to the application - the Web's as a parameter of the
-page's address:
+starts (`DiagnosticText`), so they hold on every host. `stateui run` hands
+every `STATEUI_` variable of the shell that runs it to the application on
+every host - on a simulator, a device, Android and the Web all but the
+build's own `STATEUI_HOST`, the Web's as a parameter of the page's address:
 
 ```bash
 STATEUI_TALLY=1 stateui run --project apps/Gallery --host gtk
