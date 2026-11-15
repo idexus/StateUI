@@ -69,9 +69,12 @@ final class GTKNavigationView: GTKLayoutView {
                 stack = pages.enumerated().map { index, page in
                     previous.first { $0.frame.page === page } ?? entry(for: page, at: index)
                 }
+                let going = previous.map(\.page).filter { page in !stack.contains { $0.page == page } }
+                let focused = takeFocus(from: going)
                 var natives = stack.map { Optional($0.page.of(AdwNavigationPage.self)) }
                 adw_navigation_view_replace(navigation.widget.opaque, &natives, Int32(natives.count))
-                letGo(previous.map(\.page).filter { page in !stack.contains { $0.page == page } })
+                if focused, let top = stack.last?.page { _ = gtk_widget_child_focus(top, GTK_DIR_TAB_FORWARD) }
+                letGo(going)
             }
         }
         invalidateMeasurements()
@@ -108,6 +111,15 @@ final class GTKNavigationView: GTKLayoutView {
         letGo(stack[index...].map(\.page))
         stack.removeLast(stack.count - index)
         onPopped?(stack.count)
+    }
+
+    /// Takes the window's focus out of `pages` before they are replaced away - whether one held it.
+    /// Design: docs/design/platforms/gtk/pages.md#a-page-replaced-with-the-focus-in-it
+    private func takeFocus(from pages: [GTKWidget]) -> Bool {
+        guard let root = gtk_widget_get_root(navigation.widget), let focus = gtk_root_get_focus(root),
+              pages.contains(where: { focus == $0 || gtk_widget_is_ancestor(focus, $0) != 0 }) else { return false }
+        gtk_root_set_focus(root, nil)
+        return true
     }
 
     /// Lets go of navigation pages the view no longer holds - libadwaita keeps its own while it shows one going - and
