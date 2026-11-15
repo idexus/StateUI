@@ -33,14 +33,18 @@ final class LoopbackServerTests: XCTestCase {
         XCTAssertLessThan(try XCTUnwrap(Self.held()) - before, 20, "each answered request left something held")
     }
 
-    /// A server that cannot start leaves nothing open: its port held already, or no thread to accept on. One of each
-    /// fails first - what the system opens once for itself, as Windows' sockets do at a first refused bind, is no
-    /// start's - then twenty of each leave the count where it stood.
+    /// A server that cannot start leaves nothing open: its port held already, or no thread to accept on. The port is
+    /// held by a listener no thread accepts on - a thread takes what it holds a moment after it starts, and the
+    /// count would catch it coming. One of each fails first - what a process opens once for itself at its first
+    /// sockets is no start's - then twenty of each leave the count where it stood.
     func testAServerThatCannotStartLeavesNothingOpen() throws {
-        let shared = try XCTUnwrap(LoopbackServer.shared, "this platform opens no socket")
-        let taken = try XCTUnwrap(shared.address.split(separator: ":").last.flatMap { UInt16($0) })
+        var listener: LoopbackServer.Socket?
+        let holder = try XCTUnwrap(
+            LoopbackServer(starting: { socket, _ in listener = socket; return true }), "this platform opens no socket")
+        defer { listener.map(Self.close) }
+        let taken = try XCTUnwrap(holder.address.split(separator: ":").last.flatMap { UInt16($0) })
         let fail = {
-            XCTAssertNil(LoopbackServer(port: taken), "a port the shared server holds")
+            XCTAssertNil(LoopbackServer(port: taken), "a port a listener holds")
             XCTAssertNil(LoopbackServer(starting: { _, _ in false }), "a thread that did not start")
         }
         fail()
