@@ -32,7 +32,7 @@ final class GTKPangoRunTests: XCTestCase {
 private enum Counted {
     nonisolated(unsafe) static var live = 0
 
-    nonisolated(unsafe) static let type = pango_attr_type_register("stateui-counted")
+    static let type = pango_attr_type_register("stateui-counted")
 
     nonisolated(unsafe) static let klass: UnsafeMutablePointer<PangoAttrClass> = {
         let klass = UnsafeMutablePointer<PangoAttrClass>.allocate(capacity: 1)
