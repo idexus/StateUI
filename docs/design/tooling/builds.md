@@ -63,6 +63,16 @@ then runs the program in the foreground, sharing the terminal, until it ends
 or Ctrl+C stops it with everything it started; standard output keeps the
 result alone, the build's words going to standard error.
 
+## A package
+
+A package is laid, made anew, in a folder that stands empty or where a
+package was laid before - the `.stateui-package` it holds names the head
+laid there. A folder holding anything else is refused (`ALREADY_EXISTS`),
+and so is the application's folder, its project's or its checkout's, or a
+folder holding one of them (`INVALID_CONFIGURATION`): what stood there stays.
+The folder is checked before the build, so a refused package costs no
+build and leaves no half-laid folder (`PackageOutput`).
+
 ## The operation journal
 
 A connection keeps its operations in memory; what stays is the project's

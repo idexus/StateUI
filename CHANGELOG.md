@@ -183,6 +183,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   loads, and the program run with no Swift on the search path. The tool's workflow keeps one per system from every run.
 - The `stateui` tool has a workflow of its own (`cli.yml`): its suites on macOS, Linux and Windows, then the editor
   extension's client of it against a real `stateui serve --stdio`.
+- `stateui package` lays a package only in a folder that stands empty or that a package was laid in before - its
+  `.stateui-package` says so - and never in one holding the application, its project or its checkout; the folder is
+  checked before the build.
 
 ## 0.8.4 - 2026-11-10
 

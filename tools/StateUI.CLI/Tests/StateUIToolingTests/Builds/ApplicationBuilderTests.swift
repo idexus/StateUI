@@ -137,5 +137,36 @@ final class ApplicationBuilderTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: laid.appendingPathComponent("NotesUIKit.app/NotesUIKit").path))
         XCTAssertEqual(try FileURI.url(packaged.programUri).path, laid.appendingPathComponent("NotesUIKit.app/NotesUIKit").path)
     }
+
+    /// A package replaces only a folder a package was laid in: one holding anything else is refused before any build,
+    /// and so is the application's folder or one holding it - what stood there stays. A folder it laid it lays again.
+    func testAPackageReplacesOnlyAFolderAPackageWasLaidIn() async throws {
+        let bench = try bench()
+        let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
+        let files = FileManager.default
+
+        let kept = bench.root.appendingPathComponent("kept")
+        try files.createDirectory(at: kept, withIntermediateDirectories: true)
+        try Data("mine".utf8).write(to: kept.appendingPathComponent("keep.txt"))
+        for output in [kept, bench.application, bench.root] {
+            do {
+                _ = try await builder.package(
+                    BuildRequest(host: .appkit, outputUri: FileURI.string(output)), in: bench.application, operation: "op-refused")
+                XCTFail("\(output.lastPathComponent) was laid over")
+            } catch let error as ToolingError {
+                XCTAssertTrue([.alreadyExists, .invalidConfiguration].contains(error.code), error.message)
+            }
+        }
+        XCTAssertEqual(try String(contentsOf: kept.appendingPathComponent("keep.txt"), encoding: .utf8), "mine")
+        XCTAssertTrue(files.fileExists(atPath: bench.application.appendingPathComponent("Package.swift").path))
+        XCTAssertFalse(files.fileExists(atPath: bench.arguments.path), "nothing was built")
+
+        let laid = bench.root.appendingPathComponent("laid")
+        for _ in 0..<2 {
+            _ = try await builder.package(
+                BuildRequest(host: .appkit, outputUri: FileURI.string(laid)), in: bench.application, operation: "op-laid")
+        }
+        XCTAssertTrue(files.fileExists(atPath: laid.appendingPathComponent("NotesAppKit.app").path))
+    }
 }
 #endif

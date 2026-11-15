@@ -49,20 +49,28 @@ public struct ApplicationBuilder: Sendable {
     }
 
     /// Builds `request`'s application for release - unless it names another configuration - and lays its bundle,
-    /// made anew, in its `outputUri`, else `<workspace>/artifacts/<Name>/<Host>`.
+    /// made anew, in its `outputUri`, else `<workspace>/artifacts/<Name>/<Host>`: a folder that stands empty, or one a
+    /// package was laid in - checked before the build.
+    ///
+    /// - Throws: ``ToolingError`` - besides a build's, `INVALID_CONFIGURATION` for an output holding the application,
+    ///   its project or its checkout, `ALREADY_EXISTS` for one holding what no package laid.
     public func package(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter = BuildReporter())
         async throws -> BuildResult {
         var release = request
         release.configuration = request.configuration ?? .release
-        let (built, root) = try await built(release, in: folder, operation: operation, reporter: reporter)
+        let (project, application) = try await resolve(release, in: folder)
+        let folderOfApplication = try FileURI.url(application.packageUri)
+        let root = try project.workspaceUri.map(FileURI.url) ?? folderOfApplication
         let output = try request.outputUri.map(FileURI.url)
-            ?? root.appendingPathComponent("artifacts").appendingPathComponent(built.application).appendingPathComponent(built.host.folder)
+            ?? root.appendingPathComponent("artifacts").appendingPathComponent(application.name).appendingPathComponent(release.host.folder)
+        try PackageOutput.check(output, keeping: [folderOfApplication, root] + (try application.libraryUri.map { [try FileURI.url($0)] } ?? []))
+        let (built, _) = try await built(release, project: project, application: application, operation: operation, reporter: reporter)
         let artifact = try FileURI.url(built.folderUri)
+        let head = "\(application.name) \(release.host.folder)"
         guard let bundleUri = built.bundleUri else {
             // A head with no bundle is its artifact's folder: the program, its libraries, its pictures.
             let files = FileManager.default
-            try? files.removeItem(at: output)
-            try files.createDirectory(at: output, withIntermediateDirectories: true)
+            try PackageOutput.lay(output, head: head)
             for name in try files.contentsOfDirectory(atPath: artifact.path).sorted() where name != "artifact.json" {
                 try files.copyItem(at: artifact.appendingPathComponent(name), to: output.appendingPathComponent(name))
             }
@@ -80,8 +88,7 @@ public struct ApplicationBuilder: Sendable {
         let bundle = try FileURI.url(bundleUri)
         let program = try FileURI.url(built.programUri).path.dropFirst(artifact.path.count + 1)
         let files = FileManager.default
-        try? files.removeItem(at: output)
-        try files.createDirectory(at: output, withIntermediateDirectories: true)
+        try PackageOutput.lay(output, head: head)
         try files.copyItem(at: bundle, to: output.appendingPathComponent(bundle.lastPathComponent))
         var laid = built
         laid.folderUri = FileURI.string(output)
@@ -94,6 +101,13 @@ public struct ApplicationBuilder: Sendable {
     func built(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter)
         async throws -> (result: BuildResult, root: URL) {
         let (project, application) = try await resolve(request, in: folder)
+        return try await built(request, project: project, application: application, operation: operation, reporter: reporter)
+    }
+
+    /// The build of `application`, of `project`, and the root its records stand in.
+    private func built(
+        _ request: BuildRequest, project: Project, application: Application, operation: String, reporter: BuildReporter
+    ) async throws -> (result: BuildResult, root: URL) {
         guard let libraryUri = application.libraryUri else {
             throw ToolingError(.projectNotFound, "\(application.name) names no StateUI checkout in its Package.swift.")
         }
