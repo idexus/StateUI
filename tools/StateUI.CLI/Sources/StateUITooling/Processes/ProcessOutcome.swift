@@ -32,4 +32,13 @@ public struct ProcessOutcome: Sendable, Equatable {
 
     /// Whether the program ended by itself with status 0.
     public var succeeded: Bool { termination == .exited(0) && stop == nil }
+
+    /// The status a command running the program ends with as it does: its own, or 128 and the signal that ended
+    /// it, as a shell says it.
+    public var exitStatus: Int32 {
+        switch termination {
+        case .exited(let status): Int32(truncatingIfNeeded: status)
+        case .signaled(let signal): 128 + Int32(truncatingIfNeeded: signal)
+        }
+    }
 }

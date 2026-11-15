@@ -144,7 +144,7 @@ struct RunCommand: AsyncParsableCommand {
                     environment: ProcessEnvironment.inherited.setting("SWIFT_BACKTRACE", to: "enable=no"), streams: .terminal)
             }
             let outcome = try await ProcessRunner().run(started)
-            if case .exited(let status) = outcome.termination, status != 0 { throw ExitCode(Int32(status)) }
+            if outcome.exitStatus != 0 { throw ExitCode(outcome.exitStatus) }
         } catch let error as ToolingError {
             try OutputFormat.text.write(error)
             throw ExitCode(ExitStatus.of(error))

@@ -210,4 +210,16 @@ final class ProcessRunnerTests: XCTestCase {
     }
     #endif
 
+
+    /// A program ended by a signal is no success for the command running it: its status is 128 and the signal, as a
+    /// shell says it; one that exited keeps its own.
+    func testAProgramEndedByASignalEndsTheCommandAsAFailure() async throws {
+        XCTAssertEqual(ProcessOutcome(termination: .exited(0)).exitStatus, 0)
+        XCTAssertEqual(ProcessOutcome(termination: .exited(3)).exitStatus, 3)
+        XCTAssertEqual(ProcessOutcome(termination: .signaled(15)).exitStatus, 143)
+        #if !os(Windows)
+        let (aborted, _) = try await Probe.run(Probe.request("abort"))
+        XCTAssertEqual(aborted.exitStatus, 128 + 6)
+        #endif
+    }
 }

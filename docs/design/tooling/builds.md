@@ -61,7 +61,9 @@ for the device or simulator `--device` names. A result names the bundle, the
 program it starts by, and for a UIKit head the destination it was built for. `stateui run` builds,
 then runs the program in the foreground, sharing the terminal, until it ends
 or Ctrl+C stops it with everything it started; standard output keeps the
-result alone, the build's words going to standard error.
+result alone, the build's words going to standard error. The run ends with
+the program's status - one a signal ended as 128 and the signal, as a shell
+says it - so a crash is never a success.
 
 ## A package
 
