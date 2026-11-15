@@ -42,8 +42,11 @@ looks.
 Cleaning an index (`index/clean`) takes away only what no other connection
 indexes, as any host - the same host too, whose server builds in that
 folder: a package another connection holds is left as it stands and
-answered with its host (`conflicts`); a connection cleans what it holds
-itself. The editor then restarts no server and says which window holds it.
+answered with its host (`conflicts`), by whatever path it is named - a link
+to a package is the package; a connection cleans what it holds itself. The
+package's guard is held until what is cleaned is gone, so no connection
+takes it meanwhile. The editor then restarts no server and says which
+window holds it.
 
 The editor takes the lease before it writes a package's configuration. Where
 another window holds one as another host it writes nothing: a host chosen is

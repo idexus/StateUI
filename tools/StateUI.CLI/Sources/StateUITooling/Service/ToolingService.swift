@@ -169,12 +169,11 @@ public struct ToolingService: Sendable {
     }
 
     /// Takes every index's scratch folder away from the folders `rootUris` name - `index/clean` - but for those
-    /// another connection indexes, answered as conflicts and left as they stand.
+    /// another connection indexes, by whatever path they are named, answered as conflicts and left as they stand.
     public func cleanIndex(in rootUris: [String]) async throws -> IndexCleaning {
-        let roots = try rootUris.map(FileURI.url)
-        let held = try await indexLeases.heldElsewhere(roots)
-        let free = roots.filter { root in !held.contains { $0.rootUri == FileURI.string(root) } }
-        return IndexCleaning(removedUris: IndexContexts.clean(free).map(FileURI.string), conflicts: held.isEmpty ? nil : held)
+        let cleaned = try await indexLeases.cleaning(try rootUris.map(FileURI.url), IndexContexts.clean)
+        return IndexCleaning(
+            removedUris: cleaned.removed.map(FileURI.string), conflicts: cleaned.conflicts.isEmpty ? nil : cleaned.conflicts)
     }
 
     /// Where `host`'s heads can run on this machine - `devices/list`: UIKit's iPhones, iPads and simulators on a Mac,

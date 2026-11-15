@@ -64,4 +64,55 @@ final class IndexLeasesTests: XCTestCase {
         let own = try await ToolingService(leases: holder).cleanIndex(in: [FileURI.string(package)])
         XCTAssertEqual(own, IndexCleaning(removedUris: [FileURI.string(index)]))
     }
+
+    /// A package is one by whatever path names it: cleaning asked for a held package and for a link to it leaves
+    /// the index and answers both as held.
+    func testCleaningLeavesAHeldIndexNamedThroughALink() async throws {
+        let index = package.appendingPathComponent(".build/appkit/index-build")
+        try FileManager.default.createDirectory(at: index, withIntermediateDirectories: true)
+        let link = package.deletingLastPathComponent().appendingPathComponent("Linked")
+        try FileManager.default.createSymbolicLink(at: link, withDestinationURL: package)
+        let holder = IndexLeases(folder: state)
+        _ = try await holder.acquire(.appkit, roots: [package])
+
+        let named = [FileURI.string(package), FileURI.string(link)]
+        let cleaned = try await ToolingService(leases: IndexLeases(folder: state)).cleanIndex(in: named)
+        XCTAssertEqual(cleaned, IndexCleaning(removedUris: [], conflicts: named.map { IndexConflict(rootUri: $0, host: .appkit) }))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: index.path), "another connection's index stands")
+    }
+
+    /// No connection takes a package while it is cleaned: cleaning holds the package's guard until what it removes
+    /// is gone, and a connection asking for the package meanwhile gets it only then.
+    func testNoConnectionTakesAPackageWhileItIsCleaned() async throws {
+        let cleaner = IndexLeases(folder: state)
+        let other = IndexLeases(folder: state)
+        let package = try XCTUnwrap(self.package)
+        let order = Order()
+        let cleaning = Task {
+            try await cleaner.cleaning([package]) { free in
+                order.add("cleaning \(free.count)")
+                Thread.sleep(forTimeInterval: 0.5)
+                order.add("cleaned")
+                return free
+            }
+        }
+        while order.said.isEmpty { try await Task.sleep(for: .milliseconds(10)) }
+        let lease = try await other.acquire(.appkit, roots: [package])
+        order.add("acquired")
+        let cleaned = try await cleaning.value
+
+        XCTAssertNil(lease.conflict)
+        XCTAssertEqual(cleaned.conflicts, [])
+        XCTAssertEqual(order.said, ["cleaning 1", "cleaned", "acquired"])
+    }
+}
+
+/// What happened, in the order it was said.
+private final class Order: @unchecked Sendable {
+    private let lock = NSLock()
+    private var words: [String] = []
+
+    func add(_ word: String) { lock.withLock { words.append(word) } }
+
+    var said: [String] { lock.withLock { words } }
 }

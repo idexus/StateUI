@@ -44,23 +44,37 @@ public final class IndexLeases: Sendable {
         return IndexLease(host: host, rootUris: roots.map(FileURI.string))
     }
 
-    /// The roots of `roots` another living connection holds, as any host, each with the host it holds it as - what
-    /// this connection holds is none of them; a lease whose connection ended is taken away.
-    public func heldElsewhere(_ roots: [URL]) async throws -> [IndexConflict] {
-        let places = places(of: roots)
-        let guards = try await places.map(\.place).sorted { $0.path < $1.path }.asyncMap(guarded)
+    /// Runs `clean` on the roots of `roots` no other living connection holds, as any host - what this connection
+    /// holds is its own - and answers what it removed with the roots left, each with the host it is held as. A root
+    /// is its package by whatever path names it, and each package's guard is held until `clean` returns: no
+    /// connection takes one as it is cleaned. A lease whose connection ended is taken away.
+    public func cleaning(
+        _ roots: [URL], _ clean: ([URL]) -> [URL]
+    ) async throws -> (removed: [URL], conflicts: [IndexConflict]) {
+        let guards = try await places(of: roots).map(\.place).sorted { $0.path < $1.path }.asyncMap(guarded)
         defer { guards.forEach { $0.close() } }
         let own = Set(held.withLock { $0.map(\.file.path) })
-        return try places.compactMap { root, place in
-            try holder(in: place, besides: own, sharing: nil).map { IndexConflict(rootUri: FileURI.string(root), host: HostFamily(rawValue: $0)) }
+        var free: [URL] = []
+        var conflicts: [IndexConflict] = []
+        for root in roots {
+            if let other = try holder(in: place(of: root), besides: own, sharing: nil) {
+                conflicts.append(IndexConflict(rootUri: FileURI.string(root), host: HostFamily(rawValue: other)))
+            } else {
+                free.append(root)
+            }
         }
+        return (clean(free), conflicts)
     }
 
-    /// Each root once, with the folder of its leases.
+    /// Each package of `roots` once, with the folder of its leases.
     private func places(of roots: [URL]) -> [(root: URL, place: URL)] {
         var seen = Set<String>()
-        return roots.map { (root: $0, place: folder.appendingPathComponent(BuildContext.digest(RealPath.of($0).path))) }
-            .filter { seen.insert($0.place.path).inserted }
+        return roots.map { (root: $0, place: place(of: $0)) }.filter { seen.insert($0.place.path).inserted }
+    }
+
+    /// The folder of the leases of `root`'s package: one for every path that names it.
+    private func place(of root: URL) -> URL {
+        folder.appendingPathComponent(BuildContext.digest(RealPath.of(root).path))
     }
 
     /// The host of a lease in `place` another living connection holds - not `own`, and not one as `sharing` - each
