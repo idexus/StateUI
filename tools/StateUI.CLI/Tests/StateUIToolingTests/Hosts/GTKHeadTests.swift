@@ -112,7 +112,29 @@ final class GTKHeadTests: XCTestCase {
         let arm = GTKHead.gdbCommands(for: .arm64)
         XCTAssertTrue(arm.contains("break g_return_if_fail_warning"))
         XCTAssertTrue(arm.contains("(char *)$x1, (char *)$x2"))
-        XCTAssertTrue(arm.contains("continue\nend\nrun\nprintf \"=== STOPPED\\n\""))
+        XCTAssertTrue(arm.contains("continue\nend\nrun\n"))
         XCTAssertTrue(GTKHead.gdbCommands(for: .x86_64).contains("(char *)$rsi, (char *)$rdx"))
+    }
+
+    /// Under gdb a program that ends by itself ends the run with its own status and says no stop; one a signal
+    /// stops says its stack and ends the run as that signal would.
+    func testGdbEndsTheRunAsTheProgramEnds() async throws {
+        guard FileManager.default.isExecutableFile(atPath: "/usr/bin/gdb") else { throw XCTSkip("No gdb on this machine.") }
+        let commands = FileManager.default.temporaryDirectory.appendingPathComponent("gdb-\(UUID().uuidString).cmd")
+        defer { try? FileManager.default.removeItem(at: commands) }
+        #if arch(x86_64)
+        try Data(GTKHead.gdbCommands(for: .x86_64).utf8).write(to: commands)
+        #else
+        try Data(GTKHead.gdbCommands(for: .arm64).utf8).write(to: commands)
+        #endif
+        for (script, status, stops) in [("exit 3", Int32(3), false), ("exit 0", 0, false), ("kill -SEGV $$", 139, true)] {
+            let said = Gathered()
+            let outcome = try await ProcessRunner().run(
+                ProcessRequest(.path("/usr/bin/gdb"), arguments: ["-batch", "-x", commands.path, "--args", "/bin/sh", "-c", script]),
+                output: said.add)
+            let words = said.lines(of: .standardOutput) + said.lines(of: .standardError)
+            XCTAssertEqual(outcome.exitStatus, status, "\(script): \(words.suffix(4))")
+            XCTAssertEqual(words.contains("=== STOPPED"), stops, script)
+        }
     }
 }

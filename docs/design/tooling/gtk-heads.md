@@ -35,3 +35,11 @@ takes a published artifact as it stands.
 running - a GTK application is one instance, and a second start would only
 bring the first forward - and runs it in the foreground, sharing the
 terminal; Ctrl+C ends it.
+
+With `--debugger` it runs under gdb. A breakpoint on
+`g_return_if_fail_warning` says each GTK critical - its domain and
+expression read from the architecture's argument registers - with its stack,
+and the program goes on; a signal that stops it says its stack and every
+thread's. gdb ends as the program does: one that ends by itself with its own
+status and no stop said, one a signal stopped as that signal would, 128 and
+its number - so the run fails on a crash and only on one.

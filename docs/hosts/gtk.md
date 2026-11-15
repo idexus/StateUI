@@ -305,7 +305,7 @@ both named by the application's ID, in `~/.local/share/icons` and
 them for a build alone. GNOME finds a window's icon through that entry.
 `--configuration release` builds the optimized head; `--debugger` runs it
 under gdb, the stack of every GTK critical and of a crash said as it comes,
-the application going on past a critical. Every `STATEUI_` variable of the
+the application going on past a critical, the run ending with its status. Every `STATEUI_` variable of the
 shell that runs it - `STATEUI_TALLY=1`, `STATEUI_INSPECT=1` - reaches the
 application.
 
