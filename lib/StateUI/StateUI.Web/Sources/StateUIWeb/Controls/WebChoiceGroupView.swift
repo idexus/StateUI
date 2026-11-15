@@ -20,6 +20,9 @@ final class WebChoiceGroupView: WebDOMView, WebChoosing {
     private var captions: [WebDOMView] = []
     private var written = PickerChoices()
 
+    /// Whether the user may choose: every value offered takes it, those offered later too.
+    private var enabled = true
+
     init(segmented: Bool) {
         self.segmented = segmented
         super.init(tag: "div")
@@ -67,6 +70,7 @@ final class WebChoiceGroupView: WebDOMView, WebChoosing {
             }
             WebRelay.insert(choices[place].node, into: node, at: place)
         }
+        showEnabled()
     }
 
     /// The user chose the value at `place`.
@@ -87,6 +91,11 @@ final class WebChoiceGroupView: WebDOMView, WebChoosing {
     }
 
     override func setEnabled(_ enabled: Bool) {
+        self.enabled = enabled
+        showEnabled()
+    }
+
+    private func showEnabled() {
         for choice in segmented ? choices : inputs { choice.attribute("disabled", enabled ? nil : "") }
         for label in segmented ? [] : choices { label.attribute("aria-disabled", enabled ? nil : "true") }
     }

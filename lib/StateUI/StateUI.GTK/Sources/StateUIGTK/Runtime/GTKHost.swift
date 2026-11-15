@@ -17,7 +17,7 @@ import StateUIFoundation
 ///     HelloWorldApp.register()
 ///     GTKHost.run(applicationID: "com.stateui.helloworld")
 ///
-/// `.scripts/GTK/run-app.sh` builds the head and starts it. A control this
+/// `stateui run --host gtk` builds the head and starts it. A control this
 /// host does not present yet shows its name in red where it belongs.
 public enum GTKHost {
     /// Starts GTK on this thread, runs the application until its last window closes, and ends the process with

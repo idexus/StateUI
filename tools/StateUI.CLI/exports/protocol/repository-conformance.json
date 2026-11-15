@@ -1,0 +1,37 @@
+{
+  "request" : {
+    "id" : "20",
+    "jsonrpc" : "2.0",
+    "method" : "repository/conformance",
+    "params" : {
+      "device" : "emulator-5554",
+      "host" : "android",
+      "record" : true,
+      "requestToken" : "2e4a6c8e-0b1d-4f3a-9c5e-7a9b1d3f5e21",
+      "selection" : {
+        "changed" : true
+      }
+    }
+  },
+  "response" : {
+    "id" : "20",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "phases" : [
+      {
+        "name" : "tests",
+        "passed" : true
+      },
+      {
+        "name" : "documents",
+        "passed" : true
+      }
+    ],
+    "suite" : "conformance:android"
+  }
+}

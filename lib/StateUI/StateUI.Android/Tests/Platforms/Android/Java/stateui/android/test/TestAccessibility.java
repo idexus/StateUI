@@ -37,6 +37,13 @@ public final class TestAccessibility {
         return false;
     }
 
+    /** Presses the view as TalkBack's double tap does, by the click its node offers: whether the view took it. */
+    public static boolean press(View view) {
+        AccessibilityNodeInfo.AccessibilityAction click = AccessibilityNodeInfo.AccessibilityAction.ACTION_CLICK;
+        if (!view.createAccessibilityNodeInfo().getActionList().contains(click)) return false;
+        return view.performAccessibilityAction(click.getId(), null);
+    }
+
     /** How many items the view's node tells TalkBack the user may choose, as `CollectionInfo` numbers it; -1 for none. */
     public static int selectionMode(View view) {
         AccessibilityNodeInfo.CollectionInfo collection = view.createAccessibilityNodeInfo().getCollectionInfo();

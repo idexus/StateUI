@@ -307,16 +307,49 @@ extension MultiBinding {
         guard let conversion = converted.conversion else { return converted }
 
         let (derived, reaches) = (converted.storage, reaches)
-        conversion.declareBack { [weak derived] in
-            guard let first = reaches[0]() as? State<A>.Storage, let second = reaches[1]() as? State<B>.Storage,
-                  let derived
-            else { return }
+        let sources = { () -> (State<A>.Storage, State<B>.Storage)? in
+            guard let first = reaches[0]() as? State<A>.Storage, let second = reaches[1]() as? State<B>.Storage
+            else { return nil }
+            return (first, second)
+        }
+        let refusal = { (value: Out) -> String? in
+            guard let (first, second) = sources() else { return nil }
+            let (one, two) = back(value)
+            return first.refusal(of: one) ?? second.refusal(of: two)
+        }
+        conversion.declareBack(refusing: refusal) { [weak derived] in
+            guard let (first, second) = sources(), let derived else { return false }
 
+            // A report lands on both sources or on neither: asked up each one's chain before either is written, then
+            // the second asked again once the first stands - a refusal may read the other - and every state written
+            // put back where it stood if it does not land whole.
+            // Design: docs/design/core/journeys.md#a-refusal-up-the-chain
+            if let why = refusal(derived.value) {
+                complain(why)
+                derived.settle(transform(first.value, second.value), asking: true)
+                return false
+            }
             let (one, two) = back(derived.value)
+            // Each source taken as it stands just before it is written, and put back last taken first: one a
+            // refusal stopped short of stands as it is, its journey on its way.
+            var restore = first.writtenBack.map { $0.restorer() }
             first.settle(one, asking: true)
-            second.settle(two, asking: true)
-            first.conversion?.back?()
-            second.conversion?.back?()
+            var landed = first.conversion?.back?() ?? true
+            if landed, let why = second.refusal(of: two) {
+                complain(why)
+                landed = false
+            }
+            if landed {
+                restore += second.writtenBack.map { $0.restorer() }
+                second.settle(two, asking: true)
+                landed = second.conversion?.back?() ?? true
+            }
+            guard landed else {
+                restore.reversed().forEach { $0() }
+                derived.settle(transform(first.value, second.value), asking: true)
+                return false
+            }
+            return true
         }
         return converted
     }

@@ -4,7 +4,9 @@
 package stateui.android;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -20,11 +22,25 @@ final class StateUIChoices extends RadioGroup implements StateUIChoosing, RadioG
     /** Each option's button's id, in order. */
     private int[] ids = new int[0];
 
+    /** The words' size in `unit` and their color the host last gave, 0 for the platform's; their face, features. */
+    private float size;
+    private int unit;
+    private int color;
+    private Typeface face;
+    private String features;
+
+    /** The size and colors of a radio button's words as the platform gives them, read off one made bare. */
+    private final float platformSize;
+    private final ColorStateList platformColors;
+
     StateUIChoices(Context context, long view, boolean row) {
         super(context);
         this.view = view;
         setOrientation(row ? HORIZONTAL : VERTICAL);
         setOnCheckedChangeListener(this);
+        RadioButton bare = new RadioButton(context);
+        platformSize = bare.getTextSize();
+        platformColors = bare.getTextColors();
     }
 
     @Override
@@ -40,6 +56,7 @@ final class StateUIChoices extends RadioGroup implements StateUIChoosing, RadioG
                 button.setSaveEnabled(false);
                 button.setText(options[index]);
                 button.setEnabled(isEnabled());
+                style(button);
                 addView(button);
             }
         }
@@ -50,14 +67,23 @@ final class StateUIChoices extends RadioGroup implements StateUIChoosing, RadioG
 
     @Override
     public void setLook(float size, int unit, int color, Typeface face, String features, int alignment) {
-        for (int index = 0; index < getChildCount(); index++) {
-            RadioButton button = (RadioButton) getChildAt(index);
-            if (size > 0) button.setTextSize(unit, size);
-            if (color != 0) button.setTextColor(color);
-            button.setTypeface(face);
-            button.setFontFeatureSettings(features);
-        }
+        this.size = size;
+        this.unit = unit;
+        this.color = color;
+        this.face = face;
+        this.features = features;
+        for (int index = 0; index < getChildCount(); index++) style((RadioButton) getChildAt(index));
         setGravity(alignment);
+    }
+
+    /** Gives `button`'s words the look last given - the platform's size and colors where none is. */
+    private void style(RadioButton button) {
+        if (size > 0) button.setTextSize(unit, size);
+        else button.setTextSize(TypedValue.COMPLEX_UNIT_PX, platformSize);
+        if (color != 0) button.setTextColor(color);
+        else button.setTextColor(platformColors);
+        button.setTypeface(face);
+        button.setFontFeatureSettings(features);
     }
 
     /** A group turned off turns its buttons off: a RadioGroup's own state reaches none of them. */

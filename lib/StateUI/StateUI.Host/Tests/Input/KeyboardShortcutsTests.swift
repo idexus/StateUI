@@ -139,4 +139,27 @@ final class KeyboardShortcutsTests: XCTestCase {
         XCTAssertEqual(KeyboardShortcuts.target(of: save, under: root)?.id, .manual("shown"))
         XCTAssertEqual(KeyboardShortcuts.repeated(under: root), [], "one in sight, one beneath it")
     }
+
+    /// A split view's sidebar is out of sight while the split shows none: its shortcuts reach nothing then, and
+    /// reach it again once it shows.
+    func testAHiddenSidebarIsOutOfSight() throws {
+        func tree(_ sidebarShown: Bool) -> HostPatch {
+            var sidebar = HostPatch(id: .manual("sidebar"), type: .page)
+            sidebar.children = .arranged([element("listed", .button, save)])
+            var detail = HostPatch(id: .manual("detail"), type: .page)
+            detail.children = .arranged([element("detailed", .button, save)])
+            var split = HostPatch(id: .manual("split"), type: .splitView)
+            split.properties[.showsSidebar] = .bool(sidebarShown)
+            split.children = .arranged([sidebar, detail])
+            return split
+        }
+        let hidden = try XCTUnwrap(mount([tree(false)]).tree.root)
+        XCTAssertEqual(KeyboardShortcuts.target(of: save, under: hidden)?.id, .manual("detailed"))
+        XCTAssertEqual(KeyboardShortcuts.repeated(under: hidden), [], "one in sight, one in a hidden sidebar")
+        XCTAssertFalse(try XCTUnwrap(hidden.first(id: .manual("listed"))).standsInSight)
+
+        let shown = try XCTUnwrap(mount([tree(true)]).tree.root)
+        XCTAssertEqual(KeyboardShortcuts.target(of: save, under: shown)?.id, .manual("listed"), "the first in sight")
+        XCTAssertTrue(try XCTUnwrap(shown.first(id: .manual("listed"))).standsInSight)
+    }
 }

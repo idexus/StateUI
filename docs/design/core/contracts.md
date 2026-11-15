@@ -56,7 +56,8 @@ checks instead. A node made through its contract, `Node(contract:)`, keeps
 it, and a value, a state, a handler, or an act through an aim on it - each
 written with its member - is judged once per element, contract and member:
 the element takes a member a contract it wears declares among its `members`.
-One it does not take is said once and still written; no host shows it there.
+One it does not take is said once and left out of what the host is told - its
+properties, driven values and events (`Node.keepingDeclared`).
 A node made by type - a style's, the library's structure - judges nothing.
 A test reads the same judgment: `TestElement.value` fails for a member of a
 contract its view does not wear.

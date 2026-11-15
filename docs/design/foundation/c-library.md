@@ -57,6 +57,6 @@ the build by name rather than taking a branch written for another.
 Each branch is proved where it runs: the foundation's tests
 (`StateUIFoundationTests`) on the Mac with the root package's, on Linux and on
 Windows first in a whole run of the GTK and the WinUI host's tests
-(`test-gtk.sh`, `test-winui.ps1`), and the thread number in Android's test
+(`stateui repo test --suite host:gtk`, `host:winui`), and the thread number in Android's test
 application and in the Web suite, through `@_spi(Host)` as a host imports it, the one platform each that compiles its
 branch.

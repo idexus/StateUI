@@ -29,7 +29,7 @@ private struct ShadedTabs: View {
     }
 }
 
-/// A tabbed view's strip in a running host, which a browser's page runs (`test-web.sh --browser --host`).
+/// A tabbed view's strip in a running host, which a browser's page runs (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebTabStripTests: XCTestCase {
     override func setUp() async throws {

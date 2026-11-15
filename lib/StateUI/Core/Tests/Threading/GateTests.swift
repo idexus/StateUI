@@ -328,6 +328,31 @@ final class GateTests: XCTestCase {
         XCTAssertEqual(posted.wrappedValue, 2, "the first run's late post never landed")
     }
 
+    /// A superseded run writes no state of a model it reaches through a binding's part: the part's road goes to the
+    /// object, and the model's own state refuses the write as any state does.
+    func testASupersededRunWritesNoModelStateThroughAPart() async throws {
+        let (first, second) = (Latch(), Latch())
+        var runs = 0
+        let model = State(wrappedValue: Draft())
+        let title = model.projectedValue.title
+        let (renders, id) = button(.cancelPrevious) {
+            runs += 1
+            let run = runs
+            await (run == 1 ? first : second).wait()
+            title.wrappedValue = "run \(run)"
+        }
+
+        renders.fire(id)
+        renders.fire(id)
+        second.open()
+        try await waitUntil { model.wrappedValue.title == "run 2" }
+        first.open()
+        try await waitUntil { first.waiting == 0 }
+        await settle()
+
+        XCTAssertEqual(model.wrappedValue.title, "run 2", "the first run's late write of the model's state landed")
+    }
+
     /// A post's job belongs to no run: what a live run posted lands, though the
     /// run that booked the job was superseded before the job ran.
     func testAPostLandsWhicheverRunBookedItsJob() async throws {
@@ -972,6 +997,12 @@ private struct Chimes: ElementView {
 }
 
 /// Something a handler holds, whose release says nothing holds the handler any more.
+/// A model with a state of its own.
+@MainActor
+private final class Draft {
+    @State var title = ""
+}
+
 private final class Token {}
 
 /// Where a handler waits until the test lets it go.

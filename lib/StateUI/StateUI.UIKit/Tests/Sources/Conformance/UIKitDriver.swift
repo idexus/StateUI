@@ -154,8 +154,28 @@ final class UIKitDriver: HostDriver {
 
     /// Ends the host the driver started last.
     func close() {
+        if keyboardTold { try? standUnderKeyboard(height: 0) }
         renderer?.finish()
         renderer = nil
+    }
+
+    /// Whether the driver told of a keyboard since none: the next case finds it gone.
+    private var keyboardTold = false
+
+    /// The keyboard docked at the screen's foot, told the host as UIKit tells where the keyboard goes - its frame in
+    /// the screen's coordinates, at once; below the screen for none.
+    /// Design: docs/design/platforms/uikit/conformance.md#a-keyboard
+    func standUnderKeyboard(height: Double) throws {
+        guard let screen = renderer?.roster.windows.first?.1.window?.screen else {
+            throw DriverCannot("stand the window under a keyboard: no window shows")
+        }
+        let foot = screen.bounds.maxY - (height > 0 ? height : 0)
+        let frame = CGRect(x: 0, y: foot, width: screen.bounds.width, height: max(height, 1))
+        NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: nil, userInfo: [
+            UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: frame),
+            UIResponder.keyboardAnimationDurationUserInfoKey: 0.0,
+        ])
+        keyboardTold = height > 0
     }
 
     /// `element` dragged onto the view of id `target` - across the one of id `across` first - as UIKit's
@@ -419,6 +439,11 @@ final class UIKitDriver: HostDriver {
             if let action = Self.met(view).accessibilityCustomActions?.first(where: { $0.name == name }) {
                 _ = action.actionHandler?(action)
             }
+        case (.accessibilityPress, let view?):
+            // VoiceOver's double tap on what it meets: its activation, else a tap where it activates.
+            let met = Self.met(view)
+            guard met.isAccessibilityElement, !met.accessibilityActivate() else { break }
+            try touch(element) { listening, view in Self.tap(listening, on: view, count: 1) }
         case (.adjust(let step), let view?):
             // VoiceOver's swipe up or down: the step of what it meets.
             let met = Self.met(view)

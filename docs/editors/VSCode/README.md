@@ -7,21 +7,26 @@ completion, the launches, and the suites - works as that host.
 
 ## Installing
 
-The extension is built from a StateUI checkout, with Node.js 20 or newer. From
-the repository root:
+The extension works through the `stateui` tool, built from a StateUI
+checkout and put on the search path, or unpacked from its distribution
+([The tool](../../development.md#the-tool)). Where it stands elsewhere, the
+`stateui.cliPath` setting names the program. A tool of another API than the
+extension's is refused with the version each speaks; what the tool says of
+itself shows in the **StateUI Tool** output.
+
+The tool then builds the extension, with Node.js 20 or newer, and installs it:
 
 ```bash
-cd editors/VSCode
-npm ci
-npm run package
-code --install-extension ../../artifacts/stateui-*.vsix
+stateui repo integration install --editor vscode
 ```
 
-`npm run package` compiles the extension and writes `stateui-<version>.vsix`
-into `artifacts/` at the repository root. Without the `code` command on the
-path, **Extensions: Install from VSIX…** in the Command Palette installs that
-file. Build and install it again after pulling changes to the extension -
-[**StateUI: Reinstall VS Code Extension**](#the-extension-itself) does both.
+It packages `editors/VSCode` into `artifacts/stateui-<version>.vsix` at the
+repository root - by its own `npm ci` and `npm run package` - and has VS Code's
+`code` install it, then finds it among VS Code's extensions at that version.
+`--editor-path` names VS Code's command line where `code` is not on the
+path; **Extensions: Install from VSIX…** in the Command Palette installs the
+file by hand. After pulling changes to the extension,
+[**StateUI: Reinstall VS Code Extension**](#the-extension-itself) does it again.
 
 The extension installs the **Swift** extension (swiftlang) with it. Install
 **LLDB DAP** for the Swift debugger.
@@ -39,8 +44,8 @@ Press **F5** to run **StateUI: Debug**, or choose **StateUI: Release** in Run
 and Debug. The application's head is built, installed where the host needs
 it, and started under `lldb-dap`, a breakpoint holding from the first line -
 on Android `lldb-dap` attaches once the application has started, and a
-breakpoint holds from then on; on UIKit and Android its terminal follows the
-application's log. On UIKit, Android and the Web a Release launch runs
+breakpoint holds from then on; on UIKit and Android **StateUI Run** follows the
+application's output, and the notification that follows it stops it. On UIKit, Android and the Web a Release launch runs
 without a debugger; on AppKit, WinUI and GTK `lldb-dap` starts the optimized
 build. A Web head is built, its page served and opened in the chosen browser;
 StateUI: Debug in Chrome, Edge or another of Chromium's browsers opens it
@@ -64,10 +69,10 @@ The Command Palette offers the rest under **StateUI:**
 | [Select Browser](#the-browser) | the browser a Web head's page opens in |
 | [Select Application](#the-application) | the application F5 runs |
 | [Run Tests](#tests) | the workspace's suites, run as the chosen host |
-| [Deploy](#deploy) | the chosen application built for release and laid, with what it runs with, in `artifacts/<application>/<platform>` - on WinUI per architecture - beside its `apps/` |
+| [Package](#package) | the chosen application built for release and laid, with what it runs with, in `artifacts/<application>/<platform>` of its workspace - on WinUI per architecture |
 | [Conformance - Rebuild all / changed](#the-conformance-marks) | the chosen host's marks run again - every family, or the stale ones - and the documents rendered |
-| [New Application in apps/](#a-new-application) | a new application in a checkout's or a project group's `apps/`, made by `.scripts/new-app.sh` (`.scripts/new-app.ps1` on Windows) |
-| [New Project Group](#a-project-group) | a folder of applications outside the checkout |
+| [New Application](#a-new-application) | a new application in a workspace, beside its applications, made by the `stateui` tool |
+| [New Project Group](#a-project-group) | a workspace of applications outside the checkout |
 | [Clean Index](#the-index) | removes the language server's index and builds it again |
 | [Check Toolchain](#the-toolchain) | what this machine has of what its hosts need, and what to install for the rest |
 | [Reinstall VS Code Extension](#the-extension-itself) | packs the extension from the checkout and installs it again |
@@ -99,41 +104,45 @@ says **no host**, a launch says why it runs nothing, and the editor and
   compiles for the iOS simulator - `arm64-apple-ios26.4-simulator` against
   Xcode's simulator SDK - so code under `#if UIKIT` and `Platforms/UIKit`
   resolve.
-- **StateUI: Debug and StateUI: Release run on it.** On AppKit
-  `.scripts/AppKit/run-app.sh --build-only` builds the application's head -
-  with its bundling script where it has one, with SwiftPM and its artwork laid
-  beside it otherwise - and it is started under `lldb-dap`. On Android
-  `.scripts/Android/run-app.sh` builds the head, installs it on the device
-  chosen below and starts it, and its terminal then follows the application's
-  log, in color, until the task is stopped. StateUI:
-  Debug then attaches `lldb-dap` to the application through the NDK's
-  `lldb-server`, which the script starts in the application's sandbox: a
-  breakpoint is reached from the moment it attaches. StateUI: Release, and Run
-  Without Debugging, run it without a debugger. A second launch stops the first
-  one's log before it starts again. On UIKit `.scripts/UIKit/run-app.sh`
-  builds the head, installs it on the iPhone, iPad or simulator chosen below -
-  a simulator booted first, a device's build signed for it - and starts it, and
-  its terminal follows what the application prints. StateUI: Debug starts it
-  held until `lldb-dap` attaches - to a simulator's process, one of this Mac's,
-  or through the device - and a breakpoint holds from the first line. On WinUI `.scripts/WinUI/run-app.ps1`
-  builds the head, stopping a running copy first, and lays the Windows App SDK
-  beside it, and `lldb-dap` starts it: a breakpoint holds from the first line.
-  On GTK `.scripts/GTK/run-app.sh` builds the head, stopping a running copy
-  first, and `lldb-dap` starts it: a breakpoint holds from the first line.
-  On the Web `.scripts/Web/run-app.sh` builds the head, lays its page out and
-  serves it, in a task whose terminal follows the server; a second launch
-  stops the first one's server. StateUI: Debug in Chrome, Edge or another of
-  Chromium's browsers then starts the browser chosen below on the page under
-  VS Code's own JavaScript debugger: the page's console is in the Debug
-  Console. Any other browser, and StateUI: Release, the script opens itself.
+- **StateUI: Debug and StateUI: Release run on it.** On AppKit the `stateui`
+  tool builds the application's bundle - its progress in a notification that
+  cancels it, SwiftPM's words in the **StateUI Build** output - and its
+  program is started under `lldb-dap`. On Android the `stateui` tool builds
+  the APK for the device chosen below - an emulator not running booted first
+  - installs it and starts it; **StateUI Run** follows the application's log,
+  and the notification that follows it stops it. StateUI: Debug readies the
+  NDK's `lldb-server` in the application's sandbox and attaches `lldb-dap`
+  through it: a breakpoint is reached from the moment it attaches, and ending
+  the session ends the application. StateUI: Release, and Run Without
+  Debugging, run it without a debugger. On UIKit the `stateui` tool builds the
+  head, installs it on the iPhone, iPad or simulator chosen below - a
+  simulator booted first, a device's build signed for it - and starts it;
+  **StateUI Run** follows what the application prints, and the notification
+  that follows it stops it. StateUI: Debug starts it held until `lldb-dap`
+  attaches - to a simulator's process, one of this Mac's, or through the
+  device - and a breakpoint holds from the first line; ending the session
+  ends the application. On WinUI the `stateui` tool builds the head, stopping
+  a running copy first, and lays the Windows App SDK beside it, and `lldb-dap`
+  starts it: a breakpoint holds from the first line.
+  On GTK the `stateui` tool builds the head and installs it for the user, a
+  running copy is stopped, and `lldb-dap` starts it: a breakpoint holds from
+  the first line.
+  On the Web the `stateui` tool builds the head, lays its page out and serves
+  it; **StateUI Run** follows the server, the notification that follows it
+  stops it, and a second launch stops the first one's server. StateUI: Debug
+  in Chrome, Edge or another of Chromium's browsers then starts the browser
+  chosen below on the page under VS Code's own JavaScript debugger: the page's
+  console is in the Debug Console, and ending the session stops the server.
+  Any other browser, and StateUI: Release, the tool opens itself.
 
 ## The Android device
 
 While the host is Android, a third status bar item shows the device - click it,
 or run **StateUI: Select Android Device**. It offers the devices attached and
-the emulators set up; picking an emulator starts it and waits until it has
-booted. The device is remembered for the workspace, so a launch or a run of the
-tests asks only when none is chosen or the one chosen is no longer attached.
+the emulators set up, as the `stateui` tool lists them; an emulator picked that
+is not running is started when a launch or the tests need it. The device is
+remembered for the workspace, so a launch or a run of the tests asks only when
+none is chosen or the one chosen is no longer listed.
 
 ## The UIKit device
 
@@ -153,7 +162,8 @@ remembered for suites, while a launch keeps the iPhone or iPad chosen.
 While the host is the Web, the third status bar item shows the browser a
 launch opens the page in - click it, or run **StateUI: Select Browser**. It
 offers the browsers installed on this machine - what the system opens both a
-web address and a web page with - the system's own first. It is remembered
+web address and a web page with - the system's own first, as the `stateui`
+tool lists them. It is remembered
 for the workspace, so a launch asks only when none is chosen or the one
 chosen is no longer installed.
 
@@ -167,23 +177,31 @@ configuration naming `"application": "Gallery"` runs that one instead.
 
 ## A new application
 
-**StateUI: New Application in apps/** - in a StateUI checkout or a project
-group, asks for a name and runs the scaffolder of the checkout the folder's
-applications build with, `.scripts/new-app.sh` (or `new-app.ps1` on Windows),
-which makes HelloWorld under that name - its example test in `Tests/`
-included, which **StateUI: Run Tests** runs. The application is then chosen,
-so **StateUI: Debug** runs it.
+The extension finds applications through the `stateui` tool: in a folder that
+is an application, that one; else the ones its workspace lists - the nearest
+`stateui.json` up from the folder, which names the applications and the
+StateUI they build with. A StateUI checkout is a workspace of its own
+(`apps/Gallery`, `apps/HelloWorld`), and so is a [project group](#a-project-group).
+An application added, removed or listed there is found again by itself.
+
+**StateUI: New Application** - in a workspace, asks for a name, and the
+`stateui` tool makes HelloWorld under that name beside the workspace's
+applications - at its root where it lists none yet - building with the
+StateUI its `stateui.json` names, and lists it there. Its example test in
+`Tests/` comes with it, which **StateUI: Run Tests** runs. A notification
+follows the making and cancels it. The application is then chosen, so
+**StateUI: Debug** runs it.
 
 A name is letters and digits, starting with a letter: it becomes the
 directory, the process, the package identifier and the Swift module
-(`<Name>UI`).
+(`<Name>UI`). The tool checks it as it is typed.
 
 ## A project group
 
-An application outside the checkout lives in a project group, a folder of its
-own that **StateUI: New Project Group** makes. It asks where to make the group
-and its name, which StateUI its applications build with, and the name of its
-first application:
+An application outside the checkout lives in a project group, a workspace of
+its own that **StateUI: New Project Group** has the `stateui` tool make. It
+asks where to make the group and its name, which StateUI its applications
+build with, and the name of its first application:
 
 - **A release from GitHub** - a release tag, `stateui.minimumRelease` or
   newer, cloned into the group's `StateUI/`.
@@ -192,25 +210,25 @@ first application:
 
 ```text
 MyApps/
+  stateui.json        the applications, and the StateUI they build with
   .gitignore
   .vscode/            StateUI: Debug and StateUI: Release
   StateUI/            the release, left out of git; absent with a local checkout
-  apps/
-    Notes/            HelloWorld renamed; its Package.swift names ../../StateUI
+  Notes/              HelloWorld renamed; its Package.swift names ../StateUI
 ```
 
 Its applications are HelloWorld renamed, and each one's `Package.swift` names
-its StateUI by path: `../../StateUI` for a release, the path from the
-application to the checkout for a local one. That path is how the extension
-finds the scripts that build and run the application's heads, in that
-StateUI's `.scripts/`; the group copies none of them. **StateUI: New
-Application in apps/** makes the next application there.
+its StateUI by path: `../StateUI` for a release, the path from the
+application to the checkout for a local one. The `stateui` tool builds and
+runs every head from it, and the group copies nothing of it. **StateUI: New
+Application** makes the next application beside it, and `stateui workspace
+library` points every application at another StateUI.
 
 `StateUI/` is left out of git. A clone of the group gets it back with the
 command its `.gitignore` names:
 
 ```bash
-git clone --depth 1 --branch <release> https://github.com/idexus/StateUI.git StateUI
+stateui workspace library --release <release>
 ```
 
 | Setting | What it holds |
@@ -220,42 +238,47 @@ git clone --depth 1 --branch <release> https://github.com/idexus/StateUI.git Sta
 
 ## Tests
 
-**StateUI: Run Tests** offers the workspace's suites, every one ticked, and runs
-them AS THE HOST, one after another, each in a terminal of its own:
+The workspace's suites stand in the Testing view, found by the stateui tool
+for the chosen host (`stateui test list --host <host>` lists the same) and
+found again when the host changes. **StateUI: Run Tests** offers them, every
+one ticked, and runs them AS THE HOST, one after another, each through the tool
+(`stateui test run --suite <suite>`), its output in Test Results:
 
 - **AppKit**: the library, `lib/StateUI/StateUI.AppKit`, and each application as an
   AppKit build (`STATEUI_HOST=appkit`, on `.build/appkit`).
 - **UIKit**: the library and each application as plain Swift, and the UIKit
   host's own tests, `lib/StateUI/StateUI.UIKit/Tests` - an application of tests - run
-  on the simulator chosen by `.scripts/UIKit/test-uikit.sh`.
+  on the simulator chosen by `stateui repo test --suite host:uikit`.
 - **Android**: the library and each application as plain Swift - an Android
   build runs only on a device - and the Android host's own tests,
   `lib/StateUI/StateUI.Android/Tests`, built into a test APK and run on the device
-  chosen by `.scripts/Android/test-android.sh`.
+  chosen by `stateui repo test --suite host:android`.
 - **WinUI**: the library and each application as plain Swift, and the WinUI
-  host's own tests, `lib/StateUI/StateUI.WinUI/Testing`, by `.scripts/WinUI/test-winui.ps1`,
-  which lays the Windows App SDK beside its test runner first.
+  host's own tests, `lib/StateUI/StateUI.WinUI/Testing`, by
+  `stateui repo test --suite host:winui`, which lays the Windows App SDK
+  beside its test runner first.
 - **GTK**: the library and each application as plain Swift, and the GTK host's
-  own tests, `lib/StateUI/StateUI.GTK/Testing`, by `swift test`, its windows on the
-  desktop's display.
+  own tests, `lib/StateUI/StateUI.GTK/Testing`, by
+  `stateui repo test --suite host:gtk`, its windows on the desktop's display.
 - **Web**: the library and each application as plain Swift, and the Web host's
-  own tests, `lib/StateUI/StateUI.Web/Testing`, by `.scripts/Web/test-web.sh`,
-  which compiles them for WebAssembly and runs them in Node.
+  own tests, `lib/StateUI/StateUI.Web/Testing`, by
+  `stateui repo test --suite host:web`, which compiles them for WebAssembly
+  and runs them in Node, then what needs a browser in Chrome.
 - **No host**: the library and each application as plain Swift.
 
-A failure does not stop the suites after it; the summary names the ones that
-failed.
+A suite that runs on a device asks for one once. A failure does not stop the
+suites after it; the summary names the ones that failed.
 
-## Deploy
+## Package
 
-**StateUI: Deploy** builds the chosen application for release on the chosen
-host and lays it in `artifacts/<application>/<platform>` of the folder that
-keeps its `apps/` - a project group's, or a checkout's - made anew each time.
-The host's own `deploy` script of the application's checkout does it:
+**StateUI: Package** builds the chosen application for release on the chosen
+host and lays it in `artifacts/<application>/<platform>` of its workspace - a
+project group's, or a checkout's - made anew each time.
+The `stateui` tool packages it:
 
 - **WinUI**: a folder that runs on a Windows machine with nothing installed -
   the head, StateUI, the Windows App SDK, the Swift and C++ runtimes of its
-  architecture, the pictures. Deploy asks which architecture: on an ARM64
+  architecture, the pictures. Package asks which architecture: on an ARM64
   machine arm64 or x64, which Windows runs emulated, into
   `artifacts/<application>/WinUI/arm64` or `.../x64`; an x64 machine builds x64
   without asking.
@@ -269,16 +292,17 @@ The host's own `deploy` script of the application's checkout does it:
 
 ## The conformance marks
 
-In a StateUI checkout, **StateUI: Conformance - Rebuild all** runs every
-conformance family as the host chosen, writing its verdicts into
-`lib/StateUI/exports/marks/<host>`, then renders the control dictionary and
-`docs/platform-contract.md` from them again. **StateUI: Conformance - Rebuild
-changed** does the same for the families whose verdicts stand at another
-revision than `lib/StateUI/StateUI.Conformance/revisions.txt` says, or have none;
-every other family's run ends at once. UIKit runs on the simulator chosen and Android on
-the device chosen, where Android rebuilds all only, its device reading no
-repository. Neither command shows outside a checkout: an application's
-workspace holds no marks.
+In a StateUI checkout, **StateUI: Conformance - Rebuild all** has the
+`stateui` tool run every conformance family as the host chosen, writing its
+verdicts into `lib/StateUI/exports/marks/<host>`, then render the control
+dictionary and `docs/platform-contract.md` from them again
+(`stateui repo conformance run --all --record`). **StateUI: Conformance -
+Rebuild changed** does the same for the families whose verdicts stand at
+another revision than `lib/StateUI/StateUI.Conformance/revisions.txt` says, or
+have none (`--changed`). UIKit runs on the simulator chosen and Android on the
+device chosen. The run's output is in **StateUI Build**, and its end names its
+phases - the one that failed, where one did. Neither command shows outside a
+checkout: an application's workspace holds no marks.
 
 ## The index
 
@@ -289,28 +313,37 @@ host SwiftPM's own `.build/index-build` - set in the application's
 `.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
 them and restarts the server, for an index a failed build left inconsistent.
 
+A package is indexed as one host at a time. Where another window works on
+one of this window's applications as another host, a host chosen here is
+refused - the message names the application and the host it is held as -
+and the host before stays; a window opening on such an application works as
+that host.
+
 ## The toolchain
 
-**StateUI: Check Toolchain** looks for what this machine needs to build and run
-the hosts it runs, as [Requirements](#requirements) and the handbook's host pages
-say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
+**StateUI: Check Toolchain** asks the `stateui` tool what this machine has of
+what it needs to build and run the hosts it runs - what `stateui doctor` prints -
+as [Requirements](#requirements) and the handbook's host pages say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
 JDK and Swift SDK on macOS; Visual Studio's C++ tools, the Windows SDK and the
 WebView2 runtime on Windows; GTK, libadwaita, WebKitGTK, gdk-pixbuf's SVG
 loader and a desktop session on Linux; the Swift SDK for WebAssembly and Python 3 for the Web on macOS and
 Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch - on Linux
 and Windows an `lldb-dap` that starts with the Python its LLDB loads; Git for a project group's
-releases; and Node.js for this extension's own build. The **StateUI Toolchain** output lists each
+releases; and Node.js for this extension's own build. The LLDB DAP extension
+and whether the `lldb-dap` it is set to starts are the extension's own
+findings, added to the tool's. The **StateUI Toolchain** output lists each
 with what was found - a version older than the one required marked as too old - and
-for each not found what to install. It looks where the build scripts look
-(the NDK as `build-swift.sh` finds it); it installs nothing.
+for each not found what to install. It looks where the tool's builds look
+(the NDK as an Android build finds it); it installs nothing.
 
 ## The extension itself
 
-In a StateUI checkout, **StateUI: Reinstall VS Code Extension** builds the
-extension from `editors/VSCode` - compiled and packed into
-`artifacts/stateui-<version>.vsix` by `npm run package` - and installs it with
-`--force` through the command line of the VS Code that runs it, then offers to
-reload the window, where the new build runs.
+In a StateUI checkout, **StateUI: Reinstall VS Code Extension** has the
+`stateui` tool package the extension from `editors/VSCode` into
+`artifacts/stateui-<version>.vsix` and install it over the running one through
+the command line of the VS Code that runs it, as
+`stateui repo integration install` does, then offers to reload the window,
+where the new build runs.
 
 ## Launches
 
@@ -326,33 +359,32 @@ launch file at all:
 
 - The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode),
   installed with StateUI.
-- For AppKit: macOS 26.4 or newer and the `lldb-dap` extension.
-- For UIKit: macOS with Xcode, a StateUI checkout, whose `.scripts/UIKit`
-  builds and runs the head, the `lldb-dap` extension, and an iOS 26.4 or newer
-  simulator or device - a device with Developer Mode on and a development
-  profile of this Mac's that provisions it.
-- For Android: macOS and a StateUI checkout, whose `.scripts/Android` builds
-  and runs the head; Swift 6.4 from swift.org with the
+- The `stateui` tool of the same release, on the search path or named by
+  `stateui.cliPath` ([Installing](#installing)).
+- For AppKit: macOS 26.4 or newer, `resvg` 0.50.0 (`brew install resvg`),
+  which draws its icon, and the `lldb-dap` extension.
+- For UIKit: macOS with Xcode, `resvg` 0.50.0, the `lldb-dap` extension, and an iOS 26.4 or
+  newer simulator or device - a device with Developer Mode on and a
+  development profile of this Mac's that provisions it.
+- For Android: macOS; Swift 6.4 from swift.org with the
   [Swift SDK for Android](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html)
   of the same release; the Android NDK r30 or newer; JDK 21; and the Android
   SDK with platform 36 and its build tools, in `ANDROID_HOME` or
-  `~/Library/Android/sdk`. The scripts fetch Gradle themselves.
-- For WinUI: Windows and a StateUI checkout, whose `.scripts/WinUI` builds the
-  head; Swift 6.4 from swift.org; Visual Studio's C++ tools and the Windows
-  SDK; the WebView2 runtime for the web view's backend (Windows 11 has it);
+  `~/Library/Android/sdk`; and `resvg` 0.50.0. The tool fetches Gradle itself.
+- For WinUI: Windows; Swift 6.4 from swift.org; Visual Studio's C++ tools and
+  the Windows SDK; the WebView2 runtime for the web view's backend (Windows 11 has it);
   and the `lldb-dap` extension, with the toolchain's `lldb-dap`, which loads
   the Python the Swift installer lays beside the toolchain (Check Toolchain
-  asks it, `lldb-dap --check-python`). The scripts fetch C++/WinRT and the
-  Windows App SDK themselves.
-- For the Web: macOS or Linux and a StateUI checkout, whose `.scripts/Web`
-  builds, serves and opens the head; Swift 6.4 and the Swift SDK for
-  WebAssembly of the same release (`swift sdk install`,
+  asks it, `lldb-dap --check-python`). The tool fetches C++/WinRT and the
+  Windows App SDK itself.
+- For the Web: macOS or Linux; Swift 6.4 and the Swift SDK for WebAssembly
+  of the same release (`swift sdk install`,
   [Getting started with WebAssembly](https://www.swift.org/documentation/articles/wasm-getting-started.html));
-  Python 3, which serves the page; and a browser - Chrome, Edge or another of
-  Chromium's for StateUI: Debug to follow the page in VS Code's debugger.
+  and a browser - Chrome, Edge or another of Chromium's for StateUI: Debug to
+  follow the page in VS Code's debugger. The Web host's own tests run in Node
+  and in Chrome or Chromium.
 - For a project group's releases: Git, which lists and clones them.
-- For GTK: Linux and a StateUI checkout, whose `.scripts/GTK` builds the head;
-  Swift 6.4 from swift.org; GTK 4.14 and libadwaita 1.5 or newer with their
+- For GTK: Linux; Swift 6.4 from swift.org; GTK 4.14 and libadwaita 1.5 or newer with their
   headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); WebKitGTK 6.0 with
   its headers for the web view's backend and the host's tests
   (`libwebkitgtk-6.0-dev` on Ubuntu, `webkitgtk-6.0` on Arch); gdk-pixbuf's SVG

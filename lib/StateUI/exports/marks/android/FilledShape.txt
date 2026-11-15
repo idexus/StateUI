@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 4.1
 Capsule.fill: ☑️ Android blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it.
 Ellipse.fill: ☑️ Android blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it.
 Path.fill: ☑️ Android blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it.

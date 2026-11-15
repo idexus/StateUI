@@ -52,5 +52,10 @@ without one; a bar's action behind the overflow still carries its picture,
 which Android does not draw there. When the slot goes, the view gives back
 whether it took a long press before.
 
+Android leaves a context menu open over the window when its view goes, its
+items choosing nothing. The view Android last wrote a context menu for
+(`menuOpening`) closes it as it leaves (`Activity.closeContextMenu`); a
+view that leaves after another's menu opened leaves that one alone.
+
 Each item's element keeps its place in the menu it last stood in
 (`menuPlace`), its Android id less one.

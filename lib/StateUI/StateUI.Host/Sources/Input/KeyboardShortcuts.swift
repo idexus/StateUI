@@ -134,7 +134,8 @@
     }
 
     /// Whether the element stands where the user meets it: it and everything holding it shown, on the page each
-    /// arrangement around it shows - a stack's top, the chosen tab - under no sheet shown after its own.
+    /// arrangement around it shows (`shows`) - a stack's top, the chosen tab, a split view's sidebar while it shows -
+    /// under no sheet shown after its own.
     public var standsInSight: Bool {
         guard standsShown else { return false }
         var child = self
@@ -150,11 +151,7 @@
                 child = parent
                 continue
             }
-            switch parent.type {
-            case .navigationStack: if parent.children.last !== child { return false }
-            case .tabView: if let chosen = parent.selectedTab, chosen !== child.placed { return false }
-            default: break
-            }
+            guard parent.shows(child) else { return false }
             child = parent
         }
         // Under the window's sheets, none in sight.

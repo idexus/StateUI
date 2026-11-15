@@ -399,9 +399,9 @@ below take the example apart.
 
 `AppCatalog` holds the languages and `defaultLanguage`. The raw value of each
 language is its tag - `"en"`, `"pl"`, or `"sr-Latn"` where a script tells two
-variants apart. Name the enum after the application, as `AppLanguage` is:
-inside a catalog, `Language` names the catalog's own language type, so an
-enum called `Language` does not compile there.
+variants apart. The catalog names it as its `CatalogLanguage`; naming the enum
+after the application, as `AppLanguage` is, tells it apart from another
+library's languages wherever both are read.
 
 A part is a struct whose fields are any values: `String`, `Message`, a
 typeface, an `ImageSource` - the theme then picks the picture's light or dark

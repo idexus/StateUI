@@ -1,7 +1,7 @@
-# revision 16.1
+# revision 16.2
 MotionLayout: ✅
-MotionLayout.itemDrag: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
-MotionLayout.itemDragUpdated: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
+MotionLayout.itemDrag: ✓ pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent
+MotionLayout.itemDragUpdated: ✓ pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent
 MotionLayout.magnifies: ✓ pinch on MotionLayout: the relay's report of the manipulation handed to the host, no touch sent
 MotionLayout.mirrorsRightToLeft: ✅
 MotionLayout.pans: ✓ sweep on MotionLayout: the relay's report of the hand handed to the host with its speed, no pointer sent

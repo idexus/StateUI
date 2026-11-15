@@ -1116,6 +1116,7 @@ enum Listings {
         "Areas": #"""
         // Sources/Samples/Layout/ZStackSample.swift
         @State private var proportional = true
+        @State private var rightToLeft = false
 
         var body: some View {
             VStack {
@@ -1139,10 +1140,21 @@ enum Listings {
                     Badge(text: "end", color: Color(hex: 0x00897B))
                         .horizontalAlignment(.end)
                         .verticalAlignment(.end)
+
+                    // A badge in the panel's area at its own size, at the area's
+                    // top end - right to left, the area and the badge turned.
+                    Badge(text: "in the area", color: Color(hex: 0x8E24AA))
+                        .area(proportional ? .proportional(Rect(0.5, 0, 0.5, 1)) : .absolute(Rect(16, 16, 120, 60)))
+                        .horizontalAlignment(.end)
+                        .verticalAlignment(.start)
                 }
                 .height(180)
+                .layoutDirection(rightToLeft ? .rightToLeft : .leftToRight)
 
                 SwitchRow("Proportional area", $proportional)
+                    .horizontalAlignment(.center)
+
+                SwitchRow("Right to left", $rightToLeft)
                     .horizontalAlignment(.center)
             }
         }
@@ -1805,6 +1817,7 @@ enum Listings {
         "ButtonSample": #"""
         // Sources/Samples/BasicInput/ButtonSample.swift
         @State private var counter = 0
+        @State private var wraps = true
 
         var body: some View {
             VStack {
@@ -1827,6 +1840,16 @@ enum Listings {
                 Button("Disabled")
                     .isEnabled(false)
                     .horizontalAlignment(.center)
+
+                Switch("Wrap the long words", isOn: $wraps)
+                    .horizontalAlignment(.center)
+
+                // Wrapped, the words stand on as many lines as the width leaves them; else they are cut short.
+                Button("Words enough to stand on more than one line")
+                    .lineBreak(wraps ? .wordWrap : .tailTruncation)
+                    .width(180)
+                    .horizontalAlignment(.center)
+                    .onClicked { counter += 1 }
             }
         }
         """#,
@@ -1888,6 +1911,11 @@ enum Listings {
         /// change is a new description of the layout, and so is the hand's unit.
         @State private var spread = false
 
+        /// Whether moving between cards is slow, and whether the cards reaching
+        /// new places bounce: two motions, each switched alone.
+        @State private var slowTurn = false
+        @State private var bouncy = false
+
         var body: some View {
             Grid {
                 Grid {
@@ -1925,8 +1953,17 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
                 .gridRow(2)
+
+                // Each switch changes one motion: the turn between cards, or the
+                // cards reaching new places - the other stays as it was.
+                HStack {
+                    SwitchRow("Slow turn", $slowTurn)
+                    SwitchRow("Bouncy cards", $bouncy)
+                }
+                .horizontalAlignment(.center)
+                .gridRow(3)
             }
-            .rows(.fill, .automatic, .automatic)
+            .rows(.fill, .automatic, .automatic, .automatic)
         }
 
         /// The next card not in the deck, if any is left.
@@ -1976,8 +2013,8 @@ enum Listings {
             // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
             // where the parameters stand; `.dynamics` THE CARDS reaching their new
             // places after a card joins, leaves or the order changes.
-            .parameterMotion(.eased(.milliseconds(400), curve: .cubicOut))
-            .dynamics(.spring(response: .milliseconds(300), damping: 1))
+            .parameterMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
+            .dynamics(.spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1))
         }
 
         /// Where one card stands in the fan: along an arc and turned with it, the
@@ -2127,7 +2164,8 @@ enum Listings {
                     .onColorChanged { _ in changes += 1 }
 
                 // The swatch wears the same state: the color chosen reaches it
-                // with no render of this view.
+                // with no render of this view. The count below is what renders
+                // it, once for each change the user makes.
                 Rectangle()
                     .fill($tint)
                     .height(80)
@@ -2823,6 +2861,9 @@ enum Listings {
         @State private var answer = "nothing asked yet"
         @State private var name = "Draft 1"
 
+        /// The draft's mark: one character - a family joined into one picture is one.
+        @State private var mark = "👨\u{200D}👩\u{200D}👧"
+
         /// What the draft can be done with.
         enum Share: CaseIterable {
             case mail, message, delete
@@ -2881,9 +2922,21 @@ enum Listings {
                         answer = typed.map { "renamed to '\($0)'" } ?? "cancelled"
                     }
 
+                // One character at most, as the user sees one: a letter with its
+                // accent laid over it, a family of three joined - a second is cut
+                // as it is typed, and a cancel keeps the mark.
+                Button("Ask for one character")
+                    .onClicked(policy: .ignoreWhileRunning) {
+                        let typed = try await window.prompt(
+                            "Mark", message: "One character for the draft",
+                            placeholder: "Mark", initialValue: mark, maximumLength: 1)
+                        if let typed { mark = typed }
+                        answer = typed.map { "marked '\($0)'" } ?? "cancelled"
+                    }
+
                 Text(answer)
 
-                Text("the draft is called '\(name)'")
+                Text("the draft is called '\(name)', marked '\(mark)'")
             }
         }
         """#,
@@ -2893,6 +2946,11 @@ enum Listings {
         @State private var basket: [String] = []
         @State private var over = false
         @State private var finished = "nothing dragged yet"
+
+        /// Whether a drag held over the basket swaps it for a new one, and which
+        /// basket stands now.
+        @State private var swaps = false
+        @State private var basketNumber = 1
 
         var body: some View {
             VStack {
@@ -2926,6 +2984,8 @@ enum Listings {
 
                 ZStack {
                     VStack {
+                        Text("Basket \(basketNumber)")
+
                         Text(over
                             ? "let go to drop it"
                             : (basket.isEmpty ? "nothing yet" : "\(basket.count) dropped"))
@@ -2948,11 +3008,22 @@ enum Listings {
                     basket.append(text.utf8.count <= 1024 ? text : "left out: longer than 1 KB")
                     over = false
                 }
+                // A new basket in the old one's place: the drag goes on over it.
+                .id(basketNumber)
+
+                Switch("Swap the basket while a drag is over it", isOn: $swaps)
 
                 Button("Empty it")
                     .horizontalAlignment(.center)
                     .isEnabled(!basket.isEmpty)
                     .onClicked { basket = [] }
+            }
+            // A second over the basket swaps it; a drag leaving sooner cancels it.
+            .onChanged(over, policy: .cancelPrevious) {
+                guard over, swaps else { return }
+                try await Task.sleep(for: .seconds(1))
+                basketNumber += 1
+                over = false
             }
         }
         """#,
@@ -2972,7 +3043,7 @@ enum Listings {
                     .rotation(20)
                     .onTapped { turned += 1 }
 
-                // Moved a card's width to the right: a tap where it stands counts, one where its frame lies does not.
+                // Moved 120 points to the right: a tap where it stands counts, one where its frame lies does not.
                 card("Tap the moved card")
                     .translationX(120)
                     .onTapped { moved += 1 }
@@ -3189,7 +3260,7 @@ enum Listings {
             }
         }
         """#,
-        "EngineSample": #"""
+        "EngineClock": #"""
         // Sources/Samples/Driven/EngineSample.swift
         /// The reading as it stood when Lap was last pressed - ORDINARY state, so
         /// the same reading that costs nothing driven costs a render here.
@@ -3270,6 +3341,45 @@ enum Listings {
         private func button(_ caption: String, _ act: @escaping @MainActor () throws -> Void) -> Button {
             Button(caption)
                 .onClicked(act)
+        }
+        """#,
+        "EngineOrder": #"""
+        // Sources/Samples/Driven/EngineSample.swift
+        /// How many times Tap was pressed - followed by both engines, read by no view.
+        @State private var taps = 0
+
+        /// The count the first engine keeps - its own, read by no view.
+        @State private var count = 0
+
+        /// What each engine says - driven words, written without a render.
+        @State private var counted = "Counted 0"
+        @State private var seen = "Words saw 0"
+
+        /// Whether the words' engine runs before the count's. A render reads it,
+        /// and each render hands both engines their priorities again.
+        @State private var wordsFirst = false
+
+        var body: some View {
+            VStack {
+                Text($counted)
+
+                Text($seen)
+
+                Switch("Words first", isOn: $wordsFirst)
+
+                Button("Tap")
+                    .onClicked { taps += 1 }
+            }
+            // Counts the taps.
+            .engine(following: $taps, priority: 0) { _ in
+                count = taps
+                counted = "Counted \(count)"
+            }
+            // Says what the count is when it runs: after the count's engine, this
+            // tap's; before it, the last one's.
+            .engine(following: $taps, priority: wordsFirst ? -1 : 1) { _ in
+                seen = "Words saw \(count)"
+            }
         }
         """#,
         "EnvironmentSample": #"""
@@ -4260,7 +4370,8 @@ enum Listings {
                 guard let place = parts.lastIndex(where: { $0 == "sample" || $0.hasSuffix("#sample") }),
                       place + 1 < parts.count
                 else { return nil }
-                let id = parts[place + 1].prefix { $0.isLetter || $0.isNumber }
+                // The id whole, as far as a query or a fragment after it.
+                let id = parts[place + 1].prefix { $0 != "?" && $0 != "#" }
                 return id.isEmpty ? nil : String(id)
             }
 
@@ -4629,7 +4740,8 @@ enum Listings {
                     .onFrameChanged { slot = $0 }
                     .onFrameChanged(in: .global) { window = $0 }
                     .onFrameChanged(in: .safeArea) { safe = $0 }
-                    // Fed one way into a state, with no body reading it.
+                    // Fed one way into a state, with no handler; the text below
+                    // reads it, so a new size renders this view.
                     .frame(into: feedsSecond ? $second : $first)
                 }
 
@@ -5179,7 +5291,13 @@ enum Listings {
             let winter = try await clock.utcOffset(
                 on: CalendarDate(year: 2026, month: 1, day: 15))
 
-            season = "Offset now \(offsetText(here)), on 15 January \(offsetText(winter))"
+            // A day long before the zones: Warsaw's own mean time, as the zone
+            // database keeps it for any year - the year 50 is the year 50.
+            let ancient = try await clock.utcOffset(
+                of: TimeZoneName("Europe/Warsaw"), on: CalendarDate(year: 50, month: 7, day: 1))
+
+            season = "Offset now \(offsetText(here)), on 15 January \(offsetText(winter)), "
+                + "in Warsaw on 1 July 50 \(offsetText(ancient))"
 
             var found: [(String, String)] = []
             for city in Self.cities {
@@ -5379,7 +5497,8 @@ enum Listings {
         }
 
         /// One row, with something worth keeping in it: what is typed lives in the
-        /// control, not in the tree.
+        /// row's own state, and its native field keeps the focus and the caret - all
+        /// of it staying with the row as rows come and go around it.
         private struct IdentityRow: View {
             let item: String
             @Binding var items: [String]
@@ -5407,6 +5526,9 @@ enum Listings {
         """#,
         "ImageSample": #"""
         // Sources/Samples/Media/ImageSample.swift
+        /// Whether the picture with frames runs them.
+        @State private var animates = true
+
         var body: some View {
             VStack {
                 HStack {
@@ -5483,6 +5605,20 @@ enum Listings {
                         .height(32)
 
                     Text("one per theme - switch the system between light and dark")
+                        .verticalAlignment(.center)
+                }
+
+                SectionTitle("A picture with frames")
+
+                // A GIF runs its frames while `isAnimating` says so, and stands on
+                // the one it reached while it does not.
+                HStack {
+                    Image("dots_turning.gif")
+                        .isAnimating($animates)
+                        .width(48)
+                        .height(48)
+
+                    Switch("Animating", isOn: $animates)
                         .verticalAlignment(.center)
                 }
             }
@@ -5676,8 +5812,8 @@ enum Listings {
         var body: some View {
             // The same two layers inside a subtree worth describing: `leaves`
             // little views, plus the counter. Each side times its OWN describe -
-            // the clock is read at the top of the closure and again at the
-            // bottom - so the number is what describing it cost.
+            // the clock is read at the top of the closure and again by a view
+            // standing after the leaves - so the number is what describing it cost.
             VStack {
                 // In layer one the get is in the block's own closure, so a press
                 // describes every leaf in it again, and its reading says how long
@@ -5713,7 +5849,9 @@ enum Listings {
 
             var body: some View {
                 VStack {
-                    let began = ContinuousClock.now
+                    // Read at the top of this closure, which makes it the reader: a press describes it again, every leaf
+                    // below included, and the clock is read afresh.
+                    let (shown, began) = (counter, ContinuousClock.now)
 
                     // The leaves in rows of 25: a stack wraps nothing, so the rows do.
                     ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
@@ -5729,11 +5867,12 @@ enum Listings {
                     }
 
                     HStack {
-                        Text("Counter \(counter)")
+                        Text("Counter \(shown)")
                             .fontWeight(.bold)
 
-                        Text(took(began, leaves))
-                            .height(15)
+                        // Built when the differ reaches it - after every leaf above,
+                        // whose views a container builds only then.
+                        Spent(since: began, views: leaves, named: "cost.described")
 
                         DebugInfoLabel()   // climbs on every press
                             .height(15)
@@ -5770,8 +5909,8 @@ enum Listings {
                         Text($counter.convert { "Counter \($0)" })
                             .fontWeight(.bold)
 
-                        Text(took(began, leaves))
-                            .height(15)
+                        // Built after every leaf above, as in the first block.
+                        Spent(since: began, views: leaves, named: "cost.channelled")
 
                         DebugInfoLabel()   // stays at one on +1
                             .height(15)
@@ -5780,14 +5919,34 @@ enum Listings {
             }
         }
 
-        /// How long describing this closure has taken so far, in microseconds.
-        ///
-        /// Read at the top of a closure and printed at the bottom of the same one, so
-        /// what it measures is that closure's own work - the leaves above it included,
-        /// since a `ForEach` builds its views where it is written.
+        /// The clock read again where this view stands: after a block's leaves, so
+        /// what it prints is their describe. A line at the bottom of the block's own
+        /// closure would read it too early - a container builds its views only when
+        /// the differ reaches it, after that closure has run.
+        private struct Spent: View {
+            /// The clock at the top of the block's closure.
+            let began: ContinuousClock.Instant
+
+            /// How many views stand above it.
+            let views: Int
+
+            /// What a test finds the words by.
+            let name: String
+
+            init(since began: ContinuousClock.Instant, views: Int, named name: String) {
+                (self.began, self.views, self.name) = (began, views, name)
+            }
+
+            var body: some View {
+                Text(took(began, views))
+                    .height(15)
+            }
+        }
+
+        /// How long describing a block has taken so far, in microseconds.
         ///
         /// - Parameters:
-        ///   - began: the clock at the top of the closure.
+        ///   - began: the clock at the top of the block's closure.
         ///   - views: how many views stand above the reading.
         /// - Returns: the sentence to print.
         private func took(_ began: ContinuousClock.Instant, _ views: Int) -> String {
@@ -6572,11 +6731,18 @@ enum Listings {
         """#,
         "LivingLayoutSample": #"""
         // Sources/Samples/Layout/LivingLayoutSample.swift
-        @State private var rows = ["Alpha", "Bravo", "Charlie"]
-        @State private var next = 4
+        // Each row is a number of its own, its identity; its name only says it.
+        @State private var rows = [0, 1, 2]
+        @State private var next = 3
         @State private var wide = false
 
-        static let names = ["Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India"]
+        static let names = ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India"]
+
+        /// The name row `number` shows: the names in turn, counted on once they come round.
+        static func name(of number: Int) -> String {
+            let round = number / names.count
+            return names[number % names.count] + (round == 0 ? "" : " \(round + 1)")
+        }
 
         var body: some View {
             // NOTHING HERE SAYS "ANIMATE". Where a child sits is worked out by the
@@ -6597,9 +6763,9 @@ enum Listings {
                     // left standing keep their controls.
                     DebugInfoLabel()
 
-                    ForEach(rows, id: \.self) { name in
+                    ForEach(rows, id: \.self) { number in
                         ZStack {
-                            Text(name)
+                            Text(Self.name(of: number))
                                 .verticalAlignment(.center)
                         }
                         .style(.card)
@@ -6610,7 +6776,7 @@ enum Listings {
 
                 HStack {
                     Button("Add").onClicked {
-                        rows.insert(Self.names[next % Self.names.count], at: 0)
+                        rows.insert(next, at: 0)
                         next += 1
                     }
 
@@ -7294,6 +7460,9 @@ enum Listings {
         /// The color the last panel walks to and back - a color's channel.
         @State private var wash = Palette.accent
 
+        /// Which ground the last panel stands on: a blur, a color, or none.
+        @State private var ground = 0
+
         /// The blurs on offer, thinnest first.
         private static let blurs: [(name: String, blur: Blur)] = [
             ("Ultra thin", .ultraThin), ("Thin", .thin), ("Regular", .regular), ("Thick", .thick),
@@ -7334,6 +7503,9 @@ enum Listings {
                         words("A color's channel")
                             .height(76)
                             .gridRow(2).gridColumn(1)
+                        // One panel whose ground changes kind: a blur gives way to a color, and that to none.
+                        panel(["Blur", "Color", "None"][ground], [.blur(blur), .color(Palette.accent), .color(.transparent)][ground])
+                            .gridRow(3).gridColumn(0)
                     }
                     .columns(.fill, .fill)
                 }
@@ -7348,6 +7520,9 @@ enum Listings {
                 Button("Change the color")
                     .horizontalAlignment(.center)
                     .onClicked { wash = wash == Palette.accent ? Palette.brand : Palette.accent }
+                Button("Blur, color, none")
+                    .horizontalAlignment(.center)
+                    .onClicked { ground = (ground + 1) % 3 }
             }
         }
 
@@ -8678,6 +8853,7 @@ enum Listings {
         @State private var cancelled = Tally()
         @State private var waited = Tally()
         @State private var unheld = Tally()
+        @State private var stubborn = Tally()
 
         var body: some View {
             VStack {
@@ -8697,6 +8873,16 @@ enum Listings {
                         cancelled.started += 1
                         try await Task.sleep(for: .milliseconds(1500))
                         cancelled.finished += 1
+                    }
+
+                // Work that keeps going through a cancel - it swallows the sleep's
+                // error - comes to its end all the same, and what it writes then
+                // is refused: only the last press finishes.
+                row("Cancel previous, keep working", stubborn)
+                    .onClicked(policy: .cancelPrevious) {
+                        stubborn.started += 1
+                        try? await Task.sleep(for: .milliseconds(1500))
+                        stubborn.finished += 1
                     }
 
                 row("Wait for previous", waited)
@@ -8730,6 +8916,11 @@ enum Listings {
         /// sample was taken. An ordinary state, so an ordinary get reads it.
         @State private var shown = 1.0
 
+        /// Whether the view taking the samples stands, and how many it has taken.
+        /// Once it leaves, no sample comes - not even one already booked.
+        @State private var sampling = true
+        @State private var taken = 0
+
         var body: some View {
             // One walked value, shown three ways.
             VStack {
@@ -8752,13 +8943,21 @@ enum Listings {
                 }
 
                 // A READING, ten times a second, into an ordinary state. Same
-                // number, at most ten builds a second.
-                VStack {
-                    DebugInfoLabel()
+                // number, at most ten builds a second - while the view asking
+                // for it stands.
+                if sampling {
+                    VStack {
+                        DebugInfoLabel()
 
-                    Text("at \(Int(shown * 100))%")
+                        Text("at \(Int(shown * 100))%")
+                    }
+                    .samples($fade, into: $shown, .every(.milliseconds(100)))
                 }
-                .samples($fade, into: $shown, .every(.milliseconds(100)))
+
+                Text("\(taken) samples taken")
+                    .onChanged(shown) { taken += 1 }
+
+                Switch("Sample", isOn: $sampling)
 
                 Rectangle()
                     .fill(Palette.accent)
@@ -8813,6 +9012,10 @@ enum Listings {
         @State private var liveX = 0.0
         @State private var liveY = 0.0
 
+        /// Where the hand holds the box, in the box's own points - driven words, so
+        /// a report writes them without a render.
+        @State private var held = "Hold the box"
+
         var body: some View {
             VStack {
                 // The box is moved by DRIVEN states, so a drag builds nothing: the
@@ -8834,6 +9037,9 @@ enum Listings {
                         .translationX($liveX)
                         .translationY($liveY)
                         .onPanUpdated { update in
+                            // `at` is in the box's own points: the same where
+                            // the box is held, wherever it has been moved.
+                            held = "Held at \(Int(update.at.x)), \(Int(update.at.y)) of the box"
                             switch update.phase {
                             case .changed:
                                 follow(panX + update.total.x, panY + update.total.y)
@@ -8875,6 +9081,8 @@ enum Listings {
                 Text(.multi($liveX.journey, $liveY.journey).convert { x, y in
                         "Moved \(Int(x.value)), \(Int(y.value))"
                     })
+
+                Text($held)
 
                 SwitchRow("The drag snaps", $snaps)
                 // What the box does as the hand lets it go.
@@ -8933,6 +9141,9 @@ enum Listings {
         extension PersistentKey where Value == String {
             /// What the user is called.
             static let who = PersistentKey("dev.stateui.gallery.who")
+
+            /// A note of several lines, kept letter for letter.
+            static let note = PersistentKey("dev.stateui.gallery.note")
         }
 
         extension PersistentKey where Value == Shade {
@@ -8943,6 +9154,7 @@ enum Listings {
         @State(persistentKey: .visits) private var visits = 0
         @State(persistentKey: .who) private var who = ""
         @State(persistentKey: .shade) private var shade = Shade.quiet
+        @State(persistentKey: .note) private var note = ""
 
         var body: some View {
             VStack {
@@ -8975,6 +9187,16 @@ enum Listings {
                 Rectangle()
                     .fill(shade == .bold ? Palette.accent : Palette.well)
                     .height(48)
+
+                // Lines, an accent laid over its letter and a family joined into
+                // one picture come back as they were written.
+                TextEditor($note)
+                    .placeholder("A note of several lines")
+                    .height(88)
+
+                Button("Write lines with marks")
+                    .horizontalAlignment(.center)
+                    .onClicked { note = "Cafe\u{301} at noon,\nthe family 👨\u{200D}👩\u{200D}👧 too." }
             }
         }
         """#,
@@ -9308,6 +9530,24 @@ enum Listings {
                     .dotColor(Palette.outline)
                     .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
+
+                // Each item's own mark - its letter, or a picture - the current
+                // one whole and the others faded, the position from the state
+                // itself: the row is built again as it moves.
+                PositionDots(Self.steps) { step in
+                    Text(String(step.prefix(1)))
+                        .fontWeight(.bold)
+                }
+                .position($step)
+                .horizontalAlignment(.center)
+
+                PositionDots(Self.steps) { _ in
+                    Image(ImageSource(light: "menu_star.png", dark: "menu_star_dark.png"))
+                        .width(14)
+                        .height(14)
+                }
+                .position($step)
+                .horizontalAlignment(.center)
 
                 HStack {
                     Button("Back")
@@ -10786,7 +11026,31 @@ enum Listings {
             }
         }
         """#,
-        "ShortcutSample": #"""
+        "ShortList": #"""
+        // Sources/Samples/Collections/LoadingItemsSample.swift
+        @State private var shown = false
+        @State private var asked = 0
+
+        var body: some View {
+            VStack {
+                HStack {
+                    Switch("Show the list", isOn: $shown)
+
+                    Text("asked \(asked) times")
+                        .verticalAlignment(.center)
+                }
+
+                // Three items, all within five of the end - but while the list
+                // has no room, it shows none of them, and no end is reached.
+                ItemsView(0..<3) { number in
+                    Text("Item \(number + 1)")
+                }
+                .onEndReached(within: 5) { asked += 1 }
+                .height(shown ? 160 : 0)
+            }
+        }
+        """#,
+        "ShortcutKeys": #"""
         // Sources/Samples/BasicInput/ShortcutSample.swift
         @State private var saved = 0
         @State private var last = "nothing yet"
@@ -10844,6 +11108,48 @@ enum Listings {
             last = name
         }
         """#,
+        "SidebarShortcut": #"""
+        // Sources/Samples/BasicInput/ShortcutSample.swift
+        @State private var open = false
+        @State private var showsSidebar = true
+        @State private var last = "nothing yet"
+
+        var body: some View {
+            VStack {
+                Text("Open the split view, hide its sidebar and press 3.")
+
+                Button("Open the split view")
+                    .onClicked { open = true }
+
+                Text("Last pressed: \(last)")
+            }
+            .sheet(isPresented: $open) {
+                SplitView {
+                    VStack {
+                        Button("The sidebar's 3")
+                            .keyboardShortcut("3", modifiers: [])
+                            .onClicked { last = "the sidebar's" }
+                    }
+                    .pageTitle("Sidebar")
+                } detail: {
+                    VStack {
+                        Button("The detail's 3")
+                            .keyboardShortcut("3", modifiers: [])
+                            .onClicked { last = "the detail's" }
+
+                        Switch("Sidebar", isOn: $showsSidebar)
+
+                        Text("Last pressed: \(last)")
+
+                        Button("Done")
+                            .onClicked { open = false }
+                    }
+                    .pageTitle("Detail")
+                }
+                .showsSidebar($showsSidebar)
+            }
+        }
+        """#,
         "SizingSample": #"""
         // Sources/Samples/Layout/SizingSample.swift
         var body: some View {
@@ -10866,6 +11172,14 @@ enum Listings {
                         .fill(Palette.accent)
                         .height(24)
                         .minimumWidth(160))
+
+                // A floor above the ceiling: the floor wins, and the words wrap
+                // at the width they stand at - as tall as their lines there.
+                row("minimumWidth(240), maximumWidth(120)",
+                    Text("A floor above the ceiling wins, and the words wrap at it.")
+                        .minimumWidth(240)
+                        .maximumWidth(120)
+                        .horizontalAlignment(.start))
 
                 // The pair is the point: both ask for 80 high, and only the one
                 // without a ceiling on it is allowed to have it.
@@ -12030,6 +12344,19 @@ enum Listings {
                 Button("Move the highlight")
                     .onClicked { highlighted = (highlighted + 1) % words.count }
 
+                // A run takes what its label wears unless it says otherwise:
+                // no decorations and no tracking, said, stand against the
+                // label's underline and spacing.
+                Text("")
+                    .textDecorations(.underline)
+                    .tracking(3)
+                    .spans {
+                        TextSpan("spaced and underlined, ")
+                        TextSpan("then plain")
+                            .textDecorations([])
+                            .tracking(0)
+                    }
+
                 // `text` and `spans` are MUTUALLY EXCLUSIVE: a label
                 // given both shows the runs.
                 Text("this text never appears")
@@ -12406,7 +12733,8 @@ enum Listings {
                         .onClicked { saved = 0 }
                 }
                 // The bar at the page's foot, by the same rules: words nobody
-                // chooses at its start, an action at its end.
+                // chooses at its start, an action at its end - its click its own,
+                // its menu apart, a submenu in it - and its overflow.
                 .toolbar(.bottom) {
                     if atFoot {
                         ToolbarLabel(recent.isEmpty ? "No recent files" : "\(recent.count) recent file(s)")
@@ -12416,6 +12744,41 @@ enum Listings {
                         ToolbarButton("Save")
                             .id("foot.save")
                             .onClicked { saved += 1 }
+                            .menu(.split) {
+                                MenuItem("Save a copy")
+                                    .id("foot.save.copy")
+                                    .onClicked { saved += 1 }
+
+                                Menu("Save as") {
+                                    MenuItem("Text")
+                                        .id("foot.save.text")
+                                        .onClicked { saved += 1 }
+
+                                    MenuItem("PDF")
+                                        .id("foot.save.pdf")
+                                        .onClicked { saved += 1 }
+                                }
+                            }
+
+                        // In the bar's overflow, its menu a submenu there.
+                        ToolbarButton("Export")
+                            .id("foot.export")
+                            .placement(at: .overflow)
+                            .menu {
+                                MenuItem("As text")
+                                    .id("foot.export.text")
+                                    .onClicked {
+                                        added += 1
+                                        recent.append("export\(added).txt")
+                                    }
+
+                                MenuItem("As PDF")
+                                    .id("foot.export.pdf")
+                                    .onClicked {
+                                        added += 1
+                                        recent.append("export\(added).pdf")
+                                    }
+                            }
                     }
                 }
                 // The desktop File menu, declared the same way: Save, and the recent
@@ -12720,6 +13083,50 @@ enum Listings {
                 view
 
                 Text(caption)
+            }
+        }
+        """#,
+        "TwoEditors": #"""
+        // Sources/Samples/State/AimSample.swift
+        /// Whether the two editors stand the other way round.
+        @State private var swapped = false
+        @State private var says = "Focus an editor, swap them, focus it again."
+
+        var body: some View {
+            VStack {
+                ForEach(swapped ? ["B", "A"] : ["A", "B"]) { name in
+                    Editor(name: name, says: $says)
+                        .id(name)
+                }
+
+                Button("Swap them")
+                    .onClicked { swapped.toggle() }
+
+                Text(says)
+            }
+        }
+
+        /// One editor: its field named `editor` inside it, as the other's is, with an
+        /// aim of its own on it.
+        private struct Editor: View {
+            let name: String
+            @Binding var says: String
+            @Aim(TextField.self) private var field
+            @State private var words = ""
+
+            var body: some View {
+                HStack {
+                    TextField($words)
+                        .placeholder("Editor \(name)")
+                        .id("editor")
+                        .aim(field)
+
+                    Button("Focus \(name)")
+                        .onClicked(policy: .ignoreWhileRunning) {
+                            try await field.focus()
+                            says = "focused editor \(name)"
+                        }
+                }
             }
         }
         """#,
@@ -13484,9 +13891,14 @@ extension Listings {
                 didSet { if color != oldValue { draw() } }
             }
 
-            /// Whether it turns. Stopped, it holds the angle it had.
+            /// Whether it turns. Stopped, it holds the angle it had, and turns on from there once it spins again: its
+            /// first frame then counts no time.
             var isSpinning = true {
-                didSet { if isSpinning != oldValue { Java.call(view.reference, Self.setSpinning, .bool(isSpinning)) } }
+                didSet {
+                    guard isSpinning != oldValue else { return }
+                    lastFrame = 0
+                    Java.call(view.reference, Self.setSpinning, .bool(isSpinning))
+                }
             }
 
             private let number: Int64

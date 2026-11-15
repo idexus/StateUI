@@ -168,4 +168,79 @@ final class WebPointerTests: XCTestCase {
         try press(to: 2)
         XCTAssertEqual(opened.count, 1, "let go over it: it opens, once")
     }
+
+    /// A view that stops hearing a press dragged gives the page its touch and its selection back: a pan of two
+    /// fingers leaves one finger's to the page, which scrolls under it, and its words stand as a label's - which
+    /// selects nothing where it does not say so.
+    func testAViewThatStopsHearingADragGivesThePageItsTouchBack() throws {
+        WebRenderer.shared?.finish()
+        let fingers = State(wrappedValue: 1)
+        let host = WebRenderer.running {
+            VStack {
+                Text("Row").width(200).height(40).onPanUpdated(touchCount: fingers.wrappedValue) { _ in }.id("row")
+                Text("Plain").id("plain")
+            }
+        }
+        host.step()
+        func node(_ id: String) throws -> Int32 {
+            try XCTUnwrap((host.runtime.tree.root?.first(id: .manual(id))?.native as? WebElement)?.view).node
+        }
+        func styled(_ id: String) throws -> String {
+            try WebBrowser.evaluate("((s) => s.touchAction + '|' + s.userSelect)(getComputedStyle(e))", on: node(id)) ?? ""
+        }
+        XCTAssertEqual(try styled("plain"), "auto|none", "a label selects nothing it does not say")
+        XCTAssertEqual(try styled("row"), "none|none", "a press dragged is the view's")
+
+        fingers.wrappedValue = 2
+        for _ in 0..<3 { host.step() }
+
+        XCTAssertEqual(try styled("row"), "auto|none", "the touch the page's again, the words a label's")
+        host.finish()
+    }
+
+    /// A view let go of while it is pressed takes off what its press hung on the page: the scroll it waits on to be
+    /// taken by one.
+    func testAViewLetGoOfWhilePressedLeavesNothingOnThePage() throws {
+        WebRenderer.shared?.finish()
+        let shown = State(wrappedValue: true)
+        let host = WebRenderer.running {
+            VStack {
+                if shown.wrappedValue { ZStack { Text("Row") }.width(200).height(40).onTapped {}.id("row") }
+            }
+        }
+        host.step()
+        let row = try XCTUnwrap((host.runtime.tree.root?.first(id: .manual("row"))?.native as? WebElement)?.view)
+        // The page's scroll listeners, counted as they are hung and taken off.
+        try WebBrowser.run("""
+            const [add, remove] = [document.addEventListener, document.removeEventListener];
+            window.stateuiCounted = { add, remove, scrolls: 0 };
+            document.addEventListener = function (type, ...rest) {
+              if (type === 'scroll') stateuiCounted.scrolls += 1;
+              return add.call(this, type, ...rest);
+            };
+            document.removeEventListener = function (type, ...rest) {
+              if (type === 'scroll') stateuiCounted.scrolls -= 1;
+              return remove.call(this, type, ...rest);
+            };
+            """)
+        defer {
+            try? WebBrowser.run("""
+                document.addEventListener = stateuiCounted.add;
+                document.removeEventListener = stateuiCounted.remove;
+                """)
+        }
+        try WebBrowser.run("""
+            const box = e.getBoundingClientRect();
+            e.dispatchEvent(new PointerEvent('pointerdown', { pointerId: 6, pointerType: 'mouse', isPrimary: true,
+              button: 0, clientX: box.left + 10, clientY: box.top + 10, bubbles: true }));
+            """, on: row.node)
+        XCTAssertEqual(try WebBrowser.number("stateuiCounted.scrolls", on: 0), 1, "the press waits on the page's scroll")
+
+        shown.wrappedValue = false
+        for _ in 0..<3 { host.step() }
+
+        XCTAssertNil(host.runtime.tree.root?.first(id: .manual("row")), "the view went")
+        XCTAssertEqual(try WebBrowser.number("stateuiCounted.scrolls", on: 0), 0, "nothing waits on the page")
+        host.finish()
+    }
 }

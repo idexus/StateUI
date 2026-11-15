@@ -1,0 +1,41 @@
+{
+  "request" : {
+    "id" : "14",
+    "jsonrpc" : "2.0",
+    "method" : "application/package",
+    "params" : {
+      "configuration" : "release",
+      "device" : "Example iPad",
+      "host" : "uikit",
+      "outputUri" : "file:///Users/example/Projects/Demo/artifacts/Notes/UIKit",
+      "projectUri" : "file:///Users/example/Projects/Demo/apps/Notes",
+      "requestToken" : "4c1e8a2d-6b3f-4e5a-9c7d-1b3e5f7a9c20"
+    }
+  },
+  "response" : {
+    "id" : "14",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "application" : "Notes",
+    "architecture" : "arm64",
+    "bundleUri" : "file:///Users/example/Projects/Demo/artifacts/Notes/UIKit/NotesUIKit.app",
+    "configuration" : "release",
+    "destination" : {
+      "booted" : false,
+      "connection" : "USB",
+      "id" : "0B05862F-1427-5E93-AFC2-5FEAA82B99FB",
+      "kind" : "device",
+      "name" : "Example iPad",
+      "udid" : "00008132-001808DC3C03001C",
+      "version" : "27.0"
+    },
+    "folderUri" : "file:///Users/example/Projects/Demo/artifacts/Notes/UIKit",
+    "host" : "uikit",
+    "programUri" : "file:///Users/example/Projects/Demo/artifacts/Notes/UIKit/NotesUIKit.app/NotesUIKit"
+  }
+}

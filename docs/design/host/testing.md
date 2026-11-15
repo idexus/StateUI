@@ -21,7 +21,9 @@ user can, no further: an act the window cannot make of a view - one its
 contract does not take - fails naming the view, and so does one the user
 cannot make, on a view in a disabled branch or words into a read-only field,
 saying why; words typed are held as the field holds them, in its case and to
-its bound, by the host layer's one rule (`InputWords.held`); a stepper takes
+its bound, by the host layer's one rule (`InputWords.held`); a slider's
+thumb let go past an end stands at that end, and one at no number is no
+slide (`ValueArithmetic.clamped`); a stepper takes
 a step its buttons take (`ValueArithmetic.step`), none past an end; a day is
 one its calendar offers and a time one a clock shows (`CalendarArithmetic`);
 a color keeps its opacity only where the picker chooses it

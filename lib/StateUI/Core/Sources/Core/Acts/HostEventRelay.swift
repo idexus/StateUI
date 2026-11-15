@@ -10,19 +10,25 @@ struct HostEventListen {
     let handler: ValueHandler<[PropValue]>
 }
 
-/// An element's subscription to one event, subscribed once and handing each raise to the last render's handler.
+/// An element's subscription to one event, subscribed once and handing each raise to the last render's handler,
+/// through that handler's gate - as an element's own event does.
 @MainActor
 final class HostEventRelay {
     let event: Event
-    var handler: ValueHandler<[PropValue]>
+    var handler: ValueHandler<[PropValue]> {
+        didSet { subscription?.hand(relayed(through: handler.gate)) }
+    }
     private var subscription: HostEventSubscription?
 
     init(_ listen: HostEventListen) {
         event = listen.event
         handler = listen.handler
-        subscription = HostEvents.subscribe(listen.event, ValueHandler(run: { [weak self] payload in
-            try await self?.handler.run(payload)
-        }, gate: listen.handler.gate))
+        subscription = HostEvents.subscribe(listen.event, relayed(through: listen.handler.gate))
+    }
+
+    /// What the subscription runs: the last render's handler, through `gate`.
+    private func relayed(through gate: Gating) -> ValueHandler<[PropValue]> {
+        ValueHandler(run: { [weak self] payload in try await self?.handler.run(payload) }, gate: gate)
     }
 
     /// Stops hearing, and supersedes the runs under way.

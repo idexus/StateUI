@@ -1,0 +1,41 @@
+{
+  "request" : {
+    "id" : "5",
+    "jsonrpc" : "2.0",
+    "method" : "toolchain/check",
+    "params" : {
+
+    }
+  },
+  "response" : {
+    "id" : "5",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "findings" : [
+        {
+          "advice" : "Install Swift 6.4 from https://www.swift.org/install.",
+          "component" : "Swift 6.4 or newer",
+          "found" : "6.4 (/usr/bin/swift)",
+          "hosts" : [
+            "appkit",
+            "uikit",
+            "android",
+            "winui",
+            "gtk",
+            "web"
+          ],
+          "neededBy" : "every host"
+        },
+        {
+          "advice" : "Install it with Android Studio's SDK Manager.",
+          "component" : "the Android NDK r30 or newer",
+          "hosts" : [
+            "android"
+          ],
+          "neededBy" : "Android",
+          "tooOld" : "29.0.1"
+        }
+      ]
+    }
+  }
+}

@@ -148,8 +148,9 @@ final class RenderedNode {
     /// What the view a page shows says of its page, for the page to take on every description of it.
     var pageValues: PageValues?
 
-    /// Whether it stands where a page stands - kept for the clean walk, which enters it from no parent.
-    var atPagePosition = false
+    /// What stands it where a page stands, nil where no page stands - kept for the clean walk, which enters it from no
+    /// parent.
+    var pagePlacer: NodeType?
 
     /// The properties driven to a state, as the host was told them.
     var driven: [Prop: StateEntry] = [:]

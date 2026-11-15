@@ -382,9 +382,19 @@ A field submits when Enter goes down in it; the key's release reaches nothing.
 A TextEditor is a `TextBox` of several lines whose Enter starts a new line and
 submits nothing, its words wrapped and scrolled inside it. Growing with its
 words, it is measured with the room below it open and takes the height they
-take, WinUI telling its layout as they change; not growing, it is measured
-with none and keeps a line's height, whatever it holds - the height the
-layout gives it is the room it scrolls in.
+take, WinUI telling its layout as they change; not growing, it keeps a
+line's height, whatever it holds - the height the layout gives it is the
+room it scrolls in.
+
+A line's height is what an empty `TextBox` standing as the editor does - its
+style, font, padding, border and least height - measures on the editor's
+window: the relay keeps one for each editor that does not grow. The theme's
+least height alone, 32, is a pixel short of a line at 125%, where the line's
+19.2 points and the box's border and padding take 32.8, and the editor would
+show a scroll bar over its one line. Off the tree a box takes no style of its
+own and measures its least height alone, so it is given WinUI's own,
+`DefaultTextBoxStyle`, the key WinUI's styles are based on; on the editor's
+`XamlRoot` it lays out on that window's pixels.
 
 ## A search field
 
@@ -454,7 +464,8 @@ An Image stands its picture in a border: an `Image` for a file or bytes, or
 for an icon a `FontIcon` in a `Viewbox`, which fits it to the room by the
 aspect; an icon's own size is the font's, 20 DIPs. Assistive technology
 meets the image or the icon, and what it was told of one stays with the
-other as the picture turns. Bytes are read from memory into a bitmap, whose
+next as the picture turns - into an image, another icon, or the same icon
+fitted anew, each a new glyph in a new box. Bytes are read from memory into a bitmap, whose
 size is known once WinUI has read it, as a file's is.
 
 ## A web view
@@ -464,7 +475,7 @@ A WebView on WinUI is a backend, `lib/Backends/WebView.WinUI`: WinUI's
 registration of an application's own controls, its page asked for once the
 element's values are applied. It runs over the system's WebView2 runtime: the
 WebView2 package's component and loader stand beside an application linking
-the backend, which lays them there (`SelfContained.ps1`), as the Windows App
+the backend, which declares them (`Packaging/runtime.txt`), as the Windows App
 SDK's runtime stands beside every one. Its `CoreWebView2` stands a moment after it is
 first asked for a page, so a page asked for before then is gone to once it
 stands, in the order asked. What the page does comes back as the element's
@@ -531,6 +542,16 @@ back - and `RadioButtons` applies it a turn after the write, once its buttons
 stand, and tells it as a change, so a change to the choice standing is no
 user's. Only a `ComboBox` has a list to open, a placeholder and choices across
 it.
+
+## A row that left
+
+A row of segments or tabs is a `SelectorBar`, and assistive technology holds
+the items it read for as long as it likes. Choosing through an item whose row
+has left the window - its automation peer's `Select` - sets WinUI's UI thread
+looping for ever, and the application stops answering. So a row whose element
+leaves takes every item off itself (`stateui_winui_choices_let_go`, from the
+picker's and the tab row's `detach`): an item held after that belongs to no
+row, and choosing it does nothing.
 
 ## A field's outline
 

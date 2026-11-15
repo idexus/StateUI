@@ -125,9 +125,8 @@ final class AppKitSharedMemberTests: XCTestCase {
     }
 
     /// A background color paints the view it is written on: its layer, or -
-    /// for a view that draws its own - its own fill, a field's and an
-    /// editor's. A search field takes none: AppKit draws its
-    /// rounded field itself, and no square is painted under it.
+    /// for a view that draws its own - its own fill, a field's, a search
+    /// field's and an editor's.
     @MainActor
     func testABackgroundColorPaintsEveryView() throws {
         let layered: [NodeType] = [

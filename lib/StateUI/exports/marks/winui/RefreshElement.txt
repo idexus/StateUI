@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 ItemsView.isRefreshEnabled: – WinUI's RefreshContainer pulls a ScrollViewer, and an ItemsView scrolls in a ScrollView it does not pull.
 ItemsView.isRefreshing: – WinUI's RefreshContainer pulls a ScrollViewer, and an ItemsView scrolls in a ScrollView it does not pull.
 ItemsView.refreshRequested: – WinUI's RefreshContainer pulls a ScrollViewer, and an ItemsView scrolls in a ScrollView it does not pull.

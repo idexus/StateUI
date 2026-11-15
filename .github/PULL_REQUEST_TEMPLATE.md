@@ -25,7 +25,8 @@ without this change and passes with it.
       documentation-only or repository-maintenance change
 - [ ] A bug fix includes a regression test that reproduces the linked issue
 - [ ] **StateUI: Run Tests** passes on every host the change touches - AppKit,
-      UIKit, Android, WinUI, GTK, Web (or `.scripts/test-native.sh` on a Mac)
+      UIKit, Android, WinUI, GTK, Web (or `stateui repo test --plan portable`
+      and `--plan native`)
 - [ ] The Gallery was exercised on every affected host, where the behavior is
       visible or interactive
 - [ ] Anything an author can reach has a `///` describing its StateUI semantics

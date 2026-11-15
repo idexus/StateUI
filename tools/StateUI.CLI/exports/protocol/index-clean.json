@@ -1,0 +1,28 @@
+{
+  "request" : {
+    "id" : "17",
+    "jsonrpc" : "2.0",
+    "method" : "index/clean",
+    "params" : {
+      "rootUris" : [
+        "file:///Users/example/Projects/Demo/Notes",
+        "file:///Users/example/Projects/Demo/Other"
+      ]
+    }
+  },
+  "response" : {
+    "id" : "17",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "conflicts" : [
+        {
+          "host" : "appkit",
+          "rootUri" : "file:///Users/example/Projects/Demo/Other"
+        }
+      ],
+      "removedUris" : [
+        "file:///Users/example/Projects/Demo/Notes/.build/uikit/index-build"
+      ]
+    }
+  }
+}

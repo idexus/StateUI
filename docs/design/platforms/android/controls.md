@@ -103,8 +103,9 @@ first characters that fit and writes them back, as the program, when typing
 goes past the bound.
 
 A password field is a field whose input type hides what is typed. Android
-resets the typeface when the input type changes, so the field puts its weight
-back after it.
+resets the typeface whenever a password's input type is set, so the field puts
+its weight back after it - made read only or editable again too, which sets
+its input type again.
 
 A text field, a search field and a text editor are one `EditText` of three
 kinds. A search field is a field whose keyboard's return key is captioned for
@@ -174,9 +175,11 @@ thumb follows.
 A view with a tap handler is given the same listener a button has, and a
 click on it is its tap: Android's own touch handling decides what a tap is,
 and a drag that becomes a scroll is no tap. A view whose handler goes away is
-no longer clickable, so it stops taking touches. A StateUI layout that
-ignores input takes no touch at all, and the touch goes to whatever stands
-behind it.
+no longer clickable, so it stops taking touches. A view that ignores input -
+a StateUI layout the tree says ignores it, or any view while it fades out -
+takes no touch, nor does anything in it, and the touch goes to whatever
+stands behind it: the StateUI layout holding it passes it by
+(`StateUIViewGroup.setIgnoresInput`).
 
 ## A label's words
 
@@ -295,7 +298,10 @@ a report of that row, or of the title's, is no change. The picker is given
 its options where they changed and the choice only where the tree changed it
 or them (`PickerChoices`): a new title leaves the user's choice standing.
 Its rows' words are sized in points the user's font scale applies to, as a
-label's are.
+label's are. Offered as radio buttons or segments, it is a radio group
+(`StateUIChoices`) - a column, or a row - whose buttons keep the words' look
+last given, the options that come after included, and take the size and
+colors a bare radio button has where the tree gives none.
 
 The list opens on the user's tap or on `isOpen`; the spinner tells every
 opening and closing, and the host layer's rule (`PickerOpening`) hears only
@@ -306,10 +312,11 @@ program close the list: `isOpen` set to false leaves it to the user.
 ## A day and a time
 
 A date picker and a time picker are one field of the host's, showing the day
-or the time in the user's locale - "D" and "d" the long and short day, "T" and
-"t" the long and short time, "t" following the user's choice of a 24-hour
-clock, any other text a pattern - and opening the platform's own calendar or
-clock, within the bounds the tree gave. A day and a time stand by the host
+or the time in the user's locale as its format says - a day's `DateFormat`
+short, medium or long ("d", "M", "D"), a time's `TimeFormat` short or medium
+("t", "T"), the short time following the user's choice of a 24-hour clock -
+and opening the platform's own calendar or clock, within the bounds the tree
+gave. A day and a time stand by the host
 layer's rule (`CalendarArithmetic`): a day not in the calendar keeps the day
 shown, one past the bounds stands at the nearer, and a time is added up from
 midnight. The user's choice is written into the field and reported; the
@@ -412,7 +419,8 @@ and comes back clicks nothing, where the press taps. Where more taps make one, t
 quick taps near each other as Android measures a double tap - Android itself
 counts no run past two - and tells each with its place in its run. A press is
 told as it goes down, moves, lets go or is taken away, measured on the screen,
-since a view that follows its drag moves where its own touches are measured;
+since a view that follows its drag moves where its own touches are measured,
+with the same point in the view beside it, where a pan says it is (`at`);
 it is a drag by the host layer's rule (`DragRecognition`) once it passes
 Android's touch slop, and the listener, told so at once, takes the rest of the
 touch - the view's own press and click are called off. A press of more than
@@ -430,8 +438,9 @@ A touch reaches the view in front and those around it alone, as on every
 platform: a layout (`StateUIViewGroup`) hands a touch down to the frontmost
 child under it - in the order it draws them - and, where that child takes
 none, to its own handling, never to a child behind it, which Android's own
-dispatch would offer it to next. A child hidden or clear is passed by, and
-so is a plain view answering no tap - a split view's shade, a column's edge -
+dispatch would offer it to next. A child hidden, clear or scaled to nothing -
+whose matrix turns no point back - is passed by, and so is a plain view
+answering no tap - a split view's shade, a column's edge -
 which only draws. Where the touch lands on no child, the layout's own area
 has it, unless it lets input through (`letsInputThrough`): then it is as if
 the layout were not there, and the touch goes on to whatever stands behind

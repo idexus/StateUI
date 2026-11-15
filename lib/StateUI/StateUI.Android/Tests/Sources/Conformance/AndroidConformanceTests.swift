@@ -9,7 +9,7 @@ import Android
 import XCTest
 
 /// The conformance suite on Android Views: a family a contract, each one test, its verdicts Android's column of the
-/// control dictionary - written into the test APK's files, where `test-android.sh` holds `lib/StateUI/exports/` to them.
+/// control dictionary - written into the test APK's files, where the stateui tool holds `lib/StateUI/exports/` to them.
 final class AndroidConformanceTests: XCTestCase {
     static var allTests: [(String, (AndroidConformanceTests) -> () throws -> Void)] {
         [
@@ -124,6 +124,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testLink", testLink),
             ("testTextAndIconElement", testTextAndIconElement),
             ("testPageElement", testPageElement),
+            ("testOpenedLinkElement", testOpenedLinkElement),
             ("testAWindowsPhaseIsTheHostsOwnOnAWindowAlone", testAWindowsPhaseIsTheHostsOwnOnAWindowAlone),
         ]
     }
@@ -239,6 +240,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testLink() throws { try conform(LinkTests.self) }
     func testTextAndIconElement() throws { try conform(TextAndIconElementTests.self) }
     func testPageElement() throws { try conform(PageElementTests.self) }
+    func testOpenedLinkElement() throws { try conform(OpenedLinkElementTests.self) }
 
     /// The host tells a window its activity's phase: closing or minimizing anything else is Android's own.
     func testAWindowsPhaseIsTheHostsOwnOnAWindowAlone() {

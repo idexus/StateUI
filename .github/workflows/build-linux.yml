@@ -1,6 +1,7 @@
 # The core's suites on Linux - the library, the host layer, the conformance
 # runner and the application-testing package - and the Gallery's and starter
-# application's. The GTK host's suite stands in gtk.yml.
+# application's. The GTK host's suite stands in gtk.yml, the stateui tool's in
+# cli.yml.
 #
 # The container is swift.org's own image, so the library compiles with the
 # release it is written against.
@@ -25,10 +26,10 @@ jobs:
     name: Tests
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    # Swift 6.4.0 on Ubuntu 24.04 - the toolchain and the distribution this
+    # Swift 6.4.2 on Ubuntu 24.04 - the toolchain and the distribution this
     # platform is developed on. A newer image would be a deliberate move, not a
     # default that changed underneath.
-    container: swift:6.4.0-noble
+    container: swift:6.4.2-noble
     steps:
       # THE CHECKOUT DIRECTORY HAS TO BE CALLED StateUI: a bare "StateUI"
       # dependency is matched against the package identity, which for a path
@@ -56,7 +57,7 @@ jobs:
     name: Gallery
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    container: swift:6.4.0-noble
+    container: swift:6.4.2-noble
     steps:
       - uses: actions/checkout@v7.0.1
 

@@ -20,6 +20,9 @@ struct WinUIBarActions {
     /// The actions as they were last drawn, in reading order, those behind "more" last.
     private(set) var drawn: [WinUIToolbarAction] = []
     private var drawnPlaces: [Int32] = []
+
+    /// Whether each action drawn stands behind "more", in the order of `drawn`.
+    var drawnBehindMore: [Bool] { drawnPlaces.map { $0 < 0 } }
     private var drawnLeading: Int32 = 0
 
     /// Draws `leading`, `trailing` and `overflow` on the bar `handle` where they differ from what it shows: what each

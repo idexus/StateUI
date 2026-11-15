@@ -1,0 +1,134 @@
+# The stateui tool on each machine it serves - its own suites, then the editor
+# extension's client of it: the recorded examples read with the extension's
+# types, and a real `stateui serve --stdio` answering it (npm run test:tooling
+# in editors/VSCode) - and its distribution for that system, read back and kept
+# as the run's artifact (`stateui repo distribution package`).
+
+name: stateui tool
+
+on:
+  push:
+    branches: [main, code]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  macos:
+    name: macOS
+    runs-on: xcode-27
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Use Xcode 27.0
+        run: sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
+      - name: Report the toolchain
+        run: swift --version
+      # The bundles' tests draw their pictures with resvg of the tool's release.
+      - uses: ./.github/actions/resvg
+      - name: Test the stateui tool
+        run: swift test --package-path tools/StateUI.CLI
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 22
+      - name: Test the extension's client of the tool
+        working-directory: editors/VSCode
+        run: npm ci && npm run test:tooling
+      - name: Package the tool's distribution, then read it back
+        run: swift run --quiet --package-path tools/StateUI.CLI stateui repo distribution package --output artifacts/stateui
+      - uses: actions/upload-artifact@v5
+        with:
+          name: stateui-macos
+          path: artifacts/stateui/
+
+  linux:
+    name: Linux
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    container: swift:6.4.2-noble
+    steps:
+      # THE CHECKOUT DIRECTORY HAS TO BE CALLED StateUI: the tool's tests read
+      # this checkout's applications, whose manifests name the library by it.
+      - uses: actions/checkout@v7.0.1
+      # The container's user is not the checkout's owner, and checkout trusts it
+      # only in a git configuration of its own: the tool reads its revision.
+      - name: Trust the checkout
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Report the toolchain
+        run: swift --version
+      - name: Test the stateui tool
+        run: swift test --package-path tools/StateUI.CLI
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 22
+      - name: Test the extension's client of the tool
+        working-directory: editors/VSCode
+        run: npm ci && npm run test:tooling
+      - name: Package the tool's distribution, then read it back
+        run: swift run --quiet --package-path tools/StateUI.CLI stateui repo distribution package --output artifacts/stateui
+      - uses: actions/upload-artifact@v5
+        with:
+          name: stateui-linux
+          path: artifacts/stateui/
+
+  # Visual Studio's environment and the toolchain set up as in build-windows.yml,
+  # whose notes say why each step stands.
+  windows:
+    name: Windows
+    runs-on: windows-2025
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Visual Studio developer environment
+        uses: compnerd/gha-setup-vsdevenv@v7
+      - name: Install Swift
+        uses: compnerd/gha-setup-swift@v0.4.0
+        with:
+          swift-version: swift-6.4.2-release
+          swift-build: 6.4.2-RELEASE
+      - name: Find and report the toolchain
+        run: |
+          $roots = @(
+            "$env:USERPROFILE\AppData\Local\Programs\Swift",
+            "$env:LOCALAPPDATA\Programs\Swift",
+            "$env:ProgramFiles\Swift",
+            "C:\Library"
+          ) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -Unique
+          $swift = if ($roots) {
+            Get-ChildItem -Path $roots -Filter swift.exe -Recurse -ErrorAction SilentlyContinue |
+              Sort-Object { $_.FullName -notlike "*Toolchains*" } |
+              Select-Object -First 1
+          }
+          if (-not $swift) { throw "the install step left no toolchain" }
+          Add-Content -Path $env:GITHUB_PATH -Value $swift.Directory.FullName
+          & $swift.FullName --version
+      - name: Test the stateui tool
+        run: swift test --package-path tools/StateUI.CLI
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 22
+      # npm runs a package's scripts in cmd.exe, which finds no program at all on a
+      # Path past 8191 characters - and the developer environment's, its folders
+      # named again by the setup steps, is longer: each folder stands once.
+      - name: Test the extension's client of the tool
+        working-directory: editors/VSCode
+        run: |
+          "Path: $($env:Path.Length) characters"
+          $env:Path = (($env:Path -split ';') | Where-Object { $_ -and (Test-Path -LiteralPath $_) } | Select-Object -Unique) -join ';'
+          "Path, each folder once: $($env:Path.Length) characters"
+          npm ci; if ($LASTEXITCODE -eq 0) { npm run test:tooling }
+      - name: Package the tool's distribution, then read it back
+        run: swift run --quiet --package-path tools/StateUI.CLI stateui repo distribution package --output artifacts/stateui
+      - uses: actions/upload-artifact@v5
+        with:
+          name: stateui-windows
+          path: artifacts/stateui/

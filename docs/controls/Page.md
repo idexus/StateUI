@@ -16,7 +16,7 @@ struct NotePage: View {
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
-Inherits: [IconElement](tiers/IconElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [PageElement](tiers/PageElement.md)
+Inherits: [IconElement](tiers/IconElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [PageElement](tiers/PageElement.md) · [OpenedLinkElement](tiers/OpenedLinkElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>13 ✅ · 1 ✓</td><td><code>UIViewController</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>12 ✅ · 1 ✓ · 1 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>12 ✅ · 1 ✓ · 1 –</td><td>custom <code>Panel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>10 ✅ · 1 ✓ · 2 –</td><td>custom <code>GtkWidget</code> in an <code>AdwToolbarView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>11 ✅ · 1 ✓ · 2 –</td><td>custom <code>GtkWidget</code> in an <code>AdwToolbarView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>12 ✅ · 1 ✓</td><td><code>&lt;section&gt;</code></td></tr></tbody>
 </table>
 
@@ -80,8 +80,7 @@ What an element is painted on: a view's, a page's, a window's, a bar item's and 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td></tr>
-<tr><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [PageElement](tiers/PageElement.md)
@@ -90,7 +89,15 @@ What a page shows about itself - a title and a picture where another container p
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [OpenedLinkElement](tiers/OpenedLinkElement.md)
+
+What hears the links its window is given: a link opened into the application - one chosen elsewhere, its scheme the application's - goes to the window it names, else the one the user came to last, and every page and arrangement there that hears links takes it.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>onLinkOpened</code> (<code>linkOpened</code>)</td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: openLink on Page: the host's entry the application's delegate calls, no Apple event sent<br>UIKit: only through the host's own: openLink on Page: the host's entry the scene's delegate calls, as no URL context can be made<br>Android Views: only through the host's own: openLink on Page: the host's entry the activity's intent reaches, no intent sent<br>WinUI 3: only through the host's own: openLink on Page: the relay's report of an activation told the driver's address, no activation<br>GTK 4: only through the host's own: openLink on Page: the host's entry the application's open signal reaches, no file opened<br>Web: only through the host's own: openLink on Page: the host's entry the page's address with a fragment reaches, no address loaded</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

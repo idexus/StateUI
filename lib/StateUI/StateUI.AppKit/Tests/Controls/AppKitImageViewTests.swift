@@ -177,8 +177,9 @@ final class AppKitImageViewTests: XCTestCase {
         XCTAssertFalse(renderer.image(.icon(.add)) === renderer.image(.icon(.remove)), "each icon its own")
     }
 
-    /// A picture something still shows is the same picture asked for again, even after the system let the
-    /// renderer's cache go under memory pressure: a view handed it again finds nothing changed.
+    /// A picture something still shows is the same picture asked for again, even after the renderer's cache let go
+    /// of what it kept, as it does when the system says memory runs short: a view handed it again finds nothing
+    /// changed.
     @MainActor
     func testAPictureStillShownOutlastsTheCache() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
@@ -212,6 +213,39 @@ final class AppKitImageViewTests: XCTestCase {
         autoreleasepool { for name in ["c", "b", "a"] { ask(name) } }
 
         XCTAssertEqual(made, ["a", "b", "c", "a"], "six pixels asked for, four kept: a went first")
+    }
+
+    /// A picture holding more pixels than the whole budget is not kept, and lets go of none of those that are.
+    @MainActor
+    func testAPicturePastTheBudgetIsNotKept() throws {
+        let cache = PictureCache<NSImage>(budget: 4, pixels: { $0.pixels })
+        var made: [String] = []
+        func ask(_ name: String, width: Int) {
+            _ = cache.image(.file(name)) {
+                made.append(name)
+                let pixels = NSBitmapImageRep(
+                    bitmapDataPlanes: nil, pixelsWide: width, pixelsHigh: 1, bitsPerSample: 8, samplesPerPixel: 4,
+                    hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)
+                let image = NSImage(size: NSSize(width: width, height: 1))
+                pixels.map(image.addRepresentation)
+                return image
+            }
+        }
+
+        autoreleasepool { ask("small", width: 2); ask("large", width: 5) }
+        autoreleasepool { ask("small", width: 2); ask("large", width: 5) }
+
+        XCTAssertEqual(made, ["small", "large", "large"], "the large one kept nothing, the small one stayed")
+    }
+
+    /// The renderer's cache hears the system say memory runs short; a cache made alone keeps by its budget alone.
+    @MainActor
+    func testTheRenderersPicturesHearMemoryRunShort() {
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.finish() }
+
+        XCTAssertTrue(renderer.pictures.hearsMemoryPressure)
+        XCTAssertFalse(PictureCache<NSImage>(pixels: { $0.pixels }).hearsMemoryPressure)
     }
 
     @MainActor

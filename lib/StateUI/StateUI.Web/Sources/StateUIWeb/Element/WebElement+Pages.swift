@@ -49,7 +49,7 @@ extension WebElement {
         if let tabs = view as? WebTabView {
             tabs.show(element.arrangedChildren.map { $0.value(PageElementContract.title.token)?.string ?? "" },
                       icons: element.arrangedChildren.map { HostPicture($0.value(.icon)) },
-                      requested: element.value(.selectedTab)?.number.map { Int($0) })
+                      requested: element.whole(.selectedTab))
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         }
         guard let split = view as? WebSplitView else { return }

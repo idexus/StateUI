@@ -50,9 +50,9 @@ final class Differ {
     /// Whether the element described next is the view a page shows, whose page values the page takes.
     var describesPageRoot = false
 
-    /// Whether the element described next stands where a page stands - in a window, an arrangement, a sheet, or an
-    /// anchor standing there.
-    var describesPagePosition = false
+    /// The element standing the element described next where a page stands - a window, an arrangement, a sheet -
+    /// through any anchor between them; nil where no page stands.
+    var describesPagePlacer: NodeType?
 
     /// The handlers this walk found to run - `.onChanged`, `.onCreated` and
     /// `.onVisualStateChanged` - in the order reached.
@@ -80,7 +80,7 @@ final class Differ {
 
     /// Where each `@Environment` slot met this walk last stood, built or kept, and what it resolved to there.
     /// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
-    var placed: [ObjectIdentifier: (element: ElementID, object: ObjectIdentifier?)] = [:]
+    var placed: [ObjectIdentifier: (place: [ElementID], object: ObjectIdentifier?)] = [:]
 
     /// What each element holding the one walked says of its enablement, outermost first - those that say any.
     /// Design: docs/design/views/styles.md#which-state-a-control-is-in
@@ -223,7 +223,7 @@ final class Differ {
             let moved = !rendered.reads.isDisjoint(with: changed)
             let from = moved
                 ? Self.start(of: rendered, changed: changed)
-                : rendered.refused ? 0 : stand(rendered.views[...], at: rendered.id)
+                : rendered.refused ? 0 : stand(rendered.views[...], at: standing + [rendered.id])
 
             if moved || rendered.refused || from < rendered.views.count {
                 return element(
@@ -232,7 +232,7 @@ final class Differ {
                     node: placeholder,
                     forced: true,
                     sizesArrive: rendered.sizesArrive,
-                    atPagePosition: rendered.atPagePosition,
+                    pagePlacer: rendered.pagePlacer,
                     from: from)
             }
         }

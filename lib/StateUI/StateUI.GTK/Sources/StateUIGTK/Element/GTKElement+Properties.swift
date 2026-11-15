@@ -55,7 +55,7 @@ extension GTKElement {
         // Design: docs/design/platforms/gtk/motion.md#what-moves
         let type = self.type
         let taken = GTKRegistrations.registry.apply(changed, to: view, presenting: element) {
-            !GTKTransitionSurface.presents($0, on: type)
+            GTKTransitionSurface.paintsOnlyAtRest($0, on: type)
         }
 
         let own = changed.subtracting(taken)
@@ -63,7 +63,7 @@ extension GTKElement {
             switch property {
             case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
             case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
-            case .ignoresInput: view.setIgnoresInput(value(.ignoresInput)?.bool ?? false)
+            case .ignoresInput: view.setIgnoresInput(element.ignoresInput)
             case .isVisible: view.setShown(isShown)
             case .tooltip: view.setTooltip(element.string(.tooltip))
             // GTK blurs nothing behind a widget: a blur's or glass's color stands in, its tint over it.

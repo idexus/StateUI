@@ -474,8 +474,10 @@ The coordinate spaces are:
 | `.safeArea` | window coordinates measured from the origin where this branch can safely place content |
 
 One host report carries the parent rectangle plus the same origin converted to
-global and safe-area coordinates. Each modifier selects its own space and
-deduplicates independently. Thus an ancestor scroll can notify a `.global`
+global and safe-area coordinates. Every space reads where the layout placed
+the view: a transform - a move, a turn, a size, on the view or a layout above
+it - moves what is drawn, never the frame, in any space. Each modifier selects
+its own space and deduplicates independently. Thus an ancestor scroll can notify a `.global`
 listener while a `.parent` listener on the same view remains quiet.
 
 A subscribed view reports after its first layout and whenever any fact needed
@@ -795,6 +797,7 @@ the views reaching their new places:
 ```swift
 struct Hand: View {
     @State private var names = ["Mural", "Nebula", "Ridge"]
+    @State private var added = 0
     @State private var fanned = true
     @State private var turn = 0.0
 
@@ -812,7 +815,10 @@ struct Hand: View {
             .dynamics(.spring(response: .milliseconds(300), damping: 0.8))
             .height(160)
 
-            Button("Add").onClicked { names.append("Bloom") }
+            Button("Add").onClicked {
+                added += 1
+                names.append("Bloom \(added)")
+            }
             Button("Fan").onClicked { fanned.toggle() }
         }
     }

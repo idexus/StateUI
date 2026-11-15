@@ -16,7 +16,7 @@ final class UIKitSwitchView: UIView, UIKitAccessibilityPresenting {
     var onToggled: ((Bool) -> Void)?
 
     /// The switch itself, which the user and VoiceOver act on.
-    let control = UISwitch()
+    let control = UIKitSwitchControl()
 
     /// The words beside it; hidden where it says none.
     let caption = UILabel()

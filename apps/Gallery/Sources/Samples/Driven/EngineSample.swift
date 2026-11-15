@@ -9,8 +9,19 @@ import StateUI
 /// by hand where the arithmetic REMEMBERS something between frames: here a
 /// clock that is running or stopped and the time it has counted, neither of
 /// which any conversion of any state could work out.
-struct EngineSample: SampleContent, ExampleContent {
-    // listing: EngineSample
+struct EngineSample: SampleContent {
+    static let id = "engine"
+    static let title = "Engine"
+    static let summary = "An engine: arithmetic on the host's frames that remembers where it got to."
+
+    var examples: [Example] {
+        [Example(EngineClock()), Example(EngineOrder())]
+    }
+}
+
+/// A clock the engine counts on its own frames.
+private struct EngineClock: ExampleContent {
+    // listing: EngineClock
     /// The reading as it stood when Lap was last pressed - ORDINARY state, so
     /// the same reading that costs nothing driven costs a render here.
     @State private var lap = "-"
@@ -32,11 +43,7 @@ struct EngineSample: SampleContent, ExampleContent {
     @State private var elapsed = 0.0   // the engine's own count
     // listing: end
 
-    static let id = "engine"
-    static let title = "Engine"
-    static let summary = "An engine: arithmetic on the host's frames that remembers where it got to."
-
-    // listing: EngineSample
+    // listing: EngineClock
     var body: some View {
         VStack {
             // What says the clock below ticks without a render: nothing in
@@ -146,11 +153,67 @@ struct EngineSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    // listing: EngineSample
+    // listing: EngineClock
     /// The buttons whose caption is their own rather than a driven state's.
     private func button(_ caption: String, _ act: @escaping @MainActor () throws -> Void) -> Button {
         Button(caption)
             .onClicked(act)
     }
     // listing: end
+}
+
+/// Two engines woken by the same write, run in the order their priorities say.
+struct EngineOrder: ExampleContent {
+    // listing: EngineOrder
+    /// How many times Tap was pressed - followed by both engines, read by no view.
+    @State private var taps = 0
+
+    /// The count the first engine keeps - its own, read by no view.
+    @State private var count = 0
+
+    /// What each engine says - driven words, written without a render.
+    @State private var counted = "Counted 0"
+    @State private var seen = "Words saw 0"
+
+    /// Whether the words' engine runs before the count's. A render reads it,
+    /// and each render hands both engines their priorities again.
+    @State private var wordsFirst = false
+
+    var body: some View {
+        VStack {
+            Text($counted)
+                .accessibilityIdentifier("engine.counted")
+
+            Text($seen)
+                .accessibilityIdentifier("engine.seen")
+
+            Switch("Words first", isOn: $wordsFirst)
+                .accessibilityIdentifier("engine.words.first")
+
+            Button("Tap")
+                .accessibilityIdentifier("engine.tap")
+                .onClicked { taps += 1 }
+        }
+        .spacing(12)
+        // Counts the taps.
+        .engine(following: $taps, priority: 0) { _ in
+            count = taps
+            counted = "Counted \(count)"
+        }
+        // Says what the count is when it runs: after the count's engine, this
+        // tap's; before it, the last one's.
+        .engine(following: $taps, priority: wordsFirst ? -1 : 1) { _ in
+            seen = "Words saw \(count)"
+        }
+    }
+    // listing: end
+
+    var notes: (any View)? {
+        Text("Press Tap, turn on Words first and press Tap again: the words now see the count "
+            + "before the tap. Engines woken by one write run in ascending priority, ties in "
+            + "the order they first stood; one reading what another writes sees it only "
+            + "running after it.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
 }

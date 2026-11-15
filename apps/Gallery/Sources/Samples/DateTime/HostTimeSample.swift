@@ -90,7 +90,13 @@ struct HostTimeSample: SampleContent, ExampleContent {
         let winter = try await clock.utcOffset(
             on: CalendarDate(year: 2026, month: 1, day: 15))
 
-        season = "Offset now \(offsetText(here)), on 15 January \(offsetText(winter))"
+        // A day long before the zones: Warsaw's own mean time, as the zone
+        // database keeps it for any year - the year 50 is the year 50.
+        let ancient = try await clock.utcOffset(
+            of: TimeZoneName("Europe/Warsaw"), on: CalendarDate(year: 50, month: 7, day: 1))
+
+        season = "Offset now \(offsetText(here)), on 15 January \(offsetText(winter)), "
+            + "in Warsaw on 1 July 50 \(offsetText(ancient))"
 
         var found: [(String, String)] = []
         for city in Self.cities {

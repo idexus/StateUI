@@ -12,7 +12,7 @@
 # cases, or what every host decides alike - and a host's own where that host's
 # change alone does. A change that proves nothing new raises nothing.
 TextEditor 3
-SplitView 9
+SplitView 10
 android TextAlignmentElement 2
 appkit TextInput 3
 android TextInput 2
@@ -22,7 +22,7 @@ ToolbarGroup 10
 TitleView 3
 MenuBar 4
 MenuItem 4
-Window 13
+Window 16
 Scene 4
 Overlay 6
 BarElement 15
@@ -31,8 +31,9 @@ NavigationStack 3
 uikit WebView 2
 android WebView 3
 winui WebView 2
-Button 14
-ButtonMenu 2
+Button 15
+ButtonMenu 3
+ButtonMenuElement 2
 appkit Button 2
 uikit Button 2
 winui Button 3
@@ -41,36 +42,40 @@ winui PageElement 2
 DatePicker 6
 TimePicker 6
 Picker 8
-Image 3
+Image 4
 Page 10
-PageElement 6
-View 23
-VisualElement 28
+PageElement 7
+IconElement 2
+BackgroundElement 2
+View 28
+RefreshElement 2
+VisualElement 31
 Shape 6
 BorderElement 14
-TextInput 9
-Application 14
+TextInput 10
+Application 16
 TextSpan 5
 Separator 4
 Canvas 4
 Rectangle 3
-Stepper 7
+Stepper 8
 KeyboardElement 7
+LineBreakElement 2
 LineHeightElement 2
 TextAlignmentElement 2
-Text 5
+Text 6
 TextColorElement 4
 TintElement 3
-ContextMenu 3
-winui VisualElement 2
+ContextMenu 4
+winui VisualElement 4
 winui Layout 2
 gtk Layout 2
 TextField 6
 SearchField 6
 Polyline 4
-FilledShape 3
+FilledShape 4
 AutomationElement 8
-Layout 3
+Layout 4
 PaddingElement 3
 MotionLayout 16
 FocusElement 5
@@ -83,21 +88,21 @@ CheckBox 3
 Ellipse 2
 Grid 2
 HStack 5
-ItemsView 6
+ItemsView 7
 Line 3
 Map 4
 Path 2
 Polygon 3
 ProgressBar 3
-TabView 2
+TabView 4
 VStack 3
-WebView 4
-ZStack 2
+WebView 5
+ZStack 3
 Popover 6
 TextualElement 4
 Link 3
 TextAndIconElement 2
-BottomBar 5
+BottomBar 7
 appkit MotionLayout 2
 gtk MotionLayout 2
 web MotionLayout 2
@@ -111,3 +116,32 @@ ContentModeElement 2
 RangeElement 2
 HoverElement 2
 PresentedElement 2
+Anchor 2
+CorneredShape 2
+winui TextEditor 2
+winui Map 2
+winui MotionLayout 2
+winui Anchor 2
+winui NavigationStack 2
+winui Page 2
+winui Scene 2
+winui SplitView 2
+winui ToolbarButton 2
+winui ToolbarGroup 2
+winui ToolbarToggle 2
+winui Window 3
+winui ButtonMenuElement 2
+winui PopupElement 2
+winui PresentedElement 2
+winui PressElement 2
+winui SessionElement 2
+winui TextAndIconElement 2
+winui ToggleElement 2
+winui View 2
+winui BackgroundElement 2
+winui EnabledElement 2
+winui HoverElement 2
+winui IconElement 2
+winui ShortcutElement 2
+winui StyledElement 2
+winui TextElement 2

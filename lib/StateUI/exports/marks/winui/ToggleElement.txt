@@ -1,9 +1,9 @@
-# revision 1.1
+# revision 1.2
 CheckBox.isOn: ✅
 CheckBox.toggled: ✅
 MenuToggle.isOn: ✅
 MenuToggle.toggled: ✅
 Switch.isOn: ✅
 Switch.toggled: ✅
-ToolbarToggle.isOn: ✅
-ToolbarToggle.toggled: ✅
+ToolbarToggle.isOn: ✓ activate on ToolbarToggle: the bar's action chosen as the relay reports it, no button pressed
+ToolbarToggle.toggled: ✓ activate on ToolbarToggle: the bar's action chosen as the relay reports it, no button pressed

@@ -7,7 +7,7 @@
 import XCTest
 
 /// What the user chooses in the browser's own choice controls reaches the tree, and what follows it runs with no
-/// other event to carry it. The browser raises the events, so the suite runs it in a browser (`test-web.sh --browser`).
+/// other event to carry it. The browser raises the events, so the suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebChoiceTests: XCTestCase {
     override func setUp() async throws {
@@ -40,6 +40,30 @@ final class WebChoiceTests: XCTestCase {
         }
 
         XCTAssertEqual(try WebBrowser.evaluate(count, on: 0), "Parcels: 3")
+    }
+
+    /// A picker the tree disables, offered as segments or radio buttons, takes no choice on any value - values it
+    /// offers once disabled too.
+    func testADisabledPickersValuesStayDisabledAsTheyChange() throws {
+        WebRenderer.shared?.finish()
+        let more = State(wrappedValue: false)
+        let size = State(wrappedValue: "M")
+        let host = WebRenderer.running {
+            let sizes = more.wrappedValue ? ["S", "M", "L", "XL"] : ["S", "M", "L"]
+            VStack {
+                Picker(sizes, selection: size.projectedValue).presentation(.segmented).isEnabled(false)
+                Picker(sizes, selection: size.projectedValue).presentation(.radio).isEnabled(false)
+            }
+        }
+        host.step()
+        let enabled = "[...document.querySelectorAll('.stateui-segment, .stateui-radio input')].filter((e) => !e.disabled).length"
+
+        more.wrappedValue = true
+        host.settle { (try? WebBrowser.number("document.querySelectorAll('.stateui-segment').length", on: 0)) == 4 }
+
+        XCTAssertEqual(try WebBrowser.number("document.querySelectorAll('.stateui-radio input').length", on: 0), 4)
+        XCTAssertEqual(try WebBrowser.number(enabled, on: 0), 0, "a value the user can choose")
+        host.finish()
     }
 }
 

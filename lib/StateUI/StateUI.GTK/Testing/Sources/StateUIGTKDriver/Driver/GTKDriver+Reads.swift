@@ -68,11 +68,15 @@ extension GTKDriver {
         let words = UnsafeMutablePointer<GtkText>(gtk_editable_get_delegate(editable))!
         switch property {
         case .placeholder: return .some(gtk_text_get_placeholder_text(words).map { String(cString: $0).propValue })
-        case .cursorPosition: return Int(gtk_editable_get_position(editable)).propValue
-        case .selectionLength:
+        // GTK counts in Unicode scalars; the characters they cover are read back (`InputWords.characterSelection`).
+        case .cursorPosition, .selectionLength:
+            let words = gtk_editable_get_text(editable).map { String(cString: $0) } ?? ""
             var (start, end): (Int32, Int32) = (0, 0)
             _ = gtk_editable_get_selection_bounds(editable, &start, &end)
-            return Int(end - start).propValue
+            let caret = InputWords.characterSelection(
+                scalarStart: Int(gtk_editable_get_position(editable)), length: 0, in: words).start
+            let selection = InputWords.characterSelection(scalarStart: Int(start), length: Int(end - start), in: words)
+            return (property == .cursorPosition ? caret : selection.length).propValue
         case .isReadOnly: return (gtk_editable_get_editable(editable) == 0).propValue
         case .isPassword: return (gtk_text_get_visibility(words) == 0).propValue
         case .horizontalTextAlignment: return Self.alignment(gtk_editable_get_alignment(editable)).propValue
@@ -96,14 +100,21 @@ extension GTKDriver {
             return .some(placeholder.map { String(cString: gtk_label_get_text($0.opaque)) }.flatMap {
                 $0.isEmpty ? nil : $0.propValue
             })
-        case .cursorPosition:
-            var cursor = GtkTextIter()
+        // GTK counts in Unicode scalars; the characters they cover are read back.
+        case .cursorPosition, .selectionLength:
+            var (first, last) = (GtkTextIter(), GtkTextIter())
+            gtk_text_buffer_get_bounds(buffer, &first, &last)
+            let text = gtk_text_buffer_get_text(buffer, &first, &last, 0)
+            defer { g_free(text) }
+            let words = text.map { String(cString: $0) } ?? ""
+            var (cursor, start, end) = (GtkTextIter(), GtkTextIter(), GtkTextIter())
             gtk_text_buffer_get_iter_at_mark(buffer, &cursor, gtk_text_buffer_get_insert(buffer))
-            return Int(gtk_text_iter_get_offset(&cursor)).propValue
-        case .selectionLength:
-            var (start, end) = (GtkTextIter(), GtkTextIter())
             _ = gtk_text_buffer_get_selection_bounds(buffer, &start, &end)
-            return Int(gtk_text_iter_get_offset(&end) - gtk_text_iter_get_offset(&start)).propValue
+            let caret = InputWords.characterSelection(
+                scalarStart: Int(gtk_text_iter_get_offset(&cursor)), length: 0, in: words).start
+            let (from, to) = (Int(gtk_text_iter_get_offset(&start)), Int(gtk_text_iter_get_offset(&end)))
+            let selection = InputWords.characterSelection(scalarStart: from, length: to - from, in: words)
+            return (property == .cursorPosition ? caret : selection.length).propValue
         case .isReadOnly: return (gtk_text_view_get_editable(text) == 0).propValue
         case .horizontalTextAlignment:
             let justified = gtk_text_view_get_justification(text)
@@ -431,14 +442,17 @@ extension GTKDriver {
     }
 }
 
-/// The look a label's runs give the words at one place, as Pango holds it.
-private struct PangoRun {
+/// The look a label's runs give the words at one place, as Pango holds it: read from Pango's copy of the
+/// attributes, every one of which it destroys, with the list, as it goes.
+final class PangoRun {
     private var attributes: [UnsafeMutablePointer<PangoAttribute>] = []
 
+    /// The copy Pango hands over, whose attributes and list are the run's to free.
+    private let copied: UnsafeMutablePointer<GSList>?
+
     init(_ list: OpaquePointer?, at index: UInt32) {
-        guard let list else { return }
-        var link = pango_attr_list_get_attributes(list)
-        let first = link
+        copied = list.flatMap { pango_attr_list_get_attributes($0) }
+        var link = copied
         while let each = link {
             if let attribute = each.pointee.data?.assumingMemoryBound(to: PangoAttribute.self),
                attribute.pointee.start_index <= index, index < attribute.pointee.end_index {
@@ -446,7 +460,17 @@ private struct PangoRun {
             }
             link = each.pointee.next
         }
-        _ = first
+    }
+
+    deinit {
+        var link = copied
+        while let each = link {
+            if let attribute = each.pointee.data?.assumingMemoryBound(to: PangoAttribute.self) {
+                pango_attribute_destroy(attribute)
+            }
+            link = each.pointee.next
+        }
+        g_slist_free(copied)
     }
 
     private func first(_ type: PangoAttrType) -> UnsafeMutablePointer<PangoAttribute>? {

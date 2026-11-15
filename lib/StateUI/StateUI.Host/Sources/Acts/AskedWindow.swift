@@ -18,11 +18,11 @@
         .alert, .confirm, .chooseAction, .prompt, .openFiles, .saveFile, .share, .hideOnScreenKeyboard,
     ]
 
-    /// The window `call` asks in; nil for an act no window asks.
+    /// The window `call` asks in, its keys the names the core sends; nil for an act no window asks.
     public init?(_ call: HostActCall) {
         guard Self.acts.contains(call.act) else { return nil }
-        scene = call.arguments.value(0)?.string ?? ""
-        key = call.arguments.value(1)?.string ?? ""
+        scene = call.arguments.value(0).flatMap(Name.init(propValue:))?.text ?? ""
+        key = call.arguments.value(1).flatMap(Name.init(propValue:))?.text ?? ""
     }
 
     /// Whether the act names no window, and asks in the one the user is in.

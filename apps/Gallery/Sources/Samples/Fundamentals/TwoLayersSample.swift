@@ -108,8 +108,8 @@ private struct LayerCost: ExampleContent {
     var body: some View {
         // The same two layers inside a subtree worth describing: `leaves`
         // little views, plus the counter. Each side times its OWN describe -
-        // the clock is read at the top of the closure and again at the
-        // bottom - so the number is what describing it cost.
+        // the clock is read at the top of the closure and again by a view
+        // standing after the leaves - so the number is what describing it cost.
         VStack {
             // In layer one the get is in the block's own closure, so a press
             // describes every leaf in it again, and its reading says how long
@@ -117,6 +117,7 @@ private struct LayerCost: ExampleContent {
             HStack {
                 Button("+1")
                     .onClicked { counter += 1 }
+                    .accessibilityIdentifier("cost.add")
 
                 // A choice of more than two, so a button that cycles them.
                 Button("Views: \(leaves)")
@@ -144,8 +145,8 @@ private struct LayerCost: ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("Two blocks of the same views, one number shown two ways. Each block "
-                + "reads the clock at the top of its closure and again at the bottom, so "
-                + "what it prints is what describing it cost.")
+                + "reads the clock at the top of its closure and again in a view standing "
+                + "after its views, so what it prints is what describing them cost.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -177,7 +178,9 @@ private struct Described: View {
 
     var body: some View {
         VStack {
-            let began = ContinuousClock.now
+            // Read at the top of this closure, which makes it the reader: a press describes it again, every leaf
+            // below included, and the clock is read afresh.
+            let (shown, began) = (counter, ContinuousClock.now)
 
             // The leaves in rows of 25: a stack wraps nothing, so the rows do.
             ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
@@ -196,15 +199,14 @@ private struct Described: View {
             }
 
             HStack {
-                Text("Counter \(counter)")
+                Text("Counter \(shown)")
                     .fontSize(13)
                     .fontWeight(.bold)
                     .margin(horizontal: 6, vertical: 0)
 
-                Text(took(began, leaves))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
-                    .height(15)
+                // Built when the differ reaches it - after every leaf above,
+                // whose views a container builds only then.
+                Spent(since: began, views: leaves, named: "cost.described")
 
                 DebugInfoLabel()   // climbs on every press
                     .height(15)
@@ -250,10 +252,8 @@ private struct Channelled: View {
                     .fontWeight(.bold)
                     .margin(horizontal: 6, vertical: 0)
 
-                Text(took(began, leaves))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
-                    .height(15)
+                // Built after every leaf above, as in the first block.
+                Spent(since: began, views: leaves, named: "cost.channelled")
 
                 DebugInfoLabel()   // stays at one on +1
                     .height(15)
@@ -266,14 +266,37 @@ private struct Channelled: View {
 // listing: end
 
 // listing: LayerCost
-/// How long describing this closure has taken so far, in microseconds.
-///
-/// Read at the top of a closure and printed at the bottom of the same one, so
-/// what it measures is that closure's own work - the leaves above it included,
-/// since a `ForEach` builds its views where it is written.
+/// The clock read again where this view stands: after a block's leaves, so
+/// what it prints is their describe. A line at the bottom of the block's own
+/// closure would read it too early - a container builds its views only when
+/// the differ reaches it, after that closure has run.
+private struct Spent: View {
+    /// The clock at the top of the block's closure.
+    let began: ContinuousClock.Instant
+
+    /// How many views stand above it.
+    let views: Int
+
+    /// What a test finds the words by.
+    let name: String
+
+    init(since began: ContinuousClock.Instant, views: Int, named name: String) {
+        (self.began, self.views, self.name) = (began, views, name)
+    }
+
+    var body: some View {
+        Text(took(began, views))
+            .fontSize(12)
+            .textColor(Palette.accent)
+            .height(15)
+            .accessibilityIdentifier(name)
+    }
+}
+
+/// How long describing a block has taken so far, in microseconds.
 ///
 /// - Parameters:
-///   - began: the clock at the top of the closure.
+///   - began: the clock at the top of the block's closure.
 ///   - views: how many views stand above the reading.
 /// - Returns: the sentence to print.
 private func took(_ began: ContinuousClock.Instant, _ views: Int) -> String {

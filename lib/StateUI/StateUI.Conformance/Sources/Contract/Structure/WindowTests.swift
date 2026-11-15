@@ -68,6 +68,48 @@
                 s.expect(try s.held(WindowContract.windowKind, on: note), Name(NotesApplication.note.name))
                 s.expect(try s.held(WindowContract.windowValue, on: note), "7")
             },
+            ConformanceCase("aWindowOfAKindIsAskedOverItself", proves: [
+                Covered(WindowContract.windowKind),
+            ], needs: [
+                Covered(ApplicationContract.confirm),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
+            ]) { s in
+                let said = Received<Bool>()
+                try s.start(application: { AskingApplication(said: said) })
+                let first = try s.element(ofType: WindowContract.nodeType)
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                guard let draft = s.elements(ofType: WindowContract.nodeType).first(where: { $0 !== first }) else {
+                    return s.fail("no second window")
+                }
+
+                s.expect(try s.element("ask again").enclosing(type: .window) === draft, true, "its button in the draft's window")
+                try s.perform(.activate, on: s.element("ask again"))
+                try s.settle { try s.question(over: draft) != nil }
+                s.expect(try s.question(over: draft)?.title, "Close draft?", "over the draft's window, which asked")
+                s.expect(try s.question(over: first)?.title, nil, "none over the first")
+                try s.perform(.answer(.accept), on: draft)
+                s.settle { !said.values.isEmpty }
+                s.expect(said.values, [true], "the draft's window answered")
+            },
+            ConformanceCase("aWindowOfAKindShowsItsOwnPagesTitle", proves: [
+                Covered(WindowContract.windowKind),
+            ], needs: [
+                Covered(PageContract.showsTitle), Covered(SplitViewContract.self),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
+            ]) { s in
+                try s.start(application: { TitledWindowsApplication() })
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                let page = { (id: String) throws -> MountedElement in
+                    guard let page = try s.element(id).enclosing(type: .page) else { throw DriverCannot("find \(id)'s page") }
+                    return page
+                }
+
+                try s.settle { try s.held(PageContract.showsTitle, on: page("untitled")) == false }
+                s.expect(try s.held(PageContract.showsTitle, on: page("titled")), true, "the first window's page shows its title")
+                s.expect(try s.held(PageContract.showsTitle, on: page("untitled")), false, "the second's shows none")
+            },
             ConformanceCase("aWindowThePlatformKeepsComesBackForItsValue", proves: [
                 Covered(WindowContract.windowValue),
             ]) { s in
@@ -122,6 +164,28 @@
                 try s.perform(.bringToFront, on: first)
                 try s.settle { try s.held(VisualElementContract.isVisible, on: note) == true }
                 s.expect(try s.held(VisualElementContract.isVisible, on: note), true, "its scene in front again")
+            },
+            ConformanceCase("aWindowThatStopsHidingShowsWithItsSceneBehind", proves: [
+                Covered(WindowContract.hidesWhenInactive),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+                let hides = HidingApplication.hides
+                hides.wrappedValue = true
+                try s.start(application: { HidingApplication() })
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("no second window") }
+                try s.perform(.activate, on: s.element("another"))
+                s.settle { s.elements(ofType: SceneContract.nodeType).count == 2 }
+                guard let other = s.elements(ofType: WindowContract.nodeType)
+                    .first(where: { $0.enclosing(type: .scene) !== note.enclosing(type: .scene) })
+                else { return s.fail("no second scene") }
+                try s.perform(.bringToFront, on: other)
+                try s.settle { try s.held(VisualElementContract.isVisible, on: note) == false }
+                s.expect(try s.held(VisualElementContract.isVisible, on: note), false, "hidden: another scene in front")
+
+                hides.wrappedValue = false
+                try s.settle { try s.held(VisualElementContract.isVisible, on: note) == true }
+                s.expect(try s.held(VisualElementContract.isVisible, on: note), true, "shown once it no longer hides")
             },
         ]
     }
@@ -241,6 +305,26 @@ struct NotesScene: Scene {
     }
 }
 
+/// `NotesApplication` whose notes hide while another scene is in front as long as `hides` says so.
+struct HidingApplication: Application {
+    /// Whether the notes hide, which the case writes.
+    @MainActor static let hides = State(wrappedValue: true)
+
+    var body: some Scene {
+        HidingScene()
+        Window(NotesApplication.other) { Text("Another scene") }
+    }
+}
+
+/// `NotesScene` whose notes hide as `HidingApplication.hides` says.
+struct HidingScene: Scene {
+    var body: some Scene {
+        WindowGroup { NotesPage() }
+        WindowGroup(NotesApplication.note) { number in Text("Note \(number.wrappedValue)") }
+            .hidesWhenInactive(HidingApplication.hides.wrappedValue)
+    }
+}
+
 /// The page launch opens in `NotesApplication`, with the buttons that open note 7 and the other scene's window.
 struct NotesPage: View {
     @Environment(\.application) private var application
@@ -251,5 +335,52 @@ struct NotesPage: View {
             Button("Open").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(NotesApplication.note, value: 7) }.id("open")
             Button("Another").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(NotesApplication.other) }.id("another")
         }
+    }
+}
+
+/// Two windows: the first a split view, its detail a page showing its title and a button opening the second, whose
+/// page shows none.
+struct TitledWindowsApplication: Application {
+    /// The kind of the second window.
+    static let untitled = WindowKind<Void>("conformance.untitled")
+
+    var body: some Scene {
+        TitledWindowsScene()
+    }
+}
+
+/// The scene of `TitledWindowsApplication`.
+struct TitledWindowsScene: Scene {
+    var body: some Scene {
+        WindowGroup {
+            SplitView {
+                Text("Sidebar").pageTitle("Places")
+            } detail: {
+                TitledPage()
+            }
+        }
+        WindowGroup(TitledWindowsApplication.untitled) {
+            NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                Text("Root")
+            } destination: { _ in
+                Text("Draft").id("untitled").pageTitle("Draft").showsTitle(false)
+            }
+        }
+    }
+}
+
+/// The detail of the first window: a page showing its title, with a button opening the second window.
+struct TitledPage: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        let application = self.application
+        return VStack {
+            Text("Notes").id("titled")
+            Button("Open").onClicked(policy: .ignoreWhileRunning) {
+                try await application.openWindow(TitledWindowsApplication.untitled)
+            }.id("open")
+        }
+        .pageTitle("Notes")
     }
 }

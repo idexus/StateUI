@@ -110,6 +110,39 @@ final class GTKTextInputViewTests: XCTestCase {
         }
     }
 
+    /// An editor stated wider than GTK measures - in a scroller sideways, which bounds no width - stands, measured as
+    /// wide as GTK measures.
+    func testAnEditorWiderThanGTKMeasuresStands() {
+        onUIThread {
+            let host = GTKRenderer.running {
+                ScrollView { TextEditor(State(wrappedValue: "Words").projectedValue).width(3_000_000_000) }
+                    .axes(.horizontal)
+            }
+            host.settle { (host.views(GTKTextEditorView.self).first?.laidOutFrame.height ?? 0) > 0 }
+
+            XCTAssertGreaterThan(host.views(GTKTextEditorView.self).first?.laidOutFrame.height ?? 0, 0, "laid out")
+        }
+    }
+
+    /// An editor stated wider than GTK measures, resting on its row's first baseline, stands: its baseline is
+    /// measured as its height is.
+    func testAnEditorWiderThanGTKMeasuresRestsOnABaseline() {
+        onUIThread {
+            let host = GTKRenderer.running {
+                ScrollView {
+                    HStack {
+                        TextEditor(State(wrappedValue: "Words").projectedValue).width(3_000_000_000)
+                            .verticalAlignment(.firstBaseline)
+                    }
+                }
+                .axes(.horizontal)
+            }
+            host.settle { (host.views(GTKTextEditorView.self).first?.laidOutFrame.height ?? 0) > 0 }
+
+            XCTAssertGreaterThan(host.views(GTKTextEditorView.self).first?.laidOutFrame.height ?? 0, 0, "laid out")
+        }
+    }
+
     /// Typing stops at the most characters allowed - an emoji one character, whole or not at all - in a field and an
     /// editor alike.
     func testTypingStopsAtTheMostCharactersAllowed() throws {

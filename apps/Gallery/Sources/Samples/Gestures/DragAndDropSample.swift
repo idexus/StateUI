@@ -7,6 +7,11 @@ struct DragAndDropSample: SampleContent, ExampleContent {
     @State private var basket: [String] = []
     @State private var over = false
     @State private var finished = "nothing dragged yet"
+
+    /// Whether a drag held over the basket swaps it for a new one, and which
+    /// basket stands now.
+    @State private var swaps = false
+    @State private var basketNumber = 1
     // listing: end
 
     static let id = "dragAndDrop"
@@ -58,6 +63,11 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
             ZStack {
                 VStack {
+                    Text("Basket \(basketNumber)")
+                        .fontSize(12)
+                        .textColor(Palette.subtle)
+                        .horizontalTextAlignment(.center)
+
                     Text(over
                         ? "let go to drop it"
                         : (basket.isEmpty ? "nothing yet" : "\(basket.count) dropped"))
@@ -89,6 +99,11 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 basket.append(text.utf8.count <= 1024 ? text : "left out: longer than 1 KB")
                 over = false
             }
+            // A new basket in the old one's place: the drag goes on over it.
+            .id(basketNumber)
+
+            Switch("Swap the basket while a drag is over it", isOn: $swaps)
+                .accessibilityIdentifier("drag.swaps")
 
             Button("Empty it")
                 .horizontalAlignment(.center)
@@ -96,6 +111,13 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 .onClicked { basket = [] }
         }
         .spacing(12)
+        // A second over the basket swaps it; a drag leaving sooner cancels it.
+        .onChanged(over, policy: .cancelPrevious) {
+            guard over, swaps else { return }
+            try await Task.sleep(for: .seconds(1))
+            basketNumber += 1
+            over = false
+        }
     }
     // listing: end
 
@@ -121,6 +143,13 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             Text("`onDragEnded` is the other end: it belongs to the view that was "
                 + "dragged, beside its `dragText(_:)`, and runs when that drag ends "
                 + "wherever it ended - over the basket, or over nothing at all.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Turn on Swap and hold a word over the basket for a second: a new "
+                + "basket takes its place while the drag goes on. The old one leaves "
+                + "the drag with it, and the new one hears the drag come over it as the "
+                + "pointer next moves; let go there and the word lands in it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

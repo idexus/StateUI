@@ -119,8 +119,18 @@ final class WebDriver: HostDriver {
     }
 
     func close() {
+        if renderer?.keyboard != 0 { try? standUnderKeyboard(height: 0) }
         renderer?.finish()
         renderer = nil
+    }
+
+    /// The keyboard docked at the page's foot, told the host as a phone's browser tells it: the visible part of the
+    /// page `height` shorter than the page's own viewport, at its own scale; the next case finds none.
+    /// Design: docs/design/platforms/web/runtime.md#the-conformance-run
+    func standUnderKeyboard(height: Double) throws {
+        guard let renderer else { throw DriverCannot("stand the window under a keyboard: no page shows") }
+        let layout = WebRelay.viewport.layout
+        renderer.viewportMoved(layout: layout, top: 0, visible: layout - height, scale: 1)
     }
 
     func turn() {

@@ -18,7 +18,7 @@
     @MainActor static var written: [ConformanceCase] {
         Specimens.wearing(VisualElementContract.self).flatMap { element -> [ConformanceCase] in
             let held: [ConformanceCase] = [
-                shown(element), opacity(element), enabled(element), sized(element), bounded(element),
+                shown(element), opacity(element), enabled(element), sized(element), bounded(element), toItsMost(element),
                 reachable(element), framed(element), styled(element), layered(element),
                 headed(element),
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
@@ -50,7 +50,105 @@
                 ? [disablingItsBranch(element), directingItsChild(element)] : []
             let boxed: [ConformanceCase] = boxes.contains(element) ? [blurredOrGlass(element)] : []
             let material: [ConformanceCase] = element == "VStack" ? [followsAMaterial] : []
-            return held + answered + laidOut + boxed + boxFilled(element) + material
+            let transformed: [ConformanceCase] = element == "Rectangle"
+                ? [placedUnderATransform, reachedWhereDrawn, deafWhileFading] : []
+            return held + answered + laidOut + boxed + boxFilled(element) + material + transformed
+        }
+    }
+
+    /// A transform moves what is drawn, never the frame: a rectangle moved and sized, and one in a moved layout, say
+    /// where their layouts placed them - in their parent, and in the window at their layout's corner.
+    @MainActor
+    static var placedUnderATransform: ConformanceCase {
+        ConformanceCase("Rectangle.aTransformMovesWhatIsDrawnNotItsFrame", proves: [
+            Covered(VisualElementContract.translationX, on: "Rectangle"),
+            Covered(VisualElementContract.scale, on: "Rectangle"),
+        ], needs: [Covered(ViewContract.frameChanged, on: "Rectangle")]) { s in
+            let outer = Received<[Double]>(), moved = Received<[Double]>()
+            let held = Received<[Double]>(), inner = Received<[Double]>()
+            s.start {
+                VStack {
+                    Rectangle().fill(.red).width(40).height(20).translationX(50).scale(2)
+                        .onEvent(ViewContract.frameChanged) { moved.values.append($0) }
+                    VStack {
+                        Rectangle().fill(.blue).width(40).height(20)
+                            .onEvent(ViewContract.frameChanged) { inner.values.append($0) }
+                    }
+                    .translationX(30)
+                    .onEvent(ViewContract.frameChanged) { held.values.append($0) }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+                .onEvent(ViewContract.frameChanged) { outer.values.append($0) }
+            }
+            s.settle { [outer, moved, held, inner].allSatisfy { !$0.values.isEmpty } }
+            s.turn()
+            // A report's corner in the window: its fifth and sixth numbers.
+            @MainActor func corner(_ heard: Received<[Double]>) -> [Double] {
+                heard.values.last.map { [$0[4], $0[5]] } ?? []
+            }
+            let layout = corner(outer), place = held.values.last.map(FrameReport.place) ?? []
+
+            s.expect(moved.values.last.map(FrameReport.place), [0, 0, 40, 20], "where placed in its parent, as large")
+            s.expect(corner(moved), layout, "in the window at its layout's corner")
+            let unmoved = layout.count == 2 && place.count == 4 ? [layout[0] + place[0], layout[1] + place[1]] : []
+            s.expect(corner(inner), unmoved, "in a moved layout, where that layout stands in the window unmoved")
+        }
+    }
+
+    /// A view drawn away from where its layout placed it takes a press where it is drawn, and none where it was placed
+    /// and nothing is drawn: a point read of its laid-out rectangle, no transform in it.
+    @MainActor
+    static var reachedWhereDrawn: ConformanceCase {
+        ConformanceCase("Rectangle.takesAPressWhereItIsDrawn", proves: [
+            Covered(VisualElementContract.translationX, on: "Rectangle"),
+        ]) { s in
+            s.start {
+                VStack {
+                    Rectangle().fill(.red).width(40).height(20).translationX(60).horizontalAlignment(.start).id("moved")
+                }
+                .width(200)
+                .height(100)
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            let moved = try s.element("moved")
+            try s.settle { try s.reaches(moved, at: Point(80, 10)) }
+            s.expect(try s.reaches(moved, at: Point(80, 10)), true, "where it is drawn")
+            s.expect(try s.reaches(moved, at: Point(20, 10)), false, "where it was placed and nothing is drawn")
+        }
+    }
+
+    /// A view fading out is reached by no press while it is still drawn, so a press in the meantime goes to what
+    /// stands behind it or arrives in its place; shown again as it fades, a press reaches it again.
+    @MainActor
+    static var deafWhileFading: ConformanceCase {
+        ConformanceCase("Rectangle.answersNoPressWhileItFadesOut", proves: [
+            Covered(VisualElementContract.isVisible, on: "Rectangle"),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+            let shown = State(wrappedValue: true)
+            s.start {
+                VStack {
+                    Rectangle().fill(.red).width(80).height(40).isVisible(shown.wrappedValue)
+                        .motion(.eased(.seconds(5), curve: .linear)).id("fading")
+                    Button("Hide").onClicked { shown.wrappedValue = false }.id("hide")
+                    Button("Show").onClicked { shown.wrappedValue = true }.id("show")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            let view = try s.element("fading")
+            try s.settle { try s.reaches(view, at: Point(40, 20)) }
+            s.expect(try s.reaches(view, at: Point(40, 20)), true, "a press reaches it")
+
+            try s.perform(.activate, on: s.element("hide"))
+            try s.settle { try s.reaches(view, at: Point(40, 20)) == false }
+            s.expect(try s.held(VisualElementContract.isVisible, on: view), true, "still drawn as it fades")
+            s.expect(try s.reaches(view, at: Point(40, 20)), false, "and reached by no press")
+
+            try s.perform(.activate, on: s.element("show"))
+            try s.settle { try s.reaches(view, at: Point(40, 20)) }
+            s.expect(try s.reaches(view, at: Point(40, 20)), true, "shown again as it fades, a press reaches it")
         }
     }
 
@@ -436,6 +534,49 @@
             }
             s.expect(narrowed.values.last.map(FrameReport.size), [60, 50], "no wider than its maximum, no lower than its minimum")
             s.expect(widened.values.last.map(FrameReport.size), [50, 60], "no narrower than its minimum, no taller than its maximum")
+        }
+    }
+
+    /// A view filling its slot stops at its most in the slot's middle: across a stack 200 wide, down a grid's cell
+    /// 100 high - filling as told, whatever it does unsaid (a link stands at its words).
+    @MainActor
+    static func toItsMost(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).fillsItsSlotUpToItsMost", proves: [
+            Covered(VisualElementContract.maximumWidth, on: element),
+            Covered(VisualElementContract.maximumHeight, on: element),
+        ], needs: [
+            Covered(ViewContract.frameChanged, on: element), Covered(ViewContract.horizontalAlignment, on: element),
+            Covered(ViewContract.verticalAlignment, on: element),
+        ]) { s in
+            let across = Received<[Double]>()
+            let down = Received<[Double]>()
+            let fill: [any Worn] = [
+                Write(ViewContract.horizontalAlignment, Alignment.fill), Write(ViewContract.verticalAlignment, Alignment.fill),
+            ]
+            s.start {
+                VStack {
+                    VStack {
+                        ViewTests.reporting(element, across, fill + [
+                            Write(VisualElementContract.maximumWidth, 60), Write(VisualElementContract.height, 30),
+                        ], id: "across")
+                    }
+                    .width(200)
+                    Grid {
+                        ViewTests.reporting(element, down, fill + [
+                            Write(VisualElementContract.maximumHeight, 40), Write(VisualElementContract.width, 50),
+                        ], id: "down")
+                    }
+                    .columns(.fixed(100))
+                    .rows(.fixed(100))
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+
+            let places = { (across.values.last.map(FrameReport.place), down.values.last.map(FrameReport.place)) }
+            s.settle { places().0 == [70, 0, 60, 30] && places().1 == [25, 30, 50, 40] }
+            s.expect(places().0, [70, 0, 60, 30], "across a stack 200 wide: 60 in its middle")
+            s.expect(places().1, [25, 30, 50, 40], "down a cell 100 high: 40 in its middle")
         }
     }
 

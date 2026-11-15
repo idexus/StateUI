@@ -99,7 +99,9 @@ final class GTKCanvasView: GTKPanelView {
             pango_layout_set_font_description(layout, font)
             pango_font_description_free(font)
         }
-        pango_layout_set_width(layout, Int32(room.width * Double(PANGO_SCALE)))
+        // A box wider than Pango measures - written for words never to wrap - is as wide as it measures.
+        pango_layout_set_width(
+            layout, GeometryArithmetic.pixels(room.width, density: Double(PANGO_SCALE), rounding: .towardZero) ?? .max)
         // The edge stands as it is: Pango would swap left and right for a line reading the other way.
         pango_layout_set_auto_dir(layout, 0)
         let alignment = switch CanvasArithmetic.wordsEdge(horizontal) {

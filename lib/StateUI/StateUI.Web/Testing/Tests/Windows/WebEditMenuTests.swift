@@ -8,7 +8,7 @@ import XCTest
 
 /// A page keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection, and
 /// they act on the words the user typed into though the bar's More took the focus. The browser holds the clipboard
-/// and wants a user's click to cut, so the suite runs it in one (`test-web.sh --browser`), clicking as a mouse does.
+/// and wants a user's click to cut, so the suite runs it in one (the stateui tool's `WebSuite.inBrowser`), clicking as a mouse does.
 @MainActor
 final class WebEditMenuTests: XCTestCase {
     override func setUp() async throws {
@@ -41,6 +41,44 @@ final class WebEditMenuTests: XCTestCase {
         try choose("Undo", host)
         settle(host) { words.wrappedValue.isEmpty }
         XCTAssertEqual(words.wrappedValue, "", "the paste undone")
+        host.finish()
+    }
+
+    /// A paste the clipboard answers late lands in the field it was asked for, or nowhere: that field gone and
+    /// another focused before the answer, the other keeps its words.
+    func testALatePasteLandsInNoOtherField() throws {
+        WebRenderer.shared?.finish()
+        let shown = State(wrappedValue: true)
+        let (first, second) = (State(wrappedValue: "first"), State(wrappedValue: "second"))
+        let host = WebRenderer.running {
+            VStack {
+                if shown.wrappedValue { TextField(first.projectedValue) }
+                TextField(second.projectedValue)
+            }
+        }
+        host.step()
+        let fields = host.views(WebTextInputView.self)
+        XCTAssertEqual(fields.count, 2)
+        try click("e", on: fields[0].node, host)
+        _ = try WebBrowser.evaluate(
+            "(navigator.clipboard.readText = () => new Promise((r) => { globalThis.latePaste = r; }), '')", on: 0)
+        defer { _ = try? WebBrowser.evaluate("(delete navigator.clipboard.readText, '')", on: 0) }
+
+        WebRelay.edit(.paste)
+        shown.wrappedValue = false
+        for _ in 0..<3 { host.step() }
+        let left = try XCTUnwrap(host.views(WebTextInputView.self).first)
+        XCTAssertEqual(host.views(WebTextInputView.self).count, 1, "the first field is gone")
+        try click("e", on: left.node, host)
+        _ = try WebBrowser.evaluate("(globalThis.latePaste('pasted'), '')", on: 0)
+        for _ in 0..<10 {
+            host.step()
+            WebBrowser.pause()
+        }
+
+        XCTAssertEqual(second.wrappedValue, "second", "the other field keeps its words")
+        XCTAssertEqual(try WebBrowser.evaluate("e.value ?? e.querySelector('input, textarea').value", on: left.node),
+                       "second")
         host.finish()
     }
 

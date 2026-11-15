@@ -48,7 +48,11 @@ from `PointerPressed`, the view capturing the pointer as a `Button` does, to
 the touch - are the press taken away. The press is the first view's to hear
 it: a view around one leaves it, so a tappable row inside another answers
 alone; a control under the pointer handles its own press, which never reaches
-the view around it. Assistive technology's invoke taps at once.
+the view around it. A view that stops hearing taps - leaving the tree mid-press
+among them - lets go of the press it holds, as no release reaches it after:
+Windows names the mouse's pointer alike for every press, and a press kept
+would leave every view's tap unheard. Assistive technology's invoke taps at
+once.
 
 WinUI tells a tap, and a second tap soon after as a double tap in place of a
 tap; these count a run of taps alone. The relay counts a quick run: a tap
@@ -77,7 +81,9 @@ The relay tells the press alone - down, moved, let go, taken away - and holds
 the pointer for the view as the rule says it is a drag: from there the view holds the
 pointer, so the drag goes on outside it, and the drag is handled, so a view
 dragged inside another drags alone. It is measured on the window's content,
-where the view it moves does not move the measure. A drag says its phases -
+where the view it moves does not move the measure, and told with the same
+point in the view beside it (`pressed`), where a pan says it is. A drag says
+its phases -
 began, moved by how far since it began, ended or cancelled - and a pan's
 states move by that from where they stood as it began. Ended, it is a swipe
 by the host layer's rule ([a swipe](../../host/runtime.md#a-swipe)). A pan
@@ -136,9 +142,11 @@ act of moving the focus asking the same, and tells only a change.
 
 A view's drags are WinUI's own drag and drop, through the relay
 (`Drags.cpp`): what the view offers stands in a table by its number, and its
-handlers, hung once on each element it stands as, ask it as they run - a
-password field's new box gets them again as it takes the field's place, and
-a view offering nothing, one that left among them, is gone from the table.
+handlers, hung once on the element it stands as, ask it as they run - a
+password field's new box gets them as it takes the field's place, the old
+box's taken off. A view offering nothing, one that left among them, is gone
+from the table, its handlers taken off its element: an offer that goes and
+comes again hangs them once, so a drop is told once.
 A view that can be dragged has
 `CanDrag`; its `DragStarting` puts the view's words on the drag's data as
 text, to be copied, and its `DropCompleted` says the drag ended wherever it

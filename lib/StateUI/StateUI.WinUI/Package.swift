@@ -6,8 +6,8 @@ import PackageDescription
 // package, as the AppKit and Android Views hosts are, so the one dynamic
 // StateUI runtime is linked into the application rather than copied into a
 // second library in the same process. It builds on Windows alone:
-// .scripts/WinUI/tools.ps1 generates the C++/WinRT projection the relay
-// includes, into .projection/, and lays the Windows App SDK beside what is built.
+// the stateui tool generates the C++/WinRT projection the relay includes, into
+// .projection/, and lays the Windows App SDK beside what is built.
 let package = Package(
     name: "StateUIWinUI",
     products: [

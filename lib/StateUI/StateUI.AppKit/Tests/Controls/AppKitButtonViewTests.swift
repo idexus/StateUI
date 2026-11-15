@@ -9,8 +9,70 @@ import AppKit
 import StateUIConformance
 import XCTest
 
+/// A split button whose enablement a test turns.
+private struct SplitPage: View {
+    let enabled: State<Bool>
+
+    var body: some View {
+        Button("Save").onClicked {}.menu(.split) { MenuItem("Save as").onClicked {} }.isEnabled(enabled.projectedValue)
+    }
+}
+
 @MainActor
 final class AppKitButtonViewTests: XCTestCase {
+    /// A caption the tree wraps stands as many lines tall as its words take at a narrower width, a width stated on
+    /// the button notwithstanding; a caption on one line keeps the push button's height.
+    /// Design: docs/design/platforms/appkit/views.md#a-buttons-wrapped-caption
+    @MainActor
+    func testAWrappedCaptionStandsAsTallAsItsLines() {
+        func button(wraps: Bool) -> AppKitButtonView {
+            let button = AppKitButtonView(frame: NSRect(x: 0, y: 0, width: 100, height: 24))
+            button.apply(
+                text: "Words enough to break across more than one line", image: nil, imagePosition: .noImage,
+                imageScaling: .scaleNone, font: .systemFont(ofSize: 13), textColor: .controlTextColor, tracking: 0,
+                backgroundColor: nil, strokeColor: nil, lineWidth: 0, shape: .rectangle,
+                lineBreakMode: wraps ? .byWordWrapping : .byClipping, wraps: wraps, enabled: true)
+            button.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            return button
+        }
+        let one = button(wraps: false).fittingContentSize(width: 100)
+        let wrapped = button(wraps: true).fittingContentSize(width: 100)
+
+        XCTAssertEqual(wrapped.width, 100)
+        XCTAssertGreaterThan(wrapped.height, one.height * 2, "the wrapped caption over its lines")
+    }
+
+    /// A disabled split button opens no menu, its arrow part neither - pressed where AppKit's own hit test finds
+    /// it, or by a screen reader - and opens it again once enabled.
+    @MainActor
+    func testADisabledSplitButtonsArrowOpensNoMenu() throws {
+        var opened = 0
+        let showing = AppKitButtonView.showsMenu
+        AppKitButtonView.showsMenu = { _, _, _ in opened += 1 }
+        defer { AppKitButtonView.showsMenu = showing }
+        let enabled = State(wrappedValue: false)
+        let renderer = autoreleasepool { AppKitRenderer.running { SplitPage(enabled: enabled) } }
+        defer { renderer.finish() }
+        let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
+        button.window?.contentView?.layoutSubtreeIfNeeded()
+        func pressArrow() throws {
+            let point = NSPoint(x: button.bounds.maxX - 6, y: button.bounds.midY)
+            let hit = try XCTUnwrap(button.hitTest(button.convert(point, to: button.superview)))
+            let down = try XCTUnwrap(NSEvent.mouseEvent(
+                with: .leftMouseDown, location: button.convert(point, to: nil), modifierFlags: [], timestamp: 0,
+                windowNumber: button.window?.windowNumber ?? 0, context: nil, eventNumber: 0, clickCount: 1, pressure: 1))
+            hit.mouseDown(with: down)
+            _ = hit.accessibilityPerformPress()
+        }
+
+        try pressArrow()
+        XCTAssertEqual(opened, 0, "disabled, its arrow opens nothing")
+        enabled.wrappedValue = true
+        renderer.runtime.pump.turn()
+        try pressArrow()
+        XCTAssertGreaterThan(opened, 0, "enabled, its arrow opens its menu")
+    }
+
     @MainActor
     func testTextAndImageUseOneNativeButtonSurface() {
         let button = AppKitButtonView(frame: NSRect(x: 0, y: 0, width: 120, height: 32))
@@ -28,7 +90,7 @@ final class AppKitButtonViewTests: XCTestCase {
             strokeColor: .systemBlue,
             lineWidth: 2,
             shape: .roundedRectangle(6),
-            lineBreakMode: .byTruncatingTail,
+            lineBreakMode: .byTruncatingTail, wraps: false,
             enabled: false)
 
         XCTAssertEqual(button.title, "Save")
@@ -52,7 +114,7 @@ final class AppKitButtonViewTests: XCTestCase {
                 text: "Log out", image: NSImage(size: NSSize(width: 16, height: 16)), imagePosition: position,
                 imageScaling: .scaleProportionallyDown, font: .systemFont(ofSize: 13), textColor: .labelColor,
                 tracking: 0, backgroundColor: nil, strokeColor: nil, lineWidth: 0, shape: .rectangle,
-                lineBreakMode: .byTruncatingTail, enabled: true)
+                lineBreakMode: .byTruncatingTail, wraps: false, enabled: true)
             let cell = try XCTUnwrap(button.cell as? NSButtonCell)
             let image = cell.imageRect(forBounds: button.bounds)
             let words = cell.titleRect(forBounds: button.bounds)
@@ -77,7 +139,7 @@ final class AppKitButtonViewTests: XCTestCase {
             strokeColor: nil,
             lineWidth: 1,
             shape: .rectangle,
-            lineBreakMode: .byClipping,
+            lineBreakMode: .byClipping, wraps: false,
             enabled: true)
 
         XCTAssertEqual(button.title, "")
@@ -123,7 +185,7 @@ final class AppKitButtonViewTests: XCTestCase {
             text: "Save", image: nil, imagePosition: .noImage, imageScaling: .scaleNone,
             font: .systemFont(ofSize: 13), textColor: .labelColor, tracking: 0, backgroundColor: .systemBlue,
             strokeColor: nil,
-            lineWidth: 0, shape: .rectangle, lineBreakMode: .byTruncatingTail, enabled: true)
+            lineWidth: 0, shape: .rectangle, lineBreakMode: .byTruncatingTail, wraps: false, enabled: true)
         let alpha = { Double(button.layer?.backgroundColor?.alpha ?? 0) }
         let crossing = { (type: NSEvent.EventType) in
             try XCTUnwrap(NSEvent.enterExitEvent(
@@ -508,28 +570,6 @@ final class AppKitButtonViewTests: XCTestCase {
         let drawn = try XCTUnwrap(button.cell as? NSButtonCell).imageRect(forBounds: button.bounds)
         XCTAssertGreaterThan(button.bounds.height, image.size.height * 2, "\(button.bounds)")
         XCTAssertLessThanOrEqual(drawn.height, image.size.height + 0.5, "\(drawn) for \(image.size)")
-    }
-}
-
-/// A menu as it opens: its entries read, and closed at once as the run loop tracks it.
-@MainActor
-private final class MenuWatch: NSObject {
-    private(set) var opened: [String] = []
-
-    override init() {
-        super.init()
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(began(_:)), name: NSMenu.didBeginTrackingNotification, object: nil)
-    }
-
-    @objc private func began(_ note: Notification) {
-        guard let menu = note.object as? NSMenu else { return }
-        opened = menu.items.map(\.title)
-        menu.perform(#selector(NSMenu.cancelTracking), with: nil, afterDelay: 0, inModes: [.eventTracking])
-    }
-
-    func stop() {
-        NotificationCenter.default.removeObserver(self)
     }
 }
 

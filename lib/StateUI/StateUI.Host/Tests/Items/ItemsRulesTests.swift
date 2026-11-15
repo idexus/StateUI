@@ -135,6 +135,16 @@ final class ItemsRulesTests: XCTestCase {
         XCTAssertFalse(watch.reached(count: 0, last: -1, within: 5), "an empty list has no end")
     }
 
+    /// No item in view is no end reached, however short the list: the end is told as its last rows come into
+    /// view, and a view emptied for a moment after tells it no second time.
+    func testAViewShowingNoItemReachesNoEnd() {
+        var watch = EndReachedWatch()
+        XCTAssertFalse(watch.reached(count: 3, last: -1, within: 3), "nothing in view yet")
+        XCTAssertTrue(watch.reached(count: 3, last: 2, within: 3), "the rows came into view")
+        XCTAssertFalse(watch.reached(count: 3, last: -1, within: 3))
+        XCTAssertFalse(watch.reached(count: 3, last: 2, within: 3), "an emptied moment is no scrolling away")
+    }
+
     /// A grid holds as many columns as fit its narrowest item, one at least, the columns sharing the rest.
     func testAGridHoldsTheColumnsItsWidthFits() {
         XCTAssertEqual(ItemsGrid.columns(width: 400, minimumItemWidth: 120, spacing: 8), 3)

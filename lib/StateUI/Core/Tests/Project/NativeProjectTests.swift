@@ -170,8 +170,8 @@ final class NativeProjectTests: XCTestCase {
     }
 
     /// The Android Views host is a Swift package beside AppKit's, with its Java
-    /// layer, its tests in a package of their own and the scripts under
-    /// `.scripts/Android`; and every native method the Java layer declares is
+    /// layer, its tests in a package of their own and the script that records
+    /// its marks; and every native method the Java layer declares is
     /// one the host registers, by name - one left out is found only on a
     /// device, as an `UnsatisfiedLinkError`.
     func testTheAndroidViewsHostIsAHostPackageBesideAppKit() throws {
@@ -181,8 +181,6 @@ final class NativeProjectTests: XCTestCase {
             "\(host)/Package.swift", "\(host)/Tests/Package.swift",
             "\(host)/Tests/Platforms/Android/build.gradle.kts",
             "\(host)/Java/stateui/android/StateUIActivity.java",
-            ".scripts/Android/build-swift.sh", ".scripts/Android/run-app.sh",
-            ".scripts/Android/test-android.sh", ".scripts/Android/devices.sh",
         ] {
             XCTAssertTrue(
                 FileManager.default.fileExists(atPath: repository.appendingPathComponent(relative).path),
@@ -205,7 +203,7 @@ final class NativeProjectTests: XCTestCase {
     }
 
     /// The WinUI 3 host is a Swift package beside the others, with its C++/WinRT
-    /// relay as a C++ target of its own and its scripts under `.scripts/WinUI`;
+    /// relay as a C++ target of its own;
     /// and every function the relay's header declares is one the relay defines -
     /// a declaration with nothing behind it is found only when a head links.
     func testTheWinUIHostIsAHostPackageBesideTheOthers() throws {
@@ -214,7 +212,6 @@ final class NativeProjectTests: XCTestCase {
         let relay = "\(host)/Sources/CStateUIWinUI"
         for relative in [
             "\(host)/Package.swift", "\(relay)/include/CStateUIWinUI.h",
-            ".scripts/WinUI/tools.ps1", ".scripts/WinUI/run-app.ps1", ".scripts/WinUI/test-winui.ps1",
         ] {
             XCTAssertTrue(
                 FileManager.default.fileExists(atPath: repository.appendingPathComponent(relative).path),
@@ -349,19 +346,6 @@ final class NativeProjectTests: XCTestCase {
         return found
     }
 
-    /// No WinUI script writes into an executable a build linked: the next build would link it again, however
-    /// little changed. The Windows App SDK's manifest stands beside each one.
-    func testTheWinUIScriptsLeaveWhatABuildLinked() throws {
-        let scripts = SourceTree.repository.appendingPathComponent(".scripts/WinUI")
-        let tools = try String(contentsOf: scripts.appendingPathComponent("tools.ps1"), encoding: .utf8)
-        XCTAssertTrue(tools.contains(#"WriteAllText("$executable.manifest""#), "the manifest stands beside each executable")
-
-        for name in try FileManager.default.contentsOfDirectory(atPath: scripts.path) where name.hasSuffix(".ps1") {
-            let text = try String(contentsOf: scripts.appendingPathComponent(name), encoding: .utf8)
-            XCTAssertFalse(text.contains("-outputresource"), "\(name) writes into an executable")
-        }
-    }
-
     /// A WinRT object a WinUI relay keeps for the process beside WinUI is made with `new` and never destroyed: a
     /// static one is destroyed as the process exits, after WinUI is gone, and Windows ends the process there (a
     /// display watcher did, `RaiseFailFastException` in Microsoft.UI.Windowing.dll on every window's close). The
@@ -393,19 +377,14 @@ final class NativeProjectTests: XCTestCase {
         "WindowsXamlManager::InitializeForCurrentThread",
     ]
 
-    /// What a backend's engine needs beside a WinUI application is the backend's to lay there, and only beside an
-    /// application linking it: the host's scripts name no file of WebView2's, and the web view's backend lays them
-    /// where its library stands.
-    func testAWinUIBackendLaysItsOwnFilesBesideTheApplication() throws {
+    /// What a backend's engine needs beside a WinUI application is the backend's to declare, and only an
+    /// application linking it gets it: the web view's backend declares WebView2's files in its
+    /// `Packaging/runtime.txt`, which the stateui tool lays.
+    func testAWinUIBackendDeclaresItsOwnFilesBesideTheApplication() throws {
         let repository = SourceTree.repository
-        let tools = try String(contentsOf: repository.appendingPathComponent(".scripts/WinUI/tools.ps1"), encoding: .utf8)
-        for file in ["Microsoft.Web.WebView2.Core.dll", "WebView2Loader.dll"] {
-            XCTAssertFalse(tools.contains(file), "tools.ps1 lays \(file) beside every application")
-        }
-        let backend = repository.appendingPathComponent("lib/Backends/WebView.WinUI/SelfContained.ps1")
-        let text = (try? String(contentsOf: backend, encoding: .utf8)) ?? ""
-        XCTAssertTrue(text.contains("StateUIWebViewWinUI.dll"), "the backend lays nothing, or beside every application")
-        XCTAssertTrue(text.contains("WebView2Loader.dll"), "the backend lays no loader")
+        let declaration = repository.appendingPathComponent("lib/Backends/WebView.WinUI/Packaging/runtime.txt")
+        let text = (try? String(contentsOf: declaration, encoding: .utf8)) ?? ""
+        XCTAssertTrue(text.contains("WebView2Loader.dll"), "the web view's backend declares no loader")
     }
 
     /// Every WINUI HEAD is an executable its application declares exactly when a
@@ -502,12 +481,12 @@ final class NativeProjectTests: XCTestCase {
     /// The GTK 4 host is a Swift package beside the others, Swift alone over GTK's C API: its C modules are
     /// the system's headers and nothing else - each a module map and one header: one including libadwaita's and
     /// GLib's watch of a file descriptor, and naming GLib's flags, each under a name of the host's, the other
-    /// libsoup's - and its scripts stand under `.scripts/GTK`.
+    /// libsoup's.
     func testTheGTKHostIsSwiftAloneOverGTKsCAPI() throws {
         let repository = SourceTree.repository
         let host = "lib/StateUI/StateUI.GTK"
         let module = "\(host)/Sources/CStateUIGTK"
-        for relative in ["\(host)/Package.swift", ".scripts/GTK/run-app.sh"] {
+        for relative in ["\(host)/Package.swift"] {
             XCTAssertTrue(
                 FileManager.default.fileExists(atPath: repository.appendingPathComponent(relative).path),
                 "missing \(relative)")
@@ -708,47 +687,9 @@ final class NativeProjectTests: XCTestCase {
             }
         }
 
-        for relative in [
-            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/AppKit/run-app.sh", ".scripts/AppKit/deploy.sh",
-            ".scripts/test-native.sh",
-        ] {
-            let commands = try text(relative)
-                .replacingOccurrences(of: "\\\n", with: " ")
-                .components(separatedBy: "\n")
-                .map { $0.trimmingCharacters(in: .whitespaces) }
-                .filter { Self.runsSwift($0) }
-
-            for command in commands {
-                XCTAssertFalse(
-                    command.contains("-DAPPKIT"),
-                    "\(relative) still gives -DAPPKIT, which the manifest now defines: \(command)")
-            }
-        }
-
         XCTAssertFalse(
             try text(".vscode/tasks.json").contains("\"-DAPPKIT\""),
             ".vscode/tasks.json still gives -DAPPKIT, which the manifest now defines")
-    }
-
-    /// Whether a line RUNS SwiftPM, read past any variables it sets first.
-    ///
-    /// An AppKit head needs one set - see the test below - and a command that
-    /// sets it inline is still that command, so the name is looked for after
-    /// each leading `NAME=value`. Without this, prefixing a command would drop
-    /// it out of the list above and the guard would stop asking anything of it.
-    private static func runsSwift(_ line: String) -> Bool {
-        var rest = line
-
-        while let space = rest.firstIndex(of: " ") {
-            let first = String(rest[rest.startIndex..<space])
-
-            guard first.contains("="), !first.contains("/"), !first.contains("\"") else { break }
-
-            rest = String(rest[rest.index(after: space)...]).trimmingCharacters(in: .whitespaces)
-        }
-
-        return rest.hasPrefix("swift build") || rest.hasPrefix("swift run")
-            || rest.contains("$(swift build")
     }
 
     /// Every build of an application's AppKit head TELLS ITS MANIFEST there is
@@ -768,28 +709,16 @@ final class NativeProjectTests: XCTestCase {
             try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
         }
 
-        for relative in [
-            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/AppKit/run-app.sh", ".scripts/AppKit/deploy.sh",
-            ".scripts/test-native.sh",
-        ] {
-            XCTAssertTrue(
-                try text(relative).contains("STATEUI_HOST=appkit"),
-                "\(relative) builds an AppKit head without telling the manifest there is one")
-        }
-
-        // A task sets it in the environment it runs the build in.
-        let tasks = try text(".vscode/tasks.json").components(separatedBy: "\"label\"").filter { task in
-            let lines = task.components(separatedBy: "\n").map { $0.trimmingCharacters(in: .whitespaces) }
-            guard let product = lines.firstIndex(of: "\"--product\","), product + 1 < lines.count
-            else { return false }
-            return lines[product + 1].hasSuffix("AppKit\"")
-        }
+        // The stateui tool's AppKit builds and tests set it too: ApplicationBuilderTests and TestRunnerTests.
+        // A task builds an AppKit head through the tool, which names the host - or sets it where it runs SwiftPM.
+        let tasks = try text(".vscode/tasks.json").components(separatedBy: "\"label\"").filter { $0.contains("(AppKit,") }
 
         XCTAssertFalse(tasks.isEmpty, ".vscode/tasks.json builds no AppKit head")
 
         for task in tasks {
             XCTAssertTrue(
-                task.contains("\"STATEUI_HOST\": \"appkit\""),
+                (task.contains("\"command\": \"stateui\"") && task.contains("\"--host\", \"appkit\""))
+                    || task.contains("\"STATEUI_HOST\": \"appkit\""),
                 ".vscode/tasks.json builds an AppKit head without telling the manifest there is one")
         }
     }
@@ -846,47 +775,6 @@ final class NativeProjectTests: XCTestCase {
         }
 
         XCTAssertGreaterThan(heads, 0, "no Android head found")
-        let tools = try String(
-            contentsOf: SourceTree.repository.appendingPathComponent(".scripts/Android/tools.sh"), encoding: .utf8)
-        XCTAssertTrue(
-            tools.contains("draw-app-icon") && tools.contains("-Pstateui.res="),
-            "an Android head is built without its icon being drawn")
-    }
-
-    /// The Android scripts' shared tools find the checkout they stand in by themselves: a script sourcing them from
-    /// anywhere, strict about names never set, sets nothing first.
-    func testTheAndroidToolsFindTheirCheckoutThemselves() throws {
-        let bash = URL(fileURLWithPath: "/bin/bash")
-        guard FileManager.default.fileExists(atPath: bash.path) else {
-            throw XCTSkip("no /bin/bash here; an Android head is built on macOS and Linux.")
-        }
-        let sdk = FileManager.default.temporaryDirectory.appendingPathComponent("NativeProjectTests-\(UUID().uuidString)")
-        let aapt2 = sdk.appendingPathComponent("build-tools/1.0.0/aapt2")
-        try FileManager.default.createDirectory(
-            at: sdk.appendingPathComponent("platform-tools"), withIntermediateDirectories: true)
-        try FileManager.default.createDirectory(at: aapt2.deletingLastPathComponent(), withIntermediateDirectories: true)
-        try Data().write(to: aapt2)
-        defer { try? FileManager.default.removeItem(at: sdk) }
-
-        let process = Process()
-        process.executableURL = bash
-        process.arguments = [
-            "-c", #"set -euo pipefail; source "$0"; echo "$repository_dir""#,
-            SourceTree.repository.appendingPathComponent(".scripts/Android/tools.sh").path,
-        ]
-        process.environment = ["ANDROID_HOME": sdk.path, "HOME": sdk.path, "PATH": "/usr/bin:/bin"]
-        process.currentDirectoryURL = sdk
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = pipe
-        try process.run()
-        let output = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-        process.waitUntilExit()
-
-        XCTAssertEqual(process.terminationStatus, 0, output)
-        XCTAssertEqual(
-            URL(fileURLWithPath: output.trimmingCharacters(in: .newlines)).resolvingSymlinksInPath(),
-            SourceTree.repository.resolvingSymlinksInPath())
     }
 
     /// Every Android head may read the network: the host reports it to the application's views, and a head
@@ -937,19 +825,8 @@ final class NativeProjectTests: XCTestCase {
                 "\(relative)/\(icon) is not on macOS's icon grid: an 824 body, 100 in, on a 1024 canvas")
         }
 
+        // Every bundle's .icns is drawn from this artwork and carries the pictures: AppKitBundleTests prove it.
         XCTAssertGreaterThan(heads, 1, "no AppKit head found")
-        XCTAssertTrue(
-            try String(
-                contentsOf: SourceTree.repository.appendingPathComponent(".scripts/AppKit/build-gallery-appkit.sh"),
-                encoding: .utf8
-            ).contains("Resources/AppIcon/appicon_macos.svg"),
-            "the Gallery's bundle makes its .icns from artwork off macOS's icon grid")
-        for script in [".scripts/AppKit/run-app.sh", ".scripts/AppKit/deploy.sh"] {
-            XCTAssertTrue(
-                try String(contentsOf: SourceTree.repository.appendingPathComponent(script), encoding: .utf8)
-                    .contains("for artwork in Images AppIcon"),
-                "\(script) lays no artwork beside the program it builds")
-        }
     }
 
     /// Every application's GTK head has its icon on GNOME's icon grid, which the run script installs, with the
@@ -976,11 +853,6 @@ final class NativeProjectTests: XCTestCase {
         }
 
         XCTAssertGreaterThan(heads, 1, "no GTK head found")
-        let script = try String(
-            contentsOf: SourceTree.repository.appendingPathComponent(".scripts/GTK/run-app.sh"), encoding: .utf8)
-        for installed in ["appicon_gnome.svg", "/apps/$application_id.svg", "Icon=$application_id"] {
-            XCTAssertTrue(script.contains(installed), "the GTK run script does not install \(installed)")
-        }
     }
 
     func testGalleryOwnsItsAcceptanceTests() {

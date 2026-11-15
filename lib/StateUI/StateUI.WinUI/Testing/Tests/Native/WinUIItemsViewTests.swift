@@ -41,6 +41,46 @@ final class WinUIItemsViewTests: XCTestCase {
         }
     }
 
+    /// A row's scroller views the whole height the row stands in: its scroll bar lies over the items, taking none
+    /// of their room. Where it does not, the failure says what the scroller holds - its viewport, the list's size,
+    /// the bar's visibility as asked and as computed, whether the system hides bars by itself, and the scale.
+    func testARowsScrollerViewsItsWholeHeight() throws {
+        try onUIThread {
+            let driver = WinUIDriver()
+            defer { driver.close() }
+            _ = driver.start(clock: nil, reducesMotion: true) {
+                VStack {
+                    ItemsView(0..<1_000) { Text("Item \($0)").padding(12) }.itemsLayout(.row(spacing: 8)).width(300).height(60)
+                }
+            }
+            let host = try XCTUnwrap(driver.renderer)
+            let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
+            host.settle { !host.views(WinUITextView.self).isEmpty }
+            var state = [Double](repeating: 0, count: 8)
+            stateui_winui_items_scroller_state(list.list.handle, &state)
+            let said = "viewport \(state[0]) x \(state[1]), list \(state[2]) x \(state[3]), bar asked \(state[4]) computed "
+                + "\(state[5]), system hides bars \(state[6]), scale \(state[7])"
+            XCTAssertEqual(state[1], 60, accuracy: 0.5, said)
+        }
+    }
+
+    /// A list of items alike is as long as its items once laid out: no cell is measured in a room the list never
+    /// stood in, which WinUI's estimate of its extent would keep - at any scale.
+    func testAListOfItemsAlikeIsAsLongAsItsItems() throws {
+        try onUIThread {
+            let driver = WinUIDriver()
+            defer { driver.close() }
+            _ = driver.start(clock: nil, reducesMotion: true) {
+                ItemsView(0..<1_000) { Text("Item \($0)").padding(12) }.height(300)
+            }
+            let host = try XCTUnwrap(driver.renderer)
+            let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
+            host.settle { list.standing.reach.y > 0 }
+            let item = try XCTUnwrap(host.views(WinUITextView.self).first).laidOutFrame.height
+            XCTAssertEqual(list.standing.reach.y + 300, 1_000 * item, accuracy: 0.01, "as long as its items")
+        }
+    }
+
     /// Narrator reads a row by its container's name alone: each row is named by what its item says, and named again
     /// as that changes.
     func testARowIsNamedByWhatItsItemSays() throws {

@@ -32,15 +32,23 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
     private let offered = NSMenu()
 
     /// The arrow its menu opens by: a mark after the words, or a split button's part; nil for none.
-    private var arrow: AppKitButtonArrow?
+    private var arrow: AppKitButtonArrow? {
+        didSet { arrow?.enable(isEnabled) }
+    }
 
-    /// How long a held button waits before it opens its menu, in seconds.
-    private static let holdDelay = 0.5
+    /// Whether the button takes the user's press - its arrow's part with it.
+    override var isEnabled: Bool {
+        didSet { arrow?.enable(isEnabled) }
+    }
 
     /// The words the tree gives, those shown before them, and those shown now.
     private var words = NSAttributedString()
     private var formerWords: NSAttributedString?
     private var shownWords: NSAttributedString?
+
+    /// Whether the tree says the caption wraps, which stands it on as many lines as the width offered takes.
+    /// Design: docs/design/platforms/appkit/views.md#a-buttons-wrapped-caption
+    private(set) var captionWraps = false
 
     /// The size of new words the button holds back while its box grows to hold them, its former ones shown; nil
     /// shows the tree's and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
@@ -115,12 +123,17 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         lineWidth: Double,
         shape: ContainerShape,
         lineBreakMode: NSLineBreakMode,
+        wraps: Bool,
         enabled: Bool
     ) {
         self.image = Self.picture(image, in: textColor)
         self.font = font
         isEnabled = enabled
         cell?.lineBreakMode = lineBreakMode
+        if captionWraps != wraps {
+            captionWraps = wraps
+            invalidateMeasurements()
+        }
         let former = words
         words = NSAttributedString(
             string: text, attributes: [.font: font, .foregroundColor: textColor, .kern: tracking])
@@ -264,10 +277,17 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
     /// Whether the button shows the arrow saying its click opens its menu.
     var showsMenuMark: Bool { arrow.map { $0.line == nil } ?? false }
 
-    /// Opens the menu under the button, at least as wide, as AppKit's own pull-down button opens its.
+    /// Opens the menu under the button, at least as wide, as AppKit's own pull-down button opens its - none while
+    /// the button is disabled, whichever part was pressed.
     func showMenu() {
+        guard isEnabled else { return }
         offered.minimumWidth = bounds.width
-        offered.popUp(positioning: nil, at: NSPoint(x: 0, y: isFlipped ? bounds.maxY + 2 : bounds.minY - 2), in: self)
+        Self.showsMenu(offered, NSPoint(x: 0, y: isFlipped ? bounds.maxY + 2 : bounds.minY - 2), self)
+    }
+
+    /// How a button's menu is shown: AppKit's own pop-up, which a test replaces to count what opens.
+    static var showsMenu: @MainActor (NSMenu, NSPoint, NSView) -> Void = { menu, point, view in
+        menu.popUp(positioning: nil, at: point, in: view)
     }
 
     override func updateTrackingAreas() {
@@ -312,20 +332,14 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         highlight(false)
     }
 
-    /// A held button: let go before the hold's delay, its click; held past it, its menu opens, the press going on
-    /// into it. AppKit's own tracking reads the press's events.
+    /// A held button: let go before the hold's delay, its click; held past it, its menu opens (`AppKitHeldPress`).
     private func held() {
-        guard let window else { return }
-        let until = Date(timeIntervalSinceNow: Self.holdDelay)
         pressed {
-            var letGo: NSEvent?
-            while letGo == nil,
-                  let next = window.nextEvent(
-                    matching: [.leftMouseUp, .leftMouseDragged], until: until, inMode: .eventTracking, dequeue: true) {
-                if next.type == .leftMouseUp { letGo = next }
+            switch AppKitHeldPress.follow(on: self) {
+            case .click: onClicked?()
+            case .held: showMenu()
+            case .away: break
             }
-            guard let letGo else { return showMenu() }
-            if drawnPoint(fromWindow: letGo.locationInWindow).map(bounds.contains) == true { onClicked?() }
         }
     }
 

@@ -81,6 +81,14 @@ clears its color and outline, so the scroller puts them back each time it
 updates its layer. An oval scroller's outline is a shape layer over what it
 shows: under the oval's mask a layer's border would show only as slivers.
 
+## A page's background
+
+A page's view, or a popover's, paints its background as a layout's plain box
+does: a color is its layer's background color, with no backing store; a
+gradient makes the view draw it across its whole bounds, its layer clear, so
+what stands under it shows through a stop that lets it. A blur or glass shows
+its color (`HostMaterial.painted`).
+
 ## The same box again
 
 A layout takes its box - background, outline, shape, cut - each time the
@@ -203,6 +211,16 @@ flexible push button's, which is as tall as it is placed: the push button's
 keeps one height, and a square button of a picture would stand as a short
 wide one.
 
+## A button's wrapped caption
+
+A caption that wraps stands as many lines tall as its words take at the width
+the layout offers. AppKit measures a button by its one line, so a caption that
+wraps and is wider than the offer is measured at it in the flexible push
+button's cell, its padding and its menu's arrow kept
+(`AppKitWidthConstrainedMeasuring`); placed taller, the button stands in that
+bezel ([a button's padding](#a-buttons-padding)). The push button's own bezel
+holds one line.
+
 ## A button's role
 
 A role draws where the tree draws nothing of its own ([a button's
@@ -223,7 +241,9 @@ opened under it, at least as wide, as a pull-down opens its:
   button pressed while it is open, and an arrow pointing down stands just
   after the words; the button is a menu button to assistive technology;
 - a split button's arrow is a part of its own at its trailing edge, the whole
-  height, set off by a line, opening the menu as it is pressed;
+  height, set off by a line, opening the menu as it is pressed - enabled as its
+  button is, and the menu opening for no part of a disabled button, however
+  pressed;
 - a held button is let go before half a second for its click, and held past
   it opens its menu, the press going on into it - AppKit's own event tracking
   reads the press, with no timer.

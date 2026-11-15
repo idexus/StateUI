@@ -3,7 +3,7 @@ import PackageDescription
 
 // The UIKit host's tests. A view stands in a window scene only in an application's process, so the tests are an
 // application of their own, run on the main thread once its first scene connects.
-// .scripts/UIKit/test-uikit.sh builds, installs and runs it on a simulator.
+// `stateui repo test --suite host:uikit` builds, installs and runs it on a simulator.
 let package = Package(
     name: "StateUIUIKitTests",
     platforms: [.iOS("26.4")],

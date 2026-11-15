@@ -16,8 +16,20 @@ extension WinUIElement: FrameReporter {
     /// a split view, where its sidebar stands too.
     func reportFrame() {
         guard let host, let view, view.isLaidOut else { return }
-        element.reportFrame(view.frameReport(safeArea: host.safeAreaOrigin(of: element)), in: host.runtime)
+        let report = view.frameReport(corner: windowCorner ?? view.origin, safeArea: host.safeAreaOrigin(of: element))
+        element.reportFrame(report, in: host.runtime)
         if let split = view as? WinUISplitView { element.reportSidebarOverlays(split.overlays, in: host.runtime) }
+    }
+}
+
+extension WinUIElement {
+    /// Where the top left corner of the view's laid-out rectangle stands in its window, no transform in it.
+    /// Design: docs/design/host/runtime.md#a-corner-in-the-window
+    var windowCorner: Point? {
+        element.cornerInWindow(
+            toolkit: { ($0.native as? WinUIElement)?.view?.origin },
+            place: { ($0.native as? WinUIElement)?.view.map { Point(x: $0.placedFrame.x, y: $0.placedFrame.y) } },
+            scrolled: { (($0.native as? WinUIElement)?.view as? WinUIScrollView)?.offset ?? .zero })
     }
 }
 

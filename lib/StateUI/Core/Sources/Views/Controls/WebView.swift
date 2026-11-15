@@ -19,8 +19,7 @@ extension WebViewProperties {
 ///
 ///     WebView("https://example.com")
 ///
-///     WebView()
-///         .source(html: "<h1>Hello</h1>")
+///     WebView(html: "<h1>Hello</h1>")
 ///
 /// The web content scrolls itself, so give it room of its own - a Grid row, or
 /// a page without a scroller - rather than a place inside a ScrollView.
@@ -230,7 +229,7 @@ public struct WebNavigated: Equatable, Sendable {
 /// What a web view shows: a page fetched from an address, or a document
 /// written here.
 ///
-///     WebView().source(html: "<h1>Offline</h1>")
+///     WebView(html: "<h1>Offline</h1>")
 public enum WebViewSource: Equatable, Sendable, HostRepresentable {
     /// A page fetched from an address.
     case address(String)

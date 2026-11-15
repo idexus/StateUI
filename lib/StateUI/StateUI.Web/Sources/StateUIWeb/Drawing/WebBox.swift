@@ -50,7 +50,7 @@ struct WebBox: Equatable {
                 : isDrawn ? borderless : nil
             let behind = HostBrush(fill).isGradient ? WebBrush.image(fill, size: size) : WebCSS.fill(fill)
             guard let material, let thickness = material.blur else {
-                return [("background", behind), ("border", border), corners]
+                return [("background", behind), ("border", border), corners] + Self.unblurred
             }
             // The tint lies over the blur's color, and both over the blur of what lies behind.
             let over = HostBrush(fill).isGradient ? behind : behind.map { "linear-gradient(\($0), \($0))" }
@@ -63,6 +63,9 @@ struct WebBox: Equatable {
         let inside = WebBrush.image(fill, size: size) ?? "linear-gradient(transparent, transparent)"
         let outline = WebBrush.image(stroke, size: size) ?? "none"
         return [("background", "\(inside) padding-box, \(outline) border-box"),
-                ("border", "\(WebCSS.pixels(width)!) solid transparent"), corners]
+                ("border", "\(WebCSS.pixels(width)!) solid transparent"), corners] + Self.unblurred
     }
+
+    /// What a look blurring nothing says of a blur, so one said before goes.
+    private static let unblurred: [(String, String?)] = [("backdrop-filter", nil), ("-webkit-backdrop-filter", nil)]
 }

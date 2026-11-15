@@ -141,10 +141,10 @@ final class StateUIHost {
     static native void gestured(long view, int kind, int phase, float x, float y, float z);
 
     /**
-     * A press on a view - down, moved, let go or taken away - at a point of the screen in points; whether it is a
-     * drag now, by the host layer's rule, which then takes the rest of the touch.
+     * A press on a view - down, moved, let go or taken away - at a point of the screen in points, and at the same
+     * point of the view; whether it is a drag now, by the host layer's rule, which then takes the rest of the touch.
      */
-    static native boolean pressed(long view, int phase, float x, float y);
+    static native boolean pressed(long view, int phase, float x, float y, float inViewX, float inViewY);
 
     /**
      * A finger on a layout a hand moves - down, moved, let go or taken away - where it stands on the screen and in

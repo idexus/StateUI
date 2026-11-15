@@ -255,12 +255,13 @@ final class AndroidTextFieldView: AndroidTextualView {
     }
 
     /// Lets the user only read and select the words, or edit them again: a field read only takes no key and raises
-    /// no keyboard.
+    /// no keyboard. Its kind of input set again, its face is given again, as Android draws a password's in its own.
     func setReadOnly(_ readOnly: Bool) {
         guard readOnly != isReadOnly else { return }
 
         isReadOnly = readOnly
         applyInputType()
+        applyTypeface()
     }
 
     /// Gives the field its kind of input - which also gives it the key listener that kind edits with - and takes

@@ -7,7 +7,7 @@ import XCTest
 
 /// The tab names the page the user sees beside the site's name the page's head gives - its `application-name` - and
 /// names it as the page alone where the head gives none. The head and the tab are the browser's page, so the suite
-/// runs it in a browser (`test-web.sh --browser`).
+/// runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebTabTitleTests: XCTestCase {
     override func setUp() async throws {

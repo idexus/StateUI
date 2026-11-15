@@ -1,9 +1,4 @@
-# revision 6.2
-NavigationStack.linkOpened: ✓ openLink on NavigationStack: the relay's report of an activation told the driver's address, no activation
+# revision 7.2
 NavigationStack.title: ✅
-Page.linkOpened: ✓ openLink on Page: the relay's report of an activation told the driver's address, no activation
 Page.title: ✅
-SplitView.linkOpened: ✓ openLink on SplitView: the relay's report of an activation told the driver's address, no activation
-SplitView.title: ✅
-TabView.linkOpened: ✓ openLink on TabView: the relay's report of an activation told the driver's address, no activation
 TabView.title: ✅

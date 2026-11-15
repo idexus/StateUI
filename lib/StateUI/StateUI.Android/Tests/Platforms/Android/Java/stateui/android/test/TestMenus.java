@@ -33,6 +33,25 @@ import java.util.List;
 public final class TestMenus {
     private TestMenus() {}
 
+    /** Whether the context menu the driver opened stands open: until Android closes it. */
+    private static boolean contextMenuOpen;
+
+    /** Opens `view`'s context menu as a press held asks Android for it; whether it showed. */
+    public static boolean showContextMenu(View view) {
+        contextMenuOpen = view.showContextMenu();
+        return contextMenuOpen;
+    }
+
+    /** Whether the context menu the driver opened stands open. */
+    public static boolean contextMenuOpen() {
+        return contextMenuOpen;
+    }
+
+    /** Android closed the context menu. */
+    static void contextMenuClosed() {
+        contextMenuOpen = false;
+    }
+
     /** The layer a button's foreground draws the arrow after its words in: StateUIViews' MARK_LAYER. */
     private static final int MARK_LAYER = 2;
 
@@ -252,6 +271,23 @@ public final class TestMenus {
     }
 
     /**
+     * The color the bar's title stands in and the one its overflow's picture is drawn in, at its middle:
+     * "title #..., overflow #...".
+     */
+    public static String foreground(android.widget.Toolbar bar) {
+        String title = "none";
+        for (int index = 0; index < bar.getChildCount(); index++) {
+            View child = bar.getChildAt(index);
+            if (child instanceof TextView && bar.getTitle() != null
+                    && ((TextView) child).getText().toString().contentEquals(bar.getTitle())) {
+                title = Integer.toHexString(((TextView) child).getCurrentTextColor());
+            }
+        }
+        Drawable overflow = bar.getOverflowIcon();
+        return "title #" + title + ", overflow #" + (overflow == null ? "none" : Integer.toHexString(middle(overflow)));
+    }
+
+    /**
      * The bar's entries as it lays them out, a line each in its menu's order: its id, its group, whether it stands
      * on the bar as an action, whether its words show there, and whether it can be chosen - numbers, spaces between.
      */
@@ -268,12 +304,10 @@ public final class TestMenus {
         for (int index = 0; index < menu.size(); index++) {
             MenuItem item = menu.getItem(index);
             if (!item.isVisible()) continue;
-            String title = String.valueOf(item.getTitle());
+            // The view of the bar an item stands as takes the item's id: words alike tell two items apart nowhere.
             TextView action = null;
             for (TextView each : actions) {
-                if (title.equals(String.valueOf(each.getText())) || title.equals(String.valueOf(each.getContentDescription()))) {
-                    action = each;
-                }
+                if (each.getId() == item.getItemId()) action = each;
             }
             lines.append(item.getItemId()).append(' ').append(item.getGroupId()).append(' ')
                     .append(action != null ? 1 : 0).append(' ').append(action != null && action.getText().length() > 0 ? 1 : 0)

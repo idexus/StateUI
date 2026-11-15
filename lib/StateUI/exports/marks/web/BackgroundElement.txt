@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Button.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Canvas.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Capsule.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.

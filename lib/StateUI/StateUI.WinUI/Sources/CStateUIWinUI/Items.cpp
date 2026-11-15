@@ -9,6 +9,7 @@
 
 #include "Relay.h"
 
+#include <winrt/Windows.UI.ViewManagement.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
 #include <winrt/Microsoft.UI.Xaml.Automation.Peers.h>
 #include <winrt/Microsoft.UI.Xaml.Automation.Provider.h>
@@ -496,6 +497,25 @@ extern "C" void stateui_winui_items_move_to(StateUIObjectRef handle, double x, d
         scroller.ScrollTo(x, y, controls::ScrollingScrollOptions(controls::ScrollingAnimationMode::Disabled));
     } catch (...) {
         report("moving an ItemsView's view");
+    }
+}
+
+extern "C" void stateui_winui_items_scroller_state(StateUIObjectRef handle, double *state) {
+    for (int index = 0; index < 8; ++index) state[index] = -1;
+    try {
+        auto list = borrow<controls::ItemsView>(handle);
+        auto scroller = list.ScrollView();
+        if (!scroller) return;
+        state[0] = scroller.ViewportWidth();
+        state[1] = scroller.ViewportHeight();
+        state[2] = list.ActualWidth();
+        state[3] = list.ActualHeight();
+        state[4] = static_cast<double>(scroller.HorizontalScrollBarVisibility());
+        state[5] = static_cast<double>(scroller.ComputedHorizontalScrollBarVisibility());
+        state[6] = winrt::Windows::UI::ViewManagement::UISettings().AutoHideScrollBars() ? 1 : 0;
+        state[7] = list.XamlRoot() ? list.XamlRoot().RasterizationScale() : 0;
+    } catch (...) {
+        report("reading an ItemsView's scroller");
     }
 }
 

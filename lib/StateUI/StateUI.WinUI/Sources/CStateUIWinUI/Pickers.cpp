@@ -88,6 +88,15 @@ extern "C" void stateui_winui_picker_set_options(StateUIObjectRef handle, char c
     }
 }
 
+extern "C" void stateui_winui_choices_let_go(StateUIObjectRef handle) {
+    try {
+        // Design: docs/design/platforms/winui/controls.md#a-row-that-left
+        if (auto bar = choicesOf(handle).try_as<controls::SelectorBar>()) bar.Items().Clear();
+    } catch (...) {
+        report("letting go of a row's items");
+    }
+}
+
 extern "C" void stateui_winui_picker_set(StateUIObjectRef handle, int32_t selected, bool writeSelected, char const *title) {
     try {
         auto object = choicesOf(handle);

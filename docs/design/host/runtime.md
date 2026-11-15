@@ -271,7 +271,10 @@ A scroller or a list offers the platform's pull where it hears it - a handler
 of `refreshRequested`, or a state `isRefreshing` the pull writes into - unless
 it says `isRefreshEnabled(false)`: its view is given that offer as
 `isRefreshEnabled` (`MountedElement.presented`), told again whenever what
-hears the pull changes, whatever road the handler came by. The pull is a
+hears the pull changes, whatever road the handler came by. A view the tree
+disables, or one in a branch it disables, offers none - a disabled view takes
+no input, and a platform's pull wrapper heeds its own switch alone - and is
+told the offer again as its enablement turns (`followingEnablement`). The pull is a
 user's change with nothing to carry to the handler
 (`MountedElement.reportRefreshRequested`): `isRefreshing` true onto the state
 carrying it, then `refreshRequested`. The spinner the platform shows as the
@@ -418,6 +421,22 @@ narrow the page again within the pass, whose report would step it on again -
 the whole slide run out in one frame, the screen standing still until it
 rests.
 
+
+## A corner in the window
+
+A frame report's corner in the window - `.global`, and `.safeArea` from it -
+is where the element's laid-out rectangle stands, no transform in it, as its
+place in its parent is: a transform moves what is drawn, never the frame. A
+toolkit's conversion to the window carries the transforms of the view and of
+every view above it on most hosts, so the rule is the host layer's
+(`MountedElement.cornerInWindow`): where no transform stands on the element
+or a layout above it, the toolkit's own corner, exact under bars, insets and
+scrolls; else the corner of the layout placing it, its place there added and
+that layout's scroll taken away, down from the nearest layout under no
+transform. A host hands it its toolkit's corner, an element's place and a
+scroller's offset (`windowCorner`), and its driver reads a press's point from
+that corner (`HostDriver.reaches`). AppKit's conversion carries no layer
+transform, so its own corner is the rule's answer and AppKit reads it alone.
 ## A scroller's movement
 
 The scrolling is the platform's: a drag, a throw, a wheel and a key move a
@@ -614,10 +633,10 @@ core's (views/motion-layout.md, the hand).
 A layout whose views the hand takes by themselves (`itemDrag`) gives the
 hand one of three owners, by one rule every host shares: a first move along
 its axis is the run's; a first move across it is the view's under the press
-where views are taken `.across`, else the page's; and a press standing still
-`HandReading.hold` - 500 ms, the long press the platforms share closely
-enough - is the view's where they are taken `.held`, then whichever way it
-goes. A host says where a press went down (`HeardInput.hand`'s `point`) and
+where views are taken `.perpendicular`, else the page's; and a press standing
+still `HandReading.hold` - 500 ms, the long press the platforms share closely
+enough - is the view's where they are taken `.longPress`, then whichever way
+it goes. A host says where a press went down (`HeardInput.hand`'s `point`) and
 every move and lift as it does for the run, and its end always - a press that
 held a view and never moved still lets it go; it decides nothing more. The
 hold is found by the frames, since nothing moves: a press waiting for it holds
@@ -1011,7 +1030,8 @@ application's context, which outlives every activity.
 A host whose platform keeps no store an application can use keeps them in a
 file of its own, and one codec says what the file holds (`KeptValuesText`): a
 line a key, its name and its words apart by a tab - a tab, a line's end and a
-backslash in either escaped - the keys in order, so the same values write the
+backslash in either escaped, code point by code point, so a combining mark
+after one stays apart from its escape - the keys in order, so the same values write the
 same file. Where the file stands and how it is read and written is the
 host's. The Web keeps the codec's text whole, under one key, in the browser's
 storage for its site.

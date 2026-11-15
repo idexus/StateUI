@@ -8,7 +8,7 @@ import XCTest
 
 /// A control wears the page's stylesheet wherever it stands - in the window's room, on a sheet, over every page, in a
 /// popover - and takes a tap at once there. The browser draws, so the suite runs it in a browser
-/// (`test-web.sh --browser`).
+/// (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebLookTests: XCTestCase {
     override func setUp() async throws {

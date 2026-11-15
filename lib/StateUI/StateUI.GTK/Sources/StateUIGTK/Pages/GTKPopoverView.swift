@@ -18,8 +18,8 @@ final class GTKPopoverView: GTKSingleChildView {
     /// Whether the program wants the popover shown: a closing while it does is the user's.
     private var wanted = false
 
-    /// The anchor's widget waited on to be mapped - GTK pops a popover up only by a mapped widget - and the
-    /// handler hearing it.
+    /// The anchor's widget waited on to be mapped - GTK pops a popover up only by a mapped widget - held while the
+    /// wait lasts, and the handler hearing it.
     private var waitingOn: (widget: GTKWidget, handler: gulong)?
 
     /// Whether the popover shows.
@@ -65,6 +65,7 @@ final class GTKPopoverView: GTKSingleChildView {
                 return 0
             }, data, nil)
         }
+        g_object_ref(widget)
         waitingOn = (widget, handler)
     }
 
@@ -77,6 +78,7 @@ final class GTKPopoverView: GTKSingleChildView {
     private func stopWaiting() {
         guard let waiting = waitingOn else { return }
         g_signal_handler_disconnect(UnsafeMutableRawPointer(waiting.widget), waiting.handler)
+        g_object_unref(waiting.widget)
         waitingOn = nil
     }
 

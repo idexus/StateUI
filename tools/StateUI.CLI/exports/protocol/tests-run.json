@@ -1,0 +1,29 @@
+{
+  "request" : {
+    "id" : "19",
+    "jsonrpc" : "2.0",
+    "method" : "tests/run",
+    "params" : {
+      "host" : "appkit",
+      "requestToken" : "7c1d9e3b-5a2f-4c6d-8e0b-1f3a5c7e9b20",
+      "suite" : "apps/Notes"
+    }
+  },
+  "response" : {
+    "id" : "19",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "phases" : [
+      {
+        "name" : "tests",
+        "passed" : true
+      }
+    ],
+    "suite" : "apps/Notes"
+  }
+}

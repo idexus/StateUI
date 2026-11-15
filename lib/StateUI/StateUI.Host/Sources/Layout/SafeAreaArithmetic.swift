@@ -105,14 +105,34 @@ extension MountedElement {
     /// The scroller a room's content is, or the one it holds alone, layout in layout - a ScrollView, or an ItemsView,
     /// whose native collection scrolls; nil for none.
     public var pageScroller: MountedElement? {
+        scrollerWalk.last.flatMap { $0.isScroller ? $0 : nil }
+    }
+
+    /// The room - a page, a popover - that seeks its scroller (`pageScroller`) through this element's children: its
+    /// content, or a view down from it each layout on the way holds alone, but for the scroller; nil for any other.
+    /// A change in this element's children may change the room's scroller.
+    public var roomSeekingScroller: MountedElement? {
+        guard !isScroller else { return nil }
+        var room = parent
+        while let element = room, !element.isRoom { room = element.parent }
+        return room.flatMap { room in room.scrollerWalk.contains { $0 === self } ? room : nil }
+    }
+
+    /// The views a room's scroller is sought through: its content - or this element, for no room - then the one view
+    /// each holds alone, to a scroller or to a layout holding more.
+    private var scrollerWalk: [MountedElement] {
+        var walk: [MountedElement] = []
         var held = isRoom ? arrangedChildren.first : self
         while let element = held {
-            if element.type == .scrollView || element.type == .itemsView { return element }
-            guard element.arrangedChildren.count == 1 else { return nil }
+            walk.append(element)
+            guard !element.isScroller, element.arrangedChildren.count == 1 else { break }
             held = element.arrangedChildren.first
         }
-        return nil
+        return walk
     }
+
+    /// Whether this element scrolls: a ScrollView, or an ItemsView, whose native collection scrolls.
+    private var isScroller: Bool { type == .scrollView || type == .itemsView }
 }
 
 extension MountedElement {

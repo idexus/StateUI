@@ -17,6 +17,15 @@ extension UIKitDriver {
         (view as? UIKitAccessibilityPresenting)?.presentedControl ?? view
     }
 
+    /// Whether VoiceOver meets something inside `view`: an element it offers, or a view shown in it that is one or
+    /// holds one.
+    static func meetsInside(_ view: UIView) -> Bool {
+        if view.accessibilityElementCount() > 0, view.accessibilityElementCount() != NSNotFound { return true }
+        return view.subviews.contains { sub in
+            !sub.isHidden && !sub.accessibilityElementsHidden && (sub.isAccessibilityElement || meetsInside(sub))
+        }
+    }
+
     static func viewHolds(_ property: Prop, _ view: UIView, _ native: UIKitElement?) throws -> HostValue? {
         switch property {
         case .translationX, .translationY, .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY, .pivotX,
@@ -35,10 +44,13 @@ extension UIKitDriver {
         case .accessibilityValue: return met(view).accessibilityValue.propValue
         case .accessibilityIdentifier: return met(view).accessibilityIdentifier.propValue
         case .accessibilityPresence:
-            guard !met(view).isAccessibilityElement else { return AccessibilityPresence.element.propValue }
+            let alike = native?.element.children.isEmpty ?? true
+            // UIKit makes a control holding nothing of the tree's - a date's or a time's picker - a container of its
+            // parts under VoiceOver: met through them, it is met.
+            let metInside = alike && !met(view).accessibilityElementsHidden && Self.meetsInside(met(view))
+            guard !met(view).isAccessibilityElement, !metInside else { return AccessibilityPresence.element.propValue }
             guard met(view).accessibilityElementsHidden else { return AccessibilityPresence.hidden.propValue }
             // Holding nothing of the tree's, a view hidden alone hides its own parts too: the two read alike, as said.
-            let alike = native?.element.children.isEmpty ?? true
             let alone = alike && native?.element.accessibilityWords.presence == .hidden
             return (alone ? AccessibilityPresence.hidden : .hiddenWithContents).propValue
         case .accessibilityHeading:

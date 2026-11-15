@@ -18,14 +18,23 @@ extension WinUIDriver {
     }
 
     func menu(of element: MountedElement) throws -> String {
-        if element.type == .window { return try window().menuBar.menus }
+        if element.type == .window { return try window(of: element).menuBar.menus }
         guard let view = (element.native as? WinUIElement)?.view else { throw DriverCannot("read the menu of \(element.type.name)") }
         return view.menus
     }
 
+    /// The menu the driver opened last, while WinUI holds it open; nil once it closed.
+    func shownMenu(over element: MountedElement) throws -> String? {
+        let said = WinUIStrings.read { stateui_winui_menu_shown($0, $1) }
+        return said.isEmpty ? nil : said
+    }
+
     /// The flyout the WinUI button standing for `button` opens, or the context menu it holds - a bar's button, its
-    /// button's on the title bar.
+    /// button's on the title bar or on the bar at its page's foot, or its submenu behind either's "more".
     func buttonMenu(of button: MountedElement) throws -> String {
+        if button.type == .toolbarButton, let (foot, place) = footPlace(of: button) {
+            return WinUIStrings.read { stateui_winui_foot_bar_action_menu(foot.handle, Int32(place), $0, $1) }
+        }
         if button.type == .toolbarButton {
             let titleBar = try window(of: button).titleBar
             guard let place = try actionPlace(of: button) else { throw DriverCannot("read the menu \(button.type.name) opens") }
@@ -43,9 +52,13 @@ extension WinUIDriver {
     }
 
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
-        guard let view = (element.native as? WinUIElement)?.view else { throw DriverCannot("read what reaches \(element.type.name)") }
+        guard let native = element.native as? WinUIElement, let view = native.view else {
+            throw DriverCannot("read what reaches \(element.type.name)")
+        }
         renderer?.layOut()
-        return view.reaches(point.x, point.y)
+        // The point is of the element's laid-out rectangle, no transform in it.
+        let corner = native.windowCorner ?? view.origin
+        return stateui_winui_reaches(view.handle, corner.x + point.x, corner.y + point.y)
     }
 
     /// The layout's children by where each one's view is drawn in its panel: by `Canvas.ZIndex`, then its place
@@ -63,13 +76,21 @@ extension WinUIDriver {
     }
 
     func question(over element: MountedElement) throws -> Question? {
-        guard let content = try window().content else { return nil }
-        return asked(over: content.handle).map { asked in
-            Question(
+        for content in contents(asked: element) {
+            guard let asked = asked(over: content.handle) else { continue }
+            return Question(
                 title: asked.title, message: asked.message,
                 buttons: ([asked.accept, asked.cancel] + asked.choices).filter { !$0.isEmpty },
                 field: asked.field)
         }
+        return nil
+    }
+
+    /// The contents a question over `element` may stand on: its window's, or every window's for an element standing
+    /// in none - the application.
+    func contents(asked element: MountedElement) -> [WinUIView] {
+        if let own = try? window(of: element) { return own.content.map { [$0] } ?? [] }
+        return renderer?.windows.compactMap { $0.window.content } ?? []
     }
 
     /// The theme the user's window shows in now.
@@ -79,11 +100,7 @@ extension WinUIDriver {
     }
 
     func announced() throws -> [String] {
-        let length = stateui_winui_announced(nil, 0)
-        var bytes = [CChar](repeating: 0, count: Int(length) + 1)
-        _ = stateui_winui_announced(&bytes, Int32(bytes.count))
-        let words = String(decoding: bytes.prefix(Int(length)).map { UInt8(bitPattern: $0) }, as: UTF8.self)
-        return words.isEmpty ? [] : words.split(separator: "\u{1F}", omittingEmptySubsequences: false).map(String.init)
+        renderer?.actToolkit.announcedForTesting ?? []
     }
 
     /// What the share sheet the host holds offers: its words, then its address on a line of its own.
@@ -101,15 +118,9 @@ extension WinUIDriver {
 
     func launched() throws -> [String] {
         // An address as written; a file - a path, no scheme - by its name.
-        Self.launches().dropFirst(launchesBefore).map { target in
-            target.contains("://") ? String(target) : String(target.split { $0 == "\\" || $0 == "/" }.last ?? target)
+        (renderer?.fileToolkit.launchedForTesting ?? []).map { target in
+            target.contains("://") ? target : String(target.split { $0 == "\\" || $0 == "/" }.last ?? Substring(target))
         }
-    }
-
-    /// Everything the relay launched since it started, in order.
-    static func launches() -> [Substring] {
-        let targets = WinUIStrings.read { stateui_winui_launched($0, $1) }
-        return targets.isEmpty ? [] : targets.split(separator: "\u{1F}", omittingEmptySubsequences: false)
     }
 
     func color(of element: MountedElement, at point: Point) throws -> Color? {
@@ -176,6 +187,12 @@ extension WinUIDriver {
         guard let slot = menu.parent, let button = slot.parent, button.type == .toolbarButton else { return nil }
         let items = Self.flat(slot).filter { Self.menuEntries.contains($0.type) }
         return items.firstIndex { $0 === element }.map { (button, $0) }
+    }
+
+    /// How many items the relay's menu of the bar's button `button` holds before its own menu's: behind "more", its own
+    /// action first where its click is its own (`ButtonMenu.inOverflow`).
+    static func itemsBefore(_ button: MountedElement, behindMore: Bool) -> Int {
+        behindMore && ButtonMenu.opening(of: button) != .click ? 1 : 0
     }
 
     /// `element` and everything under it, in the order a menu lists them.

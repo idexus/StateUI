@@ -8,7 +8,7 @@
 import XCTest
 
 /// An element that leaves the tree lets go of its views, each of which lets go of its DOM element. A host runs
-/// here, so the suite runs it in a browser (`test-web.sh --browser`).
+/// here, so the suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebLeaveTests: XCTestCase {
     override func setUp() async throws {
@@ -117,6 +117,129 @@ final class WebLeaveTests: XCTestCase {
 
         XCTAssertNotEqual(come, gone, "the number of the element that went was made again")
         host.finish()
+    }
+
+    /// A field the user typed into, taken away, is let go of though no other field took the keyboard after it - its
+    /// own leaving, or a view holding it leaving - as one another field took the keyboard from is.
+    func testAFieldTypedIntoIsLetGoOfAsItLeaves() throws {
+        for (leaves, focusesAnother) in [("field", false), ("holder", false), ("field", true)] {
+            WebRenderer.shared?.finish()
+            let (field, holder) = (State(wrappedValue: true), State(wrappedValue: true))
+            let (first, second) = (State(wrappedValue: ""), State(wrappedValue: ""))
+            let host = WebRenderer.running {
+                VStack {
+                    if holder.wrappedValue {
+                        VStack { if field.wrappedValue { TextField(first.projectedValue) } }
+                    }
+                    TextField(second.projectedValue)
+                }
+            }
+            host.step()
+            let fields = host.views(WebTextInputView.self)
+            let input = "(e.matches('input, textarea') ? e : e.querySelector('input, textarea'))"
+            _ = try WebBrowser.evaluate("(\(input).focus(), globalThis.left = new WeakRef(\(input)), '')", on: fields[0].node)
+            XCTAssertEqual(try WebBrowser.evaluate("document.activeElement === left.deref()", on: 0), "true")
+
+            if focusesAnother { _ = try WebBrowser.evaluate("(\(input).focus(), '')", on: fields[1].node) }
+            (leaves == "field" ? field : holder).wrappedValue = false
+            for _ in 0..<3 { host.step() }
+            WebBrowser.ask([("collect", .truth(true))])
+
+            XCTAssertEqual(try WebBrowser.evaluate("left.deref() === undefined", on: 0), "true",
+                           "the \(leaves) left\(focusesAnother ? " after another took the keyboard" : "")")
+            host.finish()
+        }
+    }
+
+    /// A menu open under the bar goes with what it opened under: the item leaving, or the whole page - its bar's
+    /// More and an item's own menu alike - leaves no popover on the page.
+    func testAMenuOpenOnTheBarGoesWithWhatOpenedIt() throws {
+        for (opens, leaves) in [("Sort", "item"), ("Sort", "page"), ("More", "page")] {
+            WebRenderer.shared?.finish()
+            let (item, path) = (State(wrappedValue: true), State(wrappedValue: [1]))
+            let host = WebRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    Text("Bars").toolbar {
+                        if item.wrappedValue {
+                            ToolbarButton("Sort").menu { MenuItem("A to Z").onClicked {} }
+                        }
+                        if opens == "More" { ToolbarButton("Clear").onClicked {}.placement(at: .overflow) }
+                    }
+                }
+            }
+            for _ in 0..<5 {
+                host.step()
+                WebBrowser.pause()
+            }
+            let button = opens == "More" ? "button[aria-label=\"More\"]" : "button[aria-label=\"\(opens)\"]"
+            let shown = "[...document.querySelectorAll('.stateui-bar \(button)')].find((b) => getComputedStyle(b).display !== 'none')"
+            _ = try WebBrowser.evaluate("(\(shown).click(), '')", on: 0)
+            for _ in 0..<3 {
+                host.step()
+                WebBrowser.pause()
+            }
+            let open = "document.querySelectorAll('.stateui-menu').length"
+            XCTAssertEqual(try WebBrowser.evaluate(open, on: 0), "1", "\(opens) open")
+
+            if leaves == "item" { item.wrappedValue = false } else { path.wrappedValue = [] }
+            for _ in 0..<5 {
+                host.step()
+                WebBrowser.pause()
+            }
+
+            XCTAssertEqual(try WebBrowser.evaluate(open, on: 0), "0", "\(opens)'s menu as the \(leaves) left")
+            host.finish()
+        }
+    }
+
+    /// The bar's More listing only the system's Edit menu a page joins - entries no element stands for - goes with the
+    /// page all the same, its Edit submenu open or not.
+    func testAMoreOfTheSystemsEditAloneGoesWithItsPage() throws {
+        for opensEdit in [false, true] {
+            WebRenderer.shared?.finish()
+            let path = State(wrappedValue: [1])
+            let host = WebRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    Text("Editing").menuBar { Menu("Edit") {}.joins(.edit) }
+                }
+            }
+            for _ in 0..<5 {
+                host.step()
+                WebBrowser.pause()
+            }
+            let more = "[...document.querySelectorAll('.stateui-bar button[aria-label=\"More\"]')]"
+                + ".find((b) => getComputedStyle(b).display !== 'none')"
+            _ = try WebBrowser.evaluate("(\(more).click(), '')", on: 0)
+            for _ in 0..<3 {
+                host.step()
+                WebBrowser.pause()
+            }
+            let open = "document.querySelectorAll('.stateui-menu').length"
+            XCTAssertNotEqual(try WebBrowser.evaluate(open, on: 0), "0", "More open")
+            if opensEdit {
+                let edit = "[...document.querySelectorAll('.stateui-menu button')].find((b) => b.textContent === 'Edit')"
+                _ = try WebBrowser.evaluate("(\(edit).click(), '')", on: 0)
+                for _ in 0..<3 {
+                    host.step()
+                    WebBrowser.pause()
+                }
+                let shown = "String([...document.querySelectorAll('.stateui-menu')].filter((m) => m.matches(':popover-open')).length)"
+                XCTAssertEqual(try WebBrowser.evaluate(shown, on: 0), "2", "More and its Edit open")
+            }
+
+            path.wrappedValue = []
+            for _ in 0..<5 {
+                host.step()
+                WebBrowser.pause()
+            }
+
+            XCTAssertEqual(try WebBrowser.evaluate(open, on: 0), "0", "More\(opensEdit ? " and Edit" : "") as the page left")
+            host.finish()
+        }
     }
 
     /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window stands out of
@@ -244,6 +367,62 @@ final class WebLeaveTests: XCTestCase {
 
         let grown = (kinds.last ?? [:]).filter { $0.value > (kinds.first?[$0.key] ?? 0) }
         XCTAssertEqual(Set(counts).count, 1, "views left behind each visit: \(counts), grown: \(grown)")
+        host.finish()
+    }
+
+    /// A page the bar stands over again, a page pushed over it taken off, is listened to as before: the bar follows
+    /// its scroller once however often it returns.
+    func testAPageShownAgainUnderTheBarIsListenedToOnce() async throws {
+        WebRenderer.shared?.finish()
+        let path = State(wrappedValue: [Int]())
+        let host = WebRenderer.running {
+            NavigationStack(path.projectedValue) {
+                ScrollView { Text("Root") }
+            } destination: { _ in
+                ScrollView { Text("Pushed") }
+            }
+        }
+        func settle() async { for _ in 0..<6 { host.step(); await Task.yield() } }
+        await settle()
+
+        var counts: [Int] = []
+        for _ in 0..<3 {
+            path.wrappedValue = [1]
+            await settle()
+            path.wrappedValue = []
+            await settle()
+            counts.append(WebRelay.listenerCount)
+        }
+
+        XCTAssertEqual(Set(counts).count, 1, "listeners after each visit: \(counts)")
+        host.finish()
+    }
+
+    /// A page's scroller that stops being its page's - a view beside it come - and is again, as the view goes, is
+    /// listened to as before by the bars over and under it, each told the page changed.
+    func testAScrollerThatIsThePagesAgainIsListenedToOnce() async throws {
+        WebRenderer.shared?.finish()
+        let beside = State(wrappedValue: false)
+        let host = WebRenderer.running {
+            VStack {
+                ScrollView { Text("Rows") }
+                if beside.wrappedValue { Text("Beside") }
+            }
+            .toolbar(.bottom) { ToolbarButton(beside.wrappedValue ? "Save all" : "Save").onClicked {} }
+        }
+        func settle() async { for _ in 0..<6 { host.step(); await Task.yield() } }
+        await settle()
+
+        var counts: [Int] = []
+        for _ in 0..<3 {
+            beside.wrappedValue = true
+            await settle()
+            beside.wrappedValue = false
+            await settle()
+            counts.append(WebRelay.listenerCount)
+        }
+
+        XCTAssertEqual(Set(counts).count, 1, "listeners after each return: \(counts)")
         host.finish()
     }
 

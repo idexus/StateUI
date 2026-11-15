@@ -236,7 +236,7 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
     }
 
     /// Where Android's scrollers stand, in points.
-    private var standingOffset: Point {
+    var standingOffset: Point {
         Point(
             x: horizontal.map { Double(Java.callInt($0.reference, JavaAPI.getScrollX)) / density } ?? 0,
             y: vertical.map { Double(Java.callInt($0.reference, JavaAPI.getScrollY)) / density } ?? 0)

@@ -76,6 +76,44 @@ final class VisibilityCrossingTests: XCTestCase {
         XCTAssertEqual(joining.said, [], "its opacity is already on its way")
     }
 
+    /// An element fading out answers no input, so a press in the meantime reaches what stands behind it or arrives
+    /// in its place; it hears again as the fade lands or as it is shown again - unless the tree says it ignores input.
+    func testAnElementFadingOutAnswersNoInput() throws {
+        let (runtime, clock, element) = Self.label(visible: true)
+        let view = Faded()
+        Self.show(false, in: runtime)
+        element.crossVisibility(view, closingIn: nil)
+        XCTAssertTrue(element.ignoresInput)
+        XCTAssertEqual(element.presented(.ignoresInput), .bool(true), "what a registration is handed")
+        XCTAssertEqual(view.said.filter { $0.hasPrefix("ignores") }, ["ignores true"], "deaf as it starts to fade")
+
+        clock.time = 200
+        runtime.displayCycle.frame(now: 200)
+        XCTAssertFalse(element.ignoresInput)
+        XCTAssertEqual(view.said.filter { $0.hasPrefix("ignores") }, ["ignores true", "ignores false"],
+                       "hearing again once the fade lands")
+
+        let (again, againClock, shownAgain) = Self.label(visible: true)
+        let returning = Faded()
+        Self.show(false, in: again)
+        shownAgain.crossVisibility(returning, closingIn: nil)
+        againClock.time = 100
+        again.displayCycle.frame(now: 100)
+        Self.show(true, in: again)
+        shownAgain.crossVisibility(returning, closingIn: nil)
+        XCTAssertEqual(returning.said.filter { $0.hasPrefix("ignores") }, ["ignores true", "ignores false"],
+                       "and as it is shown again mid-fade")
+
+        let (deaf, deafClock, ignoring) = Self.label(visible: true, ignoresInput: true)
+        let ignored = Faded()
+        Self.show(false, in: deaf, ignoresInput: true)
+        ignoring.crossVisibility(ignored, closingIn: nil)
+        deafClock.time = 200
+        deaf.displayCycle.frame(now: 200)
+        XCTAssertEqual(ignored.said.filter { $0.hasPrefix("ignores") }, ["ignores true", "ignores true"],
+                       "what the tree says outlives the fade")
+    }
+
     /// Where nothing moves, nothing crosses: the host shows or hides the view itself.
     func testWhereNothingMovesNothingCrosses() throws {
         let (runtime, _, element) = Self.label(visible: true)
@@ -91,25 +129,26 @@ final class VisibilityCrossingTests: XCTestCase {
     }
 
     /// A runtime on a clock the test winds, its application's motion a linear 200 ms, holding one label in a stack.
-    private static func label(visible: Bool) -> (HostRuntime, WoundClock, MountedElement) {
+    private static func label(visible: Bool, ignoresInput: Bool = false) -> (HostRuntime, WoundClock, MountedElement) {
         let clock = WoundClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.layoutMotion.applicationMotion = .eased(.milliseconds(200), curve: .linear)
-        runtime.tree.apply(stack(visible), complete: true)
+        runtime.tree.apply(stack(visible, ignoresInput: ignoresInput), complete: true)
         (runtime.tree.root?.native as? NoView)?.arranged = 0
         return (runtime, clock, runtime.tree.root!.children[0])
     }
 
     /// The label shown or hidden, as a patch says.
-    private static func show(_ visible: Bool, in runtime: HostRuntime) {
-        runtime.tree.apply(stack(visible), complete: false)
+    private static func show(_ visible: Bool, in runtime: HostRuntime, ignoresInput: Bool = false) {
+        runtime.tree.apply(stack(visible, ignoresInput: ignoresInput), complete: false)
         (runtime.tree.root?.native as? NoView)?.arranged = 0
     }
 
-    /// The stack holding the label, shown or hidden.
-    private static func stack(_ visible: Bool) -> HostPatch {
+    /// The stack holding the label, shown or hidden, and deaf to input where the tree says so.
+    private static func stack(_ visible: Bool, ignoresInput: Bool = false) -> HostPatch {
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [.isVisible: .bool(visible)]
+        if ignoresInput { label.properties[.ignoresInput] = .bool(true) }
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
         return stack
@@ -136,5 +175,9 @@ private final class Faded: FadingView {
     func setOpacity(_ opacity: Double) {
         self.opacity = opacity
         said.append("opacity \(opacity)")
+    }
+
+    func setIgnoresInput(_ ignores: Bool) {
+        said.append("ignores \(ignores)")
     }
 }

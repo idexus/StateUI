@@ -31,12 +31,35 @@
 /// and the end reached.
 /// Design: docs/design/host/items.md
 @_spi(Host) @MainActor public final class ItemsCells {
-    /// The room a cell keeps along the list before its entry is measured: a row's height down, an item's width
+    /// The room a cell keeps along the list before any entry is measured: a row's height down, an item's width
     /// across - so the collection asks for about as many entries as it shows.
     /// Design: docs/design/host/items.md#a-cell-before-its-entry
     public static func estimatedExtent(across: Bool) -> Double {
         across ? 100 : 44
     }
+
+    /// The size of `holding`'s content, offered `width`: its entry's, `measured`, where it shows one - and an
+    /// item's is the room the list's items take along it then; else the room the items last took, the estimate
+    /// before any - so a cell given another entry answers as the one before it did.
+    /// Design: docs/design/host/items.md#a-cell-before-its-entry
+    public func contentSize(
+        of holding: any ItemsHolding, across: Bool, width: Double?, showing: Bool, measured: () -> LayoutSize
+    ) -> LayoutSize {
+        guard showing else {
+            let extent = itemsTook.flatMap { $0.across == across ? $0.extent : nil }
+                ?? Self.estimatedExtent(across: across)
+            return across ? LayoutSize(width: extent, height: 0) : LayoutSize(width: width ?? 0, height: extent)
+        }
+        let size = measured()
+        let along = across ? size.width : size.height
+        if let identity = holding.identity, isItem(identity), along.isFinite, along > 0 {
+            itemsTook = (across, along)
+        }
+        return size
+    }
+
+    /// The room an item last took along the list, measured in a cell, and whether across.
+    private var itemsTook: (across: Bool, extent: Double)?
 
     /// The ItemsView, while it stands in the tree: the toolkit may call its collection back after it left.
     public private(set) weak var element: MountedElement?

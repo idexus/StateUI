@@ -118,5 +118,6 @@
         ButtonMenuElementTests.self,
         TextAndIconElementTests.self,
         PageElementTests.self,
+        OpenedLinkElementTests.self,
     ]
 }

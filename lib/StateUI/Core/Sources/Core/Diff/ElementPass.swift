@@ -14,7 +14,7 @@ final class ElementPass {
     var builtFrom: Int
 
     let atPageRoot: Bool
-    let atPagePosition: Bool
+    let pagePlacer: NodeType?
     let outerScene: SceneRecord?
 
     let builds: Int
@@ -30,6 +30,9 @@ final class ElementPass {
     var inspected = false
 
     var enablement: Enablement?
+
+    /// Whether the element put an enablement on the walk - read in a frame of its own, not the walk's.
+    var holdsEnablement: Bool { enablement != nil }
 
     var branch: [Enablement.Key] = []
 
@@ -66,7 +69,7 @@ final class ElementPass {
 
     init(
         id: ElementID, rendered: RenderedNode?, node: Node, forced: Bool, sizesArrive: Bool, atPageRoot: Bool,
-        atPagePosition: Bool, outerScene: SceneRecord?, start: Int
+        pagePlacer: NodeType?, outerScene: SceneRecord?, start: Int
     ) {
         self.id = id
         self.rendered = rendered
@@ -75,7 +78,7 @@ final class ElementPass {
         builtFrom = start
         self.sizesArrive = sizesArrive
         self.atPageRoot = atPageRoot
-        self.atPagePosition = atPagePosition
+        self.pagePlacer = pagePlacer
         self.outerScene = outerScene
         builds = (rendered?.builds ?? 0) + 1
         key = node.key

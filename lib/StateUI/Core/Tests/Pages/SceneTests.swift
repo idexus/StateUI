@@ -71,6 +71,7 @@ private struct Retargeting: View {
         VStack {
             Text("Document \(number)")
             Button("seven").onClicked { number = 7 }
+            Slider($number.convert({ Double($0) }, back: { Int($0.rounded()) })).maximum(100)
         }
     }
 }
@@ -245,6 +246,28 @@ private struct ListingApp: Application {
     var body: some Scene {
         WindowGroup { Listing() }
         Window(.about) { Blank() }
+    }
+}
+
+/// The windows the pages read, as each body builds.
+@MainActor private enum WindowsRead {
+    static var sessions: [WindowSession] = []
+}
+
+/// A page that reads the window it stands in.
+private struct ReadingItsWindow: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        WindowsRead.sessions.append(window)
+        return Text("Read")
+    }
+}
+
+private struct WindowReadingApp: Application {
+    var body: some Scene {
+        WindowGroup { ReadingItsWindow() }
+        WindowGroup(.fonts) { ReadingItsWindow() }
     }
 }
 
@@ -639,6 +662,22 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(refused, .notOpen)
     }
 
+    /// A page reads the session of the window it stands in - the first window's, and one opened of a kind - so its
+    /// acts ask over that window.
+    func testAPageReadsTheWindowItStandsIn() async throws {
+        WindowsRead.sessions = []
+        start(WindowReadingApp())
+        let renders = Renders()
+        renders.render(tree())
+        try await application.openWindow(.fonts)
+        renders.render(tree(), changed: Renderer.shared.pendingChanges)
+
+        let windows = WindowsRead.sessions.map { (try? $0.address.window) ?? Name("none") }
+        XCTAssertTrue(windows.contains(Name(OwnKey.window(kind: nil, serial: 1))), "\(windows)")
+        XCTAssertTrue(windows.contains(Name(OwnKey.window(kind: "fonts", serial: 1))), "\(windows)")
+        XCTAssertFalse(windows.contains(Name("")), "no page reads the window the user is in: \(windows)")
+    }
+
     /// A window's session is the same one for as long as the window is open, and goes with it.
     func testAWindowsSessionLastsAsLongAsItsWindow() async throws {
         let renders = Renders()
@@ -805,6 +844,35 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(try scene("1").windows.compactMap(\.value), [42, 7] as [AnyHashable])
         XCTAssertEqual(try scene("1").windows.compactMap(\.text), ["42", "7"])
         XCTAssertEqual(texts(in: whole).filter { $0.hasPrefix("Document") }, ["Document 42", "Document 7"])
+    }
+
+    /// A window's value reported through a conversion - a slider over it - is refused alike where another window
+    /// is open for it: the window stays about its own value, and the slider goes back to it.
+    func testAWindowsValueReportedThroughAConversionIsRefusedAlike() async throws {
+        Renderer.shared.clearStates()
+        let renders = Renders()
+        renders.render(tree())
+        let first = await refusal { try await self.application.openWindow(.document, value: 42) }
+        let second = await refusal { try await self.application.openWindow(.document, value: 7) }
+        XCTAssertNil(first)
+        XCTAssertNil(second)
+        let opened = renders.renderFromScratch(tree())
+        let document = try XCTUnwrap(opened.subtree.first { $0.props[.windowValue] == .string("42") })
+        let number = try XCTUnwrap(document.subtree.first { $0.type == .slider }?.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        // The window for 42 reports 7 - the value the window beside it is open for.
+        dragged(number, to: 7)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+        let whole = renders.renderFromScratch(tree())
+
+        XCTAssertTrue(hasComplained("is open for the value 7 already"))
+        XCTAssertEqual(try scene("1").windows.compactMap(\.value), [42, 7] as [AnyHashable])
+        XCTAssertEqual(texts(in: whole).filter { $0.hasPrefix("Document") }, ["Document 42", "Document 7"])
+        XCTAssertEqual(standing(number, as: JourneyLanes<Double>.self)?.destination, 42,
+                       "the slider goes back to its window's value")
     }
 
     /// A window's session kept past its scene's end refuses its acts once the scene's record is gone too: it is a

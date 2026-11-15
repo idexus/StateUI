@@ -225,6 +225,26 @@
         held.flatMap { revision(of: $0) } != revision(of: family, on: host, in: revisions)
     }
 
+    /// How a family's recorded verdicts stand on a host: at the revision `revisions.txt` gives, at another, not
+    /// recorded, or not read.
+    public enum Standing: Sendable {
+        /// At the revision `revisions.txt` gives.
+        case fresh
+        /// At another revision, or at none.
+        case stale
+        /// Not recorded.
+        case missing
+        /// Not read: a line of a file is no verdict.
+        case invalid
+    }
+
+    /// How `files` - the texts of `family`'s verdict files on `host`, a part each where it runs in parts - stand.
+    public static func standing(of files: [String], family: String, on host: String, in revisions: String) -> Standing {
+        if files.isEmpty { return .missing }
+        if files.contains(where: { read($0) == nil }) { return .invalid }
+        return files.contains { isStale($0, family: family, on: host, in: revisions) } ? .stale : .fresh
+    }
+
     /// The verdicts a run's text holds; nil where a line says none.
     public static func read(_ text: String) -> [HostVerdict]? {
         var verdicts: [HostVerdict] = []

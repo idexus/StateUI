@@ -376,7 +376,9 @@ A state may refuse a value before it lands - the storage's `refuses`, asked
 through one door, `Storage.admits`, on every road a value comes in by: a
 write and a post (`admitsWrite`, once the run's admission is answered), a
 movement (`Journey.send`, which starts no journey), a landing
-(`Binding.land`), and the host's report. A setter cannot throw, so the
+(`Binding.land`), the host's report, and a conversion's way back - a report
+two sources share lands on both or on neither, and the derived state goes
+back to what they hold (journeys.md#conversions). A setter cannot throw, so the
 refusal is said once, and the state, its keep and its readers stand as they
 were. The host's report is on the board before the storage hears it, so a
 reported value the state refuses is put back - the bytes it last knew, a

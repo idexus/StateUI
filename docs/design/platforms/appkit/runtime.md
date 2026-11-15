@@ -44,7 +44,10 @@ title bar accessory rather than a toolbar control's glass.
 A window stands where the host layer says its element asks ([a window's
 frame](../../host/tree.md#a-windows-frame)), each request alone. A size is the
 content area the title bar and toolbar leave, the window keeping its top
-edge; a place is counted from the top left of the screen's work area. The
+edge; a place is counted from the top left of the screen's work area. A size
+or a place that would stand an edge outside 32-bit whole points is not asked
+for: AppKit raises over such a frame, which ends the application, and the
+window stands as it was (`GeometryArithmetic.pixels`). The
 bounds are the content area's too, the chrome's height added, as AppKit
 bounds the whole content view, and are applied again on every presentation,
 since the chrome grows with a row of tabs; what the tree leaves unsaid is the
@@ -173,12 +176,25 @@ edge while rows do. The strip's leading groups stand at its start and the
 rest at its end, each group's controls close together and the groups apart;
 an action or a setting is an `NSButton` of the accessory bar's bezel, small,
 a setting a push-on push-off button; a button holding a menu an
-`NSComboButton`, split, or a button popping its menu where its click opens
-it; behind the overflow a More button pops a menu of the rest. Words
+`NSComboButton` - unified where its click opens the menu, else split, the
+arrow beside it opening it - and one whose menu opens held, which AppKit's
+combo button has no style for, an accessory bar button with no arrow, its
+click its own and its menu opened by a press held past half a second, the
+same press a held button among views follows (`AppKitHeldPress`), or by
+assistive technology asking for it; behind the overflow a More button pops a menu of
+the rest, an action holding a menu a submenu of the entries it shows there,
+as on the window's toolbar (`AppKitToolbarMenu.overflowSubmenu`). Words
 (`ToolbarLabel`) are a small label in the secondary color of words, its
 picture before it - the same view a word item on the window's toolbar
 holds. The strip is made again only where an action draws otherwise, and
 follows the page's actions whenever the window's chrome is composed.
+
+## A popover
+
+A view's popover is AppKit's `NSPopover` by its anchor's view, as large as
+its page fits - within the screen the anchor stands on: AppKit raises over a
+popover window past its 32-bit points, which ends the application, and a
+popover larger than the screen shows no more of itself.
 
 ## Sheets
 
@@ -245,7 +261,9 @@ top of its sheets - or the window the user is looking at where the act names
 none, one at a time (`QuestionQueue`): a confirmation's and a prompt's accepting
 button first, a choice's actions, its dangerous one marked, then its cancel.
 A choice answers the place of the action pressed, nothing for its cancel; a
-prompt its field's words, cut to their bound. A host that shows no window holds the
+prompt its field's words, which hold no more than their bound as the user
+types - in characters as the user sees them, by the host layer's rule
+(`InputWords.held`), as a text field's do. A host that shows no window holds the
 alert unshown, answered as a press answers it.
 
 ## Files

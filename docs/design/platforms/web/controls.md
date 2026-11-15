@@ -57,7 +57,14 @@ A Text holding spans shows its runs in place of its own words, each a `<span>`
 of its own look (`MountedElement.textRuns`). A run says only what it says
 itself - its font, its color, the space between its letters, its lines'
 height, its decorations, what stands behind it - and takes the rest from the
-text around it, as the page's styles inherit. A span is kept for each run by
+text around it, as the page's styles inherit - a space between its letters
+of none said as `0px`, so it takes no other through the cascade. A line under a
+node is drawn under all it holds and no span can take it away, so while runs
+show, the text's own lines stand on each run that says none of its own, and
+none on the text's node. Each run's lines are written whenever the text's look
+is, from the text's lines as they stand then - a description arranging the
+runs again, or a frame writing the look alone, which arranges nothing - so a
+state driving the text's decorations reaches its runs on its own frame. A span is kept for each run by
 its place: every span's words are written again as the runs change, and of its
 look only what changed.
 
@@ -137,10 +144,10 @@ layer's traits (`InputTraits`): `inputmode`, `autocapitalize`, `spellcheck`,
 `enterkeyhint`. The caret and the selection are placed in the page's own
 units, UTF-16, counted from the characters the tree names. An editor growing
 with its words stands as tall as they are, rather than scrolling them. A
-field is as wide as its words or its placeholder - `field-sizing: content`,
-and its `size` where the browser sizes no field by its content - as a native
-field measures, not the browser's twenty characters, which in a row of a
-phone's width would push what follows it out of the row. On iOS the page keeps
+field is as wide as its words or its placeholder, and no narrower than twenty
+characters and its padding - `field-sizing: content` over a least of `20ch`, a
+search field's with room for its glass and its clear button - and its `size`
+where the browser sizes no field by its content. On iOS the page keeps
 its scale as a field takes the keyboard - Safari zooms into a field whose words
 are smaller than 16 points, and no native field does - by a viewport of at most
 scale 1, set on iOS alone, where the user's fingers still zoom the page.
@@ -273,7 +280,7 @@ of another site keeps them to itself.
 ## Pictures
 
 An Image is an `<img>` showing one of the application's pictures, which
-`run-app.sh` lays beside the page in `Images/`. It is not the browser's to
+a build lays beside the page in `Images/`. It is not the browser's to
 drag (`draggable="false"`, kept so where a view offers no drag of its own):
 a native picture moves with nothing until the application offers a drag, and
 Chromium's and Firefox's drag a photo off as a ghost from under two fingers or

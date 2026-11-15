@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 
 #include <winrt/Windows.System.h>
@@ -266,6 +267,28 @@ extern "C" void stateui_winui_window_activate(StateUIObjectRef handle) {
     }
 }
 
+extern "C" bool stateui_winui_window_bring_forward(StateUIObjectRef handle) {
+    try {
+        auto window = borrow<xaml::Window>(handle);
+        auto own = reinterpret_cast<HWND>(window.AppWindow().Id().Value);
+        if (GetForegroundWindow() == own) return true;
+        window.Activate();
+        if (GetForegroundWindow() != own) {
+            // Design: docs/design/host/conformance.md#the-systems-input
+            auto front = GetWindowThreadProcessId(GetForegroundWindow(), nullptr);
+            auto thread = GetCurrentThreadId();
+            bool joined = front != 0 && front != thread && AttachThreadInput(front, thread, TRUE);
+            BringWindowToTop(own);
+            SetForegroundWindow(own);
+            if (joined) AttachThreadInput(front, thread, FALSE);
+        }
+        return GetForegroundWindow() == own;
+    } catch (...) {
+        report("bringing a window forward");
+        return false;
+    }
+}
+
 extern "C" void stateui_winui_window_close(StateUIObjectRef handle) {
     try {
         borrow<xaml::Window>(handle).Close();
@@ -306,40 +329,56 @@ namespace {
     }
 }
 
-extern "C" void stateui_winui_window_set_frame(StateUIObjectRef handle, bool const *has, double const *values) {
+extern "C" double stateui_winui_window_scale(StateUIObjectRef handle) {
+    try {
+        return scale(borrow<xaml::Window>(handle));
+    } catch (...) {
+        report("reading a window's scale");
+        return 1;
+    }
+}
+
+namespace {
+    /// `base` and `offset` together where 32-bit pixels hold them; false where they do not.
+    bool add(int32_t base, int64_t offset, int32_t &sum) {
+        auto total = static_cast<int64_t>(base) + offset;
+        if (total < INT32_MIN || total > INT32_MAX) return false;
+        sum = static_cast<int32_t>(total);
+        return true;
+    }
+}
+
+extern "C" void stateui_winui_window_set_frame(StateUIObjectRef handle, bool const *has, int32_t const *pixels) {
     try {
         auto window = borrow<xaml::Window>(handle);
         auto app = window.AppWindow();
-        auto pixels = scale(window);
         if (has[0] || has[1]) {
             auto area = workArea(window);
             auto at = app.Position();
-            if (has[0]) at.X = area.X + static_cast<int32_t>(std::lround(values[0] * pixels));
-            if (has[1]) at.Y = area.Y + static_cast<int32_t>(std::lround(values[1] * pixels));
-            app.Move(at);
+            bool held = (!has[0] || add(area.X, pixels[0], at.X)) && (!has[1] || add(area.Y, pixels[1], at.Y));
+            if (held) app.Move(at);
         }
         if (has[2] || has[3]) {
             // The content covers the title bar, which ResizeClient would add again: the frame is what stands now.
             auto outer = app.Size();
             auto client = app.ClientSize();
-            if (has[2]) outer.Width += static_cast<int32_t>(std::lround(values[2] * pixels)) - client.Width;
-            if (has[3]) outer.Height += static_cast<int32_t>(std::lround(values[3] * pixels)) - client.Height;
-            app.Resize(outer);
+            bool held = (!has[2] || add(pixels[2], int64_t{outer.Width} - client.Width, outer.Width))
+                        && (!has[3] || add(pixels[3], int64_t{outer.Height} - client.Height, outer.Height));
+            if (held) app.Resize(outer);
         }
     } catch (...) {
         report("placing a window");
     }
 }
 
-extern "C" void stateui_winui_window_set_limits(StateUIObjectRef handle, double const *limits) {
+extern "C" void stateui_winui_window_set_limits(StateUIObjectRef handle, int32_t const *limits) {
     try {
         auto window = borrow<xaml::Window>(handle);
         auto presenter = window.AppWindow().Presenter().try_as<windowing::OverlappedPresenter>();
         if (!presenter) return;
-        auto pixels = scale(window);
-        auto size = [&](double dips) -> winrt::Windows::Foundation::IReference<int32_t> {
-            if (dips <= 0) return nullptr;
-            return static_cast<int32_t>(std::lround(dips * pixels));
+        auto size = [](int32_t pixels) -> winrt::Windows::Foundation::IReference<int32_t> {
+            if (pixels <= 0) return nullptr;
+            return pixels;
         };
         presenter.PreferredMinimumWidth(size(limits[0]));
         presenter.PreferredMinimumHeight(size(limits[1]));

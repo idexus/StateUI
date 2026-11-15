@@ -28,13 +28,10 @@ its name in red where it belongs, so a gap is visible rather than silent.
 lib/StateUI/StateUI.WinUI/
   Sources/StateUIWinUI/      the host: its runtime, elements, registrations, layout and window
   Sources/CStateUIWinUI/     the relay: C++/WinRT behind the C functions its header declares
-  Testing/                   a package of its own: the host's suite, run by swift test, in Tests/,
-                             and the driver every conformance run on WinUI goes through
-.scripts/WinUI/
-  tools.ps1                  the Windows App SDK's versions, the projection, a directory made self-contained
-  run-app.ps1                builds an application's WinUI head and starts it
-  deploy.ps1                 builds it for release and lays it in a folder of its own, with what it runs with
-  test-winui.ps1             builds and runs the host's suite
+  Testing/                   a package of its own: the host's suite, run by stateui repo test, in
+                             Tests/, and the driver every conformance run on WinUI goes through
+lib/Backends/WebView.WinUI/
+  Packaging/runtime.txt      what the web view's backend lays beside an application depending on it
 apps/<App>/Platforms/WinUI/
   main.swift                 the application's WinUI head
   Host/                      what this host answers for the application
@@ -45,15 +42,15 @@ apps/<App>/Platforms/WinUI/
 
 The host builds on Windows 10 1809 or newer, on arm64 or x64:
 
-- Swift 6.4 from swift.org, `swift-6.4.0-RELEASE` - for Debug, its `lldb-dap`
+- Swift 6.4 from swift.org, `swift-6.4.2-RELEASE` - for Debug, its `lldb-dap`
   loads the Python the installer lays beside the toolchain, which
   `lldb-dap --check-python` names;
 - Visual Studio 2026 with the C++ tools for the machine's architecture, and
   the Windows SDK 10.0.26100;
-- nothing else to install: `tools.ps1` fetches C++/WinRT, the Windows App SDK
-  and the WebView2 SDK from nuget.org the first time, each checked against
-  nuget.org's own hash, and generates the C++/WinRT projection the relay
-  includes.
+- nothing else to install: the stateui tool fetches C++/WinRT, the Windows
+  App SDK and the WebView2 SDK from nuget.org the first time, each checked
+  against nuget.org's own hash, and generates the C++/WinRT projection the
+  relay includes.
 
 The web view is a backend, `lib/Backends/WebView.WinUI` - WinUI's `WebView2`
 over the system's WebView2 runtime, which WinUI does not ship: an application
@@ -63,20 +60,26 @@ showing a web view depends on it from its WinUI head and calls
 ## Architectures and a deployed head
 
 A head is built for the machine's own architecture. An ARM64 machine builds
-an x64 head too, which Windows runs emulated: `run-app.ps1 -Architecture x64`
-builds it beside the ARM64 one in `.build\winui`, and lays the x64 Swift
-runtime beside it from the merge module the Swift installer keeps in its
-`Redistributables`. `deploy.ps1` - **StateUI: Deploy** in the editor - builds
-a head for release and lays it in a folder of its own with StateUI, the
-Windows App SDK and the Swift and C++ runtimes of its architecture: a folder
-that runs on a Windows machine with nothing of them installed. The editor
-lays it in `artifacts\<application>\WinUI\<architecture>` of the folder that
-holds the application's `apps\`, asking on an ARM64 machine whether for ARM64
-or x64. A debugger here follows the machine's own architecture alone.
+an x64 head too, which Windows runs emulated: `--architecture x86_64` builds
+it in a scratch folder of its own and lays the x64 Swift runtime beside it,
+from the merge module the Swift installer keeps in its `Redistributables`.
+`stateui package` - **StateUI: Package** in the editor - builds a head for
+release and lays it in a folder of its own with StateUI, the Windows App SDK
+and the Swift and C++ runtimes of its architecture: a folder that runs on a
+Windows machine with nothing of them installed. The editor lays it in
+`artifacts\<application>\WinUI\<architecture>` of the application's
+workspace, asking on an ARM64 machine whether for ARM64 or x64. A debugger
+here follows the machine's own architecture alone.
 
 ```powershell
-.scripts\WinUI\deploy.ps1 -App apps\Gallery -Destination artifacts\Gallery\WinUI\x64 -Architecture x64
+stateui package --project apps\Gallery --host winui --architecture x86_64 --output artifacts\Gallery\WinUI\x64
 ```
+
+A backend whose engine needs files beside an application - the web view's,
+WebView2's component and loader - declares them in its
+`Packaging/runtime.txt`, a line a file: the NuGet package, its path there
+(`{architecture}` for `arm64` or `x64`), and its path beside the
+application. Only an application depending on the backend gets them.
 
 ## The head
 
@@ -114,7 +117,7 @@ so started by itself it opens no console; started from a terminal it writes
 there. Swift written for this host
 alone stands under `#if WINUI`.
 
-A new application made in `apps/` - `.scripts/new-app.ps1` - has a WinUI
+A new application made in `apps/` - `stateui new` - has a WinUI
 head, as HelloWorld does.
 
 ## Controls, acts, and events registered in Swift
@@ -308,16 +311,19 @@ private let batteryChanged: @convention(c) () -> Void = {
 ## Running
 
 ```powershell
-.scripts\WinUI\run-app.ps1 -App apps\HelloWorld
+stateui run --project apps\HelloWorld --host winui
+stateui run --project apps\Gallery --host winui --architecture x86_64
 ```
 
-`run-app.ps1` builds the head, lays the Windows App SDK beside it and starts
-it, passing on what it writes. Everything a build writes stays in the
-application's `.build\winui\`. The application carries the Windows App SDK
-itself - no package, no installer: its runtime, a manifest registering its
-classes and `resources.pri` stand beside the executable. `-Detach` returns once
-the application has started. Every `STATEUI_` variable of the shell that runs
-it - `STATEUI_TALLY=1`, `STATEUI_INSPECT=1` - reaches the application.
+`stateui run` stops a copy of the head still running - it holds its
+executable - builds the head, lays the Windows App SDK beside it and starts
+it, passing on what it writes; Ctrl+C ends it. A build publishes the head in
+the application's `.build\stateui\artifacts`, and SwiftPM's work stays in
+its `.build\winui`. The application carries the Windows App SDK itself - no
+package, no installer: its runtime, a manifest registering its classes and
+`resources.pri` stand beside the executable. `stateui build` builds without
+starting. Every `STATEUI_` variable of the shell that runs it -
+`STATEUI_TALLY=1`, `STATEUI_INSPECT=1` - reaches the application.
 
 Keep an application's folder near the root of a drive: the Swift compiler on
 Windows fails with "the filename or extension is too long" under a deep path.
@@ -325,40 +331,42 @@ Windows fails with "the filename or extension is too long" under a deep path.
 ## Testing
 
 ```powershell
-.scripts\WinUI\test-winui.ps1
+stateui repo test --suite host:winui
+stateui repo test --suite host:winui --filter WinUIConformanceTests.testButton
+stateui repo test --suite host:winui --filter WinUIConformanceTests
 ```
 
-The suite is XCTest, run by `swift test` in `lib\StateUI\StateUI.WinUI\Testing`.
-WinUI's controls stand on the test thread with no loop of WinUI's running, and
-a test lets the thread's messages run where WinUI lays out. The test runner is given
-the Windows App SDK as an application is, before the run.
+The suite is XCTest, in `lib\StateUI\StateUI.WinUI\Testing`. WinUI's
+controls stand on the test thread with no loop of WinUI's running, and a test
+lets the thread's messages run where WinUI lays out. The test runner is given
+the Windows App SDK as an application is, before the run. Unfiltered, the
+foundation's own Windows tests run first, and the facade and the web view's
+backend are held to their API records last.
 
-Alone, `test-winui.ps1` runs the host's own tests, each in a process of its
-own, one after another.
-`-Conformance` runs the conformance families, one test a family -
-`WinUIConformanceTests.testButton` - and the longest in parts, each test in a
-process of its own, as WinUI keeps GDI objects of every window a test closes
-and a process holds only so many: some fifteen minutes. `-Filter` runs the
-tests it names, each in a process of its own.
-
-```powershell
-.scripts\WinUI\test-winui.ps1 -Filter WinUIConformanceTests.testButton
-.scripts\WinUI\test-winui.ps1 -Conformance
-```
+Every test runs in a process of its own, one after another, as WinUI keeps
+GDI objects of every window a test closes and a process holds only so many.
+The conformance families - one test a family,
+`WinUIConformanceTests.testButton`, the longest in parts - run only where
+`--filter` names them: all of them take some fifteen minutes.
 
 A run holds what it says to `lib\StateUI\exports\`: the host's own tests what
 it declares to `winui.txt`, and each family its verdicts to
 `marks\winui\<Family>.txt` - a family run in parts to
 `marks\winui\<Family>-<part>.txt`, one file a part; a run that says
-otherwise fails. With `STATEUI_UPDATE_EXPORTS=1` in its environment it
-writes them instead, each verdict file under the revision its family stands
-at in `lib\StateUI\StateUI.Conformance\revisions.txt`. `-Stale` runs only the
-families whose verdicts stand at another revision, or at none: each other
-one's process ends at once. With the verdicts written,
-`swift test --filter ControlDictionaryTests` at the repository's root, with
-`STATEUI_UPDATE_DOCS=1` in its environment, renders the
+otherwise fails. `stateui repo conformance run --host winui --record` writes them instead
+- `--all` every family and what the host declares, `--changed` the families
+whose verdicts stand at another revision or at none, `--family <name>` the
+ones named - each verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, then renders the
 [platform contract](../platform-contract.md#reading-the-matrix) and
-[the control dictionary](../controls/README.md) from them. In the editor,
-with WinUI chosen, **StateUI: Conformance - Rebuild all** runs both -
-`-Conformance` writing its verdicts, then the documents - and
-**StateUI: Conformance - Rebuild changed** runs `-Stale` before it renders.
+[the control dictionary](../controls/README.md) from them;
+`stateui repo conformance status --host winui` says where they stand, and
+`stateui repo api record --host winui` writes the API records:
+
+```powershell
+stateui repo conformance run --host winui --all --record
+stateui repo conformance run --host winui --changed --record
+```
+
+In the editor, with WinUI chosen, **StateUI: Conformance - Rebuild all**
+and **Rebuild changed** run the same.

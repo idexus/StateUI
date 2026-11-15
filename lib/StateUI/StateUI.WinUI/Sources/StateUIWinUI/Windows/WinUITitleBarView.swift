@@ -20,6 +20,9 @@ final class WinUITitleBarView: WinUIView {
     /// The actions as they were last drawn, in reading order, those behind "more" last.
     var drawn: [WinUIToolbarAction] { actions.drawn }
 
+    /// Whether each action drawn stands behind "more", in the order of `drawn`.
+    var drawnBehindMore: [Bool] { actions.drawnBehindMore }
+
     init() {
         super.init { number in stateui_winui_title_bar_make(number) }
     }

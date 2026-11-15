@@ -83,7 +83,7 @@ private struct Shelving: View {
 
 /// Children an application's control draws itself, through this host's facade: handed whole and typed, each the same
 /// child for as long as it lives, each event raised on its own child, and none given an element of its own. A host
-/// runs here, so the suite runs it in a browser (`test-web.sh --browser`).
+/// runs here, so the suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebDrawnChildrenTests: XCTestCase {
     override func setUp() async throws {

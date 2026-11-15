@@ -136,6 +136,11 @@ extension MotionLayout.Run {
             return false
         }
 
+        // A run standing at the highest rank an integer holds is ranked anew, its order kept, so the held view
+        // can stand over it.
+        if shown.contains(where: { $0.zIndex == .max }) {
+            for (place, rank) in Placement.drawingOrder(of: shown).enumerated() { shown[place].zIndex = rank }
+        }
         var placement = hand.held(shown[index], over: shown)
         if let thrown = hand.velocity, !hand.dismissed {
             let lanes = LayoutShift(from: placement, to: poses[index]).lanes

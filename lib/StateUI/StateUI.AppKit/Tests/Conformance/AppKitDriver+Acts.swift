@@ -176,6 +176,9 @@ extension AppKitDriver {
             // The action VoiceOver offers on what it meets of the view, run as VoiceOver runs it.
             let target = native?.accessibilityTarget(of: view)
             _ = target?.accessibilityCustomActions()?.first { $0.name == name }?.handler?()
+        case (.accessibilityPress, let view?):
+            // VoiceOver's press on what it meets of the view.
+            _ = native?.accessibilityTarget(of: view).accessibilityPerformPress()
         case (.adjust(let step), let view?):
             guard let target = native?.accessibilityTarget(of: view) else { throw DriverCannot(act, on: element) }
             _ = step == .increment ? target.accessibilityPerformIncrement() : target.accessibilityPerformDecrement()

@@ -814,9 +814,11 @@ struct ContactsPage: View {
             .aim(list)
             .gridRow(0)
 
-            Button("Back to the top")
-                .onClicked(policy: .cancelPrevious) { try await list.scroll(to: contacts[0].name, anchor: .start) }
-                .gridRow(1)
+            if let first = contacts.first {
+                Button("Back to the top")
+                    .onClicked(policy: .cancelPrevious) { try await list.scroll(to: first.name, anchor: .start) }
+                    .gridRow(1)
+            }
         }
         .rows(.fill, .automatic)
     }
@@ -863,6 +865,7 @@ platform's own pull and spinner once it hears the pull:
 ```swift
 struct InboxPage: View {
     @State private var mail = ["Welcome"]
+    @State private var fetched = 0
     @State private var refreshing = false
 
     var body: some View {
@@ -871,7 +874,8 @@ struct InboxPage: View {
             .onRefreshRequested(policy: .ignoreWhileRunning) {
                 defer { refreshing = false }
                 try await Task.sleep(for: .seconds(1))
-                mail.insert("Fresh", at: 0)
+                fetched += 1
+                mail.insert("Fresh \(fetched)", at: 0)
             }
     }
 }

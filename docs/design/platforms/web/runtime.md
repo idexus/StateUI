@@ -48,7 +48,11 @@ imports, and the system interface, WASI, which a Swift program asks of its
 machine. The relay keeps every DOM element Swift makes under a number - one
 let go of is no element's again, so what still names it, an act that waited,
 reaches nothing rather than an element made after it - and
-words cross as UTF-8 and their length in bytes. It decides nothing of
+words cross as UTF-8 and their length in bytes. Words and bytes are read
+from the module's memory while the call lasts: once it returns, the memory
+they stood in is the program's again - a short string's own, on the stack -
+so what the relay keeps for later, the words a live region says after a
+pause or a file's contents, it reads or copies at once. It decides nothing of
 StateUI's: it makes, places and changes elements as Swift says, calls Swift
 back when one hears an event, and keeps the keyboard's way through a strip of
 tabs and a menu, and a field's focus under a pressed button, as the page's
@@ -279,7 +283,19 @@ cannot reach. A file dialog is the relay's, held on the test's page and
 answered from the test's own files, what the page would launch is the relay's
 record, a drag between views is the DOM's drag events the driver dispatches,
 and a window's phases are the notices the driver gives - a member proven
-through them is the host's own, ✓, whatever element the act is done on.
+through them is the host's own, ✓, whatever element the act is done on. A
+keyboard a case stands the page under is told the host as a phone's browser
+tells it - the visible part of the page that much shorter than the page's
+viewport, at its own scale (`WebRenderer.viewportMoved`) - and a case that
+told of one leaves none to the next.
+
+The driver measures an element where the mouse will find it. The mouse
+reaches the page a moment after the measure - the controller's answer, then
+the browser's own input - so what still moves is measured once it has come:
+every picture loaded and standing at its size, and every animation of the
+page's that ends, on the element or on one holding it, changing where or how
+large it stands - a sheet rising, a page arriving (`stateui.still`). A press
+aimed at a button on a sheet still rising lands where the button stood.
 
 XCTest's own loop runs on Swift's cooperative executor and awaits MainActor
 between its tests. Once a host runs, MainActor's executor is the UI thread's,
@@ -300,8 +316,8 @@ is the Web's first cost. A release head links with `--strip-debug`
 names its functions. A server sends the module compressed; the size that
 counts is the module gzipped.
 
-`.scripts/Web/size-budgets.sh` builds each application's release head and
-holds its module, gzipped at level 9, within the application's budget -
+`stateui repo web-size check` builds each application's release head
+and holds its module, gzipped at level 9, within the application's budget -
 HelloWorld's and the Gallery's - and CI runs it after the Web tests. A module
 past its budget fails the run: what grew it is found, or the budget is raised
 in the same change, with the reason. One a twentieth or more under its budget

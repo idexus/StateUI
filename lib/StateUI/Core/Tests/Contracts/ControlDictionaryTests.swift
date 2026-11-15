@@ -232,31 +232,6 @@ final class ControlDictionaryTests: XCTestCase {
         XCTAssertEqual(column.mark(of: nil, on: "Text").note, "")
     }
 
-    /// The revision the renderer reads a family at is the one `.scripts/Marks/revision.sh` prints, which Android's
-    /// script writes over the verdicts it takes off the device: the two ways of reading it are one.
-    func testTheRevisionIsTheScriptsOwn() throws {
-        let bash = URL(fileURLWithPath: "/bin/bash")
-        guard FileManager.default.fileExists(atPath: bash.path) else { throw XCTSkip("no /bin/bash here") }
-        let families = try ControlDictionary.folders.values.flatMap { try ControlDictionary.verdicts($0).map(\.family) }
-        for host in ControlDictionary.folders.values.sorted() {
-            for family in Set(families + ["Slider"]).sorted() {
-                let process = Process()
-                process.executableURL = bash
-                process.arguments = [
-                    SourceTree.repository.appendingPathComponent(".scripts/Marks/revision.sh").path, host, family,
-                ]
-                let output = Pipe()
-                process.standardOutput = output
-                try process.run()
-                let printed = String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-                process.waitUntilExit()
-                XCTAssertEqual(
-                    HostVerdict.revision(of: family, on: host, in: ControlDictionary.revisions),
-                    printed.trimmingCharacters(in: .whitespacesAndNewlines), "\(host) \(family)")
-            }
-        }
-    }
-
     /// Every line of `lib/StateUI/StateUI.Conformance/revisions.txt` raises a family a contract declares - on every host, or
     /// on one host a column names - to a whole number above 1: a line that raises nothing is no revision.
     func testEveryRevisionRaisesAFamily() throws {

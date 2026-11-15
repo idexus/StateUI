@@ -25,6 +25,9 @@ final class GTKItemCell: GTKSingleChildView, ItemsHolding {
 
     /// The list item the cell stands in, which the screen reader names the row by.
     var row: OpaquePointer?
+
+    /// The cells of the list the cell stands in.
+    weak var cells: ItemsCells?
     private var named = ""
 
     func hold(_ identity: String, _ item: MountedElement?) {
@@ -57,13 +60,12 @@ final class GTKItemCell: GTKSingleChildView, ItemsHolding {
         gtk_widget_set_margin_end(widget, GTKPixels.margin(room.end))
     }
 
-    /// A cell whose entry is still on its way keeps the room of a row: measured of nothing, every cell would fit in
-    /// view at once, and the list would ask for every entry.
+    /// A cell whose entry is still on its way keeps the room the list's items last took: measured of nothing, every
+    /// cell would fit in view at once, and the list would ask for every entry (`ItemsCells.contentSize`).
     override func contentSize(width: Double?) -> LayoutSize {
-        guard shown != nil, !items.isEmpty else {
-            let extent = ItemsCells.estimatedExtent(across: across)
-            return across ? LayoutSize(width: extent, height: 0) : LayoutSize(width: width ?? 0, height: extent)
+        guard let cells = cells else { return super.contentSize(width: width) }
+        return cells.contentSize(of: self, across: across, width: width, showing: shown != nil && !items.isEmpty) {
+            super.contentSize(width: width)
         }
-        return super.contentSize(width: width)
     }
 }

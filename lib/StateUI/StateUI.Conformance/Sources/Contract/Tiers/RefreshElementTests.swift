@@ -12,7 +12,7 @@
 
     public static var cases: [ConformanceCase] {
         Specimens.wearing(RefreshElementContract.self).flatMap { element in
-            [pulled(element), shown(element), unended(element), withheld(element)]
+            [pulled(element), shown(element), unended(element), withheld(element), disabled(element)]
         }
     }
 
@@ -123,6 +123,38 @@
             try s.perform(.activate, on: s.element("let"))
             try s.settle { try s.held(RefreshElementContract.isRefreshEnabled, on: view) == true }
             s.expect(try s.held(RefreshElementContract.isRefreshEnabled, on: view), true, "let again")
+        }
+    }
+
+    /// A view the tree disables offers no pull, nor one in a branch it disables; enabled, it offers it again.
+    @MainActor
+    static func disabled(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aDisabledViewOffersNoPull", proves: [
+            Covered(RefreshElementContract.isRefreshEnabled, on: element),
+        ], needs: [
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+            Covered(RefreshElementContract.refreshRequested, on: element),
+            Covered(EnabledElementContract.isEnabled, on: element), Covered(EnabledElementContract.isEnabled, on: "VStack"),
+        ]) { s in
+            let enabled = State(wrappedValue: false)
+            s.start {
+                VStack {
+                    specimen(element, Pull {}).isEnabled(enabled.wrappedValue)
+                    VStack { specimen(element, id: "inside", Pull {}) }.isEnabled(enabled.wrappedValue)
+                    Button("Enable").onClicked { enabled.wrappedValue = true }.id("enable")
+                }
+            }
+            let view = try s.element("specimen"), inside = try s.element("inside")
+            s.expect(try s.held(RefreshElementContract.isRefreshEnabled, on: view), false, "disabled")
+            s.expect(try s.held(RefreshElementContract.isRefreshEnabled, on: inside), false, "in a disabled branch")
+
+            try s.perform(.activate, on: s.element("enable"))
+            try s.settle {
+                try s.held(RefreshElementContract.isRefreshEnabled, on: view) == true
+                    && s.held(RefreshElementContract.isRefreshEnabled, on: inside) == true
+            }
+            s.expect(try s.held(RefreshElementContract.isRefreshEnabled, on: view), true, "enabled again")
+            s.expect(try s.held(RefreshElementContract.isRefreshEnabled, on: inside), true, "and its branch")
         }
     }
 

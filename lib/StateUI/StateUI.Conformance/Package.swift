@@ -11,6 +11,7 @@ let package = Package(
     platforms: [.iOS("26.4"), .macOS("26.4")],
     products: [
         .library(name: "StateUIConformance", targets: ["StateUIConformance"]),
+        .executable(name: "stateui-conformance-metadata", targets: ["StateUIConformanceMetadata"]),
     ],
     dependencies: [
         .package(name: "StateUIRoot", path: "../../.."),
@@ -23,6 +24,12 @@ let package = Package(
                 .product(name: "StateUIHost", package: "StateUIHost")],
             path: "Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        ),
+        // What the stateui tool reads a family's revision and recorded verdicts through: the library's own reader.
+        .executableTarget(
+            name: "StateUIConformanceMetadata",
+            dependencies: ["StateUIConformance", .product(name: "StateUI", package: "StateUIRoot")],
+            path: "Metadata/Sources"
         ),
         .testTarget(
             name: "StateUIConformanceTests",

@@ -60,7 +60,9 @@ least the theme's bar height (`actionBarSize`) under what it reaches
 beneath, actions or none, so a split view's two bars stand as one. The bar's words'
 color - the one written, or white or black against a written background -
 is its title's, its overflow button's, its actions' pictures' and its back
-arrow's or menu glyph's; a sidebar page's own picture keeps its colors.
+arrow's or menu glyph's; a sidebar page's own picture keeps its colors. Given
+none again, the title takes the color its style gives it and the overflow
+button the theme's picture, kept untinted - Android keeps a color otherwise.
 The actions' words follow the bar's theme, as Android's own bars do: the
 toolbar is made in Android's overlay for a dark bar, its action words light,
 or for a light one, their words dark - by the host layer's reading of the
@@ -222,7 +224,10 @@ over the theme's own ([a page's ground](../../host/pages.md#a-pages-ground)),
 the theme's alone where the window says none, and is grounded again as that
 background changes. Either moves at
 once where the user asks for less motion; the window's size is the
-configuration's, known before the root is laid out. The page in front is the one presented:
+configuration's, known before the root is laid out. A window resized across
+600 points moves the page shown, and what is laid over it, from the card to
+the whole window or back, as the configuration changes - the same page, its
+state kept, on its ground again. The page in front is the one presented:
 the page beneath hears it disappear, and appear again when the one over it
 goes. Back is the page in front's own way first - a stack inside it pops -
 and then that page going down, false written onto its sheet's state.

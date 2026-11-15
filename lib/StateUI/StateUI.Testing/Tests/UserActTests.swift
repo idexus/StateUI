@@ -111,6 +111,28 @@ final class UserActTests: XCTestCase {
         XCTAssertEqual(try window.element("pick.opaque").value(ColorPickerContract.color), Color(hex: 0xB22222))
     }
 
+    /// A slider takes what its thumb reaches: past an end it stands at that end, value and event alike, and a value
+    /// that is no number is no slide; a switch's act and a field's are no label's.
+    func testAnActIsWhatTheViewsUserCanDo() async throws {
+        let window = try await TestWindow(motion: .none) { ReachPage() }
+        let slider = try window.element("reach.slider")
+        let label = try window.element("reach.shown")
+
+        try await slider.perform(.slide(to: 2))
+        XCTAssertEqual(try slider.value(RangeElementContract.value), 1)
+        try await slider.perform(.slide(to: -1))
+        XCTAssertEqual(try label.value(TextElementContract.text), "0.0 [1.0, 0.0]")
+        for value in [Double.nan, .infinity, -.infinity] {
+            XCTAssertThrowsError(try slider.performNow(.slide(to: value))) { error in
+                XCTAssertTrue("\(error)".contains("no such value"), "\(error)")
+            }
+        }
+        XCTAssertThrowsError(try label.performNow(.toggle))
+        XCTAssertThrowsError(try label.performNow(.type("words")))
+        XCTAssertThrowsError(try label.performNow(.submit))
+        XCTAssertEqual(try label.value(TextElementContract.text), "0.0 [1.0, 0.0]", "nothing reached the label")
+    }
+
     /// The keyboard moved to a view leaves the last: each hears where it now is.
     func testTheFocusMovesFromViewToView() async throws {
         let window = try await TestWindow(motion: .none) { FocusPage() }
@@ -156,6 +178,19 @@ private struct EveryActPage: View {
             ColorPicker($tint).accessibilityIdentifier("acts.color")
             Text("\(heard) \(lit) \(name) \(focused) \(level) \(count) \(span) \(day) \(time) \(tint)")
                 .accessibilityIdentifier("acts.shown")
+        }
+    }
+}
+
+/// A slider in its range of 0 to 1, saying its value and every value it reported.
+private struct ReachPage: View {
+    @State private var level = 0.5
+    @State private var heard: [Double] = []
+
+    var body: some View {
+        VStack {
+            Slider($level).onValueChanged { heard.append($0) }.accessibilityIdentifier("reach.slider")
+            Text("\(level) \(heard)").accessibilityIdentifier("reach.shown")
         }
     }
 }

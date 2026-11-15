@@ -3,7 +3,7 @@
 How the conformance suite drives Android Views: `AndroidDriver` in the host's
 test APK, one test for each family of cases in `AndroidConformanceTests`,
 their verdicts written into the APK's files and held to `lib/StateUI/exports/marks/android`
-by `test-android.sh`.
+by `stateui repo test --suite host:android`.
 
 ## What the driver does
 
@@ -56,7 +56,10 @@ the CPH2363 ends one whose window stands while a message runs ten seconds
 that message done. So the runner runs the suite one item in each message of
 the UI thread: each test alone, and a conformance family of more cases than an
 item takes in parts, each part a message; a family's verdicts are gathered
-until its last part writes them, one file a family.
+until its last part writes them, one file a family. The walk of every case of
+every closed vocabulary runs in parts too, each test of
+`AndroidVocabularyTests` every twenty-fourth of the elements: whole, it takes some
+forty seconds.
 
 ## What the driver reads
 
@@ -110,10 +113,11 @@ words beside a picture, and that stays unread.
 
 ## Running the stale families
 
-The device reads no repository, so `STATEUI_STALE_ONLY=1` is the script's to
-answer: it runs the families whose verdict files in `lib/StateUI/exports/marks/android`
-open with another revision than `.scripts/Marks/revision.sh` gives, or with
-none, and takes only theirs off the device.
+The device reads no repository, so the stale families are the stateui tool's
+to name: `stateui repo conformance run --host android --changed` runs the
+families whose verdict files in `lib/StateUI/exports/marks/android` open with
+another revision than the conformance package's reader gives, or with none,
+and takes only theirs off the device.
 
 ## What goes past Android
 

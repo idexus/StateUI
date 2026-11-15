@@ -1,2 +1,2 @@
-# revision 6.1
-ToolbarButton: ✅
+# revision 6.2
+ToolbarButton: ✓ activate on ToolbarButton: the bar's action chosen as the relay reports it, no button pressed

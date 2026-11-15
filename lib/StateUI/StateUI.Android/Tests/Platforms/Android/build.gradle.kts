@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The test APK: the host's tests, its Java layer, and the instrumentation that
-// runs them. .scripts/Android/test-android.sh names every path below.
+// runs them. The stateui tool names every path below.
 
 plugins {
     id("com.android.application") version "9.2.1"
@@ -10,7 +10,7 @@ plugins {
 
 fun stated(name: String): String =
     providers.gradleProperty(name).orNull
-        ?: error("$name is not given - build the tests with .scripts/Android/test-android.sh")
+        ?: error("$name is not given - build the tests with stateui repo test --suite host:android")
 
 layout.buildDirectory.set(file(stated("stateui.build")))
 
@@ -23,7 +23,7 @@ android {
         minSdk = 28
         targetSdk = 36
         versionCode = 1
-        versionName = "0.8.3"
+        versionName = "0.8.5"
     }
 
     sourceSets {

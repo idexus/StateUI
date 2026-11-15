@@ -6,24 +6,24 @@ import XCTest
 
 @MainActor
 final class ReleaseTests: XCTestCase {
-    /// Every place that names the release names the one the editor
-    /// extension's `package.json` states, the release's only home: the
-    /// published-package line in the root's Package.swift, the library's own
-    /// `application.info.libraryVersion`, each Android head's version, the Gallery's AppKit
+    /// Every place that names the release names the one the library's own `application.info.libraryVersion`
+    /// states, the release's only home: the published-package line in the root's Package.swift, the editor
+    /// extension's `package.json`, the `stateui` tool's release, each Android head's version, the Gallery's AppKit
     /// bundle, every UIKit bundle, the bug report's example, and the newest section of the changes. A reader copying
     /// any of them gets this release, not the one before.
     func testEveryMentionOfTheReleaseNamesThisOne() throws {
-        let manifest = try JSONSerialization.jsonObject(
-            with: Data(contentsOf: SourceTree.repository.appendingPathComponent("editors/VSCode/package.json")))
+        let home = "lib/StateUI/Core/Sources/Types/Environment/ApplicationInfo.swift"
         let release = try XCTUnwrap(
-            (manifest as? [String: Any])?["version"] as? String, "package.json states no version.")
+            try String(contentsOf: SourceTree.repository.appendingPathComponent(home), encoding: .utf8)
+                .occurrences(between: "libraryVersion = \"", and: "\"").first,
+            "\(home) states no libraryVersion.")
 
         var mentions: [(file: String, before: String, after: String)] = [
             ("Package.swift", "exact: \"", "\""),
-            ("lib/StateUI/Core/Sources/Types/Environment/ApplicationInfo.swift", "libraryVersion = \"", "\""),
+            (home, "libraryVersion = \"", "\""),
+            ("editors/VSCode/package.json", "\"version\": \"", "\""),
+            ("tools/StateUI.CLI/Sources/StateUITooling/Release/Release.swift", "version = \"", "\""),
             (".github/ISSUE_TEMPLATE/bug.yml", "placeholder: StateUI ", ","),
-            (".scripts/AppKit/build-gallery-appkit.sh", "CFBundleShortVersionString -string ", " "),
-            (".scripts/UIKit/tools.sh", "CFBundleShortVersionString -string ", " "),
             ("lib/StateUI/StateUI.Android/Tests/Platforms/Android/build.gradle.kts", "versionName = \"", "\""),
         ]
 
@@ -49,7 +49,8 @@ final class ReleaseTests: XCTestCase {
     }
 
     /// What the newest release says is gone is gone: no name its section lists before "is gone" or "are gone"
-    /// stands in the public API's record. A name a later change brought back makes the release's word untrue.
+    /// stands in the public API's record - a release taking nothing away says none. A name a later change brought
+    /// back makes the release's word untrue.
     func testWhatTheNewestReleaseSaysIsGoneIsNotInTheAPI() throws {
         let changes = try String(contentsOf: SourceTree.repository.appendingPathComponent("CHANGELOG.md"), encoding: .utf8)
         let record = try APISurfaceTests.recorded()
@@ -60,7 +61,9 @@ final class ReleaseTests: XCTestCase {
 
         let newest = changes.components(separatedBy: "\n## ").dropFirst().first ?? ""
         let gone = ReleaseText.namesSaidGone(in: newest)
-        XCTAssertFalse(gone.isEmpty, "The guard reads no name the newest release says is gone.")
+        // A release taking nothing away says nothing is gone; one saying so names what, and the guard reads it.
+        let saysGone = newest.range(of: #"\s(is|are)\s+gone"#, options: .regularExpression) != nil
+        XCTAssertEqual(gone.isEmpty, !saysGone, "The guard reads no name the newest release says is gone.")
         for name in gone where ReleaseText.isDeclared(name, among: declared) {
             XCTFail("CHANGELOG.md's newest release says `\(name)` is gone, but the public API declares it.")
         }

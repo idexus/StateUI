@@ -22,16 +22,7 @@ lib/StateUI/StateUI.Web/           Web host package, Swift for WebAssembly over 
 lib/StateUI/StateUI.Web/Testing/   its tests, and the driver its conformance runs go through
 lib/StateUI.Head/                  the package that brings each application's head its host
 lib/Backends/                      backends: one element on one host, its engine not shipped - WebView.GTK, WebView.WinUI
-.scripts/AppKit/                   AppKit Gallery bundling, the host's tests and deploys
-.scripts/UIKit/                    UIKit bundles, runs on a simulator or a device, tests and deploys
-.scripts/Android/                  Android Views builds, runs, devices, tests and deploys
-.scripts/WinUI/                    WinUI builds, runs, tests and deploys, and the Windows App SDK
-.scripts/GTK/                      GTK builds, runs, tests and deploys
-.scripts/Web/                      Web builds, pages, runs, tests and deploys, and the Swift SDK for WebAssembly
-.scripts/Marks/                    the revision a conformance family's verdicts stand at
-.scripts/new-app.sh                a new application in apps/ (new-app.ps1 on Windows)
-.scripts/test-native.sh            the Swift suites on macOS, the AppKit host's among them
-.scripts/rasterize-images.swift    an application's SVGs drawn as PNGs for a head whose toolkit draws none
+tools/StateUI.CLI/                 the stateui tool: making, building, running, testing and packaging applications
 apps/Gallery/Sources/              platform-neutral Gallery application
 apps/Gallery/Platforms/AppKit/     Gallery AppKit entry point
 apps/Gallery/Platforms/UIKit/      Gallery UIKit head
@@ -75,8 +66,8 @@ targets of a build, never the manifest describing them - so no
 resolves no host package and compiles no line of one host's half, and a
 `Platforms/AppKit/` folder needs no condition inside it.
 
-`.scripts/AppKit/build-gallery-appkit.sh` and the AppKit tasks set the variable
-for a build. The editor gets it from the StateUI extension: the host chosen in
+The `stateui` tool and the AppKit tasks, which call it, set the variable for a
+build. The editor gets it from the StateUI extension: the host chosen in
 its status bar sets the variable for the Swift language server
 ([StateUI for VS Code](editors/VSCode/README.md#the-host)). A
 `swift.swiftEnvironmentVariables` setting naming the variable would override
@@ -154,6 +145,44 @@ branches, tests, samples, and documentation together. Do not leave an inert
 modifier or compatibility alias unless compatibility is itself an explicit
 contract.
 
+## The tool
+
+`stateui` makes, builds, runs, tests and packages applications, and does the
+repository's own work - its suites, marks, API records and documents. It is
+the package `tools/StateUI.CLI`, built from the checkout and put on the search
+path:
+
+```bash
+swift build -c release --package-path tools/StateUI.CLI
+mkdir -p ~/.local/bin
+ln -sf "$(swift build -c release --package-path tools/StateUI.CLI --show-bin-path)/stateui" ~/.local/bin/stateui
+```
+
+`~/.local/bin` is a folder the search path has to hold. On Windows the program
+is `stateui.exe`, and its folder joins the user's search path:
+
+```powershell
+swift build -c release --package-path tools\StateUI.CLI
+$bin = swift build -c release --package-path tools\StateUI.CLI --show-bin-path
+[Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";$bin", "User")
+$env:Path += ";$bin"
+```
+
+The link and the folder name the build, so after pulling, the first command
+alone renews the tool. Its distribution -
+the program for one system and architecture with its license and notices, the
+Swift runtime linked in where the system has none - is made and read back by
+
+```bash
+stateui repo distribution package
+```
+
+into `artifacts/stateui`: `stateui-<release>-<system>-<architecture>.tar.gz`
+(`.zip` on Windows) and its `.sha256`. Unpacked anywhere, its `bin` on the
+search path, it needs no Swift; the tool's workflow keeps one for macOS, Linux
+and Windows from every run. `stateui doctor` says what each host needs of the
+machine.
+
 ## Build
 
 The AppKit host requires macOS 26.4 or newer and Xcode 27, with its Swift 6.4.
@@ -161,94 +190,91 @@ The AppKit host requires macOS 26.4 or newer and Xcode 27, with its Swift 6.4.
 Build the runnable Gallery bundle:
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug
+stateui build --project apps/Gallery --host appkit
 ```
 
 Build and start the smaller example:
 
 ```bash
-.scripts/AppKit/run-app.sh apps/HelloWorld debug
+stateui run --project apps/HelloWorld --host appkit
 ```
 
 In VS Code, **StateUI: Debug** and **StateUI: Release** build and start the
 application chosen in the StateUI extension's status bar, on the host chosen
 there ([StateUI for VS Code](editors/VSCode/README.md)). The Gallery's
-build assembles its resources, icon, runtime libraries, and ad-hoc signature.
+build, and every application's, assembles its resources, icon, runtime
+libraries, `Info.plist` and ad-hoc signature.
 
 The UIKit host builds on macOS with the same Xcode and its iOS 26.4 or
 newer simulator runtime, for iOS and iPadOS 26.4 or newer. An application's UIKit
 head is built as an application bundle, installed on an iOS simulator -
 booted first where it is not - or on an iPhone or iPad of this Mac's, and
-started by one script:
+started by the tool:
 
 ```bash
-.scripts/UIKit/run-app.sh apps/HelloWorld debug "iPhone 18 Pro"
+stateui run --project apps/HelloWorld --host uikit --device "iPhone 18 Pro"
 ```
 
 A simulator is named by its name or its UDID, a device by its name or its
-identifier; with none named, the simulator booted runs it, else an iPhone.
-`--no-log` returns once the application has started.
+identifier (`stateui devices --host uikit` lists them); with none named, the
+simulator booted runs it, else an iPhone. Ctrl+C ends the application.
 [UIKit host](hosts/uikit.md) lists what it needs and what it builds.
 
 The Android Views host builds on macOS with the swift.org toolchain, the Swift
 SDK for Android, the NDK r30 and JDK 21. An application's Android head is
-built, installed and started on a device by one script:
+built, installed and started on a device by the tool:
 
 ```bash
-.scripts/Android/run-app.sh apps/HelloWorld debug emulator-5554
+stateui run --project apps/HelloWorld --host android --device emulator-5554
 ```
 
 [Android Views host](hosts/android.md) lists what it needs and what it builds.
 
 The WinUI host builds on Windows with the swift.org toolchain and Visual
-Studio's C++ tools; its script fetches C++/WinRT and the Windows App SDK
-itself. An application's WinUI head is built and started by one script:
+Studio's C++ tools; the tool fetches C++/WinRT and the Windows App SDK itself.
+An application's WinUI head is built and started by the tool:
 
 ```powershell
-.scripts\WinUI\run-app.ps1 -App apps\HelloWorld
+stateui run --project apps\HelloWorld --host winui
 ```
 
 [WinUI host](hosts/winui.md) lists what it needs and what it builds.
 
 The GTK host builds on Linux with the swift.org toolchain, GTK 4 and
-libadwaita. An application's GTK head is built and started by one script:
+libadwaita. An application's GTK head is built, installed for the user and
+started by the tool:
 
 ```bash
-.scripts/GTK/run-app.sh apps/HelloWorld
+stateui run --project apps/HelloWorld --host gtk
 ```
 
 [GTK host](hosts/gtk.md) lists what it needs and what it builds.
 
-The Web host builds on macOS and Linux with swift.org's Swift 6.4.0
+The Web host builds on macOS and Linux with swift.org's Swift 6.4.2
 toolchain and its Swift SDK for WebAssembly. An application's Web head is
-built, served and opened in a browser by one script:
+built, its page served and opened in a browser by the tool:
 
 ```bash
-.scripts/Web/run-app.sh apps/HelloWorld
+stateui run --project apps/HelloWorld --host web
 ```
 
 [Web host](hosts/web.md) lists what it needs and what it builds.
 
-## Deploy
+## Package
 
-Each host's `deploy` script builds an application's head for release and lays
-it, with what it runs with, in a folder it makes anew:
+`stateui package` builds an application's head for release and lays it, with
+what it runs with, in a folder it makes anew:
 
 ```bash
-.scripts/AppKit/deploy.sh apps/Gallery artifacts/Gallery/AppKit
-.scripts/UIKit/deploy.sh apps/Gallery artifacts/Gallery/UIKit <device-udid>
-.scripts/Android/deploy.sh apps/Gallery artifacts/Gallery/Android emulator-5554
-.scripts/GTK/deploy.sh apps/Gallery artifacts/Gallery/GTK
-.scripts/Web/deploy.sh apps/Gallery artifacts/Gallery/Web
+stateui package --project apps/Gallery --host appkit
+stateui package --project apps/Gallery --host uikit --device <device-udid>
+stateui package --project apps/Gallery --host android --device emulator-5554
+stateui package --project apps/Gallery --host gtk
+stateui package --project apps/Gallery --host web
+stateui package --project apps/Gallery --host winui --architecture x86_64 --output artifacts/Gallery/WinUI/x64
 ```
 
-```powershell
-.scripts\WinUI\deploy.ps1 -App apps\Gallery -Destination artifacts\Gallery\WinUI\x64 -Architecture x64
-```
-
-- AppKit lays the application bundle where a script beside it bundles the
-  application (`build-<application>-appkit.sh`, the Gallery's), else the head
-  and the StateUI libraries it links;
+- AppKit, the application bundle;
 - UIKit, an application bundle for the device named - a simulator, or an
   iPhone or iPad it is signed for;
 - Android, the APK, for the ABI of the device named;
@@ -260,9 +286,10 @@ it, with what it runs with, in a folder it makes anew:
   relay and its style sheet, the module, the application's own scripts and its
   pictures - a folder any web server serves as it is.
 
-In VS Code, **StateUI: Deploy** runs the chosen host's script for the chosen
-application and lays it in `artifacts/<application>/<platform>` beside the
-`apps/` that holds it, a checkout's or a project group's. A WinUI head is laid
+In VS Code, **StateUI: Package** has the tool package the chosen application
+and lays it in `artifacts/<application>/<platform>` of its
+workspace - the folder of the stateui.json listing it, a checkout's or a
+project group's. A WinUI head is laid
 per architecture, in `artifacts/<application>/WinUI/<architecture>`: this
 machine's own, and on an ARM64 machine x64 too, which Windows runs emulated.
 Git leaves `artifacts/` out.
@@ -281,11 +308,15 @@ swift test --package-path apps/Gallery
 swift test --package-path apps/HelloWorld
 ```
 
-`.scripts/test-native.sh` runs these Swift suites, then the Gallery again as an
-AppKit build (`STATEUI_HOST=appkit`), on a build directory of its own:
+`stateui repo test --plan portable` runs the owner packages' suites every
+machine runs, each apart; `--plan native` this machine's host suites, and on a
+Mac the Gallery and HelloWorld again as AppKit builds (`STATEUI_HOST=appkit`),
+on a build directory of their own:
 
 ```bash
-.scripts/test-native.sh
+stateui repo test --plan portable
+stateui repo test --plan native --suite host:appkit
+stateui repo test --plan native --suite apps:appkit
 ```
 
 The first suite covers core semantics and the typed boundary. The host
@@ -305,56 +336,57 @@ The AppKit host's runs `swift test` in `lib/StateUI/StateUI.AppKit` and hands
 on `swift test`'s arguments:
 
 ```bash
-.scripts/AppKit/test-appkit.sh
-.scripts/AppKit/test-appkit.sh --filter AppKitConformanceTests
+stateui repo test --suite host:appkit
+stateui repo test --suite host:appkit --filter AppKitConformanceTests
 ```
 
 The UIKit host's suite is an application of its own, built, installed on an
-iOS simulator and run there; with no simulator named, the one booted, else an
-iPhone:
+iOS simulator and run there - every verdict held, then its API records; with
+no simulator named, the one booted, else an iPhone:
 
 ```bash
-.scripts/UIKit/test-uikit.sh "iPhone 18 Pro"
+stateui repo test --suite host:uikit --device "iPhone 18 Pro"
 ```
 
-The Android Views host's suite runs on a device, in a test APK:
+The Android Views host's suite runs on a device, in a test APK - every
+verdict held, then its API record:
 
 ```bash
-.scripts/Android/test-android.sh emulator-5554
+stateui repo test --suite host:android --device emulator-5554
 ```
 
-`STATEUI_FILTER=<names>` narrows a UIKit or an Android run to the tests whose
+`--filter <names>` narrows a UIKit or an Android run to the tests whose
 `Case.test` name holds one of the names, split at commas.
 
 The WinUI host's suite runs on Windows, the Windows App SDK laid beside its
-test runner first, every test in a process of its own. Alone the script runs
-the host's own tests; `-Conformance` runs the conformance families - some
-fifteen minutes; `-Filter <test>` runs the tests it names:
+test runner first, every test in a process of its own: the foundation's
+Windows tests, the host's own, then its API records. The conformance families
+- some fifteen minutes - run where `--filter` names them:
 
 ```powershell
-.scripts\WinUI\test-winui.ps1
-.scripts\WinUI\test-winui.ps1 -Conformance
-.scripts\WinUI\test-winui.ps1 -Filter WinUIConformanceTests.testButton
+stateui repo test --suite host:winui
+stateui repo test --suite host:winui --filter WinUIConformanceTests
+stateui repo test --suite host:winui --filter WinUIConformanceTests.testButton
 ```
 
 The GTK host's suite runs on Linux, in a desktop session whose display shows
-its windows. Its script runs `swift test` in
-`lib/StateUI/StateUI.GTK/Testing` and hands on `swift test`'s arguments:
+its windows - the foundation's Linux tests, the host's, every verdict held,
+then its API records:
 
 ```bash
-.scripts/GTK/test-gtk.sh
+stateui repo test --suite host:gtk
 ```
 
 The Web host's suite is built for WebAssembly from
-`lib/StateUI/StateUI.Web/Testing`. Alone its script runs the host's own tests
-in Node; `--browser` runs the conformance families - every family, or those
-named - and the host's tests that need a browser's own page, in a headless
-Google Chrome or Chromium; `--browser --host` runs only those tests of the
-host's:
+`lib/StateUI/StateUI.Web/Testing`: its API record held, the host's own tests
+run in Node, then the conformance families and the host's tests that need a
+browser's own page in a headless Google Chrome or Chromium, every verdict
+held. `stateui repo web-size check` builds each application's release module and holds
+it within its budget:
 
 ```bash
-.scripts/Web/test-web.sh
-.scripts/Web/test-web.sh --browser
+stateui repo test --suite host:web
+stateui repo web-size check
 ```
 
 A passing unit suite does not prove native drawing or interaction. Exercise a
@@ -369,7 +401,9 @@ the host layer, the conformance runner and the application-testing package,
 and the Gallery and HelloWorld), and one for each host - **AppKit**, **UIKit**
 (an iPhone and an iPad simulator),
 **Android** (the test APK built on macOS, run on a Linux emulator), **WinUI**,
-**GTK** and **Web**. **Core macOS** runs the core, the host layer, the
+**GTK** and **Web** - and **stateui tool** (`cli.yml`), the tool's suites on
+macOS, Linux and Windows with the editor extension's client of it. **Core
+macOS** runs the core, the host layer, the
 conformance runner and the application-testing package once more under
 Thread Sanitizer, where a race it sees fails the run -
 `swift test --sanitize=thread` on a Mac; on Linux the
@@ -377,8 +411,9 @@ sanitizer cannot see through a `Mutex` and reports every guarded access.
 A host's workflow holds every conformance verdict to its marks and never
 writes them: a family whose verdicts changed fails there, and its marks are
 written again on that platform's machine. The Web's workflow runs the host's
-own tests alone; its marks are written on a Mac by
-`STATEUI_UPDATE_EXPORTS=1 .scripts/Web/test-web.sh --browser`.
+own tests in Node and every conformance family in a headless browser; its
+marks are written on a Mac by
+`stateui repo conformance run --host web --all --record`.
 
 ### Conformance and marks
 
@@ -398,39 +433,34 @@ two differ:
 - `lib/StateUI/exports/marks/<host>/<Family>.txt` - a family's verdicts, one a
   line, under `# revision <every>.<host>`.
 
-A run with `STATEUI_UPDATE_EXPORTS=1` writes them instead. The revision is the
-family's in `lib/StateUI/StateUI.Conformance/revisions.txt`: a line naming the
-family alone is its revision on every host, a line naming a host and the
-family that host's own, 1 where no line names it.
-`.scripts/Marks/revision.sh <host> <family>` prints it - `1.1`. A change that
+`stateui repo conformance run --record` writes them instead. The revision is
+the family's in `lib/StateUI/StateUI.Conformance/revisions.txt`: a line naming
+the family alone is its revision on every host, a line naming a host and the
+family that host's own, 1 where no line names it. `stateui repo conformance
+status` says, family by family, where each host's verdicts stand. A change that
 alters what a family's cases prove raises its revision there - the host's own
 line where one host's change alone does - and every verdict written at another
-revision shows ⌛ until its host runs the family again. `STATEUI_STALE_ONLY=1`
-(`-Stale` on Windows) runs only the families whose verdicts stand at another
-revision, or at none.
+revision shows ⌛ until its host runs the family again.
 
 A host's marks are written again, then the documents rendered from them - on
-AppKit:
+AppKit, every family, or only the stale ones, or those named:
 
 ```bash
-STATEUI_UPDATE_EXPORTS=1 .scripts/AppKit/test-appkit.sh --filter AppKitConformanceTests
-STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
+stateui repo conformance run --host appkit --all --record
+stateui repo conformance run --host appkit --changed --record
+stateui repo conformance run --host uikit --family Button --record --device "iPhone 18 Pro"
 ```
 
-The second line writes the tables of `docs/platform-contract.md` and the pages
-of `docs/controls/` from the contracts and every host's verdicts. Without the
-variable, `ControlDictionaryTests` refuses a document that differs from what
+The run's last phase writes the tables of `docs/platform-contract.md` and the
+pages of `docs/controls/` from the contracts and every host's verdicts
+(`stateui repo docs update`). Without `--record`, the verdicts are held to the
+marks, and `ControlDictionaryTests` refuses a document that differs from what
 they render, a line that is no verdict, and a verdict on what no contract
 declares.
 
-In VS Code, **StateUI: Conformance - Rebuild all** runs the chosen host's
-families writing their verdicts, then renders the documents;
-**StateUI: Conformance - Rebuild changed** runs only the stale families. A
-UIKit or an Android rebuild runs on the device chosen in the status bar; for
-Android the editor offers Rebuild all alone, and
-`STATEUI_STALE_ONLY=1 .scripts/Android/test-android.sh <serial>` runs the
-stale families. The editor makes no marks for the Web;
-`STATEUI_UPDATE_EXPORTS=1 .scripts/Web/test-web.sh --browser` writes them.
+In VS Code, **StateUI: Conformance - Rebuild all** and **Rebuild changed** run
+the same, as the chosen host - a UIKit or an Android rebuild on the device
+chosen in the status bar.
 [Reading the matrix](platform-contract.md#reading-the-matrix) says what each
 mark means.
 
@@ -486,9 +516,7 @@ The core's suite also guards the project itself, in
   NDK and the oldest system names the same one;
 - `VsCodeTests` - every name the VS Code configurations point at, in another
   file or a script, exists;
-- `WaitTests` - a wait asks its condition once a step and stops as it holds;
-- `WebPageTests` - the page `.scripts/Web/page.sh` lays out for a Web head
-  holds the application's names and what its `Page` folder adds.
+- `WaitTests` - a wait asks its condition once a step and stops as it holds.
 
 ## Diagnostics
 
@@ -521,11 +549,12 @@ an Android application sends to logcat:
 
 The host layer's runtime reads them from the process's environment as it
 starts (`DiagnosticText`), so they hold on every host. The Android, WinUI,
-GTK and Web run scripts hand every `STATEUI_` variable of the shell that runs
-them to the application - the Web's as a parameter of the page's address:
+`stateui run` and the Web's run script hand every `STATEUI_` variable of the
+shell that runs them to the application - the Web's as a parameter of the
+page's address:
 
 ```bash
-STATEUI_TALLY=1 .scripts/GTK/run-app.sh apps/Gallery
+STATEUI_TALLY=1 stateui run --project apps/Gallery --host gtk
 ```
 
 [Build diagnostics](interface/composition-and-identity.md#build-diagnostics)
@@ -541,17 +570,17 @@ installation is a complete checkout of a release tag or a local development
 tree. Each host and backend uses the root checkout as a local dependency, and
 `StateUI.Head` selects the application's host. A
 [project group](editors/VSCode/README.md#a-project-group)
-keeps applications outside the checkout while naming it by path; it uses the
-checkout's build scripts too.
+keeps applications outside the checkout while naming it by path, and the
+`stateui` tool builds them with it.
 
 Every native head and its host link the same dynamic `StateUI` product, so one
 process holds one runtime. The Web build compiles the application, StateUI and
 its host into one WebAssembly module.
 
-A release has one version, stated in the editor extension's
-`editors/VSCode/package.json`. Every other place that names it - the
-published-package line in the root `Package.swift`, the library's own
-`application.info.libraryVersion`, each application's Android
-head's version and the Android host's test head's, the Gallery's AppKit
-bundle, every UIKit bundle (`.scripts/UIKit/tools.sh`), the bug report's
+A release has one version, stated in the library's own
+`ApplicationInfo.libraryVersion`. Every other place that names it - the
+editor extension's `editors/VSCode/package.json`, the published-package line
+in the root `Package.swift`, each application's Android head's version and the
+Android host's test head's, the Gallery's AppKit bundle, the `stateui` tool's
+`Release.version` that every bundle it makes carries, the bug report's
 example - names the same one, and `ReleaseTests` holds them to it.

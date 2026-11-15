@@ -38,7 +38,7 @@ extension Differ {
         result.branch = pass.branch
         result.ownReads = pass.ownReads
         result.sizesArrive = pass.sizesArrive
-        result.atPagePosition = pass.atPagePosition
+        result.pagePlacer = pass.pagePlacer
         result.visualInput = pass.visualInput
         result.runs = pass.kept
         result.visualState = pass.visualState

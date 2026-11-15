@@ -4,6 +4,12 @@
 import Foundation
 import XCTest
 
+/// Every Swift runtime keeps one architecture: the host layer holds
+/// the elements every toolkit shares, each host holds only what its toolkit
+/// makes it write, and no host does again what an element of the layer does.
+/// These guards read the layer and every Swift host's sources as text.
+@MainActor
+final class RuntimeArchitectureTests: XCTestCase {
     /// GTK's local zone is read in one place, as it stands: GLib keeps its own from its first reading, so the
     /// locale, the clock and a local offset would part after the user changes the zone.
     /// Design: docs/design/platforms/gtk/runtime.md#the-environment
@@ -19,12 +25,6 @@ import XCTest
         XCTAssertGreaterThan(read, 10, "the scan read almost nothing of GTK's sources")
     }
 
-/// Every Swift runtime keeps one architecture: the host layer holds
-/// the elements every toolkit shares, each host holds only what its toolkit
-/// makes it write, and no host does again what an element of the layer does.
-/// These guards read the layer and every Swift host's sources as text.
-@MainActor
-final class RuntimeArchitectureTests: XCTestCase {
     /// One animator animates every value: no other file of a runtime samples a
     /// motion law, so a state channel and a described property cannot animate
     /// the same kind of value two ways.

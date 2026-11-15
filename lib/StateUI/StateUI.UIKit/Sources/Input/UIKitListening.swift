@@ -282,7 +282,9 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         switch recognizer.state {
         case .began: phase = .began
         case .changed: phase = .changed
-        case .ended, .cancelled, .failed: phase = .ended
+        case .ended: phase = .ended
+        // Taken away - another gesture won, or the system took the touches - it ends cancelled, as a drag does.
+        case .cancelled, .failed: phase = .cancelled
         default: return
         }
         let step = pinch.step(phase, scale: phase == .changed ? recognizer.scale : 1)
@@ -297,7 +299,8 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         switch recognizer.state {
         case .began: phase = .began
         case .changed: phase = .changed
-        case .ended, .cancelled, .failed: phase = .ended
+        case .ended: phase = .ended
+        case .cancelled, .failed: phase = .cancelled
         default: return
         }
         tell(.rotation(phase, degrees: rotation.step(phase, degrees: Double(recognizer.rotation) * 180 / .pi)))

@@ -28,6 +28,12 @@ extension AndroidDriver {
         return Self.said(menu, menusOnly: false)
     }
 
+    /// The context menu the driver opened, while Android holds it open - written as it opened; nil once Android
+    /// closed it.
+    func shownMenu(over element: MountedElement) throws -> String? {
+        Java.callStaticBool(Self.testMenus, Self.contextMenuOpen) ? openedMenu : nil
+    }
+
     /// The menu Android's button standing for `button` pops up, written as it opens - a bar's button, the submenu of
     /// its bar's menu holding its entries.
     func buttonMenu(of button: MountedElement) throws -> String {
@@ -230,6 +236,8 @@ extension AndroidDriver {
     }
 
     static let testMenus = Java.findClass("stateui/android/test/TestMenus")
+    static let showContextMenu = Java.staticMethod(testMenus, "showContextMenu", "(Landroid/view/View;)Z")
+    private static let contextMenuOpen = Java.staticMethod(testMenus, "contextMenuOpen", "()Z")
     static let showsMenuArrow = Java.staticMethod(testMenus, "showsMenuArrow", "(Landroid/view/View;)Z")
     private static let saidMenu = Java.staticMethod(testMenus, "said", "(Landroid/view/Menu;Z)Ljava/lang/String;")
     private static let saidHolding = Java.staticMethod(

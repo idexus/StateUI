@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `TabViewContract` on a host: the tab the binding names shows; the user's choice lands on the binding, the
-/// program's is shown.
+/// `TabViewContract` on a host: the tab the binding names shows; the user's choice lands on the binding and tells
+/// the pages they appear and disappear, the program's is shown.
 @_spi(Host) public enum TabViewTests: ConformanceFamily {
     public static let name = "TabView"
 
@@ -65,6 +65,62 @@
                 try s.perform(.activate, on: s.element("next0"))
                 try s.settle { try s.held(TabViewContract.selectedTab, on: tabs) == 1 }
                 s.expect(try s.held(TabViewContract.selectedTab, on: tabs), 1)
+            },
+            ConformanceCase("aTabViewInATabIsChosenOnItsOwn", proves: [
+                Covered(TabViewContract.selectedTab), Covered(TabViewContract.selectedTabChanged),
+            ]) { s in
+                let (outer, inner) = (State(wrappedValue: 0), State(wrappedValue: 0))
+                s.start {
+                    TabView([0, 1]) { tab in
+                        tab == 0
+                            ? AnyView(TabView([0, 1]) { Text("Inner \($0)") }.selection(inner.projectedValue))
+                            : AnyView(Text("Outer 1"))
+                    }
+                    .selection(outer.projectedValue)
+                }
+                s.settle { s.elements(ofType: TabViewContract.nodeType).count == 2 }
+                let tabViews = s.elements(ofType: TabViewContract.nodeType)
+                guard tabViews.count == 2 else { return s.fail("no tab view in a tab") }
+                let (outerTabs, innerTabs) = (tabViews[0], tabViews[1])
+
+                try s.perform(.choose(1), on: innerTabs)
+                s.settle { inner.wrappedValue == 1 }
+                s.expect(inner.wrappedValue, 1, "the inner tab view's choice")
+                s.expect(outer.wrappedValue, 0, "the outer one's unmoved")
+                s.expect(try s.held(TabViewContract.selectedTab, on: innerTabs), 1)
+                s.expect(try s.held(TabViewContract.selectedTab, on: outerTabs), 0)
+            },
+            ConformanceCase("aHeadedTabViewIsChosenOnItsOwn", proves: [
+                Covered(TabViewContract.selectedTab), Covered(TabViewContract.selectedTabChanged),
+            ], needs: [Covered(SplitViewContract.self)]) { s in
+                let tab = State(wrappedValue: 0)
+                s.start {
+                    SplitView { Text("Sidebar") } detail: {
+                        TabView([0, 1]) { Text("Tab \($0)") }.selection(tab.projectedValue).pageTitle("Library")
+                    }
+                }
+                let tabs = try s.element(ofType: TabViewContract.nodeType)
+
+                try s.perform(.choose(1), on: tabs)
+                s.settle { tab.wrappedValue == 1 }
+                s.expect(tab.wrappedValue, 1)
+                s.expect(try s.held(TabViewContract.selectedTab, on: tabs), 1)
+            },
+            ConformanceCase("aTabTheUserChoosesTellsItsPagesTheyAppearAndDisappear", proves: [
+                Covered(TabViewContract.self),
+            ], needs: [
+                Covered(TabViewContract.selectedTabChanged), Covered(PageContract.appearing),
+                Covered(PageContract.disappearing),
+            ]) { s in
+                let log = Received<String>()
+                s.start { TabView([0, 1]) { tab in Text("Tab \(tab)").loggingPhases(log, as: "tab\(tab)") } }
+                let tabs = try s.element(ofType: TabViewContract.nodeType)
+                s.settle { log.values.contains("tab0 appearing") }
+                log.values = []
+
+                try s.perform(.choose(1), on: tabs)
+                s.settle { log.values.contains("tab1 appearing") && log.values.contains("tab0 disappearing") }
+                s.expect(log.values.sorted(), ["tab0 disappearing", "tab1 appearing"], "no navigation phase for a tab")
             },
         ]
     }

@@ -93,7 +93,11 @@ final class WebImageView: WebDOMView {
     /// Design: docs/design/platforms/web/controls.md#pictures
     private func showFile() {
         holdSize()
-        guard let shown else { return attribute("src", nil) }
+        guard let shown else {
+            // No picture, no size of one: no load comes to say another.
+            style("contain-intrinsic-size", nil)
+            return attribute("src", nil)
+        }
         let unproportioned = aspect == .stretch && shown.hasSuffix(".svg")
         attribute("src", "Images/" + shown + (unproportioned ? "#svgView(preserveAspectRatio(none))" : ""))
     }

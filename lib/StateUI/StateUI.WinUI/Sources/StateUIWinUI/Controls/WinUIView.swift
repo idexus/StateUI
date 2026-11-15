@@ -150,7 +150,8 @@ class WinUIView {
     /// Design: docs/design/platforms/winui/drawing.md#a-views-background
     func setBackground(_ value: HostValue?) {
         let brush = WinUIBrush(value)
-        paint(.background, followsSize: brush.followsSize) { [handle] size in
+        paint(.background, followsSize: brush.followsSize) { [weak self] size in
+            guard let handle = self?.handle else { return }
             brush.withRelayBrush(over: size) { stateui_winui_set_background(handle, $0) }
         }
     }
@@ -315,7 +316,8 @@ class WinUIView {
     }
 
     /// Paints `what` with `paint` at the view's size now, and again at each new size where its brushes follow the
-    /// size of what they paint (`WinUIBrush.followsSize`).
+    /// size of what they paint (`WinUIBrush.followsSize`). `paint` reads the view's control as it runs, never one it
+    /// captured: a password swapped in lets the control before it go (`replaceNative`).
     /// Design: docs/design/platforms/winui/drawing.md#a-box-and-its-brush
     func paint(_ what: Painted, followsSize: Bool, _ paint: @escaping (LayoutSize) -> Void) {
         paintsBySize[what] = followsSize ? paint : nil
@@ -342,10 +344,10 @@ class WinUIView {
         return Point(x: corner[0], y: corner[1])
     }
 
-    /// Where the view stands, in DIPs: its frame in its parent, its place in the window, and that place from
-    /// `safeArea`, the safe area's top left in the window.
-    func frameReport(safeArea: Point) -> [Double] {
-        MountedElement.frameNumbers(place: placedFrame, corner: origin, content: safeArea)
+    /// Where the view stands, in DIPs: its frame in its parent, its laid-out `corner` in the window, and that corner
+    /// from `safeArea`, the safe area's top left in the window.
+    func frameReport(corner: Point, safeArea: Point) -> [Double] {
+        MountedElement.frameNumbers(place: placedFrame, corner: corner, content: safeArea)
     }
 
     /// Where WinUI laid the element out in its parent, in DIPs.
@@ -589,13 +591,13 @@ class WinUIView {
         onDragHeard?(heard)
     }
 
-    /// A press the relay tells - down, moved, let go or taken away, at `point` of the window's content: a drag by the
-    /// host layer's rule, and as it becomes one the view holds the pointer.
+    /// A press the relay tells - down, moved, let go or taken away, at `point` of the window's content and `inView`
+    /// of the view: a drag by the host layer's rule, and as it becomes one the view holds the pointer.
     /// Design: docs/design/platforms/winui/input.md#a-press-dragged
-    func heardPress(_ phase: StateUIPressPhase, at point: Point) {
+    func heardPress(_ phase: StateUIPressPhase, at point: Point, inView: Point) {
         switch phase {
         case .down:
-            press.pressed(at: point)
+            press.pressed(at: point, inView: inView)
         case .moved:
             let wasDragging = press.isDragging
             let told = press.moved(to: point)

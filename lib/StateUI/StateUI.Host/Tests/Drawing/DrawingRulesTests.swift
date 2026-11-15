@@ -109,6 +109,22 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(HostBrush(.values([.enumeration(2), .numbers([0, 0, 1, 1])])), .none)
     }
 
+    /// A gradient's stops stand in the order of their offsets, whatever order the tree wrote them in - stops at one
+    /// offset in the order written - and a stop at an offset that is no number stands nowhere: every toolkit is
+    /// handed them in order, and paints them alike.
+    func testAGradientsStopsStandInTheOrderOfTheirOffsets() {
+        let green = Color(red: 0, green: 255, blue: 0).propValue
+        let brush = HostBrush(.values([
+            .enumeration(2), .numbers([]), .number(1), blue, .number(0.5), green, .number(.nan), red, .number(0), red,
+            .number(0.5), blue,
+        ]))
+        XCTAssertEqual(brush, .linear(from: Point(x: 0, y: 0), to: Point(x: 0, y: 1), stops: [
+            HostBrush.Stop(offset: 0, color: red), HostBrush.Stop(offset: 0.5, color: green),
+            HostBrush.Stop(offset: 0.5, color: blue), HostBrush.Stop(offset: 1, color: blue),
+        ]))
+        XCTAssertEqual(brush.firstColor, red, "the stop at the start")
+    }
+
     /// A radial gradient runs out from its center to its radius, in fractions of what it paints, and from the
     /// middle to the edge where it gives no geometry.
     func testARadialGradientIsReadFromItsCenterToItsRadius() {

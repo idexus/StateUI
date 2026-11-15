@@ -35,11 +35,18 @@
     /// The space between the letters, in points.
     public var letterSpacing = 0.0
 
+    /// Whether the tree gave the space between the letters - none included: a run given none stands so in a label
+    /// that gives some.
+    public var letterSpacingGiven = false
+
     /// A line's height as a multiple of the font's own.
     public var lineHeight: Double?
 
     /// The lines under or through the words.
     public var decorations: TextDecorations = []
+
+    /// Whether the tree gave the lines - none included: a run given none stands so in a label that gives some.
+    public var decorationsGiven = false
 
     /// Whether the words' size follows the user's text-size setting.
     public var scales = true
@@ -73,9 +80,11 @@
         look.family = family ?? other.family
         look.color = color ?? other.color
         look.background = background ?? other.background
-        look.letterSpacing = letterSpacing != 0 ? letterSpacing : other.letterSpacing
+        look.letterSpacing = letterSpacingGiven || letterSpacing != 0 ? letterSpacing : other.letterSpacing
+        look.letterSpacingGiven = letterSpacingGiven || other.letterSpacingGiven
         look.lineHeight = lineHeight ?? other.lineHeight
-        look.decorations = decorations.isEmpty ? other.decorations : decorations
+        look.decorations = decorationsGiven || !decorations.isEmpty ? decorations : other.decorations
+        look.decorationsGiven = decorationsGiven || other.decorationsGiven
         look.scales = scales && other.scales
         return look
     }
@@ -109,8 +118,10 @@ extension MountedElement {
         look.family = value(.fontFamily)?.name
         look.color = value(.textColor)
         look.letterSpacing = number(.tracking) ?? 0
+        look.letterSpacingGiven = value(.tracking) != nil
         look.lineHeight = number(.lineHeight)
         look.decorations = value(.textDecorations)?.enumeration.map { TextDecorations(rawValue: $0) } ?? []
+        look.decorationsGiven = value(.textDecorations) != nil
         look.scales = value(.isFontAutoScalingEnabled)?.bool != false
         return look
     }

@@ -1,0 +1,24 @@
+{
+  "request" : {
+    "id" : "21",
+    "jsonrpc" : "2.0",
+    "method" : "repository/integrationPackage",
+    "params" : {
+      "editor" : "vscode",
+      "requestToken" : "4c6e8a0c-2d3f-4b5a-8e7c-9b1d3f5a7c22"
+    }
+  },
+  "response" : {
+    "id" : "21",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "artifactUri" : "file:///Users/example/StateUI/artifacts/stateui-0.8.5.vsix",
+    "extensionId" : "idexus.stateui",
+    "version" : "0.8.5"
+  }
+}

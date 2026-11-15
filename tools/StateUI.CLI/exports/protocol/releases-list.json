@@ -1,0 +1,22 @@
+{
+  "request" : {
+    "id" : "9",
+    "jsonrpc" : "2.0",
+    "method" : "releases/list",
+    "params" : {
+      "minimum" : "0.8.0"
+    }
+  },
+  "response" : {
+    "id" : "9",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "releases" : [
+        "0.8.5",
+        "0.8.4",
+        "0.8.0"
+      ],
+      "repository" : "https://github.com/idexus/StateUI.git"
+    }
+  }
+}

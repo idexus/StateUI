@@ -1,21 +1,17 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Acts sent from more than one thread at once.
+// Acts sent from more than one task at once.
 //
-// `async let` runs its child on the cooperative pool - Swift's design, a child
-// task does not inherit the parent's actor - so two acts started with
-// `async let` reach `Renderer.send` from pool threads while the host thread is
-// taking acts and dispatching completions. The registry behind that is a
-// dictionary and an array, and unguarded they are a data race: a lost
-// continuation on a good day, which reads as a handler frozen at its `await`,
-// and corrupted memory on a bad one.
+// `async let` runs its child off the main actor - a child task does not inherit
+// its parent's actor - and the child hops to it to send an act, as `Renderer`
+// is `@MainActor`: two acts started with `async let` reach the registry in
+// turn, between the host's taking acts and dispatching completions.
 //
-// What these tests pin is the guarantee, not the crash: every act queued from a
-// child task is taken exactly once, answered exactly once, and every awaiting
-// handler comes back. Against the unguarded registry this fails by count -
-// nondeterministically, but a loss is a red test rather than a hang, because
-// the host loop below has an end.
+// What these tests pin is the guarantee: every act queued from a child task is
+// taken exactly once, answered exactly once, and every awaiting handler comes
+// back. A loss is a red test rather than a hang, because the host loop below
+// has an end.
 
 import XCTest
 @_spi(Host) @testable import StateUI

@@ -200,7 +200,12 @@ the anchor stands where the page stands, and so does what it holds.
 
 Anywhere else an arrangement is left out of what is described and said once
 (`complain`): inside a layout, and inside a page, where a view's branch chose
-one. No type refuses an arrangement in a `VStack`, since a composed view may
+one. A split view stands only as the root of a window or of a sheet - the
+element standing it where a page stands, through any anchor between
+(`pagePlacer`), is one of the two - so on a stack's page, in a tab or in
+another split view's detail it is left out and said once: UIKit refuses to
+push a split view controller, and a sidebar reaching under a window's title
+bar belongs to the window on every desktop. No type refuses an arrangement in a `VStack`, since a composed view may
 hide one in its `body`; the hosts show one only where a page stands. An
 arrangement fills where it stands, so it keeps what its contract declares - its
 bar, its title and icon where it declares them, its own state - and leaves
@@ -210,8 +215,16 @@ gesture.
 What a screen is - its title, its buttons - its view says of its page. An
 arrangement's bar belongs to the arrangement (`BarElement`) and looks the same
 whichever page it shows. An arrangement standing
-where a page stands takes its own title and icon from the same modifiers, for
-where it is shown as an item of something else, such as a tab.
+where a page stands takes what of a page its contract wears from the same
+modifiers (`Node.takeAsArrangement`): a stack and tabs their own title and icon,
+for where they are shown as an item of something else, such as a tab. A split
+view stands only at a window's or a sheet's root, where nothing presents it as
+an item, so it wears no title or icon (`PageElement`) - only the ground of its
+pages and the links its window is given (`OpenedLinkElement`); `pageTitle` and
+`pageIcon` written on one, or on a view whose body is one, are said once and
+left out. They are modifiers of every view - what a view says of its page - so
+no type refuses them on a split view alone: an overload of its own marked
+unavailable loses to the one every view has, and the call compiles.
 
 ## The stack is the state
 

@@ -62,8 +62,12 @@ final class WebBottomBar {
         bar?.element.layoutValues ?? LayoutValues()
     }
 
-    /// The scroller whose rows the bar follows, listened to once.
+    /// The scroller whose rows the bar follows, and what the bar hangs on it - a listener of its scroll, a follower
+    /// of its rows' size - taken off as another stands there.
     private weak var followed: WebDOMView?
+    private var scrolled: Int32?
+    private weak var rows: WebDOMView?
+    private var rowsFollower: Int?
 
     /// Whether the page's content runs under the room's foot.
     private var runsUnder = false
@@ -76,13 +80,26 @@ final class WebBottomBar {
     func follow(runsUnder: Bool, scroller: WebDOMView?, edge: ScrollEdge) {
         (self.runsUnder, self.edge) = (runsUnder, edge)
         foot.attribute("data-edge", edge == .none ? "none" : edge == .hard ? "hard" : "automatic")
-        if let scroller, scroller !== followed {
-            scroller.listen("scroll") { [weak self] in self?.standOnGround() }
-            // Rows coming and going move the scroller's reach, which no scroll tells.
-            (scroller as? WebLayoutView)?.children.first?.followSize { [weak self] in self?.standOnGround() }
+        if scroller !== followed {
+            unfollow()
+            if let scroller {
+                let heard = WebRelay.listener { [weak self] in self?.standOnGround() }
+                WebRelay.listen(scroller.node, "scroll", heard)
+                scrolled = heard
+                // Rows coming and going move the scroller's reach, which no scroll tells.
+                rows = (scroller as? WebLayoutView)?.children.first
+                rowsFollower = rows?.followSize { [weak self] in self?.standOnGround() }
+            }
+            followed = scroller
         }
-        followed = scroller
         standOnGround()
+    }
+
+    /// Takes off what the bar hangs on the scroller it follows.
+    private func unfollow() {
+        if let scrolled { WebRelay.forget(scrolled) }
+        if let rowsFollower { rows?.stopFollowingSize(rowsFollower) }
+        (scrolled, rows, rowsFollower) = (nil, nil, nil)
     }
 
     /// The edge's blur and line while anything stands under the bar (`BottomBarPlace.covers`), but for no edge.
@@ -95,6 +112,7 @@ final class WebBottomBar {
     /// Lets go of the bar's own views as its page leaves - the bar at the foot with its buttons, the holder and the
     /// foot; the view the holder shows is its own element's.
     func release() {
+        unfollow()
         toolbar.release()
         holder.release()
         foot.release()

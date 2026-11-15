@@ -52,16 +52,16 @@
 /// an edge swipe, a tap on the dimmed page - are written into the binding, and
 /// a host with room for both pages may open with the sidebar showing. The
 /// sidebar page's title names the sidebar's bar; a sidebar page with none
-/// shows the application's name there.
+/// shows the application's name there. A split view stands at a window's or a
+/// sheet's root and has no title or icon of its own: its pages have theirs, and
+/// `pageTitle` or `pageIcon` written on it is said once and says nothing.
 public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement {
     /// The node this page describes.
     public var node: Node
 
-    /// A sidebar beside `detail`, shown when `showsSidebar` says so.
+    /// A sidebar beside `detail`, shown as `.showsSidebar(_:)` says - a binding the platform's own sidebar button, a
+    /// swipe or a tap outside it write.
     ///
-    /// - Parameter showsSidebar: whether the sidebar shows, borrowed
-    ///   two-way. The platform's own sidebar button, a swipe or a tap outside
-    ///   it write here.
     /// - Parameter sidebar: the page at the side; its title names the
     ///   sidebar's bar, the application's name where it says none.
     /// - Parameter detail: the page beside it, which is the application.

@@ -102,6 +102,37 @@ final class GTKLeaveTests: XCTestCase {
         }
     }
 
+    /// Pages pushed, replaced and popped with their transitions asked for leave the host holding the views it held
+    /// before, round after round: counted, not read from the process's memory. A test's window gets no frames, so
+    /// libadwaita runs no transition here; the Gallery walks them.
+    func testPagesComingAndGoingOnTheirTransitionsLeaveNothingHeld() throws {
+        try onUIThread {
+            let path = State(wrappedValue: [Int]())
+            let host = GTKRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    Text("Root")
+                } destination: { number in VStack { Text("Page \(number)"); Button("Go").onClicked {} } }
+            }
+            let navigation = try XCTUnwrap(host.views(GTKNavigationView.self).first)
+            _ = host.runtime.core.runJobs()
+            let before = GTKView.liveCount
+
+            for round in 0..<3 {
+                path.wrappedValue = [round, round + 10]
+                host.settle { navigation.stack.count == 3 }
+                path.wrappedValue = [round + 20]
+                host.settle { navigation.stack.count == 2 }
+                path.wrappedValue = []
+                host.settle { navigation.stack.count == 1 }
+                host.settle {
+                    _ = host.runtime.core.runJobs()
+                    return GTKView.liveCount == before
+                }
+                XCTAssertEqual(GTKView.liveCount, before, "views outlived round \(round)")
+            }
+        }
+    }
+
     private static func children(of widget: GTKWidget) -> Int {
         var count = 0
         var child = gtk_widget_get_first_child(widget)

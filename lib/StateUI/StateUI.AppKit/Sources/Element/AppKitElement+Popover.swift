@@ -16,8 +16,12 @@ extension AppKitElement {
         guard anchor.window != nil else { return element.waitForItsWindow() }
         let popover = shownPopover ?? AppKitPopover(content: content) { [weak self] in self?.popoverClosed() }
         shownPopover = popover
+        // Within the screen its anchor stands on. Design: docs/design/platforms/appkit/runtime.md#a-popover
+        let fitting = content.fittingContentSize(width: nil)
+        let room = (anchor.window?.screen ?? NSScreen.main)?.visibleFrame.size ?? fitting
         popover.show(
-            by: anchor, size: content.fittingContentSize(width: nil), presenting: host?.presentsWindows ?? true)
+            by: anchor, size: NSSize(width: min(fitting.width, room.width), height: min(fitting.height, room.height)),
+            presenting: host?.presentsWindows ?? true)
     }
 
     /// AppKit took the popover away: the user's dismissal, or the tree's own coming back (`reportDismissed`).

@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `ContextMenuContract` on a host: a view offers its menu - items, separators and submenus as the tree says them -
-/// the menu follows the states its entries read, and one with no entries is none.
+/// the menu follows the states its entries read, one with no entries is none, and one open goes with its view.
 @_spi(Host) public enum ContextMenuTests: ConformanceFamily {
     public static let name = "ContextMenu"
 
@@ -58,6 +58,26 @@
                 try s.perform(.activate, on: s.element("empty"))
                 try s.settle { try s.menu(of: row) == "" }
                 s.expect(try s.menu(of: row), "", "no menu offered")
+            },
+            ConformanceCase("anOpenMenuGoesWithItsView", proves: [
+                Covered(ContextMenuContract.self),
+            ], needs: [Covered(TextElementContract.text, on: "MenuItem")]) { s in
+                let shows = State(wrappedValue: true)
+                s.start {
+                    VStack {
+                        if shows.wrappedValue {
+                            Text("Row").contextMenu { MenuItem("Copy").id("copy") }.id("row")
+                        }
+                        Text("Beside").id("beside")
+                    }
+                }
+                try s.perform(.openMenu, on: s.element("row"))
+                try s.settle { try s.shownMenu() == "Copy" }
+                s.expect(try s.shownMenu(), "Copy", "the menu the user asked for, open")
+
+                shows.wrappedValue = false
+                try s.settle { try s.shownMenu() == nil }
+                s.expect(try s.shownMenu(), nil, "gone with its view")
             },
         ]
     }

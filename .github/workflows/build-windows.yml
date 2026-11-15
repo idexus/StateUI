@@ -1,6 +1,7 @@
 # The core's suites on Windows - the library, the host layer, the
 # conformance runner and the application-testing package - and the Gallery's
-# and starter application's. The WinUI host's stands in winui.yml.
+# and starter application's. The WinUI host's stands in winui.yml, the stateui
+# tool's in cli.yml.
 #
 # Windows is the second machine this library is built on, which is what makes
 # the suite worth running here: it is the other machine whose file separators,
@@ -54,8 +55,8 @@ jobs:
       - name: Install Swift
         uses: compnerd/gha-setup-swift@v0.4.0
         with:
-          swift-version: swift-6.4.0-release
-          swift-build: 6.4.0-RELEASE
+          swift-version: swift-6.4.2-release
+          swift-build: 6.4.2-RELEASE
 
       # THE ACTION ADDS WHERE IT EXPECTS THE TOOLCHAIN TO BE, not where the
       # installer put it, and when those part company the next step says only

@@ -65,6 +65,24 @@ final class LayoutApproachTests: XCTestCase {
         XCTAssertEqual(flown[7], 1, accuracy: 0.000_1, "there in 128 ms")
     }
 
+    /// A RUN LET GO FAR PAST ITS AXIS - parameters written so by the application - approaches its target in a
+    /// motion of numbers, however long the way: the run walks, and the target named stands on the axis.
+    func testARunLetGoFarPastItsAxisApproachesInAMotionOfNumbers() {
+        for far in [1e20, -1e300, Double.greatestFiniteMagnitude] {
+            let phase = State(wrappedValue: far)
+            let handed = Handed()
+            let renders = Renders()
+            func built() -> Node { tree(phase, handed) }
+            _ = bench.laid(renders, built)
+
+            bench.hand(renders, built, .began)
+            bench.hand(renders, built, .ended)
+
+            XCTAssertTrue((0...2).contains(phase.wrappedValue), "\(far): named \(phase.wrappedValue)")
+            XCTAssertTrue(flight(handed).allSatisfy(\.isFinite), "\(far)")
+        }
+    }
+
     /// A HAND SLOWER THAN THAT approaches the next target alike: thrown at 0.6 units a second, it would crawl the
     /// 0.4 on the throw's curve; it goes a unit a motion's length.
     func testAHandSlowerThanTheMotionApproachesTheNextTargetAlike() {

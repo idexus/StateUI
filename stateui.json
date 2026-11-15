@@ -1,0 +1,10 @@
+{
+  "library" : {
+    "path" : "."
+  },
+  "projects" : [
+    "apps/Gallery",
+    "apps/HelloWorld"
+  ],
+  "schemaVersion" : 1
+}

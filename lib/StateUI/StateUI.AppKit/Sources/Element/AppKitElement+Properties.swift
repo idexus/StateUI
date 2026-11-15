@@ -33,7 +33,7 @@ extension AppKitElement {
             return nil
 
         case .page, .popover:
-            let page = AppKitSingleChildView()
+            let page = AppKitPageView()
             page.translatesAutoresizingMaskIntoConstraints = true
             return page
 
@@ -105,6 +105,10 @@ extension AppKitElement {
             let background = paintedColor(element.drawnBackground)
             view.wantsLayer = true
             view.layer?.backgroundColor = background?.cgColor
+            if let page = view as? AppKitPageView {
+                let painted = AppKitBrush(HostMaterial(element.drawnBackground).painted)
+                page.gradient = painted.brush.isGradient ? painted : AppKitBrush()
+            }
         }
 
         // A family the registry realizes takes its own members there, each read

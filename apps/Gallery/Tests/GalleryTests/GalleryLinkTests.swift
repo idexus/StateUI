@@ -10,6 +10,24 @@ final class GalleryLinkTests: XCTestCase {
         XCTAssertNil(GalleryLink.sample(in: "stateui-gallery://sample/"), "no sample")
     }
 
+    /// Every sample's link names that sample, in the Gallery's own scheme and as a page's fragment - an id written
+    /// with a hyphen whole - and what follows it, a query or a fragment, is no part of it.
+    @MainActor
+    func testEverySamplesLinkNamesIt() {
+        let catalog = Catalog(nav: Navigation(), style: SessionStyle(), bar: WindowBarState(), log: WindowLog())
+        let ids = catalog.groups.flatMap { $0.samples.map(\.id) }
+        XCTAssertTrue(ids.contains("driven-reading"))
+        for id in ids {
+            XCTAssertEqual(GalleryLink.sample(in: "stateui-gallery://sample/\(id)"), id)
+            XCTAssertEqual(GalleryLink.sample(in: "http://localhost:8460/#sample/\(id)"), id)
+            XCTAssertEqual(GalleryLink.sample(in: "stateui-gallery://sample/\(id)?from=readme"), id)
+            XCTAssertEqual(GalleryLink.sample(in: "stateui-gallery://sample/\(id)#top"), id)
+        }
+        let nav = Navigation()
+        nav.follow(link: "stateui-gallery://sample/driven-reading", in: catalog)
+        XCTAssertEqual(nav.path.last, .sample("driven-reading"))
+    }
+
     /// A link the window is given shows the sample it names over its group, and is noted; one naming no sample is
     /// only noted.
     @MainActor

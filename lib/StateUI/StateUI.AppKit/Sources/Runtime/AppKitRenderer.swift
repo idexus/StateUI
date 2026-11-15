@@ -19,7 +19,7 @@ final class AppKitRenderer {
     let presentsWindows: Bool
     let preferences: UserDefaults
     /// The pictures made: each found again while a view shows it, the latest asked for kept within the host layer's
-    /// budget.
+    /// budget until the system says memory runs short.
     let pictures = PictureCache<NSImage>(pixels: { $0.pixels })
     let frameClock: AppKitFrameClock
     let reducesMotion: () -> Bool
@@ -71,6 +71,7 @@ final class AppKitRenderer {
         frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
         self.reducesMotion = reducesMotion
         runtime.presenter = self
+        pictures.letGoOfKeptWhenMemoryRunsShort()
     }
 
     func start() {

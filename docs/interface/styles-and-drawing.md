@@ -391,7 +391,8 @@ VStack {
 ```
 
 Gradient points are fractions of the painted bounds. Offsets run from zero at
-the start to one at the end. A radial gradient supplies a fractional center
+the start to one at the end, and each stop stands at its own offset, whatever
+order the stops are written in. A radial gradient supplies a fractional center
 and radius. Theme-aware colors inside gradient stops resolve with the element
 that uses the brush.
 
@@ -499,8 +500,8 @@ Canvas {
 ```
 
 Commands execute in order. The color commands, `lineWidth`, `fontSize`,
-`opacity` and the transform commands (`translateBy`, `rotate(by:)`,
-`scaleBy`) change the state used by later drawing commands. `saveGraphics` and
+`opacity` and the transform commands (`translate`, `rotate`, `scale`) change
+the state used by later drawing commands. `saveGraphics` and
 `restoreGraphics` bound temporary transform or paint changes.
 
 A canvas hears a press as every view does, in its own points - the ones its

@@ -8,8 +8,34 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+/// A page asking its window for a size past any screen's.
+private struct WideWindowPage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        let window = self.window
+        return Text("Wide").onCreated {
+            window.width = 1e12
+            window.height = 1e12
+            window.x = 1e12
+        }
+    }
+}
+
 @MainActor
 final class AppKitWindowContentTests: XCTestCase {
+    /// A window asked a size or a place AppKit's 32-bit frame cannot hold keeps the frame it stands at: AppKit
+    /// raises over such a frame, which ends the application.
+    @MainActor
+    func testAWindowAskedASizePastAnyScreenKeepsItsOwn() throws {
+        let renderer = AppKitRenderer.running { WideWindowPage() }
+        defer { renderer.finish() }
+        for _ in 0..<3 { renderer.runtime.pump.turn() }
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+
+        XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size, NSSize(width: 560, height: 440))
+    }
+
     @MainActor
     func testOverlayUsesChildAlignmentWithoutReplacingThePage() {
         let page = NSView()

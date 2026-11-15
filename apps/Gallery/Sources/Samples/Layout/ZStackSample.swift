@@ -17,6 +17,7 @@ struct ZStackSample: SampleContent {
 private struct Areas: ExampleContent {
     // listing: Areas
     @State private var proportional = true
+    @State private var rightToLeft = false
 
     var body: some View {
         VStack {
@@ -40,10 +41,21 @@ private struct Areas: ExampleContent {
                 Badge(text: "end", color: Color(hex: 0x00897B))
                     .horizontalAlignment(.end)
                     .verticalAlignment(.end)
+
+                // A badge in the panel's area at its own size, at the area's
+                // top end - right to left, the area and the badge turned.
+                Badge(text: "in the area", color: Color(hex: 0x8E24AA))
+                    .area(proportional ? .proportional(Rect(0.5, 0, 0.5, 1)) : .absolute(Rect(16, 16, 120, 60)))
+                    .horizontalAlignment(.end)
+                    .verticalAlignment(.start)
             }
             .height(180)
+            .layoutDirection(rightToLeft ? .rightToLeft : .leftToRight)
 
             SwitchRow("Proportional area", $proportional)
+                .horizontalAlignment(.center)
+
+            SwitchRow("Right to left", $rightToLeft)
                 .horizontalAlignment(.center)
         }
         .spacing(12)
@@ -51,7 +63,9 @@ private struct Areas: ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("Resize the window: a proportional area follows the room, an absolute one stays put.")
+        Text("Resize the window: a proportional area follows the room, an absolute one stays put. A child in "
+            + "an area stands there at its own size where its alignments say; right to left, the areas turn "
+            + "about the room's middle.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

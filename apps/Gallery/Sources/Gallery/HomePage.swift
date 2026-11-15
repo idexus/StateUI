@@ -249,8 +249,8 @@ struct HomePage: View {
                 // moves everything under it.
                 //
                 // So the block is given the room the longest of them needs
-                // and the words stand at the TOP of it: every summary wraps
-                // to as many lines as it wants, the count sits under it, and
+                // and the words stand at the TOP of it: the count first, every
+                // summary under it wrapping to as many lines as it wants, and
                 // what changes between cards is how much of the block is
                 // empty underneath rather than how tall it is.
                 Caption(catalog: catalog, position: $chosen)

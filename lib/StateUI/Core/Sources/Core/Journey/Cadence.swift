@@ -15,11 +15,12 @@ public enum Cadence: Equatable, Sendable {
     /// out. Nought or less is `.always`.
     case every(Duration)
 
-    /// How long a reading may be held back, in milliseconds.
+    /// How long a reading may be held back, in milliseconds - no longer than an `Int` counts, twenty-four days
+    /// where it has 32 bits.
     var window: Int {
         switch self {
         case .always: return 0
-        case .every(let length): return Int(Motion.milliseconds(of: length))
+        case .every(let length): return Int(clamping: Motion.milliseconds(of: length))
         }
     }
 }

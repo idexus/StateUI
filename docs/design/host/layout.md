@@ -72,6 +72,17 @@ child measures its own view alone. A margin taken out twice narrows the
 offer - words wrap where they had room, and on WinUI a label measured at two
 widths in one pass keeps the pass from settling.
 
+## A layout that does not settle
+
+A host whose toolkit gives up laying a window out - its layout measured and
+placed again at every pass - says so once, as a complaint
+(`LayoutComplaint.didNotSettle`), and the application goes on, the pass ended
+where it stood. On Windows such a layout is WinUI's layout cycle, which ends
+the process unless it is handled ([a layout that does not
+settle](../platforms/winui/layout.md#a-layout-that-does-not-settle)). A
+layout that never settles is a defect of the host's to find and mend; the
+complaint keeps the application standing until it is.
+
 ## Measured once
 
 A view keeps the sizes it measured, by the width its parent offered, until
@@ -94,8 +105,11 @@ nothing.
 Words measured with no width offered stand on their natural lines, and in
 any room at least that wide they stand the same: no line breaks earlier. So
 a label's kept answers hold its natural size for every wider width
-(`MeasurementCache(holdsWhenWider:)`), and only a narrower room asks its
-toolkit again. A page whose width changes every frame - a sidebar sliding
+(`MeasurementCache(holdsWhenWider:)`, `MeasurementCache.holds`), and only a
+narrower room asks its toolkit again. A host whose toolkit lays words out on
+whole pixels asks nothing more of words offered their own width, which the
+toolkit could break onto a second line there ([WinUI's words, measured every
+pass](../platforms/winui/layout.md#measured-every-pass)). A page whose width changes every frame - a sidebar sliding
 beside it - measures its words once, not once a frame at each new width:
 measuring large words is the costliest call a toolkit makes, and a frame that
 makes it at every width stalls. A view that is not words keeps one answer a
@@ -115,8 +129,10 @@ instead ([text in a box](../types/drawing.md#text-in-a-box)).
 A layout measures a child the same way on every host: at its stated width,
 within its bounds and the width offered - the width the layout places it at,
 so its words wrap to it - else at the smaller of the width offered and its
-most width; and its size is its stated width and height before what it
-measured, each within its bounds (`LayoutValues.offer`, `sized`). A host
+most width, held within its bounds as its place is, so a least width past its
+most one, or past the room, wins its measure as it wins its place; and its
+size is its stated width and height before what it measured, each within its
+bounds (`LayoutValues.offer`, `sized`). A host
 measures its native view at that width and nothing more.
 
 The trap is a child measured at one width and placed at another: a stated

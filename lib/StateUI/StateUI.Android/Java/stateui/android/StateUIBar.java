@@ -4,6 +4,7 @@
 package stateui.android;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Path;
@@ -36,6 +37,9 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
 
     /** The color the bar's words and its actions' pictures stand in; 0 for Android's own. */
     private int foreground;
+
+    /** The overflow's picture as the theme draws it, never tinted: a color given draws a copy of it. */
+    private Drawable themeOverflow;
     private View titleView;
 
     /** The theme the bar's actions take their words from: the activity's, light words, or dark words. */
@@ -82,18 +86,55 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     }
 
     /**
-     * The title and the color of what stands on the bar; 0 leaves Android's own. The host paints the bar's
-     * background as a view's.
+     * The title and the color of what stands on the bar; 0 for Android's own, given back where a color was. The
+     * host paints the bar's background as a view's.
      */
     void show(String title, int foreground) {
         this.title = title;
-        this.foreground = foreground;
-        if (foreground != 0) {
-            setTitleTextColor(foreground);
-            Drawable overflow = getOverflowIcon();
-            if (overflow != null) overflow.mutate().setTint(foreground);
+        if (foreground != this.foreground) {
+            if (foreground != 0) {
+                setTitleTextColor(foreground);
+            } else {
+                ColorStateList theme = themeTitleColor();
+                if (theme != null) setTitleTextColor(theme.getDefaultColor());
+            }
+            showOverflow(foreground);
         }
+        this.foreground = foreground;
         standTitle();
+    }
+
+    /** The color the bar's style gives its title: its own, else its title appearance's. */
+    private ColorStateList themeTitleColor() {
+        TypedArray style = getContext().obtainStyledAttributes(
+                null, new int[] { android.R.attr.titleTextColor }, android.R.attr.toolbarStyle, 0);
+        ColorStateList color = style.getColorStateList(0);
+        style.recycle();
+        if (color != null) return color;
+        style = getContext().obtainStyledAttributes(
+                null, new int[] { android.R.attr.titleTextAppearance }, android.R.attr.toolbarStyle, 0);
+        int appearance = style.getResourceId(0, 0);
+        style.recycle();
+        TypedArray words = getContext().obtainStyledAttributes(appearance, new int[] { android.R.attr.textColor });
+        color = words.getColorStateList(0);
+        words.recycle();
+        return color;
+    }
+
+    /** The overflow's picture in `foreground`, a copy of the theme's; the theme's own for 0. */
+    private void showOverflow(int foreground) {
+        if (themeOverflow == null) themeOverflow = getOverflowIcon();
+        if (themeOverflow == null) return;
+        if (foreground == 0) {
+            setOverflowIcon(themeOverflow);
+            return;
+        }
+        Drawable.ConstantState state = themeOverflow.getConstantState();
+        Drawable tinted = state != null
+                ? state.newDrawable(getResources(), getContext().getTheme()).mutate()
+                : themeOverflow.mutate();
+        tinted.setTint(foreground);
+        setOverflowIcon(tinted);
     }
 
     /**

@@ -19,15 +19,17 @@ beside each changed property, or a `HostLayoutMotion` for a layout's
 children, and a native host animates the presentation on its display frames
 while the tree keeps the destination.
 
-## Two laws
+## Three laws
 
-A motion has one of two shapes. An eased motion takes as long as it is told,
+A motion has one of three shapes. An eased motion takes as long as it is told,
 whatever the distance: the right law for something whose distance the author
 knows, such as a fade, a page sliding in, or a card turning over. A spring
 has no duration: it answers as quickly as its response says and settles when
 it is done, so one whose destination changes carries on from the speed it
 had rather than starting again. That is the right law for anything the user
-can interrupt, such as a card being dragged or a value still being chosen.
+can interrupt, such as a card being dragged or a value still being chosen. A
+glide goes on from the speed it was handed and slows onto where it is sent,
+no longer than its longest: the law of a throw let go (below).
 
 ## Every law arrives
 

@@ -233,7 +233,9 @@ label's, and its own look - size, weight and slant, color, what stands
 behind it, its lines, whether it follows the user's text size - in the
 contract's terms (`TextLook`). A run's look stands over its label's: where the
 run says nothing, the label's says it, and a run scales only where neither it
-nor its label says no. A host turns the finished look into its toolkit's
+nor its label says no. None is something said: a run given an upright slant,
+no space between its letters or no lines stands so in a label that gives them
+(`attributesGiven`, `letterSpacingGiven`, `decorationsGiven`). A host turns the finished look into its toolkit's
 attributes and nothing more. A label shown with no runs and given none
 writes nothing again: its own words stand already.
 

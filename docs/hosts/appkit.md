@@ -13,12 +13,9 @@ control belongs, so a gap is visible rather than silent.
 lib/StateUI/StateUI.AppKit/
   Sources/    StateUIAppKit: the renderer, windows, sessions and the registry
   Tests/      the host's suite
-.scripts/AppKit/
-  build-gallery-appkit.sh      the Gallery's bundle, in apps/Gallery/.build/appkit
-  deploy.sh                    an application's head built for release, laid in a folder of its own
-  test-appkit.sh               runs the host's suite
 apps/<App>/Platforms/AppKit/
   main.swift                   the application's AppKit head
+  Info.plist                   the application's own bundle keys, where it has any
   Host/                        what this host answers for the application
 ```
 
@@ -28,8 +25,10 @@ The host builds on macOS 26.4 or newer, with Xcode 27 or newer and its Swift
 6.4. macOS 26.4 is the floor of the host's package and of the library, which an
 application's manifest cannot go below
 ([the floor](../design/core/concurrency.md#the-floor)). A Debug launch runs
-Xcode's `lldb-dap`. Nothing else is installed: the `Map` and the `WebView`
-stand on MapKit and WebKit, which macOS ships. [Tested setups](../tested-setups.md)
+Xcode's `lldb-dap`. The application's icon is drawn by `resvg` 0.50.0
+(`brew install resvg`; [pictures](../design/tooling/pictures.md#the-renderer)).
+Nothing else is installed: the `Map` and the `WebView` stand on MapKit and
+WebKit, which macOS ships. [Tested setups](../tested-setups.md)
 names the versions the host's suite passes on.
 
 ## The head
@@ -58,10 +57,11 @@ AppKitHost.run()
 
 `run` shows the artwork the program carries - the `Images` in its bundle, or
 in the `Resources` beside it, with the icon there - and ends the process as
-the application ends. `.scripts/AppKit/run-app.sh` and `deploy.sh` lay the
-application's `Resources/Images` and `Resources/AppIcon` beside the program
-they build, so a head runs the same whether a debugger, a task or a terminal
-starts it; `run(resourceDirectory:applicationIcon:)` names other places. The icon a head hands the host is
+the application ends. The `stateui` tool builds every application as a
+bundle carrying its `Resources/Images` and its icon, so a head runs the same
+whether a debugger, a task or a terminal starts it; a head run as its bare
+program finds them in the `Resources` beside it, and
+`run(resourceDirectory:applicationIcon:)` names other places. The icon a head hands the host is
 `Resources/AppIcon/appicon_macos.svg`, drawn on macOS's icon grid: a
 1024-point canvas whose body is an 824-point rounded square 100 points in.
 Artwork drawn edge to edge stands larger in the Dock than every icon beside
@@ -363,72 +363,71 @@ of, the first time it is described.
 ## Running
 
 ```bash
-.scripts/AppKit/run-app.sh apps/HelloWorld debug
-.scripts/AppKit/run-app.sh apps/Gallery debug
+stateui run --project apps/HelloWorld --host appkit
+stateui build --project apps/Gallery --host appkit --configuration release
 ```
 
-`run-app.sh` builds an application's head, `debug` or `release`, and starts
-it; `--build-only` builds it and says where it is. An application with no
-bundling script of its own is built by SwiftPM, its `Resources/Images` and
-`Resources/AppIcon` laid in `Resources` beside the executable. The Gallery's,
-`build-gallery-appkit.sh`, makes it an application bundle,
-`apps/Gallery/.build/appkit/<configuration>/GalleryAppKit.app`: the head, the
-StateUI libraries it links, the Gallery's pictures, its icon drawn from
+`stateui build` builds an application's head, debug unless told otherwise,
+as an application bundle - `<Name>AppKit.app`: the head, the StateUI
+libraries it links, the application's pictures, its icon drawn from
 `Resources/AppIcon/appicon_macos.svg`, an `Info.plist` and an ad-hoc
-signature.
-
-Everything an AppKit build writes stays in the application's `.build/appkit/`.
+signature - and says where it published it, in the application's
+`.build/stateui/artifacts/`. The bundle's identifier is
+`com.stateui.<name>`; the application's own `Platforms/AppKit/Info.plist`
+lays its keys over the host's - the Gallery's names it "StateUI Gallery",
+opens its `stateui-gallery://` links and says why it asks where you are. A
+build that fails publishes nothing, so nothing older ever runs in its place.
+`stateui run` builds it, then runs it in the foreground until it ends or
+Ctrl+C stops it.
 
 In VS Code, choose **AppKit** as the host and press **F5**. **StateUI: Debug**
-builds the head with `run-app.sh --build-only` and starts it under
-`lldb-dap`, so a breakpoint in the application, in StateUI or in the host
-holds from the first line. **StateUI: Release** builds and starts the
-optimized head the same way.
+has the tool build the bundle, its progress in a notification that cancels
+it, and starts its program under `lldb-dap`, so a breakpoint in the
+application, in StateUI or in the host holds from the first line.
+**StateUI: Release** builds and starts the optimized head the same way.
 
-## Deploying
+## Packaging
 
 ```bash
-.scripts/AppKit/deploy.sh apps/Gallery artifacts/Gallery/AppKit
+stateui package --project apps/Gallery --host appkit
 ```
 
-`deploy.sh` builds an application's head for release and lays it in the
-folder named, made anew: its application bundle, where `.scripts/AppKit`
-holds a bundling script of the application's, else the head, the StateUI
-libraries it links and the application's pictures in `Images/`.
-**StateUI: Deploy** in the editor runs it for the application chosen, and
-lays the head in `artifacts/<application>/AppKit` of the folder that holds
-the application's `apps/` - a checkout's, or a project group's.
+`stateui package` builds an application's head for release and lays its
+bundle, made anew, in `artifacts/<application>/AppKit` of the application's
+workspace - the folder of the stateui.json listing it, a checkout's or a
+project group's - or in the `--output` folder named. **StateUI: Package** in
+the editor does the same for the application chosen.
 
 ## Testing
 
 ```bash
-.scripts/AppKit/test-appkit.sh
-.scripts/AppKit/test-appkit.sh --filter AppKitConformanceTests/testButton
+stateui repo test --suite host:appkit
+stateui repo test --suite host:appkit --filter AppKitConformanceTests/testButton
 ```
 
-`test-appkit.sh` runs `swift test` in `lib/StateUI/StateUI.AppKit`, handing
-it its arguments. The suite is XCTest. It runs the conformance families too,
+`stateui repo test` runs `swift test` in `lib/StateUI/StateUI.AppKit`, then
+holds the host's facade and `StateUITesting` to their API records, each a
+phase of what it answers. The suite is XCTest. It runs the conformance families too,
 one test a family - `AppKitConformanceTests/testButton` - and the longest in
 parts, each a test of its own, which `--parallel` runs side by side.
 
 A run holds what it says to `lib/StateUI/exports/`: what the host declares to
 `appkit.txt`, and each family's verdicts to `marks/appkit/<Family>.txt` - a
 family run in parts to `marks/appkit/<Family>-<part>.txt`, one file a part;
-a run that says otherwise fails. `STATEUI_UPDATE_EXPORTS=1` writes them
-instead, each verdict file under the revision its family stands at in
-`lib/StateUI/StateUI.Conformance/revisions.txt`, and `STATEUI_STALE_ONLY=1`
-runs only the families whose verdicts stand at another revision, or at none:
-each other family's test ends at once. With the verdicts written, the
+a run that says otherwise fails. `stateui repo conformance run --host appkit --record` writes them instead
+- `--all` every family and what the host declares, `--changed` the families
+whose verdicts stand at another revision or at none, `--family <name>` the
+ones named - each verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, then renders the
 [platform contract](../platform-contract.md#reading-the-matrix) and
-[the control dictionary](../controls/README.md) are rendered from them at the
-repository's root:
+[the control dictionary](../controls/README.md) from them;
+`stateui repo conformance status --host appkit` says where they stand, and
+`stateui repo api record --host appkit` writes the API records:
 
 ```bash
-STATEUI_UPDATE_EXPORTS=1 .scripts/AppKit/test-appkit.sh --filter AppKitConformanceTests
-STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
+stateui repo conformance run --host appkit --all --record
+stateui repo conformance run --host appkit --changed --record
 ```
 
 In the editor, with AppKit chosen, **StateUI: Conformance - Rebuild all**
-runs both: the families writing their verdicts, then the documents.
-**StateUI: Conformance - Rebuild changed** runs the stale families alone
-before it renders.
+and **Rebuild changed** run the same.

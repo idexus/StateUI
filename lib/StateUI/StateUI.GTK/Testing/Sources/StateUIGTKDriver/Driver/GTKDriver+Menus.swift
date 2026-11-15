@@ -32,6 +32,14 @@ extension GTKDriver {
         return Self.said(model, actions: shown.menu.actions)
     }
 
+    /// The context menu the driver opened, as its model holds it, while its popover shows; nil where none does.
+    func shownMenu(over element: MountedElement) throws -> String? {
+        guard let menu = openedMenu, gtk_widget_get_visible(menu.popover) != 0,
+              let model = gtk_popover_menu_get_menu_model(menu.popover.opaque)
+        else { return nil }
+        return Self.said(model, actions: menu.menu.actions)
+    }
+
     /// The menu the button standing for `button` opens - a bar's button, its button on the bar - as its model holds
     /// it.
     func buttonMenu(of button: MountedElement) throws -> String {
@@ -89,12 +97,15 @@ extension GTKDriver {
     }
 
     /// The widget whose menu shows the item `element` - a view its context menu, a main menu's button, a button its
-    /// own menu, a bar's button on the bar or behind its overflow - the menu, and the name of its action.
+    /// own menu, a bar's button on the bar at the top or the foot, or behind either's overflow - the menu, and the name
+    /// of its action.
     private func menuItem(_ element: MountedElement) -> (GTKWidget, GTKMenu, String)? {
+        let bars = frames().flatMap { frame in
+            frame.buttons + frame.overflowButtons + (frame.footBar.map { $0.buttons + $0.overflowButtons } ?? [])
+        }
         let shown: [(GTKWidget, GTKMenu)] = frames().compactMap { frame in frame.mainMenu.map { ($0.button, $0.menu) } }
             + (renderer?.views(GTKView.self) ?? []).compactMap { view in view.contextMenu.map { (view.widget, $0.menu) } }
-            + ((renderer?.views(GTKButtonView.self) ?? []) + frames().flatMap { $0.buttons + $0.overflowButtons })
-                .compactMap { button in button.menu.map { (button.widget, $0) } }
+            + ((renderer?.views(GTKButtonView.self) ?? []) + bars).compactMap { button in button.menu.map { (button.widget, $0) } }
         for (widget, menu) in shown {
             if let name = menu.items.first(where: { $0.value() === element })?.key { return (widget, menu, name) }
         }

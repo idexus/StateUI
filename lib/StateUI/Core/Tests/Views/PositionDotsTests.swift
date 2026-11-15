@@ -47,6 +47,22 @@ final class PositionDotsTests: XCTestCase {
         XCTAssertEqual(shown(11), 7..<12)
         XCTAssertEqual(PositionDots.shown(count: 3, position: 1, maximumVisible: 5, hidesSingle: true), 0..<3)
         XCTAssertEqual(PositionDots.shown(count: 4, position: 0, maximumVisible: 0, hidesSingle: true), 0..<1)
+    }
+
+    /// A position outside the items - below the first, past the last, as far as an integer goes - shows the run
+    /// at that end, a run of as many marks as are visible, within the items.
+    func testAPositionOutsideTheItemsShowsTheRunAtThatEnd() {
+        for count in [1, 2, 5, 12, Int.max] {
+            for most in [0, 1, 5, Int.max] {
+                let shown = [Int.min, -1, count, Int.max].map { position in
+                    PositionDots.shown(count: count, position: position, maximumVisible: most, hidesSingle: false)
+                }
+                let run = min(count, max(1, most))
+                XCTAssertEqual(shown[0...1].map(\.lowerBound), [0, 0], "\(count) \(most)")
+                XCTAssertEqual(shown[2...3].map(\.upperBound), [count, count], "\(count) \(most)")
+                XCTAssertTrue(shown.allSatisfy { $0.count == run }, "\(count) \(most)")
+            }
+        }
 
         let row = dots(PositionDots().count(12).position(6).maximumVisible(5).currentDotColor(.red))
         XCTAssertEqual(row.count, 5)

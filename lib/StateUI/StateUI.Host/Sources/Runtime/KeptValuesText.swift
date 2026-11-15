@@ -41,25 +41,36 @@ public struct KeptValuesText: Equatable, Sendable {
         return true
     }
 
-    /// A key or its words with a tab, a line's end and a backslash escaped.
+    /// A key or its words with a tab, a line's end and a backslash escaped - code point by code point, so what
+    /// follows one, a combining mark included, stays apart from its escape.
     static func escaped(_ words: String) -> String {
-        words.replacing("\\", with: "\\\\").replacing("\t", with: "\\t").replacing("\n", with: "\\n")
-            .replacing("\r", with: "\\r")
-    }
-
-    static func unescaped(_ words: Substring) -> String {
-        var result = ""
-        var escaping = false
-        for character in words {
-            if escaping {
-                result.append(character == "t" ? "\t" : character == "n" ? "\n" : character == "r" ? "\r" : character)
-                escaping = false
-            } else if character == "\\" {
-                escaping = true
-            } else {
-                result.append(character)
+        var result = String.UnicodeScalarView()
+        for scalar in words.unicodeScalars {
+            switch scalar {
+            case "\\": result.append(contentsOf: #"\\"#.unicodeScalars)
+            case "\t": result.append(contentsOf: #"\t"#.unicodeScalars)
+            case "\n": result.append(contentsOf: #"\n"#.unicodeScalars)
+            case "\r": result.append(contentsOf: #"\r"#.unicodeScalars)
+            default: result.append(scalar)
             }
         }
-        return result
+        return String(result)
+    }
+
+    /// The words `escaped` wrote, read back code point by code point.
+    static func unescaped(_ words: Substring) -> String {
+        var result = String.UnicodeScalarView()
+        var escaping = false
+        for scalar in words.unicodeScalars {
+            if escaping {
+                result.append(scalar == "t" ? "\t" : scalar == "n" ? "\n" : scalar == "r" ? "\r" : scalar)
+                escaping = false
+            } else if scalar == "\\" {
+                escaping = true
+            } else {
+                result.append(scalar)
+            }
+        }
+        return String(result)
     }
 }

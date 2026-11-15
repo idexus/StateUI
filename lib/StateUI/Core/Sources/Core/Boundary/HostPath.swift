@@ -158,6 +158,7 @@ private struct HostPathParser {
             }
 
             guard let command = active,
+                  index < tokens.count,
                   case .number = tokens[index]
             else { return nil }
             guard consume(command) else { return nil }

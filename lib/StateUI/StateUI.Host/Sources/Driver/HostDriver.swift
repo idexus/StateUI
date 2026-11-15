@@ -83,8 +83,9 @@
     /// Whether `element` holds the keyboard.
     func focused(_ element: MountedElement) throws -> Bool
 
-    /// Whether a press at `point`, in the element's own coordinates, reaches `element` or what stands in it, through
-    /// everything its window shows over it.
+    /// Whether a press at `point` of the element's laid-out rectangle - from the top left corner its layout placed
+    /// it at, no transform in it - reaches `element` or what stands in it, through everything its window shows over
+    /// it: a view drawn away is reached where it is drawn.
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool
 
     /// The children of `layout` in the order its toolkit draws them, back to front, as its native view holds them.
@@ -107,12 +108,17 @@
     /// whose platform stands nothing over a window's content, leaves it.
     func standUnderSystemBars(top: Double, bottom: Double)
 
+    /// The platform's keyboard docked at the window's foot, `height` points tall - nought for none - told to the host
+    /// as its platform tells where the keyboard goes; a platform showing no keyboard on its screen says so.
+    func standUnderKeyboard(height: Double) throws
+
     /// The accent the platform draws the application's controls in now.
     func accent() throws -> Color
 
     /// The address of an HTTP server the driver stands up on this machine, no scheme left out: it answers every
-    /// request with the status 201, the header `X-Method` naming the request's method, `X-Asked` saying what the
-    /// request's own `X-Asked` said, and the request's body.
+    /// request with the status 201 - 404 for `/missing` - the header `X-Method` naming the request's method,
+    /// `X-Asked` and `X-Cookie` saying what the request's own `X-Asked` and `Cookie` said, and the request's body;
+    /// `/session` sets the cookie `stateui-session=kept`.
     /// Design: docs/design/host/conformance.md#the-driver
     func served() throws -> String
 
@@ -126,6 +132,9 @@
     /// What the share sheet over the window of `element` offers now - its words, then its address on a line of its
     /// own; nil where none shows.
     func shared(over element: MountedElement) throws -> String?
+
+    /// The menu the window of `element` shows open now, written as `menu(of:)` writes one; nil where none shows.
+    func shownMenu(over element: MountedElement) throws -> String?
 
     /// What the host handed the system to launch, in order, since the host started: an address as written, a file
     /// by its name.
@@ -240,6 +249,11 @@ extension HostDriver {
     /// Nothing: the window stands under no bars.
     public func standUnderSystemBars(top: Double, bottom: Double) {}
 
+    /// None told: the driver has no path for it yet.
+    public func standUnderKeyboard(height: Double) throws {
+        throw DriverCannot("stand the window under a keyboard")
+    }
+
     /// None read: the driver has no path for it yet.
     public func theme() throws -> ColorScheme {
         throw DriverCannot("read the theme the application shows in")
@@ -258,6 +272,11 @@ extension HostDriver {
     /// None read: the driver has no path for it yet.
     public func shared(over element: MountedElement) throws -> String? {
         throw DriverCannot("read a share sheet")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func shownMenu(over element: MountedElement) throws -> String? {
+        throw DriverCannot("read a menu shown")
     }
 
     /// None read: the driver has no path for it yet.

@@ -6,8 +6,9 @@
 
 /// `ViewContract` on a host: where a view stands in its parent - its margin, its alignment, its area in a layered
 /// stack, its cell in a grid - as the frame it reports says, StateUI's arithmetic alike on every host; and what it
-/// hears of the user's hand - taps counted, a press held, a pan carrying its states and ending as a swipe, a pinch, the pointer
-/// coming, moving, pressing and going, a drag and a drop; each case made for every element wearing the tier. And
+/// hears of the user's hand - taps counted, a press shown in its pressed look, a screen reader's press, a press held,
+/// a pan carrying its states and ending as a swipe, a pinch, the pointer coming, moving, pressing and going, a drag
+/// and a drop; each case made for every element wearing the tier. And
 /// where a view stands in its window as a scroller's or a list's scroll moves it, and from the safe area at its page's
 /// corner; and how a view of a motion layout moves as a body following its place.
 @_spi(Host) public enum ViewTests: ConformanceFamily {
@@ -20,7 +21,69 @@
                 tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
-        } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner, onAFirstBaseline]
+        } + [
+            scrolledInItsWindow, scrolledInAList, atItsPagesCorner, onAFirstBaseline, showsItsPress,
+            pressedByAScreenReader,
+        ]
+    }
+
+    /// A view answering a tap is a button to assistive technology: a screen reader's press on it runs the handler a
+    /// tap runs.
+    @MainActor
+    static var pressedByAScreenReader: ConformanceCase {
+        ConformanceCase("HStack.aScreenReadersPressTapsIt", proves: [
+            Covered(ViewContract.tapped, on: "HStack"),
+        ]) { s in
+            let heard = Received<String>()
+            s.start {
+                VStack {
+                    HStack { Text("Open details") }
+                        .accessibilityLabel("Open details")
+                        .onTapped { heard.values.append("tapped") }
+                        .id("row")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+
+            try s.perform(.accessibilityPress, on: s.element("row"))
+            s.settle { heard.values == ["tapped"] }
+            s.expect(heard.values, ["tapped"], "the screen reader's press runs the handler a tap runs")
+        }
+    }
+
+    /// A view answering a tap is pressed as a button is: the look its visual state gives a pressed view stands while
+    /// the press holds, and letting go gives its own back.
+    @MainActor
+    static var showsItsPress: ConformanceCase {
+        ConformanceCase("ZStack.aPressShowsItsPressedLookWhileItHolds", proves: [
+            Covered(ViewContract.tapped, on: "ZStack"),
+        ], needs: [Covered(BackgroundElementContract.background, on: "ZStack")]) { s in
+            s.start {
+                VStack {
+                    ZStack { Text("Row") }
+                        .width(80)
+                        .height(40)
+                        .background(.steelBlue)
+                        .visualState(.pressed) { $0.background(.firebrick) }
+                        .onTapped {}
+                        .id("row")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            let row = try s.element("row")
+            let background = { try s.held(BackgroundElementContract.background, on: row) }
+            try s.settle { try background() == .color(.steelBlue) }
+
+            try s.perform(.pressDown(at: Point(40, 20)), on: row)
+            try s.settle { try background() == .color(.firebrick) }
+            s.expect(try background(), .color(.firebrick), "its pressed look while the press holds")
+
+            try s.perform(.lift(at: Point(40, 20)), on: row)
+            try s.settle { try background() == .color(.steelBlue) }
+            s.expect(try background(), .color(.steelBlue), "its own look again")
+        }
     }
 
     /// A scroll moves where a view stands in its window, though nothing lays it out anew: its place in its parent
@@ -158,6 +221,9 @@
 
             let above = small.y - large.y
             let below = (large.y + large.height) - (small.y + small.height)
+            // The smaller's foot stands within the larger's, never past it, and its top below the larger's top.
+            s.expect(below >= -0.5 && above > 0 && above < large.height, true,
+                     "within the larger's frame: \(above) above, \(below) below")
             s.expect(above > 2 * below, true, "lower by the larger's rise: \(above) above, \(below) below")
         }
     }
@@ -276,36 +342,68 @@
         }
     }
 
-    /// A view in a layered stack stands in its area: in points, then in shares of the room as the tree changes it.
-    /// It fills its place across, whatever it does unsaid - a link stands at its words.
+    /// A view in a layered stack stands in its area as in any slot: filling it, in points and then in shares of the
+    /// room; at its own size where its alignments say, in an area reaching past the room's top left corner, and that
+    /// turned about the room's middle right to left; and no larger than its area, its most stopping it short in the
+    /// middle and its least giving way to it. It fills its place across, whatever it does unsaid - a link stands at
+    /// its words.
     @MainActor
     static func inArea(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsArea", proves: [
             Covered(ViewContract.area, on: element), Covered(ViewContract.frameChanged, on: element),
-        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ViewContract.horizontalAlignment, on: element)]) { s in
-            let shared = State(wrappedValue: false)
+        ], needs: [
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+            Covered(ViewContract.horizontalAlignment, on: element), Covered(ViewContract.verticalAlignment, on: element),
+            Covered(VisualElementContract.width, on: element), Covered(VisualElementContract.height, on: element),
+            Covered(VisualElementContract.maximumHeight, on: element),
+            Covered(VisualElementContract.minimumWidth, on: element),
+            Covered(VisualElementContract.layoutDirection, on: "ZStack"),
+        ]) { s in
+            let step = State(wrappedValue: 0)
             let frames = Received<[Double]>()
+            let worn: [[any Worn]] = [
+                [Write(ViewContract.area, Area.absolute(Rect(10, 20, 30, 40))),
+                 Write(ViewContract.horizontalAlignment, Alignment.fill)],
+                [Write(ViewContract.area, Area.proportional(Rect(0.5, 0.5, 0.5, 0.5))),
+                 Write(ViewContract.horizontalAlignment, Alignment.fill)],
+                [Write(ViewContract.area, Area.absolute(Rect(-10, -5, 80, 60))),
+                 Write(VisualElementContract.width, 30), Write(VisualElementContract.height, 40),
+                 Write(ViewContract.horizontalAlignment, Alignment.start), Write(ViewContract.verticalAlignment, Alignment.end)],
+                [Write(ViewContract.area, Area.absolute(Rect(-10, -5, 80, 60))),
+                 Write(VisualElementContract.width, 30), Write(VisualElementContract.height, 40),
+                 Write(ViewContract.horizontalAlignment, Alignment.start), Write(ViewContract.verticalAlignment, Alignment.end)],
+                [Write(ViewContract.area, Area.absolute(Rect(20, 30, 40, 40))),
+                 Write(VisualElementContract.width, 60), Write(VisualElementContract.maximumHeight, 20),
+                 Write(ViewContract.horizontalAlignment, Alignment.start)],
+                [Write(ViewContract.area, Area.absolute(Rect(0, 0, 40, 40))),
+                 Write(VisualElementContract.minimumWidth, 60), Write(ViewContract.horizontalAlignment, Alignment.start)],
+            ]
             s.start {
                 VStack {
                     ZStack {
-                        reporting(element, frames, [
-                            Write(ViewContract.area, shared.wrappedValue
-                                  ? Area.proportional(Rect(0.5, 0.5, 0.5, 0.5)) : Area.absolute(Rect(10, 20, 30, 40))),
-                            Write(ViewContract.horizontalAlignment, Alignment.fill),
-                        ])
+                        reporting(element, frames, worn[step.wrappedValue])
                     }
                     .width(200).height(200)
-                    Button("Share").onClicked { shared.wrappedValue = true }.id("change")
+                    .layoutDirection(step.wrappedValue == 3 ? .rightToLeft : .leftToRight)
+                    Button("Next").onClicked { step.wrappedValue += 1 }.id("change")
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
             }
 
-            s.settle { frames.values.last.map(FrameReport.place) == [10, 20, 30, 40] }
-            s.expect(frames.values.last.map(FrameReport.place), [10, 20, 30, 40], "in points")
-            try s.perform(.activate, on: s.element("change"))
-            s.settle { frames.values.last.map(FrameReport.place) == [100, 100, 100, 100] }
-            s.expect(frames.values.last.map(FrameReport.place), [100, 100, 100, 100], "its room's lower right quarter")
+            let places: [([Double], String)] = [
+                ([10, 20, 30, 40], "filling it, in points"),
+                ([100, 100, 100, 100], "its room's lower right quarter"),
+                ([-10, 15, 30, 40], "its own size at its start and its foot, the area past the room's corner"),
+                ([180, 15, 30, 40], "the same turned about the room's middle right to left"),
+                ([20, 40, 40, 20], "no wider than its area, its most short of it in the middle"),
+                ([0, 0, 40, 40], "its least giving way to its area"),
+            ]
+            for (index, (place, said)) in places.enumerated() {
+                if index > 0 { try s.perform(.activate, on: s.element("change")) }
+                s.settle { frames.values.last.map(FrameReport.place) == place }
+                s.expect(frames.values.last.map(FrameReport.place), place, said)
+            }
         }
     }
 
@@ -483,13 +581,14 @@
     }
 
     /// A press dragged across a view is heard as it starts, runs and ends - each report how far it came and how fast
-    /// it goes, its end where it reached - carrying the state its pan across moves.
+    /// it goes, its end where it reached, where the press is in the view's own points - carrying the state its pan
+    /// across moves. The view stands away from the window's corner, so a point of the window is no point of the view.
     @MainActor
     static func panned(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPanIsHeardAndCarriesItsStateAcross", proves: [
             Covered(ViewContract.panUpdated, on: element), Covered(ViewContract.panTouchCount, on: element),
             Covered(ViewContract.panXChannel, on: element),
-        ]) { s in
+        ], needs: [Covered(PaddingElementContract.padding, on: "VStack")]) { s in
             let x = State(wrappedValue: 10.0)
             let heard = Received<String>()
             let lifted = Received<Point>()
@@ -506,6 +605,7 @@
                         },
                     ]), carrying: x.projectedValue)
                 }
+                .padding(start: 120, top: 120, end: 0, bottom: 0)
                 .horizontalAlignment(.start)
             }
 
@@ -520,7 +620,8 @@
             let start = began.values.first ?? Point(-1, -1)
             s.expect(began.values.allSatisfy { abs($0.x - start.x) < 1 && abs($0.y - start.y) < 1 }, true,
                      "where the press is moves with it: \(began.values)")
-            s.expect((0...100).contains(start.x) && (0...100).contains(start.y), true, "it began on the view: \(start)")
+            s.expect((0...100).contains(start.x) && (0...100).contains(start.y), true,
+                     "it began on the view, in its own points: \(start)")
             s.expect(x.wrappedValue, -50, "the state carried as far as the hand went across")
         }
     }

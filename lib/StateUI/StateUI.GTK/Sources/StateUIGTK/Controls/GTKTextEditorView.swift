@@ -180,12 +180,14 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
     /// Design: docs/design/platforms/gtk/controls.md#an-editor
     override func measure(width: Double?, height: Double?) -> LayoutSize {
         let across = width?.rounded(.down) ?? super.measure(width: nil, height: nil).width
+        // A width GTK cannot hold wraps no line: measured as at none.
+        let pixels = GeometryArithmetic.pixels(across) ?? -1
         var least: Int32 = 0
         var words: Int32 = 0
-        gtk_widget_measure(editor, GTK_ORIENTATION_VERTICAL, Int32(across), &least, &words, nil, nil)
+        gtk_widget_measure(editor, GTK_ORIENTATION_VERTICAL, pixels, &least, &words, nil, nil)
         // A line at the least: a text view not laid out yet tells less than one.
         let own = growsWithText ? max(words, lineHeight) : lineHeight
-        gtk_widget_measure(widget, GTK_ORIENTATION_VERTICAL, Int32(across), &least, &words, nil, nil)
+        gtk_widget_measure(widget, GTK_ORIENTATION_VERTICAL, pixels, &least, &words, nil, nil)
         return LayoutSize(width: across, height: Double(max(own, least)))
     }
 

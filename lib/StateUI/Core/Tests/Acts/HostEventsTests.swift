@@ -97,6 +97,61 @@ final class HostEventsTests: XCTestCase {
             "and its subscription with it")
     }
 
+    /// A VIEW WRITTEN AGAIN WITH ANOTHER GATE HEARS THE NEXT RAISE THROUGH IT, as an element's own event does: the
+    /// run under way goes on under the gate it started in, and the next raise passes the gate the last render wrote.
+    func testAViewWrittenWithAnotherGateHearsThroughIt() {
+        let heard = Heard()
+        let renders = Renders()
+        let (first, second) = (Gate(.ignoreWhileRunning), Gate(.ignoreWhileRunning))
+        func tree(_ gate: Gate) -> Node {
+            Text("Battery").onHostEvent(TestEvents.batteryChanged, gate: gate) { level, _ in
+                heard.lines.append("\(level)")
+                try await Task.sleep(for: .seconds(60))
+            }.node
+        }
+        defer { leave(renders) }
+
+        renders.render(tree(first))
+        HostBoundary.raise(TestEvents.batteryChanged, 0.5, false)
+        deliver()
+        XCTAssertTrue(first.isBusy)
+        renders.render(tree(second))
+        HostBoundary.raise(TestEvents.batteryChanged, 0.25, false)
+        deliver()
+
+        XCTAssertEqual(heard.lines, ["0.5", "0.25"], "the raise passed the gate the last render wrote")
+        XCTAssertTrue(first.isBusy, "the run under way goes on")
+        XCTAssertTrue(second.isBusy)
+    }
+
+    /// The same for a policy: a view written again to run concurrently runs the next raise beside the one under way.
+    func testAViewWrittenWithAnotherPolicyHearsByIt() {
+        let heard = Heard()
+        let renders = Renders()
+        func tree(_ policy: GatePolicy) -> Node {
+            Text("Battery").onHostEvent(TestEvents.batteryChanged, policy: policy) { level, _ in
+                heard.lines.append("\(level)")
+                try await Task.sleep(for: .seconds(60))
+            }.node
+        }
+        defer { leave(renders) }
+
+        renders.render(tree(.ignoreWhileRunning))
+        HostBoundary.raise(TestEvents.batteryChanged, 0.5, false)
+        deliver()
+        renders.render(tree(.runConcurrently))
+        HostBoundary.raise(TestEvents.batteryChanged, 0.25, false)
+        deliver()
+
+        XCTAssertEqual(heard.lines, ["0.5", "0.25"], "the raise ran by the policy the last render wrote")
+    }
+
+    /// The view leaves, and its runs under way are superseded.
+    private func leave(_ renders: Renders) {
+        renders.render(Text("gone").node)
+        stateUIRunJobs()
+    }
+
     /// One value and none take the same call: what the raise carries is the
     /// member's payload, whatever its count.
     func testARaiseCarriesOneValueOrNone() {

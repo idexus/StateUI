@@ -35,7 +35,8 @@ lift, each phase told with where it stands in the view; GTK cancelling the
 gesture - a control under it claiming the sequence, a scroller around it
 claiming a touch - is the press taken away. A view around one that begins its
 press with the same event leaves it to that one, so a tappable row inside
-another answers alone.
+another answers alone: the event is held until the next press, so no later
+event can stand at its address and pass for it.
 
 `GtkGestureClick` stays for a run of taps: its release of the primary button,
 or of a finger, over the view, of a press that has not moved past GTK's drag
@@ -94,7 +95,9 @@ GTK's own click stops at, which also tells a press that moved from a tap. From t
 the drag claims its press: GTK denies it to the tap on the same press and to
 every view around the one dragged, so a view dragged inside another drags
 alone. It is measured on the window, from each event's own position, where
-the view it moves does not move the measure. A drag says its phases - began,
+the view it moves does not move the measure; where it went down in the view,
+which a pan's `at` is measured from, is the start `drag-begin` gives. A drag
+says its phases - began,
 moved by how far since it began, ended or cancelled - and a pan's states move
 by that from where they stood as it began. It ended when the last event it
 followed let go of the press; otherwise it was cancelled. Ended, it is a

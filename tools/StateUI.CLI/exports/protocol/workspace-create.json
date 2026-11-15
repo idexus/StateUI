@@ -1,0 +1,31 @@
+{
+  "request" : {
+    "id" : "10",
+    "jsonrpc" : "2.0",
+    "method" : "workspace/create",
+    "params" : {
+      "application" : "Notes",
+      "name" : "Demo",
+      "parentUri" : "file:///Users/example/Projects",
+      "release" : "0.8.5",
+      "requestToken" : "0b6f2c8e-3d1a-4f5b-8c7e-9a2d4b6c8e10"
+    }
+  },
+  "response" : {
+    "id" : "10",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "changedUris" : [
+      "file:///Users/example/Projects/Demo/stateui.json",
+      "file:///Users/example/Projects/Demo/StateUI",
+      "file:///Users/example/Projects/Demo/Notes"
+    ],
+    "library" : "StateUI",
+    "workspaceUri" : "file:///Users/example/Projects/Demo"
+  }
+}

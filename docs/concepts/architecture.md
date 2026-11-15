@@ -239,11 +239,13 @@ The write rebuilds the body once. The sparse patch carries the final property
 values with `HostTransition` entries. No intermediate description tree crosses
 the boundary.
 
-There are two movement laws:
+There are three movement laws:
 
 - `Motion.eased` has a duration and easing curve;
 - `Motion.spring` has a response and damping, retaining velocity when
-  retargeted.
+  retargeted;
+- `Motion.glide` goes on from the speed it was handed and slows onto where it
+  is sent, within its longest - a throw.
 
 `Motion.none` snaps. `Motion.inherited` resolves through the element, then the
 application, then `Motion.standard`. A law on `@State(motion:)` or

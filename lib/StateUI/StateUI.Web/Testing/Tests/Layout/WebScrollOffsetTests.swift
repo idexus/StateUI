@@ -8,7 +8,7 @@ import XCTest
 
 /// An offset the tree writes moves a scroller as the host layer's rule says - waiting for its first layout, a
 /// scroller that scrolls neither way standing at its beginning. The browser lays out, so the suite runs it in a
-/// browser (`test-web.sh --browser`).
+/// browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebScrollOffsetTests: XCTestCase {
     override func setUp() async throws {

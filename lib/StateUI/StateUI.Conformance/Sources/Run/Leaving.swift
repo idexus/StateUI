@@ -18,17 +18,29 @@
     /// The items that come and go on a page's bar.
     static let onTheBar = ["ToolbarButton", "ToolbarToggle", "ToolbarLabel"]
 
+    /// A specimen that did not come or go though its toggle was clicked: the walk proves nothing of it.
+    public struct Unmoved: Error, CustomStringConvertible {
+        /// The element walked, as `outlived` names it.
+        public let element: String
+        /// Whether it was to come.
+        public let coming: Bool
+
+        public var description: String {
+            "\(element): the specimen did not \(coming ? "come" : "go") though its toggle was clicked"
+        }
+    }
+
     /// Each of `elements` whose views or elements `driver`'s host held on to after it left, with how many; none where
-    /// the host let go of everything.
+    /// the host let go of everything. A specimen its toggle did not move throws `Unmoved`.
     public static func outlived(on driver: any HostDriver, _ elements: [String] = walked) throws -> [String] {
         var outlived: [String] = []
         for element in elements {
             for (dressed, said) in [(false, element), (true, "\(element) dressed")] {
                 let tree = driver.start(clock: nil, reducesMotion: false) { page(element, dressed: dressed) }
-                let once = try toggle(tree, on: driver)
+                let once = try toggle(tree, on: driver, said)
                 let (kinds, held) = (driver.liveViewKinds, MountedElement.liveCount)
-                _ = try toggle(tree, on: driver)
-                let twice = try toggle(tree, on: driver)
+                _ = try toggle(tree, on: driver, said)
+                let twice = try toggle(tree, on: driver, said)
                 if let once, let twice, twice > once {
                     let left = settled(above: once, on: driver) { driver.liveViews ?? once }
                     if left > once { outlived.append("\(said): \(left - once) views" + grown(from: kinds, on: driver)) }
@@ -95,7 +107,7 @@
     }
 
     /// Clicks the page's toggle and steps the host until the specimen came or went: the views it then holds alive.
-    private static func toggle(_ tree: MountedTree, on driver: any HostDriver) throws -> Int? {
+    private static func toggle(_ tree: MountedTree, on driver: any HostDriver, _ said: String) throws -> Int? {
         func shown() -> Bool { tree.root?.first(id: .manual("specimen")) != nil }
         guard let toggle = tree.root?.first(id: .manual("toggle")) else { throw Session.Missing(id: "toggle") }
         let was = shown()
@@ -104,6 +116,7 @@
             guard shown() == was else { break }
             driver.step()
         }
+        guard shown() != was else { throw Unmoved(element: said, coming: !was) }
         driver.step()
         return driver.liveViews
     }

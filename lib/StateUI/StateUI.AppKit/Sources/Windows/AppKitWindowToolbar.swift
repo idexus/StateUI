@@ -46,6 +46,17 @@ struct AppKitToolbarMenu {
     let entries: [MenuEntry]
     let inOverflow: [MenuEntry]
 
+    /// The submenu an action opening this menu holds behind a bar's More, titled `title`: the entries it shows there.
+    func overflowSubmenu(titled title: String) -> NSMenu {
+        let submenu = NSMenu(title: title)
+        submenu.autoenablesItems = false
+        for item in AppKitMenus.items(inOverflow) {
+            item.menu?.removeItem(item)
+            submenu.addItem(item)
+        }
+        return submenu
+    }
+
     /// Everything the menu shows: a toolbar keeps its item while it says the same.
     struct Said: Equatable {
         let opening: ButtonMenuOpening
@@ -497,9 +508,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             if let opened = action.menu {
                 item.target = nil
                 item.action = nil
-                let submenu = NSMenu(title: action.title)
-                Self.fill(submenu, with: AppKitMenus.items(opened.inOverflow))
-                item.submenu = submenu
+                item.submenu = opened.overflowSubmenu(titled: action.title)
             }
             menu.addItem(item)
         }
@@ -541,6 +550,14 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
 
     func itemForTesting(_ identifier: NSToolbarItem.Identifier) -> NSToolbarItem? {
         toolbar.items.first { $0.itemIdentifier == identifier }
+    }
+
+    /// The overflow's menu item standing for the action `identifier`; nil where no overflow lists it.
+    func overflowItemForTesting(_ identifier: NSToolbarItem.Identifier) -> NSMenuItem? {
+        guard let place = (sidebarOverflowActions + overflowActions).firstIndex(where: { $0.identifier == identifier })
+        else { return nil }
+        let menus = [Self.overflow, Self.sidebarOverflow].compactMap { (itemForTesting($0) as? NSMenuToolbarItem)?.menu }
+        return menus.lazy.flatMap(\.items).first { $0.tag == place && !$0.isSeparatorItem }
     }
 
     func itemForTesting(titled title: String) -> NSToolbarItem? {

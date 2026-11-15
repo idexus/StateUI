@@ -121,6 +121,12 @@
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarButton("Save")).id(dressing.id)] }
             } destination: { _ in Text("Pushed") }
+        case "ToolbarLabel":
+            return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                DeclaringPage(beside: others, key: "\(worn)", labels: {
+                    [dressing.wear(ToolbarLabel("Saved")).id(dressing.id)]
+                })
+            } destination: { _ in Text("Pushed") }
         case "ToolbarGroup":
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage(beside: others, key: "\(worn)", groups: {
@@ -180,9 +186,9 @@ public struct WindowSessionPage: View {
     }
 }
 
-/// A page declaring a group of `items` for its bar - at `side`, in `order`, joining the group `group` names - and a
-/// title view, over words and what stands beside them; built again whenever `key` changes or a state it reads is
-/// written.
+/// A page declaring items, settings, groups and words for its bar - each item standing where its own placement says
+/// - and a title view, over words and what stands beside them; built again whenever `key` changes or a state it reads
+/// is written.
 public struct DeclaringPage: View {
     /// What stands beside its words.
     let beside: [any View]

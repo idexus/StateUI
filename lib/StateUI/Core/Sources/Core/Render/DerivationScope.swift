@@ -17,10 +17,11 @@ enum DerivationScope {
     /// The identities of the `ForEach` rows being built, outermost first.
     private static var rows: [AnyHashable] = []
 
-    /// The key a conversion written at `site` keeps its derived state under: the element being built and the line,
-    /// the rows of the `ForEach`s it stands in, and which time the line runs in this build - a helper called twice.
+    /// The key a conversion written at `site` keeps its derived state under: where the element being built stands
+    /// and the line, the rows of the `ForEach`s it stands in, and which time the line runs in this build - a helper
+    /// called twice.
     static func key(_ site: PathNumber) -> DerivationKey {
-        let place = (BuildScope.current?.element).map { site.under(PathNumber($0)) } ?? site
+        let place = (BuildScope.current?.place).map { site.under($0) } ?? site
         var key = DerivationKey(site: place, rows: rows, occurrence: 0)
         guard !stack.isEmpty else { return key }
 
@@ -56,8 +57,9 @@ enum DerivationScope {
     }
 }
 
-/// Where a conversion keeps its derived state: the element and the line it is written at, the identities of the
-/// `ForEach` rows it stands in - values, compared as values - and which time the line ran in the build.
+/// Where a conversion keeps its derived state: where its element stands and the line it is written at, the
+/// identities of the `ForEach` rows it stands in - values, compared as values - and which time the line ran in the
+/// build.
 struct DerivationKey: Hashable {
     let site: PathNumber
     let rows: [AnyHashable]

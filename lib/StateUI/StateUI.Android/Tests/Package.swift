@@ -4,7 +4,7 @@ import PackageDescription
 // The Android Views host's tests. A view exists only in an application's
 // process, so the tests are a library the test APK loads, run on the UI thread
 // by its instrumentation - Platforms/Android beside this file.
-// .scripts/Android/test-android.sh builds, installs and runs them.
+// `stateui repo test --suite host:android` builds, installs and runs them.
 let package = Package(
     name: "StateUIAndroidTests",
     products: [

@@ -68,8 +68,7 @@ typedef enum {
 
 /// What a view heard: a tap, its place in a quick run of taps from 1, 0 for a press assistive technology made; the
 /// pointer at (x, y) DIPs of the view; a pinch's `StateUIPhase`, its scale since the last, at (x, y) as shares of the
-/// view's size; a press a drag may become, its `StateUIPressPhase` at (x, y) DIPs of the window's content, which the
-/// host's rule makes a drag; a rotation's `StateUIPhase` and its degrees clockwise since the last, in the scale's
+/// view's size; a rotation's `StateUIPhase` and its degrees clockwise since the last, in the scale's
 /// place; a wheel turned with Control, as Windows tells a trackpad's pinch, its notches in the scale's place - or,
 /// over a layout WinUI's own scroller hears, the scale it scales for it; a press held, at (x, y) DIPs of the view; a
 /// press on a view that hears taps, its `StateUIPhase` at (x, y) DIPs of the view, 1 in the scale's place where a
@@ -82,7 +81,6 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIHeardPointerPressed,
     StateUIHeardPointerReleased,
     StateUIHeardPinch,
-    StateUIHeardPress,
     StateUIHeardRotation,
     StateUIHeardWheelPinch,
     StateUIHeardWheelScale,
@@ -367,6 +365,10 @@ typedef struct {
     /// 1 where a finger is a pointer event's pointer.
     void (*heard)(int64_t view, StateUIHeard what, int32_t phase, double x, double y, double scale);
 
+    /// A press a drag may become, at its `StateUIPressPhase`, at (x, y) DIPs of the window's content - which the view
+    /// a drag moves does not move - and (inX, inY) of the view: the host's rule makes it a drag.
+    void (*pressed)(int64_t view, int32_t phase, double x, double y, double inX, double inY);
+
     /// The user answered the question asked under `ticket`: whether it was accepted, the words typed, in UTF-8, null
     /// for none, and the place of the action a choice's user chose, -1 for none; or why WinUI could not ask it, in
     /// UTF-8, null where it did.
@@ -462,6 +464,10 @@ typedef struct {
     /// Windows asked the application to open a link - a scheme it registered - at its start or later, a second
     /// start handing it over: its address, in UTF-8.
     void (*linkOpened)(char const *address);
+
+    /// WinUI gave up laying a window out - a layout cycle, which would end the process - and the pass ended where it
+    /// stood.
+    void (*layoutDidNotSettle)(void);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -512,19 +518,26 @@ void stateui_winui_window_set_content(StateUIObjectRef window, StateUIObjectRef 
 void stateui_winui_window_set_chrome(StateUIObjectRef window, StateUIObjectRef titleBar, StateUIObjectRef menuBar,
                                      StateUIObjectRef tabs);
 void stateui_winui_window_activate(StateUIObjectRef window);
+/// Brings the window in front of every other, as a test does before it sends the system's keys or mouse: activated,
+/// and where the system keeps the front for another process, taken through that window's input; whether it stands
+/// in front.
+bool stateui_winui_window_bring_forward(StateUIObjectRef window);
 void stateui_winui_window_close(StateUIObjectRef window);
 /// Hides the window, or shows it again without activating it.
 void stateui_winui_window_set_shown(StateUIObjectRef window, bool shown);
 /// Minimizes or restores the window as its buttons do: `ShowWindow` with `command`. What a test does.
 void stateui_winui_window_show_as_user(StateUIObjectRef window, int32_t command);
 
-/// Moves or sizes the window where `has` says, each alone: `values` are x and y from the corner of the screen's work
-/// area and the width and height of its content, in DIPs.
-void stateui_winui_window_set_frame(StateUIObjectRef window, bool const *has, double const *values);
+/// How many pixels a DIP is in the window, known before its content is laid out.
+double stateui_winui_window_scale(StateUIObjectRef window);
 
-/// The least and the greatest size of the window's content in DIPs: least width, least height, greatest width,
+/// Moves or sizes the window where `has` says, each alone: `pixels` are x and y from the corner of the screen's work
+/// area and the width and height of its content. One that would stand the window outside 32-bit pixels is not asked.
+void stateui_winui_window_set_frame(StateUIObjectRef window, bool const *has, int32_t const *pixels);
+
+/// The least and the greatest size of the window's content in pixels: least width, least height, greatest width,
 /// greatest height, 0 for none.
-void stateui_winui_window_set_limits(StateUIObjectRef window, double const *limits);
+void stateui_winui_window_set_limits(StateUIObjectRef window, int32_t const *limits);
 
 /// What the window is: whether the user may maximize and minimize it, and whether it floats over the application's
 /// other windows.
@@ -658,10 +671,15 @@ void stateui_winui_set_tooltip(StateUIObjectRef element, char const *utf8);
 
 /// A control's keyboard shortcut - a virtual key, 0 for none, the VirtualKeyModifiers held with it, and whether it
 /// gives way to a field being typed into - and the shortcut it holds, whether it holds one; and a key with its
-/// modifiers sent as the system sends keys.
+/// modifiers sent as the system sends keys, to `window` in front - nothing sent, false, where another stands there.
 void stateui_winui_set_shortcut(StateUIObjectRef element, int32_t key, int32_t modifiers, bool givesWayToTyping);
 bool stateui_winui_shortcut(StateUIObjectRef element, int32_t *key, int32_t *modifiers);
-void stateui_winui_send_keys(int32_t key, int32_t modifiers);
+bool stateui_winui_send_keys(StateUIObjectRef window, int32_t key, int32_t modifiers);
+
+/// The mouse's main button pressed or let go at (x, y) DIPs of `element`, which stands in `window`, as the system sends
+/// the user's: the cursor moved there first - nothing sent, false, where another window covers the point. What a
+/// test does.
+bool stateui_winui_send_mouse(StateUIObjectRef window, StateUIObjectRef element, double x, double y, bool down);
 int32_t stateui_winui_tooltip(StateUIObjectRef element, char *utf8, int32_t capacity);
 
 StateUIObjectRef stateui_winui_panel_make(int64_t view);
@@ -879,6 +897,14 @@ int32_t stateui_winui_menus(StateUIObjectRef element, char *utf8, int32_t capaci
 /// Chooses the item at `index` among those menus' items, submenus' included, as assistive technology does.
 void stateui_winui_menus_choose(StateUIObjectRef element, int32_t index);
 
+/// Opens the menu `element` offers - a button's flyout, else its context menu - at the element, as the user asks
+/// for it; whether one opened. What a test does.
+bool stateui_winui_menu_open(StateUIObjectRef element);
+
+/// The menu the last `stateui_winui_menu_open` opened, while it stands open, as `stateui_winui_menus` writes one;
+/// -1 where none stands open. What a test reads.
+int32_t stateui_winui_menu_shown(char *utf8, int32_t capacity);
+
 /// What those menus' items, submenus' included, hold of `what` - "identifier" the one automation finds each by, "icon"
 /// the file its picture shows, "destructive" 1 where its words stand in the theme's critical color, "shortcut" its
 /// accelerator's key and modifiers, "," between - in their order, ";" between, in UTF-8: what a test reads; the
@@ -892,6 +918,10 @@ int32_t stateui_winui_menus_items(StateUIObjectRef element, char const *what, ch
 StateUIObjectRef stateui_winui_picker_make(int64_t view, int32_t kind);
 void stateui_winui_picker_set_options(StateUIObjectRef picker, char const *const *options, int32_t count);
 void stateui_winui_picker_set(StateUIObjectRef picker, int32_t selected, bool writeSelected, char const *title);
+
+/// Takes every item off a row of segments or tabs - a SelectorBar - as its element leaves: assistive technology still
+/// holding one of them chooses an item of no row. Nothing for any other control.
+void stateui_winui_choices_let_go(StateUIObjectRef element);
 void stateui_winui_picker_set_alignment(StateUIObjectRef picker, int32_t alignment);
 void stateui_winui_picker_set_open(StateUIObjectRef picker, bool open);
 bool stateui_winui_picker_is_open(StateUIObjectRef picker);
@@ -1000,6 +1030,17 @@ void stateui_winui_value_move(StateUIObjectRef control, double value);
 StateUIObjectRef stateui_winui_field_make(int64_t view);
 StateUIObjectRef stateui_winui_password_make(int64_t view);
 StateUIObjectRef stateui_winui_editor_make(int64_t view);
+
+/// What a test stands over the window `within` stands in: a view whose layout never settles - measured again each
+/// time it is placed, at another size each time - which WinUI gives up on with a layout cycle.
+void stateui_winui_unsettle(StateUIObjectRef within);
+
+/// An empty TextBox to measure an editor's line by; released with `stateui_winui_release`.
+StateUIObjectRef stateui_winui_editor_line_make(void);
+
+/// The height of one line of `editor` at `width`: `line`, empty and standing as the editor does - its style, font,
+/// padding, border and least height - as WinUI measures it on the editor's window.
+double stateui_winui_editor_line_height(StateUIObjectRef editor, StateUIObjectRef line, double width);
 StateUIObjectRef stateui_winui_search_make(int64_t view);
 void stateui_winui_field_set_text(StateUIObjectRef field, char const *utf8);
 void stateui_winui_field_set_placeholder(StateUIObjectRef field, char const *utf8);
@@ -1197,6 +1238,10 @@ void stateui_winui_items_move_to(StateUIObjectRef items, double x, double y);
 
 /// Where the list's view stands, then the farthest it reaches across and down, in DIPs: four values.
 void stateui_winui_items_offset(StateUIObjectRef items, double *offset);
+/// What the list's scroller shows of its room, eight numbers, for a test: its viewport's width and height, the
+/// list's own, the horizontal scroll bar's visibility as asked and as computed, whether the system hides scroll
+/// bars by itself (1) and the scale the list is drawn at.
+void stateui_winui_items_scroller_state(StateUIObjectRef items, double *state);
 
 /// Names the row holding the cell numbered `cell` `words`: what Narrator reads of it, which reads no further.
 void stateui_winui_items_name(StateUIObjectRef items, int64_t cell, char const *words);
@@ -1305,6 +1350,11 @@ void stateui_winui_foot_bar_set_action_menu(StateUIObjectRef bar, int32_t place,
                                             bool const *destructive, int32_t const *keys, int32_t const *modifiers,
                                             bool const *givesWay, int32_t count);
 
+/// What a test reads: the menu of the foot bar's action at `place`, as `stateui_winui_title_bar_action_menu` writes
+/// one; the length it needs. And the item at `index` of it chosen, as assistive technology does.
+int32_t stateui_winui_foot_bar_action_menu(StateUIObjectRef bar, int32_t place, char *utf8, int32_t capacity);
+void stateui_winui_foot_bar_action_menu_choose(StateUIObjectRef bar, int32_t place, int32_t index);
+
 /// Asks WinUI to measure a split view's pane and everything in it again, as its height changes: WinUI applies an
 /// arrange inside the pane only to what it measured in that pass.
 void stateui_winui_split_measure_pane_again(StateUIObjectRef split);
@@ -1356,11 +1406,18 @@ void stateui_winui_double_tap(double *tap);
 /// Presses `element` as assistive technology does, through its automation peer; whether it could be pressed.
 bool stateui_winui_press(StateUIObjectRef element);
 
+/// The automation peer of a segment row's segment at `index`, held as assistive technology holds what it read - what
+/// a test takes; released with `stateui_winui_release`, null where there is none.
+StateUIObjectRef stateui_winui_segment_peer(StateUIObjectRef element, int32_t index);
+
+/// Chooses through `peer`'s selection pattern, as assistive technology does; whether it offers one.
+bool stateui_winui_peer_select(StateUIObjectRef peer);
+
 /// Whether a click at (x, y) DIPs of `element` would reach the element itself.
 bool stateui_winui_hits(StateUIObjectRef element, double x, double y);
 
-/// Whether a click at (x, y) DIPs of `element` would reach it, or what stands in it, through everything its window
-/// shows over it - what a test reads.
+/// Whether a click at (x, y) DIPs of the window's content would reach `element`, or what stands in it, through
+/// everything its window shows over it - what a test reads.
 bool stateui_winui_reaches(StateUIObjectRef element, double x, double y);
 
 /// Where `child` - or the element it stands in among `panel`'s children - is drawn in `panel`: its `Canvas.ZIndex`
@@ -1382,6 +1439,9 @@ void stateui_winui_drag_read(StateUIObjectRef element, bool *canDrag, bool *allo
 
 /// How many views the relay holds a drag offer of - what a test counts to see every one let go.
 int32_t stateui_winui_drag_offers(void);
+
+/// How many views' drag handlers hang on their elements now - what a test counts to see each hung once.
+int32_t stateui_winui_drag_hangs(void);
 
 
 /// How many views listen for the user's input - what a test counts to see every one stop.
@@ -1481,9 +1541,6 @@ void stateui_winui_cancel_request(int64_t ticket);
 /// whether one took it comes back through `launchAnswered`, under `ticket`, on the UI thread.
 void stateui_winui_launch(int64_t ticket, char const *target, bool file);
 
-/// What a test does: while `held`, a launch is answered as taken and Windows is asked nothing.
-void stateui_winui_hold_launches(bool held);
-
 /// What a test does: a dialog that saves opens in `folder`, in UTF-8, so what a test saves stays there.
 void stateui_winui_keep_test_files_in(char const *folder);
 
@@ -1540,16 +1597,11 @@ void stateui_winui_prompt_write(StateUIObjectRef element, char const *utf8);
 /// (0x1F) but the last; -1 for none showing. What a test reads.
 int32_t stateui_winui_question(StateUIObjectRef element, char *utf8, int32_t capacity);
 
-/// What the screen reader was told since the relay started, in UTF-8, each ended by the unit separator (0x1F) but
-/// the last, as far as `capacity` goes; its whole length. What a test reads.
-int32_t stateui_winui_announced(char *utf8, int32_t capacity);
+/// Whether the dialog of the question asked last still lives. What a test reads to see it let go once answered.
+bool stateui_winui_last_question_lives(void);
 
 /// The file dialog showing in the process: 0 one that opens, 1 one that saves, -1 none. What a test reads.
 int32_t stateui_winui_file_dialog(void);
-
-/// What was launched since the relay started - a file by its path, an address as written - in UTF-8, each ended by
-/// the unit separator (0x1F) but the last, as far as `capacity` goes; its whole length. What a test reads.
-int32_t stateui_winui_launched(char *utf8, int32_t capacity);
 
 #ifdef STATEUI_WINUI_RELAY
 #pragma clang attribute pop

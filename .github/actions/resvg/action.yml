@@ -1,0 +1,27 @@
+# resvg of the release the stateui tool pins (`Resvg.release`), which draws a
+# head's pictures: its macOS release archive for the runner's architecture,
+# checked by its SHA-256, on the search path. PicturesTests holds the release
+# here equal to the tool's.
+
+name: resvg
+description: Puts resvg 0.50.0 on a macOS runner's search path.
+
+runs:
+  using: composite
+  steps:
+    - name: Install resvg 0.50.0
+      shell: bash
+      run: |
+        set -euo pipefail
+        case "$(uname -m)" in
+          arm64) asset=resvg-macos-aarch64.zip digest=8155b569f2b93723ba3645b53536eead3b591c8faf62bdaafd3033ba37838837 ;;
+          x86_64) asset=resvg-macos-x86_64.zip digest=f47150b41b41842c629ea9c397ce0f3373451549f47ea1c44f950866a992363f ;;
+          *) echo "::error::no resvg archive for $(uname -m)"; exit 1 ;;
+        esac
+        curl -fsSL --retry 3 -o "$RUNNER_TEMP/$asset" "https://github.com/linebender/resvg/releases/download/v0.50.0/$asset"
+        echo "$digest  $RUNNER_TEMP/$asset" | shasum -a 256 -c -
+        mkdir -p "$RUNNER_TEMP/resvg"
+        unzip -q -o "$RUNNER_TEMP/$asset" -d "$RUNNER_TEMP/resvg"
+        chmod +x "$RUNNER_TEMP/resvg/resvg"
+        "$RUNNER_TEMP/resvg/resvg" --version
+        echo "$RUNNER_TEMP/resvg" >> "$GITHUB_PATH"

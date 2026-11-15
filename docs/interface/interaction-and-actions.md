@@ -129,6 +129,7 @@ the gesture to that:
 
 ```swift
 @State private var x = 0.0
+@State private var moved = 0.0
 @State private var scale = 1.0
 @State private var scaled = 1.0
 @State private var angle = 0.0
@@ -140,7 +141,8 @@ Rectangle()
     .scale(scale)
     .rotation(angle)
     .onPanUpdated { update in
-        if update.phase == .changed { x = update.total.x }
+        if update.phase == .began { moved = x }
+        x = moved + update.total.x
     }
     .onPinchUpdated { update in
         if update.phase == .began { scaled = scale }

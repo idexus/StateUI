@@ -47,6 +47,16 @@ the painted thing's larger side, reaching as far across as down
 the box would stretch the circle into an ellipse on anything not square, so
 such a host is handed each axis's share of that one reach.
 
+## Stops in order
+
+A gradient's stops stand in the order of their offsets, whatever order they
+are written in: each stands at its own offset, held between 0 and 1, and
+stops at one offset stand in the order written - a hard edge between two
+colors. A stop at an offset that is no number stands nowhere. The host layer
+hands every toolkit the stops in that order (`HostBrush`): toolkits part over
+stops out of order - most order them, CSS, SVG and Android's Skia move each
+onto the one before it - so stops in order draw alike on every host.
+
 ## Drawn by CSS
 
 A host painting a box with CSS - the Web's boxes and bars, GTK's header bar -

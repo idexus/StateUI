@@ -125,10 +125,12 @@ enum JavaNatives {
                 AndroidView.find(number)?.heard(kind: kind, phase: phase, x: Double(x), y: Double(y), z: Double(z))
             }
         }
-        let pressed: @convention(c) (Environment, jclass?, jlong, jint, jfloat, jfloat) -> jboolean = {
-            _, _, number, phase, x, y in
+        let pressed: @convention(c) (Environment, jclass?, jlong, jint, jfloat, jfloat, jfloat, jfloat) -> jboolean = {
+            _, _, number, phase, x, y, inViewX, inViewY in
             MainActor.assumeIsolated {
-                let dragging = AndroidView.find(number)?.heardPress(phase: phase, at: Point(x: Double(x), y: Double(y)))
+                let dragging = AndroidView.find(number)?.heardPress(
+                    phase: phase, at: Point(x: Double(x), y: Double(y)),
+                    inView: Point(x: Double(inViewX), y: Double(inViewY)))
                 return dragging == true ? 1 : 0
             }
         }
@@ -419,7 +421,7 @@ enum JavaNatives {
             ("keyPressed", "(III)Z", unsafeBitCast(keyPressed, to: UnsafeMutableRawPointer.self)),
             ("keyTaken", "(ZIII)Z", unsafeBitCast(keyTaken, to: UnsafeMutableRawPointer.self)),
             ("gestured", "(JIIFFF)V", unsafeBitCast(gestured, to: UnsafeMutableRawPointer.self)),
-            ("pressed", "(JIFF)Z", unsafeBitCast(pressed, to: UnsafeMutableRawPointer.self)),
+            ("pressed", "(JIFFFF)Z", unsafeBitCast(pressed, to: UnsafeMutableRawPointer.self)),
             ("finger", "(JIIFFFFFF)Z", unsafeBitCast(finger, to: UnsafeMutableRawPointer.self)),
             ("fingers", "(JIFFFF)V", unsafeBitCast(fingers, to: UnsafeMutableRawPointer.self)),
             ("notched", "(JFF)Z", unsafeBitCast(notched, to: UnsafeMutableRawPointer.self)),

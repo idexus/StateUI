@@ -11,8 +11,13 @@
 enum GTKTransitionSurface {
     /// Whether the host moves `property` on an element of `type`.
     static func presents(_ property: Prop, on type: NodeType) -> Bool {
-        if classPainted.contains(property), !drawsItsOwnBox.contains(type) { return false }
-        return TransitionSurface.presents(property, on: type, atRest: atRest)
+        !paintsOnlyAtRest(property, on: type) && TransitionSurface.presents(property, on: type)
+    }
+
+    /// Whether GTK paints `property` of an element of `type` only at rest - a class a value, or what the desktop
+    /// keeps - which a state carried on a journey to it shows where the journey lands; any other member follows it.
+    static func paintsOnlyAtRest(_ property: Prop, on type: NodeType) -> Bool {
+        (classPainted.contains(property) && !drawsItsOwnBox.contains(type)) || atRest[type]?.contains(property) == true
     }
 
     /// What a class of the host's style sheet paints on every widget but a layout's - its background, its room, its

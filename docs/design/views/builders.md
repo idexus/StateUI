@@ -23,9 +23,10 @@ arguments: `.toolbar(.bottom) { … }`, `.contextMenu { … }`.
 The view builder keeps the type of what it was given. One statement stays what
 it is, so one view is one view. An `if`/`else` is an `Either` of its two
 branches - a view where both branches are views - an `if` with no `else` an
-optional, several statements `Statements`, repetition a `ForEach`, and a list
-of `any View` an array. Everything a container holds is `Views`: every view is
-one, and so is each of these. A composed view's `body` and a one-view slot
+optional, several statements `Statements`, and repetition a `ForEach`; a value
+held as `any View` goes in as `AnyView(view)`, and a list of them is no
+`Views` (below). Everything a container holds is `Views`: every view is one,
+and so is each of these. A composed view's `body` and a one-view slot
 take a `View`, so two statements or an `if` with no `else` there do not compile,
 and neither does `VStack { ToolbarButton("Save") }`: an action, a run of text
 and a marker each go where they belong; an arrangement of pages compiles there

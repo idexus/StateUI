@@ -1,0 +1,26 @@
+{
+  "request" : {
+    "id" : "17",
+    "jsonrpc" : "2.0",
+    "method" : "application/install",
+    "params" : {
+      "artifactUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/gtk-arm64-1b2c3d4e5f60-debug",
+      "requestToken" : "2e6a8c0b-4d1f-4b3e-9a5c-7e9b1d3f5a40"
+    }
+  },
+  "response" : {
+    "id" : "17",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "artifactUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/gtk-arm64-1b2c3d4e5f60-debug",
+    "writtenUris" : [
+      "file:///home/example/.local/share/applications/com.stateui.notes.desktop",
+      "file:///home/example/.local/share/icons/hicolor/scalable/apps/com.stateui.notes.svg"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-# revision 10.1
+# revision 10.2
 ToolbarGroup: ✅
 ToolbarGroup.barEdge: ✅
 ToolbarGroup.hidesWithSidebar: ✅

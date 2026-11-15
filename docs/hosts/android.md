@@ -16,14 +16,6 @@ lib/StateUI/StateUI.Android/
   Sources/CStateUIAndroid/   the NDK's C surface: JNI, the looper, the log
   Java/stateui/android/      the Java layer: the activity, the views and view groups the host makes, the frame callback and the listeners
   Tests/                     the host's suite, run in a test APK on a device
-.scripts/Android/
-  build-swift.sh             an application's Swift for Android, for the ABIs asked
-  run-app.sh                 builds an application's Android head, installs and starts it
-  deploy.sh                  builds it for release and lays its APK in a folder of its own
-  test-android.sh            builds and runs the host's suite on a device
-  devices.sh                 the devices attached, the emulators, and booting one
-  tools.sh                   what they share: the SDK, adb, JDK 21, Gradle, a head's APK, the device
-  draw-app-icon.swift        a head's launcher icon, drawn from the application's Resources/AppIcon
 apps/<App>/Platforms/Android/
   Swift/<App>Android.swift   the application's Android head
   Java/                      the application's own views, where it has any
@@ -35,16 +27,20 @@ apps/<App>/Platforms/Android/
 
 The host builds on macOS, for Android 9 (API 28) or newer:
 
-- Swift 6.4 from swift.org, `swift-6.4.0-RELEASE`, and the Swift SDK for
+- Swift 6.4 from swift.org, `swift-6.4.2-RELEASE`, and the Swift SDK for
   Android of the same release, installed with `swift sdk install`. Xcode's own
-  Swift 6.4 is a different build and cannot read the SDK's modules;
-  `build-swift.sh` finds the matching toolchain by itself;
+  Swift 6.4 is a different build and cannot read the SDK's modules; the
+  `stateui` tool finds the matching toolchain by itself;
 - the Android NDK r30 or newer: the one `ANDROID_NDK_ROOT` or
   `ANDROID_NDK_HOME` names, else the
   one the Swift SDK's setup linked into its bundle, else the Android SDK's
   newest;
 - the Android SDK with platform 36 and its build tools, and JDK 21 for
-  Gradle. The scripts fetch Gradle itself the first time.
+  Gradle. The tool fetches Gradle itself the first time;
+- `resvg` 0.50.0, which draws the application's pictures and launcher icon
+  (`brew install resvg`, or `cargo install resvg --version 0.50.0`).
+
+`stateui doctor --host android` says what of them this machine has.
 
 ## The head
 
@@ -89,11 +85,11 @@ application's manifest reads it, declares its `Platforms/Android/Swift` head
 and the library it makes, and defines the `ANDROID` compilation condition for
 every module of the application; `lib/StateUI.Head` brings the
 `StateUIAndroid` host to the head. Swift written for this host alone stands
-under `#if ANDROID`. The scripts set it as they call `build-swift.sh`, and
+under `#if ANDROID`. The `stateui` tool sets it for the Android build, and
 nothing else: the library itself is built as every host builds it.
 
-A new application made in `apps/` - **StateUI: New Application in apps/**, or
-`.scripts/new-app.sh` - has an Android head, as HelloWorld does, and runs and
+A new application - **StateUI: New Application**, `stateui new`, or
+`stateui new` - has an Android head, as HelloWorld does, and runs and
 is debugged as soon as it is made.
 
 ## Controls, acts, and events registered in Swift
@@ -313,76 +309,75 @@ static func report(level: Double, charging: Bool) {
 ## Running
 
 ```bash
-.scripts/Android/devices.sh list
-.scripts/Android/run-app.sh apps/HelloWorld debug emulator-5554
-.scripts/Android/run-app.sh apps/Gallery debug emulator-5554
+stateui devices --host android
+stateui run --project apps/HelloWorld --host android --device emulator-5554
+stateui run --project apps/Gallery --host android --device Pixel_3a_API_34
 ```
 
-`run-app.sh` builds the application's Swift for the device's ABI alone, then
-the APK, installs it, starts it and follows its log. Everything a build writes
-stays in the application's `.build/android/`. The APK carries the libraries
-the head needs and nothing else - the Swift runtime's own among them -
-stripped, with the unstripped copies kept in `.build/android/symbols/` for
-`ndk-stack` and a debugger. Android draws no SVG, so the application's
-`Resources/Images` are drawn for it as the APK is built: an SVG three times
-over, as a PNG, which `Image("mark.png")` finds as it does on UIKit, and as
-it finds the SVG on the hosts that draw one. An application's `print`
-reaches logcat under the tag `StateUI`, and so does what `STATEUI_TALLY=1`
-and `STATEUI_INSPECT=1` write: `run-app.sh` hands every `STATEUI_` variable of the shell that runs it
-to the application's environment. A head's manifest asks for
-`ACCESS_NETWORK_STATE`, which the host needs to report the network to the
-application's views.
+`stateui run` builds the application's Swift for the device's ABI alone,
+then the APK, installs it, starts it and follows its log until it ends;
+Ctrl+C ends the application. A device is named by its serial or its name; a
+virtual device not running is booted first; with none named, the only one
+running. The APK carries the libraries the head needs and nothing else - the
+Swift runtime's own among them - stripped, with the unstripped copies kept
+beside the APK in the build's artifact, `symbols/<abi>`, for `ndk-stack` and
+a debugger. Android draws no SVG, so the application's `Resources/Images`
+are drawn for it as the APK is built: an SVG three times over, as a PNG,
+which `Image("mark.png")` finds as it does on UIKit, and as it finds the SVG
+on the hosts that draw one. An application's `print` reaches logcat under
+the tag `StateUI`, and so does what `STATEUI_TALLY=1` and `STATEUI_INSPECT=1`
+write: the run hands every `STATEUI_` variable of its environment to the
+application's. A head's manifest asks for `ACCESS_NETWORK_STATE`, which the
+host needs to report the network to the application's views.
 
 In VS Code, choose **Android** as the host and a device, and press **F5**.
 
 ## Debugging
 
-**StateUI: Debug** builds, installs and starts the application as `run-app.sh`
-does, and then attaches `lldb-dap` to it: a breakpoint in the application, in
-StateUI or in the host stops it, with its source, its stack and its variables.
-It is the application running that is attached to, so what runs before - the
-first render - runs without the debugger. Only a debug build can be debugged.
+**StateUI: Debug** builds, installs and starts the application, readies the
+debugger's server and attaches `lldb-dap` to it: a breakpoint in the
+application, in StateUI or in the host stops it, with its source, its stack
+and its variables. It is the application running that is attached to, so
+what runs before it attaches runs without the debugger. Only a debug build
+can be debugged.
 
-`run-app.sh --debugger` readies it: the NDK's `lldb-server` runs as the
-application, in its own sandbox, and `.build/android/debugger.json` says where
-it listens and which process to attach to. From a terminal, with the toolchain's
-`lldb`:
+`stateui run --debugger` readies it: the NDK's `lldb-server` runs as the
+application, in its own sandbox, and the run says where it listens and which
+process to attach to. From a terminal, with the toolchain's `lldb`:
 
 ```bash
-.scripts/Android/run-app.sh apps/Gallery debug emulator-5554 --no-logcat --debugger
-cat apps/Gallery/.build/android/debugger.json
+stateui run --project apps/Gallery --host android --device emulator-5554 --debugger
 lldb -o "settings set plugin.jit-loader.gdb.enable off" \
      -o "platform select remote-android" \
      -o "platform connect unix-abstract-connect://emulator-5554/com.stateui.gallery/stateui-debugger.sock" \
-     -o "settings append target.exec-search-paths $PWD/apps/Gallery/.build/android/symbols/arm64-v8a" \
-     -o "process attach --pid <process from debugger.json>" \
+     -o "settings append target.exec-search-paths <the build's symbols/arm64-v8a>" \
+     -o "process attach --pid <the process the run said>" \
      -o "process handle SIGSEGV SIGBUS --pass true --stop false --notify false"
 ```
 
 The libraries are read from the build, which kept them unstripped; they must
-be the ones installed, so the application is always run through the script
-before it is attached to. Android's runtime raises SIGSEGV and SIGBUS on purpose,
-and the debugger passes them to it rather than stopping. Nor does the debugger
-follow the code the runtime's JIT compiles: the runtime announces each method
-it compiles, and a debugger that reads each announcement stops the whole
-application every time, which over USB holds the UI thread for seconds. End a
-session by detaching - stopping the debugger itself leaves its breakpoints in
-the application, which the next of them then ends.
+be the ones installed, so the debugger attaches to what that run installed.
+Android's runtime raises SIGSEGV and SIGBUS on purpose, and the debugger
+passes them to it rather than stopping. Nor does the debugger follow the
+code the runtime's JIT compiles: the runtime announces each method it
+compiles, and a debugger that reads each announcement stops the whole
+application every time, which over USB holds the UI thread for seconds. End
+a session by detaching - stopping the debugger itself leaves its breakpoints
+in the application, which the next of them then ends.
 
-## Deploying
+## Packaging
 
 ```bash
-.scripts/Android/deploy.sh apps/Gallery artifacts/Gallery/Android emulator-5554
+stateui package --project apps/Gallery --host android --device emulator-5554
 ```
 
-`deploy.sh` builds an application's head for release, for the ABI of the
-device named - `ANDROID_SERIAL`, or the one device attached, where none is
-named - and lays its APK, `<application>.apk`, in the folder named, made
-anew. The APK is signed as the head's `build.gradle.kts` says: HelloWorld's
-and the Gallery's sign a release with the debug key. **StateUI: Deploy** in
-the editor runs it for the application and the device chosen, and lays the
-APK in `artifacts/<application>/Android` of the folder that holds the
-application's `apps/` - a checkout's, or a project group's.
+`stateui package` builds an application's head for release, for the ABI of
+the device named - else the only one running, else `arm64-v8a` - and lays
+its APK, `<application>.apk`, in `--output`, else
+`artifacts/<application>/Android` of the application's workspace, made anew.
+The APK is signed as the head's `build.gradle.kts` says: HelloWorld's and
+the Gallery's sign a release with the debug key. **StateUI: Package** in the
+editor does so for the application and the device chosen.
 
 ## Testing
 
@@ -391,12 +386,12 @@ library a test APK loads, run on the device's UI thread by its
 instrumentation:
 
 ```bash
-.scripts/Android/test-android.sh emulator-5554
+stateui repo test --suite host:android --device emulator-5554
 ```
 
 The suite is XCTest. With no discovery on Android, each test case lists its
-tests in `allTests` and the runner lists the cases; `test-android.sh` refuses
-to run while a test or a case is listed nowhere. Each test and each
+tests in `allTests` and the runner lists the cases; the run is refused while
+a test or a case is listed nowhere. Each test and each
 conformance case says as it ends where the run stands, followed from the
 device's log, and the run ends with *Executed N tests, with M failures*.
 
@@ -405,34 +400,39 @@ The suite runs the conformance families too, one test a family -
 `lib/StateUI/exports/`: what the host declares to `android.txt`, and the
 verdicts it takes off the device to `marks/android/<Family>.txt`, each under
 the revision its family stands at in
-`lib/StateUI/StateUI.Conformance/revisions.txt`, which the script writes over
-them, as the device reads no repository. A run that says otherwise fails;
-`STATEUI_UPDATE_EXPORTS=1` writes them instead. `STATEUI_FILTER` runs the
-tests whose `Case.test` name holds one of its comma-separated names, and then
-holds nothing to `lib/StateUI/exports/`: a part of the suite proves only part
-of what the host declares. `STATEUI_STALE_ONLY=1` runs only the families
-whose verdict files stand at another revision, or at none - the script
-chooses them - and holds or writes only theirs.
+`lib/StateUI/StateUI.Conformance/revisions.txt`, as the device reads no
+repository; a verdict is compared, not its revision. A run that says
+otherwise fails, and so does the facade's API record that differs. `--filter`
+runs the tests whose `Case.test` name holds one of its comma-separated names,
+and then holds nothing to `lib/StateUI/exports/`: a part of the suite proves
+only part of what the host declares; a filter matching no test fails.
+A filtered conformance run holds the families it ran.
 
 ```bash
-STATEUI_FILTER=testPicker,AndroidShapeViewTests .scripts/Android/test-android.sh emulator-5554
-STATEUI_UPDATE_EXPORTS=1 .scripts/Android/test-android.sh emulator-5554
-STATEUI_UPDATE_EXPORTS=1 STATEUI_STALE_ONLY=1 .scripts/Android/test-android.sh emulator-5554
-STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
+stateui repo test --suite host:android --device emulator-5554 --filter testPicker,AndroidShapeViewTests
 ```
 
-With the verdicts written, the last line - at the repository's root - renders
-the [platform contract](../platform-contract.md#reading-the-matrix) and
-[the control dictionary](../controls/README.md) from them. In the editor,
-with Android and a device chosen, **StateUI: Conformance - Rebuild all** runs
-the whole suite on the device with `STATEUI_UPDATE_EXPORTS=1`, then renders
-the documents. **StateUI: Conformance - Rebuild changed** runs nothing for
-Android: the editor answers that the device reads no repository, so its marks
-are made again whole, by Rebuild all. From a terminal, `STATEUI_STALE_ONLY=1`
-runs the stale families alone, as above.
+`stateui repo conformance run --host android --record` writes them instead
+- `--all` every family and what the host declares, `--changed` the families
+whose verdicts stand at another revision or at none, `--family <name>` the
+ones named - each verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt` - the tool writes it over each file it takes off the device, the stale families named by the conformance package's reader, then renders the
+[platform contract](../platform-contract.md#reading-the-matrix) and
+[the control dictionary](../controls/README.md) from them;
+`stateui repo conformance status --host android` says where they stand, and
+`stateui repo api record --host android` writes the API records:
+
+```bash
+stateui repo conformance run --host android --all --record --device emulator-5554
+stateui repo conformance run --host android --changed --record --device emulator-5554
+```
+
+In the editor, with Android and a device chosen, **StateUI: Conformance - Rebuild all**
+and **Rebuild changed** run the same.
 
 The test APK can be built on one machine and run on another:
-`test-android.sh --build x86_64` builds it for that ABI with no device and
-prints where it is, and `STATEUI_TEST_APK=<apk> test-android.sh` installs
-that APK instead of building one. CI builds on macOS, where the build draws
-the pictures, and runs the suite on a Linux emulator.
+`stateui repo test --suite host:android --build-only --architecture x86_64`
+builds it for that ABI with no device, with its identity, and says its
+folder; `--artifact <folder>` runs that APK instead of building one, and
+refuses it where it was built for another ABI or commit. CI builds on macOS,
+where the build draws the pictures, and runs the suite on a Linux emulator.

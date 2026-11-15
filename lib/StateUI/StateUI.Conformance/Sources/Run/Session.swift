@@ -202,7 +202,8 @@
         return try driven { try driver.focused(element) }
     }
 
-    /// Whether a press at `point` of `element` reaches it, or what stands in it.
+    /// Whether a press at `point` of `element`'s laid-out rectangle, no transform in it, reaches it or what stands
+    /// in it.
     public func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
         note("read what reaches \(element.type.name)", element: element.type.name)
         return try driven { try driver.reaches(element, at: point) }
@@ -229,6 +230,12 @@
         return try driven { try driver.question(over: root) }
     }
 
+    /// The question the window `window` shows now; nil where it shows none - whatever another window shows.
+    public func question(over window: MountedElement) throws -> Question? {
+        note("read a question over a window")
+        return try driven { try driver.question(over: window) }
+    }
+
     /// What the platform's screen reader was told to say, in order.
     public func announced() throws -> [String] {
         note("read what the screen reader said")
@@ -239,6 +246,13 @@
     /// none (`HostDriver.standUnderSystemBars`).
     public func standUnderSystemBars(top: Double, bottom: Double) {
         driver.standUnderSystemBars(top: top, bottom: bottom)
+        driver.step()
+    }
+
+    /// The platform's keyboard docked at the window's foot, `height` points tall - nought for none - as the platform
+    /// tells the host where it goes (`HostDriver.standUnderKeyboard`).
+    public func standUnderKeyboard(height: Double) throws {
+        try driven { try driver.standUnderKeyboard(height: height) }
         driver.step()
     }
 
@@ -279,6 +293,13 @@
         guard let root = tree?.root else { return nil }
         note("read a share sheet")
         return try driven { try driver.shared(over: root) }
+    }
+
+    /// The menu the window shows open now, written as `menu(of:)` writes one; nil where none shows.
+    public func shownMenu() throws -> String? {
+        guard let root = tree?.root else { return nil }
+        note("read a menu shown")
+        return try driven { try driver.shownMenu(over: root) }
     }
 
     /// What the host handed the system to launch, in order: an address as written, a file by its name.

@@ -108,6 +108,34 @@ private final class SeenByFactor {
     }
 }
 
+/// A view converting one source by its factor - placed under two parents by one local id.
+private struct Scaled: View {
+    let source: Binding<Double>
+    let factor: Double
+    let seen: SeenByFactor
+
+    var body: some View {
+        let scaled = source.convert({ $0 * factor }, back: { $0 / factor })
+        let _ = seen.note(factor, scaled)
+        return Slider(scaled).maximum(100)
+    }
+}
+
+/// A parent for each factor, each holding a `Scaled` named `same`.
+private struct TwoParents: View {
+    let source: Binding<Double>
+    let factors: State<[Double]>
+    let seen: SeenByFactor
+
+    var body: some View {
+        VStack {
+            ForEach(factors.wrappedValue) { factor in
+                VStack { Scaled(source: source, factor: factor, seen: seen).id("same") }.id(factor)
+            }
+        }
+    }
+}
+
 /// One helper making a converted slider, called twice in one body.
 private struct HelperTwice: View {
     let source: Binding<Double>
@@ -206,6 +234,24 @@ final class ConversionTests: XCTestCase {
         XCTAssertEqual(Set(numbers).count, 2, "two calls, two derived states")
         Renderer.shared.board.cycle(now: 0, reducesMotion: false)
         XCTAssertEqual(numbers.map { destination(of: $0) }, [5, 50])
+    }
+
+    /// TWO VIEWS NAMED ALIKE UNDER TWO PARENTS KEEP TWO CONVERSIONS: a name is distinct among siblings alone, so
+    /// the conversion's place is the whole way down to its element - kept across the parents' reorder.
+    func testViewsNamedAlikeUnderTwoParentsKeepTwoConversions() throws {
+        let (source, factors, seen) = (State(0.5), State([10.0, 20.0]), SeenByFactor())
+        let renders = Renders()
+        let patch = renders.render(TwoParents(source: source.projectedValue, factors: factors, seen: seen).node)
+        let numbers = try patch.subtree.filter { $0.type == .slider }.map { try XCTUnwrap($0.driven?[.value]?.state) }
+
+        XCTAssertEqual(Set(numbers).count, 2, "two places, two derived states")
+        Renderer.shared.board.cycle(now: 0, reducesMotion: false)
+        XCTAssertEqual(numbers.map { destination(of: $0) }, [5, 10])
+
+        let before = seen.storages
+        factors.wrappedValue = [20, 10]
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+        XCTAssertEqual(seen.storages, before, "each parent kept its derived state as the parents changed places")
     }
 
     /// The journey a converted slider walks, read off its image.
@@ -535,6 +581,215 @@ final class ConversionTests: XCTestCase {
         board.cycle(now: 48, reducesMotion: false)
 
         XCTAssertEqual(volume.wrappedValue, 0.4, accuracy: 1e-12, "a report still comes back")
+    }
+
+    /// A REPORT THE SOURCE REFUSES LANDS NOWHERE: the way back asks the source, as every road a value comes in by
+    /// does, and the derived state goes back to what the source holds.
+    func testAReportTheSourceRefusesLandsNowhere() throws {
+        let volume = State(wrappedValue: 0.5)
+        volume.storage.refuses = { $0 > 0.6 ? "\($0) is too loud" : nil }
+        let renders = Renders()
+        let patch = renders.render(
+            Slider(volume.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 })).maximum(100).node)
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        dragged(number, to: 80)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(volume.wrappedValue, 0.5, "the refused report landed nowhere")
+        XCTAssertTrue(hasComplained("0.8 is too loud"))
+        XCTAssertEqual(destination(of: number), 50, "the thumb goes back to what the source holds")
+
+        _ = board.dirty()
+        dragged(number, to: 40)
+        board.cycle(now: 48, reducesMotion: false)
+        XCTAssertEqual(volume.wrappedValue, 0.4, accuracy: 1e-12, "a report the source takes still lands")
+    }
+
+    /// A report into two sources lands on both or on neither: one refusing its part, the other keeps its own.
+    func testAReportOneOfTwoSourcesRefusesLandsOnNeither() throws {
+        let hours = State(wrappedValue: 1.0)
+        let minutes = State(wrappedValue: 30.0)
+        hours.storage.refuses = { $0 >= 2 ? "\($0) hours is too long" : nil }
+        let renders = Renders()
+        let patch = renders.render(
+            Slider(
+                Binding<Double>.multi(hours.projectedValue, minutes.projectedValue)
+                    .convert({ h, m in h * 60 + m },
+                             back: { total in ((total / 60).rounded(.down), total.truncatingRemainder(dividingBy: 60)) }))
+            .maximum(600)
+            .node)
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        dragged(number, to: 125)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(hours.wrappedValue, 1)
+        XCTAssertEqual(minutes.wrappedValue, 30, "the source that takes its part keeps its own all the same")
+        XCTAssertTrue(hasComplained("2.0 hours is too long"))
+        XCTAssertEqual(destination(of: number), 90, "the thumb goes back to what the sources hold")
+    }
+
+    /// A source that is itself a conversion refuses what its own sources refuse: a report whose first part a state
+    /// two links up refuses lands on neither source, the second keeping its own.
+    func testAReportAStateUpTheChainRefusesLandsOnNeitherSource() throws {
+        let base = State(wrappedValue: 1.0)
+        let second = State(wrappedValue: 30.0)
+        base.storage.refuses = { $0 > 1 ? "\($0) is too much" : nil }
+        let renders = Renders()
+        let patch = renders.render(
+            Slider(
+                Binding<Double>.multi(base.projectedValue.convert({ $0 * 10 }, back: { $0 / 10 }), second.projectedValue)
+                    .convert({ $0 + $1 }, back: { (20, $0 - 20) }))
+            .maximum(100)
+            .node)
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        dragged(number, to: 25)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(base.wrappedValue, 1)
+        XCTAssertEqual(second.wrappedValue, 30, "the source that takes its part keeps its own all the same")
+        XCTAssertTrue(hasComplained("2.0 is too much"))
+        XCTAssertEqual(destination(of: number), 40, "the thumb goes back to what the sources hold")
+    }
+
+    /// A report a state two links up a chain refuses lands on no link: each goes back to what the first source holds.
+    func testAReportAStateTwoLinksUpRefusesLandsOnNoLink() throws {
+        let volume = State(wrappedValue: 0.5)
+        volume.storage.refuses = { $0 > 0.6 ? "\($0) is too loud" : nil }
+        let renders = Renders()
+        let patch = renders.render(
+            Slider(volume.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 }).convert({ $0 * 2 }, back: { $0 / 2 }))
+                .maximum(200)
+                .node)
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        dragged(number, to: 160)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(volume.wrappedValue, 0.5, "the refused report landed nowhere")
+        XCTAssertTrue(hasComplained("0.8 is too loud"))
+        XCTAssertEqual(destination(of: number), 100, "the thumb goes back to what the first source holds")
+    }
+
+    /// A report into two sources whose refusals read each other lands whole or not at all: two windows of one kind
+    /// asked for the same value - free while neither holds it - keep their own, through their bindings or through
+    /// conversions of them.
+    func testAReportTwoSourcesRefuseTogetherLandsOnNeither() throws {
+        for converted in [false, true] {
+            let record = SceneRecord(id: converted ? "converted" : "direct", declaration: 0)
+            let kind = KeyName("conversion.document")
+            record.open(kind, value: AnyHashable(1.0), text: "1")
+            record.open(kind, value: AnyHashable(2.0), text: "2")
+            let (a, b) = (record.windowValue(record.windows[0], as: Double.self), record.windowValue(record.windows[1], as: Double.self))
+            let (left, right) = converted
+                ? (a.projectedValue.convert({ $0 }, back: { $0 }), b.projectedValue.convert({ $0 }, back: { $0 }))
+                : (a.projectedValue, b.projectedValue)
+            let renders = Renders()
+            let patch = renders.render(
+                Slider(Binding<Double>.multi(left, right).convert({ $0 * 10 + $1 }, back: { _ in (3, 3) }))
+                    .maximum(100)
+                    .node)
+            let number = try XCTUnwrap(patch.driven?[.value]?.state)
+            let board = Renderer.shared.board
+            board.cycle(now: 0, reducesMotion: false)
+
+            dragged(number, to: 33)
+            board.cycle(now: 16, reducesMotion: false)
+            board.cycle(now: 32, reducesMotion: false)
+
+            let held = record.windows.compactMap { $0.value?.base as? Double }
+            XCTAssertEqual(held, [1, 2], "converted \(converted): neither window moved")
+            XCTAssertEqual([a.wrappedValue, b.wrappedValue], [1, 2], "converted \(converted)")
+            XCTAssertTrue(hasComplained("a window of its kind is open for the value 3.0 already"))
+            XCTAssertEqual(destination(of: number), 12, "converted \(converted): the thumb goes back to what they hold")
+        }
+    }
+
+    /// A report that does not land leaves a source it never wrote as it stands - a journey on its way keeps its law
+    /// and its way - and puts a source it wrote back whole, the journey it was on included.
+    func testAReportNotLandingLeavesEachJourneyAsItStood() throws {
+        let record = SceneRecord(id: "journeys", declaration: 0)
+        let kind = KeyName("conversion.journey")
+        record.open(kind, value: AnyHashable(1.0), text: "1")
+        record.open(kind, value: AnyHashable(2.0), text: "2")
+        let (a, b) = (record.windowValue(record.windows[0], as: Double.self), record.windowValue(record.windows[1], as: Double.self))
+        let renders = Renders()
+        let patch = renders.render(VStack {
+            Slider(a.projectedValue).maximum(100)
+            Slider(b.projectedValue).maximum(100)
+            Slider(Binding<Double>.multi(a.projectedValue, b.projectedValue).convert({ $0 * 10 + $1 }, back: { _ in (3, 3) }))
+                .maximum(100)
+        }.node)
+        let number = try XCTUnwrap(patch.children.last?.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+        a.projectedValue.journey.snap(to: 5)
+        _ = a.projectedValue.journey.move(to: 1, .eased(.seconds(1), curve: .linear))
+        b.projectedValue.journey.snap(to: 0)
+        _ = b.projectedValue.journey.move(to: 2, .eased(.seconds(2), curve: .linear))
+        let before = try (XCTUnwrap(a.storage.journeyLanes), XCTUnwrap(b.storage.journeyLanes))
+
+        dragged(number, to: 33)
+        board.cycle(now: 16, reducesMotion: false)
+
+        let after = try (XCTUnwrap(a.storage.journeyLanes), XCTUnwrap(b.storage.journeyLanes))
+        XCTAssertEqual(record.windows.compactMap { $0.value?.base as? Double }, [1, 2], "neither window moved")
+        for (name, was, now) in [("written", before.0, after.0), ("never written", before.1, after.1)] {
+            XCTAssertEqual(now.destination, was.destination, name)
+            XCTAssertEqual(now.motion, was.motion, "\(name): the law it travelled under")
+            XCTAssertEqual(now.value, was.value, name)
+            XCTAssertEqual(now.velocity, was.velocity, name)
+        }
+    }
+
+    /// A report a refusal takes back takes back its own writes alone: a move asked before it - to the destination
+    /// the state holds already - is published as it would have been without the report.
+    func testARefusedReportLeavesWhatWaitedBeforeItToBePublished() throws {
+        var published: [UInt64?] = []
+        for refused in [false, true] {
+            let record = SceneRecord(id: "waiting \(refused)", declaration: 0)
+            let kind = KeyName("conversion.waiting")
+            record.open(kind, value: AnyHashable(1.0), text: "1")
+            record.open(kind, value: AnyHashable(2.0), text: "2")
+            let (a, b) = (record.windowValue(record.windows[0], as: Double.self), record.windowValue(record.windows[1], as: Double.self))
+            let sum = Binding<Double>.multi(a.projectedValue, b.projectedValue).convert({ $0 + $1 }, back: { _ in (3, 3) })
+            let conversion = try XCTUnwrap(sum.storage.conversion)
+            let renders = Renders()
+            _ = renders.render(VStack {
+                Slider(a.projectedValue).maximum(100)
+                Slider(b.projectedValue).maximum(100)
+                Slider(sum).maximum(100)
+            }.node)
+            let board = Renderer.shared.board
+            board.cycle(now: 0, reducesMotion: false)
+            _ = board.dirty()
+            let number = try XCTUnwrap(a.storage.carryAsJourney()?.number)
+
+            _ = a.projectedValue.journey.move(to: 1, .eased(.seconds(1), curve: .linear))
+            if refused {
+                sum.storage.settle(6, asking: false)
+                XCTAssertEqual(conversion.back?(), false, "two windows of a kind asked for one value")
+            }
+            board.cycle(now: 16, reducesMotion: false)
+            published.append(board.dirty().first { $0.number == number }?.mask)
+            withExtendedLifetime((record, conversion)) {}
+        }
+        XCTAssertNotNil(published[0], "the move is published")
+        XCTAssertEqual(published[1], published[0], "and published alike after a report taken back")
     }
 
     /// A report into a two-source conversion lands on both sources.

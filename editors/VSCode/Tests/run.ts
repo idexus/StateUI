@@ -3,9 +3,10 @@
 
 // Runs the integration suite in a real VS Code: the one installed, with the
 // extensions installed, on a profile of its own - so nothing the user has set is
-// read or written - opened on this repository.
+// read or written - opened on this repository, its stateui.cliPath naming the
+// stateui tool of this checkout.
 
-import { spawn } from "child_process";
+import { execFileSync, spawn } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -20,7 +21,21 @@ const results = path.join(profile, "results.txt");
 // repository with the extension installed indexes in the same ones. The
 // extension's own switches wait for any build running there.
 
-const env: NodeJS.ProcessEnv = { ...process.env, STATEUI_TEST_RESULTS: results };
+// The tool the suite drives, named by the profile's settings - the editor's search path is the login shell's, whose
+// stateui may be another build: the one STATEUI_SUITE_CLI names, an installed one, else the one built from this checkout.
+const program = process.env.STATEUI_SUITE_CLI ?? (() => {
+    const tool = path.join(repository, "tools", "StateUI.CLI");
+    execFileSync("swift", ["build", "--package-path", tool, "--product", "stateui"], { stdio: "inherit" });
+    const bin = execFileSync("swift", ["build", "--package-path", tool, "--show-bin-path"], { encoding: "utf8" }).trim();
+    return path.join(bin, process.platform === "win32" ? "stateui.exe" : "stateui");
+})();
+const settings = path.join(profile, "data", "User", "settings.json");
+fs.mkdirSync(path.dirname(settings), { recursive: true });
+fs.writeFileSync(settings, JSON.stringify({ "stateui.cliPath": program }));
+
+// The tool's state of its own - its index leases and build permit - so the suite switches hosts on this checkout's
+// packages while a window of the user's works on them: as before, it rewrites that window's index configuration.
+const env: NodeJS.ProcessEnv = { ...process.env, STATEUI_TEST_RESULTS: results, STATEUI_STATE: path.join(profile, "stateui") };
 // The suite starts from no host at all; an inherited one would decide the first answer.
 delete env.STATEUI_HOST;
 delete env.ELECTRON_RUN_AS_NODE;

@@ -86,12 +86,13 @@
     /// Values with every part at its default.
     public init() {}
 
-    /// The width a child is measured at for the width its layout offers: its stated width, within its bounds and the
-    /// offer - the width it is placed at, so its words wrap to it - else the smaller of the offer and its most width.
+    /// The width a child is measured at for the width its layout offers - the width it is placed at, so its words
+    /// wrap to it: its stated width, within its bounds and the offer; else the smaller of the offer and its most
+    /// width, within its bounds as its place is - a least width past either winning.
     /// Design: docs/design/host/layout.md#a-child-measured
     public func offer(_ width: Double?) -> Double? {
         if let stated = self.width { return boundedWidth(stated, available: width) }
-        return [width, maximumWidth].compactMap { $0 }.min()
+        return [width, maximumWidth].compactMap { $0 }.min().map { boundedWidth($0) }
     }
 
     /// A child's size from what it measured: a stated width or height before the measured one, each within its
@@ -183,7 +184,7 @@
     public func size(offering width: Double?, measure: () -> LayoutSize) -> LayoutSize {
         if let kept = sizes.first(where: { $0.width == width }) { return kept.size }
         if holdsWhenWider, let width, let natural = sizes.first(where: { $0.width == nil })?.size,
-           width >= natural.width {
+           Self.holds(natural, in: width) {
             return natural
         }
 
@@ -191,6 +192,13 @@
         if sizes.count == Self.capacity { sizes.removeFirst() }
         sizes.append((width, measured))
         return measured
+    }
+
+    /// Whether words that took `natural` offered no width stand the same offered `width`: in a room at least that
+    /// wide no line breaks earlier.
+    /// Design: docs/design/host/layout.md#words-in-a-wider-room
+    public static func holds(_ natural: LayoutSize, in width: Double) -> Bool {
+        width >= natural.width
     }
 
     /// Forgets every kept size.

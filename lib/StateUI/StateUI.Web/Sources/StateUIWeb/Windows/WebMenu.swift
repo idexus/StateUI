@@ -6,7 +6,8 @@
 
 /// A menu as the page shows one: the host layer's walk of its entries (`MenuEntry`) as a popover over everything -
 /// an item a button, a separator a line, a submenu a button opening its own popover beside it - which a click beside
-/// it or Escape takes down, as does choosing an item, which then hears it chosen.
+/// it or Escape takes down, as does choosing an item, which then hears it chosen, and any element an entry stands
+/// for leaving.
 /// Design: docs/design/platforms/web/pages.md#menus
 @MainActor
 final class WebMenu {
@@ -50,6 +51,9 @@ final class WebMenu {
     }
 
     private func add(_ entry: MenuEntry) {
+        // The menu goes as the element an entry stands for leaves - an item's or a submenu's: no entry acts for an
+        // element gone, and a submenu of the system's entries alone goes with its menu.
+        (entry.element?.native as? WebElement)?.menuShown = self
         switch entry.kind {
         case .separator:
             guard placed > 0 else { return }
@@ -116,8 +120,8 @@ final class WebMenu {
         owned.append(part)
     }
 
-    /// Takes down the menu this one stands in, whole.
-    private func takeDown() {
+    /// Takes down the menu this one stands in, whole: one shown for a view goes as the view leaves.
+    func takeDown() {
         guard let parent else { return WebRelay.hidePopover(popover.node) }
         parent.takeDown()
     }

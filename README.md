@@ -133,22 +133,42 @@ Public API declarations provide the focused reference beside the code.
 ## Quick start
 
 StateUI is developed and used in VS Code, through the StateUI extension in
-`editors/VSCode` ([StateUI for VS Code](docs/editors/VSCode/README.md)). Clone
-the repository, then build and install the extension from the checkout
-(Node.js 20 or newer):
+`editors/VSCode` ([StateUI for VS Code](docs/editors/VSCode/README.md)), which
+works through the `stateui` tool. Clone the repository, build the tool with
+Swift 6.4 and put it on the search path, then have it build and install the
+extension (Node.js 20 or newer). On macOS and Linux the tool is linked into
+`~/.local/bin`, a folder the search path has to hold:
 
 ```bash
 git clone https://github.com/idexus/StateUI.git
-cd StateUI/editors/VSCode
-npm ci
-npm run package
-code --install-extension ../../artifacts/stateui-*.vsix
+cd StateUI
+swift build -c release --package-path tools/StateUI.CLI
+mkdir -p ~/.local/bin
+ln -sf "$(swift build -c release --package-path tools/StateUI.CLI --show-bin-path)/stateui" ~/.local/bin/stateui
+stateui repo integration install --editor vscode
 ```
+
+On Windows its folder joins the user's search path:
+
+```powershell
+git clone https://github.com/idexus/StateUI.git
+cd StateUI
+swift build -c release --package-path tools\StateUI.CLI
+$bin = swift build -c release --package-path tools\StateUI.CLI --show-bin-path
+[Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";$bin", "User")
+$env:Path += ";$bin"
+stateui repo integration install --editor vscode
+```
+
+The link and the folder name the build, so after pulling, the `swift build`
+line alone renews the tool.
 
 The AppKit host needs only Xcode 27, on macOS 26.4 or newer, and the UIKit
 host adds Xcode's iOS 26.4 or newer simulator runtime. StateUI builds with one Swift
 release everywhere, Swift 6.4: Xcode 27's for AppKit and UIKit; swift.org's
-6.4.0 toolchain for Android and the Web on macOS, and on the other platforms.
+6.4.2 toolchain for Android and the Web on macOS, and on the other platforms.
+On a Mac, `resvg` 0.50.0 (`brew install resvg`) draws the AppKit, UIKit and
+Android heads' pictures and icons.
 WinUI builds on Windows, GTK on Linux, and the Web on macOS and Linux; their
 pages say what each needs:
 [WinUI host](docs/hosts/winui.md#requirements), [GTK host](docs/hosts/gtk.md#requirements),
@@ -159,8 +179,8 @@ Android asks for more, and builds on macOS only:
 - the Android SDK with NDK 30, for Android 9 (API 28) or newer; an NDK
   outside the Android SDK is named by `ANDROID_NDK_HOME`;
 - JDK 21 for Gradle, and the Android SDK's platform 36 with its build tools;
-- the Swift SDK for Android 6.4.0, installed with `swift sdk install`;
-- the swift.org toolchain of that SDK's build, `swift-6.4.0-RELEASE`, beside
+- the Swift SDK for Android 6.4.2, installed with `swift sdk install`;
+- the swift.org toolchain of that SDK's build, `swift-6.4.2-RELEASE`, beside
   Xcode. Xcode's own Swift 6.4 is a different build and cannot read the SDK's
   modules; the build picks the matching toolchain by itself and names the one
   to install when none is there.
@@ -179,42 +199,42 @@ Then open the repository in VS Code:
    host.
 
 [StateUI for VS Code](docs/editors/VSCode/README.md) covers the extension's
-hosts and commands, including **StateUI: New Application in apps/**.
+hosts and commands, including **StateUI: New Application**.
 
 From a terminal, the same builds and suites are:
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug                  # the AppKit Gallery bundle
-.scripts/UIKit/run-app.sh apps/Gallery debug "iPhone 18 Pro"   # the UIKit Gallery, on a simulator
-.scripts/Android/run-app.sh apps/Gallery debug emulator-5554   # the Android Gallery
-.scripts/test-native.sh                                        # the Swift suites, the AppKit host's among them
-.scripts/UIKit/test-uikit.sh "iPhone 18 Pro"                   # the UIKit host's suite
-.scripts/Android/test-android.sh emulator-5554                 # the Android host's suite, on a device
+stateui build --project apps/Gallery --host appkit            # the AppKit Gallery bundle
+stateui run --project apps/Gallery --host uikit --device "iPhone 18 Pro"   # the UIKit Gallery, on a simulator
+stateui run --project apps/Gallery --host android --device emulator-5554   # the Android Gallery
+stateui repo test --plan portable                              # the Swift suites every machine runs
+stateui repo test --suite host:appkit                          # the AppKit host's suite
+stateui repo test --suite host:uikit --device "iPhone 18 Pro"   # the UIKit host's suite
+stateui repo test --suite host:android --device emulator-5554   # the Android host's suite, on a device
 ```
 
 On macOS or Linux, the Web:
 
 ```bash
-.scripts/Web/run-app.sh apps/Gallery                           # the Web Gallery, served and opened in a browser
-.scripts/Web/test-web.sh                                       # the Web host's suite, in Node
-.scripts/Web/test-web.sh --browser                             # its conformance run, in a headless browser
+stateui run --project apps/Gallery --host web                # the Web Gallery, served and opened in a browser
+stateui repo test --suite host:web                             # the Web host's suite, in Node and a headless browser
 ```
 
 On Linux and on Windows:
 
 ```bash
-.scripts/GTK/run-app.sh apps/Gallery                           # the GTK Gallery
-.scripts/GTK/test-gtk.sh                                       # the GTK host's suite
+stateui run --project apps/Gallery --host gtk                  # the GTK Gallery
+stateui repo test --suite host:gtk                             # the GTK host's suite
 ```
 
 ```powershell
-.scripts\WinUI\run-app.ps1 -App apps\Gallery                   # the WinUI Gallery
-.scripts\WinUI\test-winui.ps1                                  # the WinUI host's suite
+stateui run --project apps\Gallery --host winui                # the WinUI Gallery
+stateui repo test --suite host:winui                           # the WinUI host's suite
 ```
 
 [Project structure and development](docs/development.md#test) gives every
 suite's arguments and the conformance run that writes each host's marks, and
-[Deploy](docs/development.md#deploy) the release builds: **StateUI: Deploy**
+[Package](docs/development.md#package) the release builds: **StateUI: Package**
 lays one in `artifacts/<application>/<platform>` - on the Web the page, a
 folder any web server serves as it is.
 
@@ -232,8 +252,8 @@ under Thread Sanitizer. Each host has a workflow of its own
 that runs its suite with every verdict held: **AppKit**, **UIKit** on an
 iPhone and an iPad simulator, **Android** built on macOS and run on an
 emulator, **WinUI** on Windows and **GTK** on Linux. **Web** runs the host's
-own suite on macOS, in Node and in a headless browser; its conformance
-families join it once the Web's verdicts hold no failure.
+own suite on macOS, in Node, and in a headless browser every conformance
+family with it.
 
 ## License
 

@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The Android head: the APK around the Swift libraries .scripts/Android/run-app.sh
-// builds. The script names every path below; Gradle compiles the host's Java
-// layer and packages what the Swift build left.
+// The Android head: the APK around the Swift libraries the stateui tool builds.
+// The tool names every path below; Gradle compiles the host's Java layer and
+// packages what the Swift build left.
 
 plugins {
     id("com.android.application") version "9.2.1"
@@ -11,7 +11,7 @@ plugins {
 
 fun stated(name: String): String =
     providers.gradleProperty(name).orNull
-        ?: error("$name is not given - build this head with .scripts/Android/run-app.sh")
+        ?: error("$name is not given - build this head with stateui build --host android")
 
 layout.buildDirectory.set(file(stated("stateui.build")))
 
@@ -24,7 +24,7 @@ android {
         minSdk = 28
         targetSdk = 36
         versionCode = 1
-        versionName = "0.8.3"
+        versionName = "0.8.5"
     }
 
     sourceSets {

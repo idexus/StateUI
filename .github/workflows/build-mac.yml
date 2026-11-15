@@ -1,7 +1,7 @@
 # The core's suites on macOS - the library, the host layer, the conformance
 # runner and the application-testing package - the host layer's benchmarks
 # built for release, and the Gallery's and starter application's. Each host's
-# own suite runs in a workflow of its own.
+# own suite runs in a workflow of its own, the stateui tool's in cli.yml.
 
 name: Core macOS
 

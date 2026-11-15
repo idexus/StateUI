@@ -20,6 +20,10 @@ struct PanSample: SampleContent, ExampleContent {
     /// its own frames, so a drag costs the arithmetic and no renders at all.
     @State private var liveX = 0.0
     @State private var liveY = 0.0
+
+    /// Where the hand holds the box, in the box's own points - driven words, so
+    /// a report writes them without a render.
+    @State private var held = "Hold the box"
     // listing: end
 
     static let id = "pan"
@@ -54,6 +58,9 @@ struct PanSample: SampleContent, ExampleContent {
                     .translationX($liveX)
                     .translationY($liveY)
                     .onPanUpdated { update in
+                        // `at` is in the box's own points: the same where
+                        // the box is held, wherever it has been moved.
+                        held = "Held at \(Int(update.at.x)), \(Int(update.at.y)) of the box"
                         switch update.phase {
                         case .changed:
                             follow(panX + update.total.x, panY + update.total.y)
@@ -98,6 +105,12 @@ struct PanSample: SampleContent, ExampleContent {
                 })
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
+
+            Text($held)
+                .fontSize(13)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+                .accessibilityIdentifier("pan.held")
 
             SwitchRow("The drag snaps", $snaps)
             // What the box does as the hand lets it go.

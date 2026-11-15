@@ -43,11 +43,9 @@ extension AppKitRenderer {
     /// says in Swift reaches the native views through the host, and what a
     /// native view reports reaches the page's handlers.
     ///
-    /// `page` is `@Sendable`, which keeps it and every handler written in it
-    /// off the test's main actor: a handler runs on the executor that
-    /// dispatches its event, as an application's does, and has run by the
-    /// time the native control's report returns. A handler isolated to the
-    /// main actor never runs when its event is dispatched.
+    /// `page` is `@MainActor`, as every view and handler is: a handler runs on
+    /// the main actor as its event is dispatched, as an application's does,
+    /// and has run by the time the native control's report returns.
     @MainActor
     static func running(@ViewBuilder _ page: @escaping @MainActor () -> any View) -> AppKitRenderer {
         Renderer.shared.setApplication(OneWindowApplication(page: page))

@@ -87,11 +87,12 @@ public struct PositionDots: View {
 
     /// The places of the marks shown: none for a lone one hidden; every place
     /// up to `maximumVisible`, and past it a run of that many holding the
-    /// position as near its middle as the ends allow.
+    /// position as near its middle as the ends allow - a position outside the items holds the run at that end.
     static func shown(count: Int, position: Int, maximumVisible: Int, hidesSingle: Bool) -> Range<Int> {
         guard count > 0, !(count == 1 && hidesSingle) else { return 0..<0 }
         let most = min(count, max(1, maximumVisible))
-        let first = min(max(0, position - most / 2), count - most)
+        let at = min(max(position, 0), count - 1)
+        let first = min(max(0, at - most / 2), count - most)
         return first..<(first + most)
     }
 

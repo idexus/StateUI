@@ -249,8 +249,9 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             Text("`GalleryView` is a run of cards the user swipes through, with "
                 + "`.arrangement` choosing the shape they stand in - `.wheel` a "
                 + "wheel, `.fan` a hand of cards, `.row` a strip, `.deck` a pile swiped a "
-                + "card at a time. The cards TRAVEL between the shapes, and a card added, "
-                + "inserted or removed travels from where it was.")
+                + "card at a time. The cards TRAVEL between the shapes; a card added or "
+                + "inserted fades in where the shape puts it, and a card removed leaves at "
+                + "once while the others close up.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

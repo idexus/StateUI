@@ -28,6 +28,16 @@ struct SizingSample: SampleContent, ExampleContent {
                     .height(24)
                     .minimumWidth(160))
 
+            // A floor above the ceiling: the floor wins, and the words wrap
+            // at the width they stand at - as tall as their lines there.
+            row("minimumWidth(240), maximumWidth(120)",
+                Text("A floor above the ceiling wins, and the words wrap at it.")
+                    .background(Palette.well)
+                    .minimumWidth(240)
+                    .maximumWidth(120)
+                    .horizontalAlignment(.start)
+                    .accessibilityIdentifier("sizing.floor"))
+
             // The pair is the point: both ask for 80 high, and only the one
             // without a ceiling on it is allowed to have it.
             row("height(80), then the same with maximumHeight(32)",
@@ -83,7 +93,9 @@ struct SizingSample: SampleContent, ExampleContent {
             Text("`maximumWidth` and `maximumHeight` are the ceiling: a "
                 + "view filling its parent stops growing there, and a view that ASKED for "
                 + "more than the ceiling gets the ceiling. The minimum pair are the floor, "
-                + "and stop it being squeezed.")
+                + "and stop it being squeezed. A floor above the ceiling wins: the words "
+                + "stand at the floor, measured there, so their lines and height are the "
+                + "ones they show.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

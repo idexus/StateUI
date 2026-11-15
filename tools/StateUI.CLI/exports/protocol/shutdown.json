@@ -1,0 +1,12 @@
+{
+  "request" : {
+    "id" : "3",
+    "jsonrpc" : "2.0",
+    "method" : "shutdown"
+  },
+  "response" : {
+    "id" : "3",
+    "jsonrpc" : "2.0",
+    "result" : null
+  }
+}

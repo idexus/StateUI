@@ -26,14 +26,19 @@
                 Aspects.holds(TextInputContract.isReadOnly, on: element, false, then: true),
                 Aspects.holds(TextInputContract.isSpellCheckEnabled, on: element, true, then: false),
                 Aspects.holds(TextInputContract.isTextPredictionEnabled, on: element, true, then: false),
+                // Counted in characters, which a toolkit counts in UTF-16 units or Unicode scalars of its own.
                 Aspects.holds(TextInputContract.cursorPosition, on: element, 2, then: 4,
-                              with: [Write(TextElementContract.text, "abcdefg")]),
+                              with: [Write(TextElementContract.text, Self.words)]),
                 Aspects.holds(TextInputContract.selectionLength, on: element, 3, then: 1, with: [
-                    Write(TextElementContract.text, "abcdefg"), Write(TextInputContract.cursorPosition, 2),
+                    Write(TextElementContract.text, Self.words), Write(TextInputContract.cursorPosition, 2),
                 ]),
             ] + (element == "TextEditor" ? [] : [standsAsWideAsItsWords(element)])
         }
     }
+
+    /// Words whose characters are several UTF-16 units and scalars apiece: an emoji joined of four scalars, and a
+    /// letter with its accent combined.
+    static let words = "👩🏽‍💻ab👩🏽‍💻e\u{301}g"
 
     /// A field nothing sizes stands at least as wide as its placeholder, and with none as twenty digits - the words
     /// beside it in a `Text` the measure - whatever the platform's own field asks for.

@@ -98,6 +98,13 @@ namespace {
     /// The view each pointer's press a tap is made of stands on: the first to hear it, a view around it leaving it.
     std::unordered_map<uint32_t, int64_t> pressOwners;
 
+    /// The presses `view` holds end as it stops hearing taps - leaving, or listening for less: no release reaches it
+    /// after, and a pointer kept would press nothing again (the mouse's pointer is one for every press).
+    void letGoOfPresses(int64_t view) {
+        std::erase_if(pressOwners, [view](auto const &owner) { return owner.second == view; });
+        if (auto found = listening.find(view); found != listening.end()) found->second.tapPressing = false;
+    }
+
     /// A press on a view that hears taps, followed as a button follows one: the pointer the view's own until it lets
     /// go, each `StateUIPhase` told with where it stands in the view and whether a finger presses; the host lights the
     /// view and taps it by the host layer's rule.
@@ -133,7 +140,14 @@ namespace {
         entry.pointer = 0;
         entry.dragging = false;
         entry.capturing = false;
-        tell(view, StateUIHeardPress, phase, {});
+        callbacks.pressed(view, phase, 0, 0, 0, 0);
+    }
+
+    /// A press a drag may become, at its point of the window's content and of the view.
+    void press(int64_t view, StateUIPressPhase phase, IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
+        auto on = onContent(args);
+        auto in = args.GetCurrentPoint(sender.as<xaml::UIElement>()).Position();
+        callbacks.pressed(view, phase, on.X, on.Y, in.X, in.Y);
     }
 
     void pointer(int64_t view, StateUIHeard what, IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
@@ -340,7 +354,7 @@ namespace {
             entry->pointer = args.Pointer().PointerId();
             entry->dragging = false;
             entry->capturing = false;
-            tell(view, StateUIHeardPress, StateUIPressPhaseDown, onContent(args));
+            press(view, StateUIPressPhaseDown, sender, args);
         }));
         entry.movedToken = element.PointerMoved(guarded("handling PointerMoved",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
@@ -363,7 +377,7 @@ namespace {
             }
             auto *entry = listener(view, StateUIHearingDrags);
             if (!entry || entry->pointer != args.Pointer().PointerId()) return;
-            tell(view, StateUIHeardPress, StateUIPressPhaseMoved, onContent(args));
+            press(view, StateUIPressPhaseMoved, sender, args);
             // The host said, as it heard the move, whether the press is a drag: the view holds the pointer from there.
             entry = listener(view, StateUIHearingDrags);
             if (!entry || !entry->dragging) return;
@@ -497,6 +511,7 @@ extern "C" void stateui_winui_hear(StateUIObjectRef handle, int64_t view, uint32
         if (element.try_as<controls::WebView2>()) return;
         auto found = listening.find(view);
         if (!(hearing & StateUIHearingHand)) untrack(view);
+        if (!(hearing & StateUIHearingTaps)) letGoOfPresses(view);
         if (!hearing) {
             if (found == listening.end()) return;
             unhookLater(element, found->second);
@@ -603,6 +618,31 @@ extern "C" bool stateui_winui_press(StateUIObjectRef handle) {
     }
 }
 
+extern "C" StateUIObjectRef stateui_winui_segment_peer(StateUIObjectRef handle, int32_t index) {
+    try {
+        auto items = as<controls::SelectorBar>(handle).Items();
+        if (index < 0 || index >= static_cast<int32_t>(items.Size())) return nullptr;
+        auto peer = peers::FrameworkElementAutomationPeer::CreatePeerForElement(items.GetAt(index));
+        return peer ? detach(peer) : nullptr;
+    } catch (...) {
+        report("taking a segment's automation peer");
+        return nullptr;
+    }
+}
+
+extern "C" bool stateui_winui_peer_select(StateUIObjectRef handle) {
+    try {
+        auto pattern = as<peers::AutomationPeer>(handle).GetPattern(peers::PatternInterface::SelectionItem);
+        auto item = pattern ? pattern.try_as<provider::ISelectionItemProvider>() : nullptr;
+        if (!item) return false;
+        item.Select();
+        return true;
+    } catch (...) {
+        report("choosing through an automation peer");
+        return false;
+    }
+}
+
 extern "C" bool stateui_winui_hits(StateUIObjectRef handle, double x, double y) {
     try {
         auto element = as<xaml::UIElement>(handle);
@@ -623,8 +663,7 @@ extern "C" bool stateui_winui_reaches(StateUIObjectRef handle, double x, double 
         // An element standing in no window reaches nothing.
         auto root = element.XamlRoot();
         if (!root) return false;
-        auto point = element.TransformToVisual(nullptr).TransformPoint(
-            Point(static_cast<float>(x), static_cast<float>(y)));
+        Point point{static_cast<float>(x), static_cast<float>(y)};
         // What the window holds at the point, the top first: the click is the top one's, or an element's it stands in.
         for (auto const &hit : xaml::Media::VisualTreeHelper::FindElementsInHostCoordinates(point, root.Content())) {
             for (xaml::DependencyObject at = hit; at; at = xaml::Media::VisualTreeHelper::GetParent(at))

@@ -7,8 +7,8 @@ import XCTest
 @MainActor
 final class LicenseTests: XCTestCase {
     /// Every Swift, Java, Gradle script, TypeScript, JavaScript (`.js`, `.mjs`),
-    /// C and C++ source under `lib/` and `editors/` starts with the two SPDX
-    /// lines.
+    /// C and C++ source under `lib/`, `editors/` and `tools/` starts with the two
+    /// SPDX lines.
     ///
     /// Outside the rule: `Package.swift`, whose first line must be the tools
     /// version, and what a build writes - `node_modules` and `out` among it,
@@ -22,7 +22,7 @@ final class LicenseTests: XCTestCase {
 
         var read = 0
         var missing: [String] = []
-        for tree in ["lib", "editors"] {
+        for tree in ["lib", "editors", "tools"] {
             let root = SourceTree.repository.appendingPathComponent(tree)
             let sources = try SourceTree.files(under: root, entering: entered).filter { path in
                 let name = String(path.split(separator: "/").last ?? "")

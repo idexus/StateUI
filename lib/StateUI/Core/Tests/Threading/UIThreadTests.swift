@@ -467,9 +467,10 @@ final class UIThreadTests: XCTestCase {
     ///   integers, and nothing it does needs a formatter or ICU. An
     ///   application may import it; nothing under `Sources/` may.
     /// - **`DispatchQueue.main` is banned**, but for the one drain
-    ///   UIThread.swift posts there. Nothing drains that queue on Android
-    ///   or Windows; MainActor, which the UI thread's own executor serves
-    ///   there, is where work for the UI thread goes.
+    ///   UIThread.swift posts there. Every native host off Apple drains that
+    ///   queue on its UI thread for an application's own posts, but the
+    ///   library's work for the UI thread goes to MainActor, which the UI
+    ///   thread's own executor serves there.
     /// - **`Timer` and `RunLoop` are banned**, for the same reason: they hang
     ///   off a run loop nothing turns. A timer here is `Task.sleep` and the
     ///   waker.

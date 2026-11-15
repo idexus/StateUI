@@ -58,4 +58,9 @@ extension PathNumber {
         case .manual(let name): self = PathNumber().appending(name)
         }
     }
+
+    /// A place as a path: the keys from the root down to an element - a name is distinct among siblings alone.
+    init(place: [ElementID]) {
+        self = place.reduce(PathNumber()) { PathNumber($1).under($0) }
+    }
 }

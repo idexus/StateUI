@@ -165,12 +165,16 @@ the first time a frame asks, and again once that view is built again - a
 state the view reads, a switch turning its body on, builds the view without
 the layout or its holder, so the layout forgets that view's body as it
 builds it, shade or none). The world is worked out at
-a fixed step - 240 a second, semi-implicit, the spring's frequency as
-`HostMotionLaw`'s - with an accumulator, so other frames, another host or
-another rate bring a body to the same place; a frame works out at most 32
-steps, and a world further behind lets the rest go, slowing rather than
-spending a frame catching up (the Web without a JIT). A body as near and as
-slow as an animation counts arrived leaves the world.
+a fixed step - 240 a second, each step `HostMotionLaw`'s own closed form for
+one lane (`HostMotionLaw.spring`), so a step of any spring is where the
+spring then is and none runs away - with an accumulator, so other frames,
+another host or another rate bring a body to the same place; a frame works
+out at most 32 steps, and a world further behind lets the rest go, slowing
+rather than spending a frame catching up (the Web without a JIT). A body as
+near and as slow as an animation counts arrived leaves the world, and one
+still moving the longest a spring animates since it was set or carried lands
+on its place, as an animation does - as does one whose step comes out no
+number, its speed told back per second included.
 
 A body of the world's own is at its place but where a change shifted it: the
 parameters and the hand carry it exactly. A body following its layout
@@ -205,9 +209,9 @@ the arithmetic is handed each frame where the parameters stand - never the
 destination at once, which would make a ring jump. Under the hand, the hand's
 axis is where the hand holds it.
 
-The parameters lent are a state, `$turn`: a binding worked out from others has no
-image to wear, so its parameters would jump where they are sent, and the layout says
-so once. The engine follows the parameters themselves, so a new one wakes the arithmetic and
+The parameters lent are a state, `$turn`, or a conversion of one - a second
+state the host carries (core/journeys.md#conversions), its destination walked as
+any state's. The engine follows the parameters themselves, so a new one wakes the arithmetic and
 builds nothing; a change of room moves no parameters.
 
 ## Where a motion set out
@@ -523,7 +527,9 @@ that target later than the motion at a unit a length, the run approaches it
 under the layout's motion over as much of the motion's length as the way left
 is of a unit: 0.4 left of 300 ms is 120 ms on the motion's curve, setting out
 on the curve's own slope, never slower than the motion; a spring's response is
-cut alike and sets out at the hand's speed toward the target. A throw that gets
+cut alike and sets out at the hand's speed toward the target. A way left that
+is past what a motion's length holds - parameters written far off the axis -
+takes the longest a motion holds, and one that is no number none. A throw that gets
 there sooner sets out at the hand's speed, as above. The two meet where they
 take the same time, so a quicker hand never lands later.
 
@@ -564,7 +570,9 @@ The core finds the view under the press from what the run last showed: the
 one drawn on top - the highest `zIndex`, then the later - whose place, turned
 as it is drawn about its middle, covers the point; a view drawn clear is
 passed over. The held view is the third layer's: its middle where the middle
-it was taken by has moved with the hand, over every other view. Everything
+it was taken by has moved with the hand, over every other view - a run
+standing at the highest rank an integer holds is ranked anew first, its order
+kept, so nothing stands too high to be passed over. Everything
 else of it is its place's, as shown, and the view's own: the application is
 told as the hand takes it and as it lets it go (`ItemDrag.phase`), and lifts
 it there by the view's own properties - `.scale` under the view's `.motion`,
@@ -617,12 +625,12 @@ its own: on the snap nearest where its throw would end, or, with no snaps,
 there itself inside its range - and only its own hand moves it there, a
 settle of another leaving it where the program put it. The axes the hand or
 the fingers let go at once are each NAMED where they rest before any goes
-on, and the parameters are sent on no journey: a journey of all the parameters would
-have the host walk an axis the hand held - which nothing named while it held
-it, an axis with no snaps - from where the host last had it, the value
-snapped meanwhile left to the host's walk, so the axis let go would leap
-back to where the hand took it and come again (a pan let go across, its
-down axis, on every host).
+on, then go on together as one journey of the parameters on the host's
+channel (`letGo(together:)`): its value written first where the hands left
+the run, so no axis leaps back to where the host last had it, each axis
+setting out at its hand's speed, under one law - a throw's where one is
+thrown, else the approach of the longest way, which the others arrive within
+([coming onto a target](#coming-onto-a-target)).
 
 Under the hand only the hand's axes are named - each on the nearest of its
 snaps - so an axis the hand does not move never jumps as the hand passes.

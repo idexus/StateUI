@@ -142,12 +142,16 @@ final class GTKDriver: HostDriver {
         "pickTime": "the clock set at once through the host's own, its minute's wheel telling it; a user moves each",
         "read minimum of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
         "read maximum of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
+        "openMenu": "the view's popover popped up as its secondary click pops it up, no click sent",
     ]
 
     var renderer: GTKRenderer?
 
     /// The pointer's press the driver holds down.
     let pressed = GTKPress()
+
+    /// The context menu the driver opened last, while its view holds it.
+    weak var openedMenu: GTKContextMenu?
 
     /// The host's log, as the driver listens to it.
     let written = GTKLogLines()
@@ -224,6 +228,12 @@ final class GTKDriver: HostDriver {
             guard let files = renderer?.fileToolkit, files.held != nil else { throw DriverCannot(act, on: element) }
             return files.chooseForTesting(names.map { Self.files + "/" + $0 })
         }
+        if act == .openMenu {
+            guard let menu = (element.native as? GTKElement)?.view?.contextMenu else { throw DriverCannot(act, on: element) }
+            gtk_popover_popup(menu.popover.of(GtkPopover.self))
+            openedMenu = menu
+            return
+        }
         if act == .activate, [.toolbarButton, .toolbarToggle].contains(element.type) { return try chooseAction(element) }
         if act == .activate, [.menuItem, .menuToggle].contains(element.type) { return try chooseMenuItem(element) }
         if act == .close, element.type == .window { return try close(element) }
@@ -277,6 +287,8 @@ final class GTKDriver: HostDriver {
             type(words, into: editor, keys: OpaquePointer(gtk_scrolled_window_get_child(editor.widget.opaque)))
         case (.submit, let field as GTKTextFieldView): GTKTestHost.emit(field.widget.opaque, "activate")
         case (.focus, let view?): gtk_widget_grab_focus(view.widget)
+        // Orca's press: the action a panel offers assistive technology.
+        case (.accessibilityPress, let view?): gtk_widget_activate_action_variant(view.widget, GTKPanel.pressAction, nil)
         case (.choose(let place), let tabs as GTKTabView): try tabs.choose(place, on: element)
         case (.toggle, let split as GTKSplitView): split.toggleAsUser()
         case (.choose(let place), let picker as any GTKChoosing): picker.choose(place)
@@ -420,17 +432,16 @@ final class GTKDriver: HostDriver {
     /// Whether a press at `point` reaches `element`: what GTK picks there in the window - through everything laid
     /// over it - is its view or stands in it.
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
-        guard let view = (element.native as? GTKElement)?.view else {
+        guard let native = element.native as? GTKElement, let view = native.view else {
             throw DriverCannot("read what reaches \(element.type.name)")
         }
         // A widget standing in no window reaches nothing.
         guard let root = gtk_widget_get_root(view.widget) else { return false }
         renderer?.layOut()
         let window = UnsafeMutableRawPointer(root).assumingMemoryBound(to: GtkWidget.self)
-        var from = graphene_point_t(x: Float(point.x), y: Float(point.y))
-        var at = graphene_point_t()
-        guard gtk_widget_compute_point(view.widget, window, &from, &at) != 0,
-              let picked = gtk_widget_pick(window, Double(at.x), Double(at.y), GTK_PICK_DEFAULT)
+        // The point is of the element's laid-out rectangle, no transform in it.
+        guard let corner = native.windowCorner,
+              let picked = gtk_widget_pick(window, corner.x + point.x, corner.y + point.y, GTK_PICK_DEFAULT)
         else { return false }
         return picked == view.widget || gtk_widget_is_ancestor(picked, view.widget) != 0
     }

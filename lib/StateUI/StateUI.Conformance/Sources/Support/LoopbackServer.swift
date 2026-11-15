@@ -8,9 +8,10 @@ import WinSDK
 #endif
 
 /// The HTTP server the request cases send to, on this machine's loopback, beside the UI thread, a thread a
-/// connection: it answers a request with the status 201, `X-Method` naming the request's method, `X-Asked` saying
-/// what the request's own `X-Asked` said, and the request's body (`HostDriver.served()`); a request for `/held` it
-/// holds - five seconds, or until its client closes the connection, which it counts (`HostDriver.held()`).
+/// connection: it answers a request with the status 201 - 404 for `/missing` - `X-Method` naming the request's
+/// method, `X-Asked` and `X-Cookie` saying what the request's own `X-Asked` and `Cookie` said, and the request's body
+/// (`HostDriver.served()`); `/session` sets a cookie; a request for `/held` it holds - five seconds, or until its
+/// client closes the connection, which it counts (`HostDriver.held()`).
 final class LoopbackServer: Sendable {
     /// The server, started at its first use; nil where the platform opens no socket.
     static let shared: LoopbackServer? = LoopbackServer()
@@ -22,18 +23,26 @@ final class LoopbackServer: Sendable {
     static let heldStarted = Atomic<Int>(0)
     static let heldStopped = Atomic<Int>(0)
 
+    #if os(WASI)
     private init?() {
-        #if os(WASI)
         return nil
-        #else
+    }
+    #else
+    /// A server listening on `port` - any the system gives, unsaid - accepting on a thread `start` starts; nil where
+    /// its socket, its binding or its thread fails, nothing it opened left open.
+    init?(port: UInt16 = 0, starting start: (Socket, Work) -> Bool = { LoopbackServer.start(on: $0, $1) }) {
         #if os(Windows)
         var data = WSADATA()
         guard WSAStartup(0x0202, &data) == 0 else { return nil }
         #endif
         let listener = socket(AF_INET, Self.stream, 0)
-        guard Self.isOpen(listener) else { return nil }
+        guard Self.isOpen(listener) else {
+            Self.endSockets()
+            return nil
+        }
         var place = sockaddr_in()
         place.sin_family = .init(AF_INET)
+        place.sin_port = port.bigEndian
         #if os(Windows)
         place.sin_addr.S_un.S_addr = UInt32(0x7F00_0001).bigEndian
         #else
@@ -45,18 +54,23 @@ final class LoopbackServer: Sendable {
                 bind(listener, $0, length) == 0 && listen(listener, 8) == 0 && getsockname(listener, $0, &length) == 0
             }
         }
-        guard bound else { return nil }
+        guard bound, start(listener, Self.accepting) else {
+            Self.shut(listener)
+            Self.endSockets()
+            return nil
+        }
         address = "http://127.0.0.1:\(UInt16(bigEndian: place.sin_port))"
-        Self.start(on: listener, Self.accepting)
-        #endif
     }
+    #endif
 
     #if !os(WASI)
     #if os(Windows)
-    private typealias Socket = SOCKET
+    typealias Socket = SOCKET
     private static let stream = SOCK_STREAM
     private static func isOpen(_ socket: Socket) -> Bool { socket != INVALID_SOCKET }
     private static func shut(_ socket: Socket) { closesocket(socket) }
+    /// Gives back the use of the sockets a server that failed began.
+    private static func endSockets() { WSACleanup() }
     private static func receive(_ socket: Socket, into buffer: UnsafeMutableRawBufferPointer) -> Int {
         Int(recv(socket, buffer.baseAddress?.assumingMemoryBound(to: CChar.self), Int32(buffer.count), 0))
     }
@@ -69,7 +83,7 @@ final class LoopbackServer: Sendable {
         return WSAPoll(&watched, 1, milliseconds) > 0
     }
     #else
-    private typealias Socket = Int32
+    typealias Socket = Int32
     #if canImport(Glibc)
     private static let stream = Int32(SOCK_STREAM.rawValue)
     #else
@@ -77,6 +91,7 @@ final class LoopbackServer: Sendable {
     #endif
     private static func isOpen(_ socket: Socket) -> Bool { socket >= 0 }
     private static func shut(_ socket: Socket) { close(socket) }
+    private static func endSockets() {}
     private static func receive(_ socket: Socket, into buffer: UnsafeMutableRawBufferPointer) -> Int {
         recv(socket, buffer.baseAddress!, buffer.count, 0)
     }
@@ -98,7 +113,7 @@ final class LoopbackServer: Sendable {
     #endif
 
     /// What a thread runs, handed its socket.
-    private typealias Work = @convention(c) (UnsafeMutableRawPointer?) -> Void
+    typealias Work = @convention(c) (UnsafeMutableRawPointer?) -> Void
 
     /// Accepts connections for as long as the process runs, each answered on a thread of its own.
     private static let accepting: Work = { argument in
@@ -106,7 +121,7 @@ final class LoopbackServer: Sendable {
         while true {
             let connection = accept(listener, nil, nil)
             guard LoopbackServer.isOpen(connection) else { continue }
-            LoopbackServer.start(on: connection, LoopbackServer.answering)
+            if !LoopbackServer.start(on: connection, LoopbackServer.answering) { LoopbackServer.shut(connection) }
         }
     }
 
@@ -117,28 +132,41 @@ final class LoopbackServer: Sendable {
         LoopbackServer.shut(connection)
     }
 
-    /// Runs `work` on a thread of its own, handed `socket`.
-    private static func start(on socket: Socket, _ work: Work) {
+    /// Runs `work` on a thread of its own, handed `socket` - one nobody waits for, so what it took goes as it ends;
+    /// false where no thread started, `socket` left to the caller.
+    static func start(on socket: Socket, _ work: Work) -> Bool {
         let held = UnsafeMutablePointer<(Socket, Work)>.allocate(capacity: 1)
         held.initialize(to: (socket, work))
         #if os(Windows)
-        _ = CreateThread(nil, 0, { argument in
+        let thread = CreateThread(nil, 0, { argument in
             let (socket, work) = LoopbackServer.handed(argument)
             work(LoopbackServer.argument(of: socket))
             return 0
         }, held, 0, nil)
+        if let thread { CloseHandle(thread) }
+        let started = thread != nil
         #else
         #if canImport(Darwin)
         var thread: pthread_t?
         #else
         var thread = pthread_t()
         #endif
-        pthread_create(&thread, nil, { argument in
+        let started = pthread_create(&thread, nil, { argument in
             let (socket, work) = LoopbackServer.handed(argument)
             work(LoopbackServer.argument(of: socket))
             return nil
-        }, held)
+        }, held) == 0
+        #if canImport(Darwin)
+        if started, let thread { pthread_detach(thread) }
+        #else
+        if started { pthread_detach(thread) }
         #endif
+        #endif
+        if !started {
+            held.deinitialize(count: 1)
+            held.deallocate()
+        }
+        return started
     }
 
     /// The socket and the work a thread was handed, let go of.
@@ -192,8 +220,11 @@ final class LoopbackServer: Sendable {
             }
         }
         let body = Array(received[end..<min(received.count, end + bodyLength)])
-        let response = Array(("HTTP/1.1 201 Created\r\nX-Method: \(method)\r\n"
-            + "X-Asked: \(header("x-asked", in: head) ?? "")\r\nContent-Type: text/plain\r\n"
+        let status = path.hasSuffix("/missing") ? "404 Not Found" : "201 Created"
+        let session = path.hasSuffix("/session") ? "Set-Cookie: stateui-session=kept; Path=/\r\n" : ""
+        let response = Array(("HTTP/1.1 \(status)\r\nX-Method: \(method)\r\n"
+            + "X-Asked: \(header("x-asked", in: head) ?? "")\r\nX-Cookie: \(header("cookie", in: head) ?? "")\r\n"
+            + session + "Content-Type: text/plain\r\n"
             + "Content-Length: \(body.count)\r\nConnection: close\r\n\r\n").utf8) + body
         var sent = 0
         while sent < response.count {

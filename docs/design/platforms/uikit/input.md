@@ -36,7 +36,9 @@ press and every move, which it tells as a
 drag's start, moves and end, and a swipe where the end went far enough. A
 pan UIKit takes away ends the drag as cancelled. A pinch is told step by
 step - its scale since the last and where it is, as shares of the view's
-size.
+size - and a rotation by its degrees since the last; one UIKit takes away,
+cancelled or failed, ends cancelled as a drag does, and the next begins
+afresh.
 
 A view's recognizers hear together, with one exception: a stack lets the user
 swipe back from anywhere in its page, and that swipe would take a drag meant

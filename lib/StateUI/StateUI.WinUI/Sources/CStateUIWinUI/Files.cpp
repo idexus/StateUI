@@ -28,9 +28,6 @@ using winrt::Windows::Foundation::Collections::IVectorView;
 namespace pickers = winrt::Microsoft::Windows::Storage::Pickers;
 
 namespace {
-    /// While a test holds them, a launch is answered as taken and Windows is asked nothing.
-    bool launchesHeld = false;
-
     /// The folder a test keeps its files in, where a dialog that saves opens; empty for the dialog's own.
     std::wstring testFolder;
 
@@ -230,8 +227,6 @@ extern "C" void stateui_winui_read_file(int64_t ticket, char const *path, int64_
 
 extern "C" void stateui_winui_launch(int64_t ticket, char const *target, bool file) {
     auto named = std::string(target ? target : "");
-    launched(named);
-    if (launchesHeld) return launchAnswer(ticket, true);
     try {
         using winrt::Windows::System::Launcher;
         if (!file) {
@@ -261,14 +256,6 @@ extern "C" void stateui_winui_launch(int64_t ticket, char const *target, bool fi
     } catch (...) {
         report("launching");
         launchAnswer(ticket, false);
-    }
-}
-
-extern "C" void stateui_winui_hold_launches(bool held) {
-    try {
-        launchesHeld = held;
-    } catch (...) {
-        report("holding launches");
     }
 }
 

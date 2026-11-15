@@ -72,7 +72,14 @@ extension WebRegistrations {
                 let shortcut = KeyboardShortcuts.pressing(stated: values[ShortcutElementContract.keyboardShortcut], role: role)
                 view.attribute("aria-keyshortcuts", shortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })
                 view.attribute("type", role == .primary ? "submit" : "button")
-                view.attribute("data-role", role.map { ["primary", "cancel", "destructive"][Int($0.rawValue)] })
+                view.attribute("data-role", role.flatMap { role in
+                    switch role {
+                    case .primary: "primary"
+                    case .cancel: "cancel"
+                    case .destructive: "destructive"
+                    case .normal: nil
+                    }
+                })
             }
             button.declares(ClickElementContract.clicked)
             button.declares(PressElementContract.pressed)

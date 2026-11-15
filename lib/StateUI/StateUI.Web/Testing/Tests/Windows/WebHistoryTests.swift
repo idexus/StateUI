@@ -6,7 +6,7 @@ import XCTest
 
 /// The page goes back over its own entry of the browser's history alone: from one it did not put there, going back
 /// would take the user off the site. The browser's history is the page's, so the suite runs it in a browser
-/// (`test-web.sh --browser`).
+/// (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebHistoryTests: XCTestCase {
     override func setUp() async throws {

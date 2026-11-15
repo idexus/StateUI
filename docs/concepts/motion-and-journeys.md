@@ -215,6 +215,7 @@ nearest place it may rest at instead:
 ```swift
 struct Strip: View {
     @State private var offset = 0.0
+    @State private var start = 0.0
 
     var body: some View {
         Rectangle()
@@ -224,8 +225,11 @@ struct Strip: View {
             .translationX($offset)
             .onPanUpdated { pan in
                 switch pan.phase {
+                case .began:
+                    // Where the strip stands as the hand takes it - a throw's glide still under way included.
+                    start = $offset.journey.value
                 case .changed:
-                    $offset.journey.snap(to: pan.total.x)
+                    $offset.journey.snap(to: start + pan.total.x)
                 case .ended:
                     let glide = Motion.glide(longest: .milliseconds(800))
                     $offset.journey.velocity = pan.velocity.x

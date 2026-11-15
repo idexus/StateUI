@@ -160,14 +160,13 @@ final class AppKitElement: NSObject, NativeElement {
         guard let view else { return }
         view.isHidden = !element.standsShown
         view.alphaValue = value(.opacity)?.number ?? 1
-        let ignores = value(.ignoresInput)?.bool ?? false
+        let ignores = element.ignoresInput
         if let hitTestView = view as? AppKitHitTestView {
             // The whole view and its children, or only its own empty area.
             hitTestView.applyInputTransparency(
-                element.isLeaving || ignores || value(.letsInputThrough)?.bool == true,
-                cascades: element.isLeaving || ignores)
+                ignores || value(.letsInputThrough)?.bool == true, cascades: ignores)
         } else {
-            AppKitIgnoredInput.set(view, ignores: element.isLeaving || ignores)
+            AppKitIgnoredInput.set(view, ignores: ignores)
         }
     }
 
@@ -250,6 +249,10 @@ extension AppKitElement: FadingView {
 
     func setOpacity(_ opacity: Double) {
         view?.alphaValue = opacity
+    }
+
+    func setIgnoresInput(_ ignores: Bool) {
+        applyVisibility()
     }
 }
 #endif

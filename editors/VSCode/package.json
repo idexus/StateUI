@@ -2,7 +2,7 @@
   "name": "stateui",
   "displayName": "StateUI",
   "description": "Build, run and debug StateUI applications on AppKit, UIKit, Android, WinUI, GTK and the Web.",
-  "version": "0.8.3",
+  "version": "0.8.5",
   "publisher": "idexus",
   "license": "Apache-2.0",
   "icon": "icon.png",
@@ -35,6 +35,12 @@
     "configuration": {
       "title": "StateUI",
       "properties": {
+        "stateui.cliPath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "markdownDescription": "The `stateui` tool the extension works through. Empty: `stateui` on the search path."
+        },
         "stateui.checkout": {
           "type": "string",
           "default": "",
@@ -82,9 +88,9 @@
       },
       {
         "command": "stateui.newApplicationInApps",
-        "title": "New Application in apps/",
+        "title": "New Application",
         "category": "StateUI",
-        "enablement": "stateui.hasApps"
+        "enablement": "stateui.hasWorkspace"
       },
       {
         "command": "stateui.reinstallExtension",
@@ -121,7 +127,7 @@
       },
       {
         "command": "stateui.deploy",
-        "title": "Deploy",
+        "title": "Package",
         "category": "StateUI"
       }
     ],
@@ -187,42 +193,11 @@
         ]
       }
     ],
-    "taskDefinitions": [
-      {
-        "type": "stateui",
-        "required": [],
-        "properties": {
-          "application": {
-            "type": "string",
-            "description": "The application whose head is built or run."
-          },
-          "configuration": {
-            "type": "string",
-            "enum": [
-              "debug",
-              "release"
-            ]
-          },
-          "suite": {
-            "type": "string",
-            "description": "The test suite run."
-          },
-          "device": {
-            "type": "string",
-            "description": "The serial of the Android device the head runs on."
-          },
-          "launch": {
-            "type": "boolean",
-            "description": "A head run until stopped, which a launch of the same application on the same device replaces."
-          }
-        }
-      }
-    ],
     "menus": {
       "commandPalette": [
         {
           "command": "stateui.newApplicationInApps",
-          "when": "stateui.hasApps"
+          "when": "stateui.hasWorkspace"
         },
         {
           "command": "stateui.reinstallExtension",
@@ -242,6 +217,7 @@
   "scripts": {
     "compile": "node -e \"require('fs').rmSync('out', { recursive: true, force: true })\" && tsc -p .",
     "test": "npm run compile && node out/Tests/run.js",
+    "test:tooling": "npm run compile && node --test \"out/Tests/Tooling/**/*.test.js\"",
     "package": "npm run compile && node out/Build/package.js"
   },
   "devDependencies": {

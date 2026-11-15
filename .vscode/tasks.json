@@ -32,66 +32,52 @@
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
-      "label": "Test native",
+      "label": "Test portable",
       "type": "shell",
-      "command": "${workspaceFolder}/.scripts/test-native.sh",
+      "command": "stateui",
+      "args": ["repo", "test", "--plan", "portable"],
       "problemMatcher": [],
       "group": { "kind": "test", "isDefault": true },
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
+      "label": "Test native",
+      "type": "shell",
+      "command": "stateui",
+      "args": ["repo", "test", "--plan", "native"],
+      "problemMatcher": [],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
       "label": "Build Gallery (AppKit, Debug)",
       "type": "shell",
-      "command": "${workspaceFolder}/.scripts/AppKit/build-gallery-appkit.sh",
-      "args": ["debug"],
+      "command": "stateui",
+      "args": ["build", "--project", "${workspaceFolder}/apps/Gallery", "--host", "appkit", "--configuration", "debug"],
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
       "label": "Build Gallery (AppKit, Release)",
       "type": "shell",
-      "command": "${workspaceFolder}/.scripts/AppKit/build-gallery-appkit.sh",
-      "args": ["release"],
+      "command": "stateui",
+      "args": ["build", "--project", "${workspaceFolder}/apps/Gallery", "--host", "appkit", "--configuration", "release"],
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
       "label": "Build HelloWorld (AppKit, Debug)",
       "type": "shell",
-      "command": "swift",
-      "args": [
-        "build",
-        "--package-path",
-        "${workspaceFolder}/apps/HelloWorld",
-        "--scratch-path",
-        "${workspaceFolder}/apps/HelloWorld/.build/appkit",
-        "--configuration",
-        "debug",
-        "--product",
-        "HelloWorldAppKit"
-      ],
-      // What makes this an AppKit build: the manifest declares the head and
-      // defines APPKIT only then - see apps/Gallery/Package.swift.
-      "options": { "env": { "STATEUI_HOST": "appkit" } },
+      "command": "stateui",
+      "args": ["build", "--project", "${workspaceFolder}/apps/HelloWorld", "--host", "appkit", "--configuration", "debug"],
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
       "label": "Build HelloWorld (AppKit, Release)",
       "type": "shell",
-      "command": "swift",
-      "args": [
-        "build",
-        "--package-path",
-        "${workspaceFolder}/apps/HelloWorld",
-        "--scratch-path",
-        "${workspaceFolder}/apps/HelloWorld/.build/appkit",
-        "--configuration",
-        "release",
-        "--product",
-        "HelloWorldAppKit"
-      ],
-      "options": { "env": { "STATEUI_HOST": "appkit" } },
+      "command": "stateui",
+      "args": ["build", "--project", "${workspaceFolder}/apps/HelloWorld", "--host", "appkit", "--configuration", "release"],
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
     }

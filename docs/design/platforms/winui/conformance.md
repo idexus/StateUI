@@ -55,7 +55,8 @@ A window whose content extends into its title bar - every window the host
 shows - leaves some forty of the process's GDI objects behind when it closes,
 some eighty on GitHub's Windows runner, and a process holds ten thousand: a
 few hundred windows end it. A family of cases shows a window a case, so the
-families run each in a process of its own (`test-winui.ps1 -Conformance`),
+families run each in a process of its own (`stateui repo test --suite host:winui
+--filter WinUIConformanceTests`),
 the largest - a view's, a visual element's, a shape's - in parts, one test
 each. Each test holds its process below six thousand GDI objects on the
 runner as on a desk, and a family past that is run in more parts. The run
@@ -80,8 +81,8 @@ effect proves the member.
 A running ring's automation peer says it is busy before the name its element
 holds, so the driver reads a spinner's label from the element.
 
-What was said to the screen reader is the relay's own list of what it handed
+What was said to the screen reader is the host's record of what it handed
 UI Automation to announce, and what was launched the host's record of what it
-handed Windows: a test runs with no screen reader to hear the one and holds
+would hand Windows: a test runs with no screen reader to hear the one and holds
 back the other, so the driver names both (`byHost`), and a case proving a
 member through them proves the host's own - ✓.

@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `AnchorContract` on a host: what is written on a view keeping no node of its own stands on its anchor, which has
-/// no view - what it holds stands in its place, and its branch flipping keeps what it presents and what it watches.
+/// no view - what it holds stands in its place, a stack it holds in a sheet is the sheet's page, and its branch
+/// flipping keeps what it presents and what it watches.
 @_spi(Host) public enum AnchorTests: ConformanceFamily {
     public static let name = "Anchor"
 
@@ -47,7 +48,56 @@
                 s.expect(try s.isShown("sheet"), true, "the sheet shows on")
                 s.expect(states.log.values, ["wide"], "the watch heard the flip")
             },
+            ConformanceCase("aStackItHoldsInASheetIsTheSheetsPage", proves: [
+                Covered(AnchorContract.self),
+            ], needs: [
+                Covered(PresentedElementContract.isPresented, on: SheetContract.self), Covered(PageContract.appearing),
+                Covered(NavigationStackContract.self), Covered(TextContract.self),
+            ]) { s in
+                let (shows, wide, log) = (State(wrappedValue: true), State(wrappedValue: false), Received<String>())
+                s.start {
+                    Text("Beneath").sheet(isPresented: shows.projectedValue) {
+                        AnchoredStack(wide: wide.wrappedValue, log: log).onChanged(wide.wrappedValue) {}
+                    }
+                }
+                // A page's root fills the sheet, under its bar too: pressed in its middle.
+                @MainActor func reached(_ id: String) throws -> Bool {
+                    guard let root = try? s.element(id), let place = try? s.place(of: root) else { return false }
+                    return try s.reaches(root, at: Point(place.width / 2, place.height / 2))
+                }
+                // A sheet still entering its window - the platform's presentation - is waited for.
+                try s.settle { try reached("root") }
+                s.expect(try reached("root"), true, "the stack's root shows in the sheet, where a press reaches it")
+                s.settle { log.values.contains("root appearing") }
+                s.expect(log.values.contains("root appearing"), true, "the sheet's page in front: told it appears")
+
+                wide.wrappedValue = true
+                try s.settle { try reached("wideRoot") }
+                s.expect(try reached("wideRoot"), true, "the other branch's stack in its place")
+
+                try s.perform(.goBack, on: s.element(ofType: WindowContract.nodeType))
+                s.settle { !shows.wrappedValue }
+                s.expect(shows.wrappedValue, false, "the way back closes the sheet its page stands in")
+            },
         ]
+    }
+}
+
+/// One stack or another, as a composed view builds it, its root saying its phases into `log`: in a sheet, the anchor
+/// watching it holds the sheet's page.
+struct AnchoredStack: View {
+    let wide: Bool
+    let log: Received<String>
+    @State private var path: [Int] = []
+
+    var body: some View {
+        if wide {
+            NavigationStack($path) { Text("Wide").id("wideRoot") } destination: { _ in Text("Next") }
+        } else {
+            NavigationStack($path) {
+                Text("Root").id("root").loggingPhases(log, as: "root")
+            } destination: { _ in Text("Next") }
+        }
     }
 }
 

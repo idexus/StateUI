@@ -15,4 +15,12 @@ final class WebWholeNumberTests: XCTestCase {
 
         XCTAssertFalse(hasComplained("past 2^53"))
     }
+
+    /// A READING HELD BACK LONGER THAN AN INT COUNTS IN MILLISECONDS - past twenty-four days on the Web - is held
+    /// back the longest it counts; one just inside is its own.
+    func testALongCadenceIsTheLongestAnIntHolds() {
+        XCTAssertEqual(Cadence.every(.milliseconds(Int64(Int32.max))).window, Int(Int32.max))
+        XCTAssertEqual(Cadence.every(.seconds(30 * 86_400)).window, Int.max, "thirty days")
+        XCTAssertEqual(Cadence.every(.seconds(Int64.max)).window, Int.max)
+    }
 }

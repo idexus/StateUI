@@ -62,7 +62,7 @@ extension UIKitElement {
                     view.accessibilityTraits = element.presented(.isEnabled)?.bool == false
                         ? traits.union(.notEnabled) : traits.subtracting(.notEnabled)
                 // Ignored, the view and all in it are passed over: a touch goes to what is under it.
-                case .ignoresInput: view.isUserInteractionEnabled = element.bool(.ignoresInput) != true
+                case .ignoresInput: view.isUserInteractionEnabled = !element.ignoresInput
                 case .background:
                     view.backgroundColor = HostMaterial(element.drawnBackground).painted.flatMap(UIColor.init(stateUI:))
                     (controller as? UIKitPageController)?.showBackground()
@@ -125,6 +125,10 @@ extension UIKitElement {
         accessibilityKindSaid = words.role != nil
         if words.value != nil || accessibilityValueSaid { target.accessibilityValue = words.value }
         accessibilityValueSaid = words.value != nil
+        if let authoring = target as? UIKitAccessibilityAuthoring {
+            authoring.authored.kind = words.role.map(Self.accessibilityTrait)
+            authoring.authored.value = words.value
+        }
         applyReaderActions(words, to: target)
     }
 
@@ -173,9 +177,17 @@ extension UIView {
         accessibilityLabel = words.label
         accessibilityHint = words.hint
         if words.headingLevel > 0 { accessibilityTraits.insert(.header) } else { accessibilityTraits.remove(.header) }
-        accessibilityElementsHidden = words.presence == .hiddenWithContents
-            || (words.presence == .hidden && holdingNoChildren)
-        isAccessibilityElement = words.isElement(standing: standing)
+        let hidesItsElements = words.presence == .hiddenWithContents || (words.presence == .hidden && holdingNoChildren)
+        let isElement = words.isElement(standing: standing)
+        accessibilityElementsHidden = hidesItsElements
+        isAccessibilityElement = isElement
+        if let authoring = self as? UIKitAccessibilityAuthoring {
+            authoring.authored.label = words.label
+            authoring.authored.hint = words.hint
+            authoring.authored.isHeading = words.headingLevel > 0
+            authoring.authored.isElement = isElement
+            authoring.authored.hidesItsElements = hidesItsElements
+        }
     }
 }
 

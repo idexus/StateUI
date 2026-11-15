@@ -27,9 +27,8 @@ its panel and drops the reference it held.
 The head's `main` names the application and hands the thread to
 `GTKHost.run(applicationID:)`, which makes an `AdwApplication` under that
 name and runs GLib's main loop on the thread until the last window closes,
-then answers the code GLib's application ended with - a refused start, an
-unknown option, its own - which the head ends the process with; `run` holds
-no `@discardableResult`, so a head that drops it is warned. The
+then ends the process with the code GLib's application ended with - a refused
+start, an unknown option, its own: `run` never returns (`Never`). The
 application's first activation calls the host, whose first act is to claim
 that thread as the UI thread: `claimUIThread()` makes StateUI's UI executor
 `MainActor`'s and drains it there. The name is the one the desktop knows the application by, and
@@ -66,7 +65,10 @@ The frame clock adds a tick callback to the window while something holds it,
 and removes it when nothing moves. GTK calls it once for every frame it draws
 the window in, at the display's rate, before the frame's layout, so what the
 frame moves is drawn in that same frame. The runtime's time is GLib's
-monotonic clock, in milliseconds.
+monotonic clock, in milliseconds. The clock holds the window it ticks with
+until it moves on: the roster lets a closed window's controller go before
+the clock follows another window, and the tick comes off a window still
+there.
 
 ## The window
 
@@ -111,7 +113,7 @@ The application handles `open` (`G_APPLICATION_HANDLES_OPEN`): started with a
 link, it starts as an activation would and hears the link; a second start with
 one hands it to the first through GApplication's own uniqueness. The desktop
 finds the application for a scheme by its entry's `MimeType`, which
-`run-app.sh` writes from the head's `Platforms/GTK/link-schemes`.
+`stateui install` writes from the head's `Platforms/GTK/link-schemes`.
 
 ## The environment
 
@@ -148,7 +150,7 @@ rate.
 
 ## The suite's desktop
 
-The host's suite meets one desktop on every machine: `test-gtk.sh` pins
+The host's suite meets one desktop on every machine: the stateui tool pins
 libadwaita's accent (`ADW_DEBUG_ACCENT_COLOR=blue`), a desktop whose user
 chose one, as GNOME's from 47 on - where the application's own accent does
 not apply - so a machine with no desktop's settings, a CI container, gives
@@ -195,7 +197,10 @@ that nothing was chosen. Each response is named by what it answers
 (`accept`, `cancel`, `action-<place>`). A
 prompt's field takes the placeholder, the most characters and the keyboard
 its purpose asks for, holds the keyboard as the dialog shows, and Enter in
-it accepts.
+it accepts. Its bound counts characters, as a field's does - only those that
+fit go in, from its first words, a key and a paste alike (`InputWords.fitting`)
+- never GTK's own `max-length`, which counts Unicode scalars and would cut an
+accent from its letter.
 
 ## Files
 

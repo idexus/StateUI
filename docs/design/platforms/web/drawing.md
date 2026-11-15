@@ -65,7 +65,8 @@ ultra thin to ultra thick, saturated as the platforms' blurs are - under the
 blur's own color, the theme's stand-in, with its tint laid over both as a
 second background layer. Glass is drawn as the blur as clear as it is, which
 the register records as missing (☑️). The driver reads the filter back to its
-blur.
+blur. Every look blurring nothing - a color, a gradient's outline, none - says
+no filter, so a blur goes with the look that said it.
 
 ## A figure made of a material
 

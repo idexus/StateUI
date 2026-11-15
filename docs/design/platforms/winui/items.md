@@ -51,8 +51,10 @@ room the way it scrolls - as a ScrollView's `ScrollViewer` is
 0 and realizes one item; measured with no bound it asks for its items'
 length and stands that tall. So the list is measured in exactly the room it
 is placed in, as it is placed, and in that room again at every measure
-after; before it stands anywhere it is measured in none, and realizes
-nothing.
+after; before it stands anywhere it is not measured. Measured in none, WinUI
+still realizes a cell and measures it no wider than nothing - its words a
+letter a line - and keeps that height in its estimate of the list's extent,
+which then moves under a scroll the program asks for.
 
 The list a page scrolls by tells where it stands as its view or its extent
 changes, so a bottom bar beside the page shows its line while items go on
@@ -66,8 +68,10 @@ pass is left to the scroll the program asks for.
 
 A cell is a StateUI panel WinUI places, so it answers WinUI's measure with
 the room its entry takes. A cell whose entry is still on its way keeps the
-room of a row: measured of nothing, every cell would fit in view at once and
-the list would ask for every entry. An entry whose size changes is measured
+room the list's items last took ([a cell before its
+entry](../../host/items.md#a-cell-before-its-entry)): WinUI estimates the
+list's extent from the cells it measured, and a cell changing its size as its
+entry comes would move the extent under the scroll. An entry whose size changes is measured
 again by the cell holding it; the list's own size never follows its items.
 
 ## What Narrator reads

@@ -60,6 +60,30 @@ final class TextRulesTests: XCTestCase {
         XCTAssertEqual(TextLook().over(label).attributes, .italic, "a run given nothing takes its label's")
     }
 
+    /// A run given no space between its letters, or no lines, stands so in a label that gives them; a run given
+    /// nothing takes its label's. Read as a host reads them, off the tree.
+    func testARunGivenNoSpacingOrLinesStandsSoInALabelThatGivesThem() throws {
+        let runtime = HostRuntime.still()
+        var span = HostPatch(id: .manual("span"), type: .textSpan)
+        span.properties[.text] = .string("plain")
+        span.properties[.tracking] = .number(0)
+        span.properties[.textDecorations] = .enumeration(0)
+        var said = HostPatch(id: .manual("said"), type: .textSpan)
+        said.properties[.text] = .string("as the label")
+        var spans = HostPatch(id: .manual("spans"), type: .textSpans)
+        spans.children = .arranged([span, said])
+        var label = HostPatch(id: .manual("label"), type: .text)
+        label.properties[.tracking] = .number(4)
+        label.properties[.textDecorations] = .enumeration(TextDecorations.underline.rawValue)
+        label.children = .arranged([spans])
+        runtime.tree.apply(label, complete: true)
+        let mounted = try XCTUnwrap(runtime.tree.root)
+        let runs = try XCTUnwrap(mounted.textRuns).map { $0.look.over(mounted.textLook) }
+
+        XCTAssertEqual(runs.map(\.letterSpacing), [0, 4])
+        XCTAssertEqual(runs.map(\.decorations), [[], .underline])
+    }
+
     /// A style and a weight are read from the tree, changed or not, and a run takes its label's where it says none.
     func testAStyleAndAWeightAreTheTreesOrTheLabels() throws {
         let held: [Prop: HostValue] = [.textStyle: TextStyle.title.propValue, .fontWeight: FontWeight.semibold.propValue]
@@ -275,6 +299,27 @@ final class TextRulesTests: XCTestCase {
         XCTAssertTrue(InputWords.scalarSelection(start: 0, length: 1, in: words) == (0, 4))
         XCTAssertTrue(InputWords.scalarSelection(start: 0, length: 9, in: words) == (0, 5))
         XCTAssertTrue(InputWords.scalarSelection(start: -2, length: 0, in: words) == (0, 0))
+    }
+
+    /// A selection a toolkit tells in its own units reads back in characters: every selection in characters comes
+    /// back as it went, and an end falling inside a character takes that character - the start from its beginning,
+    /// the end past it; a caret stays a caret.
+    func testASelectionInAToolkitsUnitsReadsBackInCharacters() {
+        let words = "👩🏽‍💻ab👩🏽‍💻e\u{301}g"
+        let count = words.count
+        for start in 0...count {
+            for length in 0...(count - start) {
+                let utf16 = InputWords.utf16Selection(start: start, length: length, in: words)
+                let scalars = InputWords.scalarSelection(start: start, length: length, in: words)
+                XCTAssertTrue(InputWords.characterSelection(utf16Start: utf16.start, length: utf16.length, in: words)
+                    == (start, length), "\(start) \(length) in UTF-16")
+                XCTAssertTrue(InputWords.characterSelection(scalarStart: scalars.start, length: scalars.length, in: words)
+                    == (start, length), "\(start) \(length) in scalars")
+            }
+        }
+        XCTAssertTrue(InputWords.characterSelection(scalarStart: 2, length: 0, in: words) == (0, 0), "inside the emoji")
+        XCTAssertTrue(InputWords.characterSelection(scalarStart: 2, length: 3, in: words) == (0, 2), "into the a")
+        XCTAssertTrue(InputWords.characterSelection(utf16Start: 99, length: 5, in: words) == (count, 0), "past the end")
     }
 
     /// Each end of a selection is kept within the words before any arithmetic: a start or a length as large as a

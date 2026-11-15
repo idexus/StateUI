@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (0)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td></td><td><code>NSComboButton</code>, unified or split</td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td></td><td>the host's <code>NSButton</code> popping its <code>NSMenu</code>, a split one's arrow a part of its own; on the bar at the page's foot <code>NSComboButton</code>, unified or split</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td></td><td><code>UIButton.menu</code>, opened by a tap or held</td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td></td><td><code>PopupMenu</code> at the button, opened by a click or held</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td></td><td><code>DropDownButton</code>, <code>SplitButton</code></td></tr></tbody>

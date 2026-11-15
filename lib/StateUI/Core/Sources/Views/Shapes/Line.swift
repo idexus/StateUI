@@ -9,9 +9,6 @@
 ///         .lineWidth(1)
 ///
 /// A line is drawn by its stroke alone: it encloses nothing to fill.
-///
-/// A point left unsaid is the top left corner, so `Line().to(Point(240, 0))`
-/// runs from it across.
 public struct Line: Shape {
     /// The node this control describes.
     public var node: Node

@@ -159,6 +159,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testLink() { conform(LinkTests.self) }
     @MainActor func testTextAndIconElement() { conform(TextAndIconElementTests.self) }
     @MainActor func testPageElement() { conform(PageElementTests.self) }
+    @MainActor func testOpenedLinkElement() { conform(OpenedLinkElementTests.self) }
 
     /// Runs `family` - or `part` of it - on AppKit, and holds its verdicts to its file of AppKit's marks. A long
     /// family runs in parts, each a test of its own, so a part can be run alone and the parts side by side.

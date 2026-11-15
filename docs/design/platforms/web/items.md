@@ -20,7 +20,9 @@ away; the tree builds the entries within reach of the cells held, and lets
 the others go with its next render ([within
 reach](../../host/items.md#within-reach)). A cell whose entry never came
 keeps a row's room, 44 points; one that lets its entry go keeps the room the
-entry took, so the cells after it stand where they stood.
+entry took along the list's axis - its height down, its width across - so the
+cells after it stand where they stood. A list whose layout turns gives every
+cell its axis anew, and a room kept along the other goes.
 
 The browser tells nearness once a frame, every cell it saw in one call, and
 the cells take their entries together ([cells told

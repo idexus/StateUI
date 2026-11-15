@@ -113,22 +113,36 @@ final class LibraryContractTests: XCTestCase {
         XCTAssertEqual(wrong, [])
     }
 
-    /// Every tier the sources declare stands on the library's list: a host's register, the dictionary and the
-    /// conformance families find a tier there, and one missing from it is a member no register can name.
+    /// Every tier the sources declare stands on the library's list, and the list names no other: a host's
+    /// register, the dictionary and the conformance families find a tier there, and one missing from it is a
+    /// member no register can name.
     func testEveryTierTheSourcesDeclareIsOnTheLibrarysList() throws {
         let listed = Set(LibraryContracts.tiers.map { "\($0)" })
-        let pattern = try NSRegularExpression(pattern: #"public enum (\w+Contract): Contract \{"#)
-        var missing: [String] = []
+        var declared: Set<String> = []
 
         for source in try SourceTree.allSources() where source.path.hasPrefix("Contracts/") {
-            let range = NSRange(source.text.startIndex..., in: source.text)
-            for match in pattern.matches(in: source.text, range: range) {
-                let name = String(source.text[Range(match.range(at: 1), in: source.text)!])
-                if !listed.contains(name) { missing.append(name) }
-            }
+            declared.formUnion(try Self.tiers(declaredIn: source.text))
         }
 
-        XCTAssertEqual(missing, [])
+        XCTAssertEqual(declared.subtracting(listed).sorted(), [], "declared and not listed")
+        XCTAssertEqual(listed.subtracting(declared).sorted(), [], "listed and not found declared")
+    }
+
+    /// The scan finds a tier declared beside an element, and nothing else.
+    func testTheTierScanFindsATierDeclared() throws {
+        let fixture = """
+            public enum RulerElementContract: Tier {
+            public enum RulerContract: ElementContract {
+            enum HiddenElementContract: Tier {
+            """
+        XCTAssertEqual(try Self.tiers(declaredIn: fixture), ["RulerElementContract"])
+    }
+
+    /// The tiers `text` declares, by name.
+    private static func tiers(declaredIn text: String) throws -> Set<String> {
+        let pattern = try NSRegularExpression(pattern: #"public enum (\w+Contract): Tier \{"#)
+        let range = NSRange(text.startIndex..., in: text)
+        return Set(pattern.matches(in: text, range: range).map { String(text[Range($0.range(at: 1), in: text)!]) })
     }
 
     /// An element contract's node type is its own name - `TextContract`

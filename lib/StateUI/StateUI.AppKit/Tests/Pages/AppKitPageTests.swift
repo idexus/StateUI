@@ -6,6 +6,7 @@ import AppKit
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
+import StateUIConformance
 import XCTest
 
 @MainActor
@@ -105,9 +106,8 @@ final class AppKitPageTests: XCTestCase {
     }
 
     /// A written bar color paints the band the title bar and toolbar cover
-    /// above the page, and the title bar lets it show. The window wears it as
-    /// its background too, and a color taken away gives the material and the
-    /// window's own background back.
+    /// above the page, and the title bar lets it show; the window's own
+    /// background stands, and a color taken away gives the material back.
     @MainActor
     func testAWrittenBarColorPaintsTheBandAboveThePage() throws {
         let renderer = testRenderer(
@@ -1091,6 +1091,82 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertTrue(earlier.isBordered)
     }
 
+    /// A menu on the bar at the page's foot opens as it does on the window's: its click opening it where its button
+    /// has none of its own, a split button's beside it, and one behind More a submenu of the entries it shows there.
+    @MainActor
+    func testAMenuOnTheFootBarOpensAsOnTheWindowsBar() throws {
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").pageTitle("Files")
+                    .toolbar(.bottom) {
+                        ToolbarButton("Sort").menu { MenuItem("A to Z").onClicked {} }
+                        ToolbarButton("Save").onClicked {}.menu(.split) { MenuItem("Save as").onClicked {} }
+                        ToolbarButton("Share").menu { MenuItem("Mail").onClicked {} }.placement(at: .overflow)
+                    }
+            } destination: { _ in Text("Pushed") }
+        }
+        defer { renderer.finish() }
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        func footBar(_ view: NSView) -> AppKitBottomToolbar? {
+            if let bar = view as? AppKitBottomBarView, bar.showsAnything { return bar.toolbar }
+            return view.subviews.lazy.compactMap(footBar).first
+        }
+        let foot = try XCTUnwrap(controller.window?.contentView.flatMap(footBar))
+        func control(_ title: String) -> NSView? {
+            func search(_ view: NSView) -> NSView? {
+                if let button = view as? NSComboButton, button.toolTip == title { return button }
+                if let button = view as? NSButton, button.toolTip == title { return button }
+                return view.subviews.lazy.compactMap(search).first
+            }
+            return search(foot)
+        }
+
+        let sort = try XCTUnwrap(control("Sort") as? NSComboButton, "a click opening a menu")
+        XCTAssertEqual(sort.style, .unified)
+        XCTAssertEqual(sort.menu.items.map(\.title), ["A to Z"])
+        XCTAssertEqual((control("Save") as? NSComboButton)?.style, .split)
+        let share = try XCTUnwrap(foot.overflowMenuForTesting.items.first { $0.title == "Share" })
+        XCTAssertEqual(share.submenu?.items.map(\.title), ["Mail"], "behind More, a submenu")
+    }
+
+    /// A held menu on the bar at the page's foot is held as on the window's: no arrow and no split, its click its own,
+    /// and assistive technology asking for its menu opens it.
+    @MainActor
+    func testAHeldMenuOnTheFootBarKeepsItsClickItsOwn() throws {
+        let heard = Received<String>()
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").pageTitle("Files")
+                    .toolbar(.bottom) {
+                        ToolbarButton("Copy").onClicked { heard.values.append("copy") }
+                            .menu(.held) { MenuItem("Copy as").onClicked {} }
+                    }
+            } destination: { _ in Text("Pushed") }
+        }
+        defer { renderer.finish() }
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        func footBar(_ view: NSView) -> AppKitBottomToolbar? {
+            if let bar = view as? AppKitBottomBarView, bar.showsAnything { return bar.toolbar }
+            return view.subviews.lazy.compactMap(footBar).first
+        }
+        let foot = try XCTUnwrap(controller.window?.contentView.flatMap(footBar))
+        func search(_ view: NSView) -> NSControl? {
+            if let control = view as? NSControl, control.toolTip == "Copy" { return control }
+            return view.subviews.lazy.compactMap(search).first
+        }
+        let found = try XCTUnwrap(search(foot))
+        XCTAssertFalse(found is NSComboButton, "no arrow and no split")
+        let copy = try XCTUnwrap(found as? NSButton)
+        XCTAssertEqual(copy.bezelStyle, NSButton.BezelStyle.accessoryBarAction, "an accessory bar control as its neighbors")
+        copy.performClick(nil)
+        XCTAssertEqual(heard.values, ["copy"], "its click its own")
+
+        let watch = MenuWatch()
+        defer { watch.stop() }
+        XCTAssertTrue(copy.accessibilityPerformShowMenu())
+        XCTAssertEqual(watch.opened, ["Copy as"], "its menu opened")
+    }
+
     /// Groups placed behind a bar's More are sections of its menu, a line between two - on the window's bar and on
     /// the bar at the page's foot.
     @MainActor
@@ -1216,6 +1292,25 @@ final class AppKitPageTests: XCTestCase {
             stackSheet.contentLayoutRect.size,
             NSSize(width: min(560, around.width - 48), height: min(480, around.height - 48)),
             "the standard size, within the window it hangs from")
+    }
+
+    /// A popover whose page is larger than any screen stands within the screen: AppKit raises over a frame past its
+    /// 32-bit points, which ends the application, and a popover larger than the screen shows no more of itself.
+    @MainActor
+    func testAPopoverLargerThanAnyScreenStandsWithinIt() throws {
+        let renderer = AppKitRenderer.running {
+            Text("Beneath").popover(isPresented: State(wrappedValue: true).projectedValue) {
+                Text("Wide").width(1e12).height(1e12)
+            }
+        }
+        defer { renderer.finish() }
+        for _ in 0..<3 { renderer.runtime.pump.turn() }
+        let popover = try XCTUnwrap(renderer.runtime.tree.root?.first(type: .popover)?.native as? AppKitElement)
+        XCTAssertTrue(popover.shownPopover?.isShown ?? false, "it stands")
+        let screen = try XCTUnwrap(NSScreen.main).visibleFrame.size
+        let shown = try XCTUnwrap(popover.view?.window).frame.size
+        XCTAssertLessThanOrEqual(shown.width, screen.width)
+        XCTAssertLessThanOrEqual(shown.height, screen.height)
     }
 
     /// A stack in a sheet brings its bar to the sheet: the top page names the sheet, the way back returns to the

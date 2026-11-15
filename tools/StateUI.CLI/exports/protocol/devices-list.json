@@ -1,0 +1,36 @@
+{
+  "request" : {
+    "id" : "15",
+    "jsonrpc" : "2.0",
+    "method" : "devices/list",
+    "params" : {
+      "host" : "uikit"
+    }
+  },
+  "response" : {
+    "id" : "15",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "destinations" : [
+        {
+          "booted" : false,
+          "connection" : "USB",
+          "id" : "0B05862F-1427-5E93-AFC2-5FEAA82B99FB",
+          "kind" : "device",
+          "name" : "Example iPad",
+          "udid" : "00008132-001808DC3C03001C",
+          "version" : "27.0"
+        },
+        {
+          "booted" : true,
+          "id" : "C8992893-1166-4CDF-AF44-2169C94EE53B",
+          "kind" : "simulator",
+          "name" : "iPhone 18 Pro",
+          "udid" : "C8992893-1166-4CDF-AF44-2169C94EE53B",
+          "version" : "27.0"
+        }
+      ],
+      "host" : "uikit"
+    }
+  }
+}

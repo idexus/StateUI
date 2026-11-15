@@ -564,6 +564,9 @@ swift.conformance NetworkAccess: Swift.Equatable
 swift.conformance NetworkAccess: Swift.Hashable
 swift.conformance NetworkAccess: Swift.RawRepresentable
 swift.conformance NetworkAccess: Swift.Sendable
+swift.conformance OpenedLinkElementContract: StateUI.Tier
+swift.conformance OpenedLinkElementContract: StateUI.WornContract
+swift.conformance OpenedLinkElementContract: Swift.Sendable
 swift.conformance Orientation: Swift.Equatable
 swift.conformance Orientation: Swift.Hashable
 swift.conformance Orientation: Swift.RawRepresentable
@@ -1118,6 +1121,7 @@ swift.enum MenuToggleContract: enum MenuToggleContract
 swift.enum MotionLayoutContract: enum MotionLayoutContract
 swift.enum NavigationStackContract: enum NavigationStackContract
 swift.enum NetworkAccess: enum NetworkAccess
+swift.enum OpenedLinkElementContract: enum OpenedLinkElementContract
 swift.enum Orientation: enum Orientation
 swift.enum OverlayContract: enum OverlayContract
 swift.enum PaddingElementContract: enum PaddingElementContract
@@ -13119,6 +13123,8 @@ swift.type.property MotionValues.transform: static let transform: MotionValues
 swift.type.property MotionValues.width: static let width: MotionValues
 swift.type.property NavigationStackContract.name: static var name: String { get }
 swift.type.property NavigationStackContract.popped: static let popped: ElementEvent<NavigationStackContract, Int>
+swift.type.property OpenedLinkElementContract.linkOpened: static let linkOpened: ElementEvent<OpenedLinkElementContract, String>
+swift.type.property OpenedLinkElementContract.name: static let name: String
 swift.type.property OverlayContract.name: static var name: String { get }
 swift.type.property PaddingElementContract.name: static let name: String
 swift.type.property PaddingElementContract.padding: static let padding: ElementProperty<PaddingElementContract, Insets>
@@ -13133,7 +13139,6 @@ swift.type.property PageContract.showsBackButton: static let showsBackButton: El
 swift.type.property PageContract.showsCloseButton: static let showsCloseButton: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.showsNavigationBar: static let showsNavigationBar: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.showsTitle: static let showsTitle: ElementProperty<PageContract, Bool>
-swift.type.property PageElementContract.linkOpened: static let linkOpened: ElementEvent<PageElementContract, String>
 swift.type.property PageElementContract.name: static let name: String
 swift.type.property PageElementContract.title: static let title: ElementProperty<PageElementContract, String>
 swift.type.property PathContract.data: static let data: ElementProperty<PathContract, String>

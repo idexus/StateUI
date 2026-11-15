@@ -15,18 +15,25 @@ final class WebTextView: WebDOMView, WebWordsView {
     /// A span for each run shown, in order; nil showing the text's own words.
     private var runs: [WebDOMView]?
 
+    /// The runs the spans show, for the lines each takes from the text's look as it stands.
+    private var shownRuns: [TextRun] = []
+
+    /// The spans of the runs shown, in order.
+    var runSpans: [WebDOMView] { runs ?? [] }
+
+    /// The text's own spacing, lines' height and lines, as `setSpacing` was last given them.
+    private var spacing = TextLook()
+
     init() {
         super.init(tag: "span")
         setLines(breaking: .wordWrap, maximum: nil)
-        isSelectable = false
+        // Off unless said: set through the view's own, as an initializer runs no observer of its own property.
+        ownSelection = "none"
     }
 
     /// Whether the user can select the words and copy them, as a platform's label lets them only where it says.
     var isSelectable = false {
-        didSet {
-            style("user-select", isSelectable ? "text" : "none")
-            style("-webkit-user-select", isSelectable ? "text" : "none")
-        }
+        didSet { ownSelection = isSelectable ? "text" : "none" }
     }
 
     func setText(_ text: String) {
@@ -42,7 +49,8 @@ final class WebTextView: WebDOMView, WebWordsView {
             // Shown without runs before, the words stand already.
             guard let spans = runs else { return }
             for span in spans { span.release() }
-            runs = nil
+            (runs, shownRuns) = (nil, [])
+            writeSpacing()
             return WebRelay.setText(node, words)
         }
         if runs == nil { WebRelay.setText(node, "") }
@@ -55,10 +63,13 @@ final class WebTextView: WebDOMView, WebWordsView {
             var runLook = run.look
             runLook.scales = run.look.scales && look.scales
             if runLook.scales != look.scales, runLook.size == nil { runLook.size = look.size }
-            for (name, value) in WebCSS.font(runLook) + WebCSS.spacing(runLook) { span.style(name, value) }
+            for (name, value) in WebCSS.font(runLook) + WebCSS.spacing(runLook) where name != "text-decoration-line" {
+                span.style(name, value)
+            }
             span.style("background", WebCSS.fill(run.look.background))
         }
-        runs = spans
+        (runs, shownRuns) = (spans, shown)
+        writeSpacing()
     }
 
     /// How the words break: onto more lines at words or anywhere, or on one line, cut short where they do not
@@ -77,7 +88,21 @@ final class WebTextView: WebDOMView, WebWordsView {
     }
 
     func setSpacing(_ look: TextLook) {
-        for (name, value) in WebCSS.spacing(look) { style(name, value) }
+        spacing = look
+        writeSpacing()
+    }
+
+    /// The text's spacing on its own node, and its lines there too while it shows its own words - a line under a
+    /// node is drawn under all it holds, which no run could take away, so runs take them each: a run's own, else the
+    /// text's as they stand now, however they came - a description or a frame.
+    /// Design: docs/design/platforms/web/controls.md#runs-of-words
+    private func writeSpacing() {
+        for (name, value) in WebCSS.spacing(spacing) {
+            style(name, name == "text-decoration-line" && runs != nil ? nil : value)
+        }
+        for (span, run) in zip(runs ?? [], shownRuns) {
+            span.style("text-decoration-line", WebCSS.decorationLines(run.look.over(spacing).decorations))
+        }
     }
 
     override func release() {

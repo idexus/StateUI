@@ -1,0 +1,19 @@
+{
+  "request" : {
+    "id" : "12",
+    "jsonrpc" : "2.0",
+    "method" : "name/check",
+    "params" : {
+      "kind" : "application",
+      "name" : "My-App",
+      "parentUri" : "file:///Users/example/Projects/Demo/apps"
+    }
+  },
+  "response" : {
+    "id" : "12",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "problem" : "'My-App' cannot name an application: letters and digits only, starting with a letter."
+    }
+  }
+}

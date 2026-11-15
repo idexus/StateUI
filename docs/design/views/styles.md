@@ -207,13 +207,13 @@ properties of every node in the tree, styled or not.
 
 ## What can be styled
 
-Every control in `Views/` but the ItemsView is a `StyleTarget`, and so is
+Every control in `Views/` is a `StyleTarget`, the ItemsView too, and so is
 every item on a bar - a `ToolbarButton`, a `ToolbarToggle`, a
 `ToolbarGroup` - the list kept in one place - `StyleTarget.swift` - so it can
-be read at a glance and a test can insist on it. A style target is anything
-carrying properties that can be made with nothing set, and each of them can:
-the initializer taking the value that gives a control its purpose is one of
-several, never the only one. A style offers what its target can say of
+be read at a glance and a test can insist on it. A style target is a control
+carrying properties, named by its node type (`StyleTarget.nodeType`), which a
+style resolves by; how it is made is its initializers', which a style never
+calls. A style offers what its target can say of
 itself - a view's `VisualElement` half, a bar item's `BarItemElement` and the
 tiers it shares with controls - and a state only what its target enters: a
 bar item is pointed at, a button on a bar is pressed, a setting is on or off.

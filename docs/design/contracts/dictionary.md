@@ -193,8 +193,8 @@ case proves - raises nothing and leaves every mark standing.
 Each host's run writes, over each verdict file it writes, the revision its
 family stands at: `# revision 1.1`, every host's, then its own. A host that
 reads the repository takes it from the file (`<Host>Exports.revision`);
-Android's script writes it over the files it takes off the device
-(`.scripts/Marks/revision.sh`). The renderer shows a verdict whose file names
+the stateui tool writes it over the files it takes off an Android device,
+as the conformance package's reader of a revision gives it. The renderer shows a verdict whose file names
 another revision, or none, ⌛ with no note: what it said is no verdict of the
 family as it stands, and a note repeating it on every stale cell of every host
 only hides the notes that count. A run of the family makes it fresh again;

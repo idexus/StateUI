@@ -71,8 +71,9 @@ the chosen value's place among them (`selectedIndex`), worked out again at
 each build, so the list can change its order and the choice stays the value
 it was. A choice the user makes comes back as its place and lands on the
 state as the value standing there; a place outside the list changes nothing.
-The state is read where the picker is built, so a choice builds that body
-again - the host cannot carry an application's own value. Nothing is chosen
+The state is read as the picker is described (`Node.readsWhenDescribed`), so
+a choice describes the picker again and not the body that wrote it - the host
+cannot carry an application's own value. Nothing is chosen
 while the state holds nil, or a value the list does not hold, and the
 placeholder shows. A value needs only to be `Equatable`; it shows by its
 description unless the picker is given a caption.
@@ -126,7 +127,15 @@ normalizes it to absolute moves, lines, curves, arcs and closes before each
 toolkit draws that closed set, so the grammar accepted is not any one
 platform's. A toolkit with no SVG arc draws each as the cubic Bézier segments
 the shared parser works out, a quarter turn at most each, so an arc bends the
-same on every host.
+same on every host. The arithmetic works in the radii's own units, so no size
+of radius overflows it: radii too small to reach are scaled up until the arc
+just does. The short way round an arc whose radii stand past a billion times
+its chord is drawn as its chord, flatter than any display shows; the long way
+is the whole ellipse less that chord, its center worked from the chord's
+direction rather than divided by a length a double barely holds, so a host
+fitting the shape to its room draws the ellipse. An arc no double could draw
+is drawn as its chord. A path ending on a command, or inside a command's
+numbers, is rejected whole.
 
 ## Text runs
 

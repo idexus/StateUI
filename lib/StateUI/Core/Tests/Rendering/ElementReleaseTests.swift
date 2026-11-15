@@ -55,34 +55,38 @@ final class ElementReleaseTests: XCTestCase {
     }
 
     /// Describes what `build` writes, then describes it AWAY, and answers
-    /// whether the object it returned was let go.
+    /// whether the object it returned was let go - asked while the differ
+    /// that described it stands, once the element was seen holding it where
+    /// it does.
     ///
     /// The second render is the whole instrument: a tree that stops naming a
     /// view is how a page is left, and it is what runs `Differ.forget(_:)`.
     /// Without it a test proves only that nothing holds the object at all,
-    /// which is a different and much weaker sentence.
-    private func released(_ build: (Renders) -> AnyObject) -> Bool {
+    /// which is a different and much weaker sentence. The differ lives
+    /// through the question: one keeping the object until it went itself
+    /// would pass a question asked after it.
+    private func released(heldByTheElement: Bool = true, _ build: (Renders) -> AnyObject) -> Bool {
+        let renders = Renders()
         weak var kept: AnyObject?
-
-        do {
-            let renders = Renders()
-            var made: AnyObject? = build(renders)
-
-            kept = made
-            XCTAssertNotNil(kept, "the test built nothing to watch")
-
-            renders.render(stack([], id: "root"))
+        var made: AnyObject? = build(renders)
+        kept = made
+        if heldByTheElement {
             made = nil
-            _ = made
+            XCTAssertNotNil(kept, "the element held nothing the test watches, so the test proves nothing")
+            made = kept
         }
 
-        return kept == nil
+        renders.render(stack([], id: "root"))
+        made = nil
+        _ = made
+        return withExtendedLifetime(renders) { kept == nil }
     }
 
-    /// A state a DRIVEN property was read from: the registration holds the
-    /// image, and the image is the state's own.
+    /// A state a DRIVEN property was read from: the element keeps only the
+    /// number the host quotes it by, so nothing of the state is left once the
+    /// element is.
     func testADrivenPropertyGoesWithTheElement() {
-        XCTAssertTrue(released { renders in
+        XCTAssertTrue(released(heldByTheElement: false) { renders in
             let fade = State(1.0)
 
             renders.render(stack([Rectangle().opacity(fade.projectedValue).node], id: "root"))
@@ -123,23 +127,23 @@ final class ElementReleaseTests: XCTestCase {
     /// every value every render ever captured - a page that stands still and
     /// leaks while nothing about it changes.
     func testAReplacedHandlerLetsTheOldOneGo() {
+        let renders = Renders()
         weak var first: Carried?
-
         do {
-            let renders = Renders()
             let held = Carried()
-
             first = held
             renders.render(stack([Button("x").onClicked { _ = held }.node], id: "root"))
-
-            // The same element, described again with a handler that captures
-            // something else.
-            let other = Carried()
-            renders.render(stack([Button("x").onClicked { _ = other }.node], id: "root"))
-            _ = other
         }
+        XCTAssertNotNil(first, "the handler table holds the closure the element stands with")
 
-        XCTAssertNil(first, "the handler table kept the closure the last render replaced")
+        // The same element, described again with a handler that captures
+        // something else.
+        let other = Carried()
+        renders.render(stack([Button("x").onClicked { _ = other }.node], id: "root"))
+
+        withExtendedLifetime(renders) {
+            XCTAssertNil(first, "the handler table kept the closure the last render replaced")
+        }
     }
 
     /// An object `.environment()` provided, which the element carries so the
@@ -153,23 +157,23 @@ final class ElementReleaseTests: XCTestCase {
         })
     }
 
-    /// An aim the differ pointed at the element.
+    /// An aim the differ pointed at the element - its box, which the element wears.
     func testAnAimGoesWithTheElement() {
         XCTAssertTrue(released { renders in
             let aim = Aim(TextField.self)
 
             renders.render(stack([TextField("").aim(aim).node], id: "root"))
-            return aim
+            return aim.box
         })
     }
 
-    /// A state a FRAME FEED is written into.
+    /// The image of a state a FRAME FEED is written into.
     func testAFrameFeedGoesWithTheElement() {
         XCTAssertTrue(released { renders in
             let room = State(Rect(0, 0, 0, 0))
 
             renders.render(stack([Held().frame(into: room.projectedValue).node], id: "root"))
-            return room.storage
+            return room.storage.image ?? Carried()
         })
     }
 

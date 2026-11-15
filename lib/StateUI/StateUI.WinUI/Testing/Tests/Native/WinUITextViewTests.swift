@@ -25,6 +25,37 @@ private struct SpannedPage: View {
 }
 
 final class WinUITextViewTests: XCTestCase {
+    /// Words offered their own width keep their lines at every scale: WinUI lays a TextBlock out on whole pixels,
+    /// and its width read back through a 32-bit float can stand a pixel short of the words - at 125% a sentence of
+    /// the Gallery broke in two there, and its layout measured it again at every pass until WinUI ended the process.
+    /// Design: docs/design/host/layout.md#words-in-a-wider-room
+    func testWordsOfferedTheirOwnWidthKeepTheirLines() {
+        onUIThread {
+            let sentences = [
+                "Scroll to the end, tap a row to choose it, and rotate the rows one place either way.",
+                "Swipe both strips: the cards share one width, and every tag is as wide as its word.",
+                "Only the items on screen are built - down, across, in columns or in groups.",
+                "That is all of them.", "N and N², a thousand times", "Tap a row.",
+            ]
+            let sizes = [11.0, 12, 13, 14, 15, 17]
+            let words = Array(sizes.flatMap { size in sentences.map { ($0, size) } }.enumerated())
+            let host = WinUIRenderer.running {
+                VStack {
+                    ForEach(words, id: \.offset) { Text($0.element.0).fontSize($0.element.1) }
+                }
+            }
+            host.layOut()
+
+            let texts = host.views(WinUITextView.self)
+            XCTAssertEqual(texts.count, sentences.count * sizes.count)
+            for text in texts {
+                let natural = text.measure(width: nil, height: nil)
+                let again = text.measure(width: natural.width, height: nil)
+                XCTAssertEqual(again.height, natural.height, accuracy: 0.01, "\(text.text) offered \(natural.width)")
+            }
+        }
+    }
+
     /// A label with nothing said stands as WinUI's own body text, in the theme's color.
     func testATextWithNothingSaidIsWinUIsOwnText() throws {
         try onUIThread {

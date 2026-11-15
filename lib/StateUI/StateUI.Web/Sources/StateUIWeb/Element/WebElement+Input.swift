@@ -55,6 +55,12 @@ extension WebElement {
             listensForFocus = true
             view.hear(.within) { [weak self] in self?.send(.isFocusedChanged, [.bool(WebRelay.eventDetail != 0)]) }
         }
+        // The touch and the selection are the view's while it hears the hand itself, the page's again once it does not:
+        // a layout's hand keeps the page's scroll across its axis.
+        let way = element.handWay
+        view.handTouch = hearing.contains(.hand) ? (way == .everyWay ? "none" : way == .vertical ? "pan-x" : "pan-y")
+            : hearing.isDisjoint(with: Self.presses) ? nil : "none"
+        view.style("-webkit-touch-callout", hearing.contains(.hand) ? "none" : nil)
         view.isTapped = hearing.contains(.taps) && !view.isControl
         view.offerDrag(element.dragAndDrop) { [weak self] heard in
             guard let self, let host else { return }
@@ -72,12 +78,11 @@ extension WebElement {
     /// it no more, and hears them until they let go.
     /// Design: docs/design/platforms/web/input.md#a-press-dragged-and-a-pinch
     private func listenForPresses(_ view: WebDOMView) {
-        view.style("touch-action", "none")
-        view.style("user-select", "none")
-        view.style("-webkit-user-select", "none")
         view.listen("pointerdown") { [weak self, weak view] in
             let pointer = WebRelay.eventPointer
-            guard let self, let view, pointer.kind != .mouse || pointer.button == 0 else { return }
+            guard let self, let view, pointer.kind != .mouse || pointer.button == 0,
+                  !element.hearing.isDisjoint(with: Self.presses)
+            else { return }
             WebRelay.capturePointer(view.node)
             // A press with ⌥/Alt over a view two fingers move is two fingers, mirrored about its middle.
             if WebRelay.eventAlt, element.hearsMirroredFingers, mirroring == nil {
@@ -138,16 +143,10 @@ extension WebElement {
     /// going on to the page.
     /// Design: docs/design/platforms/web/input.md#the-hand-over-a-layout
     private func listenForTheHand(_ view: WebDOMView) {
-        // The page keeps a touch across the layout's axis, its own scroll; along it the touch is the layout's - and a
-        // pan's every way.
-        let way = element.handWay
-        view.style("touch-action", way == .everyWay ? "none" : way == .vertical ? "pan-x" : "pan-y")
-        view.style("user-select", "none")
-        view.style("-webkit-user-select", "none")
-        view.style("-webkit-touch-callout", "none")
         view.listen("pointerdown") { [weak self, weak view] in
             let pointer = WebRelay.eventPointer
-            guard let self, let view, pointer.kind != .mouse || pointer.button == 0 else { return }
+            guard let self, let view, pointer.kind != .mouse || pointer.button == 0, element.hearing.contains(.hand)
+            else { return }
             // A press with ⌥/Alt over a layout two fingers move is theirs.
             guard !(WebRelay.eventAlt && element.hearsMirroredFingers) else { return }
             // The hand's fingers, as the host layer reads them; another finger joins a hand under way.

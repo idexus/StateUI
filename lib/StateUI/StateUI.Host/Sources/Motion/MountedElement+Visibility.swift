@@ -16,6 +16,9 @@
 
     /// Stands the view at `opacity`.
     func setOpacity(_ opacity: Double)
+
+    /// Makes the view and everything in it deaf to input, a press going to what stands behind it, or lets it hear.
+    func setIgnoresInput(_ ignores: Bool)
 }
 
 /// An element's showing, the same on every host: fading in as it joins a standing layout, and a change of its
@@ -25,6 +28,11 @@ extension MountedElement {
     /// Whether the element stands shown: as the tree says, or while it fades out.
     public var standsShown: Bool {
         isLeaving || value(.isVisible)?.bool != false
+    }
+
+    /// Whether the element answers no input: as the tree says, or while it fades out (`presented`).
+    public var ignoresInput: Bool {
+        presented(.ignoresInput)?.bool == true
     }
 
     /// Whether the element fades in as it joins a standing layout: its view `presentsOpacity`, and no state owns it.
@@ -44,9 +52,9 @@ extension MountedElement {
     }
 
     /// Crosses a change of visibility on `view`, already shown, under the element's own motion or the application's:
-    /// hidden, it fades out and then hides, and the layout placing it closes over it - `places`, its parent's
-    /// traveling places, told the change arrived; shown again as it fades, it comes back from where it stands;
-    /// shown from nothing, it fades in. Where nothing moves, nothing crosses.
+    /// hidden, it fades out deaf to input and then hides, and the layout placing it closes over it - `places`, its
+    /// parent's traveling places, told the change arrived; shown again as it fades, it comes back from where it
+    /// stands and hears again; shown from nothing, it fades in. Where nothing moves, nothing crosses.
     public func crossVisibility<View: FadingView>(_ view: View, closingIn places: TravelingPlaces?) {
         guard let tree else { return }
 
@@ -55,15 +63,20 @@ extension MountedElement {
         if value(.isVisible)?.bool == false {
             guard view.isShown, !isLeaving, let law else { return }
             isLeaving = true
+            view.setIgnoresInput(true)
             let started = tree.receiveProperty(
                 mount: mount, property: .opacity, standing: .number(view.opacity), target: .number(0), motion: law,
                 landed: { [weak self, weak view, weak places] in
                     guard let self, let view else { return }
                     self.crossed(view, closingIn: places)
                 })
-            if !started { isLeaving = false }
+            if !started {
+                isLeaving = false
+                view.setIgnoresInput(ignoresInput)
+            }
         } else if isLeaving {
             isLeaving = false
+            view.setIgnoresInput(ignoresInput)
             tree.receiveProperty(
                 mount: mount, property: .opacity, standing: .number(view.opacity), target: opacity, motion: law)
         } else if !view.isShown, let law {
@@ -77,6 +90,7 @@ extension MountedElement {
         guard isLeaving else { return }
 
         isLeaving = false
+        view.setIgnoresInput(ignoresInput)
         view.setShown(standsShown)
         view.setOpacity(value(.opacity)?.number ?? 1)
         places?.patchArrived()

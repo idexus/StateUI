@@ -106,8 +106,10 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         Text("Fonts and Colors are windows of the galleries' scene: they change the "
             + "look every gallery window wears, and close with the scene. A swatch "
-            + "window exists once per value, its number lent to it as a binding. "
-            + "Another gallery window has a place of its own and the scene's look.")
+            + "window exists once per value, its number lent to it as a binding: open "
+            + "Swatch 1 and Swatch 2, and Next or a step in Swatch 1 is refused, as "
+            + "Swatch 2 shows that number. Another gallery window has a place of its "
+            + "own and the scene's look.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

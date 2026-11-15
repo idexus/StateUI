@@ -63,11 +63,10 @@ final class ToolchainTests: XCTestCase {
         return found
     }
 
-    /// One release, two spellings: swift.org names its files `6.4.0` while
-    /// the compiler calls itself `6.4`.
+    /// A version's release - its major and minor: the manifests name `6.4`, a
+    /// toolchain or an image its patch too, which the one-patch check holds.
     private func release(_ version: String) -> String {
-        let parts = version.split(separator: ".")
-        return parts.count == 3 && parts[2] == "0" ? parts[0...1].joined(separator: ".") : version
+        version.split(separator: ".").prefix(2).joined(separator: ".")
     }
 
     /// The release every manifest asks for, which is the one everything else

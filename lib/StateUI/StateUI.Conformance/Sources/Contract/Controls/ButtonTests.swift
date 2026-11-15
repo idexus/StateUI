@@ -49,6 +49,30 @@
                 s.settle { heard.values == ["save", "cancel", "send"] }
                 s.expect(heard.values, ["save", "cancel", "send"], "a shortcut stated takes the place of the role's key")
             },
+            ConformanceCase("anOrdinaryButtonIsPressedByNoKey", proves: [
+                Covered(ButtonContract.role),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+                let main = State(wrappedValue: true)
+                let heard = Received<String>()
+                s.start {
+                    VStack {
+                        Button("Save").role(main.wrappedValue ? .primary : .normal).onClicked { heard.values.append("save") }
+                            .id("save")
+                        Button("Plain").onClicked { main.wrappedValue = false }.id("plain")
+                    }
+                }
+
+                try s.perform(.pressKeys(KeyboardShortcut(.return, modifiers: [])), on: s.element("save"))
+                s.settle { heard.values == ["save"] }
+                s.expect(heard.values, ["save"], "Return presses the main action")
+
+                try s.perform(.activate, on: s.element("plain"))
+                s.settle { !main.wrappedValue }
+                s.turn()
+                try s.perform(.pressKeys(KeyboardShortcut(.return, modifiers: [])), on: s.element("save"))
+                s.turn()
+                s.expect(heard.values, ["save"], "an ordinary action, Return presses it no more")
+            },
             ConformanceCase("returnIsTheFieldsWhileItIsTypedInto", proves: [
                 Covered(ButtonContract.role),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(FocusElementContract.focus, on: "TextField")]) { s in

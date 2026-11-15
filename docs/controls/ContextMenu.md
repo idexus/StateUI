@@ -38,8 +38,10 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (0)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td></td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td></td><td><code>UIMenu</code> / <code>UIAction</code>; <code>UIContextMenuInteraction</code>; <code>UIMenuBuilder</code> menu bar</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center">◐</td><td></td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr>
+<tr><td colspan="3">cannot openMenu on Text - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">UIKit</td><td align="center">◐</td><td></td><td><code>UIMenu</code> / <code>UIAction</code>; <code>UIContextMenuInteraction</code>; <code>UIMenuBuilder</code> menu bar</td></tr>
+<tr><td colspan="3">cannot openMenu on Text - UIKit's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td></td><td><code>ContextMenu</code> / <code>SubMenu</code> / <code>MenuItem</code>; a menu bar's menus in the <code>Toolbar</code> overflow</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td></td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td></td><td><code>GMenu</code> in a <code>GtkPopoverMenu</code>; a menu bar as a <code>GtkMenuButton</code> main menu</td></tr></tbody>

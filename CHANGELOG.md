@@ -3,6 +3,284 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
+## 0.8.5 - 2026-11-13
+
+### Breaking changes
+
+- **AppKit builds through `stateui`.** `.scripts/AppKit/run-app.sh`, `build-gallery-appkit.sh` and `deploy.sh` are
+  gone: `stateui run`, `stateui build` and `stateui package --host appkit` take their place, and every application,
+  not only the Gallery, runs as a bundle.
+- **UIKit builds through `stateui`.** `.scripts/UIKit/run-app.sh`, `build-app.sh` and `deploy.sh` are gone:
+  `stateui run`, `stateui build` and `stateui package --host uikit --device <name or id>` take their place, a
+  simulator's build and a device's keeping scratch folders of their own; `.build/uikit/debugger.json` goes, a run
+  saying its process instead.
+- **Android builds through `stateui`.** `.scripts/Android/run-app.sh`, `deploy.sh` and `devices.sh` are gone:
+  `stateui run`, `stateui build`, `stateui package --host android --device <serial or name>` and `stateui devices --host
+  android` take their place, an ABI's build keeping a scratch folder of its own and the symbols beside the APK in its
+  artifact; `.build/android/debugger.json` goes, a run saying its process and the debugger's socket instead.
+- **GTK builds through `stateui`.** `.scripts/GTK/run-app.sh` and `deploy.sh` are gone: `stateui run`, `build`,
+  `install` and `package --host gtk` take their place; a build no longer writes the user's desktop entry - `install`
+  does, and `run` installs - and `run --debugger` runs the head under gdb with every GTK critical's stack said.
+- **WinUI builds through `stateui`.** `.scripts/WinUI/run-app.ps1` and `deploy.ps1` are gone: `stateui run`, `stateui
+  build` and `stateui package --host winui [--architecture x86_64]` take their place, a head published in
+  `.build/stateui/artifacts` - no longer `.build/winui/<configuration>` and its `.program` file.
+- **Web builds through `stateui`.** `.scripts/Web/run-app.sh`, `deploy.sh`, `page.sh`, `serve.py`, `browsers.sh` and
+  `size-budgets.sh` are gone: `stateui run`, `stateui build`, `stateui package --host web`, `stateui devices --host
+  web` and `stateui repo web-size check` take their place. A page is laid in the build's artifact, no longer
+  in `.build/web/site`, and `.build/web/server.json` goes, a run saying the page's address instead; the page is served
+  to this machine alone unless `--listen lan` shares it.
+- **`resvg` draws every picture.** The AppKit, UIKit and Android heads' pictures and icons are drawn by `resvg` of the
+  pinned release, 0.50.0, on every machine - the same pixels wherever a head is built - no longer by AppKit: install it
+  (`brew install resvg`, `cargo install resvg --version 0.50.0`, or its release archive), or name it with
+  `STATEUI_RESVG`; `stateui doctor` checks it. The asset catalog and `.icns` stay Apple's tools' to write.
+  `.scripts/rasterize-images.swift` is gone.
+- **The hosts' marks, declarations and API records are recorded by `stateui`.** `test-appkit.sh`, `test-uikit.sh`,
+  `test-android.sh`, `test-gtk.sh`, `test-web.sh` and `test-winui.ps1`, their `tools.sh`, `tools.ps1`, `build-swift.sh`
+  and `swift-sdk.sh`, `.scripts/API/record.sh` and `record.ps1`, and `.scripts/Marks/revision.sh` are gone:
+  `stateui repo conformance run --host <host> --all | --changed | --family <name> --record` writes a host's verdicts
+  - with `--all` what it declares too - and renders the documents, `stateui repo api record [--host <host>]` writes
+  the API records, and `stateui repo conformance status` says where each family's verdicts stand.
+- **`.scripts` is gone.** `.scripts/test-native.sh` is `stateui repo test --plan portable` and `--plan native` - on a
+  Mac the native plan tests the Gallery and HelloWorld as AppKit builds too (`apps:appkit`) - and `new-app.sh` and
+  `new-app.ps1` are `stateui new <Name> --directory apps`. The VS Code extension knows a checkout by its
+  `Package.swift`, `lib/StateUI.Head` and `apps/HelloWorld`, as the tool does.
+- **A WinUI backend declares what it lays beside an application.** `lib/Backends/<Element>.WinUI/SelfContained.ps1`
+  is gone: a backend lists the files its engine needs in `Packaging/runtime.txt` - a line a file, the NuGet package,
+  its path there (`{architecture}` for `arm64` or `x64`) and its path beside the application - and only an application
+  that depends on the backend gets them. The web view's backend declares WebView2's component and loader.
+- **A project group is a workspace.** The VS Code extension finds applications through `stateui`: in a folder that
+  is an application, that one; else the ones the nearest `stateui.json` up lists - and no longer every folder of an
+  `apps/`. **StateUI: New Project Group** makes a workspace: `stateui.json`, the StateUI it builds with, and its first
+  application beside it (`MyApps/Notes`, naming `../StateUI`), and **StateUI: Deploy** lays it in the workspace's
+  `artifacts/`. A group made before lists its applications in a `stateui.json` at its root:
+
+  ```json
+  { "schemaVersion": 1, "library": { "path": "StateUI" }, "projects": ["apps/Notes"] }
+  ```
+
+  `library.path` is the StateUI its applications build with, from the group's folder - `StateUI` for a release
+  cloned into it.
+
+### New
+
+- **`stateui`, StateUI's developer tool, begins.** `tools/StateUI.CLI` builds the `stateui` program on macOS, Linux
+  and Windows. `stateui version` says its release, the API it speaks and the machine it runs on - in words, or for a
+  program with `--format json` or `--format jsonl`. `stateui doctor` says what each host needs of this machine and
+  what to install. `stateui new` makes an application - HelloWorld renamed - wherever it is asked to;
+  `stateui project describe` reads the applications of a folder. A workspace is a `stateui.json`, found upward from
+  where the tool runs, naming its applications and the StateUI they build with: `stateui workspace create` makes one
+  from a checkout or a release, `stateui workspace library` points every application at another, and
+  `stateui releases list` lists the releases. `stateui serve --stdio` answers an editor's JSON-RPC over standard input
+  and output - the same answers, and the making as operations with events and a cancel. It builds, runs and tests no
+  application yet: until it does, `.scripts` build and run each host as before.
+- **`stateui build`, `run` and `package` make AppKit applications.** Every application is a bundle - its name,
+  identifier `com.stateui.<name>` and icon - with its own `Platforms/AppKit/Info.plist` keys laid over the host's;
+  a failed build never runs or packages an older one; one application builds at a time on a machine. The Gallery's
+  name, links and location purpose stand in its own `Info.plist`.
+- **`stateui build` and `package` make UIKit applications** for the simulator or device `--device` names - the
+  booted simulator, else an iPhone, where none is named. A simulator's bundle is signed ad hoc; a device's with the
+  development profile that provisions it, found before the build. A simulator's build and a device's keep scratch
+  folders of their own.
+- **`stateui build` and `package` make Android applications** for the ABI asked for, else the device's named, else
+  `arm64-v8a` - the APK with its native libraries and their symbols beside it in the artifact, its pictures and its
+  launcher icon drawn for it; an ABI's build keeps a scratch folder of its own.
+- **`stateui build`, `install` and `run` make GTK applications** on Linux: the program, its libraries and its
+  pictures published as the build's artifact; `stateui install --artifact` writes the desktop entry and icon for the
+  user - no longer a build's side effect - and `run` builds, installs, stops a copy still running and runs it.
+- **`stateui build` and `package --host web`** build a Web head's module with the Swift SDK for WebAssembly of the
+  compiler's release and lay its page beside it - the same page the scripts laid.
+- **`stateui run --host web`** serves a Web head's page from its build on this machine alone - `--listen lan` shares it
+  with the network - on port 8460, else a free one where another program holds it, and opens it in the system's
+  browser, every `STATEUI_` switch a parameter of its address; the page's server is the tool's own, on SwiftNIO.
+- **`stateui build`, `run` and `package --host winui`** make WinUI heads on Windows, for the machine's own
+  architecture or, with `--architecture`, the other - on ARM64 x86_64 too, run by Windows' emulation: the pinned
+  NuGet packages fetched and checked against nuget.org's catalog, the C++/WinRT projection made where a pin changed,
+  the Windows App SDK laid beside the head with a manifest registering its classes and `resources.pri`, another
+  architecture's Swift runtime unpacked from the Swift installer's merge module; a package also carries the Swift and
+  C++ runtimes, so it runs where nothing is installed. A running copy is stopped before its build.
+- **`stateui run --host uikit`** installs and starts a UIKit head on its simulator or device and follows its output;
+  `--debugger` starts it held until a debugger attaches, saying its process. `--host android` does so on a device or
+  emulator - a virtual device named but not running is booted - every `STATEUI_` switch handed to the application,
+  its log followed; `--debugger` readies the NDK's `lldb-server` in its sandbox and says its socket. Ctrl+C, or an editor's cancel of
+  `application/run`, ends the application and every process the launch started.
+- **`stateui devices --host uikit`** lists the iPhones and iPads paired with the Mac, then the simulators, the newest
+  iOS first - each with what names it, its system, and whether it is booted or how it is reached; `--host android`
+  the attached devices and running emulators with their Android version and ABI, then the virtual devices not running;
+  `--host web` the browsers installed, the system's own marked, each with its program - on Linux the desktop entries
+  shown on the desktop running.
+- **The VS Code extension works through `stateui`.** It finds the applications, checks the toolchain, makes a
+  project group and a new application - **StateUI: New Application**, beside a workspace's applications - and checks
+  their names as they are typed, all by the tool; the `stateui.cliPath` setting names it where it is not on the
+  search path. The making shows in a notification that cancels it. Every host's Debug, Release, Deploy - WinUI's for
+  either architecture - and own suite in Run Tests go through the tool, as do the UIKit and Android device lists and
+  the browsers; a UIKit or Android head's output and a page's server are in **StateUI Run**, its notification stops
+  it, the end of a debug session ends it, and a second launch in its place replaces it. **Conformance - Rebuild all**
+  and **Rebuild changed** have the tool record the chosen host's families - the Web's and Android's stale ones too.
+
+### Tooling
+
+- The release's version stands in the library's `ApplicationInfo.libraryVersion`; the editor extension's
+  `package.json`, the tool's release, the Android heads and the bundles are its copies, which `ReleaseTests` holds.
+- Swift 6.4.2 is the release StateUI builds with: the workflows' images and installers, the Swift SDKs for Android
+  and WebAssembly and the handbook name it, and `ToolchainTests` holds one patch release everywhere.
+- `stateui index describe [--host <host>]` (`index/describe`) says what a language server indexes a host's code with -
+  its scratch folder, and the triple and SDK where its heads run elsewhere, or why it falls back to this machine - and
+  `stateui index clean` (`index/clean`) takes every index's scratch folder away; the VS Code extension takes both from
+  the tool instead of reading the Swift SDKs and Xcode itself.
+- `stateui repo conformance status [--host <host>]` says, family by family, whether each host's recorded verdicts
+  stand at the revision `revisions.txt` gives - read by the library's own reader through the conformance package's
+  helper `stateui-conformance-metadata`.
+- `stateui repo conformance run --host <host> (--changed | --family <name> | --all) [--record]` runs a host's
+  families whole through its suite - a run of no test fails - holding the verdicts and the control dictionary to the
+  marks, or with `--record` writing the verdicts and rendering the dictionary and the platform contract, each a phase
+  of its own; on Android the stale families and each file's revision come from the conformance package's helper.
+- `stateui repo api check | record [--host <host>]` holds the public API to `lib/StateUI/exports/api` or writes it:
+  the library's surfaces, or with `--host` the host's facade, backends and testing module after its suite.
+- `stateui repo docs check | update` holds the control dictionary and the platform contract to the marks or renders
+  them; `stateui repo samples check | update` holds the Gallery's and the handbook's listings to their code, the
+  review standing, or writes them once the notes were read.
+- `stateui repo test --plan portable | native [--suite <id>]` runs the owner packages' suites in order, each apart -
+  portable: the library, the host layer, the conformance runner, application testing, the Gallery, HelloWorld and the
+  tool; native: this machine's host suites, one with no device listed as not run - a failure never stopping the rest.
+- `stateui repo test --suite host:winui` runs the WinUI host's suite on Windows - the foundation's Windows tests, the
+  host's tests each in a process of its own with the test runner made self-contained, both API records - and the
+  conformance families only where `--filter` names them (`WinUIConformanceTests`, or one of its tests).
+- `stateui repo test --suite host:web` runs the Web host's suite - the facade's API record, the host's tests in Node, the
+  conformance families and the host's browser tests headless in Chrome or Chromium - and `stateui repo web-size check` holds each
+  release module within its budget; `web.yml` runs both. `--suite host:gtk` runs the GTK host's - the foundation's Linux
+  tests, the host's, every verdict held, both API records - and `gtk.yml` runs it.
+- `stateui repo test --suite host:android --device <device>` runs the Android host's suite - every test listed, the test
+  APK on the device with its screen kept on, `android.txt`, every family's verdicts and the facade's API record held;
+  `--build-only --architecture x86_64` builds the test APK alone with its identity and `--artifact <folder>` runs it
+  elsewhere, refusing one of another ABI or commit - `android.yml` builds on macOS and runs on Linux so.
+- `stateui repo test --suite host:uikit --device <simulator>` runs the UIKit host's suite - its test application on the
+  simulator, its accessibility on, every verdict held, then the facade's and `StateUITesting`'s API records for the
+  simulator - and `uikit.yml` runs it; the test application's identifier stands in its own `Platforms/UIKit/Info.plist`.
+- `stateui repo test --suite host:appkit` runs the AppKit host's suite - its tests, every conformance verdict held, then
+  its API records, each a phase of the result - and the AppKit workflow runs it.
+- `stateui test list [--host <host>]` (`tests/discover`) lists a folder's suites for a host, in the order they are
+  best run, and `stateui test run --suite <suite> [--host <host>] [--device <device>]` (`tests/run`) runs one - a
+  package's by `swift test`, a host's as `stateui repo test` does. The VS Code extension's suites stand in the Testing
+  view, found and run by the tool, and **StateUI: Run Tests** runs the ones picked there too, their output in Test
+  Results.
+- `stateui repo integration package --editor vscode` (`repository/integrationPackage`) packages the checkout's VS Code
+  extension into `artifacts/stateui-<version>.vsix`, and `install` (`repository/integrationInstall`) has VS Code's
+  `code` install it and finds it listed at that version; **StateUI: Reinstall VS Code Extension** goes through both,
+  and **Conformance - Rebuild all** and **Rebuild changed** through `repository/conformance`, their phases named at
+  the end. **StateUI: Deploy** is titled **StateUI: Package**, as `stateui package` does the work; its command,
+  `stateui.deploy`, stays. A `swift test` a suite runs that ran no test fails, filtered or not.
+- One package is indexed as one host at a time: `index/acquire` holds a window's packages as its host for the
+  connection's life, and answers the package and host where another window holds one as another host. The VS Code
+  extension takes the lease before it writes a package's `.sourcekit-lsp/config.json` - a host another window holds is
+  refused, the one before kept, and a window opening on such a package works as that host; `index/clean` leaves a
+  package another window holds, saying its host. `STATEUI_STATE` names the tool's state folder - its build permit and
+  index leases - which the extension's suite gives its own. The extension declares no `stateui` task type any more: it
+  made its own tasks with it, and no task of a `tasks.json` ever ran by it. The extension runs the tool from the user's
+  home, so on Windows a folder it holds a connection for can be removed or renamed.
+- `stateui repo distribution package [--output <folder>]` builds the tool for release - the Swift runtime linked in on
+  Linux and Windows - and archives it for this system and architecture with its license, NOTICE and the notices of the
+  packages built into it, its SHA-256 beside it; then reads the archive back: what it holds, the libraries its program
+  loads, and the program run with no Swift on the search path. The tool's workflow keeps one per system from every run.
+- The `stateui` tool has a workflow of its own (`cli.yml`): its suites on macOS, Linux and Windows, then the editor
+  extension's client of it against a real `stateui serve --stdio`.
+- `stateui package` lays a package only in a folder that stands empty or that a package was laid in before - its
+  `.stateui-package` says so - and never in one holding the application, its project or its checkout; the folder is
+  checked before the build.
+
+## 0.8.4 - 2026-11-10
+
+### Breaking changes
+
+- **A split view stands at a window's or a sheet's root.** A `SplitView` is the root of a window or of a sheet; on a
+  stack's page, in a tab or in another split view's detail it is left out, and said so as a complaint. It has no
+  title or icon of its own: `.pageTitle(_:)` and `.pageIcon(_:)` written on a split view, or on a view whose body is
+  one, are said and left out, where a stack takes them and its pages keep their own. Host authors:
+  `PageElementContract.linkOpened` is `OpenedLinkElementContract.linkOpened`, which a page and a split view wear.
+
+### Fixed
+
+- State: a report through a conversion asks its sources, as every road a value comes in by does - a value a source
+  refuses, such as a window's value another window holds, lands nowhere and the control goes back to it; a report
+  into two sources refusing together lands whole or not at all; a refusal two links up a chain lands on no link; and
+  a report that does not land leaves every journey whole and publishes nothing it took back. Two views named alike
+  under two parents keep a conversion each, and an environment value stands where it is placed. A host event passes
+  the gate, and an engine runs at the priority, the last render wrote; a reading booked for its window's end goes
+  with its element.
+
+- Numbers: a number past what a toolkit counts no longer ends the process - a tab chosen past `Int`'s reach on GTK,
+  iOS and Windows, a window asked a size or a place past what the Mac and Windows count, and on GTK a canvas's words
+  or a text editor wider than the toolkit measures; on Windows such a window no longer falls to its least size.
+  A spring of any response and damping - in a motion or a layout's body - stays a number and lands by the longest
+  a spring animates, however far it goes and however fast it sets out; an arc of any radii draws numbers, the long
+  way round a far-radii arc its ellipse; a row of dots holds any position, a held card stands over any rank, and a
+  run let go far past its axis approaches its target in numbers. A cadence held back past twenty-four days holds on
+  a 32-bit `Int`, and on the Web a wait that long is asked for in parts; on the Web a day of the first century
+  reads its own time zone's offset. A path ending on a bare command is refused whole.
+- Pages and menus: a popover larger than the screen stands within it on the Mac; a context menu open as its view goes
+  closes with it on Android and the Web. A split view's sidebar out of sight reaches no shortcut. On the Web a menu
+  open under a bar goes with what it stands for - its item, its page, a page joining only the Edit menu. On the Mac a
+  disabled split button opens no menu, and a menu on the bar at the page's foot opens - a held one keeping its
+  click - as on the window's bar; on iOS a disabled split button's arrow opens no menu and is heard dimmed, and what
+  comes after a share sheet stands. On Android a sheet follows its window across 600 points; on Windows a choice of
+  actions lets go of its dialog. A window's act asks over the window its page stands in.
+- Input: on Windows a press whose view went mid-press no longer keeps the mouse from every other view, and a view
+  whose drag is offered again hears each drop once; on the Web a view let go of while pressed leaves nothing
+  listening on the page, and a view that stops hearing a drag gives the page its touch and its selection back.
+  A view fading out answers no press on every host, and a disabled view offers no pull to refresh; on Android a view
+  scaled to nothing takes no touch. On Android, GTK and Windows a pan says where it is in the view's own points. On
+  the Mac a drag lets go of a target that leaves and finds one that came under it; on iOS a pinch or a rotation the
+  system takes away ends cancelled. A selection reads back in characters, and a prompt's bound counts whole
+  characters on the Mac and GTK. On the Web a late paste lands in no other field, and a field that left is held by
+  no Edit menu.
+- Text: on the Web a text's words are selected only where the application says so; on Windows a text editor that
+  does not grow stands a whole line tall at every scale, with no scroll bar over its one line. A run given no space
+  between its letters or no lines stands so in a label that gives them; on the Web a text's lines reach its runs on
+  every frame, and a run takes no line it does not say. Kept words and a window's values read back whole whatever
+  follows an escape - a combining mark, a joiner. A POSIX suffix alone is no language tag.
+- Controls: on the Web a button given the ordinary role (`.normal`) no longer ends the application; a disabled picker
+  offered as segments or radio buttons keeps the values it offers later disabled, and a picture changed to one the
+  application does not have takes no room. On Android a read-only password keeps its weight, a bar given no
+  foreground takes the theme's again, and radio buttons and segments keep the look they are given; on GTK a stepper
+  follows a state's journey; on Windows an icon keeps its words for assistive technology as it changes.
+- Layout: on the Web a list turned into a row keeps each item scrolled away at the width it took, a view freed of
+  its area in a layered stack fills the room again, and a list that becomes the page's scroller as a view beside it
+  goes keeps its last items clear of the bar at the foot. The bars over and under a page no longer listen again to a
+  scroller each time it is the page's again. On Windows at a scale of 125% a list scrolled to an item as it is made
+  stands it there, and a list at its end stays there as a bar beside it grows: a cell no longer changes its size as
+  its entry comes, on Windows, GTK and Android alike, and a Windows list is no longer measured before it stands
+  anywhere. On Windows at 125% a layout no longer runs for ever and ends the application - wrapped words given
+  their own width back keep their line - and a layout WinUI gives up on is said as a complaint while the
+  application goes on. A child stating no width is measured at the width it is placed at, and a list showing no
+  item reaches no end. On iOS a page stands clear of the keyboard, and on the Web a phone's keyboard stands in the
+  safe area; on the Web a view in a layered stack stands in its area as in any slot, and a child filling its slot
+  stops at its most.
+- Drawing: a gradient's stops stand at their own offsets whatever order they are written in, on every platform; on
+  Windows a path's curve after a close begins a figure of its own. A pushed page's gradient is drawn across the whole
+  page on the Mac and iOS; on the Web a blur goes with the look that said it.
+- Accessibility: on iOS, under VoiceOver, a color picker and a switch say what the application says of them - name,
+  kind, value, whether VoiceOver meets them - where UIKit's own words stood; on the Web words made at run time and
+  told to the screen reader are said as asked, a list the user chooses in names its items options, and a shortcut on
+  the plus key is named as assistive technology reads it. On Windows assistive technology choosing a segment or a tab
+  of a row that has left no longer stops the application answering.
+- Hosts: on GTK a popover waiting for its hidden anchor, the frame clock and a press hold what they use; Windows keeps
+  no record of what an application told the screen reader or launched, and a password field swapped in lets the
+  control before it go.
+- Testing: a test window acts only as its user can - a slider's thumb stops at its ends, a value that is no number
+  slides nothing, and a switch's or a field's act is no label's.
+- Pictures: on the Mac and iOS a picture larger than the whole budget of pictures kept no longer pushes every other
+  one out, and what is kept follows that budget alone until the system says memory runs short.
+- Gallery: on the Web the Map sample makes Google's map once and hands it on, as Google asks maps to be reused, so
+  shown again it leaves no map behind.
+
+### Tooling
+
+- The examples in the libraries' documentation comments are held to the library as it stands
+  (`DocCommentExamplesTests`).
+- A host's driver opens a view's context menu as the user asks for it and reads the menu shown (`UserAct.openMenu`,
+  `HostDriver.shownMenu(over:)`), and the UIKit suite runs as VoiceOver does, UIKit's accessibility answering.
+- Every host's suite writes every case of every closed vocabulary to every element wearing it and holds the host to
+  taking each (`ClosedVocabularies`); Android walks it in parts a phone takes.
+
 ## 0.8.3 - 2026-11-09
 
 ### Breaking changes

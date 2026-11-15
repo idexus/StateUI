@@ -47,6 +47,15 @@ final class WinUIActsTests: XCTestCase {
         }
     }
 
+    /// A host keeps nothing of what it told the screen reader where no test listens.
+    func testNothingToldIsKeptWhereNoTestListens() {
+        onUIThread {
+            let host = WinUIRenderer.running { Text("Page") }
+            host.actToolkit.announce("Saved the draft")
+            XCTAssertNil(host.actToolkit.announcedForTesting, "the words kept")
+        }
+    }
+
     /// A question stands over the window the user is in - the one activated last - not over the application's first.
     func testAQuestionStandsInTheWindowTheUserIsIn() throws {
         try onUIThread {
@@ -71,6 +80,27 @@ final class WinUIActsTests: XCTestCase {
                 _ = stateui_winui_answer(try XCTUnwrap(window.content).handle, 1, nil)
             }
             host.settle(until: { !Self.asks(tool) && !Self.asks(main) })
+        }
+    }
+
+    /// A choice of actions answered by one of them, or cancelled, lets go of its dialog: nothing the dialog holds -
+    /// its buttons, what they do when pressed - keeps it alive.
+    func testAChoiceOfActionsLetsGoOfItsDialog() throws {
+        try onUIThread {
+            for pressed: Int32 in [2, 1] {
+                let host = WinUIRenderer.running {
+                    Text("Share").onCreated {
+                        _ = try await WindowSession().chooseAction("Share via", among: ["Mail", "Message"])
+                    }
+                }
+                let window = try XCTUnwrap(host.window)
+                host.settle(until: { Self.asks(window) })
+                XCTAssertTrue(stateui_winui_last_question_lives())
+
+                _ = stateui_winui_answer(try XCTUnwrap(window.content).handle, pressed, nil)
+                host.settle(until: { !Self.asks(window) && !stateui_winui_last_question_lives() })
+                XCTAssertFalse(stateui_winui_last_question_lives(), "the dialog let go, answered by \(pressed)")
+            }
         }
     }
 

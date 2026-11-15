@@ -32,7 +32,8 @@ final class GTKListening {
     private var pressFrom: Point?
     private var pressByFinger = false
 
-    /// The event a view began its press with: a view around it the same event reaches leaves it to the view.
+    /// The event a view began its press with, held until the next press: a view around it the same event reaches
+    /// leaves it to the view, and no later event takes its place in memory while it is held.
     private static var pressEvent: OpaquePointer?
 
     /// Where the pointer's press went down in the view.
@@ -190,7 +191,10 @@ final class GTKListening {
     func pressBegan(_ gesture: OpaquePointer?, at point: Point) {
         let event: OpaquePointer? = gesture.flatMap { gtk_event_controller_get_current_event($0) }
         guard event == nil || event != Self.pressEvent else { return }
-        Self.pressEvent = event
+        if let event {
+            if let held = Self.pressEvent { gdk_event_unref(held) }
+            Self.pressEvent = gdk_event_ref(event)
+        }
         pressFrom = point
         let device: OpaquePointer? = gesture.flatMap { gtk_event_controller_get_current_event_device($0) }
         pressByFinger = device.map { gdk_device_get_source($0) == GDK_SOURCE_TOUCHSCREEN } ?? false
@@ -309,10 +313,12 @@ final class GTKListening {
 
     private func makeDrag() -> OpaquePointer {
         let drag = gtk_gesture_drag_new()!
-        connectSignal(UnsafeMutableRawPointer(drag), "drag-begin", number: number) { (gesture, _: Double, _: Double, data) in
+        connectSignal(UnsafeMutableRawPointer(drag), "drag-begin", number: number) { (gesture, x: Double, y: Double, data) in
             let number = viewNumber(data)
             nonisolated(unsafe) let gesture = gesture
-            MainActor.assumeIsolated { GTKListening.find(number)?.dragBegan(OpaquePointer(gesture)) }
+            MainActor.assumeIsolated {
+                GTKListening.find(number)?.dragBegan(OpaquePointer(gesture), inView: Point(x: x, y: y))
+            }
         }
         connectSignal(UnsafeMutableRawPointer(drag), "drag-update", number: number) { gesture, x, y, data in
             let number = viewNumber(data)
@@ -329,10 +335,11 @@ final class GTKListening {
         return drag
     }
 
-    private func dragBegan(_ gesture: OpaquePointer?) {
-        dragFrom = Self.onWindow(gesture) ?? Point(x: 0, y: 0)
+    /// The press went down at `inView` of the widget: its moves are measured on the window, its place in the view.
+    private func dragBegan(_ gesture: OpaquePointer?, inView: Point) {
+        dragFrom = Self.onWindow(gesture) ?? inView
         drag = DragRecognition(distance: dragDistance)
-        drag.pressed(at: dragFrom)
+        drag.pressed(at: dragFrom, inView: inView)
     }
 
     /// The press moved: measured on the window, which the view it moves does not move; past the drag threshold it

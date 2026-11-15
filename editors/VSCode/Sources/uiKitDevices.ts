@@ -1,16 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Where a UIKit head runs: the iPhones and iPads paired with this Mac, and the iOS simulators - what `xcrun
-// devicectl list devices` and `xcrun simctl list` list, on the iOS a head installs on - and the one chosen for the
-// workspace. .scripts/UIKit/run-app.sh boots a simulator, and signs for a device.
+// Where a UIKit head runs: the iPhones and iPads paired with this Mac, and the iOS simulators, as the stateui tool
+// lists them (`devices/list`), and the one chosen for the workspace. The tool boots a simulator, and signs for a
+// device.
 
-import { execFile } from "child_process";
-import * as fs from "fs";
-import * as os from "os";
-import * as path from "path";
 import * as vscode from "vscode";
-import { appleFloor, atLeast } from "./toolchain";
+import { Destination } from "./Tooling/protocol";
+import { appleFloor } from "./toolchain";
 
 /** An iPhone or an iPad a UIKit head can run on, a real one or a simulator. */
 export interface UIKitDevice {
@@ -31,69 +28,15 @@ export type ChosenUIKitDevice = Pick<UIKitDevice, "id" | "name">;
 
 const chosenKey = "stateui.uiKitDevice";
 
-/** One of the scripts in `root`/.scripts/UIKit, which build and run the UIKit host. */
-export function uiKitScript(root: string, script: "run-app.sh" | "test-uikit.sh"): string {
-    return path.join(root, ".scripts", "UIKit", script);
-}
+/** The devices paired and the simulators available as the tool lists them, or nothing, said, where it could not. */
+export type UIKitLister = () => Promise<UIKitDevice[] | undefined>;
 
-/** Whether a head installs on iOS `version`: the floor, .scripts/UIKit/tools.sh's deployment target, or newer. */
-function supported(version: string | undefined): boolean {
-    return version !== undefined && atLeast(version, appleFloor);
-}
-
-/**
- * What `xcrun devicectl list devices --json-output` wrote as `json`: the real iPhones and iPads paired with this Mac,
- * of an iOS a head installs on, in the order listed.
- */
-export function parseDevices(json: string): UIKitDevice[] {
-    type Listed = {
-        identifier: string;
-        connectionProperties?: { pairingState?: string; transportType?: string };
-        deviceProperties?: { name?: string; osVersionNumber?: string };
-        hardwareProperties?: { platform?: string; reality?: string };
+/** A destination the tool listed, as a UIKit device stands in the editor. */
+export function uiKitDeviceOf(destination: Destination): UIKitDevice {
+    return {
+        id: destination.id, name: destination.name, kind: destination.kind === "device" ? "device" : "simulator", os: destination.version,
+        state: destination.kind === "device" ? destination.connection ?? "" : destination.booted ? "booted" : "",
     };
-    let listed: { result?: { devices?: Listed[] } };
-    try {
-        listed = JSON.parse(json);
-    } catch {
-        return [];
-    }
-    const transports: Record<string, string> = { wired: "USB", localNetwork: "Wi-Fi" };
-    return (listed.result?.devices ?? []).flatMap((device): UIKitDevice[] => {
-        const hardware = device.hardwareProperties ?? {};
-        const properties = device.deviceProperties ?? {};
-        const connection = device.connectionProperties ?? {};
-        if (hardware.reality !== "physical" || hardware.platform !== "iOS" || connection.pairingState !== "paired"
-            || !supported(properties.osVersionNumber)) {
-            return [];
-        }
-        return [{
-            id: device.identifier, name: properties.name ?? device.identifier, kind: "device",
-            os: properties.osVersionNumber ?? "", state: transports[connection.transportType ?? ""] ?? connection.transportType ?? "",
-        }];
-    });
-}
-
-/**
- * What `xcrun simctl list devices available -j` printed as `json`: the iPhones and iPads of the iOS runtimes a head
- * installs on, the newest runtime first, each runtime's in the order listed.
- */
-export function parseSimulators(json: string): UIKitDevice[] {
-    let listed: { devices?: Record<string, { udid: string; name: string; state: string }[]> };
-    try {
-        listed = JSON.parse(json);
-    } catch {
-        return [];
-    }
-
-    const runtimes = Object.entries(listed.devices ?? {}).flatMap(([runtime, devices]) => {
-        const version = runtime.match(/\.iOS-(\d+)-(\d+)$/)?.slice(1).join(".");
-        return version && supported(version) ? [{ version, devices }] : [];
-    });
-    const newestFirst = runtimes.sort((a, b) => b.version.localeCompare(a.version, undefined, { numeric: true }));
-    return newestFirst.flatMap(({ version, devices }) => devices.map((device): UIKitDevice => ({
-        id: device.udid, name: device.name, kind: "simulator", os: version, state: device.state === "Booted" ? "booted" : "",
-    })));
 }
 
 /** The device chosen for the workspace, where one is. */
@@ -110,22 +53,22 @@ export async function chooseUIKitDevice(state: vscode.Memento, device: ChosenUIK
  * The device a launch or a suite runs on: the one chosen, while it is still listed, else asked for - or nothing,
  * where none is picked.
  */
-export async function uiKitDeviceToRunOn(state: vscode.Memento): Promise<string | undefined> {
-    const listed = await listUIKitDevices();
+export async function uiKitDeviceToRunOn(state: vscode.Memento, list: UIKitLister): Promise<string | undefined> {
+    const listed = await list();
     const chosen = chosenUIKitDevice(state);
 
     if (chosen && listed?.some((each) => each.id === chosen.id)) {
         return chosen.id;
     }
-    return listed ? askForUIKitDevice(state, listed) : undefined;
+    return listed ? askForUIKitDevice(state, list, listed) : undefined;
 }
 
 /**
  * Chooses the device `wanted` names - its id, or its name - as it is listed, so what the status bar says is its
  * name; answers that name, or nothing where none is listed so.
  */
-export async function chooseListedUIKitDevice(state: vscode.Memento, wanted: string): Promise<string | undefined> {
-    const found = (await listUIKitDevices())?.find((each) => each.id === wanted || each.name === wanted);
+export async function chooseListedUIKitDevice(state: vscode.Memento, wanted: string, list: UIKitLister): Promise<string | undefined> {
+    const found = (await list())?.find((each) => each.id === wanted || each.name === wanted);
     if (found) {
         await chooseUIKitDevice(state, found);
     }
@@ -149,8 +92,8 @@ export function simulatorForSuites(
  * The simulator a suite runs on (`simulatorForSuites`), else asked for among the simulators alone and remembered for
  * suites: the iPhone or iPad a launch runs on stays as it is.
  */
-export async function uiKitSimulatorToTestOn(state: vscode.Memento): Promise<string | undefined> {
-    const listed = await listUIKitDevices();
+export async function uiKitSimulatorToTestOn(state: vscode.Memento, list: UIKitLister): Promise<string | undefined> {
+    const listed = await list();
     if (!listed) {
         return undefined;
     }
@@ -184,8 +127,8 @@ function entry(device: UIKitDevice, current?: string): vscode.QuickPickItem & { 
 }
 
 /** Asks for a device among the iPhones and iPads paired and the simulators, remembers it, and answers its id. */
-export async function askForUIKitDevice(state: vscode.Memento, listed?: UIKitDevice[]): Promise<string | undefined> {
-    listed ??= await listUIKitDevices();
+export async function askForUIKitDevice(state: vscode.Memento, list: UIKitLister, listed?: UIKitDevice[]): Promise<string | undefined> {
+    listed ??= await list();
     if (!listed) {
         return undefined;
     }
@@ -214,24 +157,4 @@ export async function askForUIKitDevice(state: vscode.Memento, listed?: UIKitDev
 
     await chooseUIKitDevice(state, device);
     return device.id;
-}
-
-/** The devices paired and the simulators available, or nothing, said, where neither could be listed. */
-async function listUIKitDevices(): Promise<UIKitDevice[] | undefined> {
-    const run = (args: string[]): Promise<{ failed: boolean; stdout: string; output: string }> => new Promise((resolve) =>
-        execFile("xcrun", args, { maxBuffer: 16 * 1024 * 1024 },
-            (error, out, err) => resolve({ failed: error !== null, stdout: out, output: `${out}${err}` })));
-
-    const answer = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "stateui-devices-")), "devices.json");
-    const [paired, available] = await Promise.all([
-        run(["devicectl", "list", "devices", "--json-output", answer]),
-        run(["simctl", "list", "devices", "available", "-j"]),
-    ]);
-    const devices = !paired.failed && fs.existsSync(answer) ? parseDevices(fs.readFileSync(answer, "utf8")) : [];
-    fs.rmSync(path.dirname(answer), { recursive: true, force: true });
-    if (available.failed && paired.failed) {
-        void vscode.window.showErrorMessage(`StateUI: the iPhones, iPads and simulators could not be listed - ${available.output.trim()}`);
-        return undefined;
-    }
-    return [...devices, ...parseSimulators(available.stdout)];
 }

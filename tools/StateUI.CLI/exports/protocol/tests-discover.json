@@ -1,0 +1,34 @@
+{
+  "request" : {
+    "id" : "18",
+    "jsonrpc" : "2.0",
+    "method" : "tests/discover",
+    "params" : {
+      "host" : "appkit"
+    }
+  },
+  "response" : {
+    "id" : "18",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "host" : "appkit",
+      "suites" : [
+        {
+          "detail" : "swift test",
+          "id" : "Demo",
+          "kind" : "package",
+          "onDevice" : false,
+          "packageUri" : "file:///Users/example/Projects/Demo"
+        },
+        {
+          "detail" : "swift test as an AppKit build, on .build/appkit",
+          "host" : "appkit",
+          "id" : "apps/Notes",
+          "kind" : "package",
+          "onDevice" : false,
+          "packageUri" : "file:///Users/example/Projects/Demo/apps/Notes"
+        }
+      ]
+    }
+  }
+}

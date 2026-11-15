@@ -7,7 +7,7 @@
 import XCTest
 
 /// A toggle's words stand beside it in its `<label>`, so they name it and a click on them turns it. The browser lays
-/// out, so the suite runs it in a browser (`test-web.sh --browser`).
+/// out, so the suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebToggleTests: XCTestCase {
     override func setUp() async throws {

@@ -2,4 +2,4 @@
 Button.clicked: ✅
 Link.clicked: ✅
 MenuItem.clicked: ✅
-ToolbarButton.clicked: ✅
+ToolbarButton.clicked: ✓ activate on ToolbarButton: the bar's action chosen as the relay reports it, no button pressed

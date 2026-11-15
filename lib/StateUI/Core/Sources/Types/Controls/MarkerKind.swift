@@ -4,7 +4,7 @@
 // A closed vocabulary, numbered by StateUI: append a case, never insert one.
 // Design: docs/design/types/vocabularies.md#written-out-and-appended
 
-/// What a map marker stands for - what `.type` takes, and what decides the icon
+/// What a map marker stands for - what `.kind` takes, and what decides the icon
 /// the platform draws.
 public enum MarkerKind: Int32, Sendable {
     /// Somewhere on the map, with no more said. The default.

@@ -39,6 +39,7 @@ places, and a control handed the state mid-animation joins it where it is.
   kind 2  eased:  millis, curve (Easing's number)
   kind 3  spring: response millis, damping
   kind 4  custom  - an engine on this side animates the value
+  kind 5  glide:  longest millis - on from the speed it was handed
 ```
 
 `.none` and `.inherited` cross as themselves rather than as an eased law of no
@@ -201,7 +202,9 @@ read by two views into two states at two rates, taken in the order asked.
 A reading whose window has not passed books one for the end of it, so the last
 frame of an animation arrives. It stops by itself: a take copies only what
 changed, and the host stops sending when the channel stops moving. The booked
-reading sleeps with `Task.sleep`; nothing here uses a run-loop timer.
+reading sleeps with `Task.sleep`; nothing here uses a run-loop timer. The sleep
+knows the reading weakly: one whose element left while it slept is gone when it
+wakes, and nothing is taken.
 
 The window has to survive the render the reading's own write asks for. That
 render walks the very view that asked for the reading; made afresh there, the
@@ -227,7 +230,8 @@ value: what the application writes goes forward and stays as written - `v =
 0.123` through a slider converting by hundredths stays 0.123, the control
 showing 12 - as the application's writes never come back as the user's.
 The way back is meant as the inverse; where it is not exactly - a rounding, a
-clamp - a report lands on the source as the round trip makes it. It is written
+clamp - a report lands on the source as the round trip makes it, and one the
+source refuses lands nowhere (state.md#kept-state). It is written
 in the same call, `convert(_:back:)`, typed `(Out) -> Value`: a way back
 answering another type does not compile, and one call declares the conversion
 whole - a way back that comes and goes stays one call, `back: editing ? { … } :
@@ -235,8 +239,10 @@ nil`, so the derived state stays the same object.
 
 ```text
   derived state   known to the first source's storage under a key spelled
-                  nowhere (DerivationKey): the element being built and the
-                  call's file, line and column (PathNumber), the identities of
+                  nowhere (DerivationKey): where the element being built
+                  stands - the keys from the root down to it, as a name is
+                  distinct among siblings alone - and the call's file, line
+                  and column (PathNumber), the identities of
                   the ForEach rows it stands in - values, compared as values -
                   and which time that line ran in the build; held by that
                   element as it holds its readings: one state per use across
@@ -287,6 +293,39 @@ cycle. A body reading the last reads every link's sources, and works each link
 out over the one before it. A report goes back the same way: each link's
 way back lands it on its sources and hands it to the link before.
 
+## A refusal up the chain
+
+A report is asked whole before anything lands. A state that is a conversion's
+derived side refuses what its way back refuses: what a source refuses of the
+value the report goes back to it as, and that source, if it is itself a
+derived state, what its own way back refuses - `Storage.refusal(of:)`, the
+state's own word first, then `Conversion.refusesBack`, which the declaration
+writing the way back writes beside it. So a report into `.multi(a, b)` whose
+first part a state two links up `a` refuses lands on neither `a` nor `b`, and
+a report into a chain lands on no link; the derived state goes back to what
+its sources hold, and the refusal is said once. The refusal sits on the
+conversion, which the derived state knows weakly, since the derived state
+holding its sources would close the ring the section above opens.
+
+Asking each source before either is written does not settle sources whose
+refusals read each other - two windows of one kind asked for one value, free
+while neither holds it. So the second source is asked again once the first
+stands, each way back says whether its report landed, and a report that does
+not land whole puts back every state it wrote - each source and its chain's
+(`writtenBack`, `restorer`), each taken as it stood just before it was written
+and put back last taken first - before the derived state goes back to what they
+hold: a report lands whole or not at all. Putting back touches only what was
+written: a source the refusal stopped short of, and a state whose write stamp
+did not move, stand as they are - a journey on its way keeps its law. One that
+was written gets back whole what the host carries of it - its value, a
+journey's destination, speed, law, completion and stop - and what of it waited
+to be published then, no more (`hostHeld`, `CycleBoard.held`, `restore`): the
+writes taken back publish nothing, so the host's run of it travels on to its
+own deadline and its waiter is answered as it arrives, while a write made
+before the report - a move to the destination it holds - is published as it
+would have been. What this side knows of the image goes back with it, so the
+host's next frame asks nothing.
+
 ## A conversion declared again
 
 A conversion is one object across renders, and each render declares it again:
@@ -334,7 +373,13 @@ every animation of its table to where it starts and where it lands.
                                     does - at the curve's own starting speed the
                                     curve itself, overshoot and all
   spring                            about the distance left, so the three
-                                    damping cases are the textbook ones
+                                    damping cases are the textbook ones; an
+                                    overdamped one's rates written so no
+                                    damping a motion admits overflows or
+                                    cancels them away
+  no number                         a sample past what a double holds - its
+                                    speed told back per second included -
+                                    lands, for every animator alike
   still                             0.001 in the value's units, and 1 a second
                                     for a speed: below any display's resolution
                                     for a color channel (0 to 1) or a point

@@ -85,15 +85,15 @@ Code under `lib/StateUI/Core/Sources` and `lib/StateUI/StateUI.Host/Sources` doe
 import Foundation or a platform UI framework. Each host is a sibling package of
 its own - `lib/StateUI/StateUI.AppKit`, `lib/StateUI/StateUI.UIKit`, `lib/StateUI/StateUI.Android`,
 `lib/StateUI/StateUI.WinUI`, `lib/StateUI/StateUI.GTK`, `lib/StateUI/StateUI.Web` - standing on the
-host layer, with its build in `.scripts/<Platform>`. Swift written for one host alone stands under
+host layer, built by the `stateui` tool. Swift written for one host alone stands under
 that host's condition - `#if APPKIT`, `#if UIKIT`, `#if ANDROID`, `#if WINUI`,
 `#if GTK`, `#if WEB` - which its builds define.
 
-The core schedules nothing on Foundation's `Timer` or `RunLoop`, and nothing
-on `DispatchQueue.main` but the one drain `UIThread.swift` posts there for a
-process that turns that queue: nothing drains them on Android, on Windows or
-in a browser. Work for the UI thread goes to `MainActor`, and a timer is
-`Task.sleep` or `Ticker`. Memory allocated in Swift is freed in Swift - never
+The core schedules nothing on Foundation's `Timer` or `RunLoop` - nothing
+turns them off Apple - and nothing on `DispatchQueue.main` but the one drain
+`UIThread.swift` posts there. Every native host off Apple drains that queue on
+its UI thread, for an application's own posts; the library's work for the UI
+thread goes to `MainActor`, and a timer is `Task.sleep` or `Ticker`. Memory allocated in Swift is freed in Swift - never
 `strdup` and `free` - because several C runtimes can share a Windows process.
 
 StateUI's core owns identity, diffing, state, journeys, and motion
@@ -156,17 +156,19 @@ the rule as the test reads it.
 Run the suite owned by the area while iterating, then every suite before
 handing off a complete vertical change. In VS Code, run **StateUI: Run Tests**
 once with each host this machine runs - AppKit, UIKit, Android and the Web on
-a Mac. From a terminal, `.scripts/test-native.sh` runs the suites of the
-library, the host layer, the conformance package, the AppKit host and the
-applications on this Mac, `.scripts/UIKit/test-uikit.sh` the UIKit host's on a
-simulator, `.scripts/Android/test-android.sh <serial>` the Android host's on a
-device, and `.scripts/Web/test-web.sh` the Web host's:
+a Mac. From a terminal, `stateui repo test --plan portable` runs the suites
+of the library, the host layer, the conformance package, application testing,
+the applications and the tool, `stateui repo test --suite host:appkit` the
+AppKit host's, `stateui repo test --suite host:uikit` the UIKit host's on a
+simulator, `stateui repo test --suite host:android --device <serial>` the Android host's on a
+device, and `stateui repo test --suite host:web` the Web host's:
 
 ```bash
-.scripts/test-native.sh
-.scripts/UIKit/test-uikit.sh "iPhone 18 Pro"
-.scripts/Android/test-android.sh emulator-5554
-.scripts/Web/test-web.sh
+stateui repo test --plan portable
+stateui repo test --suite host:appkit
+stateui repo test --suite host:uikit --device "iPhone 18 Pro"
+stateui repo test --suite host:android --device emulator-5554
+stateui repo test --suite host:web
 ```
 
 A plain `swift test` compiles no code under a host's condition, so it does not
@@ -176,8 +178,8 @@ Run the Gallery with **StateUI: Debug** on each host the change reaches. From a
 terminal:
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug
-.scripts/Android/run-app.sh apps/Gallery debug emulator-5554
+stateui build --project apps/Gallery --host appkit
+stateui run --project apps/Gallery --host android --device emulator-5554
 ```
 
 Run one application build at a time. Concurrent application builds share Swift

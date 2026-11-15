@@ -35,7 +35,9 @@ width and height, their least and most, and its alignment across its slot -
 in a grid's cell along both axes. Start, center and end are CSS's start,
 center and end; a filling child stretches, unless a stated or a most size
 stops it short of its slot, when it stands in the middle, as the host layer
-places it. The least size a control's look gives it - a button's, a
+places it - one its most stops takes the slot's length within its margin as
+its width or height, which its most bounds: CSS's middle is a box's own size,
+which would stand a filling shape at nothing. The least size a control's look gives it - a button's, a
 field's, a slider's - is its own size, and yields where the tree states a
 size or a most, where the child fills its slot and in an area: CSS's least
 wins over a stated size, so a button stated 30 high stood 36. A label in a
@@ -45,6 +47,24 @@ layer's arithmetic does elsewhere (host/layout.md, a row short of room); every
 other child of a stack keeps its own (`flex: none`). A hidden child
 is `hidden`, which takes it out of the layout: it takes no room and no
 spacing.
+
+## A child's area
+
+A ZStack is one cell its children share; a child naming an area stands out
+of the flow (`position: absolute`) in the box the area names: its four edges
+are insets from the room's - `left`, `top`, `right`, `bottom`, in points or
+in shares of the room within its padding, below nothing too, so an area may
+reach past the room's corner. In that box the child stands as in any slot,
+by its own size and alignments - the browser aligns an absolutely placed box
+within its insets (`justify-self`, `align-self`) - and no larger than the
+box within its margin, its most and its least bounded by it, as the host layer places it
+(`ZStackArithmetic.places`). A filling child takes the box's length within
+its margin as its width or height, which its most bounds, in its middle: the
+browser stretches an absolutely placed control - a `select`, an `input` - no
+narrower than its own size, and centers a box at its own size. Right to left the box is turned about the
+room's middle: its start inset is the room's right, and the ZStack stands
+its children again as it turns. A run's place writes over the box, and
+takes the foot's inset away.
 
 ## A change inside a child
 

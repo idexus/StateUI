@@ -1,0 +1,29 @@
+{
+  "request" : {
+    "id" : "22",
+    "jsonrpc" : "2.0",
+    "method" : "repository/integrationInstall",
+    "params" : {
+      "editorExecutableUri" : "file:///Applications/Visual%20Studio%20Code.app/Contents/Resources/app/bin/code",
+      "editorExtension" : {
+        "artifactUri" : "file:///Users/example/StateUI/artifacts/stateui-0.8.5.vsix",
+        "extensionId" : "idexus.stateui",
+        "version" : "0.8.5"
+      },
+      "requestToken" : "6e8a0c2e-4f5b-4d7c-9a1e-3d5f7b9c1e23"
+    }
+  },
+  "response" : {
+    "id" : "22",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "artifactUri" : "file:///Users/example/StateUI/artifacts/stateui-0.8.5.vsix",
+    "extensionId" : "idexus.stateui",
+    "version" : "0.8.5"
+  }
+}

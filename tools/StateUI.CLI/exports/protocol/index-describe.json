@@ -1,0 +1,20 @@
+{
+  "request" : {
+    "id" : "16",
+    "jsonrpc" : "2.0",
+    "method" : "index/describe",
+    "params" : {
+      "host" : "uikit"
+    }
+  },
+  "response" : {
+    "id" : "16",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "host" : "uikit",
+      "scratchPath" : ".build/uikit/index-build",
+      "sdk" : "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk",
+      "triple" : "arm64-apple-ios26.4-simulator"
+    }
+  }
+}

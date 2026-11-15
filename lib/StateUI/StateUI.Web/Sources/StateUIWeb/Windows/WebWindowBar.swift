@@ -80,12 +80,13 @@ final class WebWindowBar: WebDOMView {
     /// What the user is doing to each of the bar's own buttons - a press, the pointer over it - by the button.
     private var ownStates: [ObjectIdentifier: (pressed: Bool, over: Bool)] = [:]
 
-    /// The page under the bar and, over a sidebar, the sidebar's page; the scroller of each listened to last; and
-    /// whether each part shows its edge.
+    /// The page under the bar and, over a sidebar, the sidebar's page; the scroller of each listened to, and the
+    /// listener the bar hears it by, let go of as another scroller stands there; and whether each part shows its edge.
     private weak var pageUnder: MountedElement?
     private weak var sideUnder: MountedElement?
     private weak var pageRows: WebDOMView?
     private weak var sideRows: WebDOMView?
+    private var scrolled: (page: Int32?, side: Int32?) = (nil, nil)
     private var edges = (page: false, side: false)
 
     init() {
@@ -225,8 +226,6 @@ final class WebWindowBar: WebDOMView {
         fit()
     }
 
-    /// Stands `runs` on `edge`, each a group of buttons - a group of `pool` taken before one is made, an item's
-    /// button the one standing for it - each item's button joining `kept`; the groups standing.
     /// Follows what of `page` stands under the bar, and of `sidebar` under its part over a sidebar, and shows each
     /// part's edge while anything does (`TopBarEdge.covers`): `data-under` over the page, `data-side-under` over the
     /// sidebar.
@@ -238,22 +237,32 @@ final class WebWindowBar: WebDOMView {
 
     /// Each part's edge, read again from its page as its rows move.
     private func showEdges() {
-        let (page, side) = (covers(pageUnder, listened: &pageRows), covers(sideUnder, listened: &sideRows))
+        let page = covers(pageUnder, listened: &pageRows, by: &scrolled.page)
+        let side = covers(sideUnder, listened: &sideRows, by: &scrolled.side)
         if page != edges.page { attribute("data-under", page ? "" : nil) }
         if side != edges.side { attribute("data-side-under", side ? "" : nil) }
         edges = (page, side)
     }
 
-    /// Whether anything of `page` stands under its part of the bar, its scroller listened to once.
-    private func covers(_ page: MountedElement?, listened: inout WebDOMView?) -> Bool {
+    /// Whether anything of `page` stands under its part of the bar, its scroller listened to by one `listener`.
+    private func covers(_ page: MountedElement?, listened: inout WebDOMView?, by listener: inout Int32?) -> Bool {
+        let rows = page?.pageScroller?.web.view
+        if rows !== listened {
+            if let listener { WebRelay.forget(listener) }
+            listener = rows.map { rows in
+                let heard = WebRelay.listener { [weak self] in self?.showEdges() }
+                WebRelay.listen(rows.node, "scroll", heard)
+                return heard
+            }
+            listened = rows
+        }
         guard let page else { return false }
-        let rows = page.pageScroller?.web.view
-        if let rows, rows !== listened { rows.listen("scroll") { [weak self] in self?.showEdges() } }
-        listened = rows
         let runs = SafeAreaArithmetic.under(page.contentIgnoresSafeArea, direction: page.layoutDirection).top
         return TopBarEdge.covers(contentRunsUnder: runs, scrollerOffset: rows.map(WebElement.standing))
     }
 
+    /// Stands `runs` on `edge`, each a group of buttons - a group of `pool` taken before one is made, an item's
+    /// button the one standing for it - each item's button joining `kept`; the groups standing.
     private func place(
         _ runs: [[MountedElement]], on edge: WebDOMView, from pool: inout [WebBarGroup],
         keeping kept: inout [ObjectIdentifier: WebBarButton]
@@ -364,6 +373,7 @@ final class WebWindowBar: WebDOMView {
     }
 
     override func release() {
+        for listener in [scrolled.page, scrolled.side] { if let listener { WebRelay.forget(listener) } }
         for button in buttons.values { button.release() }
         for group in groups + sideGroups { group.release() }
         for shape in glyphs { shape.release() }

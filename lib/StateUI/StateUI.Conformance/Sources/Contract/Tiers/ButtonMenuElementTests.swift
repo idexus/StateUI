@@ -4,28 +4,28 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `ButtonMenuElementContract` on a host: a button holding a menu - a button among views, a bar's button - held keeps
-/// its click its own and its menu apart, and shows the arrow saying its click opens the menu as the tree says; each
-/// case made for every element wearing the tier.
+/// `ButtonMenuElementContract` on a host: a button holding a menu - a button among views, a bar's button on the bar at
+/// the top or at the page's foot - held keeps its click its own and its menu apart, and shows the arrow saying its
+/// click opens the menu as the tree says; each case made for every element wearing the tier.
 @_spi(Host) public enum ButtonMenuElementTests: ConformanceFamily {
     public static let name = "ButtonMenuElement"
 
     public static var cases: [ConformanceCase] {
         Specimens.wearing(ButtonMenuElementContract.self).flatMap { element in
             [held(element), arrow(element)]
-        }
+        } + [held(ToolbarButtonContract.nodeType.name, at: .foot)]
     }
 
     /// A held button's click is its own action, and its menu stands apart.
     @MainActor
-    static func held(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aHeldButtonsClickIsItsOwnItsMenuApart", proves: [
+    static func held(_ element: String, at place: MenuButtons.BarPlace = .top) -> ConformanceCase {
+        ConformanceCase("\(element)\(place.named).aHeldButtonsClickIsItsOwnItsMenuApart", proves: [
             Covered(ButtonMenuElementContract.menuKind, on: element),
         ], needs: [clicking(element), Covered(ClickElementContract.clicked, on: "MenuItem")]) { s in
             let heard = Received<String>()
             s.start {
                 MenuButtons.standing(
-                    element, "Save", clicked: { heard.values.append("save") }, kind: .held,
+                    element, "Save", clicked: { heard.values.append("save") }, kind: .held, at: place,
                     entries: { MenuItem("Save as").onClicked { heard.values.append("save as") }.id("saveAs") })
             }
             let save = try s.element("save")
@@ -69,21 +69,44 @@
 }
 
 /// A button holding a menu as each element wearing `ButtonMenuElement` stands: a button among views, a bar's button
-/// on its page's bar over a stack.
+/// on its page's bar over a stack - at its top or its foot, or behind either's overflow.
 enum MenuButtons {
+    /// Where a bar's button stands.
+    enum BarPlace {
+        case top, foot, topOverflow, footOverflow
+
+        /// The words a case's name takes for the place: none on the bar at the top.
+        var named: String {
+            switch self {
+            case .top: ""
+            case .foot: ".atTheFoot"
+            case .topOverflow: ".inTheOverflow"
+            case .footOverflow: ".inTheFootsOverflow"
+            }
+        }
+    }
+
     /// A button of `element`'s kind saying `text`, known by its words in lower case, clicked as `clicked` says,
-    /// holding a menu of `entries` opening as `kind` asks, its arrow as `arrow` says, `beside` views of its page.
+    /// holding a menu of `entries` opening as `kind` asks, its arrow as `arrow` says, `beside` views of its page - a
+    /// bar's button standing at `place`.
     @MainActor
     static func standing(
         _ element: String, _ text: String, clicked: (@MainActor () -> Void)? = nil, kind: ButtonMenuKind = .automatic,
-        arrow: Bool? = nil, @MenuBuilder entries: @escaping @MainActor () -> MenuEntries, beside: [any View] = []
+        arrow: Bool? = nil, at place: BarPlace = .top, @MenuBuilder entries: @escaping @MainActor () -> MenuEntries,
+        beside: [any View] = []
     ) -> AnyView {
         let id = text.lowercased()
         if element == "ToolbarButton" {
             var item = ToolbarButton(text).menu(kind, entries).id(id)
             if let arrow { item = item.showsMenuArrow(arrow) }
             if let clicked { item = item.onClicked(clicked) }
+            if place == .topOverflow || place == .footOverflow { item = item.placement(at: .overflow) }
             let page = item
+            if place == .foot || place == .footOverflow {
+                return AnyView(NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    VStack { Beside([Text("Page")] + beside) }.toolbar(.bottom) { page }
+                } destination: { _ in Text("Pushed") })
+            }
             return AnyView(NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage(beside: beside) { [page] }
             } destination: { _ in Text("Pushed") })

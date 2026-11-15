@@ -241,7 +241,7 @@ enum JavaAPI {
     static let groundPage = Java.staticMethod(views, "groundPage", "(Landroid/view/View;)V")
     static let sheet = Java.staticMethod(
         views, "sheet", "(Landroid/content/Context;Landroid/view/View;II)Landroid/widget/FrameLayout;")
-    static let sizeSheet = Java.staticMethod(views, "sizeSheet", "(Landroid/view/View;II)V")
+    static let sizeSheet = Java.staticMethod(views, "sizeSheet", "(Landroid/view/View;II)Z")
     static let groundSheet = Java.staticMethod(views, "groundSheet", "(Landroid/view/View;J)V")
     static let sheetColor = Java.staticMethod(views, "sheetColor", "(Landroid/view/View;)J")
     static let windowDp = Java.staticMethod(views, "windowDp", "(Landroid/content/Context;Z)I")
@@ -459,7 +459,7 @@ enum JavaAPI {
     static let newViewGroupHost = Java.method(
         viewGroupHost, "<init>", "(Landroid/content/Context;J)V")
     static let setChildren = Java.method(viewGroupHost, "setChildren", "([Landroid/view/View;)V")
-    static let setIgnoresInput = Java.method(viewGroupHost, "setIgnoresInput", "(Z)V")
+    static let setIgnoresInput = Java.staticMethod(viewGroupHost, "setIgnoresInput", "(Landroid/view/View;Z)V")
     static let setLetsInputThrough = Java.method(viewGroupHost, "setLetsInputThrough", "(Z)V")
     static let watchLayout = Java.method(viewGroupHost, "watch", "(Lstateui/android/StateUIListener;Z)V")
 
@@ -550,6 +550,7 @@ enum JavaAPI {
     static let showPopupMenu = Java.method(popupMenu, "show", "()V")
 
     static let androidActivity = Java.findClass("android/app/Activity")
+    static let closeContextMenu = Java.method(androidActivity, "closeContextMenu", "()V")
     static let activity = Java.findClass("stateui/android/StateUIActivity")
     static let setHandlesBack = Java.method(activity, "setHandlesBack", "(Z)V")
 

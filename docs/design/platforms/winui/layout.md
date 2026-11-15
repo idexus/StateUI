@@ -36,13 +36,19 @@ Measured at every width asked of it, a layout would forget its sizes each time
 and measure its whole subtree again.
 
 A line that never wraps - a label's, a button's caption - is measured at no
-width and keeps its natural size; wrapped words are measured at the room they
-are offered. WinUI holds the size it measures to the room offered: a line of
-138 measured at 137 answers 137, so a line that never wraps would answer
-another size at every width under its own, and a layout reading those sizes
-back would not settle. Measured at no width, a line coming to wrap shows WinUI
-no change of its own, so the view is measured again as its words break
-otherwise, and the layout placing it forgets its sizes (`measureAgain`).
+width and keeps its natural size. Wrapped words keep the natural size the
+layout's own measure at no width gave them in a room at least as wide ([words
+in a wider room](../../host/layout.md#words-in-a-wider-room)), WinUI not
+asked again there; only a narrower room is measured, and the size is
+forgotten as anything the words stand in changes. WinUI rounds the words'
+natural width to a whole pixel and takes a room as a float it lays out on
+whole pixels: offered their own width back - 490.399994 at 125%, 612.99999
+pixels there, floored to 612 - words that took 613 break onto a second line,
+their size changes between the measures of a pass, and WinUI gives up on the
+layout. The words are never measured at no width only to tell: inside an
+arrangement a measure at a width other than the last marks the layout for
+another pass, and a label a pixel narrower than its words would mark it at
+every pass.
 
 A layout whose place travels lays its children out at the size it is bound
 for ([a layout bound for a size](../../host/motion.md#a-layout-bound-for-a-size)),
@@ -51,6 +57,19 @@ Measured at the widths it passes through, words that fit the destination on
 one line would break onto two inside the layout's measure and stand on one
 inside its parent's: their size would change with every pass, and WinUI ends
 the process over a layout that never settles (`AG_E_LAYOUT_CYCLE`).
+
+## A layout that does not settle
+
+WinUI measures and arranges until a pass changes nothing, and gives up after
+some hundred passes with a layout cycle (`E_LAYOUTCYCLE`, `0x802B0014`;
+its own stowed `AG_E_LAYOUT_CYCLE`, `0x88000FA8`), which ends the process as
+an unhandled exception (`0xc000027b`) - a whole application, and on a scale
+where the sizes it hands back stand a hair off what it was given, at its start.
+The relay's application hears `UnhandledException`: a layout cycle is handled
+there, told once as the host layer's complaint ([a layout that does not
+settle](../../host/layout.md#a-layout-that-does-not-settle)), and the
+application goes on, the pass ended where it stood. Any other exception goes
+on to end the process as before.
 
 ## A place between passes
 

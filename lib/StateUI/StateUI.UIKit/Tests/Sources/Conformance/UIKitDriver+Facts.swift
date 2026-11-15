@@ -11,12 +11,16 @@ import UIKit
 /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
 extension UIKitDriver {
     /// The color the user sees at `point` of the element's view, as the screen shows it, in sRGB; nil where
-    /// nothing opaque is drawn there.
+    /// nothing opaque is drawn there. A page is read on its controller's view, which its background stands on.
+    /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
     func color(of element: MountedElement, at point: Point) throws -> Color? {
-        guard let view = (element.native as? UIKitElement)?.view else {
+        guard let native = element.native as? UIKitElement, let shown = native.view else {
             throw DriverCannot("read the color of \(element.type.name)")
         }
         renderer?.layOut()
+        let view = (native.controller as? UIKitPageController)?.view ?? shown
+        let at = view.convert(CGPoint(x: point.x, y: point.y), from: shown)
+        let point = Point(at.x, at.y)
         let size = view.bounds.size
         let (width, height) = (Int(size.width.rounded(.up)), Int(size.height.rounded(.up)))
         guard point.x >= 0, point.y >= 0, point.x < size.width, point.y < size.height, width > 0, height > 0,
@@ -210,11 +214,13 @@ extension UIKitDriver {
     /// Whether a touch at `point` of the element's view lands on it or on something inside it, as the window's
     /// hit testing finds it.
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
-        guard let view = (element.native as? UIKitElement)?.view, let window = view.window else {
+        guard let native = element.native as? UIKitElement, let view = native.view, let window = view.window else {
             throw DriverCannot("read what reaches \(element.type.name)")
         }
         renderer?.layOut()
-        let touched = view.convert(CGPoint(x: point.x, y: point.y), to: window)
+        // The point is of the element's laid-out rectangle, no transform in it.
+        guard let corner = native.windowCorner else { return false }
+        let touched = CGPoint(x: corner.x + point.x, y: corner.y + point.y)
         guard let hit = window.hitTest(touched, with: nil) else { return false }
         return hit === view || hit.isDescendant(of: view)
     }

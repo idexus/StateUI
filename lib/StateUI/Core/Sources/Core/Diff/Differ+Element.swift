@@ -20,14 +20,14 @@ extension Differ {
         node: Node,
         forced: Bool = false,
         sizesArrive: Bool = false,
-        atPagePosition: Bool? = nil,
+        pagePlacer: NodeType?? = nil,
         from start: Int = 0
     ) -> (node: RenderedNode, patch: HostPatch) {
         let pass = ElementPass(
             id: id, rendered: rendered, node: node, forced: forced, sizesArrive: sizesArrive,
-            atPageRoot: describesPageRoot, atPagePosition: atPagePosition ?? describesPagePosition,
+            atPageRoot: describesPageRoot, pagePlacer: pagePlacer ?? describesPagePlacer,
             outerScene: sceneRecord, start: start)
-        (describesPageRoot, describesPagePosition) = (false, false)
+        (describesPageRoot, describesPagePlacer) = (false, nil)
         standing.append(id)
 
         // What the element entered - the environments provided, the views, its scene, an inspector's frame - is
@@ -37,17 +37,14 @@ extension Differ {
             sceneRecord = pass.outerScene
             bodies.removeLast(pass.entered)
             scope.removeLast(pass.pushed)
-            if pass.enablement != nil { enablements.removeLast() }
+            if pass.holdsEnablement { enablements.removeLast() }
             if pass.inspected { Inspection.leave() }
         }
 
         if let carried = expand(pass) { return carried }
         if pass.node.type == .page { describePage(pass) }
         prepare(pass)
-
-        // What it says of its enablement holds for everything in it.
-        pass.enablement = Enablement(pass.node)
-        if let enablement = pass.enablement { enablements.append(enablement) }
+        enterEnablement(pass)
 
         let children: [RenderedNode]
         if let described = pass.described {
@@ -59,10 +56,18 @@ extension Differ {
             describesPageRoot = pass.atPageRoot && pass.node.type == .anchor
             children = reconcileChildren(
                 of: pass.previous, node: pass.node, into: &pass.patch, sizesArrive: pass.node.childSizesArrive,
-                atPagePosition: pass.atPagePosition)
+                pagePlacer: pass.pagePlacer)
             describesPageRoot = false
         }
         return finish(pass, children: children)
+    }
+
+    /// What the element says of its enablement, put on the walk for everything it holds - in a frame of its own,
+    /// gone before its children are walked.
+    @inline(never)
+    private func enterEnablement(_ pass: ElementPass) {
+        pass.enablement = Enablement(pass.node)
+        if let enablement = pass.enablement { enablements.append(enablement) }
     }
 
     /// The element's composed views unwrapped, outermost first, until a real node comes out - each keeping its state
@@ -130,7 +135,7 @@ extension Differ {
                 // is walked by no mirror for this.
                 // Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
                 let slots = resolution(of: stateful)
-                guard place(slots, at: id) else {
+                guard place(slots, at: standing) else {
                     complain(refusal(of: stateful))
                     pass.refused = true
                     node = Node(contract: AnchorContract.self)
@@ -206,7 +211,7 @@ extension Differ {
                     changed: self.changed,
                     written: self.written,
                     everything: describeAll,
-                    element: id)
+                    place: PathNumber(place: standing))
 
                 pass.frame = built
                 bodies.append(stateful.viewType.name)
@@ -258,7 +263,7 @@ extension Differ {
         // The container's own content runs here, inside this element's read scope and
         // build frame: the reader of a state is the closure that read it.
         // Design: docs/design/core/identity-and-diffing.md#containers-run-their-own-content
-        let within = pass.frame ?? bareFrame(for: rendered, builds: pass.builds, element: id)
+        let within = pass.frame ?? bareFrame(for: rendered, builds: pass.builds)
         pass.within = within
 
         // A container built again for what its own closure read: an inspector names the
@@ -294,19 +299,19 @@ extension Differ {
         }
     }
 
-    /// Marks `slots` as standing at `id` this walk, with what each resolved to, or places none: one of them stood
-    /// this walk at another element the walk is not inside - so no holder of the view - resolving to another object.
+    /// Marks `slots` as standing at `place` this walk - the keys from the root down to the element - with what each
+    /// resolved to, or places none: one of them stood this walk at an element `place` is not inside - so no holder
+    /// of the view - resolving to another object.
     /// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
-    private func place(_ slots: [PlacedSlot], at id: ElementID) -> Bool {
+    private func place(_ slots: [PlacedSlot], at place: [ElementID]) -> Bool {
         for (slot, object) in slots {
-            if let earlier = placed[slot], earlier.element != id, !standing.contains(earlier.element),
-                earlier.object != object {
+            if let earlier = placed[slot], !place.starts(with: earlier.place), earlier.object != object {
                 return false
             }
         }
 
         for (slot, object) in slots {
-            placed[slot] = (id, object)
+            placed[slot] = (place, object)
         }
 
         return true
@@ -314,8 +319,8 @@ extension Differ {
 
     /// Places the slots of `views`, standing as they were built, in order up to one the placing refuses: how many
     /// stand.
-    func stand(_ views: ArraySlice<BuiltView>, at id: ElementID) -> Int {
-        for (step, view) in views.enumerated() where !place(view.slots, at: id) {
+    func stand(_ views: ArraySlice<BuiltView>, at place: [ElementID]) -> Int {
+        for (step, view) in views.enumerated() where !self.place(view.slots, at: place) {
             return step
         }
 
@@ -345,7 +350,7 @@ extension Differ {
     /// holding that view - or holding the first view whose slots the placing refuses, which the walk refuses.
     /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     private func standOutside(_ pass: ElementPass, _ rendered: RenderedNode, through asked: Int) -> Node {
-        let start = stand(rendered.views.prefix(asked), at: pass.id)
+        let start = stand(rendered.views.prefix(asked), at: standing)
         pass.views = Array(rendered.views.prefix(start))
         pass.seen = rendered.seen
         pass.builtFrom = start
@@ -389,7 +394,7 @@ extension Differ {
 
     /// The frame a bare container's content runs under: the view the walk is in,
     /// with this element's own count and reads.
-    private func bareFrame(for rendered: RenderedNode?, builds: Int, element: ElementID) -> BuildScope.Frame? {
+    private func bareFrame(for rendered: RenderedNode?, builds: Int) -> BuildScope.Frame? {
         guard let view = bodies.last ?? rendered?.view else { return nil }
 
         return BuildScope.Frame(
@@ -399,7 +404,7 @@ extension Differ {
             changed: changed,
             written: written,
             everything: describeAll,
-            element: element)
+            place: PathNumber(place: standing))
     }
 
     /// Whether two elements are alike by their composed views: each one's type and the branch its content root

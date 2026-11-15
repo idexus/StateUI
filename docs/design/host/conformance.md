@@ -23,7 +23,10 @@ native widget's pixels, its font, its kind, where the toolkit puts its own
 parts: those belong to the host's own tests, beside the native API they
 prove. What StateUI decides itself a case reads as an effect: the place its
 layout gives a view, and the colors of what it draws, which hold no native
-value to read ([a drawing read by its colors](#a-drawing-read-by-its-colors)).
+value to read ([a drawing read by its colors](#a-drawing-read-by-its-colors)). A
+toolkit lays its views out on whole pixels - at 125% a pixel is four fifths
+of a point - so a case compares a size or a place it reads within a point,
+never exactly: a third of 280 points stands at 92.8 there.
 
 ## A case
 
@@ -124,19 +127,27 @@ application is its first launch: the driver forgets what the host's stores
 keep, and a start after it in the same case is the next launch, which finds
 them.
 
-One report a driver makes as the platform would rather than reads: the
-platform's bars over a window's edges (`standUnderSystemBars`). A host whose
+Two reports a driver makes as the platform would rather than reads. The
+platform's bars over a window's edges (`standUnderSystemBars`): a host whose
 test window stands under none - Android's instrumented window - is told a
 phone's status bar and gesture bar as its toolkit tells them, through the
 host's own report of the window's insets; a host whose window has its own
 (UIKit's) or whose platform stands nothing over a window's content leaves
 it, so a case of the safe area proves on each host what a user meets there.
+The keyboard docked at a window's foot (`standUnderKeyboard`), which no test
+can raise at a height it knows: a host is told it as its platform tells
+where the keyboard goes - Android among the window's insets, UIKit by its
+own notice of the keyboard's frame, the Web by the visible part of the page
+a phone's browser leaves - and a platform showing no keyboard on its screen
+says so, which the case does not apply to.
 
 A case's requests go to the HTTP server its driver names (`served()`, and
 `held()` counting the requests it holds). A native host's driver names the
 suite's own, on the machine's loopback, which the conformance package gives
 every driver; the Web's names its page's own, which the browser's runner
-answers. Both are requirements of the protocol, so a driver's own is the one
+answers. Node's parser takes no method it does not know, so the runner
+answers a custom method from the request's own line, where the parser
+gives it up. Both are requirements of the protocol, so a driver's own is the one
 a case reaches: a method a driver adds outside the protocol is never called
 through it.
 
@@ -155,6 +166,19 @@ conformance suite in a browser, whose layout, focus, dialogs and input its
 cases need - and what the driver reads, that JavaScript answers through
 functions of its own (`CWebTesting`).
 
+## The system's input
+
+A few acts a driver sends only as the system sends a user's: WinUI raises a
+text box's key-down and a keyboard accelerator from the keyboard alone, and a
+test of a press's own path moves the mouse. The system delivers such input to
+the window in front, or to the window standing at the point, whichever
+application it belongs to. The driver brings the case's window in front first
+- activated, and where the system keeps the front for another process, taken
+through the input of the window in front - and sends nothing where its window
+does not stand in front, or where another covers the point: the case fails
+saying so, rather than reading a press nobody heard or typing into another
+application.
+
 ## A drawing read by its colors
 
 What StateUI draws itself - a shape's outline, a canvas, a box's fill - holds
@@ -162,14 +186,18 @@ no native value a driver could read, so its cases read the colors it shows:
 a dashed outline has gaps along a run of points where a solid one has none,
 dashes shifted by their phase stand where the gaps stood, squared ends cover
 more of a run of short dashes than flat ones, and a mitred corner reaches a
-point just inside its outer side that a bevel, or a mitre past its limit,
-leaves bare. A figure's points stand set in from its room, so a corner's
-outer side is drawn inside it; a rectangle and an ellipse are set in by half
-their outline on every host. A line and an ellipse have no corner: their
-joins are never had there. A layout's box and a button's are read the same
-way - filled inside, outlined at the edge, an oval leaving the corners bare -
-but a button's own face may stand inside its outline, so there "nothing
-inside" means nothing of the outline's color.
+point just inside its outer side that a bevel leaves bare. A mitre past its
+limit is cut off however its platform cuts it - across the corner, or at the
+reach the limit allows, as WinUI's XAML does - so its case reads a point
+past that reach, on an outline sixteen wide: by more than a pixel at any
+scale, as a screen at 125% stands four fifths of a point to a pixel. A
+figure's points stand set in from its room, so a corner's outer side is
+drawn inside it; a rectangle and an ellipse are set in by half their outline
+on every host. A line and an ellipse have no corner: their joins are never
+had there. A layout's box and a button's are read the same way - filled
+inside, outlined at the edge, an oval leaving the corners bare - but a
+button's own face may stand inside its outline, so there "nothing inside"
+means nothing of the outline's color.
 
 ## A session
 
@@ -264,7 +292,9 @@ holds as many of its views alive as the first time - the count its tally
 writes (`HostDriver.liveViews`) - and as many elements
 (`MountedElement.liveCount`). The first time is the measure, not the page
 before it: a toolkit may make a view of its own the first time a control is
-drawn, and keep it.
+drawn, and keep it. A count is a measure only of a page that changed: a click
+after which the element did not come or go fails the walk, naming it
+(`Leaving.Unmoved`), as equal counts on an unchanged page prove nothing.
 
 The elements' count finds what the views' cannot: an element a host still
 holds after the tree dropped it, through an object that is no view - an
@@ -289,3 +319,27 @@ gesture with a closure of its own, and a closure that holds its view keeps
 it: a bare control never builds one. The walk marks nothing; an element a
 toolkit itself never lets go stands outside it in that host's test, with its
 reason.
+
+## Every case of a closed vocabulary
+
+A case proves a member by the values that show its effect - a button's main
+action and its way out - so a case of a vocabulary no case writes never
+reaches a host, and a host's table missing it stops the application only
+where an application writes that case. Every host's own suite runs one
+shared walk instead (`ClosedVocabularies.untaken(on:)`): each member whose
+value crosses as a number of a [closed vocabulary](../types/vocabularies.md)
+is written, case after case and then none, to every element the host
+realizes that wears it - one page an element, its specimen standing where a
+tier's case stands it. The cases are what the member's own type reads back
+from each number; a flag set reads every number, so it is written none,
+each of its first eight bits alone, and those eight. Each case leaves the
+host going on: the specimen in the tree, nothing new in the host's log - the
+lines it wrote since its page started (`HostDriver.logged`), each page's
+counted from its own start - and the words after it standing in the window
+at the end. An element an author
+writes only through a modifier of its own - a page's icon, a bottom bar's
+edge, a marker's kind - stands on a page of its own, which writes the
+members it knows; for any other it stands no specimen, and the walk says
+so. A host whose UI thread may run a message only so long walks it in parts
+(`untaken(on:part:)`), every n-th of the elements it realizes. The walk marks
+nothing.

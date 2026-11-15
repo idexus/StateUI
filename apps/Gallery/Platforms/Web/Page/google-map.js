@@ -7,6 +7,9 @@
 // `no-scroll`, and `markers` - a line each: "number, latitude, longitude, kind, label, subtitle", a tab apart. It
 // raises `mapclick` ("latitude longitude"), `markerselect` and `markerdetails` (a marker's number) in `detail`.
 //
+// The API keeps every map it makes for as long as the page lives and asks that maps be reused: an element that
+// leaves hands its map, bare, to the next one.
+//
 // The API's key is the application's: Page/google-maps-key.js, which git keeps out, sets `StateUI.googleMapsKey`,
 // and `StateUI.googleMapsMapId` where the key's project has a map of its own; without a key, "No key - only for
 // development" stands under the map. The Swift half is Platforms/Web/Host/GoogleMapElement.swift.
@@ -33,6 +36,13 @@ const colors = { generic: "#ea4335", place: "#1a73e8", saved: "#f9ab00", searchR
 
 /** Meters in a degree of latitude. */
 const meters = 111320;
+
+/** Where a map opens before its element says a region. */
+const opening = { center: { lat: 0, lng: 0 }, zoom: 2 };
+
+/** The maps of elements that left, each waiting for the next element: the sheet it is drawn on, the map, its card
+ *  and its traffic. */
+const idle = [];
 
 class GalleryMap extends HTMLElement {
   static observedAttributes = ["region", "moving-to", "map-type", "traffic", "user-location", "no-zoom", "no-scroll",
@@ -61,25 +71,57 @@ class GalleryMap extends HTMLElement {
     this.made ??= this.make();
   }
 
+  disconnectedCallback() {
+    // An element moved is connected again at once: only one still out when the microtask runs lets its map go.
+    queueMicrotask(() => { if (!this.isConnected) this.letGo(); });
+  }
+
   async make() {
     try {
       const google = await maps();
       const [{ Map, InfoWindow }, { AdvancedMarkerElement, PinElement }] =
         await Promise.all([google.importLibrary("maps"), google.importLibrary("marker")]);
+      if (this.drawn || !this.isConnected) return;
       Object.assign(this, { google, AdvancedMarkerElement, PinElement });
-      this.map = new Map(this.room, {
-        center: { lat: 0, lng: 0 }, zoom: 2, mapId: globalThis.StateUI?.googleMapsMapId ?? "DEMO_MAP_ID",
-        streetViewControl: false, mapTypeControl: false, fullscreenControl: false, clickableIcons: false,
-      });
-      this.details = new InfoWindow();
-      this.map.addListener("click", (event) => {
-        if (!event.latLng) return;
-        this.raise("mapclick", `${event.latLng.lat()} ${event.latLng.lng()}`);
-      });
+      this.drawn = idle.pop() ?? GalleryMap.draw(Map, InfoWindow);
+      this.drawn.owner = this;
+      Object.assign(this, { map: this.drawn.map, details: this.drawn.details });
+      this.room.append(this.drawn.sheet);
+      this.map.setOptions(opening);
       for (const name of GalleryMap.observedAttributes) this.attributeChangedCallback(name);
     } catch (error) {
       this.room.textContent = `Map: ${error.message}`;
     }
+  }
+
+  /** A new map on a sheet of its own, its clicks raised on the element holding it. */
+  static draw(Map, InfoWindow) {
+    const sheet = document.createElement("div");
+    sheet.style.cssText = "position: absolute; inset: 0;";
+    const map = new Map(sheet, {
+      ...opening, mapId: globalThis.StateUI?.googleMapsMapId ?? "DEMO_MAP_ID",
+      streetViewControl: false, mapTypeControl: false, fullscreenControl: false, clickableIcons: false,
+    });
+    const drawn = { sheet, map, details: new InfoWindow() };
+    map.addListener("click", (event) => {
+      if (event.latLng) drawn.owner?.raise("mapclick", `${event.latLng.lat()} ${event.latLng.lng()}`);
+    });
+    return drawn;
+  }
+
+  /** Hands the map on bare: no marker, card, layer or position of this element's stays on it. */
+  letGo() {
+    this.made = undefined;
+    const drawn = this.drawn;
+    if (!drawn) return;
+    this.follow(false);
+    this.mark("");
+    drawn.details.close();
+    drawn.traffic?.setMap(null);
+    drawn.sheet.remove();
+    drawn.owner = undefined;
+    this.drawn = this.map = this.details = undefined;
+    idle.push(drawn);
   }
 
   attributeChangedCallback(name) {
@@ -90,8 +132,8 @@ class GalleryMap extends HTMLElement {
       case "moving-to": if (value) this.map.fitBounds(this.bounds(value), 0); break;
       case "map-type": this.map.setMapTypeId({ satellite: "satellite", hybrid: "hybrid" }[value] ?? "roadmap"); break;
       case "traffic":
-        this.traffic ??= new this.google.TrafficLayer();
-        this.traffic.setMap(value === null ? null : this.map);
+        if (value !== null) this.drawn.traffic ??= new this.google.TrafficLayer();
+        this.drawn.traffic?.setMap(value === null ? null : this.map);
         break;
       case "user-location": this.follow(value !== null); break;
       case "no-zoom": case "no-scroll": this.gestures(); break;

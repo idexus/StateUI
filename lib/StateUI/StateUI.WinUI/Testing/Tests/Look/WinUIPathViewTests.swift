@@ -46,6 +46,15 @@ final class WinUIPathViewTests: XCTestCase {
         XCTAssertEqual(colors, [Self.red, Self.red, 0])
     }
 
+    /// A path's figure after a close begins where the closed one began, as the SVG grammar draws it: two thin
+    /// triangles from one corner, the room between them empty - not one figure running on past the close.
+    func testAFigureAfterACloseBeginsWhereTheClosedOneBegan() throws {
+        let colors = try drawn(width: 40, height: 40, at: [(20, 15), (35, 3), (2, 35)]) {
+            Path("M 0 0 L 40 0 L 40 10 Z L 0 40 L 10 40 Z").fill(Color(hex: 0xFF0000)).width(40).height(40)
+        }
+        XCTAssertEqual(colors, [0, Self.red, Self.red])
+    }
+
     /// A path of its own is placed by its aspect: fitted, a triangle keeps its shape; stretched, it covers a wide
     /// room.
     func testAPathIsPlacedByItsAspect() throws {

@@ -92,6 +92,29 @@ final class LayoutItemDragTests: XCTestCase {
         XCTAssertEqual(told.drags.map(\.at), [Point(75, 50), Point(105, 90)], "told as it takes it and moves it")
     }
 
+    /// A HELD VIEW IS DRAWN OVER EVERY OTHER HOWEVER HIGH THEY STAND - the highest rank an integer holds, several
+    /// alike - and the others keep their order beneath it.
+    func testAHeldViewIsDrawnOverViewsAtTheHighestRank() {
+        let renders = Renders()
+        func tree() -> Node {
+            let places = [
+                Placement(Rect(0, 0, 100, 100), zIndex: .max), Placement(Rect(50, 0, 100, 100), zIndex: .max),
+                Placement(Rect(200, 0, 50, 50), zIndex: .max - 1),
+            ]
+            return MotionLayout(["A", "B", "C"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) }
+                placements: { _, _ in places }
+                .itemDrag(begins: .longPress)
+                .node
+        }
+        _ = bench.laid(renders, tree)
+
+        bench.item(renders, tree, .began, at: Point(25, 50))
+        bench.item(renders, tree, .changed, at: Point(35, 50))
+        let ranks = Placement.drawingOrder(of: shown(renders, tree))
+
+        XCTAssertEqual(ranks, [2, 1, 0], "A held over B, B over C as they stood")
+    }
+
     /// A HELD VIEW STAYS UNDER THE HAND AS THE ORDER CHANGES: its place moves under it, the others travel to theirs.
     func testAHeldViewStaysUnderTheHandAsTheOrderChanges() {
         let told = Told()

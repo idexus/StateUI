@@ -44,7 +44,8 @@ is read back with `gtk_widget_compute_bounds`, which does too;
 `gtk_widget_get_width` and `gtk_widget_compute_point` are the box's inside.
 A widget is measured at its natural width, no wider than offered and no
 narrower than its least, and then at its natural height for that width - a
-label wraps to the width it is given.
+label wraps to the width it is given. Its first baseline is measured at that
+width too, and at no width where GTK's 32-bit pixels cannot hold it.
 
 ## Where a view stands
 

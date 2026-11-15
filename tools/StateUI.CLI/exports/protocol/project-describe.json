@@ -1,0 +1,43 @@
+{
+  "request" : {
+    "id" : "4",
+    "jsonrpc" : "2.0",
+    "method" : "project/describe",
+    "params" : {
+      "projectUri" : "file:///Users/example/Projects/Demo"
+    }
+  },
+  "response" : {
+    "id" : "4",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "applications" : [
+        {
+          "declaredHosts" : [
+            "appkit",
+            "uikit"
+          ],
+          "id" : "apps/Notes",
+          "libraryUri" : "file:///Users/example/Projects/Demo/StateUI",
+          "name" : "Notes",
+          "packageUri" : "file:///Users/example/Projects/Demo/apps/Notes",
+          "products" : [
+            "NotesUI"
+          ],
+          "testSuites" : [
+            "NotesTests"
+          ]
+        }
+      ],
+      "libraries" : [
+        {
+          "dirty" : false,
+          "release" : "1.0.0",
+          "revision" : "0123456789abcdef0123456789abcdef01234567",
+          "rootUri" : "file:///Users/example/Projects/Demo/StateUI"
+        }
+      ],
+      "rootUri" : "file:///Users/example/Projects/Demo"
+    }
+  }
+}

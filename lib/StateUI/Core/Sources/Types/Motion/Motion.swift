@@ -18,10 +18,10 @@
 /// timing law and its numbers. A state an engine of the application's animates
 /// says so at its declaration, `@State(animatedBy: .engine)`.
 ///
-/// Design: docs/design/types/motion.md#two-laws
+/// Design: docs/design/types/motion.md#three-laws
 public struct Motion: Equatable, Sendable {
     /// What a motion is, each kind with only its own numbers.
-    /// Design: docs/design/types/motion.md#two-laws
+    /// Design: docs/design/types/motion.md#three-laws
     @_spi(Host) public enum Kind: Equatable, Sendable {
         /// The element's motion, else the application's, else `standard`.
         case inherited

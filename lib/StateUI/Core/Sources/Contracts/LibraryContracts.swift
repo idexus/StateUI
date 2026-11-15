@@ -55,6 +55,7 @@
         ButtonMenuElementContract.self,
         TextAndIconElementContract.self,
         PageElementContract.self,
+        OpenedLinkElementContract.self,
     ]
 
     /// Every element: one contract per node type the library declares.

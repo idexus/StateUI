@@ -5,8 +5,8 @@ import PackageDescription
 // typed patch and calling the views through JNI. A sibling package, as the
 // AppKit host is, so the one dynamic StateUI runtime is linked into the
 // application rather than copied into a second library in the same process.
-// It builds for Android alone: .scripts/Android/build-swift.sh names the Swift
-// SDK and the triple.
+// It builds for Android alone: the stateui tool names the Swift SDK and the
+// triple.
 let package = Package(
     name: "StateUIAndroid",
     products: [

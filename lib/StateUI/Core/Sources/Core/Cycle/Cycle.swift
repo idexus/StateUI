@@ -55,6 +55,28 @@ final class CycleBoard {
         storage.stamp &+= 1
     }
 
+    /// A storage's image and what of it waits to be published, as they stand.
+    struct Held {
+        let image: [UInt8]
+        let pending: [UInt8]?
+        let pendingMask: UInt64
+        let dirty: UInt64
+    }
+
+    /// What `storage` holds now, for `restore` to put back.
+    func held(_ storage: HostStorage) -> Held {
+        Held(image: storage.image, pending: storage.pending, pendingMask: storage.pendingMask, dirty: storage.dirty)
+    }
+
+    /// Puts `storage` back as `held` had it - its image and what waited to be published then, no more: writes taken
+    /// back publish nothing, and what waited before them still does.
+    /// Design: docs/design/core/journeys.md#a-refusal-up-the-chain
+    func restore(_ held: Held, to storage: HostStorage) {
+        storage.stamp &+= 1
+        (storage.image, storage.pending) = (held.image, held.pending)
+        (storage.pendingMask, storage.dirty) = (held.pendingMask, held.dirty)
+    }
+
     /// Takes a storage into this board's keeping.
     func hold(_ storage: HostStorage) {
         storages.removeAll { $0.storage == nil }
@@ -153,6 +175,11 @@ final class CycleBoard {
     /// Registers an engine, which runs from the next cycle.
     func arm(_ entry: EngineEntry) {
         engines.append(entry)
+        order()
+    }
+
+    /// The engines in the order they run: ascending priority, ties by id.
+    private func order() {
         engines.sort { ($0.priority, $0.id) < ($1.priority, $1.id) }
     }
 
@@ -161,11 +188,12 @@ final class CycleBoard {
         engines.removeAll { $0.id == id }
     }
 
-    /// Hands an engine a fresh render's closure and followed states, and arms it.
-    /// Answers whether there was one to hand it to.
+    /// Hands an engine a fresh render's closure, priority and followed states, and arms it - moved in the order
+    /// where its priority changed. Answers whether there was one to hand it to.
     @discardableResult
     func rearm(
         _ id: Int,
+        priority: Double,
         following follows: [any FollowedState],
         with run: @escaping @MainActor (EngineCycle) -> EngineAnswer
     ) -> Bool {
@@ -174,6 +202,10 @@ final class CycleBoard {
         engines[place].run = run
         engines[place].follow(follows)
         engines[place].armed = true
+        if engines[place].priority != priority {
+            engines[place].priority = priority
+            order()
+        }
         return true
     }
 

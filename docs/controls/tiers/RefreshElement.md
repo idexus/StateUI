@@ -7,11 +7,13 @@ An element the user pulls to refresh what it shows - a scroller, a list.
 ```swift
 @State var refreshing = false
 @State var rows = ["First"]
+@State var fetched = 0
 
 ItemsView(rows) { Text($0) }
     .isRefreshing($refreshing)
     .onRefreshRequested {
-        rows.insert("Fresh", at: 0)
+        fetched += 1
+        rows.insert("Fresh \(fetched)", at: 0)
         refreshing = false
     }
 ```

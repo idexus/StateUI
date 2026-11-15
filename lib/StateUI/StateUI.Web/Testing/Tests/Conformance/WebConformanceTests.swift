@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIConformance
 import XCTest
 
-/// The conformance suite on the Web, in a browser (`test-web.sh --browser`): a family a contract, each one test,
+/// The conformance suite on the Web, in a browser (`stateui repo test --suite host:web`): a family a contract, each one test,
 /// its verdicts the Web's column of the control dictionary.
 @MainActor
 final class WebConformanceTests: XCTestCase {
@@ -124,6 +124,7 @@ final class WebConformanceTests: XCTestCase {
     func testLink() { conform(LinkTests.self) }
     func testTextAndIconElement() { conform(TextAndIconElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }
+    func testOpenedLinkElement() { conform(OpenedLinkElementTests.self) }
 
     /// Runs `family` on the Web, and holds its verdicts to the family's file of the Web's marks.
     private func conform(_ family: any ConformanceFamily.Type) {

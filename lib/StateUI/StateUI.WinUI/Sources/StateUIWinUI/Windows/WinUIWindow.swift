@@ -62,17 +62,23 @@ final class WinUIWindow {
     }
 
     /// Moves and sizes the window as `frame` asks, each request alone: a place from the corner of the screen's work
-    /// area, a size the content's, in DIPs.
+    /// area, a size the content's, in DIPs - one Windows' 32-bit pixels cannot hold not asked.
     /// Design: docs/design/platforms/winui/runtime.md#a-windows-frame
     func request(_ frame: WindowFrame) {
-        let requests = [frame.x, frame.y, frame.width, frame.height]
+        let requests = [frame.x, frame.y, frame.width, frame.height].map(pixels)
         stateui_winui_window_set_frame(handle, requests.map { $0 != nil }, requests.map { $0 ?? 0 })
     }
 
-    /// Bounds the content's size as `bounds` says; one it leaves unsaid is WinUI's own.
+    /// Bounds the content's size as `bounds` says; one it leaves unsaid, or Windows' pixels cannot hold, is WinUI's
+    /// own.
     func bound(_ bounds: WindowBounds) {
         let limits = [bounds.minimumWidth, bounds.minimumHeight, bounds.maximumWidth, bounds.maximumHeight]
-        stateui_winui_window_set_limits(handle, limits.map { $0 ?? 0 })
+        stateui_winui_window_set_limits(handle, limits.map { $0.flatMap(pixels) ?? 0 })
+    }
+
+    /// `dips` in the window's whole pixels (`GeometryArithmetic.pixels`); nil where 32 bits cannot hold them.
+    private func pixels(_ dips: Double?) -> Int32? {
+        dips.flatMap { GeometryArithmetic.pixels($0, density: stateui_winui_window_scale(handle)) }
     }
 
     /// Makes the window what `traits` says: a button it leaves unsaid is WinUI's own, which lets the user press it;

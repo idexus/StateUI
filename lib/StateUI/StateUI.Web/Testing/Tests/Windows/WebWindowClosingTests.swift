@@ -7,7 +7,7 @@
 import XCTest
 
 /// A window closing takes the sheets over it away: each is a modal dialog of the page's, which would hold every page
-/// after it still. A host runs here, so the suite runs it in a browser (`test-web.sh --browser`).
+/// after it still. A host runs here, so the suite runs it in a browser (the stateui tool's `WebSuite.inBrowser`).
 @MainActor
 final class WebWindowClosingTests: XCTestCase {
     override func setUp() async throws {

@@ -37,12 +37,15 @@ final class AndroidPagesTests: XCTestCase {
             ("testGroupsBehindTheOverflowAreSectionsOfItsMenu", testGroupsBehindTheOverflowAreSectionsOfItsMenu),
             ("testALeadingGroupStandsFirstAmongTheActions", testALeadingGroupStandsFirstAmongTheActions),
             ("testTheBarsActionsStandInItsWordsColor", testTheBarsActionsStandInItsWordsColor),
+            ("testABarGivenNoForegroundStandsInTheThemesAgain", testABarGivenNoForegroundStandsInTheThemesAgain),
+            ("testActionsCaptionedAlikeStandWhereEachIsPlaced", testActionsCaptionedAlikeStandWhereEachIsPlaced),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
             ("testAStackAndItsPagesSayHowTheBarAndThePageLook", testAStackAndItsPagesSayHowTheBarAndThePageLook),
             ("testTabsOfStacksOnAStackStandUnderOneBar", testTabsOfStacksOnAStackStandUnderOneBar),
             ("testATabsAndAnActionsPicturesStandAtTheIconSize", testATabsAndAnActionsPicturesStandAtTheIconSize),
             ("testASheetPresentsOverThePageAndBackTakesItDown", testASheetPresentsOverThePageAndBackTakesItDown),
             ("testASheetStandsOnACardAsLargeAsItsPageInAWideWindow", testASheetStandsOnACardAsLargeAsItsPageInAWideWindow),
+            ("testASheetCrossesFromCardToWindowAsTheWindowDoes", testASheetCrossesFromCardToWindowAsTheWindowDoes),
             ("testAPageStandsClearOfTheSystemsBarsUnlessItSaysSo", testAPageStandsClearOfTheSystemsBarsUnlessItSaysSo),
             ("testARootDrawnEdgeToEdgeHearsTheStatusBar", testARootDrawnEdgeToEdgeHearsTheStatusBar),
             ("testAStacksBarReachesUnderTheStatusBar", testAStacksBarReachesUnderTheStatusBar),
@@ -802,6 +805,53 @@ extension AndroidPagesTests {
         }
     }
 
+    /// A bar's title and its overflow's picture stand in the color it is given, and in the theme's again once it is
+    /// given none: Android otherwise keeps the color it was last given.
+    func testABarGivenNoForegroundStandsInTheThemesAgain() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Notes", actions: [ToolbarButton("Scan")])
+                } destination: { _ in
+                    TitledPage(title: "Note")
+                }
+            }
+            host.layOut()
+            let bar = try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar
+            let theme = TestMenus.foreground(of: bar)
+            var red = bar.content
+            red.foreground = .color(red: 255, green: 0, blue: 0, alpha: 255)
+
+            bar.show(red)
+            XCTAssertEqual(TestMenus.foreground(of: bar), "title #ffff0000, overflow #ffff0000")
+            var none = red
+            none.foreground = nil
+            bar.show(none)
+            XCTAssertEqual(TestMenus.foreground(of: bar), theme, "the theme's again")
+        }
+    }
+
+    /// Two actions captioned alike, one on the bar and one behind its overflow, are read where each stands: by the
+    /// item each view of the bar stands for, never by its words.
+    func testActionsCaptionedAlikeStandWhereEachIsPlaced() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Notes", actions: [
+                        ToolbarButton("Same"), ToolbarButton("Same").placement(at: .overflow),
+                    ])
+                } destination: { _ in
+                    TitledPage(title: "Note")
+                }
+            }
+            host.layOut()
+            let bar = try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar
+            let onBar = TestMenus.laidOut(bar).map { $0.split(separator: " ").dropFirst(2).first.map(String.init) }
+
+            XCTAssertEqual(onBar, ["1", "0"], "the first on the bar, the second behind its overflow")
+        }
+    }
+
     /// A page's title view stands in the bar in place of its title; a page pushed over it, with none, shows
     /// its own title and the view leaves the bar; back, and it stands there again.
     func testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle() throws {
@@ -1008,6 +1058,49 @@ extension AndroidPagesTests {
             let shown = try XCTUnwrap(Java.callObject(holder.reference, TestJava.getChildAt, .int(0)).map(JavaObject.init))
             XCTAssertEqual([Java.callInt(shown.reference, TestJava.getWidth), Java.callInt(shown.reference, TestJava.getHeight)],
                            [600, 400], "a card in the middle")
+        }
+    }
+
+    /// A sheet on a card stands on the whole window as the window narrows past 600 points, and on a card again as it
+    /// widens: the same page, and what is laid over it, moved from one to the other.
+    func testASheetCrossesFromCardToWindowAsTheWindowDoes() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running(reducesMotion: true) { ZStack {} }
+            defer { withExtendedLifetime(host) {} }
+            let page = TestJava.root(), over = TestJava.root()
+            let holder = try withExtendedLifetime(page) {
+                try XCTUnwrap(Java.callStaticObject(
+                    JavaAPI.views, JavaAPI.sheet, .object(AndroidRenderer.context), .object(page.reference),
+                    .int(600), .int(400)).map(JavaObject.init))
+            }
+            @MainActor func child(of parent: jobject, _ index: Int32 = 0) -> JavaObject? {
+                Java.callObject(parent, TestJava.getChildAt, .int(index)).map(JavaObject.init)
+            }
+            @MainActor func same(_ one: JavaObject?, _ other: JavaObject) -> Bool {
+                Java.jni.IsSameObject(Java.env, one?.reference, other.reference) != 0
+            }
+            @MainActor func size(_ width: Int32, _ height: Int32) -> Bool {
+                Java.callStaticBool(JavaAPI.views, JavaAPI.sizeSheet, .object(holder.reference), .int(width), .int(height))
+            }
+            let card = try XCTUnwrap(child(of: holder.reference))
+            Java.call(card.reference, JavaAPI.addView, .object(over.reference), .int(-1), .int(-1))
+            XCTAssertTrue(same(child(of: card.reference), page), "on a card in a wide window")
+
+            XCTAssertTrue(size(0, 0), "moved")
+            XCTAssertTrue(same(child(of: holder.reference), page), "the page on the whole narrow window")
+            XCTAssertTrue(same(child(of: holder.reference, 1), over), "with what is laid over it")
+
+            XCTAssertTrue(size(600, 400), "moved back")
+            XCTAssertFalse(size(600, 400), "standing where it is")
+            Java.call(holder.reference, JavaAPI.measure, .int(ViewConstants.spec(ViewConstants.exactly, 2000)),
+                      .int(ViewConstants.spec(ViewConstants.exactly, 1600)))
+            Java.call(holder.reference, JavaAPI.layout, .int(0), .int(0), .int(2000), .int(1600))
+            let widened = try XCTUnwrap(child(of: holder.reference))
+            XCTAssertTrue(same(child(of: widened.reference), page), "on a card again as the window widens")
+            XCTAssertTrue(same(child(of: widened.reference, 1), over))
+            XCTAssertEqual(
+                [Java.callInt(widened.reference, TestJava.getWidth), Java.callInt(widened.reference, TestJava.getHeight)],
+                [600, 400])
         }
     }
 

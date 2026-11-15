@@ -90,36 +90,4 @@ extension SourceTree {
         walk("")
         return found.sorted()
     }
-
-    /// A file of HelloWorld's as it reads under another name: the name
-    /// replaced wherever it appears, and its lower-case spelling - the
-    /// application identifier's - likewise. What is not text is left as it is.
-    static func helloWorld(_ contents: Data, renamedTo name: String) -> Data {
-        guard let text = String(data: contents, encoding: .utf8) else { return contents }
-
-        return Data(
-            text.replacingOccurrences(of: "HelloWorld", with: name)
-                .replacingOccurrences(of: "helloworld", with: name.lowercased())
-                .utf8)
-    }
-}
-
-/// Fails when two files differ, showing both as text where they are text - a
-/// byte count says nothing about which line moved.
-func assertSameFile(
-    _ written: Data,
-    _ expected: Data,
-    _ message: @autoclosure () -> String,
-    file: StaticString = #filePath,
-    line: UInt = #line
-) {
-    guard written != expected else { return }
-
-    if let text = String(data: written, encoding: .utf8),
-       let wanted = String(data: expected, encoding: .utf8),
-       text != wanted {
-        XCTAssertEqual(text, wanted, message(), file: file, line: line)
-    } else {
-        XCTFail(message(), file: file, line: line)
-    }
 }

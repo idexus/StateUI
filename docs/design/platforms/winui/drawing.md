@@ -95,7 +95,10 @@ path, a polygon and a polyline draw a geometry of their own - a path's data
 read by the core's parser, its arcs as curves - placed in the room by their
 aspect: fitted, covering, stretched or at their own size, centered, then
 moved by their transform, as every host places them
-([a shape's own geometry](../../host/layout.md#a-shapes-own-geometry)). WinUI
+([a shape's own geometry](../../host/layout.md#a-shapes-own-geometry)). A
+curve after a close, with no move between, begins a figure of its own where
+the closed one began, as the SVG grammar draws it - a `PathFigure` closed
+takes no segment after it, which would run the two figures into one. WinUI
 measures the geometry's bounds, once for each geometry, and the host hands
 the relay the place the arithmetic gives for the room; a geometry left where
 it stands takes no transform, since WinUI draws nothing of one given the

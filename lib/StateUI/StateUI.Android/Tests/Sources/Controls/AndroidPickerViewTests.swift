@@ -13,6 +13,7 @@ final class AndroidPickerViewTests: XCTestCase {
             ("testTheFieldShowsTheChoiceOrTheTitleWithoutOne", testTheFieldShowsTheChoiceOrTheTitleWithoutOne),
             ("testAUsersChoiceIsReportedAndTheProgramsIsNot", testAUsersChoiceIsReportedAndTheProgramsIsNot),
             ("testARadioGroupOffersTheValuesAndTellsTheUsersCheck", testARadioGroupOffersTheValuesAndTellsTheUsersCheck),
+            ("testAChoicesLookComesGoesAndReachesNewOptions", testAChoicesLookComesGoesAndReachesNewOptions),
         ]
     }
 
@@ -75,6 +76,47 @@ final class AndroidPickerViewTests: XCTestCase {
 
             Java.callStatic(AndroidDriver.testPicker, AndroidDriver.chooseRadio, .object(picker.reference), .int(2))
             XCTAssertEqual(chosen.wrappedValue, "L")
+        }
+    }
+
+    /// Radio buttons and segments take the words' size and color they are given, the platform's again once they are
+    /// given none, and options that come after take the look given.
+    func testAChoicesLookComesGoesAndReachesNewOptions() throws {
+        try onMainActor {
+            for presentation in [PickerPresentation.radio, .segmented] {
+                let host = AndroidRenderer.running {
+                    Picker(["S", "M"], selection: State(wrappedValue: "S").projectedValue).presentation(presentation)
+                }
+                let picker = try XCTUnwrap(host.views(AndroidPickerView.self).first)
+                @MainActor func looks() -> [String] {
+                    let count = Java.callInt(picker.reference, TestJava.getChildCount)
+                    return (0..<count).map { index in
+                        Java.frame {
+                            guard let button = Java.callObject(picker.reference, TestJava.getChildAt, .int(index)) else {
+                                return "none"
+                            }
+                            let size = Java.callFloat(button, TestJava.getTextSize)
+                            let color = UInt32(bitPattern: Java.callInt(button, TestJava.getCurrentTextColor))
+                            return "\(Int(size)) #\(String(color, radix: 16))"
+                        }
+                    }
+                }
+                let platform = looks()
+                var big = TextLook()
+                big.size = 30
+                big.color = .color(red: 255, green: 0, blue: 0, alpha: 255)
+
+                picker.setLook(big, alignment: .start)
+                let given = looks()
+                XCTAssertTrue(given.allSatisfy { $0.hasSuffix("#ffff0000") }, "\(presentation) given: \(given)")
+                XCTAssertNotEqual(given, platform)
+                picker.setLook(TextLook(), alignment: .start)
+                XCTAssertEqual(looks(), platform, "\(presentation): the platform's again")
+
+                picker.setLook(big, alignment: .start)
+                picker.setChoices(["S", "M", "L"], chosen: 0, writeChosen: true, title: "")
+                XCTAssertEqual(looks(), [given[0], given[0], given[0]], "\(presentation): new options take the look")
+            }
         }
     }
 

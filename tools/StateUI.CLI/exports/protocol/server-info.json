@@ -1,0 +1,31 @@
+{
+  "request" : {
+    "id" : "2",
+    "jsonrpc" : "2.0",
+    "method" : "server/info",
+    "params" : {
+
+    }
+  },
+  "response" : {
+    "id" : "2",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "apiVersions" : [
+        {
+          "major" : 1,
+          "maxMinor" : 0,
+          "minMinor" : 0
+        }
+      ],
+      "machine" : {
+        "architecture" : "arm64",
+        "system" : "macos"
+      },
+      "server" : {
+        "name" : "stateui",
+        "version" : "1.0.0"
+      }
+    }
+  }
+}

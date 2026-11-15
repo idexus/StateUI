@@ -30,11 +30,10 @@ executor's queue, which posts a turn. The WinUI element goes with it.
 ## Starting
 
 The head's `main` names the application and hands the thread to
-`WinUIHost.run()`, which loads the Windows App SDK the application carries
-and starts WinUI's `Application` there; WinUI's loop runs that thread until
-the last window closes, and `run` answers the code WinUI ended with, which
-the head ends the process with - it holds no `@discardableResult`, so a head
-that drops it is warned. Its `OnLaunched` calls the host, whose first act is to
+`WinUIHost.run(linkSchemes:)`, which loads the Windows App SDK the application
+carries and starts WinUI's `Application` there; WinUI's loop runs that thread
+until the last window closes, and `run` ends the process with the code WinUI
+ended with: it never returns (`Never`). Its `OnLaunched` calls the host, whose first act is to
 claim that thread as the UI thread: `claimUIThread()` makes StateUI's UI
 executor `MainActor`'s and drains it there, and every native call after it
 asserts that isolation rather than assuming a thread.
@@ -50,7 +49,7 @@ before WinUI starts, and points the C runtime's streams, and its descriptors
 1 and 2, at that console. Output a caller sent elsewhere - a file, or the
 debugger F5 starts it under, which shows it in the editor's debug console -
 stays where it was sent. A windowed application is not waited for by the
-shell that starts it, so `run-app.ps1` waits for it itself.
+shell that starts it, so `stateui run` waits for it itself.
 
 ## An application with no XAML
 
@@ -117,7 +116,11 @@ pixels, so each DIP is the window's DPI over 96 of them - known before
 anything is laid out, where the root's rasterization scale is not. The size
 is set as the whole window's, the content's asked for plus the frame around
 it as it stands: `ResizeClient` would add the title bar's height again, which
-the content already covers.
+the content already covers. The host turns each DIP into whole pixels by the
+host layer's rule (`GeometryArithmetic.pixels`); a place, a size or a bound
+32-bit pixels cannot hold - or that the work area's corner or the frame
+around the content would take past them - is not asked, and the window
+stands as it was: asked past them, it fell to its least size.
 
 The bounds are the presenter's preferred least and greatest size. The
 traits ([a window's traits](../../host/tree.md#a-windows-traits)) are the
@@ -320,12 +323,13 @@ An application carries the Windows App SDK beside its executable, with no
 package: the runtime of WinUI, Foundation and InteractiveExperiences, a
 manifest registering every class each component declares - the registrations
 the SDK's own build writes - and `resources.pri`, where WinUI's controls find
-their resources. `.scripts/WinUI/tools.ps1` lays them out after each build,
-the test runner's included, and owns the versions. What a backend's engine
-needs beside an application the backend lays itself, and only beside one
-linking it: each `lib/Backends/<Element>.WinUI/SelfContained.ps1` the script
-runs looks for its own library there - the web view's lays WebView2's
-component and loader.
+their resources. The stateui tool lays them out with each build, the test
+runner's included, and owns the versions
+([WinUI heads](../../tooling/winui-heads.md)). What a backend's engine
+needs beside an application the backend declares, and only one linking it
+gets it: each `lib/Backends/<Element>.WinUI/Packaging/runtime.txt` names the
+package's files and where they stand - the web view's WebView2's component
+and loader.
 
 The manifest stands beside the executable as `<name>.exe.manifest`, which
 Windows reads for an executable carrying none of its own. It is not written

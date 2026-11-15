@@ -1,81 +1,81 @@
-# revision 2.1
-Button.pointerEntered: ✅
-Button.pointerExited: ✅
-Canvas.pointerEntered: ✅
-Canvas.pointerExited: ✅
-Capsule.pointerEntered: ✅
-Capsule.pointerExited: ✅
-CheckBox.pointerEntered: ✅
-CheckBox.pointerExited: ✅
-ColorPicker.pointerEntered: ✅
-ColorPicker.pointerExited: ✅
-DatePicker.pointerEntered: ✅
-DatePicker.pointerExited: ✅
-Ellipse.pointerEntered: ✅
-Ellipse.pointerExited: ✅
-Fill.pointerEntered: ✅
-Fill.pointerExited: ✅
-Grid.pointerEntered: ✅
-Grid.pointerExited: ✅
-HStack.pointerEntered: ✅
-HStack.pointerExited: ✅
-Image.pointerEntered: ✅
-Image.pointerExited: ✅
-ItemsView.pointerEntered: ✅
-ItemsView.pointerExited: ✅
-Line.pointerEntered: ✅
-Line.pointerExited: ✅
-Link.pointerEntered: ✅
-Link.pointerExited: ✅
+# revision 2.2
+Button.pointerEntered: ✓ hover on Button: the relay's report of the pointer handed to the host, no pointer sent
+Button.pointerExited: ✓ hover on Button: the relay's report of the pointer handed to the host, no pointer sent
+Canvas.pointerEntered: ✓ hover on Canvas: the relay's report of the pointer handed to the host, no pointer sent
+Canvas.pointerExited: ✓ hover on Canvas: the relay's report of the pointer handed to the host, no pointer sent
+Capsule.pointerEntered: ✓ hover on Capsule: the relay's report of the pointer handed to the host, no pointer sent
+Capsule.pointerExited: ✓ hover on Capsule: the relay's report of the pointer handed to the host, no pointer sent
+CheckBox.pointerEntered: ✓ hover on CheckBox: the relay's report of the pointer handed to the host, no pointer sent
+CheckBox.pointerExited: ✓ hover on CheckBox: the relay's report of the pointer handed to the host, no pointer sent
+ColorPicker.pointerEntered: ✓ hover on ColorPicker: the relay's report of the pointer handed to the host, no pointer sent
+ColorPicker.pointerExited: ✓ hover on ColorPicker: the relay's report of the pointer handed to the host, no pointer sent
+DatePicker.pointerEntered: ✓ hover on DatePicker: the relay's report of the pointer handed to the host, no pointer sent
+DatePicker.pointerExited: ✓ hover on DatePicker: the relay's report of the pointer handed to the host, no pointer sent
+Ellipse.pointerEntered: ✓ hover on Ellipse: the relay's report of the pointer handed to the host, no pointer sent
+Ellipse.pointerExited: ✓ hover on Ellipse: the relay's report of the pointer handed to the host, no pointer sent
+Fill.pointerEntered: ✓ hover on Fill: the relay's report of the pointer handed to the host, no pointer sent
+Fill.pointerExited: ✓ hover on Fill: the relay's report of the pointer handed to the host, no pointer sent
+Grid.pointerEntered: ✓ hover on Grid: the relay's report of the pointer handed to the host, no pointer sent
+Grid.pointerExited: ✓ hover on Grid: the relay's report of the pointer handed to the host, no pointer sent
+HStack.pointerEntered: ✓ hover on HStack: the relay's report of the pointer handed to the host, no pointer sent
+HStack.pointerExited: ✓ hover on HStack: the relay's report of the pointer handed to the host, no pointer sent
+Image.pointerEntered: ✓ hover on Image: the relay's report of the pointer handed to the host, no pointer sent
+Image.pointerExited: ✓ hover on Image: the relay's report of the pointer handed to the host, no pointer sent
+ItemsView.pointerEntered: ✓ hover on ItemsView: the relay's report of the pointer handed to the host, no pointer sent
+ItemsView.pointerExited: ✓ hover on ItemsView: the relay's report of the pointer handed to the host, no pointer sent
+Line.pointerEntered: ✓ hover on Line: the relay's report of the pointer handed to the host, no pointer sent
+Line.pointerExited: ✓ hover on Line: the relay's report of the pointer handed to the host, no pointer sent
+Link.pointerEntered: ✓ hover on Link: the relay's report of the pointer handed to the host, no pointer sent
+Link.pointerExited: ✓ hover on Link: the relay's report of the pointer handed to the host, no pointer sent
 Map.pointerEntered: 🧩
 Map.pointerExited: 🧩
-MotionLayout.pointerEntered: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
-MotionLayout.pointerExited: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
-Path.pointerEntered: ✅
-Path.pointerExited: ✅
-Picker.pointerEntered: ✅
-Picker.pointerExited: ✅
-Polygon.pointerEntered: ✅
-Polygon.pointerExited: ✅
-Polyline.pointerEntered: ✅
-Polyline.pointerExited: ✅
-ProgressBar.pointerEntered: ✅
-ProgressBar.pointerExited: ✅
-Rectangle.pointerEntered: ✅
-Rectangle.pointerExited: ✅
-ScrollView.pointerEntered: ✅
-ScrollView.pointerExited: ✅
-SearchField.pointerEntered: ✅
-SearchField.pointerExited: ✅
-Separator.pointerEntered: ✅
-Separator.pointerExited: ✅
-Slider.pointerEntered: ✅
-Slider.pointerExited: ✅
-Space.pointerEntered: ✅
-Space.pointerExited: ✅
-Spinner.pointerEntered: ✅
-Spinner.pointerExited: ✅
-Stepper.pointerEntered: ✅
-Stepper.pointerExited: ✅
-Switch.pointerEntered: ✅
-Switch.pointerExited: ✅
-Text.pointerEntered: ✅
-Text.pointerExited: ✅
-TextEditor.pointerEntered: ✅
-TextEditor.pointerExited: ✅
-TextField.pointerEntered: ✅
-TextField.pointerExited: ✅
-TimePicker.pointerEntered: ✅
-TimePicker.pointerExited: ✅
+MotionLayout.pointerEntered: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
+MotionLayout.pointerExited: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
+Path.pointerEntered: ✓ hover on Path: the relay's report of the pointer handed to the host, no pointer sent
+Path.pointerExited: ✓ hover on Path: the relay's report of the pointer handed to the host, no pointer sent
+Picker.pointerEntered: ✓ hover on Picker: the relay's report of the pointer handed to the host, no pointer sent
+Picker.pointerExited: ✓ hover on Picker: the relay's report of the pointer handed to the host, no pointer sent
+Polygon.pointerEntered: ✓ hover on Polygon: the relay's report of the pointer handed to the host, no pointer sent
+Polygon.pointerExited: ✓ hover on Polygon: the relay's report of the pointer handed to the host, no pointer sent
+Polyline.pointerEntered: ✓ hover on Polyline: the relay's report of the pointer handed to the host, no pointer sent
+Polyline.pointerExited: ✓ hover on Polyline: the relay's report of the pointer handed to the host, no pointer sent
+ProgressBar.pointerEntered: ✓ hover on ProgressBar: the relay's report of the pointer handed to the host, no pointer sent
+ProgressBar.pointerExited: ✓ hover on ProgressBar: the relay's report of the pointer handed to the host, no pointer sent
+Rectangle.pointerEntered: ✓ hover on Rectangle: the relay's report of the pointer handed to the host, no pointer sent
+Rectangle.pointerExited: ✓ hover on Rectangle: the relay's report of the pointer handed to the host, no pointer sent
+ScrollView.pointerEntered: ✓ hover on ScrollView: the relay's report of the pointer handed to the host, no pointer sent
+ScrollView.pointerExited: ✓ hover on ScrollView: the relay's report of the pointer handed to the host, no pointer sent
+SearchField.pointerEntered: ✓ hover on SearchField: the relay's report of the pointer handed to the host, no pointer sent
+SearchField.pointerExited: ✓ hover on SearchField: the relay's report of the pointer handed to the host, no pointer sent
+Separator.pointerEntered: ✓ hover on Separator: the relay's report of the pointer handed to the host, no pointer sent
+Separator.pointerExited: ✓ hover on Separator: the relay's report of the pointer handed to the host, no pointer sent
+Slider.pointerEntered: ✓ hover on Slider: the relay's report of the pointer handed to the host, no pointer sent
+Slider.pointerExited: ✓ hover on Slider: the relay's report of the pointer handed to the host, no pointer sent
+Space.pointerEntered: ✓ hover on Space: the relay's report of the pointer handed to the host, no pointer sent
+Space.pointerExited: ✓ hover on Space: the relay's report of the pointer handed to the host, no pointer sent
+Spinner.pointerEntered: ✓ hover on Spinner: the relay's report of the pointer handed to the host, no pointer sent
+Spinner.pointerExited: ✓ hover on Spinner: the relay's report of the pointer handed to the host, no pointer sent
+Stepper.pointerEntered: ✓ hover on Stepper: the relay's report of the pointer handed to the host, no pointer sent
+Stepper.pointerExited: ✓ hover on Stepper: the relay's report of the pointer handed to the host, no pointer sent
+Switch.pointerEntered: ✓ hover on Switch: the relay's report of the pointer handed to the host, no pointer sent
+Switch.pointerExited: ✓ hover on Switch: the relay's report of the pointer handed to the host, no pointer sent
+Text.pointerEntered: ✓ hover on Text: the relay's report of the pointer handed to the host, no pointer sent
+Text.pointerExited: ✓ hover on Text: the relay's report of the pointer handed to the host, no pointer sent
+TextEditor.pointerEntered: ✓ hover on TextEditor: the relay's report of the pointer handed to the host, no pointer sent
+TextEditor.pointerExited: ✓ hover on TextEditor: the relay's report of the pointer handed to the host, no pointer sent
+TextField.pointerEntered: ✓ hover on TextField: the relay's report of the pointer handed to the host, no pointer sent
+TextField.pointerExited: ✓ hover on TextField: the relay's report of the pointer handed to the host, no pointer sent
+TimePicker.pointerEntered: ✓ hover on TimePicker: the relay's report of the pointer handed to the host, no pointer sent
+TimePicker.pointerExited: ✓ hover on TimePicker: the relay's report of the pointer handed to the host, no pointer sent
 ToolbarButton.pointerEntered: – The title bar's commands stand in WinUI's own look.
 ToolbarButton.pointerExited: – The title bar's commands stand in WinUI's own look.
 ToolbarGroup.pointerEntered: – The title bar's commands stand in WinUI's own look.
 ToolbarGroup.pointerExited: – The title bar's commands stand in WinUI's own look.
 ToolbarToggle.pointerEntered: – The title bar's commands stand in WinUI's own look.
 ToolbarToggle.pointerExited: – The title bar's commands stand in WinUI's own look.
-VStack.pointerEntered: ✅
-VStack.pointerExited: ✅
+VStack.pointerEntered: ✓ hover on VStack: the relay's report of the pointer handed to the host, no pointer sent
+VStack.pointerExited: ✓ hover on VStack: the relay's report of the pointer handed to the host, no pointer sent
 WebView.pointerEntered: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.pointerExited: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-ZStack.pointerEntered: ✅
-ZStack.pointerExited: ✅
+ZStack.pointerEntered: ✓ hover on ZStack: the relay's report of the pointer handed to the host, no pointer sent
+ZStack.pointerExited: ✓ hover on ZStack: the relay's report of the pointer handed to the host, no pointer sent

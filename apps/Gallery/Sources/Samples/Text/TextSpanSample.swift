@@ -57,6 +57,19 @@ struct TextSpanSample: SampleContent, ExampleContent {
             Button("Move the highlight")
                 .onClicked { highlighted = (highlighted + 1) % words.count }
 
+            // A run takes what its label wears unless it says otherwise:
+            // no decorations and no tracking, said, stand against the
+            // label's underline and spacing.
+            Text("")
+                .textDecorations(.underline)
+                .tracking(3)
+                .spans {
+                    TextSpan("spaced and underlined, ")
+                    TextSpan("then plain")
+                        .textDecorations([])
+                        .tracking(0)
+                }
+
             // `text` and `spans` are MUTUALLY EXCLUSIVE: a label
             // given both shows the runs.
             Text("this text never appears")
@@ -84,6 +97,12 @@ struct TextSpanSample: SampleContent, ExampleContent {
                 + "under every example here is drawn. Moving the highlight sends the two runs "
                 + "that changed and nothing else; the host keeps the rest of the line, the "
                 + "same way it keeps a list of rows.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("A run takes its label's underline and spacing unless it says its own: "
+                + "`.textDecorations([])` and `.tracking(0)` are said, and stand against the "
+                + "label's, where a run saying nothing wears them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

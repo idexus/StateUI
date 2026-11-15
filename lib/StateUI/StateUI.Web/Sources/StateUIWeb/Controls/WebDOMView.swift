@@ -12,8 +12,8 @@ class WebDOMView {
     /// The relay's number for the DOM element.
     let node: Int32
 
-    /// When the view was made among every view of the page - the order the display's frames serve them in; the
-    /// relay makes a number let go of again, so its number is no order.
+    /// When the view was made among every view of the page - the order the display's frames serve them in, kept on
+    /// this side so no relay's numbering decides it.
     let serial: Int64
 
     /// How many views are alive, for the tally.
@@ -30,9 +30,10 @@ class WebDOMView {
     private var offered = DragAndDrop.none
     private var dragListener: Int32?
 
-    /// What runs as the element's size changes, every one: its box drawn again, its drawing, its frame read, a
-    /// scroller's waiting offset moved to.
-    private var sizeFollowers: [@MainActor () -> Void] = []
+    /// What runs as the element's size changes, every one, by the number it is followed under: its box drawn again,
+    /// its drawing, its frame read, a scroller's waiting offset moved to, a bar's edge.
+    private var sizeFollowers: [(number: Int, action: @MainActor () -> Void)] = []
+    private var followedSizes = 0
 
     /// The CSS properties this view's element holds, by name, so a value is sent only when it changes.
     private var styles: [String: String] = [:]
@@ -123,7 +124,7 @@ class WebDOMView {
         #endif
     }
 
-    /// Whether the element has been let go of: its number may be another element's by now.
+    /// Whether the element has been let go of: its number names no element any more.
     private(set) var isReleased = false
 
     /// Takes the element off the page and lets go of it and of everything hung on it, once.
@@ -154,16 +155,24 @@ class WebDOMView {
         WebRelay.offerDrag(node, offered, listener)
     }
 
-    /// Runs `action` whenever the element's size changes: one observer of the page's carries every follower, and
-    /// goes with the element.
+    /// Runs `action` whenever the element's size changes, until `stopFollowingSize` with the number it answers: one
+    /// observer of the page's carries every follower, and goes with the element.
     /// Design: docs/design/platforms/web/layout.md#where-a-view-stands
-    func followSize(_ action: @escaping @MainActor () -> Void) {
-        if sizeFollowers.isEmpty {
+    @discardableResult
+    func followSize(_ action: @escaping @MainActor () -> Void) -> Int {
+        if followedSizes == 0 {
             WebRelay.observeSize(node, held(WebRelay.listener { [weak self] in
-                for follower in self?.sizeFollowers ?? [] { follower() }
+                for follower in self?.sizeFollowers ?? [] { follower.action() }
             }))
         }
-        sizeFollowers.append(action)
+        followedSizes += 1
+        sizeFollowers.append((followedSizes, action))
+        return followedSizes
+    }
+
+    /// Stops running what `followSize` answered `number` for.
+    func stopFollowingSize(_ number: Int) {
+        sizeFollowers.removeAll { $0.number == number }
     }
 
     /// A listener the element lets go of as it leaves.
@@ -237,14 +246,41 @@ class WebDOMView {
         guard styles[name] != value else { return }
         styles[name] = value
         if !overridden.contains(name) { WebRelay.setStyle(node, name, value) }
-        // The width the layout gives the view, which a field's padding yields to.
+        // The width the layout gives the view - no more than its most - else its most, which a field's padding
+        // yields to.
         // Design: docs/design/platforms/web/look.md#a-fields-padding
-        if name == "width" { WebRelay.setStyle(node, "--stateui-width", value) }
+        if name == "width" || name == "max-width" {
+            let most = styles["max-width"]
+            let width = styles["width"].map { width in most.map { "min(\(width), \($0))" } ?? width } ?? most
+            WebRelay.setStyle(node, "--stateui-width", width)
+        }
     }
 
     /// The value of a CSS property as the view's own say keeps it.
     func styled(_ name: String) -> String? {
         styles[name]
+    }
+
+    /// Whether the user selects the view's words, as the view says it - a text's "text" or "none"; nil for the
+    /// page's own.
+    var ownSelection: String? {
+        didSet { showSelection() }
+    }
+
+    /// The touch the page keeps over the view while the hand is the view's - a press dragged, two fingers, a layout's
+    /// hand - which selects nothing then; nil where the hand is the page's.
+    /// Design: docs/design/platforms/web/input.md#a-press-dragged-and-a-pinch
+    var handTouch: String? {
+        didSet {
+            style("touch-action", handTouch)
+            showSelection()
+        }
+    }
+
+    private func showSelection() {
+        let selection = handTouch == nil ? ownSelection : "none"
+        style("user-select", selection)
+        style("-webkit-user-select", selection)
     }
 
     /// What the element is drawn over, under its whole box: a color, or a brush's first color; nil for the
@@ -283,6 +319,11 @@ class WebDOMView {
     /// Whether the view takes input; a form control grays itself.
     func setEnabled(_ enabled: Bool) {
         attribute("aria-disabled", enabled ? nil : "true")
+    }
+
+    /// Whether the view and everything in it let a press go to what stands behind them.
+    func setIgnoresInput(_ ignores: Bool) {
+        attribute("data-ignores-input", ignores ? "" : nil)
     }
 
     /// Whether the view shows; a hidden one takes no room, so its layout's places are read before it goes or comes.

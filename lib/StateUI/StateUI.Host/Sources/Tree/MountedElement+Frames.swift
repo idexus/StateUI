@@ -52,4 +52,34 @@ extension MountedElement {
     public static func frameNumbers(place: Rect, corner: Point, content: Point) -> [Double] {
         [place.x, place.y, place.width, place.height, corner.x, corner.y, corner.x - content.x, corner.y - content.y]
     }
+
+    /// Where the top left corner of the element's laid-out rectangle stands in its window, no transform in it: the
+    /// toolkit's own (`toolkit`) where none stands on the element or a layout above it, else the corner of the
+    /// layout placing it, with its `place` there added and that layout's `scrolled` offset taken away.
+    /// Design: docs/design/host/runtime.md#a-corner-in-the-window
+    public func cornerInWindow(
+        toolkit: (MountedElement) -> Point?, place: (MountedElement) -> Point?, scrolled: (MountedElement) -> Point
+    ) -> Point? {
+        guard standsTransformed, let parent = layoutParent, let at = place(self),
+              let above = parent.cornerInWindow(toolkit: toolkit, place: place, scrolled: scrolled)
+        else { return toolkit(self) }
+        let scroll = scrolled(parent)
+        return Point(x: above.x + at.x - scroll.x, y: above.y + at.y - scroll.y)
+    }
+
+    /// Whether a transform - a move, a turn, a size - stands on the element or on a layout above it.
+    var standsTransformed: Bool {
+        var each: MountedElement? = self
+        while let element = each {
+            if Self.transforms.contains(where: { (element.number($0.property) ?? $0.none) != $0.none }) { return true }
+            each = element.layoutParent
+        }
+        return false
+    }
+
+    /// The properties transforming what a view draws, each with the value that leaves it as it stands.
+    private static let transforms: [(property: Prop, none: Double)] = [
+        (.translationX, 0), (.translationY, 0), (.rotation, 0), (.rotationX, 0), (.rotationY, 0),
+        (.scale, 1), (.scaleX, 1), (.scaleY, 1),
+    ]
 }

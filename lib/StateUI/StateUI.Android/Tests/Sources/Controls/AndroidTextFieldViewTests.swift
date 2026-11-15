@@ -28,6 +28,7 @@ final class AndroidTextFieldViewTests: XCTestCase {
             ("testWordsStillComposedAreCutOnceCommitted", testWordsStillComposedAreCutOnceCommitted),
             ("testAStateWriteShowsTheWordsAndIsNotHeardAsTyping", testAStateWriteShowsTheWordsAndIsNotHeardAsTyping),
             ("testAPasswordHidesTheWordsAndKeepsThem", testAPasswordHidesTheWordsAndKeepsThem),
+            ("testAPasswordReadOnlyAndBackKeepsItsWeight", testAPasswordReadOnlyAndBackKeepsItsWeight),
             ("testReturnSubmitsOnce", testReturnSubmitsOnce),
             ("testAReturnsReleaseStaysOnTheFieldItsSubmitAimedAt", testAReturnsReleaseStaysOnTheFieldItsSubmitAimedAt),
             ("testAHardwareReturnStartsANewLineInAnEditor", testAHardwareReturnStartsANewLineInAnEditor),
@@ -153,6 +154,32 @@ final class AndroidTextFieldViewTests: XCTestCase {
                 Java.callStaticInt(AndroidDriver.testText, AndroidDriver.weight, .object(field.reference)), 700,
                 "the weight drawn after the words were hidden")
             XCTAssertEqual(name.wrappedValue, "secret")
+        }
+    }
+
+    /// A password made read only and editable again keeps the weight the tree gives it: Android draws a password's
+    /// kind of input in its own face each time the kind is set.
+    func testAPasswordReadOnlyAndBackKeepsItsWeight() throws {
+        try onMainActor {
+            let name = State(wrappedValue: "secret")
+            let readOnly = State(wrappedValue: false)
+            let host = AndroidRenderer.running {
+                VStack {
+                    TextField(name.projectedValue).isPassword(true).isReadOnly(readOnly.wrappedValue).fontWeight(.bold)
+                    Button("Lock").onClicked { readOnly.wrappedValue.toggle() }
+                }
+            }
+            let field = try XCTUnwrap(host.views(AndroidTextFieldView.self).first)
+            let lock = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+            @MainActor func weight() -> Int32 {
+                Java.callStaticInt(AndroidDriver.testText, AndroidDriver.weight, .object(field.reference))
+            }
+            XCTAssertEqual(weight(), 700)
+
+            lock.click()
+            XCTAssertEqual(weight(), 700, "the weight drawn once the password is read only")
+            lock.click()
+            XCTAssertEqual(weight(), 700, "and once it is editable again")
         }
     }
 

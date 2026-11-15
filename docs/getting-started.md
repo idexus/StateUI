@@ -17,7 +17,8 @@ the selected host, and any backends are built from that same checkout.
 ## Requirements
 
 - macOS 26.4 or newer, with Xcode 27 and its Swift 6.4, for the AppKit host;
-- a checkout of this repository;
+- a checkout of this repository, and the `stateui` tool built from it
+  ([The tool](development.md#the-tool));
 - VS Code and Node.js 20 or newer, for the StateUI extension.
 
 [UIKit host](hosts/uikit.md#requirements) lists what the UIKit host needs for
@@ -47,10 +48,10 @@ Every launch has a command-line equivalent. Build and start HelloWorld's
 AppKit head from the repository root:
 
 ```bash
-.scripts/AppKit/run-app.sh apps/HelloWorld debug
+stateui run --project apps/HelloWorld --host appkit
 ```
 
-The script builds it with `STATEUI_HOST=appkit`, the variable that makes it an
+The `stateui` tool builds it with `STATEUI_HOST=appkit`, the variable that makes it an
 AppKit build: the manifest then declares the
 AppKit head and defines `APPKIT`, and without it `swift test` compiles no part
 of one host's half; see
@@ -60,48 +61,45 @@ application in a directory of its own inside the application's `.build` -
 `.build/gtk`, `.build/web` - beside SwiftPM's plain build, so switching hosts
 rebuilds nothing. `swift package clean` empties all of them.
 
-Run HelloWorld's Android head on a device - `.scripts/Android/devices.sh list`
+Run HelloWorld's Android head on a device - `stateui devices --host android`
 names the devices:
 
 ```bash
-.scripts/Android/run-app.sh apps/HelloWorld debug emulator-5554
+stateui run --project apps/HelloWorld --host android --device emulator-5554
 ```
 
 Run its UIKit head on an iOS simulator, booted first where it is not - the
 one named, else the one booted, else an iPhone:
 
 ```bash
-.scripts/UIKit/run-app.sh apps/HelloWorld debug "iPhone 18 Pro"
+stateui run --project apps/HelloWorld --host uikit --device "iPhone 18 Pro"
 ```
 
-The WinUI, GTK and Web heads have a script of their own too, under
-[Build](development.md#build). So has each host's suite -
-`.scripts/AppKit/test-appkit.sh`, `.scripts/UIKit/test-uikit.sh`,
-`.scripts/Android/test-android.sh`, `.scripts/GTK/test-gtk.sh`,
-`.scripts/Web/test-web.sh`, and `.scripts\WinUI\test-winui.ps1` on Windows -
-which [Test](development.md#test) lists with the arguments each takes.
+Every head runs from `stateui run`, and each host's suite from
+`stateui repo test` - `--suite host:appkit`, `host:uikit`, `host:android`,
+`host:winui`, `host:gtk` and `host:web` - which [Build](development.md#build)
+and [Test](development.md#test) list with the arguments each takes.
 
 Build the signed Gallery bundle with its resources and icon:
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug
+stateui build --project apps/Gallery --host appkit
 ```
 
 A new application is HelloWorld under another name, with every head
 HelloWorld has and its example test in `Tests/` - its page shown in a test
 window, its button clicked ([Testing an application](interface/testing.md)) -
-which `swift test` and **StateUI: Run Tests** run. This makes `apps/Notes`
-(`.scripts/new-app.ps1 -Name Notes` on Windows):
+which `swift test` and **StateUI: Run Tests** run. This makes `apps/Notes`:
 
 ```bash
-.scripts/new-app.sh Notes
+stateui new Notes --directory apps
 ```
 
 Test it, then build and start its AppKit head from the same repository root:
 
 ```bash
 swift test --package-path apps/Notes
-.scripts/AppKit/run-app.sh apps/Notes debug
+stateui run --project apps/Notes --host appkit
 ```
 
 ## Application shape
@@ -222,9 +220,9 @@ GalleryEventSources.start()
 AppKitHost.run()
 ```
 
-The host finds the artwork beside the program - its bundle's, or the
-`Resources` that `.scripts/AppKit/run-app.sh` and `deploy.sh` lay there - so a
-head runs from any directory, and on another Mac. Its icon is drawn on
+The host finds the artwork the program carries - in the bundle the `stateui`
+tool builds every application as, or in the `Resources` beside a bare
+program - so a head runs from any directory, and on another Mac. Its icon is drawn on
 macOS's icon grid; see [AppKit host](hosts/appkit.md).
 
 Registration and `run` happen once per process. All scenes and windows then
@@ -288,7 +286,7 @@ Package.swift, on a GTK build
 
 An application showing no web page names no backend and links no engine.
 
-A new application has this directory shape (`.scripts/new-app.sh Notes`):
+A new application has this directory shape (`stateui new Notes --directory apps`):
 
 ```text
 apps/Notes/

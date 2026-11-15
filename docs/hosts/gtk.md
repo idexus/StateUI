@@ -24,12 +24,8 @@ lib/StateUI/StateUI.GTK/
   Sources/StateUIGTK/        the host: its runtime, elements, registrations, layout and window
   Sources/CStateUIGTK/       GTK's and libadwaita's headers, found by pkg-config, and GLib's flags
                              by names every GLib resolves: the C module a head imports too
-  Testing/                   a package of its own: the host's suite, run by swift test, in Tests/,
-                             and the driver every conformance run on GTK goes through
-.scripts/GTK/
-  run-app.sh                 builds an application's GTK head and starts it
-  deploy.sh                  builds it for release and lays it in a folder of its own
-  test-gtk.sh                runs the host's suite
+  Testing/                   a package of its own: the host's suite, run by stateui repo test, in
+                             Tests/, and the driver every conformance run on GTK goes through
 apps/<App>/Platforms/GTK/
   main.swift                 the application's GTK head
   Host/                      what this host answers for the application
@@ -94,7 +90,8 @@ and defines the `GTK` compilation condition for every module of the
 application; `lib/StateUI.Head` brings the `StateUIGTK` host to the head. Swift written for this host alone stands under
 `#if GTK`.
 
-A new application made in `apps/` - `.scripts/new-app.sh` - has a GTK head,
+A new application - **StateUI: New Application**, `stateui new`, or
+`stateui new` - has a GTK head,
 as HelloWorld does.
 
 ## Controls, acts, and events registered in Swift
@@ -294,74 +291,75 @@ private static func report() {
 ## Running
 
 ```bash
-.scripts/GTK/run-app.sh apps/HelloWorld
+stateui run --project apps/HelloWorld --host gtk
+stateui run --project apps/HelloWorld --host gtk --debugger
 ```
 
-`run-app.sh` stops a running copy of the head, builds it and starts it, its
-output in the terminal. Everything a build writes stays in the application's
-`.build/gtk/`, but for what the desktop shows the application by: its icon,
-`Resources/AppIcon/appicon_gnome.svg`, and an entry starting this build, both
-named by the application's ID and installed for the user in
-`~/.local/share/icons` and `~/.local/share/applications`. GNOME finds a
-window's icon through that entry. `release` builds the optimized head, `--detach` returns once
-the application has started, `--gdb` starts it detached under gdb - the
-stack of every GTK critical and of a crash written to `.build/gtk/gdb.log`,
-the application going on past a critical - and `--build-only` builds it and
-starts nothing. Every `STATEUI_` variable of the shell that runs it -
-`STATEUI_TALLY=1`, `STATEUI_INSPECT=1` - reaches the application.
+`stateui run` builds the head, installs it for the user, stops a running
+copy and starts it, its output in the terminal; Ctrl+C ends it. A build
+publishes the head beside its libraries and its pictures; installing writes
+what the desktop shows the application by: its icon,
+`Resources/AppIcon/appicon_gnome.svg`, and an entry starting that build,
+both named by the application's ID, in `~/.local/share/icons` and
+`~/.local/share/applications` - `stateui install --artifact <folder>` writes
+them for a build alone. GNOME finds a window's icon through that entry.
+`--configuration release` builds the optimized head; `--debugger` runs it
+under gdb, the stack of every GTK critical and of a crash said as it comes,
+the application going on past a critical. Every `STATEUI_` variable of the
+shell that runs it - `STATEUI_TALLY=1`, `STATEUI_INSPECT=1` - reaches the
+application.
 
-In VS Code, with **GTK** chosen in the status bar, **StateUI: Debug** builds
-the head with `run-app.sh --build-only` and starts it under `lldb-dap`, so a
+In VS Code, with **GTK** chosen in the status bar, **StateUI: Debug** has the
+tool build and install the head and starts it under `lldb-dap`, so a
 breakpoint in the application's Swift holds from the first line.
 
-## Deploying
+## Packaging
 
 ```bash
-.scripts/GTK/deploy.sh apps/Gallery artifacts/Gallery/GTK
+stateui package --project apps/Gallery --host gtk
 ```
 
-`deploy.sh` builds an application's head for release, as
-`run-app.sh release --build-only` does, and lays it in the folder named, made
-anew: the head, the StateUI libraries it links, and its pictures in
-`Images/`. It lays nothing the system provides - GTK, libadwaita,
+`stateui package` builds an application's head for release and lays it in
+`--output`, else `artifacts/<application>/GTK`, made anew: the head, the
+StateUI libraries it links, and its pictures in `Images/`. It lays nothing the system provides - GTK, libadwaita,
 WebKitGTK: the machine that runs the folder has them installed.
-**StateUI: Deploy** in the editor runs it for the application chosen,
-and lays the head in `artifacts/<application>/GTK` of the folder that holds
-the application's `apps/` - a checkout's, or a project group's.
+**StateUI: Package** in the editor does so for the application chosen,
+and lays the head in `artifacts/<application>/GTK` of the application's
+workspace - the folder of the stateui.json listing it, a checkout's or a
+project group's.
 
 ## Testing
 
 ```bash
-swift test --package-path lib/StateUI/StateUI.GTK/Testing
-.scripts/GTK/test-gtk.sh --filter GTKConformanceTests/testButton
+stateui repo test --suite host:gtk
+stateui repo test --suite host:gtk --filter GTKConformanceTests/testButton
 ```
 
 The suite is XCTest. GTK's widgets stand on the test thread with no main loop
 running: the suite starts libadwaita once, registers an application for its
 windows, and turns GLib's loop itself where GTK lays out and draws. The
 windows open on the desktop's display, so the suite runs in a desktop
-session. `.scripts/GTK/test-gtk.sh` runs the same `swift test`, handing it
-its arguments.
+session. Unfiltered, the foundation's own Linux tests run first, and the
+host's facade and its web view's backend are held to their API records last.
 
 The suite runs the conformance families too, one test a family -
 `GTKConformanceTests/testButton` - with the web view's backend registered.
 A run holds what it says to `lib/StateUI/exports/`: what the host declares to
 `gtk.txt`, and each family's verdicts to `marks/gtk/<Family>.txt`; a run that
-says otherwise fails. `STATEUI_UPDATE_EXPORTS=1` writes them instead, each
-verdict file under the revision its family stands at in
-`lib/StateUI/StateUI.Conformance/revisions.txt`, and `STATEUI_STALE_ONLY=1`
-runs only the families whose verdicts stand at another revision, or at none:
-each other family's test ends at once. With the verdicts written, the
+says otherwise fails. `stateui repo conformance run --host gtk --record` writes them instead
+- `--all` every family and what the host declares, `--changed` the families
+whose verdicts stand at another revision or at none, `--family <name>` the
+ones named - each verdict file under the revision its family stands at in
+`lib/StateUI/StateUI.Conformance/revisions.txt`, then renders the
 [platform contract](../platform-contract.md#reading-the-matrix) and
-[the control dictionary](../controls/README.md) are rendered from them at the
-repository's root:
+[the control dictionary](../controls/README.md) from them;
+`stateui repo conformance status --host gtk` says where they stand, and
+`stateui repo api record --host gtk` writes the API records:
 
 ```bash
-STATEUI_UPDATE_EXPORTS=1 .scripts/GTK/test-gtk.sh --filter GTKConformanceTests
-STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests
+stateui repo conformance run --host gtk --all --record
+stateui repo conformance run --host gtk --changed --record
 ```
 
-In the editor, with GTK chosen, **StateUI: Conformance - Rebuild all** runs
-both: the families writing their verdicts, then the documents.
-**StateUI: Conformance - Rebuild changed** runs the stale families alone
-before it renders.
+In the editor, with GTK chosen, **StateUI: Conformance - Rebuild all**
+and **Rebuild changed** run the same.

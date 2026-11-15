@@ -19,6 +19,11 @@ final class LocaleTagTests: XCTestCase {
         XCTAssertEqual(LocaleTag("PL_pl").identifier, "pl-PL")
         XCTAssertEqual(LocaleTag("zh-hant-tw").identifier, "zh-Hant-TW")
         XCTAssertEqual(LocaleTag("pl_PL.UTF-8@euro").identifier, "pl-PL", "a POSIX locale names its language and region")
+        XCTAssertEqual(LocaleTag("de@euro").identifier, "de")
+        for text in [".en", "@en", ".UTF-8", "@euro", "."] {
+            XCTAssertFalse(LocaleTag(text).isValid, "\(text): a POSIX suffix with no language before it is no tag")
+            XCTAssertEqual(LocaleTag(text).identifier, text)
+        }
         XCTAssertEqual(LocaleTag("es-419").region, "419")
     }
 

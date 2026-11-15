@@ -128,8 +128,11 @@ extension AppKitDriver {
             case .horizontalTextAlignment: return alignment(text.alignment, in: editor.userInterfaceLayoutDirection).propValue
             case .isSpellCheckEnabled: return text.isContinuousSpellCheckingEnabled.propValue
             case .isTextPredictionEnabled: return text.isAutomaticTextCompletionEnabled.propValue
-            case .cursorPosition: return text.selectedRange().location.propValue
-            case .selectionLength: return text.selectedRange().length.propValue
+            // AppKit counts in UTF-16 units; the characters they cover are read back.
+            case .cursorPosition, .selectionLength:
+                let range = text.selectedRange()
+                let selection = InputWords.characterSelection(utf16Start: range.location, length: range.length, in: text.string)
+                return (property == .cursorPosition ? selection.start : selection.length).propValue
             case .inputPurpose: return (filled(text.contentType) ?? purpose(of: editor.traits)).propValue
             default: return nil
             }

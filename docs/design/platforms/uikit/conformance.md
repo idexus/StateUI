@@ -9,7 +9,7 @@ application, one test for each family of cases - the longest in parts - in
 
 A view stands in a window only in an application's process, and a window only
 in a scene iOS connected. So the host's tests are an application of their
-own, which `test-uikit.sh` builds, installs on a simulator and starts: once
+own, which `stateui repo test --suite host:uikit` builds, installs on a simulator and starts: once
 its first scene connects and stands in front, the runner reads every test case of its own binary
 by name - a class of the whole process may be no object at all - and runs
 each test in a turn of the main run loop of its own, saying each as it ends.
@@ -57,7 +57,8 @@ last wrote. A run of a text's words is the label's attributes over the
 letters the host layer's runs place it at (`RunPlace`). A text view takes
 input while the user can edit or select it,
 and is read only while they can select it and not edit it. A color at a point is read from the screen: the view drawn as the
-screen shows it into a bitmap in sRGB. Whether a touch reaches a view is the
+screen shows it into a bitmap in sRGB - a page's on its controller's view,
+which its background stands on behind its bars. Whether a touch reaches a view is the
 window's own hit testing at that point.
 
 A layout's box and a shape's paint are layers UIKit holds: a box's fill and
@@ -68,6 +69,15 @@ A button's box, icon and breaking are its configuration's. What UIKit holds
 none of - a shape's figure placed and moved into its path, a layout's outline
 held as a path, where StateUI's layout places the children, what StateUI
 measures - does not apply here, its effect proven by another case.
+
+## A keyboard
+
+A keyboard a case stands the window under (`standUnderKeyboard`) is UIKit's
+own notice of where the keyboard goes, posted with the frame it goes to in
+the screen's coordinates and no animation, which the host hears as it hears
+the system's keyboard (`UIKitKeyboardPlace`); none is a frame below the
+screen. A case that told of one leaves none to the next: closing, the driver
+tells the keyboard gone.
 
 ## What goes past UIKit
 

@@ -175,9 +175,11 @@ in from nothing under the layout's motion, where its view presents opacity
 and no state owns it; an opacity already on its way keeps its motion. A
 change of visibility on an element already shown crosses under the
 element's own motion or the application's: hidden, it fades out - standing
-shown the while (`standsShown`) - and only as the fade ends, landed or cut
-short, does it hide and its layout close over it; shown again mid-fade, it
-comes back from the opacity it stands at; shown from nothing, it fades in.
+shown the while (`standsShown`), deaf to input (`ignoresInput`, which the
+element presents as true and hands its view by `setIgnoresInput`) - and only
+as the fade ends, landed or cut short, does it hide, hear again and its
+layout close over it; shown again mid-fade, it comes back from the opacity it
+stands at and hears again; shown from nothing, it fades in.
 Where nothing moves - no motion, or the user asked for less - nothing
 crosses, and the view simply shows or hides.
 

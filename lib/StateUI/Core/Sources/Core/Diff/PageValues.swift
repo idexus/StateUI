@@ -40,11 +40,13 @@ extension Node {
         }
     }
 
-    /// Takes, as an arrangement standing where a page stands, the title, the icon and the ground of its pages `values`
-    /// give; anything else a page alone says, and anywhere but at a page's position nothing, is complained about.
+    /// Takes, as an arrangement standing where a page stands, what of a page `values` give its contract wears - a
+    /// title, an icon, the ground of its pages, the links its window is given; anything else, and anywhere but at a
+    /// page's position everything, is complained about.
+    /// Design: docs/design/views/pages.md#an-arrangement-is-a-view
     mutating func takeAsArrangement(_ values: PageValues) {
         let node = values.node
-        guard NodeType.arrangements.contains(type) else {
+        guard let taken = Self.arrangementTakes[type] else {
             let said = node.props.keys.map(\.name) + node.driven.keys.map(\.name) + node.events.keys.map(\.name)
             complain("""
                 \(Set(said).sorted().joined(separator: ", ")) says something of a page, written on a view no page \
@@ -54,32 +56,51 @@ extension Node {
             return
         }
 
-        for (key, value) in node.props where Self.pageProps.contains(key) { props[key] = value }
-        for (key, value) in node.driven where Self.pageProps.contains(key) { driven[key] = value }
-        for (name, handlers) in node.events.sorted(by: { $0.key < $1.key }) where Self.pageEvents.contains(name) {
+        for (key, value) in node.props where taken.props.contains(key) { props[key] = value }
+        for (key, value) in node.driven where taken.props.contains(key) { driven[key] = value }
+        for (name, handlers) in node.events.sorted(by: { $0.key < $1.key }) where taken.events.contains(name) {
             addHandlers(name, handlers)
         }
 
-        let others = node.props.keys.filter { !Self.pageProps.contains($0) }.map(\.name)
-            + node.driven.keys.filter { !Self.pageProps.contains($0) }.map(\.name)
-            + node.events.keys.filter { !Self.pageEvents.contains($0) }.map(\.name)
+        let others = node.props.keys.filter { !taken.props.contains($0) }.map(\.name)
+            + node.driven.keys.filter { !taken.props.contains($0) }.map(\.name)
+            + node.events.keys.filter { !taken.events.contains($0) }.map(\.name)
         if !others.isEmpty {
             complain("""
                 \(Set(others).sorted().joined(separator: ", ")) says something of a page, written on \(type.name), \
-                which stands where a page stands as a page already and takes only a title, an icon, the ground of its \
-                pages and the links its window is given.
+                which stands where a page stands as a page already and takes only \(taken.said).
                 """)
         }
     }
 
     /// The keys the page tier's properties - a title, an icon, a ground - and its event - a link given - are written
     /// under, made once.
-    private static let pageProps = Set(declared(.property).map { Prop(key: $0) })
-    private static let pageEvents = Set(declared(.event).map { Event(key: $0) })
+    private static let pageProps = Set(declared(.property, in: PageElementContract.worn).map { Prop(key: $0) })
+    private static let pageEvents = Set(declared(.event, in: PageElementContract.worn).map { Event(key: $0) })
 
-    /// The keys of the page tier's members of `kind`, its tiers' included.
-    private static func declared(_ kind: MemberFacts.Kind) -> [KeyName] {
-        PageElementContract.worn.flatMap { $0.members }.compactMap { member in
+    /// What of a page each arrangement takes - the page tier's keys its contract wears - and those said in words,
+    /// made once.
+    private static let arrangementTakes: [NodeType: (props: Set<Prop>, events: Set<Event>, said: String)] = {
+        let arrangements: [any ElementContract.Type] = [
+            NavigationStackContract.self, TabViewContract.self, SplitViewContract.self,
+        ]
+        let words: [(KeyName, String)] = [
+            (PageElementContract.title.memberKey, "a title"), (IconElementContract.icon.memberKey, "an icon"),
+            (BackgroundElementContract.background.memberKey, "the ground of its pages"),
+            (OpenedLinkElementContract.linkOpened.memberKey, "the links its window is given"),
+        ]
+        return Dictionary(uniqueKeysWithValues: arrangements.map { contract in
+            let worn = Set(declared(.property, in: contract.worn) + declared(.event, in: contract.worn))
+            let said = words.filter { worn.contains($0.0) }.map(\.1)
+            let listed = said.dropLast().joined(separator: ", ") + (said.count > 1 ? " and " : "") + (said.last ?? "nothing")
+            let taken = (props: pageProps.filter { worn.contains($0.key) }, events: pageEvents.filter { worn.contains($0.key) })
+            return (contract.nodeType, (taken.props, taken.events, listed))
+        })
+    }()
+
+    /// The keys of `contracts`' members of `kind`.
+    private static func declared(_ kind: MemberFacts.Kind, in contracts: [any Contract.Type]) -> [KeyName] {
+        contracts.flatMap { $0.members }.compactMap { member in
             (member as? any DeclaredMember).flatMap { $0.facts.kind == kind ? $0.memberKey : nil }
         }
     }

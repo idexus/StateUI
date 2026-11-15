@@ -59,8 +59,9 @@ said twice. Without a split view the bar names the page alone. The parts follow
 from the split view's `data-sidebar`, which the bar repeats, and the page's
 width, so no measuring moves them.
 
-The bar shows no application's mark: it names the page and the application
-in words, and the browser's tab shows the site's own icon.
+The bar shows the application's mark where its title area has one - the
+sidebar's page's picture, before its name - and names the page and the
+application in words; the browser's tab shows the site's own icon.
 
 The page is one window: an application's second window has no place of its
 own in it.
@@ -144,9 +145,28 @@ sides. A page stands its content clear of what is left by its own padding -
 what stands in it then has nothing over that edge (`data-pads`) - but on an
 edge where the content lets itself under (`SafeAreaArithmetic.under`), where
 the content's scroller takes that padding instead, its rows scrolling under
-the bar's material, the first and the last clear of it. The overlays stand
-clear of all of it. A view's frame is told from the corner below the bar
+the bar's material, the first and the last clear of it. The page stands so
+again as it changes, and as a view it seeks its scroller through changes - its
+content, or a view a layout on the way holds alone (`roomSeekingScroller`):
+another view may be its scroller then. The overlays stand clear of all of
+it. A view's frame is told from the corner below the bar
 (`WebRenderer.contentBox`), where the room's safe area starts.
+
+## The keyboard
+
+A phone's browser lays its keyboard over the page and leaves the page's own
+viewport as it was, showing less of it: the visible part
+(`visualViewport`) ends where the keyboard begins. The relay tells the host
+each time the visible part moves or changes its size, and the host reads the
+keyboard from it (`WebScreenKeyboard`): how far the page's viewport reaches
+past the foot of its visible part, at its own scale - nought while the page is
+zoomed in, which shows less of it with no keyboard, and nought where the
+browser makes the page itself shorter for the keyboard. The host writes it as
+`--stateui-keyboard`, and the foot of the safe area is the higher of the
+system's own and the keyboard (`--stateui-over-bottom`, the rule of
+`SafeAreaArithmetic.bottom`): a page stands clear of the keyboard, its bottom
+bar on it, and content that ignores the foot of the safe area runs under it,
+as on every host. A phone's sheet from the bottom keeps clear of it too.
 
 ## The color under the window
 
@@ -229,7 +249,11 @@ over everything (`popover="auto"`): an item a button, a separator a line, a
 submenu a button opening its own popover beside it, inside the one it stands
 in so that both stay open. A click beside it or Escape takes it down - the
 browser's own light dismissal - and so does choosing an item, which then
-hears it chosen. An open menu holds the keyboard: the page's own keys - a
+hears it chosen. A menu goes as any element an entry of it stands for leaves the
+page - an item's or a submenu's: a view's context menu as its menu does, a bar
+item's as the item does, the bar's More as the page whose items and menus it
+lists does, the system's Edit menu a page joins among them, whose entries no
+element stands for - so no entry acts for an element gone. An open menu holds the keyboard: the page's own keys - a
 view taking the arrows, Enter or Escape - pass it by, so its arrows go
 through its items whatever the page takes, and as it goes the browser gives
 the keyboard back to what held it. A popover is kept in the window whole,
@@ -260,12 +284,15 @@ still add up; its entries are read as they stand then.
 A page keeps no Edit menu of its own, so a menu joining `StandardMenu.edit`
 behind the bar's More holds the host layer's entries (`ChromeMenus.editing`).
 The page keeps the field the user last typed into (`focusin` on an input, a
-text area or editable words), since the menu takes the focus, and each entry
+text area or editable words), since the menu takes the focus - until it leaves,
+or what holds it does, as nothing keeps a field that left - and each entry
 hands it back and does its act there (`stateui_web_edit`): undo, redo, cut,
 copy and delete through the document's own commands - a cut and a copy want
 the user's click, which choosing the entry is - select all through the
 field's own, and paste through the clipboard's API, which the browser opens
-only where the user allowed it.
+only where the user allowed it. Its answer comes later: it lands in the field
+it was asked for, which takes the focus back, or nowhere once that field left
+the page - never in the field the focus went to meanwhile.
 
 ## Sheets
 

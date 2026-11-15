@@ -15,6 +15,7 @@
 // the page's contract, and insist the two exhaustive values in this one carry
 // every key.
 
+import Synchronization
 import XCTest
 @_spi(Host) @testable import StateUI
 
@@ -451,6 +452,66 @@ final class PageTests: XCTestCase {
         }.node)
 
         XCTAssertEqual(patch.subtree.map(\.type), [.vStack, .text])
+    }
+
+    /// A split view stands as the root of a window or of a sheet: on a stack's page, in a tab or in another split
+    /// view's detail it is left out, and said so.
+    func testASplitViewStandsOnlyAtTheRootOfAWindowOrASheet() {
+        let heard = Mutex<[String]>([])
+        Complaints.route { words in heard.withLock { $0.append(words) } }
+        defer { Complaints.route(to: nil) }
+        let (path, sheet) = (State<[Int]>([]), State(wrappedValue: true))
+        func split() -> some View { SplitView { Plain() } detail: { Plain() } }
+        func splits(_ shown: some View) -> Int {
+            let window = Node.window(showing: { Node.page(shown) }, session: WindowSession()).built
+            return Renders().render(window).subtree.filter { $0.type == .splitView }.count
+        }
+
+        XCTAssertEqual(splits(split()), 1, "a window's root")
+        XCTAssertEqual(splits(Text("page").sheet(isPresented: sheet.projectedValue) { split() }), 1, "a sheet's root")
+        XCTAssertEqual(splits(NavigationStack(path.projectedValue) { split() } destination: { _ in Plain() }), 0)
+        XCTAssertEqual(splits(TabView([0]) { _ in split() }), 0)
+        XCTAssertEqual(splits(SplitView { Plain() } detail: { split() }), 1, "the outer one alone")
+        let said = heard.withLock { $0 }.filter { $0.contains("stands as the root of a window or of a sheet") }
+        XCTAssertEqual(said.count, 3, "\(said)")
+    }
+
+    /// A split view takes of what a view says of its page the ground of its pages and the links its window is
+    /// given: it has no title or icon of its own, so those - written on it, or on a view whose body is one - are said
+    /// and left out, where a stack takes them and its pages keep their own.
+    func testASplitViewTakesTheGroundAndTheLinksOfAPageAlone() throws {
+        struct Split: View {
+            var body: some View { SplitView { Plain().pageTitle("Places") } detail: { Plain() } }
+        }
+        let heard = Mutex<[String]>([])
+        Complaints.route { words in heard.withLock { $0.append(words) } }
+        defer { Complaints.route(to: nil) }
+        func root(_ shown: some View) throws -> HostPatch {
+            let window = Node.window(showing: { Node.page(shown) }, session: WindowSession()).built
+            return try XCTUnwrap(Renders().render(window).subtree.first { NodeType.arrangements.contains($0.type) })
+        }
+        let direct = SplitView { Plain().pageTitle("Places") } detail: { Plain() }
+
+        for split in [try root(Split().pageTitle("Mail").pageIcon("mail.png").pageBackground(.red).onLinkOpened { _ in }),
+                      try root(direct.pageTitle("Mail").pageBackground(.red).onLinkOpened { _ in })] {
+            XCTAssertNil(split.props[PageElementContract.title.token], "no title of its own")
+            XCTAssertNil(split.props[IconElementContract.icon.token], "nor an icon")
+            XCTAssertNotNil(split.props[BackgroundElementContract.background.token], "the ground of its pages")
+            XCTAssertNotNil(split.events?[.linkOpened], "the links its window is given")
+            let sidebar = try XCTUnwrap(split.subtree.first { $0.type == .page })
+            XCTAssertEqual(sidebar.props[PageElementContract.title.token], .string("Places"), "its page keeps its own")
+        }
+        // Each said once: on the view whose body is a split view its title and icon, on the split view its title.
+        let said = heard.withLock { $0 }.filter { $0.contains("written on SplitView") }
+        XCTAssertEqual(said.map { $0.components(separatedBy: " says").first ?? "" },
+                       ["IconElement.icon, PageElement.title", "PageElement.title"], "\(heard.withLock { $0 })")
+        XCTAssertTrue(said.allSatisfy { $0.contains("takes only the ground of its pages and the links its window is given") })
+
+        let path = State<[Int]>([])
+        let stack = try root(
+            NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }.pageTitle("Mail").pageIcon("mail.png"))
+        XCTAssertEqual(stack.props[PageElementContract.title.token], .string("Mail"), "a stack takes its title")
+        XCTAssertNotNil(stack.props[IconElementContract.icon.token], "and its icon")
     }
 
     /// An arrangement fills where a page stands: what its contract does not declare - a width, a tap - is left

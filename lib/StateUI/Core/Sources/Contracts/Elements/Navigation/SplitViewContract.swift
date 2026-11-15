@@ -10,10 +10,14 @@ public enum SplitViewContract: ElementContract {
     /// StateUI's state contract.
     public static let layer: ElementLayer = .adaptive
 
-    /// A split view declares the bar over what it shows, is shown as a page
-    /// with a title and an icon, and automation finds it by its name.
+    /// A split view declares the bar over what it shows, the ground of its
+    /// pages and the links its window is given, and automation finds it by
+    /// its name. It stands only at a window's or a sheet's root, where nothing
+    /// presents it as an item, so it has no title or icon of its own: its
+    /// pages have theirs.
     public static let tiers: [any Tier.Type] = [
-        BarElementContract.self, PageElementContract.self, AutomationElementContract.self,
+        BarElementContract.self, BackgroundElementContract.self, OpenedLinkElementContract.self,
+        AutomationElementContract.self,
     ]
 
     /// Whether the sidebar is showing.

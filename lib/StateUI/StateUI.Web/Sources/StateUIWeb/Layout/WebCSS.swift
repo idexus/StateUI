@@ -160,11 +160,18 @@ enum WebCSS {
 
     /// The rest of a look: the space between the letters, the lines' height and the lines under or through.
     static func spacing(_ look: TextLook) -> [(String, String?)] {
-        let lines = [(TextDecorations.underline, "underline"), (.strikethrough, "line-through")]
-            .filter { look.decorations.contains($0.0) }.map(\.1)
-        return [("letter-spacing", letterSpacing(look.letterSpacing)),
+        // Given none, a run says none, so it does not take its label's through the cascade.
+        let spacing = look.letterSpacingGiven ? signedPixels(look.letterSpacing) : letterSpacing(look.letterSpacing)
+        return [("letter-spacing", spacing),
                 ("line-height", look.lineHeight.map(number)),
-                ("text-decoration-line", lines.isEmpty ? nil : lines.joined(separator: " "))]
+                ("text-decoration-line", decorationLines(look.decorations))]
+    }
+
+    /// The lines under or through words as `text-decoration-line` says them; nil for none.
+    static func decorationLines(_ decorations: TextDecorations) -> String? {
+        let lines = [(TextDecorations.underline, "underline"), (.strikethrough, "line-through")]
+            .filter { decorations.contains($0.0) }.map(\.1)
+        return lines.isEmpty ? nil : lines.joined(separator: " ")
     }
 
     /// A color as CSS's `rgb()`; nil for a value that is none.
@@ -183,13 +190,13 @@ enum WebCSS {
         }
     }
 
-    /// The most a child's length may be: `most` where it is stated, and no more than its slot where it is `bound`.
-    static func most(_ most: Double?, bound: Bool) -> String? {
+    /// The most a child's length may be: `most` where it is stated, no more than `bound`, its slot's, where it has one.
+    static func most(_ most: Double?, within bound: String?) -> String? {
         switch (pixels(most), bound) {
-        case (let stated?, true): "min(\(stated), 100%)"
-        case (let stated?, false): stated
-        case (nil, true): "100%"
-        case (nil, false): nil
+        case (let stated?, let bound?): "min(\(stated), \(bound))"
+        case (let stated?, nil): stated
+        case (nil, let bound?): bound
+        case (nil, nil): nil
         }
     }
 

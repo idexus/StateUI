@@ -32,6 +32,10 @@ extension WebDriver {
         if let page = Self.pageState(after: act) { return try running().pageChanged(page) }
         if act == .close, element.type == .window { return try running().runtime.ending() }
         if case .openLink(let address) = act { return try running().runtime.openLink(address) }
+        if act == .openMenu {
+            try open(menuOf: element)
+            return
+        }
         if act == .close, element.type == .page {
             // The close button on the bar of the sheet the page stands in, as a click presses it.
             return try click(try sheetBar(over: element), part: "button:has(> [data-glyph=close])")
@@ -57,6 +61,8 @@ extension WebDriver {
             // The user reaches nothing under a question; the program's own may wait their turn behind it.
             try WebBrowser.run("e.click()", on: e)
         case (.toggle, _), (.activate, _): try click(view)
+        // A screen reader's press: the click no pointer made.
+        case (.accessibilityPress, _): try WebBrowser.run("e.click()", on: e)
         case (.tap(let count), _): try click(view, count: count)
         case (.hold, _): try hold(view)
         case (.slide(let value), is WebSliderView):
@@ -198,13 +204,16 @@ extension WebDriver {
     }
 
     /// Where the element `e` - or its part `part` names - stands in the browser's window, brought into it first, once
-    /// the page's pictures have come and stand at their size: one coming moves what stands after it, as the user sees.
+    /// what moves it has come: the page's pictures, standing at their size, and every animation of the page's on it or
+    /// on what holds it - a sheet rising. The mouse reaches the page a moment after the measure.
+    /// Design: docs/design/platforms/web/runtime.md#the-conformance-run
     func box(of e: Int32, part: String? = nil) throws -> Rect {
         // A picture is come once loaded and sized by it - the host sizes it as it hears it loaded.
         let come = "[...document.images].every((i) => i.complete && (!i.classList.contains('stateui-picture') "
             + "|| !i.getAttribute('src') || i.style.containIntrinsicSize !== ''))"
+        let still = "((t) => !t || stateui.still(t))(\(target(part)))"
         for _ in 0..<150 {
-            guard try !WebBrowser.truth(come, on: 0) else { break }
+            guard try !(WebBrowser.truth(come, on: 0) && WebBrowser.truth(still, on: e)) else { break }
             WebBrowser.pause()
         }
         let numbers = try numbers(
