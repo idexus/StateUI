@@ -38,6 +38,19 @@ struct Workspace: Sendable {
         }
     }
 
+    /// The application a run starts where none is named: the folder `startup` names, one the file lists.
+    ///
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a `startup` the file does not list.
+    func startup() throws(ToolingError) -> URL? {
+        guard let path = file.startup else { return nil }
+        guard file.projects.contains(path) else {
+            throw ToolingError(
+                .invalidConfiguration,
+                "\(folder.appendingPathComponent(WorkspaceFile.name).path) starts \(path), which it does not list in projects.")
+        }
+        return ApplicationMaker.folder(named: path, from: folder)
+    }
+
     /// The checkout the file names for new applications.
     var library: URL? {
         file.library.map { ApplicationMaker.folder(named: $0.path, from: folder) }

@@ -314,10 +314,17 @@ public struct ApplicationBuilder: Sendable {
         return (keys as? [String: Any])?["CFBundleIdentifier"] as? String
     }
 
-    /// The project `request` names - its `projectUri`, else `folder` - and the application in it it means.
+    /// The project `request` names - its `projectUri`, else `folder` - and the application in it it means: the one
+    /// it names, else the only one, else the workspace's startup.
     private func resolve(_ request: BuildRequest, in folder: URL) async throws -> (Project, Application) {
         let project = try await ProjectReader(tools: tools).describe(containing: try request.projectUri.map(FileURI.url) ?? folder)
-        let named = request.application.map { name in project.applications.filter { $0.name == name } } ?? project.applications
+        let named = if let name = request.application {
+            project.applications.filter { $0.name == name }
+        } else if project.applications.count > 1, let startup = project.startupUri {
+            project.applications.filter { $0.packageUri == startup }
+        } else {
+            project.applications
+        }
         guard named.count == 1, let application = named.first else {
             let names = project.applications.map(\.name).joined(separator: ", ")
             throw ToolingError(.invalidConfiguration, named.isEmpty

@@ -138,6 +138,23 @@ final class ApplicationBuilderTests: XCTestCase {
         XCTAssertEqual(try FileURI.url(packaged.programUri).path, laid.appendingPathComponent("NotesUIKit.app/NotesUIKit").path)
     }
 
+    /// In a workspace of several applications, a build naming none builds the one its file starts.
+    func testAWorkspacesStartupIsBuiltWhereNoneIsNamed() async throws {
+        let bench = try bench()
+        let files = FileManager.default
+        let other = bench.root.appendingPathComponent("Other")
+        try files.createDirectory(at: other.appendingPathComponent("Platforms/AppKit"), withIntermediateDirectories: true)
+        try Data().write(to: other.appendingPathComponent("Platforms/AppKit/main.swift"))
+        try Data().write(to: other.appendingPathComponent("Package.swift"))
+        try WorkspaceFile(library: .init(path: "StateUI"), projects: ["Notes", "Other"], startup: "Notes")
+            .write(to: bench.root.appendingPathComponent("stateui.json"))
+        let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
+
+        let built = try await builder.build(BuildRequest(host: .appkit), in: bench.root, operation: "op-startup")
+
+        XCTAssertEqual(built.application, "Notes")
+    }
+
     /// A package replaces only a folder a package was laid in: one holding anything else is refused before any build,
     /// and so is the application's folder or one holding it - what stood there stays. A folder it laid it lays again.
     func testAPackageReplacesOnlyAFolderAPackageWasLaidIn() async throws {

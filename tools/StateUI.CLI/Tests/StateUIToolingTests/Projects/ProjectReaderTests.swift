@@ -82,6 +82,11 @@ final class ProjectReaderTests: XCTestCase {
         }
         try #"{"schemaVersion":2,"projects":[]}"#.write(to: file, atomically: true, encoding: .utf8)
         XCTAssertThrowsError(try Workspace.nearest(from: root))
+        try WorkspaceFile(projects: ["notes"], startup: "elsewhere").write(to: file)
+        XCTAssertThrowsError(try Workspace.nearest(from: root)?.startup()) {
+            XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration)
+            XCTAssertTrue(($0 as? ToolingError)?.message.contains("elsewhere") == true)
+        }
     }
 
     /// The file is written the same every time: keys and projects sorted, a line break at its end.

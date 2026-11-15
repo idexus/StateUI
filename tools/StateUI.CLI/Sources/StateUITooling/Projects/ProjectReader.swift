@@ -25,16 +25,17 @@ public struct ProjectReader: Sendable {
         let folder = RealPath.of(RealPath.lexical(path))
         let workspace = try Workspace.nearest(from: folder)
         if let application = Self.application(holding: folder) {
-            return try await describe(root: application, packages: [application], workspace: workspace)
+            return try await describe(root: application, packages: [application], workspace: workspace, startup: nil)
         }
         guard let workspace else {
             throw ToolingError(
                 .projectNotFound, "No StateUI application stands in or above \(path.path), and no stateui.json lists one.")
         }
-        return try await describe(root: workspace.folder, packages: try workspace.applications(), workspace: workspace)
+        return try await describe(
+            root: workspace.folder, packages: try workspace.applications(), workspace: workspace, startup: try workspace.startup())
     }
 
-    private func describe(root: URL, packages: [URL], workspace: Workspace?) async throws -> Project {
+    private func describe(root: URL, packages: [URL], workspace: Workspace?, startup: URL?) async throws -> Project {
         let applications = try await withThrowingTaskGroup(of: (Application, Checkout?).self) { group in
             for package in packages {
                 group.addTask { try await self.application(at: package, root: root) }
@@ -52,7 +53,7 @@ public struct ProjectReader: Sendable {
         try Task.checkCancellation()
         return Project(
             rootUri: FileURI.string(root), applications: applications.map(\.0), libraries: libraries,
-            workspaceUri: workspace.map { FileURI.string($0.folder) })
+            workspaceUri: workspace.map { FileURI.string($0.folder) }, startupUri: startup.map(FileURI.string))
     }
 
     private func application(at package: URL, root: URL) async throws -> (Application, Checkout?) {

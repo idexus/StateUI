@@ -44,7 +44,9 @@ whatever folders they stand, and the StateUI checkout they build with.
 `projects` lists the applications - paths from the file, each read as an
 application or refused - and nothing beneath the folder belongs to it
 otherwise. `library` is the checkout new applications build with; `startup`
-the application a run starts when none is named. The file is read whole: a
+the application a build, a run or a package takes where none is named and
+the workspace holds several - one `projects` lists, another refused - which
+a project's description says as `startupUri`. The file is read whole: a
 field the tool does not read, or another `schemaVersion`, is refused by its
 place. The tool writes it the same every time - keys and projects sorted, a
 line break at its end - so `stateui new` adds a project without rewriting the

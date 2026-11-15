@@ -12,12 +12,18 @@ public struct Project: Codable, Equatable, Sendable {
     public var libraries: [Library]
     /// The folder of the workspace it stands in - the nearest `stateui.json` up - as a file URI.
     public var workspaceUri: String?
+    /// The folder of the application a run starts where none is named - the workspace's `startup` - as a file URI.
+    public var startupUri: String?
 
     /// A project at `rootUri`.
-    public init(rootUri: String, applications: [Application], libraries: [Library], workspaceUri: String? = nil) {
+    public init(
+        rootUri: String, applications: [Application], libraries: [Library], workspaceUri: String? = nil,
+        startupUri: String? = nil
+    ) {
         self.rootUri = rootUri
         self.applications = applications
         self.libraries = libraries
         self.workspaceUri = workspaceUri
+        self.startupUri = startupUri
     }
 }

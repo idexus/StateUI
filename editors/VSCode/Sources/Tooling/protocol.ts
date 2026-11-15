@@ -146,9 +146,12 @@ export const Library = object<Library>({
     rootUri: string, release: optional(string), revision: optional(string), dirty: optional(boolean),
 });
 
-export interface Project { rootUri: string; applications: Application[]; libraries: Library[]; workspaceUri?: string }
+export interface Project {
+    rootUri: string; applications: Application[]; libraries: Library[]; workspaceUri?: string; startupUri?: string;
+}
 export const Project = object<Project>({
     rootUri: string, applications: array(Application), libraries: array(Library), workspaceUri: optional(string),
+    startupUri: optional(string),
 });
 
 export interface ProjectReference { projectUri?: string }
