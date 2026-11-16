@@ -44,6 +44,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### Tooling
 
+- The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running.
 - `stateui run` hands an application it starts on a simulator, a device, Android or a page every `STATEUI_` variable
   of its own environment, `STATEUI_TALLY=1` among them, as a head on the Mac, Linux or Windows has always had.
 - A GTK head run with `--debugger` ends as its program does: its exit status, or a crash's signal with every thread's

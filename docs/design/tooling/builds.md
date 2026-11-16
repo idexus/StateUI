@@ -86,7 +86,10 @@ workspace's folder, else the application's - with `operation.json` (schema
 version 1: the operation, its kind, what was asked, its state, when it started
 and ended, the failure) written as it opens and again as it ends, through a
 file written beside and moved into place, and `output.log`, what its programs
-said. `.stateui/` stands in every workspace's `.gitignore`.
+said. `.stateui/` stands in every workspace's `.gitignore`. The journal keeps
+the newest 50: as one opens, the records beyond them - by when they opened,
+then by id - go, but one still running, or a folder whose record is not
+written yet, which another process may be opening.
 
 ## An artifact published whole
 
