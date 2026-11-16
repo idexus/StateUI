@@ -178,18 +178,19 @@ configuration naming `"application": "Gallery"` runs that one instead.
 ## A new application
 
 The extension finds applications through the `stateui` tool: in a folder that
-is an application, that one; else the ones its workspace lists - the nearest
-`stateui-workspace.json` up from the folder, which names the applications and
-the StateUI they build with. A StateUI checkout is a workspace of its own
-(`apps/Gallery`, `apps/HelloWorld`), and so is a [project
-group](#a-project-group). An application added, removed or listed there is
-found again by itself.
+is an application - one holding its `stateui.json` - that one; else the ones
+its workspace lists - the nearest `stateui-workspace.json` up from the folder,
+which names the applications and the StateUI they build with. A StateUI
+checkout is a workspace of its own (`apps/Gallery`, `apps/HelloWorld`), and so
+is a [project group](#a-project-group). An application added, removed or
+listed there is found again by itself.
 
 **StateUI: New Application** - in a workspace, asks for a name, and the
 `stateui` tool makes HelloWorld under that name beside the workspace's
 applications - at its root where it lists none yet - building with the StateUI
-its `stateui-workspace.json` names, and lists it there. Its example test in
-`Tests/` comes with it, which **StateUI: Run Tests** runs. A notification
+its `stateui-workspace.json` names, and lists it there. Its `stateui.json`
+names it `com.example.<name>` until it is given its own identifier. Its example
+test in `Tests/` comes with it, which **StateUI: Run Tests** runs. A notification
 follows the making and cancels it. The application is then chosen, so
 **StateUI: Debug** runs it.
 

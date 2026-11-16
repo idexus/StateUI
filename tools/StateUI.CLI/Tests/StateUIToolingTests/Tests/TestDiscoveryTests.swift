@@ -84,6 +84,7 @@ final class TestDiscoveryTests: XCTestCase {
         try write(
             #"{ "schemaVersion": 1, "library": { "path": "." }, "projects": ["apps/Notes"] }"#, to: "stateui-workspace.json")
         try write("", to: "apps/Notes/Platforms/AppKit/main.swift")
+        try write(#"{"build":1,"identifier":"com.example.notes","schemaVersion":1,"version":"1.0.0"}"#, to: "apps/Notes/stateui.json")
         let service = ToolingService()
         let listed = try await service.discoverTests(for: .android, in: root)
         XCTAssertEqual(listed.suites.map(\.id), ["Checkout", "lib/StateUI/Core", "apps/Notes", "lib/StateUI/StateUI.Android/Tests"])

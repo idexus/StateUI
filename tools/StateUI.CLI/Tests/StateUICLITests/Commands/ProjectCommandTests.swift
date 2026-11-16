@@ -54,6 +54,8 @@ final class ProjectCommandTests: XCTestCase {
     /// ends with status 130.
     func testAnInterruptStopsTheWorkAndEndsWith130() throws {
         let project = try folder(["Package.swift", "Platforms/AppKit/main.swift"])
+        try ApplicationFile(identifier: "com.example.demo", version: "1.0.0", build: 1)
+            .write(to: project.appendingPathComponent("stateui.json"))
         let file = project.deletingLastPathComponent().appendingPathComponent("descendant")
         let process = Process()
         process.executableURL = URL(fileURLWithPath: Stateui.path)

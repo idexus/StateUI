@@ -290,6 +290,7 @@ A new application has this directory shape (`stateui new Notes --directory apps`
 
 ```text
 apps/Notes/
+  stateui.json
   Package.swift
   Sources/
     NotesApp.swift
@@ -319,6 +320,25 @@ apps/Notes/
   Tests/
     MainPageTests.swift
 ```
+
+`stateui.json` says what the application is on every platform - the
+identifier that names it, the version shown to its user and its build - and
+makes the folder an application to the `stateui` tool:
+
+```json
+{
+  "build" : 1,
+  "identifier" : "com.example.notes",
+  "schemaVersion" : 1,
+  "version" : "1.0.0"
+}
+```
+
+`stateui new` writes `com.example.<name>` where `--identifier` names none;
+an application gives its own before it is published (`pl.example.notes`):
+two or more parts joined by dots, each a letter, then letters and digits.
+The version is one to three numbers joined by dots, the build a whole number
+that grows with every release.
 
 The application target depends only on the `StateUI` product, its tests on
 `StateUITesting` too. The executable target depends on the application

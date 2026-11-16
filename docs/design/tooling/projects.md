@@ -8,11 +8,12 @@ tests reads a project the same way.
 ## A project read
 
 A command's target is the nearest application up from the folder it is run in:
-a folder holding a `Package.swift` and at least one head - a `main.swift` in
-`Platforms/<Host>`, or Android's Gradle build in `Platforms/Android`. A
-library's manifest or a host's test package is no target, though it has a
-`Package.swift`. Outside any application, the target is the workspace - the
-nearest `stateui-workspace.json` up - with every application it lists.
+a folder holding its `stateui.json` beside its `Package.swift`. Its hosts are
+its heads - a `main.swift` in `Platforms/<Host>`, or Android's Gradle build in
+`Platforms/Android`. A library's manifest or a host's test package holds no
+`stateui.json`, so it is no target. Outside any application, the target is the
+workspace - the nearest `stateui-workspace.json` up - with every application it
+lists.
 
 An application's name is its folder's, which its products and heads are named
 after; its id is its folder's path from the project's root, `.` for the root
@@ -26,6 +27,35 @@ manifest written in any way SwiftPM accepts is read as SwiftPM reads it.
 Paths come out as absolute file URIs, a folder's with no slash after its name.
 A folder is climbed one parent at a time, each parent a strict ancestor - at a
 root, or a Windows drive's, the climb ends.
+
+## An application's file
+
+`stateui.json` says what an application is on every platform, and makes its
+folder an application:
+
+```text
+{
+  "build" : 1,
+  "identifier" : "pl.example.notes",
+  "schemaVersion" : 1,
+  "version" : "1.0.0"
+}
+```
+
+`identifier` names the application to every platform, `version` is the one
+shown to its user, and `build` grows with every release of it. Each is one
+every platform takes, checked as the file is read: the identifier two or more
+parts joined by dots, each a letter, then letters and digits - Apple's bundle
+identifiers take no `_`, Android's application ids no `-`; the version one to
+three numbers joined by dots; the build a whole number from 1 to
+2 100 000 000, Android's largest version code. The file is read whole, as the
+workspace's is: a field missing, one the tool does not read, or another
+`schemaVersion` is refused by its place. The tool writes it the same every
+time - keys sorted, a line break at its end.
+
+The file stands beside the manifest, not in it: SwiftPM's description of a
+package has no field for an application's identity, and nothing reads a
+manifest's text.
 
 ## A workspace
 
@@ -41,8 +71,8 @@ in whatever folders they stand, and the StateUI checkout they build with.
 }
 ```
 
-`projects` lists the applications - paths from the file, each read as an
-application or refused - and nothing beneath the folder belongs to it
+`projects` lists the applications - paths from the file, each a folder holding
+its `stateui.json` or refused - and nothing beneath the folder belongs to it
 otherwise. `library` is the checkout new applications build with; `startup`
 the application a build, a run or a package takes where none is named and
 the workspace holds several - one `projects` lists, another refused - which
@@ -82,10 +112,13 @@ commit it stands at and whether tracked files differ from it.
 `stateui new <Name>` makes HelloWorld of a checkout under another name, in the
 working directory or the one named: every file of HelloWorld's but the hidden
 - what its builds and editors left - copied, `HelloWorld` renamed in every
-file's name and text, `helloworld` (the application identifier) in lower case.
-The name is letters and digits starting with a letter - a Swift module, a
-process and a folder all take it - and not the library's own. A folder already
-holding files is refused and left as it was.
+file's name and text, `helloworld` in lower case. Its `stateui.json` is its
+own: the identifier `--identifier` gives - `com.example.<name>` where none is
+given - at version 1.0.0, build 1; never HelloWorld's, which is StateUI's
+release. The name is letters and digits starting with a letter - a Swift
+module, a process and a folder all take it - and not the library's own. A
+folder already holding files, or an identifier some platform refuses, is
+refused and nothing is made.
 
 The application is written beside its place, in a hidden folder, and moved
 into it whole: a refusal or a failure leaves nothing behind. Its manifest names

@@ -39,15 +39,16 @@ public struct ToolingService: Sendable {
     }
 
     /// Makes application `name` in `parent` from a checkout's HelloWorld - `checkout`, else the workspace's library,
-    /// else the checkout `parent` stands in - and lists it in the workspace - `project/create`.
-    public func createApplication(_ name: String, in parent: URL, from checkout: URL?) async throws -> ProjectCreation {
+    /// else the checkout `parent` stands in - named `identifier`, and lists it in the workspace - `project/create`.
+    public func createApplication(_ name: String, identifier: String? = nil, in parent: URL, from checkout: URL?)
+        async throws -> ProjectCreation {
         var workspace = try Workspace.nearest(from: parent)
         guard let checkout = checkout ?? workspace?.library ?? Checkout.holding(parent)?.root else {
             throw ToolingError(
                 .projectNotFound, "No StateUI checkout is named for \(parent.path): name one with --checkout, or in a"
                     + " stateui-workspace.json's library.")
         }
-        let made = try ApplicationMaker().make(name, in: parent, from: checkout)
+        let made = try ApplicationMaker().make(name, identifier: identifier, in: parent, from: checkout)
         var created = [FileURI.string(made)]
         if workspace != nil {
             try workspace?.add(made)
@@ -449,7 +450,8 @@ public struct ToolingService: Sendable {
         }
         methods.mutation("project/create") { (request: ApplicationRequest, _: OperationContext) in
             try await createApplication(
-                request.name, in: try FileURI.url(request.parentUri), from: try request.checkoutUri.map(FileURI.url))
+                request.name, identifier: request.identifier, in: try FileURI.url(request.parentUri),
+                from: try request.checkoutUri.map(FileURI.url))
         }
         methods.query("project/describe") { (reference: ProjectReference, context: RequestContext) in
             guard let uri = reference.projectUri ?? context.workspaceUri else {

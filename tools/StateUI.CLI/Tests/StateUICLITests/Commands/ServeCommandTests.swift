@@ -75,6 +75,8 @@ final class ServeCommandTests: XCTestCase {
             try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
             try Data().write(to: file)
         }
+        try ApplicationFile(identifier: "com.example.notes", version: "1.0.0", build: 1)
+            .write(to: package.appendingPathComponent("stateui.json"))
         // Swift asked to describe the package starts a program and waits for it, as a slow manifest does.
         let started = root.appendingPathComponent("descendant")
         let process = Process()

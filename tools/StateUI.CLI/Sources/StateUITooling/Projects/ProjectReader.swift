@@ -58,12 +58,19 @@ public struct ProjectReader: Sendable {
     }
 
     private func application(at package: URL, root: URL) async throws -> (Application, Checkout?) {
+        let file = try ApplicationFile.read(package.appendingPathComponent(ApplicationFile.name))
+        guard FileManager.default.fileExists(atPath: package.appendingPathComponent("Package.swift").path) else {
+            throw ToolingError(.invalidConfiguration, "\(package.path) holds its \(ApplicationFile.name) but no Package.swift.")
+        }
         let description = try await describePackage(package)
         let checkout = description.dependencies.lazy.compactMap { $0.path.flatMap { Checkout(at: URL(fileURLWithPath: $0)) } }
             .first
         let application = Application(
             id: Self.relativePath(of: package, from: root),
             name: package.lastPathComponent,
+            identifier: file.identifier,
+            version: file.version,
+            build: file.build,
             packageUri: FileURI.string(package),
             declaredHosts: Self.hosts(of: package),
             products: description.products.map(\.name).sorted(),
@@ -102,10 +109,16 @@ public struct ProjectReader: Sendable {
     static func application(holding folder: URL) -> URL? {
         var current = folder
         while true {
-            if !hosts(of: current).isEmpty { return current }
+            if isApplication(current) { return current }
             guard let parent = Folders.parent(of: current) else { return nil }
             current = parent
         }
+    }
+
+    /// Whether `folder` is an application: whether it holds its `stateui.json`.
+    /// Design: docs/design/tooling/projects.md#a-project-read
+    static func isApplication(_ folder: URL) -> Bool {
+        FileManager.default.fileExists(atPath: folder.appendingPathComponent(ApplicationFile.name).path)
     }
 
     /// The hosts a package has a head for: a `main.swift` in `Platforms/<Host>`, or Android's Gradle build there.

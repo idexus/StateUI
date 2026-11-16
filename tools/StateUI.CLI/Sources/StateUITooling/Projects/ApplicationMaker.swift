@@ -19,12 +19,17 @@ public struct ApplicationMaker: Sendable {
         return name == "StateUI" ? "'StateUI' is the library. Pick a name of the application's own." : nil
     }
 
-    /// Makes application `name` in `parent` from `checkout`'s HelloWorld: written beside, then put in place whole.
+    /// Makes application `name` in `parent` from `checkout`'s HelloWorld, its `stateui.json` naming it `identifier` -
+    /// `com.example.<name>` where none is given - at version 1.0.0, build 1: written beside, then put in place whole.
     ///
     /// - Returns: The new application's folder.
-    /// - Throws: ``ToolingError`` - a name that cannot be, a folder already holding something, no checkout.
-    public func make(_ name: String, in parent: URL, from checkout: URL) throws(ToolingError) -> URL {
+    /// - Throws: ``ToolingError`` - a name or identifier that cannot be, a folder already holding something, no
+    ///   checkout.
+    public func make(_ name: String, identifier: String? = nil, in parent: URL, from checkout: URL) throws(ToolingError)
+        -> URL {
         if let problem = Self.problem(with: name) { throw ToolingError(.invalidName, problem) }
+        let file = ApplicationFile(identifier: identifier ?? "com.example.\(name.lowercased())", version: "1.0.0", build: 1)
+        if let problem = file.problem { throw ToolingError(.invalidName, "\(name) cannot be made: \(problem)") }
         guard let checkout = Checkout(at: RealPath.lexical(checkout)) else {
             throw ToolingError(.projectNotFound, "No StateUI checkout stands at \(checkout.path).")
         }
@@ -37,6 +42,7 @@ public struct ApplicationMaker: Sendable {
         do {
             try copy(checkout.root.appendingPathComponent("apps/HelloWorld"), to: staging, naming: name)
             try nameCheckout(checkout.root, in: staging, standingAt: destination)
+            try file.write(to: staging.appendingPathComponent(ApplicationFile.name))
             if files.fileExists(atPath: destination.path) { try files.removeItem(at: destination) }
             try files.moveItem(at: staging, to: destination)
         } catch {

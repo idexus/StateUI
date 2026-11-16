@@ -8,9 +8,9 @@ import XCTest
 final class ReleaseTests: XCTestCase {
     /// Every place that names the release names the one the library's own `application.info.libraryVersion`
     /// states, the release's only home: the published-package line in the root's Package.swift, the editor
-    /// extension's `package.json`, the `stateui` tool's release, each Android head's version, the Gallery's AppKit
-    /// bundle, every UIKit bundle, the bug report's example, and the newest section of the changes. A reader copying
-    /// any of them gets this release, not the one before.
+    /// extension's `package.json`, the `stateui` tool's release, each application's `stateui.json` and Android
+    /// head's version, the Gallery's AppKit bundle, every UIKit bundle, the bug report's example, and the newest
+    /// section of the changes. A reader copying any of them gets this release, not the one before.
     func testEveryMentionOfTheReleaseNamesThisOne() throws {
         let home = "lib/StateUI/Core/Sources/Types/Environment/ApplicationInfo.swift"
         let release = try XCTUnwrap(
@@ -29,6 +29,7 @@ final class ReleaseTests: XCTestCase {
 
         for application in try SourceTree.applications() {
             let name = application.lastPathComponent
+            mentions.append(("apps/\(name)/stateui.json", "\"version\" : \"", "\""))
             if FileManager.default.fileExists(atPath: application.appendingPathComponent("Platforms/Android").path) {
                 mentions.append(("apps/\(name)/Platforms/Android/build.gradle.kts", "versionName = \"", "\""))
             }

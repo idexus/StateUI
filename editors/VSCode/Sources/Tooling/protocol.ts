@@ -130,6 +130,9 @@ export const HostFamily = oneOf<HostFamily>("appkit", "uikit", "android", "winui
 export interface Application {
     id: string;
     name: string;
+    identifier: string;
+    version: string;
+    build: number;
     packageUri: string;
     declaredHosts: HostFamily[];
     products: string[];
@@ -137,8 +140,8 @@ export interface Application {
     libraryUri?: string;
 }
 export const Application = object<Application>({
-    id: string, name: string, packageUri: string, declaredHosts: array(HostFamily), products: array(string),
-    testSuites: array(string), libraryUri: optional(string),
+    id: string, name: string, identifier: string, version: string, build: number, packageUri: string,
+    declaredHosts: array(HostFamily), products: array(string), testSuites: array(string), libraryUri: optional(string),
 });
 
 export interface Library { rootUri: string; release?: string; revision?: string; dirty?: boolean }
@@ -157,8 +160,10 @@ export const Project = object<Project>({
 export interface ProjectReference { projectUri?: string }
 export const ProjectReference = object<ProjectReference>({ projectUri: optional(string) });
 
-export interface ApplicationRequest { name: string; parentUri: string; checkoutUri?: string }
-export const ApplicationRequest = object<ApplicationRequest>({ name: string, parentUri: string, checkoutUri: optional(string) });
+export interface ApplicationRequest { name: string; identifier?: string; parentUri: string; checkoutUri?: string }
+export const ApplicationRequest = object<ApplicationRequest>({
+    name: string, identifier: optional(string), parentUri: string, checkoutUri: optional(string),
+});
 
 export type Architecture = "arm64" | "x86_64" | "armv7" | "x86" | "wasm32";
 export const Architecture = oneOf<Architecture>("arm64", "x86_64", "armv7", "x86", "wasm32");

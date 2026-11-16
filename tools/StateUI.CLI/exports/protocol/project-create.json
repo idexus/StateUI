@@ -25,11 +25,13 @@
     "project" : {
       "applications" : [
         {
+          "build" : 1,
           "declaredHosts" : [
             "appkit",
             "uikit"
           ],
           "id" : "apps/Notes",
+          "identifier" : "com.example.notes",
           "libraryUri" : "file:///Users/example/Projects/Demo/StateUI",
           "name" : "Notes",
           "packageUri" : "file:///Users/example/Projects/Demo/apps/Notes",
@@ -38,7 +40,8 @@
           ],
           "testSuites" : [
             "NotesTests"
-          ]
+          ],
+          "version" : "1.0.0"
         }
       ],
       "libraries" : [

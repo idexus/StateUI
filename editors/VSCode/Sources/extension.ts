@@ -85,9 +85,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     const buildOutput = vscode.window.createOutputChannel("StateUI Build");
     context.subscriptions.push(buildOutput);
 
-    // What the tool found in each folder: its applications, and the workspace - the folder of a
-    // stateui-workspace.json - holding them. Read on activation, and again when a folder, a stateui-workspace.json,
-    // a manifest or a head comes or goes.
+    // What the tool found in each folder: its applications - each a folder holding its stateui.json - and the
+    // workspace - the folder of a stateui-workspace.json - holding them. Read on activation, and again when a folder,
+    // either file, a manifest or a head comes or goes.
     let found: { readonly applications: Application[]; readonly workspace?: string }[] = [];
     let unread = false;
     const discover = async (): Promise<void> => {
@@ -883,7 +883,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             rediscover();
         }
     };
-    for (const pattern of ["**/stateui-workspace.json", "**/Package.swift", "**/Platforms/*/main.swift", "**/Platforms/Android/build.gradle.kts"]) {
+    for (const pattern of ["**/stateui-workspace.json", "**/stateui.json", "**/Package.swift", "**/Platforms/*/main.swift", "**/Platforms/Android/build.gradle.kts"]) {
         const watcher = vscode.workspace.createFileSystemWatcher(pattern);
         context.subscriptions.push(watcher, watcher.onDidCreate(watched), watcher.onDidDelete(watched), watcher.onDidChange(watched));
     }

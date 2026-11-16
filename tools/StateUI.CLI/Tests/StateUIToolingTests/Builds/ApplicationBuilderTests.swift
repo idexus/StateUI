@@ -37,6 +37,8 @@ final class ApplicationBuilderTests: XCTestCase {
             try Data().write(to: application.appendingPathComponent("Platforms/\(host)/main.swift"))
         }
         try Data().write(to: application.appendingPathComponent("Package.swift"))
+        try ApplicationFile(identifier: "com.example.notes", version: "1.0.0", build: 1)
+            .write(to: application.appendingPathComponent("stateui.json"))
         let bin = root.appendingPathComponent("bin")
         let failing = root.appendingPathComponent("FAIL")
         let arguments = root.appendingPathComponent("arguments")
@@ -150,6 +152,8 @@ final class ApplicationBuilderTests: XCTestCase {
         try files.createDirectory(at: other.appendingPathComponent("Platforms/AppKit"), withIntermediateDirectories: true)
         try Data().write(to: other.appendingPathComponent("Platforms/AppKit/main.swift"))
         try Data().write(to: other.appendingPathComponent("Package.swift"))
+        try ApplicationFile(identifier: "com.example.other", version: "1.0.0", build: 1)
+            .write(to: other.appendingPathComponent("stateui.json"))
         try WorkspaceFile(library: .init(path: "StateUI"), projects: ["Notes", "Other"], startup: "Notes")
             .write(to: bench.root.appendingPathComponent("stateui-workspace.json"))
         let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)

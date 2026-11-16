@@ -7,6 +7,16 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### Breaking changes
 
+- **An application is a folder holding its `stateui.json`.** Beside its `Package.swift`, the file says what the
+  application is on every platform - the `identifier` naming it, the `version` shown to its user and its `build` - and
+  neither `stateui` nor the VS Code extension takes a folder without one for an application. `stateui new` writes it:
+  the identifier `--identifier` gives, else `com.example.<name>`, at version 1.0.0, build 1. An application made
+  before adds its own:
+
+  ```json
+  { "build": 1, "identifier": "pl.example.notes", "schemaVersion": 1, "version": "1.0.0" }
+  ```
+
 - **AppKit builds through `stateui`.** `.scripts/AppKit/run-app.sh`, `build-gallery-appkit.sh` and `deploy.sh` are
   gone: `stateui run`, `stateui build` and `stateui package --host appkit` take their place, and every application,
   not only the Gallery, runs as a bundle.

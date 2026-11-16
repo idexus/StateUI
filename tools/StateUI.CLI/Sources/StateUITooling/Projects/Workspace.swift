@@ -29,10 +29,11 @@ struct Workspace: Sendable {
     func applications() throws(ToolingError) -> [URL] {
         try file.projects.map { (path: String) throws(ToolingError) -> URL in
             let folder = ApplicationMaker.folder(named: path, from: self.folder)
-            guard !ProjectReader.hosts(of: folder).isEmpty else {
+            guard ProjectReader.isApplication(folder) else {
                 throw ToolingError(
                     .invalidConfiguration,
-                    "\(self.folder.appendingPathComponent(WorkspaceFile.name).path) lists \(path), which is no application.")
+                    "\(self.folder.appendingPathComponent(WorkspaceFile.name).path) lists \(path), which holds no"
+                        + " \(ApplicationFile.name) - no application.")
             }
             return folder
         }
