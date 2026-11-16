@@ -17,7 +17,7 @@ public struct ProjectReader: Sendable {
     }
 
     /// The project at `path`: the nearest application up from it, else the applications its workspace - the nearest
-    /// `stateui.json` up - lists.
+    /// `stateui-workspace.json` up - lists.
     ///
     /// - Throws: ``ToolingError`` - `PROJECT_NOT_FOUND`, `INVALID_CONFIGURATION`, `MISSING_TOOLCHAIN`, `TOOL_FAILED` -
     ///   or `CancellationError`.
@@ -29,7 +29,8 @@ public struct ProjectReader: Sendable {
         }
         guard let workspace else {
             throw ToolingError(
-                .projectNotFound, "No StateUI application stands in or above \(path.path), and no stateui.json lists one.")
+                .projectNotFound,
+                "No StateUI application stands in or above \(path.path), and no stateui-workspace.json lists one.")
         }
         return try await describe(
             root: workspace.folder, packages: try workspace.applications(), workspace: workspace, startup: try workspace.startup())

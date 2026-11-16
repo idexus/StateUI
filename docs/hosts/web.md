@@ -366,7 +366,7 @@ stateui package --project apps/HelloWorld --host web --output artifacts/HelloWor
 folder named, else `artifacts/<application>/Web`, made anew: a folder any web
 server serves as it is. **StateUI: Package** in the editor does so for the
 application chosen, and lays the page in `artifacts/<application>/Web` of the
-application's workspace - the folder of the stateui.json listing it.
+application's workspace - the folder of the stateui-workspace.json listing it.
 
 ## Testing
 

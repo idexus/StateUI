@@ -4,7 +4,7 @@
 import Foundation
 import StateUIToolingProtocol
 
-/// A workspace: the folder of the nearest `stateui.json` up from a command's folder, and what its file says.
+/// A workspace: the folder of the nearest `stateui-workspace.json` up from a command's folder, and what its file says.
 /// Design: docs/design/tooling/projects.md#a-workspace
 struct Workspace: Sendable {
     /// The folder the file stands in.
@@ -12,7 +12,7 @@ struct Workspace: Sendable {
     /// What the file says.
     var file: WorkspaceFile
 
-    /// The workspace whose `stateui.json` is nearest up from `folder`, itself included.
+    /// The workspace whose `stateui-workspace.json` is nearest up from `folder`, itself included.
     static func nearest(from folder: URL) throws(ToolingError) -> Workspace? {
         var current = RealPath.of(folder)
         while true {

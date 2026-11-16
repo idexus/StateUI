@@ -81,7 +81,8 @@ final class TestDiscoveryTests: XCTestCase {
 
     /// A run takes a suite the folder holds for the host, and a device for a suite that runs on one.
     func testARunTakesAHeldSuiteAndADevicesSuiteItsDevice() async throws {
-        try write(#"{ "schemaVersion": 1, "library": { "path": "." }, "projects": ["apps/Notes"] }"#, to: "stateui.json")
+        try write(
+            #"{ "schemaVersion": 1, "library": { "path": "." }, "projects": ["apps/Notes"] }"#, to: "stateui-workspace.json")
         try write("", to: "apps/Notes/Platforms/AppKit/main.swift")
         let service = ToolingService()
         let listed = try await service.discoverTests(for: .android, in: root)

@@ -394,9 +394,9 @@ stateui package --project apps/Gallery --host appkit
 
 `stateui package` builds an application's head for release and lays its
 bundle, made anew, in `artifacts/<application>/AppKit` of the application's
-workspace - the folder of the stateui.json listing it, a checkout's or a
-project group's - or in the `--output` folder named. **StateUI: Package** in
-the editor does the same for the application chosen.
+workspace - the folder of the stateui-workspace.json listing it, a checkout's
+or a project group's - or in the `--output` folder named. **StateUI: Package**
+in the editor does the same for the application chosen.
 
 ## Testing
 

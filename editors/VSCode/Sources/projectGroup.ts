@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A project group: a workspace the stateui tool makes (`workspace/create`) - its
-// stateui.json, the StateUI it builds with, its applications - and the editor's
+// stateui-workspace.json, the StateUI it builds with, its applications - and the editor's
 // own files beside it.
 
 import * as fs from "fs";

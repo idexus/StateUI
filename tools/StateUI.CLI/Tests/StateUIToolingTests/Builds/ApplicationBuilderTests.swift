@@ -151,7 +151,7 @@ final class ApplicationBuilderTests: XCTestCase {
         try Data().write(to: other.appendingPathComponent("Platforms/AppKit/main.swift"))
         try Data().write(to: other.appendingPathComponent("Package.swift"))
         try WorkspaceFile(library: .init(path: "StateUI"), projects: ["Notes", "Other"], startup: "Notes")
-            .write(to: bench.root.appendingPathComponent("stateui.json"))
+            .write(to: bench.root.appendingPathComponent("stateui-workspace.json"))
         let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
 
         let built = try await builder.build(BuildRequest(host: .appkit), in: bench.root, operation: "op-startup")

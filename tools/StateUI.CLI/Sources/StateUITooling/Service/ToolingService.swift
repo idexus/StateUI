@@ -45,7 +45,7 @@ public struct ToolingService: Sendable {
         guard let checkout = checkout ?? workspace?.library ?? Checkout.holding(parent)?.root else {
             throw ToolingError(
                 .projectNotFound, "No StateUI checkout is named for \(parent.path): name one with --checkout, or in a"
-                    + " stateui.json's library.")
+                    + " stateui-workspace.json's library.")
         }
         let made = try ApplicationMaker().make(name, in: parent, from: checkout)
         var created = [FileURI.string(made)]
@@ -77,7 +77,7 @@ public struct ToolingService: Sendable {
     /// manifests - `workspace/useLibrary`.
     public func useLibrary(in folder: URL, checkout: URL?, release: String?, repository: String?) async throws -> WorkspaceChange {
         guard var workspace = try Workspace.nearest(from: folder) else {
-            throw ToolingError(.projectNotFound, "No stateui.json stands in or above \(folder.path).")
+            throw ToolingError(.projectNotFound, "No stateui-workspace.json stands in or above \(folder.path).")
         }
         let library: URL
         switch try Self.library(checkout, release, repository) {

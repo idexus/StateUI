@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The applications the stateui tool finds in a folder (`project/describe`): the nearest application up from it, else
-// the ones its workspace's stateui.json lists.
+// the ones its workspace's stateui-workspace.json lists.
 
 import * as vscode from "vscode";
 import { pathToFileUri, ToolingClient, toolingErrorCode, ToolRequestError } from "./Tooling/client";
@@ -20,7 +20,7 @@ export interface Application {
     /** The hosts it has a head for: `Platforms/<Host>/main.swift`, Android's `Platforms/Android/build.gradle.kts`. */
     readonly hosts: readonly Host[];
 
-    /** The workspace listing it - the folder of its stateui.json - where one does. */
+    /** The workspace listing it - the folder of its stateui-workspace.json - where one does. */
     readonly workspace?: string;
 
     /**

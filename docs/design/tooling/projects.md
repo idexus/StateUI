@@ -12,7 +12,7 @@ a folder holding a `Package.swift` and at least one head - a `main.swift` in
 `Platforms/<Host>`, or Android's Gradle build in `Platforms/Android`. A
 library's manifest or a host's test package is no target, though it has a
 `Package.swift`. Outside any application, the target is the workspace - the
-nearest `stateui.json` up - with every application it lists.
+nearest `stateui-workspace.json` up - with every application it lists.
 
 An application's name is its folder's, which its products and heads are named
 after; its id is its folder's path from the project's root, `.` for the root
@@ -29,8 +29,8 @@ root, or a Windows drive's, the climb ends.
 
 ## A workspace
 
-A workspace is a folder with a `stateui.json`: several applications, in
-whatever folders they stand, and the StateUI checkout they build with.
+A workspace is a folder with a `stateui-workspace.json`: several applications,
+in whatever folders they stand, and the StateUI checkout they build with.
 
 ```text
 {
@@ -103,13 +103,13 @@ whole, `D:/a/StateUI`.
 
 ## A new workspace
 
-`stateui workspace create <name>` makes a workspace's folder - its name letters,
-digits, dots, hyphens and underscores, as every build tool takes a path - with
-its `stateui.json`, a `.gitignore` for what builds and tools write, and the
-library: a checkout on this machine, named by the path from the workspace, or
-a release cloned into the workspace's `StateUI/`, which Git then leaves out.
-Like an application, it is written beside its place and moved into it whole. A
-first application made with it is listed at once.
+`stateui workspace create <name>` makes a workspace's folder - its name
+letters, digits, dots, hyphens and underscores, as every build tool takes a
+path - with its `stateui-workspace.json`, a `.gitignore` for what builds and
+tools write, and the library: a checkout on this machine, named by the path
+from the workspace, or a release cloned into the workspace's `StateUI/`, which
+Git then leaves out. Like an application, it is written beside its place and
+moved into it whole. A first application made with it is listed at once.
 
 `stateui workspace library` makes another checkout or release the library: each
 listed application's manifest names it by the path from the application - the
@@ -120,9 +120,9 @@ release replaces the workspace's clone only where the clone holds no changes of
 its own.
 
 The paths stay in each manifest because SwiftPM caches a manifest by its own
-text: a manifest reading `stateui.json` would go on resolving the checkout it
-read before. The workspace file declares the library; the tool writes the
-manifests from it.
+text: a manifest reading `stateui-workspace.json` would go on resolving the
+checkout it read before. The workspace file declares the library; the tool
+writes the manifests from it.
 
 ## A name checked
 

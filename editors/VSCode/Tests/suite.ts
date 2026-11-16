@@ -682,7 +682,8 @@ export async function run(): Promise<void> {
                 && api.applications().every((each) => each.checkout !== undefined));
         }
         // 7a. A project group, made by the command itself with its questions answered: one building with this checkout,
-        //     one with the newest release offered cloned into it - a workspace, its stateui.json listing its applications.
+        //     one with the newest release offered cloned into it - a workspace, its stateui-workspace.json listing its
+        //     applications.
         //     Each application names its StateUI in its Package.swift, New Application makes another the same way beside
         //     it, and each group's Notes builds.
         {
@@ -717,8 +718,8 @@ export async function run(): Promise<void> {
                 { location, name: "LocalGroup", checkout: root.uri.fsPath, application: "Notes" });
             const localNotes = path.join(local ?? "", "Notes");
             const launch = local ? JSON.parse(fs.readFileSync(path.join(local, ".vscode", "launch.json"), "utf8")) : {};
-            const listed = (group: string): string => JSON.parse(fs.readFileSync(path.join(group, "stateui.json"), "utf8")).projects.join(" ");
-            check("a group is a workspace: its stateui.json listing Notes, a .gitignore, and the editor's settings with StateUI: Debug and Release",
+            const listed = (group: string): string => JSON.parse(fs.readFileSync(path.join(group, "stateui-workspace.json"), "utf8")).projects.join(" ");
+            check("a group is a workspace: its stateui-workspace.json listing Notes, a .gitignore, and the editor's settings with StateUI: Debug and Release",
                 same(local, path.join(location, "LocalGroup")) && listed(local!) === "Notes"
                 && [".gitignore", ".vscode/settings.json", "Notes/Package.swift"].every((each) => fs.existsSync(path.join(local, each)))
                 && JSON.stringify(launch.configurations.map((each: vscode.DebugConfiguration) => [each.name, each.type, each.configuration]))

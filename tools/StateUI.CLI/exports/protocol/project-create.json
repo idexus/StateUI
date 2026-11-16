@@ -20,7 +20,7 @@
   "result" : {
     "createdUris" : [
       "file:///Users/example/Projects/Demo/apps/Notes",
-      "file:///Users/example/Projects/Demo/stateui.json"
+      "file:///Users/example/Projects/Demo/stateui-workspace.json"
     ],
     "project" : {
       "applications" : [

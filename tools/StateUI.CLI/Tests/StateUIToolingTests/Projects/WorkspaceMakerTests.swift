@@ -52,7 +52,7 @@ final class WorkspaceMakerTests: XCTestCase {
             "Demo", in: parent, library: .checkout(ProjectReaderTests.repository), application: "Notes")
         let demo = RealPath.of(parent).appendingPathComponent("Demo")
 
-        let file = try WorkspaceFile.read(demo.appendingPathComponent("stateui.json"))
+        let file = try WorkspaceFile.read(demo.appendingPathComponent("stateui-workspace.json"))
         XCTAssertEqual(file.projects, ["Notes"])
         XCTAssertEqual(file.library?.path, ApplicationMaker.relativePath(from: demo, to: ProjectReaderTests.repository))
         XCTAssertEqual(change.changedUris.count, 2)
@@ -72,7 +72,8 @@ final class WorkspaceMakerTests: XCTestCase {
         let demo = RealPath.of(parent).appendingPathComponent("Demo")
 
         XCTAssertNotNil(Checkout(at: demo.appendingPathComponent("StateUI")))
-        XCTAssertEqual(try WorkspaceFile.read(demo.appendingPathComponent("stateui.json")).library?.path, "StateUI")
+        XCTAssertEqual(
+            try WorkspaceFile.read(demo.appendingPathComponent("stateui-workspace.json")).library?.path, "StateUI")
         XCTAssertTrue(try text(demo.appendingPathComponent("Notes/Package.swift")).contains(#"path: "../StateUI")"#))
         XCTAssertTrue(try text(demo.appendingPathComponent(".gitignore")).contains("/StateUI/"))
     }
@@ -110,15 +111,15 @@ final class WorkspaceMakerTests: XCTestCase {
         let path = ApplicationMaker.relativePath(from: demo.appendingPathComponent("Notes"), to: origin.folder)
         XCTAssertTrue(manifest.contains("path: \"\(path)\")"), manifest)
         XCTAssertTrue(manifest.contains("path: \"\(path)/lib/StateUI/StateUI.Testing\")"), manifest)
-        XCTAssertEqual(rewritten.map(\.lastPathComponent), ["Package.swift", "stateui.json"])
+        XCTAssertEqual(rewritten.map(\.lastPathComponent), ["Package.swift", "stateui-workspace.json"])
 
         let other = demo.appendingPathComponent("Notes/Package.swift")
         try manifest.replacingOccurrences(of: "\"StateUIRoot\", path:", with: "\"StateUIRoot\",  path:").write(to: other, atomically: true, encoding: .utf8)
-        let before = try text(demo.appendingPathComponent("stateui.json"))
+        let before = try text(demo.appendingPathComponent("stateui-workspace.json"))
         XCTAssertThrowsError(try workspace.use(ProjectReaderTests.repository)) {
             XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration)
         }
-        XCTAssertEqual(try text(demo.appendingPathComponent("stateui.json")), before)
+        XCTAssertEqual(try text(demo.appendingPathComponent("stateui-workspace.json")), before)
     }
 
     /// A release replaces a workspace's clone only where the clone holds no changes of its own.

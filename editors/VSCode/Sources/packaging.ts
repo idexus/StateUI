@@ -3,7 +3,7 @@
 
 // StateUI: Package - an application built for release on a host and laid, with
 // what it runs with, in artifacts/<application>/<platform> of its workspace -
-// the folder of the stateui.json listing it - else of its own folder. A WinUI head is laid
+// the folder of the stateui-workspace.json listing it - else of its own folder. A WinUI head is laid
 // per architecture - this machine's own, and on an ARM64 machine x64 too,
 // which Windows runs emulated. The stateui tool packages it.
 

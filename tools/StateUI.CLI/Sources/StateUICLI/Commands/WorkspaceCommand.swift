@@ -6,7 +6,7 @@ import Foundation
 import StateUITooling
 import StateUIToolingProtocol
 
-/// `stateui workspace`: a folder of applications and the StateUI they build with, kept in its `stateui.json`.
+/// `stateui workspace`: a folder of applications and the StateUI they build with, kept in its `stateui-workspace.json`.
 struct WorkspaceCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "workspace",

@@ -19,7 +19,7 @@
   },
   "result" : {
     "changedUris" : [
-      "file:///Users/example/Projects/Demo/stateui.json",
+      "file:///Users/example/Projects/Demo/stateui-workspace.json",
       "file:///Users/example/Projects/Demo/Notes/Package.swift"
     ],
     "library" : "../../StateUI",

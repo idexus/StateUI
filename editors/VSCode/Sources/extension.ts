@@ -85,8 +85,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     const buildOutput = vscode.window.createOutputChannel("StateUI Build");
     context.subscriptions.push(buildOutput);
 
-    // What the tool found in each folder: its applications, and the workspace - the folder of a stateui.json -
-    // holding them. Read on activation, and again when a folder, a stateui.json, a manifest or a head comes or goes.
+    // What the tool found in each folder: its applications, and the workspace - the folder of a
+    // stateui-workspace.json - holding them. Read on activation, and again when a folder, a stateui-workspace.json,
+    // a manifest or a head comes or goes.
     let found: { readonly applications: Application[]; readonly workspace?: string }[] = [];
     let unread = false;
     const discover = async (): Promise<void> => {
@@ -474,7 +475,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             }
         }),
         // A new application in a workspace, beside its applications - or at its root where it lists none yet - building
-        // with the library its stateui.json names.
+        // with the library its stateui-workspace.json names.
         vscode.commands.registerCommand("stateui.newApplicationInApps", async (given?: { folder?: string; name?: string }) => {
             const folder = given?.folder ?? await (async () => {
                 const workspaces = [...new Set(found.map((each) => each.workspace).filter((each): each is string => each !== undefined))];
@@ -483,13 +484,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                     : workspaces[0];
             })();
             if (!folder) {
-                void vscode.window.showErrorMessage("StateUI: no folder here is a workspace - a stateui.json lists its applications.");
+                void vscode.window.showErrorMessage("StateUI: no folder here is a workspace - a stateui-workspace.json lists its applications.");
                 return undefined;
             }
             const project = await withTool(tool, folder, "the workspace was not read", async (client) => readApplications(client, folder));
             if (!project?.workspaceUri) {
                 if (project) {
-                    void vscode.window.showErrorMessage(`StateUI: ${folder} is no workspace - a stateui.json lists its applications.`);
+                    void vscode.window.showErrorMessage(`StateUI: ${folder} is no workspace - a stateui-workspace.json lists its applications.`);
                 }
                 return undefined;
             }
@@ -528,7 +529,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 return undefined;
             }
             const name = given?.name ?? await askName("workspace", location, location, "New Project Group",
-                `The group's folder, made in ${location}: its stateui.json, the StateUI it builds with, and its applications.`);
+                `The group's folder, made in ${location}: its stateui-workspace.json, the StateUI it builds with, and its applications.`);
             if (!name) {
                 return undefined;
             }
@@ -882,7 +883,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             rediscover();
         }
     };
-    for (const pattern of ["**/stateui.json", "**/Package.swift", "**/Platforms/*/main.swift", "**/Platforms/Android/build.gradle.kts"]) {
+    for (const pattern of ["**/stateui-workspace.json", "**/Package.swift", "**/Platforms/*/main.swift", "**/Platforms/Android/build.gradle.kts"]) {
         const watcher = vscode.workspace.createFileSystemWatcher(pattern);
         context.subscriptions.push(watcher, watcher.onDidCreate(watched), watcher.onDidDelete(watched), watcher.onDidChange(watched));
     }

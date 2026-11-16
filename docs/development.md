@@ -287,12 +287,12 @@ stateui package --project apps/Gallery --host winui --architecture x86_64 --outp
   pictures - a folder any web server serves as it is.
 
 In VS Code, **StateUI: Package** has the tool package the chosen application
-and lays it in `artifacts/<application>/<platform>` of its
-workspace - the folder of the stateui.json listing it, a checkout's or a
-project group's. A WinUI head is laid
-per architecture, in `artifacts/<application>/WinUI/<architecture>`: this
-machine's own, and on an ARM64 machine x64 too, which Windows runs emulated.
-Git leaves `artifacts/` out.
+and lays it in `artifacts/<application>/<platform>` of its workspace - the
+folder of the stateui-workspace.json listing it, a checkout's or a project
+group's. A WinUI head is laid per architecture, in
+`artifacts/<application>/WinUI/<architecture>`: this machine's own, and on an
+ARM64 machine x64 too, which Windows runs emulated. Git leaves `artifacts/`
+out.
 
 ## Test
 

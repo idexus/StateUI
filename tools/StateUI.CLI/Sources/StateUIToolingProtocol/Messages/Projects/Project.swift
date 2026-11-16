@@ -10,7 +10,7 @@ public struct Project: Codable, Equatable, Sendable {
     public var applications: [Application]
     /// The StateUI checkouts its applications build with, in the order of their roots.
     public var libraries: [Library]
-    /// The folder of the workspace it stands in - the nearest `stateui.json` up - as a file URI.
+    /// The folder of the workspace it stands in - the nearest `stateui-workspace.json` up - as a file URI.
     public var workspaceUri: String?
     /// The folder of the application a run starts where none is named - the workspace's `startup` - as a file URI.
     public var startupUri: String?

@@ -48,11 +48,11 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   is gone: a backend lists the files its engine needs in `Packaging/runtime.txt` - a line a file, the NuGet package,
   its path there (`{architecture}` for `arm64` or `x64`) and its path beside the application - and only an application
   that depends on the backend gets them. The web view's backend declares WebView2's component and loader.
-- **A project group is a workspace.** The VS Code extension finds applications through `stateui`: in a folder that
-  is an application, that one; else the ones the nearest `stateui.json` up lists - and no longer every folder of an
-  `apps/`. **StateUI: New Project Group** makes a workspace: `stateui.json`, the StateUI it builds with, and its first
-  application beside it (`MyApps/Notes`, naming `../StateUI`), and **StateUI: Deploy** lays it in the workspace's
-  `artifacts/`. A group made before lists its applications in a `stateui.json` at its root:
+- **A project group is a workspace.** The VS Code extension finds applications through `stateui`: in a folder that is
+  an application, that one; else the ones the nearest `stateui-workspace.json` up lists - and no longer every folder
+  of an `apps/`. **StateUI: New Project Group** makes a workspace: `stateui-workspace.json`, the StateUI it builds
+  with, and its first application beside it (`MyApps/Notes`, naming `../StateUI`), and **StateUI: Deploy** lays it in
+  the workspace's `artifacts/`. A group made before lists its applications in a `stateui-workspace.json` at its root:
 
   ```json
   { "schemaVersion": 1, "library": { "path": "StateUI" }, "projects": ["apps/Notes"] }
@@ -67,12 +67,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   and Windows. `stateui version` says its release, the API it speaks and the machine it runs on - in words, or for a
   program with `--format json` or `--format jsonl`. `stateui doctor` says what each host needs of this machine and
   what to install. `stateui new` makes an application - HelloWorld renamed - wherever it is asked to;
-  `stateui project describe` reads the applications of a folder. A workspace is a `stateui.json`, found upward from
-  where the tool runs, naming its applications and the StateUI they build with: `stateui workspace create` makes one
-  from a checkout or a release, `stateui workspace library` points every application at another, and
-  `stateui releases list` lists the releases. `stateui serve --stdio` answers an editor's JSON-RPC over standard input
-  and output - the same answers, and the making as operations with events and a cancel. It builds, runs and tests no
-  application yet: until it does, `.scripts` build and run each host as before.
+  `stateui project describe` reads the applications of a folder. A workspace is a `stateui-workspace.json`, found
+  upward from where the tool runs, naming its applications and the StateUI they build with: `stateui workspace create`
+  makes one from a checkout or a release, `stateui workspace library` points every application at another, and
+  `stateui releases list` lists the releases. `stateui serve --stdio` answers an editor's JSON-RPC over standard input and output - the same
+  answers, and the making as operations with events and a cancel. It builds, runs and tests no application yet: until
+  it does, `.scripts` build and run each host as before.
 - **`stateui build`, `run` and `package` make AppKit applications.** Every application is a bundle - its name,
   identifier `com.stateui.<name>` and icon - with its own `Platforms/AppKit/Info.plist` keys laid over the host's;
   a failed build never runs or packages an older one; one application builds at a time on a machine. The Gallery's

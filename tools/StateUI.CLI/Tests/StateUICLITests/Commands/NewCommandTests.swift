@@ -68,14 +68,15 @@ final class NewCommandTests: XCTestCase {
     func testNewInAWorkspaceListsTheApplication() async throws {
         let workspace = try folder()
         let library = WorkspaceFile.LibraryReference(path: try relativePath(from: workspace, to: Self.repository))
-        try WorkspaceFile(library: library, projects: []).write(to: workspace.appendingPathComponent("stateui.json"))
+        try WorkspaceFile(library: library, projects: [])
+            .write(to: workspace.appendingPathComponent("stateui-workspace.json"))
         let clients = workspace.appendingPathComponent("clients")
         try FileManager.default.createDirectory(at: clients, withIntermediateDirectories: true)
         let (outcome, _) = try await run(["new", "Notes"], in: clients)
         XCTAssertTrue(outcome.succeeded)
 
         XCTAssertTrue(FileManager.default.fileExists(atPath: clients.appendingPathComponent("Notes/Package.swift").path))
-        let file = try String(contentsOf: workspace.appendingPathComponent("stateui.json"), encoding: .utf8)
+        let file = try String(contentsOf: workspace.appendingPathComponent("stateui-workspace.json"), encoding: .utf8)
         XCTAssertTrue(file.contains("\"clients/Notes\""), file)
     }
 }

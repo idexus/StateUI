@@ -51,15 +51,16 @@ final class ProjectReaderTests: XCTestCase {
         XCTAssertEqual(project.applications.map(\.name), ["HelloWorld"])
     }
 
-    /// A workspace's applications are the ones its `stateui.json` lists, in any folders; inside one of them, the
-    /// project is that application, standing in its workspace.
+    /// A workspace's applications are the ones its `stateui-workspace.json` lists, in any folders; inside one of them,
+    /// the project is that application, standing in its workspace.
     func testAWorkspaceIsTheApplicationsItsFileLists() async throws {
         let root = try package([
             "a/One/Package.swift": "", "a/One/Platforms/AppKit/main.swift": "",
             "b/c/Two/Package.swift": "", "b/c/Two/Platforms/Android/build.gradle.kts": "",
             "Unlisted/Package.swift": "", "Unlisted/Platforms/GTK/main.swift": "",
         ])
-        try WorkspaceFile(projects: ["b/c/Two", "a/One"]).write(to: root.appendingPathComponent("stateui.json"))
+        try WorkspaceFile(projects: ["b/c/Two", "a/One"])
+            .write(to: root.appendingPathComponent("stateui-workspace.json"))
         let workspace = try XCTUnwrap(try Workspace.nearest(from: root.appendingPathComponent("b")))
         XCTAssertEqual(try workspace.applications().map(\.lastPathComponent), ["One", "Two"])
         XCTAssertEqual(ProjectReader.application(holding: root.appendingPathComponent("a/One/Platforms"))?.lastPathComponent, "One")
@@ -70,7 +71,7 @@ final class ProjectReaderTests: XCTestCase {
     /// by what and where.
     func testAWorkspaceFileIsReadWhole() throws {
         let root = try package(["notes/readme.txt": ""])
-        let file = root.appendingPathComponent("stateui.json")
+        let file = root.appendingPathComponent("stateui-workspace.json")
         try WorkspaceFile(projects: ["notes"]).write(to: file)
         XCTAssertThrowsError(try Workspace.nearest(from: root)?.applications()) {
             XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration)
@@ -91,7 +92,7 @@ final class ProjectReaderTests: XCTestCase {
 
     /// The file is written the same every time: keys and projects sorted, a line break at its end.
     func testAWorkspaceFileIsWrittenTheSameEveryTime() throws {
-        let file = try package(["x": ""]).appendingPathComponent("stateui.json")
+        let file = try package(["x": ""]).appendingPathComponent("stateui-workspace.json")
         try WorkspaceFile(library: .init(path: "StateUI"), projects: ["b", "a"]).write(to: file)
         XCTAssertEqual(
             try String(contentsOf: file, encoding: .utf8),

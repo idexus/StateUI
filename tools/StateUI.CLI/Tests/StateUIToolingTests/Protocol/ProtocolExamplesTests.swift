@@ -71,12 +71,15 @@ final class ProtocolExamplesTests: XCTestCase {
             libraries: [Library(
                 rootUri: demo + "/StateUI", release: "1.0.0", revision: "0123456789abcdef0123456789abcdef01234567",
                 dirty: false)])
-        let creation = ProjectCreation(project: project, createdUris: [demo + "/apps/Notes", demo + "/stateui.json"])
+        let creation = ProjectCreation(
+            project: project, createdUris: [demo + "/apps/Notes", demo + "/stateui-workspace.json"])
         finished.result = try JSONValue(encoding: creation)
         let made = WorkspaceChange(
-            workspaceUri: demo, library: "StateUI", changedUris: [demo + "/stateui.json", demo + "/StateUI", demo + "/Notes"])
+            workspaceUri: demo, library: "StateUI",
+            changedUris: [demo + "/stateui-workspace.json", demo + "/StateUI", demo + "/Notes"])
         let used = WorkspaceChange(
-            workspaceUri: demo, library: "../../StateUI", changedUris: [demo + "/stateui.json", demo + "/Notes/Package.swift"])
+            workspaceUri: demo, library: "../../StateUI",
+            changedUris: [demo + "/stateui-workspace.json", demo + "/Notes/Package.swift"])
         let artifact = demo + "/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug"
         let built = BuildResult(
             application: "Notes", host: .appkit, configuration: .debug, architecture: .arm64, folderUri: artifact,

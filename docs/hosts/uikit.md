@@ -360,7 +360,7 @@ or an iPhone or iPad, the bundle then signed for it - and lays the bundle,
 `<App>UIKit.app`, in the folder named, made anew. **StateUI: Package** in the
 editor does so for the application and the device chosen, and lays the
 bundle in `artifacts/<application>/UIKit` of the application's workspace -
-the folder of the stateui.json listing it, a checkout's or a project
+the folder of the stateui-workspace.json listing it, a checkout's or a project
 group's.
 
 ## Testing

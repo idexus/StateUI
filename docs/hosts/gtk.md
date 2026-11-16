@@ -321,12 +321,12 @@ stateui package --project apps/Gallery --host gtk
 
 `stateui package` builds an application's head for release and lays it in
 `--output`, else `artifacts/<application>/GTK`, made anew: the head, the
-StateUI libraries it links, and its pictures in `Images/`. It lays nothing the system provides - GTK, libadwaita,
-WebKitGTK: the machine that runs the folder has them installed.
-**StateUI: Package** in the editor does so for the application chosen,
-and lays the head in `artifacts/<application>/GTK` of the application's
-workspace - the folder of the stateui.json listing it, a checkout's or a
-project group's.
+StateUI libraries it links, and its pictures in `Images/`. It lays nothing the
+system provides - GTK, libadwaita, WebKitGTK: the machine that runs the folder
+has them installed. **StateUI: Package** in the editor does so for the
+application chosen, and lays the head in `artifacts/<application>/GTK` of the
+application's workspace - the folder of the stateui-workspace.json listing it,
+a checkout's or a project group's.
 
 ## Testing
 

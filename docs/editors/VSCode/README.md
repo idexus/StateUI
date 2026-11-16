@@ -179,15 +179,16 @@ configuration naming `"application": "Gallery"` runs that one instead.
 
 The extension finds applications through the `stateui` tool: in a folder that
 is an application, that one; else the ones its workspace lists - the nearest
-`stateui.json` up from the folder, which names the applications and the
-StateUI they build with. A StateUI checkout is a workspace of its own
-(`apps/Gallery`, `apps/HelloWorld`), and so is a [project group](#a-project-group).
-An application added, removed or listed there is found again by itself.
+`stateui-workspace.json` up from the folder, which names the applications and
+the StateUI they build with. A StateUI checkout is a workspace of its own
+(`apps/Gallery`, `apps/HelloWorld`), and so is a [project
+group](#a-project-group). An application added, removed or listed there is
+found again by itself.
 
 **StateUI: New Application** - in a workspace, asks for a name, and the
 `stateui` tool makes HelloWorld under that name beside the workspace's
-applications - at its root where it lists none yet - building with the
-StateUI its `stateui.json` names, and lists it there. Its example test in
+applications - at its root where it lists none yet - building with the StateUI
+its `stateui-workspace.json` names, and lists it there. Its example test in
 `Tests/` comes with it, which **StateUI: Run Tests** runs. A notification
 follows the making and cancels it. The application is then chosen, so
 **StateUI: Debug** runs it.
@@ -210,11 +211,11 @@ build with, and the name of its first application:
 
 ```text
 MyApps/
-  stateui.json        the applications, and the StateUI they build with
+  stateui-workspace.json  the applications, and the StateUI they build with
   .gitignore
-  .vscode/            StateUI: Debug and StateUI: Release
-  StateUI/            the release, left out of git; absent with a local checkout
-  Notes/              HelloWorld renamed; its Package.swift names ../StateUI
+  .vscode/                StateUI: Debug and StateUI: Release
+  StateUI/                the release, left out of git; absent with a local checkout
+  Notes/                  HelloWorld renamed; its Package.swift names ../StateUI
 ```
 
 Its applications are HelloWorld renamed, and each one's `Package.swift` names

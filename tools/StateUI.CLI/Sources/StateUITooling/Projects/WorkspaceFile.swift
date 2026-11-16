@@ -4,7 +4,7 @@
 import Foundation
 import StateUIToolingProtocol
 
-/// A workspace's file, `stateui.json`: the applications it lists and the StateUI they build with.
+/// A workspace's file, `stateui-workspace.json`: the applications it lists and the StateUI they build with.
 /// Design: docs/design/tooling/projects.md#a-workspace
 public struct WorkspaceFile: Codable, Equatable, Sendable {
     /// The StateUI checkout a workspace's new applications build with.
@@ -19,7 +19,7 @@ public struct WorkspaceFile: Codable, Equatable, Sendable {
     }
 
     /// The file's name, found upward from a command's folder.
-    public static let name = "stateui.json"
+    public static let name = "stateui-workspace.json"
     /// The version of the file's form this tool reads.
     public static let currentVersion = 1
 
