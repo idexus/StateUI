@@ -218,7 +218,7 @@ public struct ApplicationBuilder: Sendable {
                 id: context.artifact, producerOperationId: operation,
                 createdAt: Operations.timestamp(), applicationUri: FileURI.string(context.application), host: context.host,
                 configuration: context.configuration, architecture: context.architecture, productName: context.product,
-                entryPoints: [program], signing: signing, applicationName: name, identifier: head.identifier)
+                entryPoints: [program], signing: signing, applicationName: identity.name ?? name, identifier: head.identifier)
             let published = try store.publish(staging, as: manifest)
             return BuildResult(
                 application: name, host: context.host, configuration: context.configuration, architecture: context.architecture,
@@ -242,17 +242,20 @@ public struct ApplicationBuilder: Sendable {
         var symbols: String?
     }
 
-    /// The head assembled in `staging` - an Apple bundle, an Android APK - for the application `identity` says.
+    /// The head assembled in `staging` - an Apple bundle, an Android APK - for the application `identity` says; a head
+    /// whose platform keeps no record of the application - WinUI's, GTK's, a page - carries its `stateui.json`.
+    /// Design: docs/design/tooling/projects.md#a-head-carries-what-the-application-is
     private func assemble(
         _ context: BuildContext, _ target: BuildTarget, name: String, identity: ApplicationFile, binaries: URL, common: [String],
         environment: ProcessEnvironment, in staging: URL, reporter: BuildReporter
     ) async throws -> Head {
+        try Self.lay(identity, for: context.host, in: staging)
         if context.host == .web {
             let page = WebPage(
-                application: context.application, name: name, product: context.product, binaries: binaries, library: context.library,
-                stamp: Int(Date().timeIntervalSince1970))
+                application: context.application, name: identity.name ?? name, product: context.product, binaries: binaries,
+                library: context.library, stamp: Int(Date().timeIntervalSince1970))
             try page.assemble(in: staging)
-            return Head(bundle: nil, program: "index.html", signing: .none)
+            return Head(bundle: nil, program: "index.html", signing: .none, identifier: identity.identifier)
         }
         if context.host == .winui {
             let compiler = try Self.compilerPath(tools.swift)
@@ -264,12 +267,12 @@ public struct ApplicationBuilder: Sendable {
                 packages: WinUIPackages(environment: self.environment),
                 compiler: compiler, cache: ArtifactStore(application: context.application).cache("swift-runtime-\(context.architecture.rawValue)"))
             try await head.assemble(in: staging, reporter: reporter)
-            return Head(bundle: nil, program: "\(context.product).exe", signing: .none)
+            return Head(bundle: nil, program: "\(context.product).exe", signing: .none, identifier: identity.identifier)
         }
         if context.host == .gtk {
             let head = GTKHead(application: context.application, product: context.product, binaries: binaries)
             try head.assemble(in: staging)
-            return Head(bundle: nil, program: context.product, signing: .none, identifier: GTKHead.applicationID(of: context.application))
+            return Head(bundle: nil, program: context.product, signing: .none, identifier: identity.identifier)
         }
         if context.host == .android, let (swiftSDK, ndk) = target.android {
             let head = AndroidHead(
@@ -306,6 +309,12 @@ public struct ApplicationBuilder: Sendable {
         #else
         throw ToolingError(.invalidConfiguration, "An Apple bundle is assembled on a Mac.")
         #endif
+    }
+
+    /// Lays `identity` - the name in it - in a head of `host` whose platform keeps no record of the application.
+    static func lay(_ identity: ApplicationFile, for host: HostFamily, in staging: URL) throws {
+        guard [.web, .winui, .gtk].contains(host) else { return }
+        try identity.write(to: staging.appendingPathComponent(ApplicationFile.name))
     }
 
     /// Where `compiler` stands: its path, or where the search path finds it.

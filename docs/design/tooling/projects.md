@@ -59,6 +59,17 @@ The file stands beside the manifest, not in it: SwiftPM's description of a
 package has no field for an application's identity, and nothing reads a
 manifest's text.
 
+## A head carries what the application is
+
+An Apple bundle and an APK carry what the application is in the platform's own
+record - `Info.plist`, the manifest - which the tool writes from its
+`stateui.json`, and which the host reads back as it starts. WinUI's program,
+standing in no package, GTK's, and a Web page keep none, so their head carries
+the file itself: the tool lays it beside the program, or the page's
+`index.html`, the name in it written - the folder's where the file gives none -
+so a head never decides one. The host reads it as it starts, and what it
+reports as the application's comes from there.
+
 ## A workspace
 
 A workspace is a folder with a `stateui-workspace.json`: several applications,

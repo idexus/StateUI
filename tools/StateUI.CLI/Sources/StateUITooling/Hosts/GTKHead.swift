@@ -26,14 +26,6 @@ struct GTKHead {
             try files.copyItem(at: images, to: staging.appendingPathComponent("Images"))
         }
     }
-
-    /// The application ID the head runs as - `GTKHost.run(applicationID: "com.stateui.gallery")` - which names its
-    /// desktop entry and icon; `nil` where the head names none.
-    static func applicationID(of application: URL) -> String? {
-        let head = application.appendingPathComponent("Platforms/GTK/main.swift")
-        guard let text = try? String(contentsOf: head, encoding: .utf8) else { return nil }
-        return text.firstMatch(of: /applicationID: "([^"]+)"/).map { String($0.1) }
-    }
 }
 
 extension GTKHead {

@@ -14,22 +14,20 @@ final class GTKHeadTests: XCTestCase {
         return folder
     }
 
-    /// An application laid out as StateUI's are: its GTK head naming its ID, its pictures, its icon and link schemes.
+    /// An application laid out as StateUI's are: its GTK head, its pictures, its icon and link schemes.
     private func application(in root: URL) throws -> URL {
         let application = root.appendingPathComponent("Notes")
         for folder in ["Platforms/GTK", "Resources/Images", "Resources/AppIcon"] {
             try FileManager.default.createDirectory(at: application.appendingPathComponent(folder), withIntermediateDirectories: true)
         }
-        try "GTKHost.run(applicationID: \"com.stateui.notes\")\n".write(
-            to: application.appendingPathComponent("Platforms/GTK/main.swift"), atomically: true, encoding: .utf8)
+        try "GTKHost.run()\n".write(to: application.appendingPathComponent("Platforms/GTK/main.swift"), atomically: true, encoding: .utf8)
         try "notes\n\nstateui-notes\n".write(to: application.appendingPathComponent("Platforms/GTK/link-schemes"), atomically: true, encoding: .utf8)
         try "<svg/>".write(to: application.appendingPathComponent("Resources/Images/mark.svg"), atomically: true, encoding: .utf8)
         try "<svg/>".write(to: application.appendingPathComponent("Resources/AppIcon/appicon_gnome.svg"), atomically: true, encoding: .utf8)
         return application
     }
 
-    /// The head is the program, every library beside it and the pictures as they are; it is known by the ID its head
-    /// runs as.
+    /// The head is the program, every library beside it and the pictures as they are.
     func testTheHeadIsItsProgramLibrariesAndPictures() throws {
         let root = try folder()
         let application = try application(in: root)
@@ -45,8 +43,6 @@ final class GTKHeadTests: XCTestCase {
 
         XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: staging.path).sorted(),
                        ["Images", "NotesGTK", "libStateUI.so", "libStateUIGTK.so"])
-        XCTAssertEqual(GTKHead.applicationID(of: application), "com.stateui.notes")
-        XCTAssertNil(GTKHead.applicationID(of: root))
     }
 
     /// The desktop entry starts the program with the links it opens, shows the icon by the ID and matches the

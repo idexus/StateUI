@@ -8,9 +8,11 @@ architecture, beside the libraries it links.
 `stateui build --host gtk` publishes the program, every library SwiftPM laid
 beside it - which the program finds there - and the application's
 `Resources/Images` as they are, since GTK draws SVG (`GTKHead`). The program
-runs from the artifact; its Swift runtime is the toolchain's. The head's
-application ID is read from `Platforms/GTK/main.swift`
-(`GTKHost.run(applicationID:)`) and stands in the artifact's manifest.
+runs from the artifact; its Swift runtime is the toolchain's. Beside it
+stands the application's `stateui.json` (projects.md, A head carries what the
+application is), whose identifier is the application ID the desktop entry and
+icon are named by, and stands in the artifact's manifest; its name is the
+entry's.
 `stateui package --host gtk` lays the artifact's files in
 `artifacts/<Name>/GTK`, made anew.
 

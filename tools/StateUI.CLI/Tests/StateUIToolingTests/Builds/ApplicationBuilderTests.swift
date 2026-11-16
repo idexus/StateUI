@@ -3,7 +3,7 @@
 
 #if os(macOS)
 import Foundation
-import StateUITooling
+@testable import StateUITooling
 import StateUIToolingProtocol
 import XCTest
 
@@ -181,6 +181,23 @@ final class ApplicationBuilderTests: XCTestCase {
         let built = try await builder.build(BuildRequest(), in: bench.application, operation: "op-chosen")
 
         XCTAssertEqual(built.host, .appkit)
+    }
+
+    /// A head whose platform keeps no record of the application - WinUI's, GTK's, a page - carries its `stateui.json`,
+    /// the name shown in it; a bundle and an APK, whose platform keeps one, carry none.
+    func testAHeadOfNoRecordCarriesTheApplicationsFile() throws {
+        let identity = ApplicationFile(identifier: "pl.example.notes", version: "2.1", build: 9, name: "Notes")
+        for host in HostFamily.allCases {
+            let staging = FileManager.default.temporaryDirectory.appendingPathComponent("head-\(UUID().uuidString)")
+            try FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true)
+            defer { try? FileManager.default.removeItem(at: staging) }
+            try ApplicationBuilder.lay(identity, for: host, in: staging)
+            let file = staging.appendingPathComponent("stateui.json")
+            XCTAssertEqual(FileManager.default.fileExists(atPath: file.path), [.web, .winui, .gtk].contains(host), host.rawValue)
+            if [.web, .winui, .gtk].contains(host) {
+                XCTAssertEqual(try ApplicationFile.read(file), identity)
+            }
+        }
     }
 
     /// A package replaces only a folder a package was laid in: one holding anything else is refused before any build,
