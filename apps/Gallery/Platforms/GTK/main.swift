@@ -19,5 +19,5 @@ GalleryEventSources.start()
 // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
 WebViewGTK.register()
 // Then GTK holds this thread until the last window closes.
-GTKHost.run(applicationID: "com.stateui.gallery")
+GTKHost.run()
 // listing: end

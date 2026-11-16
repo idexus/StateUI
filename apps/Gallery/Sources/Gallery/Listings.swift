@@ -16389,7 +16389,7 @@ extension Listings {
 
         // Platforms/Web/main.swift
         GalleryEventSources.start()
-        WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
+        WebHost.run()
         """#,
         "InteropEventsSample.WinUI.cpp": #"""
         // Platforms/WinUI/Relay/System.cpp
@@ -16825,7 +16825,7 @@ extension Listings {
         // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
         WebViewGTK.register()
         // Then GTK holds this thread until the last window closes.
-        GTKHost.run(applicationID: "com.stateui.gallery")
+        GTKHost.run()
         """#,
         "uikit.md.acts": #"""
         // Platforms/UIKit/Host/GalleryActs.swift
@@ -17044,7 +17044,7 @@ extension Listings {
         GalleryControls.register()
         GalleryActs.register()
         GalleryEventSources.start()
-        WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
+        WebHost.run()
         """#,
         "winui.md.acts": #"""
         // Platforms/WinUI/Host/GalleryActs.swift

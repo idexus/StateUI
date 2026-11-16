@@ -182,7 +182,9 @@ the call returns.
 
 The host tells the core what it stands on as it starts: a desktop running
 Windows - the device's maker, model, name and version, and whether it is a
-virtual machine - the application's name, the system's theme, the user's
+virtual machine - the application's identifier, name, version and build, read
+from the `stateui.json` the head carries beside its program (the program's
+name alone where none stands there), the system's theme, the user's
 locale, the battery and the network; and the screen once there is a window,
 at the system's scale, which a window on a second screen may not share, and
 turned as Windows says (`dmDisplayOrientation`, quarters of the picture's

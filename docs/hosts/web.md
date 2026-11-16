@@ -74,12 +74,14 @@ GalleryApp.register()
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
-WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
+WebHost.run()
 ```
 
-`name:` is what `app.info.name` tells the application, and `applicationID:`
-what `app.info.packageName` tells: a page has no identity of its own, so a
-head that names none leaves it empty.
+What `app.info` tells the application - its name, identifier, version and
+build - is its `stateui.json`'s, which the tool lays beside the page's
+`index.html` and the page reads as it starts: a page has no record of an
+application of its own. The browser keeps the application's values under its
+identifier.
 
 `STATEUI_HOST=web` is what makes a build a Web one: the application's manifest
 reads it, declares its `Platforms/Web` head and the module it makes, links the

@@ -24,16 +24,19 @@ its panel and drops the reference it held.
 
 ## Starting
 
-The head's `main` names the application and hands the thread to
-`GTKHost.run(applicationID:)`, which makes an `AdwApplication` under that
-name and runs GLib's main loop on the thread until the last window closes,
-then ends the process with the code GLib's application ended with - a refused
-start, an unknown option, its own: `run` never returns (`Never`). The
-application's first activation calls the host, whose first act is to claim
-that thread as the UI thread: `claimUIThread()` makes StateUI's UI executor
-`MainActor`'s and drains it there. The name is the one the desktop knows the application by, and
-GTK keeps one instance of it: a second launch activates the first, which
-brings its window forward.
+The head's `main` registers the application and hands the thread to
+`GTKHost.run()`. It reads the `stateui.json` the head carries beside its
+program - the application's identifier, name, version and build - makes an
+`AdwApplication` under the identifier, gives GLib the name shown and the
+windows' icon the identifier, and runs GLib's main loop on the thread until
+the last window closes, then ends the process with the code GLib's
+application ended with - a refused start, an unknown option, its own: `run`
+never returns (`Never`). The application's first activation calls the host,
+whose first act is to claim that thread as the UI thread: `claimUIThread()`
+makes StateUI's UI executor `MainActor`'s and drains it there. The
+identifier is the one the desktop knows the application by, and GTK keeps
+one instance of it: a second launch activates the first, which brings its
+window forward. A program standing without the file runs unnamed.
 
 A test process runs no main loop: it starts libadwaita, registers an
 application of its own so windows have one to belong to, and turns GLib's

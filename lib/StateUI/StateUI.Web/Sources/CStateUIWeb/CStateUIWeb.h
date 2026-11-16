@@ -145,6 +145,8 @@ STATEUI_WEB(listen_page) void stateui_web_listen_page(int32_t changed, int32_t l
 /// otherwise.
 STATEUI_WEB(listen_links) void stateui_web_listen_links(int32_t listener);
 STATEUI_WEB(page_link) int32_t stateui_web_page_link(void);
+/// The application's `stateui.json` beside the page, its length answered and its bytes read by `copy_read`.
+STATEUI_WEB(application_file) int32_t stateui_web_application_file(void);
 
 /// Calls the act `name` of the application's own scripts - `StateUI.acts` - with the words, and `listener` once its
 /// promise settles: the event's number 0 is 1 kept, 0 broken, and `script_words` reads what it gave, or why.

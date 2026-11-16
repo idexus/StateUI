@@ -28,3 +28,21 @@
         self.build = build
     }
 }
+
+extension HostApplicationInfo {
+    /// What an application's `stateui.json` says, as the tool lays it beside a head whose platform keeps no record of
+    /// the application: its name shown, identifier, version and build; nil where `bytes` are no such file.
+    /// Design: docs/design/tooling/projects.md#a-head-carries-what-the-application-is
+    public init?(applicationFile bytes: [UInt8]) {
+        var parser = ValueText.Parser(bytes: bytes)
+        guard case .object(let fields)? = parser.document() else { return nil }
+        let words = { (key: String) -> String? in
+            guard case .string(let value)? = fields.first(where: { $0.key == key })?.value else { return nil }
+            return value
+        }
+        guard let identifier = words("identifier"), let name = words("name"), let version = words("version"),
+              case .number(let build)? = fields.first(where: { $0.key == "build" })?.value
+        else { return nil }
+        self.init(name: name, packageName: identifier, version: version, build: build)
+    }
+}

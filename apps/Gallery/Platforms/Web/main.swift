@@ -15,6 +15,6 @@ GalleryControls.register()
 GalleryActs.register()
 // listing: InteropEventsSample.Web.swift
 GalleryEventSources.start()
-WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
+WebHost.run()
 // listing: end
 // listing: end

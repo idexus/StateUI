@@ -30,6 +30,11 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
   and its `AndroidManifest.xml` says `android:label="${stateuiName}"`.
 
+- **WinUI, GTK and the Web read what the application is from its `stateui.json`.** The tool lays the file beside a
+  WinUI or GTK program and a page's `index.html`, and `app.info` tells its name, identifier, version and build on
+  these hosts too. `GTKHost.run(applicationID:)` is `GTKHost.run()` - the desktop knows the application by the file's
+  identifier - and `WebHost.run(name:applicationID:)` is `WebHost.run()`; the browser keeps an application's values
+  under its identifier, so what a page kept under its name before is not read again.
 - **A workspace's file is `stateui-workspace.json`.** `stateui.json` is an application's now: a workspace made before
   renames its file, which keeps what it says.
 - **What was chosen stands out of git.** A workspace's application to start leaves `stateui-workspace.json` for its

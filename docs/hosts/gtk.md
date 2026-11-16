@@ -77,12 +77,14 @@ GalleryEventSources.start()
 // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
 WebViewGTK.register()
 // Then GTK holds this thread until the last window closes.
-GTKHost.run(applicationID: "com.stateui.gallery")
+GTKHost.run()
 ```
 
-The name is the one the desktop knows the application by. GTK keeps one
-instance of it: launched again, the running application brings its window
-forward.
+The identifier in the application's `stateui.json` - which the tool lays
+beside the program, and the host reads as it starts - is the one the desktop
+knows the application by, its entry and icon named by it; its name and
+version are what `app.info` tells. GTK keeps one instance of it: launched
+again, the running application brings its window forward.
 
 `STATEUI_HOST=gtk` is what makes a build a GTK one: the application's
 manifest reads it, declares its `Platforms/GTK` head, the executable it makes,

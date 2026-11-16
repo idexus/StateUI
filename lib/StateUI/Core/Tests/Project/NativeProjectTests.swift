@@ -535,7 +535,7 @@ final class NativeProjectTests: XCTestCase {
                 "\(name)'s Package.swift declares no GTK head in Platforms/GTK")
 
             let entry = try text("Platforms/GTK/main.swift")
-            for shape in ["import StateUIGTK", "\(name)App.register()", "GTKHost.run(applicationID: \"com.stateui."] {
+            for shape in ["import StateUIGTK", "\(name)App.register()", "GTKHost.run()"] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s GTK head does not say \(shape)")
             }
         }

@@ -108,6 +108,10 @@ WebViewWinUI.register()
 WinUIHost.run(linkSchemes: ["stateui-gallery"])
 ```
 
+The application's `stateui.json` - which the tool lays beside the program,
+and the host reads as it starts - gives its identifier, name, version and
+build, which `app.info` tells.
+
 `STATEUI_HOST=winui` is what makes a build a WinUI one: the application's
 manifest reads it, declares its `Platforms/WinUI` head, the executable it
 makes, and defines the `WINUI` compilation condition for every module of the

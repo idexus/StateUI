@@ -22,11 +22,11 @@ final class WebRenderer {
     /// Where the children of the page's traveling layouts stand, read around each call's changes.
     let placements = WebPlacements()
 
-    /// The application's name, which the core tells the application.
-    let applicationName: String
+    /// What the application is - its name, identifier, version - which the core tells the application.
+    let application: HostApplicationInfo
 
-    /// The application's identity, `com.example.App`; nil where the head names none.
-    let applicationID: String?
+    /// What the browser keeps the application's values under: its identifier, else its name.
+    var keptUnder: String { application.packageName.isEmpty ? application.name : application.packageName }
 
     /// What the host hears the page by - its focus and visibility, its leaving, the user's appearance - for as
     /// long as it runs the page.
@@ -63,14 +63,12 @@ final class WebRenderer {
     /// What is kept of the scenes for the page's next start.
     let scenes = SceneKeeper()
 
-    /// A runtime of the application `applicationName`, on the page's clock or on `clock`, with the motion
-    /// `reducesMotion` allows.
+    /// A runtime of `application`, on the page's clock or on `clock`, with the motion `reducesMotion` allows.
     init(
-        applicationName: String, applicationID: String? = nil, clock: (() -> Double)? = nil,
+        application: HostApplicationInfo, clock: (() -> Double)? = nil,
         reducesMotion: @escaping () -> Bool = { MainActor.assumeIsolated { WebRelay.reducesMotion } }
     ) {
-        self.applicationName = applicationName
-        self.applicationID = applicationID
+        self.application = application
         frameClock = clock.map { WebFrameClock(now: $0, ticksWithBrowser: false) } ?? WebFrameClock()
         self.reducesMotion = reducesMotion
         runtime.presenter = self
@@ -79,8 +77,8 @@ final class WebRenderer {
     /// Starts the host in the page: told what the page stands on, the application rendered in one new scene, and a
     /// turn after every call the page makes from then on.
     /// Design: docs/design/platforms/web/runtime.md#starting
-    static func start(applicationName: String, applicationID: String?) {
-        WebRenderer(applicationName: applicationName, applicationID: applicationID).run()
+    static func start(application: HostApplicationInfo) {
+        WebRenderer(application: application).run()
     }
 
     /// Runs this host in the page, in place of any before it, on the page's thread claimed as the UI thread.
@@ -121,14 +119,14 @@ final class WebRenderer {
             register: WebRealization.register,
             complainingTo: WebRenderer.log,
             environment: {
-                WebEnvironment.report(to: core, applicationName: applicationName, applicationID: applicationID)
+                WebEnvironment.report(to: core, application: application)
                 pageListeners.append(WebEnvironment.watch { [weak self] in
                     self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
                 })
             },
-            kept: { WebKeptValues.readKept(into: core, application: applicationName) },
+            kept: { WebKeptValues.readKept(into: core, application: keptUnder) },
             // The scenes kept when the page was left come back; else the window launch opens.
-            windows: { scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime) },
+            windows: { scenes.restore(WebKeptValues.readScenes(keptUnder), in: runtime) },
             turns: entryEnded)
     }
 
@@ -251,7 +249,7 @@ extension WebRenderer: HostPresenter {
         // What a render wrote may move a view without resizing it, which no observer of the page tells.
         runtime.frames.laidOut()
         for popover in runtime.tree.takeWaitingPopovers() { popover.web.configurePopover() }
-        if let text = scenes.changed(root: runtime.tree.root) { WebKeptValues.writeScenes(text, application: applicationName) }
+        if let text = scenes.changed(root: runtime.tree.root) { WebKeptValues.writeScenes(text, application: keptUnder) }
     }
 
     func presentFrame(movedChrome: Bool) {
