@@ -113,6 +113,21 @@ final class ProtocolExamplesTests: XCTestCase {
                 ("request", try request("4", "project/describe", ProjectReference(projectUri: demo))),
                 ("response", try response("4", project)),
             ], answeredAsWritten: false),
+            Example(name: "settings-get", messages: [
+                ("request", try request("4", "settings/get", SettingsRequest(projectUri: demo))),
+                ("response", try response("4", Settings(
+                    workspaceUri: demo, startup: "Notes", applicationUri: demo + "/apps/Notes", host: .uikit,
+                    devices: ["android": "emulator-5554", "uikit": "iPhone 18 Pro"]))),
+            ], answeredAsWritten: false),
+            Example(name: "settings-set", messages: [
+                ("request", try request("12", "settings/set", Mutation(
+                    requestToken: "2b8e4f6a-9c1d-4e3f-8a5b-7d9c1e3f5a7b",
+                    request: SettingsChange(projectUri: demo, host: .uikit, device: "iPhone 18 Pro")))),
+                ("response", try response("12", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: Settings(
+                    workspaceUri: demo, startup: "Notes", applicationUri: demo + "/apps/Notes", host: .uikit,
+                    devices: ["uikit": "iPhone 18 Pro"]))),
+            ], answeredAsWritten: false),
             Example(name: "toolchain-check", messages: [
                 ("request", try request("5", "toolchain/check", NoParameters())),
                 ("response", try response("5", ToolchainReport(findings: [

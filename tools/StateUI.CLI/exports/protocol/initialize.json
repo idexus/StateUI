@@ -44,6 +44,8 @@
           "repository/integrationInstall",
           "repository/integrationPackage",
           "server/info",
+          "settings/get",
+          "settings/set",
           "tests/discover",
           "tests/run",
           "toolchain/check",

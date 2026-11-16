@@ -5,7 +5,7 @@
 // (tools/StateUI.CLI, StateUIToolingProtocol), written again here by hand and held to the tool's recorded examples
 // (tools/StateUI.CLI/exports/protocol) by the protocol tests.
 
-import { array, boolean, Decoder, DecodingError, json, number, object, oneOf, optional, string } from "./decoding";
+import { array, boolean, Decoder, DecodingError, dictionary, json, number, object, oneOf, optional, string } from "./decoding";
 
 export interface ToolIdentity { name: string; version: string }
 export const ToolIdentity = object<ToolIdentity>({ name: string, version: string });
@@ -199,14 +199,14 @@ export const DestinationList = object<DestinationList>({ host: HostFamily, desti
 export interface BuildRequest {
     projectUri?: string;
     application?: string;
-    host: HostFamily;
+    host?: HostFamily;
     configuration?: BuildConfiguration;
     architecture?: Architecture;
     device?: string;
     outputUri?: string;
 }
 export const BuildRequest = object<BuildRequest>({
-    projectUri: optional(string), application: optional(string), host: HostFamily, configuration: optional(BuildConfiguration),
+    projectUri: optional(string), application: optional(string), host: optional(HostFamily), configuration: optional(BuildConfiguration),
     architecture: optional(Architecture), device: optional(string), outputUri: optional(string),
 });
 
@@ -295,6 +295,25 @@ export const WorkspaceRequest = object<WorkspaceRequest>({
 export interface LibraryRequest { projectUri?: string; checkoutUri?: string; release?: string; repository?: string }
 export const LibraryRequest = object<LibraryRequest>({
     projectUri: optional(string), checkoutUri: optional(string), release: optional(string), repository: optional(string),
+});
+
+export interface SettingsRequest { projectUri?: string; application?: string }
+export const SettingsRequest = object<SettingsRequest>({ projectUri: optional(string), application: optional(string) });
+
+export interface SettingsChange {
+    projectUri?: string; application?: string; startup?: string; host?: HostFamily; device?: string;
+}
+export const SettingsChange = object<SettingsChange>({
+    projectUri: optional(string), application: optional(string), startup: optional(string), host: optional(HostFamily),
+    device: optional(string),
+});
+
+export interface Settings {
+    workspaceUri?: string; startup?: string; applicationUri?: string; host?: HostFamily; devices: Record<string, string>;
+}
+export const Settings = object<Settings>({
+    workspaceUri: optional(string), startup: optional(string), applicationUri: optional(string), host: optional(HostFamily),
+    devices: dictionary(string),
 });
 
 export interface LibraryChange { projectUri: string; library: string; changedUris: string[] }
@@ -404,6 +423,7 @@ export const IntegrationInstallRequest = object<IntegrationInstallRequest>({ edi
 export const methods = {
     "server/info": query(NoParameters, ServerInfo),
     "project/describe": query(ProjectReference, Project),
+    "settings/get": query(SettingsRequest, Settings),
     "toolchain/check": query(NoParameters, ToolchainReport),
     "name/check": query(NameCheck, NameVerdict),
     "devices/list": query(DestinationQuery, DestinationList),
@@ -421,6 +441,7 @@ export const methods = {
     "application/install": mutation(InstallRequest, InstallResult),
     "workspace/create": mutation(WorkspaceRequest, WorkspaceChange),
     "project/useLibrary": mutation(LibraryRequest, LibraryChange),
+    "settings/set": mutation(SettingsChange, Settings),
     "tests/run": mutation(TestRunRequest, SuiteResult),
     "repository/conformance": mutation(ConformanceRequest, SuiteResult),
     "repository/integrationPackage": mutation(IntegrationPackageRequest, EditorExtension),

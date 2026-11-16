@@ -28,6 +28,11 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 - **A workspace's file is `stateui-workspace.json`.** `stateui.json` is an application's now: a workspace made before
   renames its file, which keeps what it says.
+- **What was chosen stands out of git.** A workspace's application to start leaves `stateui-workspace.json` for its
+  `.stateui/workspace-settings.json`, which `stateui settings --startup <application>` writes; a file still saying
+  `startup` is refused. Each application keeps its chosen host and each host's device in its `.stateui/settings.json`,
+  and `stateui build`, `run` and `package` take them where `--host` or `--device` is left out. `stateui settings` -
+  `settings/get` and `settings/set` - shows and changes both. A build's `host` may be left out of `BuildRequest`.
 - **`stateui project library` changes the StateUI a project builds with.** It acts on the project a command reads:
   in an application, the checkout its manifest names - no workspace needed; in a workspace, a checkout or a release
   for every application it lists, as `stateui workspace library` did. `stateui workspace library` and the API's
@@ -44,7 +49,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### Tooling
 
-- The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running.
+- The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running; an
+  application `stateui new` makes outside a workspace has a `.gitignore` keeping `.stateui/` out of git.
 - `stateui run` hands an application it starts on a simulator, a device, Android or a page every `STATEUI_` variable
   of its own environment, `STATEUI_TALLY=1` among them, as a head on the Mac, Linux or Windows has always had.
 - A GTK head run with `--debugger` ends as its program does: its exit status, or a crash's signal with every thread's

@@ -1,0 +1,30 @@
+{
+  "request" : {
+    "id" : "12",
+    "jsonrpc" : "2.0",
+    "method" : "settings/set",
+    "params" : {
+      "device" : "iPhone 18 Pro",
+      "host" : "uikit",
+      "projectUri" : "file:///Users/example/Projects/Demo",
+      "requestToken" : "2b8e4f6a-9c1d-4e3f-8a5b-7d9c1e3f5a7b"
+    }
+  },
+  "response" : {
+    "id" : "12",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "applicationUri" : "file:///Users/example/Projects/Demo/apps/Notes",
+    "devices" : {
+      "uikit" : "iPhone 18 Pro"
+    },
+    "host" : "uikit",
+    "startup" : "Notes",
+    "workspaceUri" : "file:///Users/example/Projects/Demo"
+  }
+}

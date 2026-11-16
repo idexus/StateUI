@@ -22,6 +22,10 @@ public struct ApplicationRunner: Sendable {
     ///   build held for a debugger, `TOOL_FAILED` where it does not start - or `CancellationError` once stopped.
     public func run(_ request: RunRequest, in folder: URL, operation: String, reporter: RunReporter = RunReporter())
         async throws -> RunResult {
+        try Self.refuse(request)
+        var request = request
+        request.build = try ApplicationBuilder.chosen(request.build, in: folder)
+        try Self.refuse(request)
         if request.build.host == .android {
             return try await runAndroid(request, in: folder, operation: operation, reporter: reporter)
         }
@@ -35,12 +39,6 @@ public struct ApplicationRunner: Sendable {
             #else
             throw ToolingError(.invalidConfiguration, "A Web head's page is served on macOS and Linux.")
             #endif
-        }
-        guard request.build.host == .uikit else {
-            throw ToolingError(.invalidConfiguration, "application/run starts UIKit, Android and Web heads; \(request.build.host.rawValue) runs from the program application/build names.")
-        }
-        if request.debugger, request.build.configuration == .release {
-            throw ToolingError(.invalidConfiguration, "Only a debug build is held for a debugger.")
         }
         let (built, root) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
         #if os(macOS)
@@ -73,12 +71,21 @@ public struct ApplicationRunner: Sendable {
         #endif
     }
 
+    /// Refuses, before anything is read or built, a run of a host it does not start - another runs from the program
+    /// its build names - and a release build held for a debugger; a request naming no host yet passes.
+    private static func refuse(_ request: RunRequest) throws {
+        guard let host = request.build.host else { return }
+        guard [.uikit, .android, .web].contains(host) else {
+            throw ToolingError(.invalidConfiguration, "application/run starts UIKit, Android and Web heads; \(host.rawValue) runs from the program application/build names.")
+        }
+        if request.debugger, request.build.configuration == .release {
+            throw ToolingError(.invalidConfiguration, "Only a debug build is held for a debugger.")
+        }
+    }
+
     /// An Android head run on the device or emulator the request names - a virtual device not running booted first,
     /// so the build is for its ABI.
     private func runAndroid(_ request: RunRequest, in folder: URL, operation: String, reporter: RunReporter) async throws -> RunResult {
-        if request.debugger, request.build.configuration == .release {
-            throw ToolingError(.invalidConfiguration, "Only a debug build can be debugged.")
-        }
         let environment = ProcessInfo.processInfo.environment
         let tools = AndroidTools(environment: environment)
         let destinations = AndroidDestinations(tools: tools)

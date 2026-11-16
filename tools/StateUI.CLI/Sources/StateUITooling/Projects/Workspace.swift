@@ -39,15 +39,16 @@ struct Workspace: Sendable {
         }
     }
 
-    /// The application a run starts where none is named: the folder `startup` names, one the file lists.
+    /// The application a run starts where none is named: the one chosen on this machine, a folder the file lists.
     ///
-    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a `startup` the file does not list.
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a choice the file does not list.
     func startup() throws(ToolingError) -> URL? {
-        guard let path = file.startup else { return nil }
+        guard let path = try WorkspaceSettings.read(in: folder).startup else { return nil }
         guard file.projects.contains(path) else {
             throw ToolingError(
                 .invalidConfiguration,
-                "\(folder.appendingPathComponent(WorkspaceFile.name).path) starts \(path), which it does not list in projects.")
+                "\(WorkspaceSettings.file(in: folder).path) starts \(path), which the workspace does not list:"
+                    + " choose another with `stateui settings --startup <application>`.")
         }
         return ApplicationMaker.folder(named: path, from: folder)
     }

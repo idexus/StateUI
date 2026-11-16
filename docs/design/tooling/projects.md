@@ -66,26 +66,49 @@ in whatever folders they stand, and the StateUI checkout they build with.
 {
   "library" : { "path" : "StateUI" },
   "projects" : [ "apps/Notes", "clients/Mac" ],
-  "schemaVersion" : 1,
-  "startup" : "apps/Notes"
+  "schemaVersion" : 1
 }
 ```
 
 `projects` lists the applications - paths from the file, each a folder holding
 its `stateui.json` or refused - and nothing beneath the folder belongs to it
-otherwise. `library` is the checkout new applications build with; `startup`
-the application a build, a run or a package takes where none is named and
-the workspace holds several - one `projects` lists, another refused - which
-a project's description says as `startupUri`. The file is read whole: a
-field the tool does not read, or another `schemaVersion`, is refused by its
-place. The tool writes it the same every time - keys and projects sorted, a
-line break at its end - so `stateui new` adds a project without rewriting the
-rest. An application inside a workspace stands in it: its settings reach the
-application too. The repository is a workspace of Gallery and HelloWorld.
+otherwise. `library` is the checkout new applications build with. The file is
+read whole: a field the tool does not read, or another `schemaVersion`, is
+refused by its place. The tool writes it the same every time - keys and
+projects sorted, a line break at its end - so `stateui new` adds a project
+without rewriting the rest. An application inside a workspace stands in it.
+The repository is a workspace of Gallery and HelloWorld.
 
 The file is JSON: a user's static configuration that the tool reads and also
 writes. A Swift description would be a program to compile and run before the
 tool could read it, and one the tool could not safely rewrite.
+
+## What was chosen
+
+What one person chose on one machine stands apart from what the project is,
+out of git, in the `.stateui/` the tool keeps its own state in beside its
+journal (`.gitignore` leaves it out):
+
+```text
+<workspace>/.stateui/workspace-settings.json   { "schemaVersion" : 1, "startup" : "apps/Notes" }
+<application>/.stateui/settings.json           { "devices" : { "uikit" : "iPhone 18 Pro" }, "host" : "uikit", "schemaVersion" : 1 }
+```
+
+The workspace's says the application a build, a run or a package takes where
+none is named and the workspace lists several - one it lists, else refused -
+which a project's description says as `startupUri`. The application's says
+the host it is built for where none is named, and each host's device - a
+simulator or device, an emulator, a browser - where none is named for it. No
+file is nothing chosen: one application is itself, several are asked for by
+name, and a build naming no host and finding none chosen is refused, saying
+how to choose. Two names, because an application standing at its workspace's
+root shares its `.stateui/`. Both are read as the project's files are - whole,
+a device for no host refused - and written the same every time.
+
+`stateui settings` (`settings/get`, `settings/set`) shows them and chooses: an
+application to start, one its workspace lists; a host, one the application has
+a head for; a device, for the host named or chosen. The editor chooses through
+the same, so what a terminal's `stateui run` takes is what the editor shows.
 
 ## SwiftPM reads a package without a host
 

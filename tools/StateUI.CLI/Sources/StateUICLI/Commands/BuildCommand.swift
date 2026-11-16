@@ -14,8 +14,8 @@ struct BuildOptions: ParsableArguments {
     @Option(help: "The application, where the project holds more than one.")
     var application: String?
 
-    @Option(help: "The host it is built for: appkit, uikit, android or gtk.")
-    var host: HostFamily
+    @Option(help: "The host it is built for: appkit, uikit, android, winui, gtk or web; the one chosen (stateui settings) when left out.")
+    var host: HostFamily?
 
     @Option(help: "debug or release; debug for a build and a run, release for a package.")
     var configuration: BuildConfiguration?
@@ -23,7 +23,7 @@ struct BuildOptions: ParsableArguments {
     @Option(help: "The architecture it is built for; left out, this machine's for AppKit, WinUI and GTK, the device's for UIKit and Android - on Windows arm64 or x86_64, the other run by Windows' emulation.")
     var architecture: Architecture?
 
-    @Option(help: "A UIKit head's device or simulator, an Android head's device or emulator, by name or id (stateui devices --host <host>); left out, the booted simulator, else an iPhone - the only Android device running.")
+    @Option(help: "A UIKit head's device or simulator, an Android head's device or emulator, a Web head's browser, by name or id (stateui devices --host <host>); left out, the one chosen for the host (stateui settings), else the booted simulator, else an iPhone - the only Android device running.")
     var device: String?
 
     /// The request these options name, laid in `output` where given.
@@ -110,12 +110,13 @@ struct RunCommand: AsyncParsableCommand {
 
     func run() async throws {
         do {
-            if [.uikit, .android, .web].contains(build.host) {
+            let request = try ApplicationBuilder.chosen(build.request(), in: build.here)
+            if let host = request.host, [.uikit, .android, .web].contains(host) {
                 guard listen == nil || ["loopback", "lan"].contains(listen ?? "") else {
                     throw ToolingError(.invalidConfiguration, "--listen is loopback or lan.")
                 }
                 _ = try await ToolingService().run(
-                    RunRequest(build: build.request(), debugger: debugger, port: port, lan: listen.map { $0 == "lan" }), in: build.here,
+                    RunRequest(build: request, debugger: debugger, port: port, lan: listen.map { $0 == "lan" }), in: build.here,
                     operation: BuildOptions.operation,
                     reporter: RunReporter(
                         build: BuildOptions.terminal, started: { FileHandle.standardError.write(Data((Self.words($0) + "\n").utf8)) },
@@ -125,9 +126,9 @@ struct RunCommand: AsyncParsableCommand {
                         }))
                 return
             }
-            let built = try await ToolingService().build(build.request(), in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
+            let built = try await ToolingService().build(request, in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
             let program = try FileURI.url(built.programUri)
-            if build.host == .gtk {
+            if request.host == .gtk {
                 // A GTK application is one instance: a second start would only bring a running copy forward.
                 _ = try await ToolingService().install(try FileURI.url(built.folderUri))
                 _ = try? await ProcessRunner().run(ProcessRequest(.name("pkill"), arguments: ["-f", "^\(program.path)( |$)"]))
@@ -136,7 +137,7 @@ struct RunCommand: AsyncParsableCommand {
             var started = ProcessRequest(.path(program.path), streams: .terminal)
             let commands = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-gdb-\(UUID().uuidString).cmd")
             defer { try? FileManager.default.removeItem(at: commands) }
-            if build.host == .gtk, debugger {
+            if request.host == .gtk, debugger {
                 // Under gdb, each GTK critical's stack and a crash's are said as they come.
                 try Data(ToolingService.gdbCommands(for: built.architecture).utf8).write(to: commands)
                 started = ProcessRequest(

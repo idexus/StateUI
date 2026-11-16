@@ -102,6 +102,15 @@ swift test --package-path apps/Notes
 stateui run --project apps/Notes --host appkit
 ```
 
+A host chosen once - and a device for it - is what a build or a run takes
+when it names none; it is this machine's choice, kept out of git in the
+application's `.stateui/`, and the editor shows and changes the same:
+
+```bash
+stateui settings --project apps/Notes --host uikit --device "iPhone 18 Pro"
+stateui run --project apps/Notes
+```
+
 ## Application shape
 
 Every application follows one structural path:

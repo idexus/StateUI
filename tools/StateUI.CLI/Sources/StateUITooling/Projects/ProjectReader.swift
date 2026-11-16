@@ -105,6 +105,41 @@ public struct ProjectReader: Sendable {
         }
     }
 
+    /// The folder of the application a command in `folder` means, read off the files alone: the application `folder`
+    /// stands in - `name`, where one is given - else of its workspace the one `name` names, else the only one listed,
+    /// else the one chosen to start.
+    ///
+    /// - Throws: ``ToolingError`` - `PROJECT_NOT_FOUND`, `INVALID_CONFIGURATION` for none or several meant.
+    static func applicationFolder(named name: String?, containing folder: URL) throws(ToolingError) -> URL {
+        let folder = RealPath.of(RealPath.lexical(folder))
+        if let application = application(holding: folder) {
+            guard name == nil || name == application.lastPathComponent else {
+                throw ToolingError(.invalidConfiguration, "No application \(name ?? "") here; the project holds \(application.lastPathComponent).")
+            }
+            return application
+        }
+        guard let workspace = try Workspace.nearest(from: folder) else {
+            throw ToolingError(
+                .projectNotFound,
+                "No StateUI application stands in or above \(folder.path), and no stateui-workspace.json lists one.")
+        }
+        let listed = try workspace.applications()
+        let meant: [URL] = if let name {
+            listed.filter { $0.lastPathComponent == name }
+        } else if listed.count > 1, let startup = try workspace.startup() {
+            [startup]
+        } else {
+            listed
+        }
+        guard meant.count == 1, let application = meant.first else {
+            let names = listed.map(\.lastPathComponent).joined(separator: ", ")
+            throw ToolingError(.invalidConfiguration, meant.isEmpty
+                ? "No application \(name ?? "") here; the project holds \(names)."
+                : "Name the application, or choose one to start (`stateui settings --startup <application>`): the project holds \(names).")
+        }
+        return application
+    }
+
     /// The application `folder` stands in: itself, or the nearest folder above it that is one.
     static func application(holding folder: URL) -> URL? {
         var current = folder

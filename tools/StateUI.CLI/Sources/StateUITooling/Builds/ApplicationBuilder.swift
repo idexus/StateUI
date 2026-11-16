@@ -56,18 +56,19 @@ public struct ApplicationBuilder: Sendable {
     ///   its project or its checkout, `ALREADY_EXISTS` for one holding what no package laid.
     public func package(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter = BuildReporter())
         async throws -> BuildResult {
-        var release = request
+        var release = try Self.chosen(request, in: folder)
         release.configuration = request.configuration ?? .release
-        let (project, application) = try await resolve(release, in: folder)
+        let (project, application, host) = try await resolve(release, in: folder)
         let folderOfApplication = try FileURI.url(application.packageUri)
         let root = try project.workspaceUri.map(FileURI.url) ?? folderOfApplication
         let output = try request.outputUri.map(FileURI.url)
-            ?? root.appendingPathComponent("artifacts").appendingPathComponent(application.name).appendingPathComponent(release.host.folder)
+            ?? root.appendingPathComponent("artifacts").appendingPathComponent(application.name).appendingPathComponent(host.folder)
         let keeping = [folderOfApplication, root] + (try application.libraryUri.map { [try FileURI.url($0)] } ?? [])
         try PackageOutput.check(output, keeping: keeping)
-        let (built, _) = try await built(release, project: project, application: application, operation: operation, reporter: reporter)
+        let (built, _) = try await built(
+            release, project: project, application: application, host: host, operation: operation, reporter: reporter)
         let artifact = try FileURI.url(built.folderUri)
-        let head = "\(application.name) \(release.host.folder)"
+        let head = "\(application.name) \(host.folder)"
         guard let bundleUri = built.bundleUri else {
             // A head with no bundle is its artifact's folder: the program, its libraries, its pictures.
             let files = FileManager.default
@@ -101,13 +102,16 @@ public struct ApplicationBuilder: Sendable {
     /// The build, and the project root its records stand in: the workspace's folder, else the application's.
     func built(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter)
         async throws -> (result: BuildResult, root: URL) {
-        let (project, application) = try await resolve(request, in: folder)
-        return try await built(request, project: project, application: application, operation: operation, reporter: reporter)
+        let request = try Self.chosen(request, in: folder)
+        let (project, application, host) = try await resolve(request, in: folder)
+        return try await built(
+            request, project: project, application: application, host: host, operation: operation, reporter: reporter)
     }
 
-    /// The build of `application`, of `project`, and the root its records stand in.
+    /// The build of `application`, of `project`, for `host`, and the root its records stand in.
     private func built(
-        _ request: BuildRequest, project: Project, application: Application, operation: String, reporter: BuildReporter
+        _ request: BuildRequest, project: Project, application: Application, host: HostFamily, operation: String,
+        reporter: BuildReporter
     ) async throws -> (result: BuildResult, root: URL) {
         guard let libraryUri = application.libraryUri else {
             throw ToolingError(.projectNotFound, "\(application.name) names no StateUI checkout in its Package.swift.")
@@ -115,7 +119,7 @@ public struct ApplicationBuilder: Sendable {
         let folderOfApplication = try FileURI.url(application.packageUri)
         let configuration = request.configuration ?? .debug
         let machine = Architecture(rawValue: Machine.current.architecture) ?? .arm64
-        let target = switch request.host {
+        let target = switch host {
         case .uikit:
             try await BuildTarget.uiKit(
                 device: request.device, listed: await destinations(.uikit), architecture: request.architecture, machine: machine,
@@ -125,7 +129,7 @@ public struct ApplicationBuilder: Sendable {
                 device: request.device, listed: await destinations(.android), architecture: request.architecture,
                 tools: AndroidTools(environment: environment))
         case .gtk:
-            try BuildTarget.native(request.architecture ?? machine, machine: machine, host: request.host)
+            try BuildTarget.native(request.architecture ?? machine, machine: machine, host: host)
         case .winui:
             try BuildTarget.winUI(request.architecture ?? machine, machine: machine)
         case .web:
@@ -135,12 +139,12 @@ public struct ApplicationBuilder: Sendable {
         }
         let compiler = target.compiler ?? tools.swift
         let context = BuildContext(
-            application: folderOfApplication, product: "\(application.name)\(request.host.folder)", host: request.host,
+            application: folderOfApplication, product: "\(application.name)\(host.folder)", host: host,
             configuration: configuration, architecture: target.architecture,
             compiler: (await ToolOutput.text(compiler, ["--version"]))?.split(separator: "\n").first.map(String.init) ?? "",
             sdk: target.sdkIdentity, library: try FileURI.url(libraryUri))
 
-        let lease = try await permit.acquire(for: "\(application.name) for \(request.host.rawValue), stateui \(ProcessInfo.processInfo.processIdentifier)") {
+        let lease = try await permit.acquire(for: "\(application.name) for \(host.rawValue), stateui \(ProcessInfo.processInfo.processIdentifier)") {
             reporter.progress("waiting for \($0)")
         }
         defer { lease.release() }
@@ -312,26 +316,40 @@ public struct ApplicationBuilder: Sendable {
         }
     }
 
-    /// The project `request` names - its `projectUri`, else `folder` - and the application in it it means: the one
-    /// it names, else the only one, else the workspace's startup.
-    private func resolve(_ request: BuildRequest, in folder: URL) async throws -> (Project, Application) {
-        let project = try await ProjectReader(tools: tools).describe(containing: try request.projectUri.map(FileURI.url) ?? folder)
-        let named = if let name = request.application {
-            project.applications.filter { $0.name == name }
-        } else if project.applications.count > 1, let startup = project.startupUri {
-            project.applications.filter { $0.packageUri == startup }
-        } else {
-            project.applications
+    /// `request` with what was chosen for its application where it names nothing: the host, and that host's device.
+    /// Design: docs/design/tooling/projects.md#what-was-chosen
+    ///
+    /// - Throws: ``ToolingError`` - the project's, and `INVALID_CONFIGURATION` for no host named or chosen.
+    public static func chosen(_ request: BuildRequest, in folder: URL) throws -> BuildRequest {
+        var chosen = request
+        let application = try ProjectReader.applicationFolder(
+            named: request.application, containing: try request.projectUri.map(FileURI.url) ?? folder)
+        let settings = try ApplicationSettings.read(in: application)
+        guard let host = request.host ?? settings.host else {
+            throw ToolingError(
+                .invalidConfiguration,
+                "Name the host with --host, or choose one for \(application.lastPathComponent): `stateui settings --host <host>`.")
         }
-        guard named.count == 1, let application = named.first else {
-            let names = project.applications.map(\.name).joined(separator: ", ")
-            throw ToolingError(.invalidConfiguration, named.isEmpty
-                ? "No application \(request.application ?? "") here; the project holds \(names)."
-                : "Name the application to build: the project holds \(names).")
+        chosen.host = host
+        chosen.device = request.device ?? settings.device(for: host)
+        return chosen
+    }
+
+    /// The project `request` names - its `projectUri`, else `folder` - the application in it it means
+    /// (`ProjectReader.applicationFolder`), and the host it is built for.
+    private func resolve(_ request: BuildRequest, in folder: URL) async throws -> (Project, Application, HostFamily) {
+        let projectFolder = try request.projectUri.map(FileURI.url) ?? folder
+        let project = try await ProjectReader(tools: tools).describe(containing: projectFolder)
+        let meant = FileURI.string(try ProjectReader.applicationFolder(named: request.application, containing: projectFolder))
+        guard let application = project.applications.first(where: { $0.packageUri == meant }) else {
+            throw ToolingError(.internalError, "\(meant) was meant, but the project's description holds no such application.")
         }
-        guard application.declaredHosts.contains(request.host) else {
-            throw ToolingError(.invalidConfiguration, "\(application.name) has no \(request.host.rawValue) head.")
+        guard let host = request.host else {
+            throw ToolingError(.invalidConfiguration, "No host is named for \(application.name).")
         }
-        return (project, application)
+        guard application.declaredHosts.contains(host) else {
+            throw ToolingError(.invalidConfiguration, "\(application.name) has no \(host.rawValue) head.")
+        }
+        return (project, application, host)
     }
 }

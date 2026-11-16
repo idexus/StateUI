@@ -7,7 +7,7 @@ import StateUIToolingProtocol
 /// An application's file, `stateui.json`, beside its `Package.swift`: what the application is on every platform -
 /// its identifier, its version and its build. A folder holding one is an application.
 /// Design: docs/design/tooling/projects.md#an-applications-file
-public struct ApplicationFile: Codable, Equatable, Sendable {
+public struct ApplicationFile: ToolFile, Equatable {
     /// The file's name, which marks an application's folder.
     public static let name = "stateui.json"
     /// The version of the file's form this tool reads.
@@ -30,28 +30,6 @@ public struct ApplicationFile: Codable, Equatable, Sendable {
         self.identifier = identifier
         self.version = version
         self.build = build
-    }
-
-    /// The file at `url`, read whole and checked.
-    ///
-    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` naming what cannot be read and where.
-    public static func read(_ url: URL) throws(ToolingError) -> ApplicationFile {
-        let invalid = { (reason: String) in ToolingError(.invalidConfiguration, "\(url.path): \(reason)") }
-        guard let data = try? Data(contentsOf: url) else { throw invalid("it cannot be read.") }
-        guard let json = try? ToolingJSON.decoder().decode(JSONValue.self, from: data) else { throw invalid("it is not JSON.") }
-        let file: ApplicationFile
-        do {
-            file = try json.decode(ApplicationFile.self)
-        } catch let error as StrictDecodingError {
-            throw invalid("it has no field \(error.unread.joined(separator: ", ")).")
-        } catch {
-            throw invalid("\(error)")
-        }
-        guard file.schemaVersion == currentVersion else {
-            throw invalid("its schemaVersion \(file.schemaVersion) is not \(currentVersion), the one this tool reads.")
-        }
-        if let problem = file.problem { throw invalid(problem) }
-        return file
     }
 
     /// What every platform would refuse of the file; nil where each takes it.
@@ -87,11 +65,6 @@ public struct ApplicationFile: Codable, Equatable, Sendable {
             !part.isEmpty && part.count <= 9 && part.unicodeScalars.allSatisfy { ("0"..."9").contains($0) }
                 && (part == "0" || part.first != "0")
         }
-    }
-
-    /// Writes the file: its keys in sorted order, a line break at its end - the same file every time.
-    public func write(to url: URL) throws {
-        try (ToolingJSON.encoder(pretty: true).encode(self) + Data("\n".utf8)).write(to: url)
     }
 }
 

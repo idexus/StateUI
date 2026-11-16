@@ -90,7 +90,12 @@ final class ProjectReaderTests: XCTestCase {
         }
         try #"{"schemaVersion":2,"projects":[]}"#.write(to: file, atomically: true, encoding: .utf8)
         XCTAssertThrowsError(try Workspace.nearest(from: root))
-        try WorkspaceFile(projects: ["notes"], startup: "elsewhere").write(to: file)
+        try #"{"schemaVersion":1,"projects":["notes"],"startup":"notes"}"#.write(to: file, atomically: true, encoding: .utf8)
+        XCTAssertThrowsError(try Workspace.nearest(from: root)) {
+            XCTAssertTrue(($0 as? ToolingError)?.message.contains("/startup") == true, "the workspace's file says no startup")
+        }
+        try WorkspaceFile(projects: ["notes"]).write(to: file)
+        try WorkspaceSettings(startup: "elsewhere").write(to: WorkspaceSettings.file(in: root))
         XCTAssertThrowsError(try Workspace.nearest(from: root)?.startup()) {
             XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration)
             XCTAssertTrue(($0 as? ToolingError)?.message.contains("elsewhere") == true)

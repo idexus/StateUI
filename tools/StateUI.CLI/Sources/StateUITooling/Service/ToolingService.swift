@@ -39,7 +39,8 @@ public struct ToolingService: Sendable {
     }
 
     /// Makes application `name` in `parent` from a checkout's HelloWorld - `checkout`, else the workspace's library,
-    /// else the checkout `parent` stands in - named `identifier`, and lists it in the workspace - `project/create`.
+    /// else the checkout `parent` stands in - named `identifier`, and lists it in the workspace, else gives it the
+    /// `.gitignore` a workspace has - `project/create`.
     public func createApplication(_ name: String, identifier: String? = nil, in parent: URL, from checkout: URL?)
         async throws -> ProjectCreation {
         var workspace = try Workspace.nearest(from: parent)
@@ -50,6 +51,10 @@ public struct ToolingService: Sendable {
         }
         let made = try ApplicationMaker().make(name, identifier: identifier, in: parent, from: checkout)
         var created = [FileURI.string(made)]
+        if workspace == nil {
+            // An application standing alone keeps what its builds and the tool write out of git, as a workspace does.
+            try Data(WorkspaceMaker.ignored(cloned: false).utf8).write(to: made.appendingPathComponent(".gitignore"))
+        }
         if workspace != nil {
             try workspace?.add(made)
             created.append(FileURI.string(workspace!.folder.appendingPathComponent(WorkspaceFile.name)))
@@ -473,6 +478,18 @@ public struct ToolingService: Sendable {
             try await createApplication(
                 request.name, identifier: request.identifier, in: try FileURI.url(request.parentUri),
                 from: try request.checkoutUri.map(FileURI.url))
+        }
+        methods.query("settings/get") { (request: SettingsRequest, context: RequestContext) in
+            guard let uri = request.projectUri ?? context.workspaceUri else {
+                throw ToolingError(.projectNotFound, "No project is named, and the connection opened no workspace.")
+            }
+            return try settings(in: try FileURI.url(uri), application: request.application)
+        }
+        methods.mutation("settings/set") { (change: SettingsChange, _: OperationContext, caller: RequestContext) in
+            guard let uri = change.projectUri ?? caller.workspaceUri else {
+                throw ToolingError(.projectNotFound, "No project is named, and the connection opened no workspace.")
+            }
+            return try changeSettings(change, in: try FileURI.url(uri))
         }
         methods.query("project/describe") { (reference: ProjectReference, context: RequestContext) in
             guard let uri = reference.projectUri ?? context.workspaceUri else {

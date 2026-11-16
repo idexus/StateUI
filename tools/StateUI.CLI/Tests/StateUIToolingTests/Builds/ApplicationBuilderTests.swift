@@ -154,13 +154,33 @@ final class ApplicationBuilderTests: XCTestCase {
         try Data().write(to: other.appendingPathComponent("Package.swift"))
         try ApplicationFile(identifier: "com.example.other", version: "1.0.0", build: 1)
             .write(to: other.appendingPathComponent("stateui.json"))
-        try WorkspaceFile(library: .init(path: "StateUI"), projects: ["Notes", "Other"], startup: "Notes")
+        try WorkspaceFile(library: .init(path: "StateUI"), projects: ["Notes", "Other"])
             .write(to: bench.root.appendingPathComponent("stateui-workspace.json"))
+        try WorkspaceSettings(startup: "Notes").write(to: WorkspaceSettings.file(in: bench.root))
         let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
 
         let built = try await builder.build(BuildRequest(host: .appkit), in: bench.root, operation: "op-startup")
 
         XCTAssertEqual(built.application, "Notes")
+    }
+
+    /// A build naming no host builds for the one chosen for its application; with none chosen it is refused, saying
+    /// how to choose.
+    func testABuildNamingNoHostBuildsForTheOneChosen() async throws {
+        let bench = try bench()
+        let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
+        do {
+            _ = try await builder.build(BuildRequest(), in: bench.application, operation: "op-no-host")
+            XCTFail("a build with no host ran")
+        } catch let error as ToolingError {
+            XCTAssertEqual(error.code, .invalidConfiguration)
+            XCTAssertTrue(error.message.contains("stateui settings --host"), error.message)
+        }
+
+        try ApplicationSettings(host: .appkit).write(to: ApplicationSettings.file(in: bench.application))
+        let built = try await builder.build(BuildRequest(), in: bench.application, operation: "op-chosen")
+
+        XCTAssertEqual(built.host, .appkit)
     }
 
     /// A package replaces only a folder a package was laid in: one holding anything else is refused before any build,
