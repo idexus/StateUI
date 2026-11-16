@@ -174,6 +174,19 @@ which GTK allows. The keyboard GNOME shows on a touch screen stands for the
 field holding the focus, so taking it down lets that field's focus go, and
 answers whether a field held it.
 
+## The input method
+
+GTK hands a field the keyboard through its input method, which on Wayland
+binds the compositor's text input only when the compositor answers the first
+field of the process. GTK 4.22 keeps a field gone before that answer as the
+method's current one after it is freed, and the compositor's next word
+reaching it ends the process - a prompt a test answers at once, or a focused
+field an application drops in the same turn, meets it. So the window waits
+for that answer as the first field on its display takes the keyboard -
+`gdk_display_sync`, one roundtrip on Wayland - and no field can go before it
+(`GTKInputMethod`). Only the process's first field meets the defect, so its
+test proves it run alone.
+
 ## The clipboard
 
 The clipboard is the display's `GdkClipboard`: words are set on it at once,

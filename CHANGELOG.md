@@ -57,6 +57,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   in place.
 - GTK: a page replaced while the focus stood in it is let go. A link replacing the stack's top page left that page,
   and everything it held, alive for the rest of the run; the focus is taken out of a page before it is replaced away.
+- GTK on Wayland: a field that takes the keyboard and goes at once no longer ends the process. GTK 4.22 binds its input
+  method as the compositor answers the first field, and kept a field gone before that answer, freed, for the
+  compositor's next word to reach; the window now waits for that answer as the first field takes the keyboard.
 
 ### Tooling
 
