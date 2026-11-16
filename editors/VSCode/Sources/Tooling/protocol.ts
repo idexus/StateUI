@@ -131,6 +131,7 @@ export interface Application {
     id: string;
     name: string;
     identifier: string;
+    displayName: string;
     version: string;
     build: number;
     packageUri: string;
@@ -140,7 +141,7 @@ export interface Application {
     libraryUri?: string;
 }
 export const Application = object<Application>({
-    id: string, name: string, identifier: string, version: string, build: number, packageUri: string,
+    id: string, name: string, identifier: string, displayName: string, version: string, build: number, packageUri: string,
     declaredHosts: array(HostFamily), products: array(string), testSuites: array(string), libraryUri: optional(string),
 });
 

@@ -7,7 +7,7 @@ import StateUIToolingProtocol
 import XCTest
 
 final class InfoPlistTests: XCTestCase {
-    private static let gallery = ApplicationFile(identifier: "com.stateui.gallery", version: "1.2.3", build: 45)
+    private static let gallery = ApplicationFile(identifier: "com.stateui.gallery", version: "1.2.3", build: 45, name: "StateUI Gallery")
 
     /// A bundle's keys are the host's own with the application's laid over, each key whole; its identifier, version
     /// and build are its `stateui.json`'s.
@@ -15,7 +15,7 @@ final class InfoPlistTests: XCTestCase {
         let own = FileManager.default.temporaryDirectory.appendingPathComponent("own-\(UUID().uuidString).plist")
         defer { try? FileManager.default.removeItem(at: own) }
         let theirs: [String: Any] = [
-            "CFBundleDisplayName": "StateUI Gallery",
+            "NSLocationUsageDescription": "Where you are.",
             "CFBundleURLTypes": [["CFBundleURLSchemes": ["stateui-gallery"]]],
         ]
         try PropertyListSerialization.data(fromPropertyList: theirs, format: .xml, options: 0).write(to: own)
@@ -28,7 +28,8 @@ final class InfoPlistTests: XCTestCase {
         XCTAssertEqual(plist["CFBundleShortVersionString"] as? String, "1.2.3")
         XCTAssertEqual(plist["CFBundleVersion"] as? String, "45")
         XCTAssertEqual(plist["CFBundleDisplayName"] as? String, "StateUI Gallery")
-        XCTAssertEqual(plist["CFBundleName"] as? String, "Gallery")
+        XCTAssertEqual(plist["CFBundleName"] as? String, "StateUI Gallery")
+        XCTAssertEqual(plist["NSLocationUsageDescription"] as? String, "Where you are.")
         XCTAssertEqual(plist["CFBundleExecutable"] as? String, "GalleryAppKit")
         XCTAssertEqual(plist["LSMinimumSystemVersion"] as? String, "26.4")
         XCTAssertEqual(((plist["CFBundleURLTypes"] as? [[String: Any]])?.first?["CFBundleURLSchemes"] as? [String]), ["stateui-gallery"])
@@ -48,6 +49,7 @@ final class InfoPlistTests: XCTestCase {
         XCTAssertEqual(simulator["CFBundleSupportedPlatforms"] as? [String], ["iPhoneSimulator"])
         XCTAssertEqual(device["CFBundleSupportedPlatforms"] as? [String], ["iPhoneOS"])
         XCTAssertEqual(simulator["CFBundleIdentifier"] as? String, "com.stateui.helloworld")
+        XCTAssertEqual(simulator["CFBundleDisplayName"] as? String, "HelloWorld", "no name is the folder's")
         XCTAssertEqual([simulator["CFBundleShortVersionString"], simulator["CFBundleVersion"]] as? [String], ["0.8.5", "1"])
         XCTAssertEqual(simulator["MinimumOSVersion"] as? String, "26.4")
         XCTAssertEqual(simulator["UIDeviceFamily"] as? [Int], [1, 2])

@@ -30,6 +30,7 @@
                 "appkit",
                 "uikit"
               ],
+              "displayName" : "Notes",
               "id" : "apps/Notes",
               "identifier" : "com.example.notes",
               "libraryUri" : "file:///Users/example/Projects/Demo/StateUI",

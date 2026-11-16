@@ -37,9 +37,10 @@ AppKit's for now. The host's drawables join the resources. Gradle, run on JDK
 assembles the head's `Platforms/Android` project with the host's Java and
 these folders, given as properties, `ANDROID_HOME` naming the SDK. The
 application's `stateui.json` is given the same way - `stateui.identifier`,
-`stateui.version` and `stateui.versionCode` - and the head's
+`stateui.name`, `stateui.version` and `stateui.versionCode` - and the head's
 `build.gradle.kts` takes its `applicationId`, `versionName` and `versionCode`
-from them, naming none of its own (projects.md). The host's test APK is
+from them, its manifest's `android:label` as `${stateuiName}` from
+`manifestPlaceholders`, naming none of its own (projects.md). The host's test APK is
 given the suite's own (`AndroidSuite.identity`). The APK is
 published as the artifact, `<Name>.apk`, signed with the debug key Gradle
 keeps for every configuration; its package and the activity the launcher

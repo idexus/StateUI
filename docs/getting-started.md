@@ -331,8 +331,9 @@ apps/Notes/
 ```
 
 `stateui.json` says what the application is on every platform - the
-identifier that names it, the version shown to its user and its build - and
-makes the folder an application to the `stateui` tool:
+identifier that names it, the version shown to its user and its build, and
+the name it is shown by where it is not its folder's (`"name" : "My Notes"`) -
+and makes the folder an application to the `stateui` tool:
 
 ```json
 {

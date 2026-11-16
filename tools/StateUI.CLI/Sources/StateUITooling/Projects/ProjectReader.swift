@@ -69,6 +69,7 @@ public struct ProjectReader: Sendable {
             id: Self.relativePath(of: package, from: root),
             name: package.lastPathComponent,
             identifier: file.identifier,
+            displayName: file.name ?? package.lastPathComponent,
             version: file.version,
             build: file.build,
             packageUri: FileURI.string(package),

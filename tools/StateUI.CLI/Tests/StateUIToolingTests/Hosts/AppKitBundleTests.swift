@@ -22,7 +22,7 @@ final class AppKitBundleTests: XCTestCase {
         try svg.write(to: application.appendingPathComponent("Resources/Images/mark.svg"), atomically: true, encoding: .utf8)
         try svg.write(to: application.appendingPathComponent("Resources/AppIcon/appicon_macos.svg"), atomically: true, encoding: .utf8)
         if ownKeys {
-            let own: [String: Any] = ["CFBundleDisplayName": "My Notes", "NSLocationUsageDescription": "Where notes were written."]
+            let own: [String: Any] = ["NSLocationUsageDescription": "Where notes were written."]
             try PropertyListSerialization.data(fromPropertyList: own, format: .xml, options: 0)
                 .write(to: application.appendingPathComponent("Platforms/AppKit/Info.plist"))
         }
@@ -42,7 +42,7 @@ final class AppKitBundleTests: XCTestCase {
         try Data("library".utf8).write(to: binaries.appendingPathComponent("libStateUI.dylib"))
         let bundle = try await AppKitBundle(
             application: application, name: "Notes", product: "NotesAppKit", binaries: binaries,
-            identity: ApplicationFile(identifier: "pl.example.notes", version: "2.1", build: 9),
+            identity: ApplicationFile(identifier: "pl.example.notes", version: "2.1", build: 9, name: "My Notes"),
             minimumSystem: "26.4").assemble(in: staging, sign: false)
 
         let files = FileManager.default
@@ -66,7 +66,7 @@ final class AppKitBundleTests: XCTestCase {
         let (application, binaries, staging) = try application(ownKeys: false)
         let bundle = try await AppKitBundle(
             application: application, name: "Notes", product: "NotesAppKit", binaries: binaries,
-            identity: ApplicationFile(identifier: "pl.example.notes", version: "2.1", build: 9),
+            identity: ApplicationFile(identifier: "pl.example.notes", version: "2.1", build: 9, name: "My Notes"),
             minimumSystem: "26.4").assemble(in: staging)
         let said = Gathered()
         let verified = try await ProcessRunner().run(

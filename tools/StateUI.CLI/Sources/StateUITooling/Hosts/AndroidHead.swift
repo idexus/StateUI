@@ -14,7 +14,7 @@ struct AndroidHead {
     var application: URL
     /// The application's name: `Gallery`.
     var name: String
-    /// What the application's `stateui.json` says: the APK's application id, version name and version code.
+    /// What the application's `stateui.json` says: the APK's application id, label, version name and version code.
     var identity: ApplicationFile
     /// The library SwiftPM built: `GalleryAndroid`.
     var product: String
@@ -79,7 +79,8 @@ struct AndroidHead {
                 "-Pstateui.build=\(work.appendingPathComponent("gradle").path)",
                 "-Pstateui.java=\(library.appendingPathComponent("lib/StateUI/StateUI.Android/Java").path)",
                 "-Pstateui.libraries=\(jniLibs.path)", "-Pstateui.assets=\(assets.path)", "-Pstateui.res=\(res.path)",
-                "-Pstateui.identifier=\(identity.identifier)", "-Pstateui.version=\(identity.version)",
+                "-Pstateui.identifier=\(identity.identifier)", "-Pstateui.name=\(identity.name ?? name)",
+                "-Pstateui.version=\(identity.version)",
                 "-Pstateui.versionCode=\(identity.build)", task,
             ], environment: ProcessEnvironment.inherited.setting("JAVA_HOME", to: java.path).setting("ANDROID_HOME", to: tools.sdk.path)),
             output: { line in

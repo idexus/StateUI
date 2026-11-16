@@ -152,7 +152,9 @@ public struct ApplicationBuilder: Sendable {
         let root = try project.workspaceUri.map(FileURI.url) ?? folderOfApplication
         let entry = try OperationJournal(root: root).open(id: operation, kind: "application/build", request: try JSONValue(encoding: request))
         do {
-            let identity = ApplicationFile(identifier: application.identifier, version: application.version, build: application.build)
+            let identity = ApplicationFile(
+                identifier: application.identifier, version: application.version, build: application.build,
+                name: application.displayName)
             let result = try await compileAndPublish(
                 context, target, name: application.name, identity: identity, operation: operation, entry: entry, reporter: reporter)
             try entry.finish(.succeeded)

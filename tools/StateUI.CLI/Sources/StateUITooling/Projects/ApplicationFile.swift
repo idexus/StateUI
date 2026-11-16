@@ -5,7 +5,7 @@ import Foundation
 import StateUIToolingProtocol
 
 /// An application's file, `stateui.json`, beside its `Package.swift`: what the application is on every platform -
-/// its identifier, its version and its build. A folder holding one is an application.
+/// its identifier, the name shown, its version and its build. A folder holding one is an application.
 /// Design: docs/design/tooling/projects.md#an-applications-file
 public struct ApplicationFile: ToolFile, Equatable {
     /// The file's name, which marks an application's folder.
@@ -19,15 +19,18 @@ public struct ApplicationFile: ToolFile, Equatable {
     public var schemaVersion: Int
     /// What names the application to every platform: `pl.example.notes`.
     public var identifier: String
+    /// The name shown to its user: `Monitoring Paczek`; its folder's where none is given.
+    public var name: String?
     /// The version shown to the user: `1.0.0`.
     public var version: String
     /// The build, which grows with every release of the application: `1`.
     public var build: Int
 
-    /// An application named `identifier`, at `version` and `build`.
-    public init(identifier: String, version: String, build: Int) {
+    /// An application named `identifier`, at `version` and `build`, shown as `name`.
+    public init(identifier: String, version: String, build: Int, name: String? = nil) {
         schemaVersion = Self.currentVersion
         self.identifier = identifier
+        self.name = name
         self.version = version
         self.build = build
     }
@@ -38,6 +41,9 @@ public struct ApplicationFile: ToolFile, Equatable {
         if !Self.isIdentifier(identifier) {
             return "its identifier \"\(identifier)\" is not two or more parts joined by dots, each a letter, then letters"
                 + " and digits: pl.example.notes."
+        }
+        if let name, name.trimmingCharacters(in: .whitespaces).isEmpty {
+            return "its name is empty; leave it out, and the application's folder names it."
         }
         if !Self.isVersion(version) {
             return "its version \"\(version)\" is not one to three numbers joined by dots: 1.0.0."

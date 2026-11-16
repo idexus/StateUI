@@ -35,7 +35,8 @@ final class ProjectReaderTests: XCTestCase {
         XCTAssertEqual(project.applications.map(\.id), ["apps/Gallery", "apps/HelloWorld"])
         let hello = try XCTUnwrap(project.applications.last)
         XCTAssertEqual(hello.name, "HelloWorld")
-        XCTAssertEqual([hello.identifier, hello.version], ["com.stateui.helloworld", Release.version])
+        XCTAssertEqual([hello.identifier, hello.displayName, hello.version], ["com.stateui.helloworld", "HelloWorld", Release.version])
+        XCTAssertEqual(project.applications.first?.displayName, "StateUI Gallery")
         XCTAssertEqual(hello.build, 1)
         XCTAssertEqual(hello.declaredHosts, HostFamily.allCases)
         XCTAssertEqual(hello.products, ["HelloWorldUI"])
@@ -135,13 +136,14 @@ final class ProjectReaderTests: XCTestCase {
             }
         }
         try refused(#"{"build":1,"identifier":"pl.example.notes","schemaVersion":1}"#, "version")
-        try refused(#"{"build":1,"identifier":"pl.example.notes","schemaVersion":1,"version":"1","name":"N"}"#, "/name")
+        try refused(#"{"build":1,"identifier":"pl.example.notes","schemaVersion":1,"version":"1","title":"N"}"#, "/title")
         try refused(#"{"build":1,"identifier":"notes","schemaVersion":1,"version":"1"}"#, "identifier")
         try refused(#"{"build":1,"identifier":"pl.my-company.notes","schemaVersion":1,"version":"1"}"#, "identifier")
         try refused(#"{"build":1,"identifier":"pl.example.2notes","schemaVersion":1,"version":"1"}"#, "identifier")
         try refused(#"{"build":1,"identifier":"pl.example.notes","schemaVersion":1,"version":"1.0.0.0"}"#, "version")
         try refused(#"{"build":1,"identifier":"pl.example.notes","schemaVersion":1,"version":"1.02"}"#, "version")
         try refused(#"{"build":0,"identifier":"pl.example.notes","schemaVersion":1,"version":"1"}"#, "build")
+        try refused(#"{"build":1,"identifier":"pl.example.notes","name":" ","schemaVersion":1,"version":"1"}"#, "name")
         try refused(#"{"build":1,"identifier":"pl.example.notes","schemaVersion":2,"version":"1"}"#, "schemaVersion")
 
         try ApplicationFile(identifier: "pl.example.notes", version: "1.10.0", build: 7).write(to: file)

@@ -8,13 +8,14 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 ### Breaking changes
 
 - **An application is a folder holding its `stateui.json`.** Beside its `Package.swift`, the file says what the
-  application is on every platform - the `identifier` naming it, the `version` shown to its user and its `build` - and
-  neither `stateui` nor the VS Code extension takes a folder without one for an application. Every head takes them from
-  there: an Apple bundle's `CFBundleIdentifier`, `CFBundleShortVersionString` and `CFBundleVersion` - which were
-  `com.stateui.<name>`, StateUI's release and 1, and which an application's own `Info.plist` may no longer say - and an
-  Android head's `applicationId`, `versionName` and `versionCode`. `stateui new` writes the file: the identifier
-  `--identifier` gives, else `com.example.<name>`, at version 1.0.0, build 1. An application made before adds its own
-  file, and its `Platforms/Android/build.gradle.kts` reads it:
+  application is on every platform - the `identifier` naming it, the `name` shown (its folder's where none is given),
+  the `version` shown to its user and its `build` - and neither `stateui` nor the VS Code extension takes a folder
+  without one for an application. Every head takes them from there: an Apple bundle's `CFBundleIdentifier`,
+  `CFBundleShortVersionString` and `CFBundleVersion` - which were `com.stateui.<name>`, StateUI's release and 1, and
+  which an application's own `Info.plist` may no longer say, with `CFBundleDisplayName` and `CFBundleName` from its
+  `name` - and an Android head's `applicationId`, `versionName`, `versionCode` and label. `stateui new` writes the
+  file: the identifier `--identifier` gives, else `com.example.<name>`, at version 1.0.0, build 1. An application made
+  before adds its own file, and its `Platforms/Android/build.gradle.kts` reads it:
 
   ```json
   { "build": 1, "identifier": "pl.example.notes", "schemaVersion": 1, "version": "1.0.0" }
@@ -24,7 +25,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   applicationId = stated("stateui.identifier")
   versionCode = stated("stateui.versionCode").toInt()
   versionName = stated("stateui.version")
+  manifestPlaceholders["stateuiName"] = stated("stateui.name")
   ```
+
+  and its `AndroidManifest.xml` says `android:label="${stateuiName}"`.
 
 - **A workspace's file is `stateui-workspace.json`.** `stateui.json` is an application's now: a workspace made before
   renames its file, which keeps what it says.

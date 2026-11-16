@@ -1,6 +1,7 @@
 {
   "build" : 1,
   "identifier" : "com.stateui.gallery",
+  "name" : "StateUI Gallery",
   "schemaVersion" : 1,
   "version" : "0.8.6"
 }

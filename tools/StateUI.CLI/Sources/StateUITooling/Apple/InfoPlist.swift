@@ -8,23 +8,25 @@ import StateUIToolingProtocol
 /// `Platforms/<Host>/Info.plist` laid over them key by key.
 /// Design: docs/design/tooling/apple-bundles.md#infoplist
 public enum InfoPlist {
-    /// The keys an application's own `Info.plist` never says: its identifier, version and build, its
+    /// The keys an application's own `Info.plist` never says: its identifier, name, version and build, its
     /// `stateui.json`'s.
-    public static let identityKeys = ["CFBundleIdentifier", "CFBundleShortVersionString", "CFBundleVersion"]
+    public static let identityKeys = [
+        "CFBundleDisplayName", "CFBundleIdentifier", "CFBundleName", "CFBundleShortVersionString", "CFBundleVersion",
+    ]
 
-    /// The keys of a macOS application's bundle: its executable `product`, its name shown and spoken, the identifier,
-    /// version and build its `stateui.json` says (`identity`), the oldest macOS it runs on, and the icon
-    /// `StateUI.icns`.
+    /// The keys of a macOS application's bundle: its executable `product`, the name shown and spoken, identifier,
+    /// version and build its `stateui.json` says (`identity`) - `name` shown where it says none - the oldest macOS it
+    /// runs on, and the icon `StateUI.icns`.
     public static func macOS(name: String, product: String, identity: ApplicationFile, minimumSystem: String)
         -> [String: Any] {
         [
             "CFBundleDevelopmentRegion": "en",
-            "CFBundleDisplayName": name,
+            "CFBundleDisplayName": identity.name ?? name,
             "CFBundleExecutable": product,
             "CFBundleIconFile": "StateUI",
             "CFBundleIdentifier": identity.identifier,
             "CFBundleInfoDictionaryVersion": "6.0",
-            "CFBundleName": name,
+            "CFBundleName": identity.name ?? name,
             "CFBundlePackageType": "APPL",
             "CFBundleShortVersionString": identity.version,
             "CFBundleVersion": String(identity.build),
@@ -34,19 +36,19 @@ public enum InfoPlist {
     }
 
     /// The keys of an iOS application's bundle for `platform` - a simulator's or a device's: its executable `product`,
-    /// its name shown and spoken, the identifier, version and build its `stateui.json` says (`identity`), the oldest
-    /// iOS it runs on, both families, every orientation, and many scenes - an iPad's windows.
+    /// the name shown and spoken, identifier, version and build its `stateui.json` says (`identity`) - `name` shown
+    /// where it says none - the oldest iOS it runs on, both families, every orientation, and many scenes.
     public static func iOS(
         name: String, product: String, identity: ApplicationFile, minimumSystem: String, platform: AppleSDK.Platform
     ) -> [String: Any] {
         [
             "CADisableMinimumFrameDurationOnPhone": true,
             "CFBundleDevelopmentRegion": "en",
-            "CFBundleDisplayName": name,
+            "CFBundleDisplayName": identity.name ?? name,
             "CFBundleExecutable": product,
             "CFBundleIdentifier": identity.identifier,
             "CFBundleInfoDictionaryVersion": "6.0",
-            "CFBundleName": name,
+            "CFBundleName": identity.name ?? name,
             "CFBundlePackageType": "APPL",
             "CFBundleShortVersionString": identity.version,
             "CFBundleSupportedPlatforms": [platform.bundleName],

@@ -3,7 +3,7 @@
 
 // The Android head: the APK around the Swift libraries the stateui tool builds.
 // The tool names every path below and what the application's stateui.json
-// says - its id, version and build; Gradle compiles the host's Java layer and
+// says - its id, name, version and build; Gradle compiles the host's Java layer and
 // packages what the Swift build left.
 
 plugins {
@@ -26,6 +26,7 @@ android {
         targetSdk = 36
         versionCode = stated("stateui.versionCode").toInt()
         versionName = stated("stateui.version")
+        manifestPlaceholders["stateuiName"] = stated("stateui.name")
     }
 
     sourceSets {

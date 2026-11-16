@@ -66,7 +66,7 @@ final class ProtocolExamplesTests: XCTestCase {
         let project = Project(
             rootUri: demo,
             applications: [Application(
-                id: "apps/Notes", name: "Notes", identifier: "com.example.notes", version: "1.0.0", build: 1,
+                id: "apps/Notes", name: "Notes", identifier: "com.example.notes", displayName: "Notes", version: "1.0.0", build: 1,
                 packageUri: demo + "/apps/Notes", declaredHosts: [.appkit, .uikit],
                 products: ["NotesUI"], testSuites: ["NotesTests"], libraryUri: demo + "/StateUI")],
             libraries: [Library(

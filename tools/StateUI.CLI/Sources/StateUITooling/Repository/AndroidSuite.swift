@@ -10,7 +10,8 @@ import StateUIToolingProtocol
 /// Design: docs/design/tooling/repository.md#the-android-hosts-suite
 struct AndroidSuite {
     /// What the test APK is - no application's `stateui.json`, the suite's own - at StateUI's release.
-    static let identity = ApplicationFile(identifier: "com.stateui.androidtests", version: Release.version, build: 1)
+    static let identity = ApplicationFile(
+        identifier: "com.stateui.androidtests", version: Release.version, build: 1, name: "StateUI Android host tests")
 
     let checkout: URL
     let tools: ToolResolver

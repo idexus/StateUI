@@ -37,18 +37,20 @@ folder an application:
 {
   "build" : 1,
   "identifier" : "pl.example.notes",
+  "name" : "Notes",
   "schemaVersion" : 1,
   "version" : "1.0.0"
 }
 ```
 
-`identifier` names the application to every platform, `version` is the one
+`identifier` names the application to every platform, `name` is the one shown
+to its user - its folder's where the file gives none - `version` is the one
 shown to its user, and `build` grows with every release of it. Each is one
 every platform takes, checked as the file is read: the identifier two or more
 parts joined by dots, each a letter, then letters and digits - Apple's bundle
 identifiers take no `_`, Android's application ids no `-`; the version one to
 three numbers joined by dots; the build a whole number from 1 to
-2 100 000 000, Android's largest version code. The file is read whole, as the
+2 100 000 000, Android's largest version code; a name not empty. The file is read whole, as the
 workspace's is: a field missing, one the tool does not read, or another
 `schemaVersion` is refused by its place. The tool writes it the same every
 time - keys sorted, a line break at its end.

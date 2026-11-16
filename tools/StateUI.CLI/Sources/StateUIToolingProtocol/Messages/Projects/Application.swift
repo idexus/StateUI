@@ -9,6 +9,8 @@ public struct Application: Codable, Equatable, Sendable {
     public var name: String
     /// What names it to every platform, from its `stateui.json`: `com.stateui.gallery`.
     public var identifier: String
+    /// The name shown to its user: its `stateui.json`'s `name`, else its name.
+    public var displayName: String
     /// The version shown to its user, from its `stateui.json`: `1.0.0`.
     public var version: String
     /// Its build, from its `stateui.json`: `1`.
@@ -26,12 +28,13 @@ public struct Application: Codable, Equatable, Sendable {
 
     /// An application of a project.
     public init(
-        id: String, name: String, identifier: String, version: String, build: Int, packageUri: String,
+        id: String, name: String, identifier: String, displayName: String, version: String, build: Int, packageUri: String,
         declaredHosts: [HostFamily], products: [String], testSuites: [String], libraryUri: String?
     ) {
         self.id = id
         self.name = name
         self.identifier = identifier
+        self.displayName = displayName
         self.version = version
         self.build = build
         self.packageUri = packageUri
