@@ -40,6 +40,14 @@ the Web a third item shows the device: an iPhone, an iPad or a simulator for
 UIKit; an attached phone or an emulator, started when it is picked, for
 Android; the browser the page opens in, for the Web.
 
+What is chosen there is the project's choice on this machine, which the
+`stateui` tool keeps out of git in its `.stateui/` - the workspace's
+application to start in `workspace-settings.json`, the application's host and
+each host's device in its `settings.json`: the window works as the chosen
+application's host, and `stateui run` in a terminal, naming no host or device,
+takes the same. A change made by `stateui settings` shows here at once. A
+window holding no application keeps its host and devices as its own.
+
 Press **F5** to run **StateUI: Debug**, or choose **StateUI: Release** in Run
 and Debug. The application's head is built, installed where the host needs
 it, and started under `lldb-dap`, a breakpoint holding from the first line -
@@ -141,17 +149,17 @@ While the host is Android, a third status bar item shows the device - click it,
 or run **StateUI: Select Android Device**. It offers the devices attached and
 the emulators set up, as the `stateui` tool lists them; an emulator picked that
 is not running is started when a launch or the tests need it. The device is
-remembered for the workspace, so a launch or a run of the tests asks only when
-none is chosen or the one chosen is no longer listed.
+the application's choice, by its name, so a launch or a run of the tests asks
+only when none is chosen or the one chosen is no longer listed.
 
 ## The UIKit device
 
 While the host is UIKit, the third status bar item shows the iPhone or iPad a
 launch runs on - click it, or run **StateUI: Select UIKit Device**. It offers
 the devices paired with this Mac, over USB or Wi-Fi, and the simulators, each
-of iOS 26.4 or later, the newest runtime first. It is remembered for the
-workspace, so a launch asks only when none is chosen or the one chosen is
-gone. A device runs with Developer Mode on, and its build is signed with a
+of iOS 26.4 or later, the newest runtime first. It is the application's
+choice, by its name, so a launch asks only when none is chosen or the one
+chosen is gone. A device runs with Developer Mode on, and its build is signed with a
 development profile of this Mac's that provisions it - Xcode makes one for a
 team once the device is added. The host's own suites run on a simulator: the
 one chosen where it is one, else one asked for among the simulators alone and
@@ -163,17 +171,19 @@ While the host is the Web, the third status bar item shows the browser a
 launch opens the page in - click it, or run **StateUI: Select Browser**. It
 offers the browsers installed on this machine - what the system opens both a
 web address and a web page with - the system's own first, as the `stateui`
-tool lists them. It is remembered
-for the workspace, so a launch asks only when none is chosen or the one
-chosen is no longer installed.
+tool lists them. It is the application's choice,
+by its name, so a launch asks only when none is chosen or the one chosen is
+no longer installed.
 
 ## The application
 
 A second status bar item shows the application **StateUI: Debug** and
 **StateUI: Release** run - click it, or run **StateUI: Select Application**.
-It is remembered for the workspace, so a launch asks only when nothing is
-chosen yet, or when the chosen application has no head for the host. A launch
-configuration naming `"application": "Gallery"` runs that one instead.
+In a workspace it is the application the workspace starts on this machine
+(`.stateui/workspace-settings.json`), so a launch asks only when nothing is
+chosen yet, or when the chosen application has no head for the host; the
+window then works as the host chosen for it. A launch configuration naming
+`"application": "Gallery"` runs that one instead.
 
 ## A new application
 

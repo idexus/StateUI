@@ -32,7 +32,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `.stateui/workspace-settings.json`, which `stateui settings --startup <application>` writes; a file still saying
   `startup` is refused. Each application keeps its chosen host and each host's device in its `.stateui/settings.json`,
   and `stateui build`, `run` and `package` take them where `--host` or `--device` is left out. `stateui settings` -
-  `settings/get` and `settings/set` - shows and changes both. A build's `host` may be left out of `BuildRequest`.
+  `settings/get` and `settings/set` - shows and changes both. A build's `host` may be left out of `BuildRequest`. The
+  VS Code extension chooses through the same files: the window works as the chosen application's host, a device is
+  the application's choice by its name, and what `stateui settings` changes shows in the status bar at once.
 - **`stateui project library` changes the StateUI a project builds with.** It acts on the project a command reads:
   in an application, the checkout its manifest names - no workspace needed; in a workspace, a checkout or a release
   for every application it lists, as `stateui workspace library` did. `stateui workspace library` and the API's

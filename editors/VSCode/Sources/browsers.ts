@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The browsers a Web head runs in, as the stateui tool lists them (`devices/list`) - the browsers installed on this
-// machine - and the one chosen for the workspace.
+// machine - and the one chosen, by its name.
 
 import * as vscode from "vscode";
+import { DeviceStore } from "./choices";
 import { Destination } from "./Tooling/protocol";
 
 /** A browser installed on this machine. */
@@ -20,13 +21,9 @@ export interface Browser {
     readonly isDefault: boolean;
 }
 
-/** The browser chosen for a workspace. */
-export type ChosenBrowser = Pick<Browser, "id" | "name">;
-
 /** The browsers as the tool lists them, or nothing, said, where it could not. */
 export type BrowserLister = () => Promise<Browser[] | undefined>;
 
-const browserKey = "stateui.browser";
 
 /** A destination the tool listed, as a browser stands in the editor. */
 export function browserOf(destination: Destination): Browser {
@@ -44,21 +41,20 @@ export function isChromium(browser: Pick<Browser, "id">): boolean {
     return /chrome|chromium|edge|brave|vivaldi|opera|thebrowser/i.test(browser.id);
 }
 
-/** The browser chosen for the workspace, where one is. */
-export function chosenBrowser(state: vscode.Memento): ChosenBrowser | undefined {
-    return state.get<ChosenBrowser>(browserKey);
+/** The browser among `listed` the one chosen - its name, or its id - names; nothing where it is installed no more. */
+export function browserAmong(listed: readonly Browser[], chosen: string | undefined): Browser | undefined {
+    return chosen === undefined ? undefined : listed.find((each) => each.id === chosen) ?? listed.find((each) => each.name === chosen);
 }
 
 /** The browser a launch runs in: the one chosen, while it is installed, else asked for - or nothing, where none is picked. */
-export async function browserToRunOn(state: vscode.Memento, list: BrowserLister): Promise<Browser | undefined> {
+export async function browserToRunOn(store: DeviceStore, list: BrowserLister): Promise<Browser | undefined> {
     const listed = await list();
-    const chosen = chosenBrowser(state);
-    const installed = listed?.find((each) => each.id === chosen?.id);
-    return installed ?? (listed ? askForBrowser(state, list, listed) : undefined);
+    const installed = listed && browserAmong(listed, store.device("web"));
+    return installed ?? (listed ? askForBrowser(store, list, listed) : undefined);
 }
 
 /** Asks for a browser among those the tool lists, the system's own first, remembers it and answers it. */
-export async function askForBrowser(state: vscode.Memento, list: BrowserLister, listed?: Browser[]): Promise<Browser | undefined> {
+export async function askForBrowser(store: DeviceStore, list: BrowserLister, listed?: Browser[]): Promise<Browser | undefined> {
     listed ??= await list();
     if (!listed) {
         return undefined;
@@ -68,7 +64,7 @@ export async function askForBrowser(state: vscode.Memento, list: BrowserLister, 
         return undefined;
     }
 
-    const current = chosenBrowser(state)?.id;
+    const current = browserAmong(listed, store.device("web"))?.id;
     const ordered = [...listed].sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
     const picked = await vscode.window.showQuickPick(
         ordered.map((browser) => ({
@@ -82,15 +78,15 @@ export async function askForBrowser(state: vscode.Memento, list: BrowserLister, 
         return undefined;
     }
 
-    await state.update(browserKey, { id: picked.browser.id, name: picked.browser.name } satisfies ChosenBrowser);
+    await store.choose("web", picked.browser.name);
     return picked.browser;
 }
 
 /** Chooses the browser `wanted` names - its id or its name - as the tool lists it; answers its name, or nothing. */
-export async function chooseListedBrowser(state: vscode.Memento, wanted: string, list: BrowserLister): Promise<string | undefined> {
+export async function chooseListedBrowser(store: DeviceStore, wanted: string, list: BrowserLister): Promise<string | undefined> {
     const found = (await list())?.find((each) => each.id === wanted || each.name === wanted);
     if (found) {
-        await state.update(browserKey, { id: found.id, name: found.name } satisfies ChosenBrowser);
+        await store.choose("web", found.name);
     }
     return found?.name;
 }

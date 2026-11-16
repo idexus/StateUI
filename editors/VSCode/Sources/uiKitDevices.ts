@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Where a UIKit head runs: the iPhones and iPads paired with this Mac, and the iOS simulators, as the stateui tool
-// lists them (`devices/list`), and the one chosen for the workspace. The tool boots a simulator, and signs for a
-// device.
+// lists them (`devices/list`), and the one chosen - by its name. The tool boots a simulator, and signs for a device.
 
 import * as vscode from "vscode";
+import { DeviceStore } from "./choices";
 import { Destination } from "./Tooling/protocol";
 import { appleFloor } from "./toolchain";
 
@@ -23,10 +23,8 @@ export interface UIKitDevice {
     readonly state: string;
 }
 
-/** The device chosen for a workspace. */
+/** A device remembered: the simulator chosen for suites. */
 export type ChosenUIKitDevice = Pick<UIKitDevice, "id" | "name">;
-
-const chosenKey = "stateui.uiKitDevice";
 
 /** The devices paired and the simulators available as the tool lists them, or nothing, said, where it could not. */
 export type UIKitLister = () => Promise<UIKitDevice[] | undefined>;
@@ -39,38 +37,32 @@ export function uiKitDeviceOf(destination: Destination): UIKitDevice {
     };
 }
 
-/** The device chosen for the workspace, where one is. */
-export function chosenUIKitDevice(state: vscode.Memento): ChosenUIKitDevice | undefined {
-    return state.get<ChosenUIKitDevice>(chosenKey);
-}
-
-/** Chooses `device` for the workspace. */
-export async function chooseUIKitDevice(state: vscode.Memento, device: ChosenUIKitDevice): Promise<void> {
-    await state.update(chosenKey, { id: device.id, name: device.name } satisfies ChosenUIKitDevice);
+/** The device among `listed` the one chosen - its name, or its id - names; nothing where it is listed no more. */
+export function uiKitDeviceAmong(listed: readonly UIKitDevice[], chosen: string | undefined): UIKitDevice | undefined {
+    return chosen === undefined ? undefined : listed.find((each) => each.id === chosen) ?? listed.find((each) => each.name === chosen);
 }
 
 /**
  * The device a launch or a suite runs on: the one chosen, while it is still listed, else asked for - or nothing,
  * where none is picked.
  */
-export async function uiKitDeviceToRunOn(state: vscode.Memento, list: UIKitLister): Promise<string | undefined> {
+export async function uiKitDeviceToRunOn(store: DeviceStore, list: UIKitLister): Promise<string | undefined> {
     const listed = await list();
-    const chosen = chosenUIKitDevice(state);
-
-    if (chosen && listed?.some((each) => each.id === chosen.id)) {
+    const chosen = listed && uiKitDeviceAmong(listed, store.device("uikit"));
+    if (chosen) {
         return chosen.id;
     }
-    return listed ? askForUIKitDevice(state, list, listed) : undefined;
+    return listed ? askForUIKitDevice(store, list, listed) : undefined;
 }
 
 /**
  * Chooses the device `wanted` names - its id, or its name - as it is listed, so what the status bar says is its
  * name; answers that name, or nothing where none is listed so.
  */
-export async function chooseListedUIKitDevice(state: vscode.Memento, wanted: string, list: UIKitLister): Promise<string | undefined> {
+export async function chooseListedUIKitDevice(store: DeviceStore, wanted: string, list: UIKitLister): Promise<string | undefined> {
     const found = (await list())?.find((each) => each.id === wanted || each.name === wanted);
     if (found) {
-        await chooseUIKitDevice(state, found);
+        await store.choose("uikit", found.name);
     }
     return found?.name;
 }
@@ -82,22 +74,24 @@ const suitesKey = "stateui.uiKitSuiteSimulator";
  * else the simulator chosen for suites, each while it is listed; nothing where one is to be asked for.
  */
 export function simulatorForSuites(
-    listed: UIKitDevice[], chosen?: ChosenUIKitDevice, forSuites?: ChosenUIKitDevice,
+    listed: UIKitDevice[], chosen?: string, forSuites?: ChosenUIKitDevice,
 ): string | undefined {
     const simulators = new Set(listed.filter((each) => each.kind === "simulator").map((each) => each.id));
-    return [chosen, forSuites].find((each) => each !== undefined && simulators.has(each.id))?.id;
+    return [uiKitDeviceAmong(listed, chosen), forSuites].find((each) => each !== undefined && simulators.has(each.id))?.id;
 }
 
 /**
  * The simulator a suite runs on (`simulatorForSuites`), else asked for among the simulators alone and remembered for
  * suites: the iPhone or iPad a launch runs on stays as it is.
  */
-export async function uiKitSimulatorToTestOn(state: vscode.Memento, list: UIKitLister): Promise<string | undefined> {
+export async function uiKitSimulatorToTestOn(
+    store: DeviceStore, state: vscode.Memento, list: UIKitLister,
+): Promise<string | undefined> {
     const listed = await list();
     if (!listed) {
         return undefined;
     }
-    const found = simulatorForSuites(listed, chosenUIKitDevice(state), state.get<ChosenUIKitDevice>(suitesKey));
+    const found = simulatorForSuites(listed, store.device("uikit"), state.get<ChosenUIKitDevice>(suitesKey));
     if (found) {
         return found;
     }
@@ -127,7 +121,7 @@ function entry(device: UIKitDevice, current?: string): vscode.QuickPickItem & { 
 }
 
 /** Asks for a device among the iPhones and iPads paired and the simulators, remembers it, and answers its id. */
-export async function askForUIKitDevice(state: vscode.Memento, list: UIKitLister, listed?: UIKitDevice[]): Promise<string | undefined> {
+export async function askForUIKitDevice(store: DeviceStore, list: UIKitLister, listed?: UIKitDevice[]): Promise<string | undefined> {
     listed ??= await list();
     if (!listed) {
         return undefined;
@@ -138,7 +132,7 @@ export async function askForUIKitDevice(state: vscode.Memento, list: UIKitLister
         return undefined;
     }
 
-    const current = chosenUIKitDevice(state)?.id;
+    const current = uiKitDeviceAmong(listed, store.device("uikit"))?.id;
     type Item = vscode.QuickPickItem & { device?: UIKitDevice };
     const devices = listed.filter((each) => each.kind === "device");
     const simulators = listed.filter((each) => each.kind === "simulator");
@@ -155,6 +149,6 @@ export async function askForUIKitDevice(state: vscode.Memento, list: UIKitLister
         return undefined;
     }
 
-    await chooseUIKitDevice(state, device);
+    await store.choose("uikit", device.name);
     return device.id;
 }

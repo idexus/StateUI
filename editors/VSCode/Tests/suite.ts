@@ -15,6 +15,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { Application, applicationsOf, hasHead, readApplications } from "../Sources/applications";
 import { Configuration, configurations, runPlace, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
+import { chosenApplication } from "../Sources/choices";
 import { androidDeviceOf, deviceAmong } from "../Sources/devices";
 import { browserOf, isChromium } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
@@ -294,11 +295,22 @@ export async function run(): Promise<void> {
                     { kind: "device", serial: "emulator-5554", name: "Pixel_3a" },
                     { kind: "avd", name: "Medium_Phone" },
                 ]));
-            check("a device chosen is known by its serial while it runs - an emulator chosen when it was not, by its name - else by its virtual device's name",
-                deviceAmong(listed, { serial: "190a991d", name: "CPH2363" }) === "190a991d"
-                && deviceAmong(listed, { serial: "Pixel_3a", name: "Pixel_3a" }) === "emulator-5554"
-                && deviceAmong(listed, { serial: "Medium_Phone", name: "Medium_Phone" }) === "Medium_Phone"
-                && deviceAmong(listed, { serial: "gone", name: "Gone" }) === undefined);
+            check("a device chosen by its name or serial is known by its serial while it runs - an emulator chosen when it was not too - else by its virtual device's name",
+                deviceAmong(listed, "CPH2363") === "190a991d"
+                && deviceAmong(listed, "190a991d") === "190a991d"
+                && deviceAmong(listed, "Pixel_3a") === "emulator-5554"
+                && deviceAmong(listed, "Medium_Phone") === "Medium_Phone"
+                && deviceAmong(listed, "Gone") === undefined);
+            const one = { name: "One", directory: "/w/One", hosts: [] as Host[], workspace: "/w" };
+            const two = { name: "Two", directory: "/w/b/Two", hosts: [] as Host[], workspace: "/w" };
+            const alone = { name: "Alone", directory: "/a/Alone", hosts: [] as Host[] };
+            const starts = new Map([["/w", "Two"]]);
+            check("the application a window works on: the one it remembers where its workspace starts it or none - else the workspace's start - else the only one",
+                chosenApplication([one, two], starts, "One") === two
+                && chosenApplication([one, two], new Map(), "One") === one
+                && chosenApplication([one, two, alone], starts, "Alone") === alone
+                && chosenApplication([one, two], new Map()) === undefined
+                && chosenApplication([alone], new Map()) === alone);
         }
 
         const helloWorld = api.applications().find((each) => each.name === "HelloWorld")!;
@@ -399,10 +411,10 @@ export async function run(): Promise<void> {
             const simulator = { id: "S", name: "iPhone 18 Pro", kind: "simulator" as const, os: "27.0", state: "" };
             const pad = { id: "A", name: "iPad Air 13-inch (M4)", kind: "simulator" as const, os: "27.0", state: "" };
             check("a suite runs on the simulator chosen, never on a device - an iPhone chosen asks for a simulator, or takes the one chosen for suites",
-                simulatorForSuites([phone, simulator, pad], simulator) === "S"
-                && simulatorForSuites([phone, simulator, pad], phone) === undefined
-                && simulatorForSuites([phone, simulator, pad], phone, pad) === "A"
-                && simulatorForSuites([phone, simulator], phone, pad) === undefined);
+                simulatorForSuites([phone, simulator, pad], simulator.name) === "S"
+                && simulatorForSuites([phone, simulator, pad], phone.name) === undefined
+                && simulatorForSuites([phone, simulator, pad], phone.name, pad) === "A"
+                && simulatorForSuites([phone, simulator], phone.name, pad) === undefined);
         }
         {
             check("a destination the tool lists stands as a UIKit device: a device by how it is reached, a simulator by whether it is booted",
