@@ -135,6 +135,13 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   it, the end of a debug session ends it, and a second launch in its place replaces it. **Conformance - Rebuild all**
   and **Rebuild changed** have the tool record the chosen host's families - the Web's and Android's stale ones too.
 
+### Fixed
+
+- Web: a bar button whose look follows the pointer and the press takes its click in Safari. The page wrote its words
+  and attributes again as the press came and went, its words in a new text node, and WebKit sends no click where the
+  node under the pointer was replaced; what already stands is written no more, and new words change the one text node
+  in place.
+
 ### Tooling
 
 - The release's version stands in the library's `ApplicationInfo.libraryVersion`; the editor extension's

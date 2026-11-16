@@ -28,6 +28,7 @@ struct WebSuite {
         "WebTabTitleTests",
         "WebLeaveTests",
         "WebLookTests",
+        "WebRelayWritesTests",
         "WebScrollOffsetTests",
         "WebHandTests",
         "WebPointerTests",

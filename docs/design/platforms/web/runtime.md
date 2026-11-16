@@ -77,6 +77,17 @@ Words read back - a field's value - are read in two steps: the relay encodes
 them and answers their length, and Swift hands it a buffer of that length to
 copy them into.
 
+### What already stands
+
+The relay writes only what changes: an element's words or an attribute that
+already says what Swift asks is left alone, and new words for an element
+holding one text node change that node's `data` in place. A view shown again
+as its look follows the pointer - a bar's button pressed, hovered - writes
+its words and attributes again, and a text node replaced between a press and
+its release is a click WebKit never sends (Chrome sends it, so the suite's
+browser alone never shows it). `WebRelayWritesTests` holds both: the same
+write changes nothing, and a press on a bar's button replaces no node.
+
 A DOM event crosses by its name, and a name is only ever the DOM's - an
 application's custom element hears its own `closed` or `focus`. What the
 relay reads for the host out of one event or more - Return that commits no
