@@ -20,13 +20,16 @@ public struct ApplicationMaker: Sendable {
     }
 
     /// Makes application `name` in `parent` from `checkout`'s HelloWorld, its `stateui.json` naming it `identifier` -
-    /// `com.example.<name>` where none is given - at version 1.0.0, build 1: written beside, then put in place whole.
+    /// `com.example.<name>` where none is given - at version 1.0.0, build 1, with the heads of `platforms` alone where
+    /// they are given: written beside, then put in place whole.
     ///
     /// - Returns: The new application's folder.
-    /// - Throws: ``ToolingError`` - a name or identifier that cannot be, a folder already holding something, no
-    ///   checkout.
-    public func make(_ name: String, identifier: String? = nil, in parent: URL, from checkout: URL) throws(ToolingError)
-        -> URL {
+    /// - Throws: ``ToolingError`` - a name or identifier that cannot be, no platform, a folder already holding
+    ///   something, no checkout.
+    public func make(
+        _ name: String, identifier: String? = nil, platforms: [HostFamily]? = nil, in parent: URL, from checkout: URL
+    ) throws(ToolingError) -> URL {
+        if platforms?.isEmpty == true { throw ToolingError(.invalidName, "\(name) cannot be made for no platform.") }
         if let problem = Self.problem(with: name) { throw ToolingError(.invalidName, problem) }
         let file = ApplicationFile(identifier: identifier ?? "com.example.\(name.lowercased())", version: "1.0.0", build: 1)
         if let problem = file.problem { throw ToolingError(.invalidName, "\(name) cannot be made: \(problem)") }
@@ -43,6 +46,9 @@ public struct ApplicationMaker: Sendable {
             try copy(checkout.root.appendingPathComponent("apps/HelloWorld"), to: staging, naming: name)
             try nameCheckout(checkout.root, in: staging, standingAt: destination)
             try file.write(to: staging.appendingPathComponent(ApplicationFile.name))
+            for host in HostFamily.allCases where platforms.map({ !$0.contains(host) }) ?? false {
+                try? files.removeItem(at: staging.appendingPathComponent("Platforms").appendingPathComponent(host.folder))
+            }
             if files.fileExists(atPath: destination.path) { try files.removeItem(at: destination) }
             try files.moveItem(at: staging, to: destination)
         } catch {

@@ -55,6 +55,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### Tooling
 
+- `stateui new --platforms appkit,web,winui` makes an application with those hosts' heads alone; an application's
+  hosts are its heads, so one is taken away by removing its `Platforms/<Host>`.
 - The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running; an
   application `stateui new` makes outside a workspace has a `.gitignore` keeping `.stateui/` out of git.
 - `stateui run` hands an application it starts on a simulator, a device, Android or a page every `STATEUI_` variable

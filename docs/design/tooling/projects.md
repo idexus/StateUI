@@ -145,7 +145,9 @@ working directory or the one named: every file of HelloWorld's but the hidden
 file's name and text, `helloworld` in lower case. Its `stateui.json` is its
 own: the identifier `--identifier` gives - `com.example.<name>` where none is
 given - at version 1.0.0, build 1; never HelloWorld's, which is StateUI's
-release. The name is letters and digits starting with a letter - a Swift
+release. Its heads are HelloWorld's, or those of the hosts `--platforms`
+names alone (`appkit,web,winui`): an application's hosts are its heads, so
+one meant for some platforms holds no head for another. The name is letters and digits starting with a letter - a Swift
 module, a process and a folder all take it - and not the library's own. A
 folder already holding files, or an identifier some platform refuses, is
 refused and nothing is made.

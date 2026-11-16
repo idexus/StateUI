@@ -65,6 +65,18 @@ final class ApplicationMakerTests: XCTestCase {
         XCTAssertFalse(manifest.contains("\"../..\""))
     }
 
+    /// An application made for some platforms has their heads alone, and the project says those hosts; none at all
+    /// makes nothing.
+    func testANewApplicationHasTheHeadsOfItsPlatforms() async throws {
+        let parent = try folder()
+        let made = try ApplicationMaker().make("Probe", platforms: [.web, .appkit], in: parent, from: ProjectReaderTests.repository)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: made.appendingPathComponent("Platforms").path).sorted(), ["AppKit", "Web"])
+        XCTAssertEqual(ProjectReader.hosts(of: made), [.appkit, .web])
+
+        XCTAssertThrowsError(try ApplicationMaker().make("Other", platforms: [], in: parent, from: ProjectReaderTests.repository))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: parent.appendingPathComponent("Other").path))
+    }
+
     /// An application named by an identifier is made with it in its `stateui.json`; one some platform refuses makes
     /// nothing.
     func testANewApplicationTakesTheIdentifierGiven() throws {

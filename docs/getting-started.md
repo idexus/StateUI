@@ -344,7 +344,9 @@ and makes the folder an application to the `stateui` tool:
 }
 ```
 
-`stateui new` writes `com.example.<name>` where `--identifier` names none;
+`stateui new --platforms android,web` makes the heads of those hosts alone - an
+application's hosts are its heads. It writes `com.example.<name>` where
+`--identifier` names none;
 an application gives its own before it is published (`pl.example.notes`):
 two or more parts joined by dots, each a letter, then letters and digits.
 The version is one to three numbers joined by dots, the build a whole number

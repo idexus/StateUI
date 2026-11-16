@@ -161,9 +161,12 @@ export const Project = object<Project>({
 export interface ProjectReference { projectUri?: string }
 export const ProjectReference = object<ProjectReference>({ projectUri: optional(string) });
 
-export interface ApplicationRequest { name: string; identifier?: string; parentUri: string; checkoutUri?: string }
+export interface ApplicationRequest {
+    name: string; identifier?: string; platforms?: HostFamily[]; parentUri: string; checkoutUri?: string;
+}
 export const ApplicationRequest = object<ApplicationRequest>({
-    name: string, identifier: optional(string), parentUri: string, checkoutUri: optional(string),
+    name: string, identifier: optional(string), platforms: optional(array(HostFamily)), parentUri: string,
+    checkoutUri: optional(string),
 });
 
 export type Architecture = "arm64" | "x86_64" | "armv7" | "x86" | "wasm32";
