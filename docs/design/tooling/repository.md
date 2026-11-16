@@ -109,7 +109,10 @@ host's own tests run in Node over a page with just enough of a DOM, through
 the host's relay; the conformance families and the host's tests that run a
 host - their classes listed in `WebSuite`, each needing a browser's layout,
 focus, dialogs and input - run headless in Google Chrome or Chromium (or the
-browser `STATEUI_BROWSER` names), each in a program of its own. `--filter`
+browser `STATEUI_BROWSER` names), each in a program of its own on a tab of
+its own, so nothing a class emulated - a touch screen among them - reaches the
+next. Every tab's pointer is a desktop's mouse that hovers, whatever the
+machine has: a machine with no mouse makes Chromium say none. `--filter`
 names a class, a class's test, or a conformance family, which then runs
 where it belongs.
 

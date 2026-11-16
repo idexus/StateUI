@@ -27,6 +27,8 @@ struct WebSuite {
         "WebLinksTests",
         "WebTabTitleTests",
         "WebLeaveTests",
+        // Before WebLookTests, whose page holds a desktop's pointer after a touch screen's run.
+        "WebTouchScreenTests",
         "WebLookTests",
         "WebRelayWritesTests",
         "WebScrollOffsetTests",
