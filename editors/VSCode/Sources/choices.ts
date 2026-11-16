@@ -7,7 +7,7 @@
 // host and devices of a window holding no application.
 
 import type { Application } from "./applications";
-import type { Host } from "./hosts";
+import type { Host, HostDescription } from "./hosts";
 
 /** Where the device chosen for each host stands. */
 export interface DeviceStore {
@@ -20,7 +20,7 @@ export interface DeviceStore {
 /**
  * The application a window works on among `applications`: the one it remembers, where that stands in no workspace or
  * its workspace starts it or none; else a workspace's application to start (`startups`, by the workspace's folder);
- * else the only application.
+ * else the first listed; none where there is none.
  */
 export function chosenApplication(
     applications: readonly Application[], startups: ReadonlyMap<string, string>, remembered?: string,
@@ -28,5 +28,19 @@ export function chosenApplication(
     const started = (each: Application): boolean => each.workspace !== undefined && startups.get(each.workspace) === each.name;
     const kept = applications.find((each) =>
         each.name === remembered && (each.workspace === undefined || !startups.has(each.workspace) || started(each)));
-    return kept ?? applications.find(started) ?? (applications.length === 1 ? applications[0] : undefined);
+    return kept ?? applications.find(started) ?? applications[0];
+}
+
+/** The hosts a window can work as among `available`, this machine's: the chosen application's heads alone. */
+export function offeredHosts(available: readonly HostDescription[], chosen: Application | undefined): HostDescription[] {
+    return available.filter((each) => chosen?.hosts.includes(each.id) ?? false);
+}
+
+/**
+ * The host a window works as among `offered`: the one the chosen application's settings name (`saved`), else the
+ * window's own (`kept`), else the first; none where none is offered.
+ */
+export function chosenHost(offered: readonly HostDescription[], saved: Host | undefined, kept: Host | undefined): Host | undefined {
+    const offers = (each: Host | undefined): each is Host => offered.some((one) => one.id === each);
+    return offers(saved) ? saved : offers(kept) ? kept : offered[0]?.id;
 }

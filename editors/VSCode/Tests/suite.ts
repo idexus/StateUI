@@ -15,12 +15,12 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { Application, applicationsOf, hasHead, readApplications } from "../Sources/applications";
 import { Configuration, configurations, runPlace, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
-import { chosenApplication } from "../Sources/choices";
+import { chosenApplication, chosenHost, offeredHosts } from "../Sources/choices";
 import { androidDeviceOf, deviceAmong } from "../Sources/devices";
 import { browserOf, isChromium } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
 import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
-import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
+import { availableHosts, describe, environment, Host, HostDescription, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { editorCommandLine, hasExtensionSources } from "../Sources/reinstall";
 import { conformanceRequest, failedPhases } from "../Sources/conformance";
@@ -103,6 +103,13 @@ export async function run(): Promise<void> {
         const found = api.applications().map((each) => each.name).join(" ");
         check(`the extension finds this checkout's applications through the stateui tool${found === "Gallery HelloWorld" ? "" : ` - not "${found}"`}`,
             found === "Gallery HelloWorld");
+        // The suite starts with no application chosen to start (run.ts sets the workspace's settings aside).
+        const startup = (): string | undefined => {
+            const file = path.join(root.uri.fsPath, ".stateui", "workspace-settings.json");
+            return fs.existsSync(file) ? (JSON.parse(fs.readFileSync(file, "utf8")) as { startup?: string }).startup : undefined;
+        };
+        await until("the application the window works on - the first listed, none chosen - stands in .stateui/workspace-settings.json",
+            async () => api.application() === "Gallery" && startup() === "apps/Gallery", 30);
 
         // 0. A restart the Swift extension rejects - its server, still loading packages, not stopped in time, or its
         //    client still starting - is asked again until it takes; a refusal that lasts is the caller's.
@@ -305,12 +312,27 @@ export async function run(): Promise<void> {
             const two = { name: "Two", directory: "/w/b/Two", hosts: [] as Host[], workspace: "/w" };
             const alone = { name: "Alone", directory: "/a/Alone", hosts: [] as Host[] };
             const starts = new Map([["/w", "Two"]]);
-            check("the application a window works on: the one it remembers where its workspace starts it or none - else the workspace's start - else the only one",
+            check("the application a window works on: the one it remembers where its workspace starts it or none - else the workspace's start - else the first listed",
                 chosenApplication([one, two], starts, "One") === two
                 && chosenApplication([one, two], new Map(), "One") === one
                 && chosenApplication([one, two, alone], starts, "Alone") === alone
-                && chosenApplication([one, two], new Map()) === undefined
-                && chosenApplication([alone], new Map()) === alone);
+                && chosenApplication([one, two], new Map()) === one
+                && chosenApplication([alone], new Map()) === alone
+                && chosenApplication([], new Map()) === undefined);
+            const panel = { name: "Panel", directory: "/d/apps/Panel", hosts: ["web"] as Host[], workspace: "/d" };
+            const reader = { name: "Reader", directory: "/d/apps/Reader", hosts: ["android"] as Host[], workspace: "/d" };
+            const mac = availableHosts("darwin");
+            const ids = (offered: HostDescription[]): string => offered.map((each) => each.id).join(",");
+            check("a window offers the chosen application's heads this machine runs, and those alone - none where none is chosen",
+                ids(offeredHosts(mac, panel)) === "web"
+                && ids(offeredHosts(mac, reader)) === "android"
+                && ids(offeredHosts(mac, undefined)) === ""
+                && ids(offeredHosts(availableHosts("linux"), reader)) === "");
+            check("a window works as a host it offers: the application's saved, else the window's own, else the first",
+                chosenHost(offeredHosts(mac, panel), "appkit", "appkit") === "web"
+                && chosenHost(offeredHosts(mac, reader), "android", "web") === "android"
+                && chosenHost(offeredHosts(mac, panel), undefined, "web") === "web"
+                && chosenHost(offeredHosts(mac, undefined), undefined, "appkit") === undefined);
         }
 
         const helloWorld = api.applications().find((each) => each.name === "HelloWorld")!;

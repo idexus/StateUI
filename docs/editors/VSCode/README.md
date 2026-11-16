@@ -34,9 +34,9 @@ The extension installs the **Swift** extension (swiftlang) with it. Install
 ## Running an application
 
 Open the repository folder. The status bar shows two StateUI items: the
-[host](#the-host) the editor and the launches work as, and the
-[application](#the-application) they run. While the host is UIKit, Android or
-the Web a third item shows the device: an iPhone, an iPad or a simulator for
+[application](#the-application) the launches run, and the [host](#the-host)
+it and the editor work as. While the host is UIKit, Android or the Web a
+third item after them shows the device: an iPhone, an iPad or a simulator for
 UIKit; an attached phone or an emulator, started when it is picked, for
 Android; the browser the page opens in, for the Web.
 
@@ -88,12 +88,14 @@ The Command Palette offers the rest under **StateUI:**
 ## The host
 
 The status bar shows the host - **AppKit**, **UIKit**, **Android**, **WinUI**,
-**GTK** or **Web**. Click it, or run **StateUI: Select Host**. AppKit, UIKit and Android are
-offered on macOS, UIKit and Android where an application has their head
-(`Platforms/UIKit`, `Platforms/Android`); WinUI on Windows; GTK on Linux; the
-Web on macOS and Linux, where an application has its head (`Platforms/Web`). On a machine that runs no host the status bar
-says **no host**, a launch says why it runs nothing, and the editor and
-**StateUI: Run Tests** work as plain Swift.
+**GTK** or **Web**. Click it, or run **StateUI: Select Host**. It offers the
+[application](#the-application)'s heads (`Platforms/<Host>`) that this machine
+runs, and those alone: an application with an Android head alone runs as
+Android. AppKit, UIKit and Android run on macOS, WinUI on Windows, GTK on
+Linux, the Web on macOS and Linux. Where none is offered - no head of the
+application runs here, or no application is here - the status bar says **no
+host**, a launch says why it runs nothing, and the editor and **StateUI: Run
+Tests** work as plain Swift.
 
 - **The editor works as that host.** Code under `#if APPKIT` is compiled and
   completed while AppKit is chosen, and an application's `Platforms/AppKit`
@@ -177,12 +179,12 @@ no longer installed.
 
 ## The application
 
-A second status bar item shows the application **StateUI: Debug** and
+The first status bar item shows the application **StateUI: Debug** and
 **StateUI: Release** run - click it, or run **StateUI: Select Application**.
 In a workspace it is the application the workspace starts on this machine
-(`.stateui/workspace-settings.json`), so a launch asks only when nothing is
-chosen yet, or when the chosen application has no head for the host; the
-window then works as the host chosen for it. A launch configuration naming
+(`.stateui/workspace-settings.json`), else the first it lists, which is then
+written there, so a launch asks only when the application has no head for the
+host; the window then works as the host chosen for it. A launch configuration naming
 `"application": "Gallery"` runs that one instead.
 
 ## A new application
