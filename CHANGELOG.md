@@ -3,17 +3,18 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
-## 0.8.5 - 2026-11-13
+## 0.8.6 - 2026-11-16
 
 ### Breaking changes
 
 - **An application is a folder holding its `stateui.json`.** Beside its `Package.swift`, the file says what the
   application is on every platform - the `identifier` naming it, the `version` shown to its user and its `build` - and
-  neither `stateui` nor the VS Code extension takes a folder without one for an application. `stateui new` writes it:
-  the identifier `--identifier` gives, else `com.example.<name>`, at version 1.0.0, build 1. Every head takes them
-  from there: an Apple bundle's `CFBundleIdentifier`, `CFBundleShortVersionString` and `CFBundleVersion` - an own
-  `Info.plist` saying one is refused - and an Android head's `applicationId`, `versionName` and `versionCode`. An
-  application made before adds its own file, and its `Platforms/Android/build.gradle.kts` reads them:
+  neither `stateui` nor the VS Code extension takes a folder without one for an application. Every head takes them from
+  there: an Apple bundle's `CFBundleIdentifier`, `CFBundleShortVersionString` and `CFBundleVersion` - which were
+  `com.stateui.<name>`, StateUI's release and 1, and which an application's own `Info.plist` may no longer say - and an
+  Android head's `applicationId`, `versionName` and `versionCode`. `stateui new` writes the file: the identifier
+  `--identifier` gives, else `com.example.<name>`, at version 1.0.0, build 1. An application made before adds its own
+  file, and its `Platforms/Android/build.gradle.kts` reads it:
 
   ```json
   { "build": 1, "identifier": "pl.example.notes", "schemaVersion": 1, "version": "1.0.0" }
@@ -24,6 +25,33 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   versionCode = stated("stateui.versionCode").toInt()
   versionName = stated("stateui.version")
   ```
+
+- **A workspace's file is `stateui-workspace.json`.** `stateui.json` is an application's now: a workspace made before
+  renames its file, which keeps what it says.
+- **`stateui project library` changes the StateUI a project builds with.** It acts on the project a command reads:
+  in an application, the checkout its manifest names - no workspace needed; in a workspace, a checkout or a release
+  for every application it lists, as `stateui workspace library` did. `stateui workspace library` and the API's
+  `workspace/useLibrary` are gone; `project/useLibrary` takes a `projectUri` and answers a `LibraryChange`.
+
+### Fixed
+
+- Web: a bar button whose look follows the pointer and the press takes its click in Safari. The page wrote its words
+  and attributes again as the press came and went, its words in a new text node, and WebKit sends no click where the
+  node under the pointer was replaced; what already stands is written no more, and new words change the one text node
+  in place.
+- GTK: a page replaced while the focus stood in it is let go. A link replacing the stack's top page left that page,
+  and everything it held, alive for the rest of the run; the focus is taken out of a page before it is replaced away.
+
+### Tooling
+
+- `stateui run` hands an application it starts on a simulator, a device, Android or a page every `STATEUI_` variable
+  of its own environment, `STATEUI_TALLY=1` among them, as a head on the Mac, Linux or Windows has always had.
+- A GTK head run with `--debugger` ends as its program does: its exit status, or a crash's signal with every thread's
+  stack.
+
+## 0.8.5 - 2026-11-13
+
+### Breaking changes
 
 - **AppKit builds through `stateui`.** `.scripts/AppKit/run-app.sh`, `build-gallery-appkit.sh` and `deploy.sh` are
   gone: `stateui run`, `stateui build` and `stateui package --host appkit` take their place, and every application,
@@ -66,11 +94,11 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   is gone: a backend lists the files its engine needs in `Packaging/runtime.txt` - a line a file, the NuGet package,
   its path there (`{architecture}` for `arm64` or `x64`) and its path beside the application - and only an application
   that depends on the backend gets them. The web view's backend declares WebView2's component and loader.
-- **A project group is a workspace.** The VS Code extension finds applications through `stateui`: in a folder that is
-  an application, that one; else the ones the nearest `stateui-workspace.json` up lists - and no longer every folder
-  of an `apps/`. **StateUI: New Project Group** makes a workspace: `stateui-workspace.json`, the StateUI it builds
-  with, and its first application beside it (`MyApps/Notes`, naming `../StateUI`), and **StateUI: Deploy** lays it in
-  the workspace's `artifacts/`. A group made before lists its applications in a `stateui-workspace.json` at its root:
+- **A project group is a workspace.** The VS Code extension finds applications through `stateui`: in a folder that
+  is an application, that one; else the ones the nearest `stateui.json` up lists - and no longer every folder of an
+  `apps/`. **StateUI: New Project Group** makes a workspace: `stateui.json`, the StateUI it builds with, and its first
+  application beside it (`MyApps/Notes`, naming `../StateUI`), and **StateUI: Deploy** lays it in the workspace's
+  `artifacts/`. A group made before lists its applications in a `stateui.json` at its root:
 
   ```json
   { "schemaVersion": 1, "library": { "path": "StateUI" }, "projects": ["apps/Notes"] }
@@ -85,16 +113,16 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   and Windows. `stateui version` says its release, the API it speaks and the machine it runs on - in words, or for a
   program with `--format json` or `--format jsonl`. `stateui doctor` says what each host needs of this machine and
   what to install. `stateui new` makes an application - HelloWorld renamed - wherever it is asked to;
-  `stateui project describe` reads the applications of a folder. A workspace is a `stateui-workspace.json`, found
-  upward from where the tool runs, naming its applications and the StateUI they build with: `stateui workspace create`
-  makes one from a checkout or a release, `stateui project library` points its applications - or one application -
-  at another, and `stateui releases list` lists the releases. `stateui serve --stdio` answers an editor's JSON-RPC over standard input
+  `stateui project describe` reads the applications of a folder. A workspace is a `stateui.json`, found upward from
+  where the tool runs, naming its applications and the StateUI they build with: `stateui workspace create` makes one
+  from a checkout or a release, `stateui workspace library` points every application at another, and
+  `stateui releases list` lists the releases. `stateui serve --stdio` answers an editor's JSON-RPC over standard input
   and output - the same answers, and the making as operations with events and a cancel. It builds, runs and tests no
   application yet: until it does, `.scripts` build and run each host as before.
-- **`stateui build`, `run` and `package` make AppKit applications.** Every application is a bundle - its name, the
-  identifier, version and build its `stateui.json` says, and its icon - with its own `Platforms/AppKit/Info.plist`
-  keys laid over the host's; a failed build never runs or packages an older one; one application builds at a time on a
-  machine. The Gallery's name, links and location purpose stand in its own `Info.plist`.
+- **`stateui build`, `run` and `package` make AppKit applications.** Every application is a bundle - its name,
+  identifier `com.stateui.<name>` and icon - with its own `Platforms/AppKit/Info.plist` keys laid over the host's;
+  a failed build never runs or packages an older one; one application builds at a time on a machine. The Gallery's
+  name, links and location purpose stand in its own `Info.plist`.
 - **`stateui build` and `package` make UIKit applications** for the simulator or device `--device` names - the
   booted simulator, else an iPhone, where none is named. A simulator's bundle is signed ad hoc; a device's with the
   development profile that provisions it, found before the build. A simulator's build and a device's keep scratch
@@ -134,13 +162,6 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the browsers; a UIKit or Android head's output and a page's server are in **StateUI Run**, its notification stops
   it, the end of a debug session ends it, and a second launch in its place replaces it. **Conformance - Rebuild all**
   and **Rebuild changed** have the tool record the chosen host's families - the Web's and Android's stale ones too.
-
-### Fixed
-
-- Web: a bar button whose look follows the pointer and the press takes its click in Safari. The page wrote its words
-  and attributes again as the press came and went, its words in a new text node, and WebKit sends no click where the
-  node under the pointer was replaced; what already stands is written no more, and new words change the one text node
-  in place.
 
 ### Tooling
 
