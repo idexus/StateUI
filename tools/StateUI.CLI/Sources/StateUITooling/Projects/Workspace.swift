@@ -64,25 +64,12 @@ struct Workspace: Sendable {
     /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a manifest naming its checkout in a form the tool does
     ///   not write - nothing is rewritten then.
     mutating func use(_ checkout: URL) throws -> [URL] {
-        var rewritten: [(URL, String)] = []
-        for application in try applications() {
-            let manifest = application.appendingPathComponent("Package.swift")
-            let text = try String(contentsOf: manifest, encoding: .utf8)
-            guard let old = text.firstMatch(of: /\.package\(name: "StateUIRoot", path: "([^"]*)"\)/)?.output.1 else {
-                throw ToolingError(
-                    .invalidConfiguration,
-                    "\(manifest.path) names no checkout as `.package(name: \"StateUIRoot\", path: ...)`; name it by hand.")
-            }
-            let new = ApplicationMaker.relativePath(from: application, to: checkout)
-            let renamed = text.replacingOccurrences(of: "path: \"\(old)\"", with: "path: \"\(new)\"")
-                .replacingOccurrences(of: "path: \"\(old)/", with: "path: \"\(new)/")
-            if renamed != text { rewritten.append((manifest, renamed)) }
-        }
+        let rewritten = try applications().compactMap { try ApplicationManifest.naming(checkout, in: $0) }
         for (manifest, text) in rewritten { try Data(text.utf8).write(to: manifest) }
         file.library = .init(path: ApplicationMaker.relativePath(from: folder, to: checkout))
         let own = folder.appendingPathComponent(WorkspaceFile.name)
         try file.write(to: own)
-        return rewritten.map(\.0) + [own]
+        return rewritten.map(\.manifest) + [own]
     }
 
     /// Lists `application` in the file and writes it, unless listed already.

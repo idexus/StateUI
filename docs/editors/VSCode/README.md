@@ -223,14 +223,14 @@ Its applications are HelloWorld renamed, and each one's `Package.swift` names
 its StateUI by path: `../StateUI` for a release, the path from the
 application to the checkout for a local one. The `stateui` tool builds and
 runs every head from it, and the group copies nothing of it. **StateUI: New
-Application** makes the next application beside it, and `stateui workspace
+Application** makes the next application beside it, and `stateui project
 library` points every application at another StateUI.
 
 `StateUI/` is left out of git. A clone of the group gets it back with the
 command its `.gitignore` names:
 
 ```bash
-stateui workspace library --release <release>
+stateui project library --release <release>
 ```
 
 | Setting | What it holds |

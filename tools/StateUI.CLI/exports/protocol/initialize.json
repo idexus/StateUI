@@ -38,6 +38,7 @@
           "operation/get",
           "project/create",
           "project/describe",
+          "project/useLibrary",
           "releases/list",
           "repository/conformance",
           "repository/integrationInstall",
@@ -46,8 +47,7 @@
           "tests/discover",
           "tests/run",
           "toolchain/check",
-          "workspace/create",
-          "workspace/useLibrary"
+          "workspace/create"
         ],
         "notifications" : [
           "operation/event"

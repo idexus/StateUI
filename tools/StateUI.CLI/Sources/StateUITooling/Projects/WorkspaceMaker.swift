@@ -88,6 +88,6 @@ public struct WorkspaceMaker: Sendable {
         *.pdb
         .DS_Store
 
-        """ + (cloned ? "# The StateUI release cloned here: stateui workspace library --release <release>\n/StateUI/\n" : "")
+        """ + (cloned ? "# The StateUI release cloned here: stateui project library --release <release>\n/StateUI/\n" : "")
     }
 }

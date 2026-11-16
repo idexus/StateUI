@@ -79,10 +79,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   what to install. `stateui new` makes an application - HelloWorld renamed - wherever it is asked to;
   `stateui project describe` reads the applications of a folder. A workspace is a `stateui-workspace.json`, found
   upward from where the tool runs, naming its applications and the StateUI they build with: `stateui workspace create`
-  makes one from a checkout or a release, `stateui workspace library` points every application at another, and
-  `stateui releases list` lists the releases. `stateui serve --stdio` answers an editor's JSON-RPC over standard input and output - the same
-  answers, and the making as operations with events and a cancel. It builds, runs and tests no application yet: until
-  it does, `.scripts` build and run each host as before.
+  makes one from a checkout or a release, `stateui project library` points its applications - or one application -
+  at another, and `stateui releases list` lists the releases. `stateui serve --stdio` answers an editor's JSON-RPC over standard input
+  and output - the same answers, and the making as operations with events and a cancel. It builds, runs and tests no
+  application yet: until it does, `.scripts` build and run each host as before.
 - **`stateui build`, `run` and `package` make AppKit applications.** Every application is a bundle - its name, the
   identifier, version and build its `stateui.json` says, and its icon - with its own `Platforms/AppKit/Info.plist`
   keys laid over the host's; a failed build never runs or packages an older one; one application builds at a time on a

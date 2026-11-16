@@ -74,14 +74,35 @@ public struct ToolingService: Sendable {
             name, in: parent, library: try Self.library(checkout, release, repository), application: application)
     }
 
-    /// Makes `checkout` or `release` the library of the workspace `folder` stands in, rewriting its applications'
-    /// manifests - `workspace/useLibrary`.
-    public func useLibrary(in folder: URL, checkout: URL?, release: String?, repository: String?) async throws -> WorkspaceChange {
+    /// Makes `checkout` or `release` the library of the project `folder` stands in - `project/useLibrary`: the
+    /// application, whose manifest names a checkout from then on, else the workspace, every listed application's
+    /// manifest and its file naming a checkout or a release cloned into it.
+    /// Design: docs/design/tooling/projects.md#a-library-changed
+    public func useLibrary(in folder: URL, checkout: URL?, release: String?, repository: String?) async throws -> LibraryChange {
+        let folder = RealPath.of(RealPath.lexical(folder))
+        let chosen = try Self.library(checkout, release, repository)
+        if let application = ProjectReader.application(holding: folder) {
+            guard case .checkout(let named) = chosen else {
+                throw ToolingError(
+                    .invalidConfiguration,
+                    "A release is cloned into a workspace's StateUI/: name a checkout for \(application.lastPathComponent),"
+                        + " or change its workspace's library.")
+            }
+            guard Checkout(at: named) != nil else {
+                throw ToolingError(.projectNotFound, "No StateUI checkout stands at \(named.path).")
+            }
+            let rewritten = try ApplicationManifest.naming(named, in: application)
+            if let (manifest, text) = rewritten { try Data(text.utf8).write(to: manifest) }
+            return LibraryChange(
+                projectUri: FileURI.string(application), library: ApplicationMaker.relativePath(from: application, to: named),
+                changedUris: rewritten.map { [FileURI.string($0.manifest)] } ?? [])
+        }
         guard var workspace = try Workspace.nearest(from: folder) else {
-            throw ToolingError(.projectNotFound, "No stateui-workspace.json stands in or above \(folder.path).")
+            throw ToolingError(
+                .projectNotFound, "No StateUI application or stateui-workspace.json stands in or above \(folder.path).")
         }
         let library: URL
-        switch try Self.library(checkout, release, repository) {
+        switch chosen {
         case .checkout(let named):
             guard Checkout(at: named) != nil else {
                 throw ToolingError(.projectNotFound, "No StateUI checkout stands at \(named.path).")
@@ -91,8 +112,8 @@ public struct ToolingService: Sendable {
             library = try await Self.replaceClone(in: workspace.folder, with: release, of: repository)
         }
         let rewritten = try workspace.use(library)
-        return WorkspaceChange(
-            workspaceUri: FileURI.string(workspace.folder), library: workspace.file.library?.path ?? "",
+        return LibraryChange(
+            projectUri: FileURI.string(workspace.folder), library: workspace.file.library?.path ?? "",
             changedUris: rewritten.map(FileURI.string))
     }
 
@@ -440,9 +461,9 @@ public struct ToolingService: Sendable {
                 request.name, in: try FileURI.url(request.parentUri), checkout: try request.checkoutUri.map(FileURI.url),
                 release: request.release, repository: request.repository, application: request.application)
         }
-        methods.mutation("workspace/useLibrary") { (request: LibraryRequest, _: OperationContext) in
-            guard let uri = request.workspaceUri else {
-                throw ToolingError(.projectNotFound, "No workspace is named.")
+        methods.mutation("project/useLibrary") { (request: LibraryRequest, _: OperationContext, caller: RequestContext) in
+            guard let uri = request.projectUri ?? caller.workspaceUri else {
+                throw ToolingError(.projectNotFound, "No project is named, and the connection opened no workspace.")
             }
             return try await useLibrary(
                 in: try FileURI.url(uri), checkout: try request.checkoutUri.map(FileURI.url), release: request.release,

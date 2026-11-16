@@ -10,8 +10,8 @@ import StateUIToolingProtocol
 struct ProjectCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "project",
-        abstract: "Reads a project of StateUI applications.",
-        subcommands: [Describe.self]
+        abstract: "Reads a project of StateUI applications, or changes the StateUI they build with.",
+        subcommands: [Describe.self, Library.self]
     )
 
     /// `stateui project describe`: the applications, their hosts and the StateUI they build with.
@@ -45,6 +45,33 @@ struct ProjectCommand: AsyncParsableCommand {
                 lines.append("StateUI \(library.release ?? "?") at \(path)\(state.isEmpty ? "" : " (\(state))")")
             }
             return lines.joined(separator: "\n")
+        }
+    }
+
+    /// `stateui project library`: another StateUI for the project - one application's checkout, or a workspace's.
+    struct Library: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Makes a checkout - or, for a workspace, a release - the StateUI a project builds with.")
+
+        @Option(help: "The project, or a folder in it; the working directory when left out.")
+        var project: String?
+
+        @OptionGroup var library: LibraryOptions
+        @OptionGroup var output: OutputOptions
+
+        func run() async throws {
+            let folder = URL(fileURLWithPath: project ?? FileManager.default.currentDirectoryPath)
+            try await output.answer({
+                try await ToolingService().useLibrary(
+                    in: folder, checkout: library.checkout.map { URL(fileURLWithPath: $0) }, release: library.release,
+                    repository: library.repository)
+            }, text: Self.words)
+        }
+
+        static func words(_ change: LibraryChange) -> String {
+            let paths = change.changedUris.map { (try? FileURI.url($0).path) ?? $0 }
+            return (["\((try? FileURI.url(change.projectUri).path) ?? change.projectUri), library \(change.library)"]
+                + paths.map { "  \($0)" }).joined(separator: "\n")
         }
     }
 }

@@ -292,10 +292,13 @@ export const WorkspaceRequest = object<WorkspaceRequest>({
     repository: optional(string), application: optional(string),
 });
 
-export interface LibraryRequest { workspaceUri?: string; checkoutUri?: string; release?: string; repository?: string }
+export interface LibraryRequest { projectUri?: string; checkoutUri?: string; release?: string; repository?: string }
 export const LibraryRequest = object<LibraryRequest>({
-    workspaceUri: optional(string), checkoutUri: optional(string), release: optional(string), repository: optional(string),
+    projectUri: optional(string), checkoutUri: optional(string), release: optional(string), repository: optional(string),
 });
+
+export interface LibraryChange { projectUri: string; library: string; changedUris: string[] }
+export const LibraryChange = object<LibraryChange>({ projectUri: string, library: string, changedUris: array(string) });
 
 export interface WorkspaceChange { workspaceUri: string; library: string; changedUris: string[] }
 export const WorkspaceChange = object<WorkspaceChange>({ workspaceUri: string, library: string, changedUris: array(string) });
@@ -417,7 +420,7 @@ export const methods = {
     "application/run": mutation(RunRequest, RunResult),
     "application/install": mutation(InstallRequest, InstallResult),
     "workspace/create": mutation(WorkspaceRequest, WorkspaceChange),
-    "workspace/useLibrary": mutation(LibraryRequest, WorkspaceChange),
+    "project/useLibrary": mutation(LibraryRequest, LibraryChange),
     "tests/run": mutation(TestRunRequest, SuiteResult),
     "repository/conformance": mutation(ConformanceRequest, SuiteResult),
     "repository/integrationPackage": mutation(IntegrationPackageRequest, EditorExtension),

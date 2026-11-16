@@ -78,8 +78,8 @@ final class ProtocolExamplesTests: XCTestCase {
         let made = WorkspaceChange(
             workspaceUri: demo, library: "StateUI",
             changedUris: [demo + "/stateui-workspace.json", demo + "/StateUI", demo + "/Notes"])
-        let used = WorkspaceChange(
-            workspaceUri: demo, library: "../../StateUI",
+        let used = LibraryChange(
+            projectUri: demo, library: "../../StateUI",
             changedUris: [demo + "/stateui-workspace.json", demo + "/Notes/Package.swift"])
         let artifact = demo + "/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug"
         let built = BuildResult(
@@ -272,10 +272,10 @@ final class ProtocolExamplesTests: XCTestCase {
                 ("response", try response("10", OperationHandle(operationId: operation, state: .queued))),
                 ("result", try JSONValue(encoding: made)),
             ], answeredAsWritten: false),
-            Example(name: "workspace-useLibrary", messages: [
-                ("request", try request("11", "workspace/useLibrary", Mutation(
+            Example(name: "project-useLibrary", messages: [
+                ("request", try request("11", "project/useLibrary", Mutation(
                     requestToken: "7c3e1a9b-5f2d-4e8c-a6b4-1d3f5a7c9e20",
-                    request: LibraryRequest(workspaceUri: demo, checkoutUri: "file:///Users/example/StateUI")))),
+                    request: LibraryRequest(projectUri: demo, checkoutUri: "file:///Users/example/StateUI")))),
                 ("response", try response("11", OperationHandle(operationId: operation, state: .queued))),
                 ("result", try JSONValue(encoding: used)),
             ], answeredAsWritten: false),

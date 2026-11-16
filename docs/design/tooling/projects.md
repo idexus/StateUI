@@ -144,18 +144,26 @@ from the workspace, or a release cloned into the workspace's `StateUI/`, which
 Git then leaves out. Like an application, it is written beside its place and
 moved into it whole. A first application made with it is listed at once.
 
-`stateui workspace library` makes another checkout or release the library: each
-listed application's manifest names it by the path from the application - the
+## A library changed
+
+An application decides the StateUI it builds with in its own manifest - the
 `.package(name: "StateUIRoot", path: ...)` line and the packages under it -
-then the file does. Every manifest is read before any is written; one naming
-its checkout in another form is refused by its file, and nothing changes. A
-release replaces the workspace's clone only where the clone holds no changes of
-its own.
+and the tool reads it from there, so an application needs no workspace.
+`stateui project library` (`project/useLibrary`) makes another StateUI the
+library of its target, as every command reads one: in an application, a
+checkout its manifest names from then on, by the path from it; in a
+workspace, a checkout or a release cloned into its `StateUI/`, which each
+listed application's manifest names, then the workspace's file. A release is a
+workspace's alone - its clone serves every application listed - so an
+application asking for one is refused. Every manifest is read before any is
+written; one naming its checkout in another form is refused by its file, and
+nothing changes. A release replaces the workspace's clone only where the clone
+holds no changes of its own.
 
 The paths stay in each manifest because SwiftPM caches a manifest by its own
-text: a manifest reading `stateui-workspace.json` would go on resolving the
-checkout it read before. The workspace file declares the library; the tool
-writes the manifests from it.
+text: a manifest reading a path from another file would go on resolving the
+checkout it read before. The workspace file declares the library its new
+applications take; the tool writes the manifests from it.
 
 ## A name checked
 

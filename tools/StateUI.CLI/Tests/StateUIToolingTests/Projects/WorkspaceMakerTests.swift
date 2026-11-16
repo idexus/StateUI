@@ -122,6 +122,32 @@ final class WorkspaceMakerTests: XCTestCase {
         XCTAssertEqual(try text(demo.appendingPathComponent("stateui-workspace.json")), before)
     }
 
+    /// An application standing in no workspace takes another checkout in its manifest alone; a release, which a
+    /// workspace's clone holds, is refused, and nothing is rewritten.
+    func testAnApplicationTakesACheckoutOfItsOwn() async throws {
+        let origin = try await GitFixture.repository(tagged: ["0.9.1"])
+        let parent = try folder()
+        let made = try ApplicationMaker().make("Notes", in: parent, from: ProjectReaderTests.repository)
+
+        let change = try await ToolingService().useLibrary(
+            in: made.appendingPathComponent("Sources"), checkout: origin.folder, release: nil, repository: nil)
+        let path = ApplicationMaker.relativePath(from: made, to: origin.folder)
+        XCTAssertEqual(change.projectUri, FileURI.string(made))
+        XCTAssertEqual(change.library, path)
+        XCTAssertEqual(change.changedUris, [FileURI.string(made.appendingPathComponent("Package.swift"))])
+        let manifest = try text(made.appendingPathComponent("Package.swift"))
+        XCTAssertTrue(manifest.contains("path: \"\(path)\")"), manifest)
+
+        do {
+            _ = try await ToolingService().useLibrary(in: made, checkout: nil, release: "0.9.1", repository: origin.url)
+            XCTFail("an application outside a workspace took a release")
+        } catch let error as ToolingError {
+            XCTAssertEqual(error.code, .invalidConfiguration)
+        }
+        XCTAssertEqual(try text(made.appendingPathComponent("Package.swift")), manifest)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: made.appendingPathComponent("StateUI").path))
+    }
+
     /// A release replaces a workspace's clone only where the clone holds no changes of its own.
     func testAReleaseReplacesOnlyACleanClone() async throws {
         let origin = try await GitFixture.repository(tagged: ["0.9.1", "0.10.0"])
