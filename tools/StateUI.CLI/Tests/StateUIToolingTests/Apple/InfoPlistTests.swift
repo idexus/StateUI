@@ -3,11 +3,14 @@
 
 import Foundation
 import StateUITooling
+import StateUIToolingProtocol
 import XCTest
 
 final class InfoPlistTests: XCTestCase {
-    /// A bundle's keys are the host's own with the application's laid over, each key whole; the identifier is
-    /// `com.stateui.<name>` unless the application says otherwise.
+    private static let gallery = ApplicationFile(identifier: "com.stateui.gallery", version: "1.2.3", build: 45)
+
+    /// A bundle's keys are the host's own with the application's laid over, each key whole; its identifier, version
+    /// and build are its `stateui.json`'s.
     func testTheApplicationsOwnKeysLieOverTheHosts() throws {
         let own = FileManager.default.temporaryDirectory.appendingPathComponent("own-\(UUID().uuidString).plist")
         defer { try? FileManager.default.removeItem(at: own) }
@@ -17,11 +20,13 @@ final class InfoPlistTests: XCTestCase {
         ]
         try PropertyListSerialization.data(fromPropertyList: theirs, format: .xml, options: 0).write(to: own)
 
-        let keys = InfoPlist.macOS(name: "Gallery", product: "GalleryAppKit", release: "1.0.0", minimumSystem: "26.4")
+        let keys = InfoPlist.macOS(name: "Gallery", product: "GalleryAppKit", identity: Self.gallery, minimumSystem: "26.4")
         let data = try InfoPlist.compose(keys, over: own)
         let plist = try XCTUnwrap(try PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any])
 
         XCTAssertEqual(plist["CFBundleIdentifier"] as? String, "com.stateui.gallery")
+        XCTAssertEqual(plist["CFBundleShortVersionString"] as? String, "1.2.3")
+        XCTAssertEqual(plist["CFBundleVersion"] as? String, "45")
         XCTAssertEqual(plist["CFBundleDisplayName"] as? String, "StateUI Gallery")
         XCTAssertEqual(plist["CFBundleName"] as? String, "Gallery")
         XCTAssertEqual(plist["CFBundleExecutable"] as? String, "GalleryAppKit")
@@ -35,13 +40,15 @@ final class InfoPlistTests: XCTestCase {
     /// An iOS bundle's keys say the platform it was built for - a simulator's or a device's - and the many scenes,
     /// both families and every orientation an iPad's windows take, the same keys a head of the baseline had.
     func testAnIOSBundlesKeysSayItsPlatformAndScenes() throws {
+        let identity = ApplicationFile(identifier: "com.stateui.helloworld", version: "0.8.5", build: 1)
         let simulator = InfoPlist.iOS(
-            name: "HelloWorld", product: "HelloWorldUIKit", release: "0.8.5", minimumSystem: "26.4", platform: .iOSSimulator)
+            name: "HelloWorld", product: "HelloWorldUIKit", identity: identity, minimumSystem: "26.4", platform: .iOSSimulator)
         let device = InfoPlist.iOS(
-            name: "HelloWorld", product: "HelloWorldUIKit", release: "0.8.5", minimumSystem: "26.4", platform: .iOS)
+            name: "HelloWorld", product: "HelloWorldUIKit", identity: identity, minimumSystem: "26.4", platform: .iOS)
         XCTAssertEqual(simulator["CFBundleSupportedPlatforms"] as? [String], ["iPhoneSimulator"])
         XCTAssertEqual(device["CFBundleSupportedPlatforms"] as? [String], ["iPhoneOS"])
         XCTAssertEqual(simulator["CFBundleIdentifier"] as? String, "com.stateui.helloworld")
+        XCTAssertEqual([simulator["CFBundleShortVersionString"], simulator["CFBundleVersion"]] as? [String], ["0.8.5", "1"])
         XCTAssertEqual(simulator["MinimumOSVersion"] as? String, "26.4")
         XCTAssertEqual(simulator["UIDeviceFamily"] as? [Int], [1, 2])
         XCTAssertEqual((simulator["UIApplicationSceneManifest"] as? [String: Bool])?["UIApplicationSupportsMultipleScenes"], true)
@@ -54,5 +61,20 @@ final class InfoPlistTests: XCTestCase {
             "UISupportedInterfaceOrientations",
         ])
         XCTAssertNoThrow(try InfoPlist.compose(device, over: nil))
+    }
+
+    /// An application's own keys never say what its `stateui.json` says: each of the identifier, version and build
+    /// there is refused by its key and its file.
+    func testTheApplicationsOwnKeysSayNoIdentity() throws {
+        let own = FileManager.default.temporaryDirectory.appendingPathComponent("own-\(UUID().uuidString).plist")
+        defer { try? FileManager.default.removeItem(at: own) }
+        let keys = InfoPlist.macOS(name: "Gallery", product: "GalleryAppKit", identity: Self.gallery, minimumSystem: "26.4")
+        for key in InfoPlist.identityKeys {
+            try PropertyListSerialization.data(fromPropertyList: [key: "1"], format: .xml, options: 0).write(to: own)
+            XCTAssertThrowsError(try InfoPlist.compose(keys, over: own), key) {
+                XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration)
+                XCTAssertTrue(($0 as? ToolingError)?.message.contains(key) == true, "\($0)")
+            }
+        }
     }
 }

@@ -18,18 +18,20 @@ public struct AppKitBundle: Sendable {
     public var product: String
     /// The folder SwiftPM laid the product and the libraries in (`--show-bin-path`).
     public var binaries: URL
-    /// StateUI's release, the bundle's version.
-    public var release: String
+    /// What the application's `stateui.json` says: the bundle's identifier, version and build.
+    public var identity: ApplicationFile
     /// The oldest macOS the bundle runs on.
     public var minimumSystem: String
 
     /// The bundle of `application`'s `product` as SwiftPM laid it in `binaries`.
-    public init(application: URL, name: String, product: String, binaries: URL, release: String, minimumSystem: String) {
+    public init(
+        application: URL, name: String, product: String, binaries: URL, identity: ApplicationFile, minimumSystem: String
+    ) {
         self.application = application
         self.name = name
         self.product = product
         self.binaries = binaries
-        self.release = release
+        self.identity = identity
         self.minimumSystem = minimumSystem
     }
 
@@ -58,7 +60,7 @@ public struct AppKitBundle: Sendable {
             try files.copyItem(at: images, to: resources.appendingPathComponent("Images"))
         }
 
-        var keys = InfoPlist.macOS(name: name, product: product, release: release, minimumSystem: minimumSystem)
+        var keys = InfoPlist.macOS(name: name, product: product, identity: identity, minimumSystem: minimumSystem)
         let icon = application.appendingPathComponent("Resources/AppIcon/appicon_macos.svg")
         if files.fileExists(atPath: icon.path) {
             let iconset = staging.appendingPathComponent("StateUI.iconset")

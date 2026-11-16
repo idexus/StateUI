@@ -9,13 +9,16 @@ A bundle's keys are its host's, with the application's own
 `Platforms/<Host>/Info.plist` laid over them key by key - a key the
 application gives replaces the host's whole, an array or a dictionary
 included (`InfoPlist`). The host's keys for macOS: the program, the
-identifier `com.stateui.<name in lower case>`, the application's name shown
-and spoken, StateUI's release as the bundle's version, the oldest macOS
-StateUI runs on (26.4), high resolution, and the icon `StateUI` where the
-application has one. What is the application's own - Gallery's name
-"StateUI Gallery", its `stateui-gallery://` links, why it asks where you are
-- stands in its own file, which its manifest leaves out of the head's
-sources; nothing about one application stands in the tool.
+application's name shown and spoken, the identifier, version and build its
+`stateui.json` says (projects.md) as `CFBundleIdentifier`,
+`CFBundleShortVersionString` and `CFBundleVersion`, the oldest macOS StateUI
+runs on (26.4), high resolution, and the icon `StateUI` where the application
+has one. What is the application's own - Gallery's name "StateUI Gallery",
+its `stateui-gallery://` links, why it asks where you are - stands in its own
+file, which its manifest leaves out of the head's sources; nothing about one
+application stands in the tool. That file never says the three keys its
+`stateui.json` says: one saying any of them is refused, so the application's
+identity has one home.
 
 ## An AppKit bundle
 

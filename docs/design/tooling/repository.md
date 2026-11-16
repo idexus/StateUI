@@ -24,10 +24,10 @@ row.
 
 ## The UIKit host's suite
 
-A view stands in a window scene only in an application's process, so
-UIKit's tests are an application of their own,
-`lib/StateUI/StateUI.UIKit/Tests`, its identifier in its own
-`Platforms/UIKit/Info.plist`. `--suite host:uikit` runs it on the simulator
+A view stands in a window scene only in an application's process, so UIKit's
+tests are an application of their own, `lib/StateUI/StateUI.UIKit/Tests`,
+the suite's own identity `com.stateui.uikit.tests` at StateUI's release
+(`UIKitSuite.identity`). `--suite host:uikit` runs it on the simulator
 `--device` names - the booted one, else an iPhone; a device is refused. The
 simulator is booted first and the application built for its triple and SDK
 against the simulator platform's own XCTest, read where it stands, bundled
@@ -36,11 +36,11 @@ accessibility is turned on then, before the application starts, so UIKit's
 accessibility answers for its controls as for a VoiceOver user, whatever ran
 before - after the build, as a simulator booted for the first time answers
 slowly at first: on a runner the write took more than two minutes just after
-the boot. The application is started as a run starts one
-(runs.md) - `--filter` handed to it as `STATEUI_FILTER` - its output followed
-until it ends with `Executed N tests, with M failures`, which decides the
-tests' phase. Then `StateUIUIKit` and `StateUITesting`, as that build made
-them, are held to their API records for the simulator's triple and SDK.
+the boot. The application is started as a run starts one (runs.md) -
+`--filter` handed to it as `STATEUI_FILTER` - its output followed until it
+ends with `Executed N tests, with M failures`, which decides the tests'
+phase. Then `StateUIUIKit` and `StateUITesting`, as that build made them,
+are held to their API records for the simulator's triple and SDK.
 
 ## The Android host's suite
 

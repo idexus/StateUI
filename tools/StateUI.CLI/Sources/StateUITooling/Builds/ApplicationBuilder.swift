@@ -119,7 +119,7 @@ public struct ApplicationBuilder: Sendable {
         case .uikit:
             try await BuildTarget.uiKit(
                 device: request.device, listed: await destinations(.uikit), architecture: request.architecture, machine: machine,
-                application: folderOfApplication, name: application.name)
+                identifier: application.identifier)
         case .android:
             try await BuildTarget.android(
                 device: request.device, listed: await destinations(.android), architecture: request.architecture,
@@ -148,7 +148,9 @@ public struct ApplicationBuilder: Sendable {
         let root = try project.workspaceUri.map(FileURI.url) ?? folderOfApplication
         let entry = try OperationJournal(root: root).open(id: operation, kind: "application/build", request: try JSONValue(encoding: request))
         do {
-            let result = try await compileAndPublish(context, target, name: application.name, operation: operation, entry: entry, reporter: reporter)
+            let identity = ApplicationFile(identifier: application.identifier, version: application.version, build: application.build)
+            let result = try await compileAndPublish(
+                context, target, name: application.name, identity: identity, operation: operation, entry: entry, reporter: reporter)
             try entry.finish(.succeeded)
             return (result, root)
         } catch let error as ToolingError {
@@ -161,8 +163,8 @@ public struct ApplicationBuilder: Sendable {
     }
 
     private func compileAndPublish(
-        _ context: BuildContext, _ target: BuildTarget, name: String, operation: String, entry: OperationJournal.Entry,
-        reporter: BuildReporter
+        _ context: BuildContext, _ target: BuildTarget, name: String, identity: ApplicationFile, operation: String,
+        entry: OperationJournal.Entry, reporter: BuildReporter
     ) async throws -> BuildResult {
         let common = ["--package-path", context.application.path, "--scratch-path", context.scratch.path,
                       "--configuration", context.configuration.rawValue, "--disable-build-manifest-caching"] + target.arguments
@@ -202,7 +204,9 @@ public struct ApplicationBuilder: Sendable {
                 entry.write(output: line.text + "\n")
                 reporter.output(line)
             })
-            let head = try await assemble(context, target, name: name, binaries: binaries, common: common, environment: environment, in: staging, reporter: logged)
+            let head = try await assemble(
+                context, target, name: name, identity: identity, binaries: binaries, common: common, environment: environment,
+                in: staging, reporter: logged)
             let (bundle, program, signing) = (head.bundle, head.program, head.signing)
             let manifest = ArtifactManifest(
                 id: context.artifact, producerOperationId: operation,
@@ -232,10 +236,10 @@ public struct ApplicationBuilder: Sendable {
         var symbols: String?
     }
 
-    /// The head assembled in `staging` - an Apple bundle, an Android APK.
+    /// The head assembled in `staging` - an Apple bundle, an Android APK - for the application `identity` says.
     private func assemble(
-        _ context: BuildContext, _ target: BuildTarget, name: String, binaries: URL, common: [String], environment: ProcessEnvironment,
-        in staging: URL, reporter: BuildReporter
+        _ context: BuildContext, _ target: BuildTarget, name: String, identity: ApplicationFile, binaries: URL, common: [String],
+        environment: ProcessEnvironment, in staging: URL, reporter: BuildReporter
     ) async throws -> Head {
         if context.host == .web {
             let page = WebPage(
@@ -277,14 +281,13 @@ public struct ApplicationBuilder: Sendable {
         if context.host == .appkit {
             let bundle = AppKitBundle(
                 application: context.application, name: name, product: context.product, binaries: binaries,
-                release: Release.version, minimumSystem: Doctor.appleFloor)
+                identity: identity, minimumSystem: Doctor.appleFloor)
             _ = try await bundle.assemble(in: staging)
-            return Head(bundle: bundle.bundlePath, program: bundle.programPath, signing: .adHoc,
-                        identifier: Self.identifier(of: staging.appendingPathComponent(bundle.bundlePath).appendingPathComponent("Contents/Info.plist")))
+            return Head(bundle: bundle.bundlePath, program: bundle.programPath, signing: .adHoc, identifier: identity.identifier)
         }
         let bundle = UIKitBundle(
             application: context.application, name: name, product: context.product, binaries: binaries,
-            release: Release.version, minimumSystem: Doctor.appleFloor, platform: target.sdk?.platform ?? .iOSSimulator,
+            identity: identity, minimumSystem: Doctor.appleFloor, platform: target.sdk?.platform ?? .iOSSimulator,
             work: context.scratch.appendingPathComponent("stateui"))
         switch target.signing {
         case .adHoc:
@@ -307,12 +310,6 @@ public struct ApplicationBuilder: Sendable {
             guard let found = SearchPath().find(name) else { throw ToolingError(.missingToolchain, "No \(name) stands on the search path.") }
             return found
         }
-    }
-
-    /// The bundle identifier the property list at `plist` names.
-    private static func identifier(of plist: URL) -> String? {
-        let keys = (try? Data(contentsOf: plist)).flatMap { try? PropertyListSerialization.propertyList(from: $0, format: nil) }
-        return (keys as? [String: Any])?["CFBundleIdentifier"] as? String
     }
 
     /// The project `request` names - its `projectUri`, else `folder` - and the application in it it means: the one
