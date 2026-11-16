@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The Android head: the APK around the Swift libraries the stateui tool builds.
-// The tool names every path below; Gradle compiles the host's Java layer and
+// The tool names every path below and what the application's stateui.json
+// says - its id, version and build; Gradle compiles the host's Java layer and
 // packages what the Swift build left.
 
 plugins {
@@ -20,11 +21,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.stateui.helloworld"
+        applicationId = stated("stateui.identifier")
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.8.5"
+        versionCode = stated("stateui.versionCode").toInt()
+        versionName = stated("stateui.version")
     }
 
     sourceSets {

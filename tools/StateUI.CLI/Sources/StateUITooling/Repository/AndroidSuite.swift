@@ -9,6 +9,9 @@ import StateUIToolingProtocol
 /// records, and the facade to its API record; or the test APK built alone, with its identity, to run elsewhere.
 /// Design: docs/design/tooling/repository.md#the-android-hosts-suite
 struct AndroidSuite {
+    /// What the test APK is - no application's `stateui.json`, the suite's own - at StateUI's release.
+    static let identity = ApplicationFile(identifier: "com.stateui.androidtests", version: Release.version, build: 1)
+
     let checkout: URL
     let tools: ToolResolver
     /// Whether the API phase writes its records rather than holds them.
@@ -133,7 +136,8 @@ struct AndroidSuite {
         try? FileManager.default.removeItem(at: folder)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let head = AndroidHead(
-            application: tests, name: product, product: product, library: checkout, configuration: .debug, work: work, tools: android)
+            application: tests, name: product, identity: Self.identity, product: product, library: checkout, configuration: .debug,
+            work: work, tools: android)
         _ = try await head.assemble(abi: abi, binaries: binaries, swiftSDK: swiftSDK, ndk: ndk, in: folder, reporter: reporter)
         let identity = Identity(suite: "host:android", architecture: architecture, revision: await revision(), swiftSDK: swiftSDK)
         let encoder = JSONEncoder()

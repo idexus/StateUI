@@ -267,7 +267,7 @@ public struct ApplicationBuilder: Sendable {
         }
         if context.host == .android, let (swiftSDK, ndk) = target.android {
             let head = AndroidHead(
-                application: context.application, name: name, product: context.product, library: context.library,
+                application: context.application, name: name, identity: identity, product: context.product, library: context.library,
                 configuration: context.configuration, work: context.scratch.appendingPathComponent("stateui"),
                 tools: AndroidTools(environment: self.environment))
             guard let abi = AndroidDestinations.abi(of: context.architecture) else {

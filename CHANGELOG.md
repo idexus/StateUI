@@ -10,11 +10,19 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **An application is a folder holding its `stateui.json`.** Beside its `Package.swift`, the file says what the
   application is on every platform - the `identifier` naming it, the `version` shown to its user and its `build` - and
   neither `stateui` nor the VS Code extension takes a folder without one for an application. `stateui new` writes it:
-  the identifier `--identifier` gives, else `com.example.<name>`, at version 1.0.0, build 1. An application made
-  before adds its own:
+  the identifier `--identifier` gives, else `com.example.<name>`, at version 1.0.0, build 1. Every head takes them
+  from there: an Apple bundle's `CFBundleIdentifier`, `CFBundleShortVersionString` and `CFBundleVersion` - an own
+  `Info.plist` saying one is refused - and an Android head's `applicationId`, `versionName` and `versionCode`. An
+  application made before adds its own file, and its `Platforms/Android/build.gradle.kts` reads them:
 
   ```json
   { "build": 1, "identifier": "pl.example.notes", "schemaVersion": 1, "version": "1.0.0" }
+  ```
+
+  ```kotlin
+  applicationId = stated("stateui.identifier")
+  versionCode = stated("stateui.versionCode").toInt()
+  versionName = stated("stateui.version")
   ```
 
 - **AppKit builds through `stateui`.** `.scripts/AppKit/run-app.sh`, `build-gallery-appkit.sh` and `deploy.sh` are

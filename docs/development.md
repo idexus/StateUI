@@ -580,8 +580,7 @@ its host into one WebAssembly module.
 A release has one version, stated in the library's own
 `ApplicationInfo.libraryVersion`. Every other place that names it - the
 editor extension's `editors/VSCode/package.json`, the published-package line
-in the root `Package.swift`, each application's `stateui.json` - its
-bundles' version - and Android head's version, the Android host's test
-head's, the `stateui` tool's `Release.version`, which the UIKit host's test
-bundle carries, the bug report's example - names the same one, and
-`ReleaseTests` holds them to it.
+in the root `Package.swift`, each application's `stateui.json` - the version
+every head of it carries - the `stateui` tool's `Release.version`, which the
+UIKit and Android hosts' test applications carry, the bug report's example -
+names the same one, and `ReleaseTests` holds them to it.

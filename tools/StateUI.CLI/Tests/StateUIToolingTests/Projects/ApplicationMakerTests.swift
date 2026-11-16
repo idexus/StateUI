@@ -55,7 +55,7 @@ final class ApplicationMakerTests: XCTestCase {
             try ApplicationFile.read(made.appendingPathComponent("stateui.json")),
             ApplicationFile(identifier: "com.example.probe", version: "1.0.0", build: 1))
         let gradle = try String(contentsOf: made.appendingPathComponent("Platforms/Android/build.gradle.kts"), encoding: .utf8)
-        XCTAssertTrue(gradle.contains("applicationId = \"com.stateui.probe\""))
+        XCTAssertTrue(gradle.contains("applicationId = stated(\"stateui.identifier\")"), gradle)
         let head = try String(contentsOf: made.appendingPathComponent("Platforms/AppKit/main.swift"), encoding: .utf8)
         XCTAssertTrue(head.contains("ProbeApp.register()"))
 
