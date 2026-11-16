@@ -4,7 +4,9 @@
     "jsonrpc" : "2.0",
     "method" : "settings/set",
     "params" : {
-      "device" : "iPhone 18 Pro",
+      "devices" : {
+        "uikit" : "iPhone 18 Pro"
+      },
       "host" : "uikit",
       "projectUri" : "file:///Users/example/Projects/Demo",
       "requestToken" : "2b8e4f6a-9c1d-4e3f-8a5b-7d9c1e3f5a7b"

@@ -107,8 +107,13 @@ a device for no host refused - and written the same every time.
 
 `stateui settings` (`settings/get`, `settings/set`) shows them and chooses: an
 application to start, one its workspace lists; a host, one the application has
-a head for; a device, for the host named or chosen. The editor chooses through
-the same, so what a terminal's `stateui run` takes is what the editor shows.
+a head for; a device for a host - `settings/set` takes them by host, each
+other host's kept, and `--device` is the host named's, else the chosen one's.
+A device stands by its name, as a person reads and types it and the tool
+takes it as it takes an id. The editor chooses through the same, works as the
+chosen application's host, and reads them again as they change, so what a
+terminal's `stateui run` takes is what the editor shows; a window holding no
+application keeps its host and devices as its own.
 
 ## SwiftPM reads a package without a host
 

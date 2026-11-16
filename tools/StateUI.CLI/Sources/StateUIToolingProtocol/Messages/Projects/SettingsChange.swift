@@ -11,18 +11,18 @@ public struct SettingsChange: Codable, Equatable, Sendable {
     public var startup: String?
     /// The host the application is built for.
     public var host: HostFamily?
-    /// The device for `host` - else for the application's chosen host - by name or id.
-    public var device: String?
+    /// The device chosen for each host named, by the host's name: its name or id. Another host's stays.
+    public var devices: [String: String]?
 
-    /// `startup`, `host` and `device` chosen in the project at `projectUri`, for `application`.
+    /// `startup`, `host` and `devices` chosen in the project at `projectUri`, for `application`.
     public init(
         projectUri: String? = nil, application: String? = nil, startup: String? = nil, host: HostFamily? = nil,
-        device: String? = nil
+        devices: [String: String]? = nil
     ) {
         self.projectUri = projectUri
         self.application = application
         self.startup = startup
         self.host = host
-        self.device = device
+        self.devices = devices
     }
 }

@@ -37,27 +37,29 @@ final class SettingsTests: XCTestCase {
         XCTAssertEqual(try service.settings(in: root, application: nil), Settings(workspaceUri: FileURI.string(root)))
 
         _ = try service.changeSettings(SettingsChange(startup: "Two"), in: root)
-        let chosen = try service.changeSettings(SettingsChange(host: .android, device: "emulator-5554"), in: root)
+        _ = try service.changeSettings(SettingsChange(devices: ["web": "Safari"]), in: root)
+        let chosen = try service.changeSettings(SettingsChange(host: .android, devices: ["android": "emulator-5554"]), in: root)
 
         let two = root.appendingPathComponent("b/Two")
         XCTAssertEqual(chosen, Settings(
             workspaceUri: FileURI.string(root), startup: "Two", applicationUri: FileURI.string(two), host: .android,
-            devices: ["android": "emulator-5554"]))
+            devices: ["android": "emulator-5554", "web": "Safari"]))
         XCTAssertEqual(try WorkspaceSettings.read(in: root).startup, "b/Two")
-        XCTAssertEqual(try ApplicationSettings.read(in: two), ApplicationSettings(host: .android, devices: ["android": "emulator-5554"]))
+        XCTAssertEqual(
+            try ApplicationSettings.read(in: two), ApplicationSettings(host: .android, devices: ["android": "emulator-5554", "web": "Safari"]))
         let request = try ApplicationBuilder.chosen(BuildRequest(), in: root)
         XCTAssertEqual([request.host?.rawValue, request.device], ["android", "emulator-5554"])
         XCTAssertEqual(try ApplicationBuilder.chosen(BuildRequest(device: "Pixel"), in: root).device, "Pixel")
     }
 
     /// A choice the project cannot take is refused and nothing is written: an application the workspace does not
-    /// list, a host the application has no head for, a device for no host.
+    /// list, a host the application has no head for, a device for what is no host.
     func testAChoiceTheProjectCannotTakeIsRefused() throws {
         let root = try workspace()
         let service = ToolingService()
         for change in [
             SettingsChange(startup: "Three"), SettingsChange(application: "One", host: .android),
-            SettingsChange(application: "One", device: "iPhone 18 Pro"),
+            SettingsChange(application: "One", devices: ["maui": "iPhone 18 Pro"]),
         ] {
             XCTAssertThrowsError(try service.changeSettings(change, in: root), "\(change)") {
                 XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration)

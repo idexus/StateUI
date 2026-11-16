@@ -35,10 +35,17 @@ struct SettingsCommand: AsyncParsableCommand {
         let changes = startup != nil || host != nil || device != nil
         try await output.answer({
             let service = ToolingService()
-            return changes
-                ? try service.changeSettings(
-                    SettingsChange(application: application, startup: startup, host: host, device: device), in: folder)
-                : try service.settings(in: folder, application: application)
+            guard changes else { return try service.settings(in: folder, application: application) }
+            var devices: [String: String]?
+            if let device {
+                let chosenHost = try service.settings(in: folder, application: application).host
+                guard let forHost = host ?? chosenHost else {
+                    throw ToolingError(.invalidConfiguration, "Name the host the device is for with --host, or choose one first.")
+                }
+                devices = [forHost.rawValue: device]
+            }
+            return try service.changeSettings(
+                SettingsChange(application: application, startup: startup, host: host, devices: devices), in: folder)
         }, text: Self.words)
     }
 

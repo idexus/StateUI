@@ -33,7 +33,7 @@ extension ToolingService {
     }
 
     /// Makes the choices `change` says - `settings/set` - and answers what is chosen then: the workspace's application
-    /// to start, one it lists; the application's host, one it has a head for; the device of that host.
+    /// to start, one it lists; the application's host, one it has a head for; a device for each host named.
     /// Design: docs/design/tooling/projects.md#what-was-chosen
     public func changeSettings(_ change: SettingsChange, in folder: URL) throws -> Settings {
         let folder = RealPath.of(RealPath.lexical(folder))
@@ -48,7 +48,7 @@ extension ToolingService {
             }
             try WorkspaceSettings(startup: path).write(to: WorkspaceSettings.file(in: workspace.folder))
         }
-        if change.host != nil || change.device != nil {
+        if change.host != nil || change.devices?.isEmpty == false {
             let application = try ProjectReader.applicationFolder(named: change.application, containing: folder)
             var chosen = try ApplicationSettings.read(in: application)
             if let host = change.host {
@@ -57,12 +57,8 @@ extension ToolingService {
                 }
                 chosen.host = host
             }
-            if let device = change.device {
-                guard let host = change.host ?? chosen.host else {
-                    throw ToolingError(.invalidConfiguration, "Name the host the device is for, or choose one first.")
-                }
-                chosen.devices[host.rawValue] = device
-            }
+            chosen.devices.merge(change.devices ?? [:]) { _, new in new }
+            if let problem = chosen.problem { throw ToolingError(.invalidConfiguration, problem) }
             try chosen.write(to: ApplicationSettings.file(in: application))
         }
         return try settings(in: folder, application: change.application)

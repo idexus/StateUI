@@ -122,7 +122,7 @@ final class ProtocolExamplesTests: XCTestCase {
             Example(name: "settings-set", messages: [
                 ("request", try request("12", "settings/set", Mutation(
                     requestToken: "2b8e4f6a-9c1d-4e3f-8a5b-7d9c1e3f5a7b",
-                    request: SettingsChange(projectUri: demo, host: .uikit, device: "iPhone 18 Pro")))),
+                    request: SettingsChange(projectUri: demo, host: .uikit, devices: ["uikit": "iPhone 18 Pro"])))),
                 ("response", try response("12", OperationHandle(operationId: operation, state: .queued))),
                 ("result", try JSONValue(encoding: Settings(
                     workspaceUri: demo, startup: "Notes", applicationUri: demo + "/apps/Notes", host: .uikit,

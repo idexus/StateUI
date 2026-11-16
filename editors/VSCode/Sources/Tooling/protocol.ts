@@ -301,11 +301,11 @@ export interface SettingsRequest { projectUri?: string; application?: string }
 export const SettingsRequest = object<SettingsRequest>({ projectUri: optional(string), application: optional(string) });
 
 export interface SettingsChange {
-    projectUri?: string; application?: string; startup?: string; host?: HostFamily; device?: string;
+    projectUri?: string; application?: string; startup?: string; host?: HostFamily; devices?: Record<string, string>;
 }
 export const SettingsChange = object<SettingsChange>({
     projectUri: optional(string), application: optional(string), startup: optional(string), host: optional(HostFamily),
-    device: optional(string),
+    devices: optional(dictionary(string)),
 });
 
 export interface Settings {
