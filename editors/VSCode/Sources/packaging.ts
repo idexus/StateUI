@@ -4,20 +4,21 @@
 // StateUI: Package - an application built for release on a host and laid, with
 // what it runs with, in artifacts/<application>/<platform> of its workspace -
 // the folder of the stateui-workspace.json listing it - else of its own folder. A WinUI head is laid
-// per architecture - this machine's own, and on an ARM64 machine x64 too,
-// which Windows runs emulated. The stateui tool packages it.
+// per architecture - the ones the stateui tool says its machine or guest runs:
+// its own, and on an ARM64 one x64 too, which Windows runs emulated. The
+// stateui tool packages it.
 
-import * as os from "os";
 import * as path from "path";
 import { Application } from "./applications";
 import { describe, Host } from "./hosts";
+import type { Architecture as ToolArchitecture } from "./Tooling/protocol";
 
 /** What a WinUI head is built for. */
 export type Architecture = "arm64" | "x64";
 
-/** The architectures a WinUI head is packaged for on a machine of `machine`: its own, and x64 too on an ARM64 one. */
-export function winUIArchitectures(machine: string = os.arch()): Architecture[] {
-    return machine === "arm64" ? ["arm64", "x64"] : ["x64"];
+/** Windows' word for an architecture the stateui tool names - `x86_64` is `x64` - or nothing for one Windows runs not. */
+export function windowsArchitecture(architecture: ToolArchitecture): Architecture | undefined {
+    return architecture === "x86_64" ? "x64" : architecture === "arm64" ? "arm64" : undefined;
 }
 
 /** The folder `application`'s artifacts/ stands in: its workspace's, else its own. */

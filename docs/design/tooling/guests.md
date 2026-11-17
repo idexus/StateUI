@@ -38,7 +38,9 @@ cut into lines per stream - to its terminal state, and read whole with
 `operation/get`: its result returned, its failure thrown as the guest's tool
 said it, a refusal (`-32010`) as the error it carries. Cancelled on the Mac,
 the operation is cancelled in the guest (`operation/cancel`); a connection
-whose input ends cancels the guest's operations itself. No command line
+whose input ends cancels the guest's operations itself. A guest's stateui that
+ends before answering is said with the last lines it wrote to its standard
+error - a crash's own words, which would otherwise end with it. No command line
 carries quotes, which `prlctl exec` hands a guest's shell unreliably.
 
 ## Reaching a guest
@@ -83,9 +85,10 @@ field it does not know as nothing.
 ## The doctor of a guest
 
 `stateui doctor --host gtk --device <guest>` (`toolchain/check` given a
-`device`) checks a guest instead of the Mac, and changes nothing - it neither
-starts the guest nor lays anything in it (`GuestDoctor`). It checks the way
-to the guest from the Mac first: Parallels' `prlctl`, the guest by its name
+`device`) checks the Mac, then the guest, in one report every client shows
+alike, and changes nothing - it neither starts the guest nor lays anything in
+it (`GuestDoctor`). After the Mac's own findings it checks the way to the
+guest from the Mac: Parallels' `prlctl`, the guest by its name
 and of the host's system, Parallels Tools in it, and each folder of the
 project - its applications and their checkout - shared with it. Then, where
 the guest runs: its user's desktop session, and its own stateui at the same
@@ -121,8 +124,13 @@ session waited for; its stateui laid again where it is not this checkout's
 checkout copied; then the request asked of it with the guest's path of the
 application. A build answers the guest's artifact, its device the guest. A
 package is laid in the Mac's output folder - the request's, else the
-project's `artifacts/<Name>/<Host>` - which the guest writes through the
-folder it shares, and answers the Mac's paths. A run is the guest's
+project's `artifacts/<Name>/<Host>`, judged as a package's folder before the
+guest builds and again before it is filled: the guest lays it on its own
+disk, `stateui-guest/artifacts/<Name>/<Host>`, then its stateui copies it into
+the Mac's folder through the folder it shares (`folder/mirror`), and the
+answer names the Mac's paths. A guest reads the Mac by plain paths alone: a
+path of a Windows guest's share written as a URI (`\\Mac\AllFiles\…`) is
+read there as a folder of its own drive. A run is the guest's
 `application/run`, its application's output told on the Mac as it comes;
 cancelled on the Mac - Ctrl+C - the guest's operation is cancelled and its
 end waited for, up to twenty seconds, before the connection closes, so the

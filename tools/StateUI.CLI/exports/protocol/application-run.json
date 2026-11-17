@@ -12,6 +12,10 @@
             "configuration" : "debug",
             "destination" : {
               "booted" : true,
+              "debugger" : true,
+              "emulated" : [
+
+              ],
               "id" : "C8992893-1166-4CDF-AF44-2169C94EE53B",
               "kind" : "simulator",
               "name" : "iPhone 18 Pro",
@@ -63,6 +67,10 @@
         "configuration" : "debug",
         "destination" : {
           "booted" : true,
+          "debugger" : true,
+          "emulated" : [
+
+          ],
           "id" : "C8992893-1166-4CDF-AF44-2169C94EE53B",
           "kind" : "simulator",
           "name" : "iPhone 18 Pro",

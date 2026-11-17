@@ -16,8 +16,6 @@ export const APIVersionRange = object<APIVersionRange>({ major: number, minMinor
 export interface Machine { system: string; architecture: string }
 export const Machine = object<Machine>({ system: string, architecture: string });
 
-export interface ServerInfo { server: ToolIdentity; apiVersions: APIVersionRange[]; machine: Machine }
-export const ServerInfo = object<ServerInfo>({ server: ToolIdentity, apiVersions: array(APIVersionRange), machine: Machine });
 
 export interface InitializeParameters { apiVersions: APIVersionRange[]; client: ToolIdentity; workspaceUri: string }
 export const InitializeParameters = object<InitializeParameters>({
@@ -127,6 +125,17 @@ export const OperationEvent = object<OperationEvent>({
 export type HostFamily = "appkit" | "uikit" | "android" | "winui" | "gtk" | "web";
 export const HostFamily = oneOf<HostFamily>("appkit", "uikit", "android", "winui", "gtk", "web");
 
+export type Place = "machine" | "device" | "browser" | "guest";
+export const Place = oneOf<Place>("machine", "device", "browser", "guest");
+
+export interface HostPlace { host: HostFamily; place: Place }
+export const HostPlace = object<HostPlace>({ host: HostFamily, place: Place });
+
+export interface ServerInfo { server: ToolIdentity; apiVersions: APIVersionRange[]; machine: Machine; hosts: HostPlace[] }
+export const ServerInfo = object<ServerInfo>({
+    server: ToolIdentity, apiVersions: array(APIVersionRange), machine: Machine, hosts: array(HostPlace),
+});
+
 export interface Application {
     id: string;
     name: string;
@@ -182,8 +191,8 @@ export const Architecture = oneOf<Architecture>("arm64", "x86_64", "armv7", "x86
 export type BuildConfiguration = "debug" | "release";
 export const BuildConfiguration = oneOf<BuildConfiguration>("debug", "release");
 
-export type DestinationKind = "device" | "simulator" | "emulator" | "browser" | "guest";
-export const DestinationKind = oneOf<DestinationKind>("device", "simulator", "emulator", "browser", "guest");
+export type DestinationKind = "machine" | "device" | "simulator" | "emulator" | "browser" | "guest";
+export const DestinationKind = oneOf<DestinationKind>("machine", "device", "simulator", "emulator", "browser", "guest");
 
 export interface Destination {
     id: string;
@@ -194,11 +203,14 @@ export interface Destination {
     booted: boolean;
     connection?: string;
     architecture?: Architecture;
+    emulated: Architecture[];
+    debugger: boolean;
     programUri?: string;
 }
 export const Destination = object<Destination>({
     id: string, udid: string, name: string, kind: DestinationKind, version: string, booted: boolean,
-    connection: optional(string), architecture: optional(Architecture), programUri: optional(string),
+    connection: optional(string), architecture: optional(Architecture), emulated: array(Architecture), debugger: boolean,
+    programUri: optional(string),
 });
 
 export interface DestinationQuery { host: HostFamily }

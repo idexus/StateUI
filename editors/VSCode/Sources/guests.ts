@@ -8,13 +8,18 @@
 import * as vscode from "vscode";
 import { DeviceStore } from "./choices";
 import { describe, Host } from "./hosts";
-import { Destination } from "./Tooling/protocol";
+import { Architecture, Destination } from "./Tooling/protocol";
 
-/** A guest as the tool lists it: its name, its system, and its state - running, suspended, stopped. */
+/**
+ * A guest as the tool lists it: its name, its system, its state - running, suspended, stopped - whether a debugger
+ * reaches an application run in it, and the architectures a head is built for there, its own first.
+ */
 export interface Guest {
     readonly name: string;
     readonly system: string;
     readonly state: string;
+    readonly debugger: boolean;
+    readonly architectures: readonly Architecture[];
 }
 
 /** The guests of `host`'s system as the tool lists them, or nothing, said, where it could not. */
@@ -22,7 +27,10 @@ export type GuestLister = (host: Host) => Promise<Guest[] | undefined>;
 
 /** A destination the tool listed, as a guest stands in the editor. */
 export function guestOf(destination: Destination): Guest {
-    return { name: destination.name, system: destination.version, state: destination.connection ?? (destination.booted ? "running" : "stopped") };
+    return {
+        name: destination.name, system: destination.version, state: destination.connection ?? (destination.booted ? "running" : "stopped"),
+        debugger: destination.debugger, architectures: [...(destination.architecture ? [destination.architecture] : []), ...destination.emulated],
+    };
 }
 
 /** The system whose guests build `host`'s heads. */
@@ -31,17 +39,14 @@ function systemOf(host: Host): string {
 }
 
 /** The guest a launch of `host` is built and run in: the one chosen, while it is listed, else asked for. */
-export async function guestToRunIn(store: DeviceStore, host: Host, list: GuestLister): Promise<string | undefined> {
+export async function guestToRunIn(store: DeviceStore, host: Host, list: GuestLister): Promise<Guest | undefined> {
     const listed = await list(host);
-    const chosen = store.device(host);
-    if (listed?.some((each) => each.name === chosen)) {
-        return chosen;
-    }
-    return listed ? askForGuest(store, host, list, listed) : undefined;
+    const chosen = listed?.find((each) => each.name === store.device(host));
+    return chosen ?? (listed ? askForGuest(store, host, list, listed) : undefined);
 }
 
-/** Asks for a guest of `host`'s system among those the tool lists, remembers it, and answers its name. */
-export async function askForGuest(store: DeviceStore, host: Host, list: GuestLister, listed?: Guest[]): Promise<string | undefined> {
+/** Asks for a guest of `host`'s system among those the tool lists, remembers it, and answers it. */
+export async function askForGuest(store: DeviceStore, host: Host, list: GuestLister, listed?: Guest[]): Promise<Guest | undefined> {
     listed ??= await list(host);
     if (!listed) {
         return undefined;
@@ -68,5 +73,5 @@ export async function askForGuest(store: DeviceStore, host: Host, list: GuestLis
         return undefined;
     }
     await store.choose(host, guest.name);
-    return guest.name;
+    return guest;
 }

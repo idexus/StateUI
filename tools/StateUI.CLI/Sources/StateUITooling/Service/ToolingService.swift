@@ -20,7 +20,7 @@ public struct ToolingService: Sendable {
 
     /// The tool's name, release, API versions and machine - `server/info`.
     public func serverInfo() -> ServerInfo {
-        ServerInfo(server: Self.identity, apiVersions: Release.apiVersions, machine: .current)
+        ServerInfo(server: Self.identity, apiVersions: Release.apiVersions, machine: .current, hosts: HostPlaces.here)
     }
 
     /// The project holding `folder` - `project/describe`.
@@ -155,10 +155,11 @@ public struct ToolingService: Sendable {
         return clone
     }
 
-    /// What this machine has of every component it needs - `toolchain/check` - or, where `query` names a guest, what
-    /// that guest has of what a head of its host needs, for the application and checkout of its project.
+    /// What this machine has of every component it needs - `toolchain/check` - and, where `query` names a guest, then
+    /// what that guest has of what a head of its host needs, for the application and checkout of its project.
     public func checkToolchain(_ query: ToolchainQuery = ToolchainQuery()) async -> ToolchainReport {
-        guard let device = query.device, let host = query.host else { return await Doctor().check() }
+        let here = await Doctor().check()
+        guard let device = query.device, let host = query.host else { return here }
         var folders: [URL] = []
         if let uri = query.projectUri, let folder = try? FileURI.url(uri), let project = try? await ProjectReader().describe(containing: folder) {
             for application in project.applications {
@@ -167,8 +168,9 @@ public struct ToolingService: Sendable {
             }
         }
         var seen: Set<String> = []
-        return await GuestDoctor(guests: ParallelsGuests())
+        let there = await GuestDoctor(guests: ParallelsGuests())
             .check(host: host, device: device, folders: folders.filter { seen.insert($0.standardizedFileURL.path).inserted })
+        return ToolchainReport(findings: here.findings + there.findings)
     }
 
     /// Lays the stateui of the checkout `folder` builds with in `device`, a guest of this Mac; its program's path
@@ -237,33 +239,32 @@ public struct ToolingService: Sendable {
             removedUris: cleaned.removed.map(FileURI.string), conflicts: cleaned.conflicts.isEmpty ? nil : cleaned.conflicts)
     }
 
-    /// Where `host`'s heads can run from this machine - `devices/list`: UIKit's iPhones, iPads and simulators on a Mac,
-    /// Android's devices and emulators, the Web's browsers, and on a Mac the virtual machines of GTK's and WinUI's
-    /// systems.
+    /// Where `host`'s heads can run from this machine - `devices/list`, as its place says (`HostPlaces`): this machine
+    /// itself, UIKit's iPhones, iPads and simulators, Android's devices and emulators, the Web's browsers, and on a Mac
+    /// the virtual machines of GTK's and WinUI's systems.
     ///
-    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose heads run on this machine itself.
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose heads this machine does not build.
     public func listDestinations(of host: HostFamily) async throws -> DestinationList {
-        switch host {
-        case .uikit:
+        switch HostPlaces.place(of: host) {
+        case .machine:
+            return DestinationList(host: host, destinations: [HostPlaces.machine()])
+        case .device where host == .uikit:
             #if os(macOS)
             return DestinationList(host: host, destinations: await AppleDestinations().list())
             #else
             return DestinationList(host: host, destinations: [])
             #endif
-        case .android:
+        case .device:
             return DestinationList(host: host, destinations: await AndroidDestinations().list())
-        case .web:
+        case .browser:
             return DestinationList(host: host, destinations: await Browsers.list())
-        case .gtk, .winui:
-            #if os(macOS)
+        case .guest:
             let system = ParallelsGuests.system(for: host)
             return DestinationList(host: host, destinations: await ParallelsGuests().list()
                 .filter { $0.system == system }.map(ParallelsGuests.destination))
-            #else
-            throw ToolingError(.invalidConfiguration, "Heads of \(host.rawValue) run on this machine itself.")
-            #endif
-        default:
-            throw ToolingError(.invalidConfiguration, "Heads of \(host.rawValue) run on this machine itself; uikit's and android's run on devices, web's in browsers.")
+        case nil:
+            let built = HostPlaces.here.map(\.host.rawValue).joined(separator: ", ")
+            throw ToolingError(.invalidConfiguration, "This machine builds no heads of \(host.rawValue): \(built.isEmpty ? "none" : built).")
         }
     }
 

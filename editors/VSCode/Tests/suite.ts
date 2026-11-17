@@ -18,20 +18,20 @@ import { Application, applicationsOf, hasHead, readApplications } from "../Sourc
 import { Configuration, configurations, runPlace, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
 import { chosenApplication, chosenHost, offeredHosts } from "../Sources/choices";
 import { androidDeviceOf, deviceAmong } from "../Sources/devices";
-import { browserOf, isChromium } from "../Sources/browsers";
+import { browserOf } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
 import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
 import { guestOf } from "../Sources/guests";
-import { availableHosts, describe, Host, HostDescription, hosts, inGuest } from "../Sources/hosts";
+import { availableHosts, describe, Host, HostDescription, hosts, placeOf } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { editorCommandLine, hasExtensionSources } from "../Sources/reinstall";
 import { conformanceRequest, failedPhases } from "../Sources/conformance";
-import { packageDestination, toolArchitecture, winUIArchitectures } from "../Sources/packaging";
+import { Architecture, packageDestination, toolArchitecture, windowsArchitecture } from "../Sources/packaging";
 import {
     atLeast, checkedPythonIn, debuggerFinding, Finding, lldbDapFailure, report,
 } from "../Sources/toolchain";
 import { pathToFileUri, ToolingClient } from "../Sources/Tooling/client";
-import { TestSuiteDescription } from "../Sources/Tooling/protocol";
+import { HostPlace, TestSuiteDescription } from "../Sources/Tooling/protocol";
 import { locateTool } from "../Sources/Tooling/locate";
 
 const started = Date.now();
@@ -123,6 +123,24 @@ export async function run(): Promise<void> {
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
 
+        // The hosts this machine builds and where their heads run, as the stateui tool says them (`server/info`).
+        const places: HostPlace[] = await (async () => {
+            const asking = await ToolingClient.start({
+                executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
+                folder: root.uri.fsPath, clientVersion: "suite",
+            });
+            const info = await asking.request("server/info", {});
+            await asking.dispose();
+            return info.hosts;
+        })();
+        // A Mac's, Linux's and Windows' places, as the tool names them on each.
+        const macPlaces: HostPlace[] = [
+            { host: "appkit", place: "machine" }, { host: "uikit", place: "device" }, { host: "android", place: "device" },
+            { host: "winui", place: "guest" }, { host: "gtk", place: "guest" }, { host: "web", place: "browser" },
+        ];
+        const linuxPlaces: HostPlace[] = [{ host: "gtk", place: "machine" }, { host: "web", place: "browser" }];
+        const windowsPlaces: HostPlace[] = [{ host: "winui", place: "machine" }];
+
         // The applications, found at activation through the stateui tool: this checkout's workspace lists Gallery and HelloWorld.
         const found = api.applications().map((each) => each.name).join(" ");
         check(`the extension finds this checkout's applications through the stateui tool${found === "Gallery HelloWorld" ? "" : ` - not "${found}"`}`,
@@ -198,7 +216,7 @@ export async function run(): Promise<void> {
             check(`another window is refused ${other} on this window's packages - held as ${current} - and shares ${current}`,
                 refused.conflict?.host === current && refused.rootUris.length === 0
                 && shared.conflict === undefined && shared.rootUris.length === rootUris.length);
-            const switchable = availableHosts().map((each) => each.id).find((each) => each !== current);
+            const switchable = availableHosts(places).map((each) => each.id).find((each) => each !== current);
             if (switchable) {
                 await api.selectHost(switchable);
                 check(`while that window works as ${current}, this one is refused ${switchable} and stays ${current}`, api.host() === current);
@@ -213,16 +231,20 @@ export async function run(): Promise<void> {
             }
         }
 
-        // 4. The hosts a machine is offered: AppKit, UIKit and Android on macOS,
-        //    WinUI on Windows, GTK on Linux - both in a Mac's guests too - and
-        //    the Web on macOS and Linux. A launch on a machine that runs no host
-        //    resolves to nothing.
+        // 4. The hosts a machine is offered, as the stateui tool says them: AppKit,
+        //    UIKit and Android on macOS, WinUI on Windows, GTK on Linux - both in
+        //    a Mac's guests too - and the Web on macOS and Linux. A launch on a
+        //    machine that runs no host resolves to nothing.
         const gallery_ = api.applications().find((each) => each.name === "Gallery")!;
-        check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, both in a Mac's guests, and the Web on macOS and Linux",
-            JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android", "winui", "gtk", "web"])
-            && JSON.stringify(availableHosts("win32").map((each) => each.id)) === JSON.stringify(["winui"])
-            && JSON.stringify(availableHosts("linux").map((each) => each.id)) === JSON.stringify(["gtk", "web"])
-            && availableHosts("freebsd").length === 0);
+        const placed = (list: readonly HostPlace[]): string => JSON.stringify(list.map((each) => [each.host, each.place]));
+        const expected: Record<string, HostPlace[]> = { darwin: macPlaces, linux: linuxPlaces, win32: windowsPlaces };
+        check("the tool names this machine's hosts and where they run - a Mac's AppKit itself, UIKit and Android on devices, WinUI and GTK in guests, the Web in browsers",
+            placed(places) === placed(expected[process.platform] ?? []));
+        check("the host picker offers the hosts the tool names, in the matrix's order, and none where it names none",
+            JSON.stringify(availableHosts(macPlaces).map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android", "winui", "gtk", "web"])
+            && JSON.stringify(availableHosts([...linuxPlaces].reverse()).map((each) => each.id)) === JSON.stringify(["gtk", "web"])
+            && availableHosts([]).length === 0
+            && placeOf("gtk", macPlaces) === "guest" && placeOf("gtk", linuxPlaces) === "machine" && placeOf("appkit", linuxPlaces) === undefined);
         {
             const ran: string[] = [];
             const provider = new StateUIDebugConfigurationProvider({
@@ -231,6 +253,7 @@ export async function run(): Promise<void> {
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
                 guest: async () => undefined,
+                place: () => undefined,
                 runHead: async () => undefined,
                 browser: async () => undefined,
             });
@@ -244,7 +267,9 @@ export async function run(): Promise<void> {
             const runs: { host: string; device: string; debug: boolean; configuration: string }[] = [];
             const inAGuest = (forHost: Host, named: string | undefined) => new StateUIDebugConfigurationProvider({
                 build: async () => undefined, host: () => forHost, application: async () => gallery_,
-                device: async () => undefined, uiKitDevice: async () => undefined, guest: async () => named,
+                device: async () => undefined, uiKitDevice: async () => undefined, place: () => "guest",
+                guest: async () => named === undefined ? undefined
+                    : { name: named, system: "", state: "running", debugger: false, architectures: ["arm64"] },
                 runHead: async (_folder, _application, ran, asked, device, debug) => {
                     runs.push({ host: ran, device, debug, configuration: asked });
                     return undefined;
@@ -263,13 +288,15 @@ export async function run(): Promise<void> {
                         { host: "winui", device: "Windows 11", debug: false, configuration: "debug" },
                     ]));
             }
-            check("GTK and WinUI are built in a guest on a Mac alone, and a guest is listed by its name, system and state",
-                inGuest("gtk", "darwin") && inGuest("winui", "darwin") && !inGuest("gtk", "linux") && !inGuest("winui", "win32")
-                && !inGuest("appkit", "darwin")
-                && JSON.stringify(guestOf({
-                    id: "Ubuntu", udid: "{1}", name: "Ubuntu", kind: "guest", version: "ubuntu", booted: false, connection: "suspended",
+            check("a guest is listed by its name, system and state, whether a debugger reaches it, and its architectures - its own first",
+                JSON.stringify(guestOf({
+                    id: "Ubuntu", udid: "{1}", emulated: [], debugger: false, name: "Ubuntu", kind: "guest", version: "ubuntu", booted: false, connection: "suspended",
                     architecture: "arm64",
-                })) === JSON.stringify({ name: "Ubuntu", system: "ubuntu", state: "suspended" }));
+                })) === JSON.stringify({ name: "Ubuntu", system: "ubuntu", state: "suspended", debugger: false, architectures: ["arm64"] })
+                && JSON.stringify(guestOf({
+                    id: "Windows 11", udid: "{2}", emulated: ["x86_64"], debugger: false, name: "Windows 11", kind: "guest", version: "win-11",
+                    booted: true, connection: "running", architecture: "arm64",
+                }).architectures) === JSON.stringify(["arm64", "x86_64"]));
         }
 
         // 5. The suites, found for each host as the stateui tool runs them; the core's is named by the checkout's folder.
@@ -351,7 +378,7 @@ export async function run(): Promise<void> {
                 executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
                 folder: root.uri.fsPath, clientVersion: "suite",
             });
-            const contexts = await Promise.all([undefined, ...availableHosts().map((each) => each.id)].map((each) =>
+            const contexts = await Promise.all([undefined, ...availableHosts(places).map((each) => each.id)].map((each) =>
                 asked.request("index/describe", each ? { host: each } : {})));
             await asked.dispose();
             say(`     index: ${contexts.map((each) => `${each.host ?? "plain"} ${each.scratchPath} ${each.triple ?? ""} ${each.swiftSDK ?? each.sdk ?? ""}`).join("; ")}`);
@@ -365,9 +392,9 @@ export async function run(): Promise<void> {
         }
         {
             const listed = [
-                androidDeviceOf({ id: "190a991d", udid: "190a991d", name: "CPH2363", kind: "device", version: "13", booted: false, connection: "USB", architecture: "arm64" }),
-                androidDeviceOf({ id: "emulator-5554", udid: "emulator-5554", name: "Pixel_3a", kind: "emulator", version: "14", booted: true, architecture: "arm64" }),
-                androidDeviceOf({ id: "Medium_Phone", udid: "Medium_Phone", name: "Medium_Phone", kind: "emulator", version: "", booted: false }),
+                androidDeviceOf({ id: "190a991d", udid: "190a991d", emulated: [], debugger: true, name: "CPH2363", kind: "device", version: "13", booted: false, connection: "USB", architecture: "arm64" }),
+                androidDeviceOf({ id: "emulator-5554", udid: "emulator-5554", emulated: [], debugger: true, name: "Pixel_3a", kind: "emulator", version: "14", booted: true, architecture: "arm64" }),
+                androidDeviceOf({ id: "Medium_Phone", udid: "Medium_Phone", emulated: [], debugger: true, name: "Medium_Phone", kind: "emulator", version: "", booted: false }),
             ];
             check("the tool's list reads as the devices attached and running, by serial and name, and the virtual devices not running",
                 JSON.stringify(listed) === JSON.stringify([
@@ -394,13 +421,13 @@ export async function run(): Promise<void> {
                 && chosenApplication([], new Map()) === undefined);
             const panel = { name: "Panel", directory: "/d/apps/Panel", hosts: ["web"] as Host[], workspace: "/d" };
             const reader = { name: "Reader", directory: "/d/apps/Reader", hosts: ["android"] as Host[], workspace: "/d" };
-            const mac = availableHosts("darwin");
+            const mac = availableHosts(macPlaces);
             const ids = (offered: HostDescription[]): string => offered.map((each) => each.id).join(",");
             check("a window offers the chosen application's heads this machine runs, and those alone - none where none is chosen",
                 ids(offeredHosts(mac, panel)) === "web"
                 && ids(offeredHosts(mac, reader)) === "android"
                 && ids(offeredHosts(mac, undefined)) === ""
-                && ids(offeredHosts(availableHosts("linux"), reader)) === "");
+                && ids(offeredHosts(availableHosts(linuxPlaces), reader)) === "");
             check("a window works as a host it offers: the application's saved, else the window's own, else the first",
                 chosenHost(offeredHosts(mac, panel), "appkit", "appkit") === "web"
                 && chosenHost(offeredHosts(mac, reader), "android", "web") === "android"
@@ -421,12 +448,13 @@ export async function run(): Promise<void> {
                     device: async () => serial,
                     uiKitDevice: async () => undefined,
                     guest: async () => undefined,
+                    place: () => undefined,
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
                         runs.push({ host: forHost, device, debug, configuration: asked });
                         if (!starts) {
                             return undefined;
                         }
-                        const destination = { id: device, udid: device, name: "Pixel_3a", kind: "emulator" as const, version: "14", booted: true, architecture: "arm64" as const };
+                        const destination = { id: device, udid: device, emulated: [], debugger: true, name: "Pixel_3a", kind: "emulator" as const, version: "14", booted: true, architecture: "arm64" as const };
                         return {
                             token: "RUN-2",
                             launched: {
@@ -515,9 +543,9 @@ export async function run(): Promise<void> {
         {
             check("a destination the tool lists stands as a UIKit device: a device by how it is reached, a simulator by whether it is booted",
                 JSON.stringify([
-                    uiKitDeviceOf({ id: "PHONE-ID", udid: "U", name: "Phone", kind: "device", version: "26.6.2", booted: false, connection: "USB" }),
-                    uiKitDeviceOf({ id: "SIM", udid: "SIM", name: "iPhone 18 Pro", kind: "simulator", version: "27.0", booted: true }),
-                    uiKitDeviceOf({ id: "PAD", udid: "PAD", name: "iPad Air 13-inch (M4)", kind: "simulator", version: "27.0", booted: false }),
+                    uiKitDeviceOf({ id: "PHONE-ID", udid: "U", emulated: [], debugger: true, name: "Phone", kind: "device", version: "26.6.2", booted: false, connection: "USB" }),
+                    uiKitDeviceOf({ id: "SIM", udid: "SIM", emulated: [], debugger: true, name: "iPhone 18 Pro", kind: "simulator", version: "27.0", booted: true }),
+                    uiKitDeviceOf({ id: "PAD", udid: "PAD", emulated: [], debugger: true, name: "iPad Air 13-inch (M4)", kind: "simulator", version: "27.0", booted: false }),
                 ]) === JSON.stringify([
                     { id: "PHONE-ID", name: "Phone", kind: "device", os: "26.6.2", state: "USB" },
                     { id: "SIM", name: "iPhone 18 Pro", kind: "simulator", os: "27.0", state: "booted" },
@@ -542,12 +570,13 @@ export async function run(): Promise<void> {
                     device: async () => undefined,
                     uiKitDevice: async () => udid,
                     guest: async () => undefined,
+                    place: () => undefined,
                     runHead: async (_folder, _application, _host, asked, device, debug) => {
                         runs.push({ device, debug, configuration: asked });
                         if (!starts) {
                             return undefined;
                         }
-                        const destination = { id: device, udid: device, name: "iPhone 18 Pro", kind: "simulator" as const, version: "27.0", booted: true };
+                        const destination = { id: device, udid: device, emulated: [], debugger: true, name: "iPhone 18 Pro", kind: "simulator" as const, version: "27.0", booted: true };
                         return {
                             token: "RUN-1",
                             launched: {
@@ -599,7 +628,7 @@ export async function run(): Promise<void> {
         // 6b. WinUI: HelloWorld's head, built by the stateui tool and launched under lldb-dap where Windows runs it - a
         //     Mac's guest runs it with no debugger (4.) - and the host's own package through stateui repo test.
         check("HelloWorld has a WinUI head", hasHead(helloWorld, "winui"));
-        if (!inGuest("winui")) {
+        if (placeOf("winui", places) !== "guest") {
             const built: string[] = [];
             const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "winui-release", "HelloWorldWinUI.exe");
             const provider = new StateUIDebugConfigurationProvider({
@@ -611,6 +640,7 @@ export async function run(): Promise<void> {
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
                 guest: async () => undefined,
+                place: () => undefined,
                 runHead: async () => undefined,
                 browser: async () => undefined,
             });
@@ -633,7 +663,7 @@ export async function run(): Promise<void> {
         //     launched under lldb-dap where Linux runs it - a Mac's guest runs it
         //     with no debugger (4.) - and the host's own suite by the tool.
         check("HelloWorld has a GTK head", hasHead(helloWorld, "gtk"));
-        if (!inGuest("gtk")) {
+        if (placeOf("gtk", places) !== "guest") {
             const built: string[] = [];
             const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "gtk-arm64-x-debug", "HelloWorldGTK");
             const provider = new StateUIDebugConfigurationProvider({
@@ -642,6 +672,7 @@ export async function run(): Promise<void> {
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
                 guest: async () => undefined,
+                place: () => undefined,
                 runHead: async () => undefined,
                 browser: async () => undefined,
             });
@@ -665,23 +696,25 @@ export async function run(): Promise<void> {
         //     one of Chromium's VS Code's JavaScript debugger on the page the run's `started` event names.
         check("HelloWorld has a Web head", hasHead(helloWorld, "web"));
         {
-            const browserOn = (id: string, name: string, program: string | undefined, booted: boolean) =>
-                browserOf({ id, udid: id, name, kind: "browser", version: "", booted, programUri: program && vscode.Uri.file(program).toString() });
+            const browserOn = (id: string, name: string, program: string | undefined, booted: boolean, followed = false) =>
+                browserOf({
+                    id, udid: id, name, kind: "browser", version: "", booted, emulated: [], debugger: followed,
+                    programUri: program && vscode.Uri.file(program).toString(),
+                });
             const listed = [
                 browserOn("com.apple.Safari", "Safari", "/Applications/Safari.app/Contents/MacOS/Safari", true),
-                browserOn("com.google.Chrome", "Google Chrome", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", false),
+                browserOn("com.google.Chrome", "Google Chrome", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", false, true),
                 browserOn("firefox.desktop", "Firefox", "/usr/bin/firefox", false),
                 browserOn("chromium.desktop", "Chromium", undefined, false),
             ];
             // A program reads as this system spells a path.
             const spelled = (file: string): string => vscode.Uri.file(file).fsPath;
-            check("the tool's browsers read by id, name and program, the system's own marked, and Chromium's told apart",
+            check("the tool's browsers read by id, name and program, the system's own marked, and a debugger following one as the tool says",
                 listed[0].isDefault && !listed[1].isDefault && listed[1].name === "Google Chrome"
                 && listed[1].program === spelled("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
                 && listed[2].program === spelled("/usr/bin/firefox")
                 && listed[3].program === undefined
-                && !isChromium(listed[0]) && isChromium(listed[1]) && !isChromium(listed[2])
-                && isChromium({ id: "com.microsoft.edgemac" }) && isChromium({ id: "brave-browser.desktop" }));
+                && !listed[0].debugger && listed[1].debugger && !listed[2].debugger && !listed[3].debugger);
 
             const site = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "web-debug");
             const launchOnWeb = async (browser: (typeof listed)[number], configuration: string) => {
@@ -692,6 +725,7 @@ export async function run(): Promise<void> {
                     device: async () => undefined,
                     uiKitDevice: async () => undefined,
                     guest: async () => undefined,
+                    place: () => undefined,
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
                         runs.push({ host: forHost, device, debug, configuration: asked });
                         return {
@@ -865,14 +899,14 @@ export async function run(): Promise<void> {
             check(`Notes' example test passes as ${testHost ?? "plain Swift"}, run by the tool`, passes);
 
             // StateUI: Package in the group: Notes built for release and laid in the group's artifacts/Notes/<platform>,
-            // on WinUI per architecture - this machine's own, and x64 too on an ARM64 machine - and run from there.
+            // on WinUI per architecture the tool says this machine runs - its own, and x64 too on an ARM64 one - and run
+            // from there.
             const notes = (await described(local!)).find((each) => each.name === "Notes")!;
             const titled = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8"))
                 .contributes.commands.find((each: { command: string }) => each.command === "stateui.deploy")?.title;
             check("Package lays an application in artifacts/<application>/<platform> of its workspace, on WinUI per architecture - x64 the tool's x86_64",
                 commands.includes("stateui.deploy") && titled === "Package"
-                && JSON.stringify(winUIArchitectures("arm64")) === JSON.stringify(["arm64", "x64"])
-                && JSON.stringify(winUIArchitectures("x64")) === JSON.stringify(["x64"])
+                && windowsArchitecture("x86_64") === "x64" && windowsArchitecture("arm64") === "arm64" && windowsArchitecture("wasm32") === undefined
                 && toolArchitecture("x64") === "x86_64" && toolArchitecture("arm64") === "arm64"
                 && packageDestination(notes, "winui", "x64") === path.join(local!, "artifacts", "Notes", "WinUI", "x64")
                 && packageDestination(notes, "gtk") === path.join(local!, "artifacts", "Notes", "GTK")
@@ -880,7 +914,17 @@ export async function run(): Promise<void> {
                 && fs.readFileSync(path.join(local!, ".gitignore"), "utf8").includes("\n/artifacts/\n"));
             const own: Record<string, Host> = { darwin: "appkit", win32: "winui", linux: "gtk" };
             await api.selectHost(own[process.platform]);
-            for (const architecture of process.platform === "win32" ? winUIArchitectures() : [undefined]) {
+            // On Windows, the architectures the tool says this machine builds a WinUI head for, its own first.
+            const machineArchitectures: (Architecture | undefined)[] = process.platform !== "win32" ? [undefined] : await (async () => {
+                const asking = await ToolingClient.start({
+                    executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
+                    folder: root.uri.fsPath, clientVersion: "suite",
+                });
+                const machine = (await asking.request("devices/list", { host: "winui" })).destinations.find((each) => each.kind === "machine");
+                await asking.dispose();
+                return machine ? [machine.architecture, ...machine.emulated].flatMap((each) => each && windowsArchitecture(each) ? [windowsArchitecture(each)] : []) : [];
+            })();
+            for (const architecture of machineArchitectures) {
                 const laid = await vscode.commands.executeCommand<string>("stateui.deploy", { application: notes.directory, architecture });
                 const platform = describe(own[process.platform]).label;
                 check(`Package lays the group's Notes in its artifacts/Notes/${platform}${architecture ? `/${architecture}` : ""}`,

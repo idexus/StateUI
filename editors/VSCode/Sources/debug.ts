@@ -30,14 +30,16 @@
 // executable written again - for this machine's architecture, and launched by
 // lldb-dap, which reads the DWARF the head carries.
 //
-// On a Mac, a GTK or WinUI head is built and started in the Parallels guest
-// chosen by the stateui tool (`application/run`), its output followed in
-// StateUI Run; the debugger does not reach a guest, so a Debug launch runs the
+// A head of a host this machine works in a guest - GTK and WinUI on a Mac, as
+// the stateui tool says (`server/info`) - is built and started in the guest
+// chosen by the tool (`application/run`), its output followed in StateUI Run.
+// Where the tool says no debugger reaches the guest, a Debug launch runs the
 // debug build without one, said, and neither has a session.
 //
 // A Web head is built, laid out and served by the stateui tool
 // (`application/run`), which opens the page in the browser chosen. A Debug
-// launch in one of Chromium's has the page served alone, and VS Code's own
+// launch in a browser a debugger follows, as the tool says - one of
+// Chromium's - has the page served alone, and VS Code's own
 // JavaScript debugger starts that browser's program on the address the
 // `started` event says: the console in the Debug Console, a breakpoint in the
 // relay; the debug session's end stops the run. Any other browser the tool
@@ -49,10 +51,11 @@
 import { execFile } from "child_process";
 import * as vscode from "vscode";
 import { Application, pathOf } from "./applications";
-import { Browser, isChromium } from "./browsers";
+import { Browser } from "./browsers";
+import { Guest } from "./guests";
 import { lldbDapFinding } from "./toolchain";
-import { Host, inGuest } from "./hosts";
-import { LaunchedApplication } from "./Tooling/protocol";
+import { Host } from "./hosts";
+import { LaunchedApplication, Place } from "./Tooling/protocol";
 
 /** Which build a launch runs. */
 export type Configuration = "debug" | "release";
@@ -61,6 +64,9 @@ export type Configuration = "debug" | "release";
 export interface Choices {
     /** The host chosen - nothing on a machine that runs none. */
     host(): Host | undefined;
+
+    /** Where `host`'s heads run from this machine, as the stateui tool says - nothing where it builds none. */
+    place(host: Host): Place | undefined;
 
     /**
      * The application to run on `host` - the one named, else the one chosen,
@@ -88,10 +94,10 @@ export interface Choices {
     uiKitDevice(): Promise<string | undefined>;
 
     /**
-     * The guest of this Mac a launch of `host` - GTK or WinUI - is built and run in: the one chosen while it is listed,
-     * else asked for - or nothing, where none is picked.
+     * The guest a launch of `host` is built and run in, where this machine works it in one: the one chosen while it
+     * is listed, else asked for - or nothing, where none is picked.
      */
-    guest(host: Host): Promise<string | undefined>;
+    guest(host: Host): Promise<Guest | undefined>;
 
     /**
      * Has the stateui tool build `application` for `host` in `configuration` and start it on `device` - a debugger
@@ -110,7 +116,7 @@ export interface Choices {
 }
 
 /** What a machine that runs no host is told, wherever a host is asked for. */
-export const noHost = "no StateUI host runs on this machine yet - AppKit, UIKit and Android are built and run on macOS, WinUI on Windows, GTK on Linux, both in a Mac's guests too, Web on macOS and Linux.";
+export const noHost = "the stateui tool builds no StateUI host on this machine - `stateui version` names the hosts it builds and where.";
 
 
 /** The two configurations every workspace offers. */
@@ -154,11 +160,11 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
 
-        // A page needs no lldb-dap: its debugger is the browser's; a head in a guest runs without one.
+        // A page needs no lldb-dap: its debugger is the browser's; a guest's is the tool's to give.
         if (host === "web") {
             return this.web(root, application, configuration, name);
         }
-        if (inGuest(host)) {
+        if (this.choices.place(host) === "guest") {
             return this.inGuest(root, application, host, configuration);
         }
 
@@ -295,8 +301,8 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
     }
 
     /**
-     * A GTK or WinUI head built and started by the stateui tool in the guest of this Mac chosen, which follows its
-     * output; the debugger does not reach a guest, so a Debug build runs without one, said - neither has a session.
+     * A head built and started by the stateui tool in the guest chosen, which follows its output; where the tool says
+     * no debugger reaches the guest, a Debug build runs without one, said - neither has a session.
      */
     private async inGuest(
         root: vscode.WorkspaceFolder,
@@ -308,18 +314,18 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         if (!guest) {
             return undefined;
         }
-        if (configuration === "debug") {
+        if (configuration === "debug" && !guest.debugger) {
             void vscode.window.showInformationMessage(
-                `StateUI: the debugger does not reach a guest - ${application.name}'s debug build runs in ${guest} without one.`);
+                `StateUI: no debugger reaches ${guest.name} - ${application.name}'s debug build runs there without one.`);
         }
-        await this.choices.runHead(root, application, host, configuration, guest, false);
+        await this.choices.runHead(root, application, host, configuration, guest.name, false);
         return undefined;
     }
 
     /**
      * A Web head, built and served by the stateui tool, which opens the page in the browser chosen; a Debug launch in
-     * one of Chromium's has the page served alone and VS Code's JavaScript debugger starting that browser on it, the
-     * session's end stopping the run.
+     * a browser a debugger follows - one of Chromium's, as the tool says - has the page served alone and VS Code's
+     * JavaScript debugger starting that browser on it, the session's end stopping the run.
      */
     private async web(
         root: vscode.WorkspaceFolder,
@@ -332,7 +338,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
 
-        const debugged = configuration === "debug" && isChromium(browser) && browser.program !== undefined;
+        const debugged = configuration === "debug" && browser.debugger;
         const running = await this.choices.runHead(root, application, "web", configuration, debugged ? "none" : browser.id, false);
         if (!running || !debugged) {
             return undefined;

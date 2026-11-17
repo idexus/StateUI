@@ -1,9 +1,26 @@
 # Destinations
 
 A destination is where a head runs. An AppKit, WinUI or GTK head runs on the
-machine that built it - from a Mac a GTK or WinUI head also in a virtual
-machine of its system ([Guests](guests.md)); a UIKit head runs on an iPhone
-or iPad simulator, or on a real iPhone or iPad paired with the Mac.
+machine that built it - from a Mac a GTK or WinUI head in a virtual machine
+of its system ([Guests](guests.md)); a UIKit head runs on an iPhone or iPad
+simulator, or on a real iPhone or iPad paired with the Mac.
+
+## Where a host's heads run
+
+The tool says which hosts a machine builds, and where each one's heads run
+(`HostPlaces`), in one list every client reads - `server/info`'s `hosts`, which
+`stateui version` prints - so an editor, a generated project and the terminal
+are told the same and none keeps a table of its own: on a Mac AppKit on the
+machine itself, UIKit and Android on a device, WinUI and GTK in a guest, the
+Web in a browser; on Linux GTK on the machine and the Web in a browser; on
+Windows WinUI on the machine. `devices/list` answers by that place, and whether
+a host's work goes to a guest is read from it.
+
+Each destination says what a client needs to offer it: whether a debugger
+reaches an application run there (`debugger`) - not in a guest, nor in a
+browser not of Chromium's, whose pages no debugger follows - and the
+architectures it runs emulated beside its own (`emulated`), which a head can
+be built for too: x86_64 on an ARM64 Windows, a machine or a guest.
 
 ## Listing them
 
@@ -16,8 +33,8 @@ newer, the newest runtime first and each runtime's in its own order, each
 saying whether it is booted. A destination is known by `id` - a device's
 `devicectl` identifier, a simulator's UDID - and keeps the hardware's UDID
 apart, the one a development profile provisions. A host whose heads run on
-the machine itself has no destinations, and asking for them is refused - but
-on a Mac, where GTK's and WinUI's are its guests.
+the machine itself has one destination, the machine (`machine`), with its
+architecture; a host the machine builds no heads of is refused.
 
 ## Android
 
@@ -42,7 +59,9 @@ bundle id; on Linux every desktop entry taking `x-scheme-handler/https` and
 `text/html` and shown on the desktop running - `NoDisplay`, `Hidden`,
 `OnlyShowIn` and `NotShowIn` read as the desktop does - by its file's name.
 The system's own is marked, and each names its program (`programUri`): the
-bundle's executable, the entry's `Exec` past `env` and its variables. A run
+bundle's executable, the entry's `Exec` past `env` and its variables. A
+browser of Chromium's - Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc,
+told by its id - with its program found is one a debugger follows. A run
 opens the page in the one it names, the system's own where it names none, and
 no browser for `none` - the page left to a debugger, which starts a browser's
 program on it.

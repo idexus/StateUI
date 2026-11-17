@@ -53,7 +53,11 @@ final class ProtocolExamplesTests: XCTestCase {
             capabilities: ServerCapabilities(
                 methods: ToolingService().methods.names, notifications: ToolingService().methods.notifications),
             limits: .current)
-        let info = ServerInfo(server: tool, apiVersions: Release.apiVersions, machine: Machine(system: "macos", architecture: "arm64"))
+        let info = ServerInfo(
+            server: tool, apiVersions: Release.apiVersions, machine: Machine(system: "macos", architecture: "arm64"),
+            hosts: [HostPlace(host: .appkit, place: .machine), HostPlace(host: .uikit, place: .device),
+                    HostPlace(host: .android, place: .device), HostPlace(host: .winui, place: .guest),
+                    HostPlace(host: .gtk, place: .guest), HostPlace(host: .web, place: .browser)])
         let demo = "file:///Users/example/Projects/Demo"
         let operation = "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69"
         var finished = OperationSnapshot(

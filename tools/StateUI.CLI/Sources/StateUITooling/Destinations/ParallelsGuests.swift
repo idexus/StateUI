@@ -123,6 +123,7 @@ public struct ParallelsGuests: Sendable {
     public static func destination(of guest: Guest) -> Destination {
         Destination(
             id: guest.name, udid: guest.id, name: guest.name, kind: .guest, version: guest.os,
-            booted: guest.state == "running", connection: guest.state, architecture: guest.architecture)
+            booted: guest.state == "running", connection: guest.state, architecture: guest.architecture,
+            emulated: guest.system == .windows && guest.architecture == .arm64 ? [.x86_64] : [], debugger: false)
     }
 }

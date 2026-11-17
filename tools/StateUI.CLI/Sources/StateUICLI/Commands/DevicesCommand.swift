@@ -25,8 +25,12 @@ struct DevicesCommand: AsyncParsableCommand {
     static func words(_ list: DestinationList) -> String {
         if list.destinations.isEmpty { return "No device or simulator for \(list.host.rawValue) here." }
         return list.destinations.map { each in
-            let state = each.kind == .browser ? (each.booted ? "the system's own" : "")
-                : each.kind == .device || each.kind == .guest ? each.connection ?? "" : each.booted ? "booted" : "not running"
+            let state = switch each.kind {
+            case .machine: ""
+            case .browser: each.booted ? "the system's own" : ""
+            case .device, .guest: each.connection ?? ""
+            case .simulator, .emulator: each.booted ? "booted" : "not running"
+            }
             let facts = [each.kind.rawValue, each.version, each.architecture?.rawValue ?? "", state].filter { !$0.isEmpty }.joined(separator: ", ")
             return "\(each.name) (\(facts)) \(each.id)"
         }.joined(separator: "\n")

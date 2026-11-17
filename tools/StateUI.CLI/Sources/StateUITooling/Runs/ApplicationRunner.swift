@@ -66,7 +66,7 @@ public struct ApplicationRunner: Sendable {
                 device: destination, bundle: bundle, identifier: identifier,
                 environment: HandedEnvironment(of: ProcessInfo.processInfo.environment))
                 .run(built, held: request.debugger, reporter: reporter)
-        case .emulator, .browser, .guest:
+        case .machine, .emulator, .browser, .guest:
             throw ToolingError(.internalError, "A UIKit head runs on no \(destination.kind.rawValue).")
         }
         #else

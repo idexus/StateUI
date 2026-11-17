@@ -36,8 +36,8 @@ stateui devices --host winui
 ```
 
 Each is listed by its name, its system and its state - running, suspended or
-stopped. The doctor checks the way to one and what stands in it, and changes
-nothing:
+stopped. The doctor checks the Mac, then the way to a guest and what stands
+in it, and changes nothing:
 
 ```bash
 stateui doctor --host gtk --device Ubuntu

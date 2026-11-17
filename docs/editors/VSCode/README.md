@@ -96,9 +96,10 @@ The status bar shows the host - **AppKit**, **UIKit**, **Android**, **WinUI**,
 **GTK** or **Web**. Click it, or run **StateUI: Select Host**. It offers the
 [application](#the-application)'s heads (`Platforms/<Host>`) that this machine
 runs, and those alone: an application with an Android head alone runs as
-Android. AppKit, UIKit and Android run on macOS, WinUI on Windows, GTK on
-Linux - both on a Mac too, in a [guest](#the-guest) - the Web on macOS and
-Linux. Where none is offered - no head of the
+Android. Which hosts this machine runs, and where, the `stateui` tool says
+(`stateui version` prints them): AppKit, UIKit and Android on macOS, WinUI on
+Windows, GTK on Linux - both on a Mac too, in a [guest](#the-guest) - the Web
+on macOS and Linux. Where none is offered - no head of the
 application runs here, or no application is here - the status bar says **no
 host**, a launch says why it runs nothing, and the editor and **StateUI: Run
 Tests** work as plain Swift.
@@ -156,8 +157,9 @@ Tests** work as plain Swift.
   On a Mac, GTK and WinUI are the [guest](#the-guest)'s: the `stateui` tool
   copies the project into it, has the guest's own `stateui` build and start
   the head there, and **StateUI Run** follows what it prints; the notification
-  that follows it stops it in the guest. The debugger does not reach a guest:
-  StateUI: Debug runs the debug build without one, and says so.
+  that follows it stops it in the guest. Where the tool says no debugger
+  reaches the guest, StateUI: Debug runs the debug build without one, and says
+  so.
 
 ## The Android device
 

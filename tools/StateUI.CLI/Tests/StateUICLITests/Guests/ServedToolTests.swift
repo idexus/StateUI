@@ -24,6 +24,25 @@ final class ServedToolTests: XCTestCase {
         return folder
     }
 
+    /// A served tool that ends before answering is said with what it last wrote to its standard error - a crash's own
+    /// words, which the guest's tool otherwise takes with it.
+    func testAServedToolThatEndsIsSaidWithItsLastWords() async throws {
+        #if os(Windows)
+        let dying = ServedTool(
+            executable: .name("cmd.exe"), arguments: ["/c", "echo Fatal error: the guest broke 1>&2 & exit 1"], workspaceUri: "file:///C:/")
+        #else
+        let dying = ServedTool(
+            executable: .path("/bin/sh"), arguments: ["-c", "echo 'Fatal error: the guest broke' >&2; exit 1"], workspaceUri: "file:///")
+        #endif
+        do {
+            _ = try await dying.opening()
+            XCTFail("a tool that ended answered")
+        } catch let error as ToolingError {
+            XCTAssertEqual(error.code, .toolFailed)
+            XCTAssertTrue(error.message.contains("Fatal error: the guest broke"), error.message)
+        }
+    }
+
     /// A query is answered with its result.
     func testAQueryIsAnswered() async throws {
         let info = try await served(in: try folder()).query("server/info", .object([:])).decode(ServerInfo.self)

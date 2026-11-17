@@ -107,6 +107,13 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   and **StateUI: Package** work there - a Debug launch with no debugger, said - and **StateUI: Check Toolchain**
   checks the guest chosen too. In a checkout, `stateui repo test --suite host:gtk|winui --device <guest>` runs the
   host's own suite in the guest, and **StateUI: Run Tests** there too; a test run (`tests/run`) takes a `filter`.
+- The tool decides, and every client shows: `server/info` - and `stateui version` - names the hosts this machine
+  builds and where each one's heads run (`hosts`: the machine itself, a device, a browser or a guest); `devices/list`
+  names this machine (`machine`) for a host whose heads run on it, and each destination says whether a debugger
+  reaches it (`debugger`) and the architectures it runs emulated (`emulated`, x86_64 on an ARM64 Windows); `stateui
+  doctor --host <host> --device <guest>` checks this machine and then the guest, in one report. The VS Code extension
+  reads all of it from the tool - the hosts it offers, a browser's or a guest's debugger, WinUI's package
+  architectures - and keeps no table of its own.
 - `stateui new --platforms appkit,web,winui` makes an application with those hosts' heads alone; an application's
   hosts are its heads, so one is taken away by removing its `Platforms/<Host>`.
 - The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running; an

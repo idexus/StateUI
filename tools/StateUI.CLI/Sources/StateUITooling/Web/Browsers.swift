@@ -26,8 +26,9 @@ enum Browsers {
         return workspace.urlsForApplications(toOpen: address).compactMap { application in
             guard let id = Bundle(url: application)?.bundleIdentifier, pages.contains(id), seen.insert(id).inserted else { return nil }
             let name = FileManager.default.displayName(atPath: application.path).replacingOccurrences(of: ".app", with: "")
+            let program = Bundle(url: application)?.executableURL
             return Destination(id: id, udid: id, name: name, kind: .browser, version: "", booted: application == preferred,
-                               programUri: Bundle(url: application)?.executableURL.map(FileURI.string))
+                               debugger: Self.chromium(id) && program != nil, programUri: program.map(FileURI.string))
         }
         #else
         let home = FileManager.default.homeDirectoryForCurrentUser
@@ -47,11 +48,18 @@ enum Browsers {
                 else { continue }
                 let program = browser.program.hasPrefix("/") ? URL(fileURLWithPath: browser.program) : SearchPath().find(browser.program)
                 found.append(Destination(id: id, udid: id, name: browser.name, kind: .browser, version: "", booted: id == preferred,
-                                         programUri: program.map(FileURI.string)))
+                                         debugger: Self.chromium(id) && program != nil, programUri: program.map(FileURI.string)))
             }
         }
         return found
         #endif
+    }
+
+    /// Whether the browser `id` names is one of Chromium's - Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc - whose
+    /// pages a debugger follows over its debugging protocol.
+    static func chromium(_ id: String) -> Bool {
+        let lowered = id.lowercased()
+        return ["chrome", "chromium", "edge", "brave", "vivaldi", "opera", "thebrowser"].contains { lowered.contains($0) }
     }
 
     /// The browser a desktop entry `text` is - one taking both https and HTML, shown on `desktops` - by its name and

@@ -74,6 +74,7 @@ final class ParallelsGuestsTests: XCTestCase {
             ParallelsGuests.destination(of: guest),
             Destination(
                 id: "Windows 11", udid: "0758bcb2-db54-42e8-a620-fa15105f9c40", name: "Windows 11", kind: .guest,
-                version: "win-11", booted: false, connection: "suspended", architecture: .arm64))
+                version: "win-11", booted: false, connection: "suspended", architecture: .arm64, emulated: [.x86_64],
+                debugger: false))
     }
 }

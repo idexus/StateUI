@@ -9,7 +9,8 @@ final class ServerInfoTests: XCTestCase {
     private let info = ServerInfo(
         server: ToolIdentity(name: "stateui", version: "0.8.4"),
         apiVersions: [APIVersionRange(major: 1, minMinor: 0, maxMinor: 0)],
-        machine: Machine(system: "linux", architecture: "x86_64")
+        machine: Machine(system: "linux", architecture: "x86_64"),
+        hosts: [HostPlace(host: .gtk, place: .machine), HostPlace(host: .web, place: .browser)]
     )
 
     /// A message is written the same, byte for byte, every time: keys sorted, slashes as they are.
@@ -18,6 +19,7 @@ final class ServerInfoTests: XCTestCase {
         let written = String(decoding: try ToolingJSON.encoder().encode(envelope), as: UTF8.self)
 
         XCTAssertEqual(written, #"{"apiVersion":"1.0","result":{"apiVersions":[{"major":1,"maxMinor":0,"minMinor":0}],"#
+            + #""hosts":[{"host":"gtk","place":"machine"},{"host":"web","place":"browser"}],"#
             + #""machine":{"architecture":"x86_64","system":"linux"},"server":{"name":"stateui","version":"0.8.4"}}}"#)
         XCTAssertEqual(try ToolingJSON.decoder().decode(Envelope<ServerInfo>.self, from: Data(written.utf8)), envelope)
     }

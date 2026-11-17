@@ -104,14 +104,15 @@ public struct ServedTool: Sendable {
         }
     }
 
-    /// Starts the served tool, opens a connection, runs `body` over it, then shuts it down.
+    /// Starts the served tool, opens a connection, runs `body` over it, then shuts it down. A served tool that ends
+    /// before answering is said with the last lines it wrote to its standard error - a crash's own words.
     private func converse<Result: Sendable>(_ body: @Sendable (Conversation) async throws -> Result) async throws -> Result {
         let configuration = Configuration(executable: executable.subprocess, arguments: Arguments(arguments))
         do {
             return try await Subprocess.run(configuration, input: .inputWriter, output: .sequence, error: .sequence) { execution in
                 let conversation = Conversation(writer: execution.standardInputWriter)
                 async let reading: Void = conversation.read(execution.standardOutput)
-                async let diagnostics: Void = Self.discard(execution.standardError)
+                async let diagnostics: [String] = Self.lastLines(of: execution.standardError)
                 defer { conversation.endEvents() }
                 let result: Swift.Result<Result, any Error>
                 do {
@@ -121,7 +122,11 @@ public struct ServedTool: Sendable {
                     result = .failure(error)
                 }
                 await conversation.close()
-                _ = await (reading, diagnostics)
+                let (_, said) = await (reading, diagnostics)
+                if case .failure(let error) = result, !said.isEmpty, Self.ended(error) {
+                    let words = (error as? ToolingError)?.message ?? "The served stateui failed: \(error)."
+                    throw ToolingError((error as? ToolingError)?.code ?? .toolFailed, words + " It wrote:\n" + said.joined(separator: "\n"))
+                }
                 return try result.get()
             }.closureResult
         } catch let error as SubprocessError {
@@ -129,8 +134,22 @@ public struct ServedTool: Sendable {
         }
     }
 
-    private static func discard(_ sequence: SubprocessOutputSequence) async {
-        do { for try await _ in sequence {} } catch {}
+    /// Whether `error` says the served tool itself ended - its output closed, its input broken - rather than refused.
+    private static func ended(_ error: any Error) -> Bool {
+        guard let error = error as? ToolingError else { return !(error is CancellationError) }
+        return error.message.hasPrefix("The served stateui ended")
+    }
+
+    /// The last lines `sequence` held when it ended, at most twenty.
+    private static func lastLines(of sequence: SubprocessOutputSequence) async -> [String] {
+        var lines = OutputLines()
+        var kept: [String] = []
+        do {
+            for try await buffer in sequence {
+                kept = Array((kept + lines.take(buffer.withUnsafeBytes { Array($0) })).suffix(20))
+            }
+        } catch {}
+        return Array((kept + (lines.finish().map { [$0] } ?? [])).suffix(20))
     }
 }
 

@@ -30,11 +30,7 @@ public struct GuestWork: Sendable {
 
     /// Whether this machine works `host`'s heads and suite in a guest of its own: GTK's and WinUI's, on a Mac.
     public static func inGuest(_ host: HostFamily?) -> Bool {
-        #if os(macOS)
-        [.gtk, .winui].contains(host)
-        #else
-        false
-        #endif
+        HostPlaces.place(of: host) == .guest
     }
 
     /// Whether `request` is for a guest: a GTK or WinUI head with a device, on a Mac.
@@ -54,30 +50,48 @@ public struct GuestWork: Sendable {
     }
 
     /// Packages `request` in its guest into the Mac's output folder - its `outputUri`, else the project's
-    /// `artifacts/<Name>/<Host>` - which the guest writes through the folder it shares.
+    /// `artifacts/<Name>/<Host>`, judged as a package's folder before the guest builds: the guest lays the package on its
+    /// own disk, then copies it through the folder it shares - by path, as a guest reads the Mac - into that folder.
     func package(_ request: BuildRequest, in folder: URL, reporter: BuildReporter) async throws -> BuildResult {
         let ready = try await self.ready(request, in: folder, reporter: reporter)
-        let guest = ready.reached.guest
+        let (guest, places) = (ready.reached.guest, ready.reached.places)
         let host = request.host ?? .gtk
-        let root = try ready.project.workspaceUri.map(FileURI.url) ?? FileURI.url(ready.application.packageUri)
+        let applicationFolder = try FileURI.url(ready.application.packageUri)
+        let root = try ready.project.workspaceUri.map(FileURI.url) ?? applicationFolder
         let output = try request.outputUri.map(FileURI.url)
             ?? root.appendingPathComponent("artifacts").appendingPathComponent(ready.application.name).appendingPathComponent(host.folder)
+        let keeping = [applicationFolder, root] + (try ready.application.libraryUri.map { [try FileURI.url($0)] } ?? [])
+        try PackageOutput.check(output, keeping: keeping)
         try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
         guard let there = guest.path(of: output) else {
             throw ToolingError(.invalidConfiguration, "\(guest.name) reaches no \(output.path): share it with the guest.")
         }
+        let made = Self.packagePlace(of: ready.application.name, host: host, in: places)
         var asked = request
-        (asked.projectUri, asked.device, asked.outputUri) = (ready.applicationUri, nil, Self.uri(of: there, in: guest))
+        (asked.projectUri, asked.device, asked.outputUri) = (ready.applicationUri, nil, Self.uri(of: made, in: guest))
         var laid = try await ready.reached.served.operation("application/package", try JSONValue(encoding: asked), reporter: reporter)
             .decode(BuildResult.self)
+        try PackageOutput.check(output, keeping: keeping)
+        reporter.progress("copying the package to \(output.path)")
+        _ = try await ready.reached.served.operation(
+            "folder/mirror", try JSONValue(encoding: FolderMirrorRequest(sourcePath: made, targetPath: there, files: nil)),
+            reporter: reporter)
         laid.destination = ParallelsGuests.destination(of: guest)
-        // What the guest laid in the folder it shares stands on the Mac at the same place inside the output.
-        let inside = { (uri: String) in
-            FileURI.string(output.appendingPathComponent(String(uri.dropFirst(min(uri.count, laid.folderUri.count))).removingPercentEncoding?
-                .split(separator: "/").joined(separator: "/") ?? ""))
-        }
-        (laid.programUri, laid.bundleUri, laid.folderUri) = (inside(laid.programUri), laid.bundleUri.map(inside), FileURI.string(output))
+        (laid.programUri, laid.bundleUri, laid.folderUri) = (
+            Self.moved(laid.programUri, from: laid.folderUri, to: output), laid.bundleUri.map { Self.moved($0, from: laid.folderUri, to: output) },
+            FileURI.string(output))
         return laid
+    }
+
+    /// Where a guest lays a package of `application` for `host` on its own disk: `stateui-guest/artifacts/<Name>/<Host>`.
+    static func packagePlace(of application: String, host: HostFamily, in places: GuestPlaces) -> String {
+        places.join(places.root, "artifacts", application, host.folder)
+    }
+
+    /// `uri`, a file inside the guest's folder `folder`, as the same file inside the Mac's `output`.
+    static func moved(_ uri: String, from folder: String, to output: URL) -> String {
+        let inside = String(uri.dropFirst(min(uri.count, folder.count))).removingPercentEncoding ?? ""
+        return FileURI.string(inside.split(separator: "/").reduce(output) { $0.appendingPathComponent(String($1)) })
     }
 
     /// Runs `request` in its guest and follows it until it ends; cancelled, it stops there. What a run cannot start is

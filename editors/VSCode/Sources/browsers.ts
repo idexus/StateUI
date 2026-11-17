@@ -19,6 +19,9 @@ export interface Browser {
 
     /** Whether the system opens a web address in it. */
     readonly isDefault: boolean;
+
+    /** Whether a debugger follows its pages - one of Chromium's with its program found - as the tool says. */
+    readonly debugger: boolean;
 }
 
 /** The browsers as the tool lists them, or nothing, said, where it could not. */
@@ -28,17 +31,9 @@ export type BrowserLister = () => Promise<Browser[] | undefined>;
 /** A destination the tool listed, as a browser stands in the editor. */
 export function browserOf(destination: Destination): Browser {
     return {
-        id: destination.id, name: destination.name, isDefault: destination.booted,
+        id: destination.id, name: destination.name, isDefault: destination.booted, debugger: destination.debugger,
         program: destination.programUri && vscode.Uri.parse(destination.programUri).fsPath,
     };
-}
-
-/**
- * Whether `browser` is one of Chromium's - Chrome, Edge, Brave, Vivaldi, Opera, Arc, Chromium itself - whose page
- * VS Code's own JavaScript debugger starts and follows.
- */
-export function isChromium(browser: Pick<Browser, "id">): boolean {
-    return /chrome|chromium|edge|brave|vivaldi|opera|thebrowser/i.test(browser.id);
 }
 
 /** The browser among `listed` the one chosen - its name, or its id - names; nothing where it is installed no more. */
@@ -70,7 +65,7 @@ export async function askForBrowser(store: DeviceStore, list: BrowserLister, lis
         ordered.map((browser) => ({
             label: `$(globe) ${browser.name}`,
             description: [browser.isDefault ? "the system's own" : "", browser.id === current ? "current" : ""].filter(Boolean).join(" · "),
-            detail: isChromium(browser) ? "StateUI: Debug follows the page in VS Code's debugger" : undefined,
+            detail: browser.debugger ? "StateUI: Debug follows the page in VS Code's debugger" : undefined,
             browser,
         })),
         { placeHolder: "Which browser do StateUI: Debug and StateUI: Release open the application in?", ignoreFocusOut: true });

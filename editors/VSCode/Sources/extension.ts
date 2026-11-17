@@ -17,8 +17,8 @@ import { chosenApplication, chosenHost, DeviceStore, offeredHosts } from "./choi
 import { AndroidLister, androidDeviceOf, askForDevice, chooseListedDevice, deviceToRunOn } from "./devices";
 import { askForBrowser, Browser, BrowserLister, browserOf, browserToRunOn, chooseListedBrowser } from "./browsers";
 import { applyEditorMode, cleanIndex, IndexAcquirer, IndexConflictError, IndexDescriber } from "./editorMode";
-import { askForGuest, GuestLister, guestOf, guestToRunIn } from "./guests";
-import { availableHosts, describe, Host, HostDescription, inGuest } from "./hosts";
+import { askForGuest, Guest, GuestLister, guestOf, guestToRunIn } from "./guests";
+import { availableHosts, describe, Host, HostDescription, placeOf } from "./hosts";
 import {
     askForUIKitDevice, chooseListedUIKitDevice, uiKitDeviceOf, UIKitLister, uiKitDeviceToRunOn, uiKitSimulatorToTestOn,
 } from "./uiKitDevices";
@@ -28,10 +28,10 @@ import { editorCommandLine, hasExtensionSources } from "./reinstall";
 import { conformanceRequest, failedPhases, Rebuild } from "./conformance";
 import { debuggerFinding, Finding, lldbDapFinding, report } from "./toolchain";
 import { pathToFileUri } from "./Tooling/client";
-import { LaunchedApplication, NameKind, Settings } from "./Tooling/protocol";
+import { Architecture as ToolArchitecture, HostPlace, LaunchedApplication, NameKind, Settings } from "./Tooling/protocol";
 import { runOperation, sayProblem, toolingClients, withTool } from "./Tooling/presentation";
 import { ToolRequestError } from "./Tooling/client";
-import { Architecture, packageDestination, toolArchitecture, winUIArchitectures } from "./packaging";
+import { Architecture, packageDestination, toolArchitecture, windowsArchitecture } from "./packaging";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
@@ -111,9 +111,25 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 return { applications: [] };
             }
         }));
+        await readPlaces(folders[0]);
         await readChoices();
     };
     const applications = (): Application[] => found.flatMap((each) => each.applications);
+
+    // The hosts this machine builds and where their heads run, as the tool says them (`server/info`) - read once.
+    let places: HostPlace[] = [];
+    const readPlaces = async (folder: string | undefined): Promise<void> => {
+        if (places.length > 0) {
+            return;
+        }
+        const info = await withTool(tool, folder ?? os.homedir(), "this machine's hosts were not read",
+            (client) => client.request("server/info", {}));
+        places = info?.hosts ?? [];
+    };
+    /** Where `forHost`'s heads run from this machine; nothing where it builds none. */
+    const place = (forHost: Host) => placeOf(forHost, places);
+    /** Whether this machine works `forHost`'s heads in a guest of its own. */
+    const inGuest = (forHost: Host): boolean => place(forHost) === "guest";
 
     // What was chosen, as the tool keeps it: each workspace's application to start, by its folder, and the chosen
     // application's host and devices - read with the applications, and again when a settings file changes.
@@ -150,7 +166,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     const chosen = (): Application | undefined => chosenApplication(applications(), startups, state.get<string>(applicationKey));
 
     /** The hosts the window can work as: this machine's, the chosen application's heads alone (`offeredHosts`). */
-    const offered = (): HostDescription[] => offeredHosts(availableHosts(), chosen());
+    const offered = (): HostDescription[] => offeredHosts(availableHosts(places), chosen());
 
     /** The host the window works as, one it offers (`chosenHost`); none where it offers none. */
     const host = (): Host | undefined => chosenHost(offered(), settings?.host, state.get<Host>(hostKey));
@@ -158,7 +174,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     /** Why the window works as no host: the chosen application runs on none here, or no application is here. */
     const whyNoHost = (): string => {
         const application = chosen();
-        return availableHosts().length === 0 ? noHost
+        return availableHosts(places).length === 0 ? noHost
             : application ? `${application.name} has no head this machine runs.` : "no application is here.";
     };
 
@@ -288,7 +304,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             deviceItem.text = `$(device-mobile) ${device ?? "Select Android Device"}`;
             deviceItem.tooltip = "The Android device StateUI: Debug, StateUI: Release and StateUI: Run Tests run on. Click to change.";
         }
-        ["android", "uikit", "web"].includes(described.id) || inGuest(described.id) ? deviceItem.show() : deviceItem.hide();
+        // A host whose heads run elsewhere than on this machine itself shows where: a device, a browser, a guest.
+        place(described.id) !== undefined && place(described.id) !== "machine" ? deviceItem.show() : deviceItem.hide();
     };
 
     /** The editor made to work as `forHost` - false where another window indexes a package as another host, said. */
@@ -437,16 +454,26 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return listed?.destinations.filter((each) => each.kind === "guest").map(guestOf);
     };
 
-    /** The guest a GTK or WinUI launch on a Mac is built and run in - asked for where none chosen is listed. */
-    const guest = async (forHost: Host): Promise<string | undefined> => {
-        const name = await guestToRunIn(devices, forHost, listGuests);
+    /** The guest a launch of a host worked in one is built and run in - asked for where none chosen is listed. */
+    const guest = async (forHost: Host): Promise<Guest | undefined> => {
+        const found = await guestToRunIn(devices, forHost, listGuests);
         refresh();
-        return name;
+        return found;
+    };
+
+    /** The architectures this machine builds `forHost`'s heads for, its own first, as the tool lists the machine. */
+    const machineArchitectures = async (forHost: Host): Promise<ToolArchitecture[]> => {
+        const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? os.homedir();
+        const listed = await withTool(tool, folder, "this machine's architectures were not read",
+            (client) => client.request("devices/list", { host: forHost }));
+        const machine = listed?.destinations.find((each) => each.kind === "machine");
+        return machine ? [...(machine.architecture ? [machine.architecture] : []), ...machine.emulated] : [];
     };
 
     // The suites in the Testing view, found and run by the tool as the chosen host.
     const testSuites = new TestSuites({
-        tool, host, device: (forHost) => forHost === "uikit" ? uiKitSimulator() : inGuest(forHost) ? guest(forHost) : androidDevice(),
+        tool, host, device: async (forHost) => forHost === "uikit" ? uiKitSimulator()
+            : inGuest(forHost) ? (await guest(forHost))?.name : androidDevice(),
     });
     context.subscriptions.push(testSuites);
 
@@ -724,28 +751,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         // The findings, as the command's answer too - for the suite.
         vscode.commands.registerCommand("stateui.checkToolchain", async (): Promise<Finding[] | undefined> => {
             const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? os.homedir();
-            // A host built in a guest: the guest chosen checked too, for the chosen application.
+            // A host built in a guest: the guest chosen checked after this machine, for the chosen application.
             const forHost = host();
             const guested = forHost && inGuest(forHost) ? devices.device(forHost) : undefined;
             const application = chosen();
             const checked = await withTool(tool, folder, "the toolchain was not checked", (client) => vscode.window.withProgress(
                 { location: vscode.ProgressLocation.Notification, title: "StateUI: checking the toolchain" },
-                async () => {
-                    const here = await client.request("toolchain/check", {});
-                    const there = forHost && guested ? await client.request("toolchain/check", {
-                        host: forHost, device: guested, projectUri: application && pathToFileUri(application.directory),
-                    }) : undefined;
-                    return [...here.findings, ...(there?.findings ?? [])];
-                }));
+                () => client.request("toolchain/check", forHost && guested
+                    ? { host: forHost, device: guested, projectUri: application && pathToFileUri(application.directory) } : {})));
             if (!checked) {
                 return undefined;
             }
-            const findings = checked;
+            const findings = checked.findings;
             const types = vscode.extensions.all.flatMap((each) =>
                 ((each.packageJSON?.contributes?.debuggers ?? []) as { type?: string }[]).map((debug) => debug.type ?? ""));
             const starts = await lldbDapFinding(vscode.workspace.getConfiguration("lldb-dap").get<string>("executable-path"));
             const all = [...findings, debuggerFinding(types), ...(starts ? [starts] : [])];
-            const served = availableHosts().map((each) => each.label).join(", ");
+            const served = availableHosts(places).map((each) => each.label).join(", ");
             toolchain.clear();
             toolchain.appendLine(`What ${served || "StateUI"} needs on this machine (${process.platform}, ${process.arch}):`);
             report(all).forEach((line) => toolchain.appendLine(line));
@@ -775,18 +797,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             if (!application) {
                 return undefined;
             }
-            const offered = forHost === "winui" ? winUIArchitectures() : [];
+            // A guest's head is built there: the guest first, its architectures with it.
+            const guested = inGuest(forHost) ? await guest(forHost) : undefined;
+            if (inGuest(forHost) && !guested) {
+                return undefined;
+            }
+            const offered = forHost === "winui"
+                ? (guested?.architectures ?? await machineArchitectures(forHost)).flatMap((each) => windowsArchitecture(each) ?? [])
+                : [];
             const architecture = asked?.architecture ?? (offered.length > 1
                 ? (await vscode.window.showQuickPick(
-                    offered.map((each, index) => ({ label: each, description: index === 0 ? (inGuest(forHost) ? "the guest's own" : "this machine's own") : "run by Windows' emulation" })),
+                    offered.map((each, index) => ({ label: each, description: index === 0 ? (guested ? "the guest's own" : "this machine's own") : "run by Windows' emulation" })),
                     { title: `StateUI: Package ${application.name} for which architecture?`, ignoreFocusOut: true }))?.label as Architecture | undefined
                 : offered[0]);
             if (forHost === "winui" && !architecture) {
                 return undefined;
             }
-            const device = forHost === "android" ? await androidDevice()
-                : forHost === "uikit" ? await uiKitDevice() : inGuest(forHost) ? await guest(forHost) : undefined;
-            if ((forHost === "android" || forHost === "uikit" || inGuest(forHost)) && !device) {
+            const device = forHost === "android" ? await androidDevice() : forHost === "uikit" ? await uiKitDevice() : guested?.name;
+            if ((forHost === "android" || forHost === "uikit") && !device) {
                 return undefined;
             }
 
@@ -910,6 +938,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             });
             return built && pathOf(built.programUri);
         },
+        place,
         device: androidDevice,
         uiKitDevice,
         guest,

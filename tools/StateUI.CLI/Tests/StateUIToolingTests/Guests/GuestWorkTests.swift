@@ -32,6 +32,22 @@ final class GuestWorkTests: XCTestCase {
         XCTAssertEqual(GuestWork.relative(checkout.appendingPathComponent("apps/Gallery"), from: checkout), ["StateUI", "apps", "Gallery"])
     }
 
+    /// A guest lays a package on its own disk, under `stateui-guest`, and what it laid stands in the Mac's output at
+    /// the same place: a path of the Mac named as a URI is no path a Windows guest reads.
+    func testAGuestsPackageIsLaidOnItsOwnDiskThenOnTheMacs() {
+        let windows = GuestPlaces(home: #"C:\Users\me"#, windows: true)
+        let linux = GuestPlaces(home: "/home/me", windows: false)
+        XCTAssertEqual(GuestWork.packagePlace(of: "Demo", host: .winui, in: windows), #"C:\Users\me\stateui-guest\artifacts\Demo\WinUI"#)
+        XCTAssertEqual(GuestWork.packagePlace(of: "Demo", host: .gtk, in: linux), "/home/me/stateui-guest/artifacts/Demo/GTK")
+        let output = URL(fileURLWithPath: "/Users/me/Shop/artifacts/Demo/WinUI")
+        let made = GuestWork.uri(of: GuestWork.packagePlace(of: "Demo", host: .winui, in: windows), in: guest("win-11"))
+        XCTAssertEqual(made, "file:///C:/Users/me/stateui-guest/artifacts/Demo/WinUI")
+        XCTAssertEqual(GuestWork.moved(made + "/DemoWinUI.exe", from: made, to: output), FileURI.string(output.appendingPathComponent("DemoWinUI.exe")))
+        XCTAssertEqual(
+            GuestWork.moved("file:///home/me/stateui-guest/artifacts/My%20Demo/GTK/lib/My%20Demo", from: "file:///home/me/stateui-guest/artifacts/My%20Demo/GTK", to: output),
+            FileURI.string(output.appendingPathComponent("lib").appendingPathComponent("My Demo")))
+    }
+
     /// A run in a guest held for a debugger is refused on the Mac, before the guest is started or anything copied.
     func testAGuestRunHeldForADebuggerIsRefusedFirst() async throws {
         let nowhere = FileManager.default.temporaryDirectory.appendingPathComponent("run-\(UUID().uuidString)")
