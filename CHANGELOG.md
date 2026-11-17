@@ -123,8 +123,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - `stateui service --listen <address:port>` serves the tool's protocol over TCP - the one an editor speaks over
   `serve --stdio` - to many clients at once, on any address it is given; its sockets are the tool's own on macOS,
   Linux and Windows. It admits a paired client alone: it shows a pairing code, `stateui remote add <name>
-  <address:port> --code <code>` pairs another machine (`stateui remote list`, `remove`), and every connection proves
-  its token by the HMAC-SHA256 of a challenge, the token never sent.
+  <address:port> --code <code>` pairs a project with another machine (`stateui remote list`, `remove`, `--project`),
+  kept in the project's `.stateui/remotes.json` out of git, and every connection proves its token by the HMAC-SHA256
+  of a challenge, the token never sent.
+- A machine paired with a project is a destination of the hosts whose heads run there as its own programs:
+  `server/info` tells them at the place `remote` and says the folder another machine's projects are copied into
+  (`workFolder`), and `devices/list` lists the machine (`remote`).
 - A folder travels to another machine's tool, and back, through the connection itself - `folder/survey`,
   `files/write`, `file/read`, `files/remove`, in pieces of at most 4 MiB, a file's time kept - over a guest's
   `prlctl exec` as over the service: a guest reads the project and hands a package back through no shared folder;

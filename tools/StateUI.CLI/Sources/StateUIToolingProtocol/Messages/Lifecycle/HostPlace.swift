@@ -13,6 +13,8 @@ public struct HostPlace: Codable, Equatable, Sendable {
         case browser
         /// In a virtual machine of this one chosen: GTK's and WinUI's on a Mac.
         case guest
+        /// On a machine of the network paired with this one, whose service builds it as its own.
+        case remote
     }
 
     public var host: HostFamily

@@ -124,15 +124,22 @@ export const OperationEvent = object<OperationEvent>({
 export type HostFamily = "appkit" | "uikit" | "android" | "winui" | "gtk" | "web";
 export const HostFamily = oneOf<HostFamily>("appkit", "uikit", "android", "winui", "gtk", "web");
 
-export type Place = "machine" | "device" | "browser" | "guest";
-export const Place = oneOf<Place>("machine", "device", "browser", "guest");
+export type Place = "machine" | "device" | "browser" | "guest" | "remote";
+export const Place = oneOf<Place>("machine", "device", "browser", "guest", "remote");
 
 export interface HostPlace { host: HostFamily; place: Place }
 export const HostPlace = object<HostPlace>({ host: HostFamily, place: Place });
 
-export interface ServerInfo { server: ToolIdentity; apiVersions: APIVersionRange[]; machine: Machine; hosts: HostPlace[] }
+export interface ServerInfo {
+    server: ToolIdentity;
+    apiVersions: APIVersionRange[];
+    machine: Machine;
+    hosts: HostPlace[];
+    /** The folder another machine's projects are copied into for work on this one. */
+    workFolder: string;
+}
 export const ServerInfo = object<ServerInfo>({
-    server: ToolIdentity, apiVersions: array(APIVersionRange), machine: Machine, hosts: array(HostPlace),
+    server: ToolIdentity, apiVersions: array(APIVersionRange), machine: Machine, hosts: array(HostPlace), workFolder: string,
 });
 
 export interface Application {
@@ -202,8 +209,8 @@ export const Architecture = oneOf<Architecture>("arm64", "x86_64", "armv7", "x86
 export type BuildConfiguration = "debug" | "release";
 export const BuildConfiguration = oneOf<BuildConfiguration>("debug", "release");
 
-export type DestinationKind = "machine" | "device" | "simulator" | "emulator" | "browser" | "guest";
-export const DestinationKind = oneOf<DestinationKind>("machine", "device", "simulator", "emulator", "browser", "guest");
+export type DestinationKind = "machine" | "device" | "simulator" | "emulator" | "browser" | "guest" | "remote";
+export const DestinationKind = oneOf<DestinationKind>("machine", "device", "simulator", "emulator", "browser", "guest", "remote");
 
 export interface Destination {
     id: string;

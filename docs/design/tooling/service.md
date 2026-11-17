@@ -54,8 +54,14 @@ whenever one goes. On the other machine `stateui remote add <name>
 keeps what it is given (`RemoteMachines`): the machine's name here, where its
 service listens, the client's id and a token of 32 random bytes from the
 system's secure source. The service keeps its clients in its user's state
-folder (`service/clients.json`), the client its machines
-(`remotes.json`), each readable by its user alone.
+folder (`service/clients.json`), as it serves every project of its machine; a
+project keeps the machines it is paired with in its own `.stateui/remotes.json`
+(`RemotesFile`, a tool file of its version) - its workspace's, else its
+application's - out of git, so a machine is paired for the work it serves.
+Each is readable by its user alone, and pairing outside a project is refused
+before the service is asked. `--project` names the project of `stateui remote`
+and `stateui devices`, the working directory else; `server/info` and
+`devices/list` read the project of the connection's workspace.
 
 Every connection is proved afresh: the client asks `service/challenge` for a
 nonce, and `initialize` carries a credential - its id and the HMAC-SHA256 of

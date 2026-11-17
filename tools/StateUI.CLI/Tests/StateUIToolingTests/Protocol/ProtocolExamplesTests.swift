@@ -57,7 +57,8 @@ final class ProtocolExamplesTests: XCTestCase {
             server: tool, apiVersions: Release.apiVersions, machine: Machine(system: "macos", architecture: "arm64"),
             hosts: [HostPlace(host: .appkit, place: .machine), HostPlace(host: .uikit, place: .device),
                     HostPlace(host: .android, place: .device), HostPlace(host: .winui, place: .guest),
-                    HostPlace(host: .gtk, place: .guest), HostPlace(host: .web, place: .browser)])
+                    HostPlace(host: .gtk, place: .guest), HostPlace(host: .web, place: .browser)],
+            workFolder: "/Users/example/stateui-guest")
         let demo = "file:///Users/example/Projects/Demo"
         let operation = "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69"
         var finished = OperationSnapshot(
@@ -394,7 +395,7 @@ final class ProtocolExamplesTests: XCTestCase {
     }
 
     /// The examples' requests, sent to the service in their order, are answered as their responses say - the
-    /// service's instance, identity and machine aside.
+    /// service's instance, identity, machine, hosts and work folder aside.
     func testTheServiceAnswersAsTheExamplesSay() async throws {
         let written = Written()
         let connection = Connection(
@@ -417,10 +418,11 @@ final class ProtocolExamplesTests: XCTestCase {
         XCTAssertEqual(answers, expected.map(Self.withoutTheServer))
     }
 
-    /// `value` without what differs between services: the instance, the identity and the machine.
+    /// `value` without what differs between services: the instance, the identity, the machine and what is its own -
+    /// the hosts it builds, its work folder.
     private static func withoutTheServer(_ value: JSONValue) -> JSONValue {
         guard case .object(var object) = value else { return value }
-        for key in ["serverInstanceId", "server", "machine"] where object[key] != nil { object[key] = .null }
+        for key in ["serverInstanceId", "server", "machine", "hosts", "workFolder"] where object[key] != nil { object[key] = .null }
         return .object(object.mapValues(withoutTheServer))
     }
 }

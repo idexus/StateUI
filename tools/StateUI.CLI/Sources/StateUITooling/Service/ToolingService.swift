@@ -18,9 +18,13 @@ public struct ToolingService: Sendable {
     /// The tool's name and release.
     public static let identity = ToolIdentity(name: "stateui", version: Release.version)
 
-    /// The tool's name, release, API versions and machine - `server/info`.
-    public func serverInfo() -> ServerInfo {
-        ServerInfo(server: Self.identity, apiVersions: Release.apiVersions, machine: .current, hosts: HostPlaces.here)
+    /// The tool's name, release, API versions and machine, and the hosts it builds - beside its own, those of the
+    /// machines paired with the project holding `folder` - `server/info`.
+    public func serverInfo(in folder: URL? = nil) -> ServerInfo {
+        let remotes = folder.map { (try? RemoteMachines(project: $0).list()) ?? [] } ?? []
+        return ServerInfo(
+            server: Self.identity, apiVersions: Release.apiVersions, machine: .current, hosts: HostPlaces.available(remotes: remotes),
+            workFolder: HostPlaces.workFolder)
     }
 
     /// The project holding `folder` - `project/describe`.
@@ -189,13 +193,14 @@ public struct ToolingService: Sendable {
     }
 
     /// Pairs this Mac with the guest `device` names as with any machine of the network: its stateui's service laid to
-    /// start with its user's session, listening on `port`, the guest kept as a paired machine by its name.
+    /// start with its user's session, listening on `port`, the guest kept by its name with the project holding `folder`.
     public func pairGuest(_ device: String, port: UInt16, in folder: URL, reporter: BuildReporter) async throws -> RemoteMachine {
         let project = try? await ProjectReader().describe(containing: folder)
         guard let library = project?.applications.compactMap(\.libraryUri).first.flatMap({ try? FileURI.url($0) })
             ?? Checkout.holding(folder)?.root
         else { throw ToolingError(.projectNotFound, "No StateUI checkout stands in or above \(folder.path).") }
-        return try await GuestPairing(guests: ParallelsGuests()).pair(device, port: port, checkout: library, reporter: reporter)
+        return try await GuestPairing(guests: ParallelsGuests()).pair(
+            device, port: port, checkout: library, remotes: RemoteMachines(project: folder), reporter: reporter)
     }
 
     /// The suites the folder holding `folder` - a checkout, a workspace, an application - holds for `host`, in the
@@ -249,31 +254,40 @@ public struct ToolingService: Sendable {
 
     /// Where `host`'s heads can run from this machine - `devices/list`, as its place says (`HostPlaces`): this machine
     /// itself, UIKit's iPhones, iPads and simulators, Android's devices and emulators, the Web's browsers, and on a Mac
-    /// the virtual machines of GTK's and WinUI's systems.
+    /// the virtual machines of GTK's and WinUI's systems; and after them the machines paired with the project holding
+    /// `folder` whose own programs `host`'s heads run as, a guest paired listed once, as a guest.
     ///
-    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose heads this machine does not build.
-    public func listDestinations(of host: HostFamily) async throws -> DestinationList {
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose heads this machine does not build, nor a
+    ///   machine paired, or a project's paired machines the tool does not read.
+    public func listDestinations(of host: HostFamily, in folder: URL? = nil) async throws -> DestinationList {
+        let remotes = try folder.map { try RemoteMachines(project: $0).list() } ?? []
+        var destinations: [Destination]
         switch HostPlaces.place(of: host) {
         case .machine:
-            return DestinationList(host: host, destinations: [HostPlaces.machine()])
+            destinations = [HostPlaces.machine()]
         case .device where host == .uikit:
             #if os(macOS)
-            return DestinationList(host: host, destinations: await AppleDestinations().list())
+            destinations = await AppleDestinations().list()
             #else
-            return DestinationList(host: host, destinations: [])
+            destinations = []
             #endif
         case .device:
-            return DestinationList(host: host, destinations: await AndroidDestinations().list())
+            destinations = await AndroidDestinations().list()
         case .browser:
-            return DestinationList(host: host, destinations: await Browsers.list())
+            destinations = await Browsers.list()
         case .guest:
             let system = ParallelsGuests.system(for: host)
-            return DestinationList(host: host, destinations: await ParallelsGuests().list()
-                .filter { $0.system == system }.map(ParallelsGuests.destination))
-        case nil:
-            let built = HostPlaces.here.map(\.host.rawValue).joined(separator: ", ")
-            throw ToolingError(.invalidConfiguration, "This machine builds no heads of \(host.rawValue): \(built.isEmpty ? "none" : built).")
+            destinations = await ParallelsGuests().list().filter { $0.system == system }.map(ParallelsGuests.destination)
+        case .remote, nil:
+            destinations = []
         }
+        let listed = Set(destinations.map(\.name))
+        let paired = remotes.filter { $0.machineHosts.contains(host) && !listed.contains($0.name) }
+        guard HostPlaces.place(of: host) != nil || !paired.isEmpty else {
+            let built = HostPlaces.available(remotes: remotes).map(\.host.rawValue).joined(separator: ", ")
+            throw ToolingError(.invalidConfiguration, "This machine builds no heads of \(host.rawValue), nor a machine paired: \(built.isEmpty ? "none" : built).")
+        }
+        return DestinationList(host: host, destinations: destinations + paired.map(HostPlaces.remote))
     }
 
     /// Builds `request`'s application and publishes it - `application/build`.
@@ -490,9 +504,11 @@ public struct ToolingService: Sendable {
     /// The methods an editor calls, each answered by this service.
     public var methods: Methods {
         var methods = Methods()
-        methods.query("server/info") { (_: NoParameters) in serverInfo() }
+        methods.query("server/info") { (_: NoParameters, caller: RequestContext) in serverInfo(in: try? Self.folder(of: caller)) }
         methods.query("toolchain/check") { (query: ToolchainQuery) in await checkToolchain(query) }
-        methods.query("devices/list") { (query: DestinationQuery) in try await listDestinations(of: query.host) }
+        methods.query("devices/list") { (query: DestinationQuery, caller: RequestContext) in
+            try await listDestinations(of: query.host, in: try? Self.folder(of: caller))
+        }
         methods.query("index/describe") { (query: IndexQuery) in await describeIndex(of: query.host) }
         methods.query("tests/discover") { (query: TestDiscoveryQuery, caller: RequestContext) in
             try await discoverTests(for: query.host, in: try query.folderUri.map(FileURI.url) ?? Self.folder(of: caller))

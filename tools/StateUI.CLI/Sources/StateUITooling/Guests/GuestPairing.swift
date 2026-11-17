@@ -13,8 +13,9 @@ struct GuestPairing: Sendable {
 
     /// Pairs with the guest `device` names, its service listening on `port`, kept in `remotes` by the guest's name.
     func pair(
-        _ device: String, port: UInt16, checkout: URL, remotes: RemoteMachines = RemoteMachines(), reporter: BuildReporter
+        _ device: String, port: UInt16, checkout: URL, remotes: RemoteMachines, reporter: BuildReporter
     ) async throws -> RemoteMachine {
+        _ = try remotes.projectFile()
         guard let found = await guests.list().first(where: { $0.name == device || $0.id == device }) else {
             throw ToolingError(.invalidConfiguration, "No guest named \(device) stands here: `stateui devices` lists them.")
         }

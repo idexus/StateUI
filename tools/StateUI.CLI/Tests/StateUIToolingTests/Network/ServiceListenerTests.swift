@@ -23,7 +23,7 @@ final class ServiceListenerTests: XCTestCase {
         defer { serving.cancel() }
         let remotes = RemoteMachines(file: state.appendingPathComponent("remotes.json"))
         let machine = try await remotes.pair(name: "office", address: "127.0.0.1", port: listener.port, code: pairing.code)
-        XCTAssertEqual(remotes.list().map(\.name), ["office"])
+        XCTAssertEqual(try remotes.list().map(\.name), ["office"])
         XCTAssertEqual(machine.service, "Office")
         let tool = ServedTool(remote: machine, workspaceUri: "file:///")
 

@@ -15,6 +15,8 @@ public struct Destination: Codable, Equatable, Sendable {
         case browser
         /// A virtual machine of this Mac - a Parallels guest - which a GTK or WinUI head is built and run in.
         case guest
+        /// A machine of the network paired with this one, whose service builds and runs the head.
+        case remote
     }
 
     /// How a tool names it: a device's identifier as `devicectl` gives it, a simulator's UDID, an Android device's

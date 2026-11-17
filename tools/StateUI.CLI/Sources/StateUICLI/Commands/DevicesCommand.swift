@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import ArgumentParser
+import Foundation
 import StateUITooling
 import StateUIToolingProtocol
 
@@ -15,10 +16,14 @@ struct DevicesCommand: AsyncParsableCommand {
     @Option(help: "The host whose devices to list: uikit, android or web - and on a Mac gtk and winui, its virtual machines.")
     var host: HostFamily
 
+    @Option(help: "The project, or a folder in it, whose paired machines are listed too; the working directory when left out.")
+    var project: String?
+
     @OptionGroup var output: OutputOptions
 
     func run() async throws {
-        try await output.answer({ try await ToolingService().listDestinations(of: host) }, text: Self.words)
+        let folder = URL(fileURLWithPath: project ?? FileManager.default.currentDirectoryPath)
+        try await output.answer({ try await ToolingService().listDestinations(of: host, in: folder) }, text: Self.words)
     }
 
     /// A line a destination: its name, kind, system and state, then what names it.
@@ -28,7 +33,7 @@ struct DevicesCommand: AsyncParsableCommand {
             let state = switch each.kind {
             case .machine: ""
             case .browser: each.booted ? "the system's own" : ""
-            case .device, .guest: each.connection ?? ""
+            case .device, .guest, .remote: each.connection ?? ""
             case .simulator, .emulator: each.booted ? "booted" : "not running"
             }
             let facts = [each.kind.rawValue, each.version, each.architecture?.rawValue ?? "", state].filter { !$0.isEmpty }.joined(separator: ", ")

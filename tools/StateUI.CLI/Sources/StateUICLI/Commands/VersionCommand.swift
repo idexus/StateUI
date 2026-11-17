@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import ArgumentParser
+import Foundation
 import StateUITooling
 
 /// `stateui version`: the tool's release, the API versions it speaks, the machine it runs on and the hosts it builds
-/// there, each with where its heads run.
+/// there - beside its own, the working directory's project's paired machines' - each with where its heads run.
 struct VersionCommand: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "version",
@@ -15,7 +16,7 @@ struct VersionCommand: ParsableCommand {
     @OptionGroup var output: OutputOptions
 
     func run() throws {
-        let info = ToolingService().serverInfo()
+        let info = ToolingService().serverInfo(in: URL(fileURLWithPath: FileManager.default.currentDirectoryPath))
         try output.format.write(info) { info in
             let versions = info.apiVersions.map(\.newest).joined(separator: ", ")
             let hosts = info.hosts.map { "\($0.host.rawValue) (\($0.place.rawValue))" }.joined(separator: ", ")

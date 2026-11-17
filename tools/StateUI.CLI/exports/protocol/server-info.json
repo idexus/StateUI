@@ -51,7 +51,8 @@
       "server" : {
         "name" : "stateui",
         "version" : "1.0.0"
-      }
+      },
+      "workFolder" : "/Users/example/stateui-guest"
     }
   }
 }

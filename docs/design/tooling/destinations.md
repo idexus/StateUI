@@ -16,6 +16,15 @@ Web in a browser; on Linux GTK on the machine and the Web in a browser; on
 Windows WinUI on the machine. `devices/list` answers by that place, and whether
 a host's work goes to a guest is read from it.
 
+A machine paired with the project ([Pairing](service.md#pairing)) adds the
+hosts whose heads run there as its own programs - AppKit on a Mac, WinUI on
+Windows, GTK on Linux - as its service said them: a host this machine builds
+not stands in `hosts` at `remote`, and `devices/list` lists each such machine
+after the destinations of the host's own place (`remote`), a guest paired
+listed once, as a guest. Its devices, browsers and guests are reached on that
+machine itself. `server/info` says the folder another machine's projects are
+copied into there (`workFolder`).
+
 Each destination says what a client needs to offer it: whether a debugger
 reaches an application run there (`debugger`) - not in a guest, nor in a
 browser not of Chromium's, whose pages no debugger follows - and the
