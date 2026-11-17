@@ -11,19 +11,32 @@ import System
 import SystemPackage
 #endif
 
-/// Another machine's stateui, served over the standard input and output of the program that reaches it - a guest's
-/// `stateui serve --stdio` through `prlctl exec` - and asked in the protocol an editor speaks, one connection a call.
+/// Another stateui, asked in the protocol an editor speaks, one connection a call: served over the standard input and
+/// output of the program that reaches it - a guest's `stateui serve --stdio` through `prlctl exec` - or by its
+/// service, over TCP.
 /// Design: docs/design/tooling/guests.md#the-guests-own-tool
 public struct ServedTool: Sendable {
-    let executable: ProcessExecutable
-    let arguments: [String]
+    /// How the served tool is reached.
+    enum Road: Sendable {
+        /// The program that serves it over its standard streams.
+        case program(ProcessExecutable, [String])
+        /// Its service, at an address and a port.
+        case service(String, UInt16)
+    }
+
+    let road: Road
     let workspaceUri: String
 
     /// The stateui `executable` serves when run with `arguments`, its workspace `workspaceUri` as the served tool
     /// names it.
     public init(executable: ProcessExecutable, arguments: [String], workspaceUri: String) {
-        self.executable = executable
-        self.arguments = arguments
+        road = .program(executable, arguments)
+        self.workspaceUri = workspaceUri
+    }
+
+    /// The stateui whose service listens on `address` at `port`, its workspace `workspaceUri` as it names it.
+    public init(address: String, port: UInt16, workspaceUri: String) {
+        road = .service(address, port)
         self.workspaceUri = workspaceUri
     }
 
@@ -107,11 +120,13 @@ public struct ServedTool: Sendable {
     /// Starts the served tool, opens a connection, runs `body` over it, then shuts it down. A served tool that ends
     /// before answering is said with the last lines it wrote to its standard error - a crash's own words.
     private func converse<Result: Sendable>(_ body: @Sendable (Conversation) async throws -> Result) async throws -> Result {
+        guard case .program(let executable, let arguments) = road else { return try await converseByService(body) }
         let configuration = Configuration(executable: executable.subprocess, arguments: Arguments(arguments))
         do {
             return try await Subprocess.run(configuration, input: .inputWriter, output: .sequence, error: .sequence) { execution in
-                let conversation = Conversation(writer: execution.standardInputWriter)
-                async let reading: Void = conversation.read(execution.standardOutput)
+                let writer = execution.standardInputWriter
+                let conversation = Conversation(write: { _ = try await writer.write($0) }, finish: { try? await writer.finish() })
+                async let reading: Void = conversation.read(execution.standardOutput.map { $0.withUnsafeBytes { Array($0) } })
                 async let diagnostics: [String] = Self.lastLines(of: execution.standardError)
                 defer { conversation.endEvents() }
                 let result: Swift.Result<Result, any Error>
@@ -132,6 +147,27 @@ public struct ServedTool: Sendable {
         } catch let error as SubprocessError {
             throw ToolingError(.toolFailed, "The served stateui could not be reached: \(error.description)")
         }
+    }
+
+    /// Connects to the served tool's service, opens a connection, runs `body` over it, then shuts it down.
+    private func converseByService<Result: Sendable>(_ body: @Sendable (Conversation) async throws -> Result) async throws -> Result {
+        guard case .service(let address, let port) = road else { throw ToolingError(.internalError, "No service to reach.") }
+        let socket = try StreamSocket.connect(to: address, port: port)
+        let writer = SocketWriter(socket)
+        let conversation = Conversation(write: { writer.write(Data($0)) }, finish: { writer.flush() })
+        async let reading: Void = conversation.read(socket.chunks())
+        defer { conversation.endEvents() }
+        let result: Swift.Result<Result, any Error>
+        do {
+            try await conversation.open(workspaceUri: workspaceUri)
+            result = .success(try await body(conversation))
+        } catch {
+            result = .failure(error)
+        }
+        await conversation.close()
+        socket.close()
+        await reading
+        return try result.get()
     }
 
     /// Whether `error` says the served tool itself ended - its output closed, its input broken - rather than refused.
@@ -155,7 +191,8 @@ public struct ServedTool: Sendable {
 
 /// One connection to a served tool: requests matched to their answers by id, its operations' events in order.
 final class Conversation: Sendable {
-    private let writer: StandardInputWriter
+    private let writing: @Sendable ([UInt8]) async throws -> Void
+    private let finishing: @Sendable () async -> Void
     private let state = Mutex(State())
     private let stream: AsyncStream<OperationEvent>.Continuation
     /// The events of every operation, in the order the served tool wrote them.
@@ -168,8 +205,10 @@ final class Conversation: Sendable {
         var opening: InitializeResult?
     }
 
-    init(writer: StandardInputWriter) {
-        self.writer = writer
+    /// A connection that writes its frames through `write` and ends its output through `finish`.
+    init(write: @escaping @Sendable ([UInt8]) async throws -> Void, finish: @escaping @Sendable () async -> Void) {
+        writing = write
+        finishing = finish
         (events, stream) = AsyncStream.makeStream()
     }
 
@@ -218,15 +257,14 @@ final class Conversation: Sendable {
     func close() async {
         _ = try? await request("shutdown", .object([:]))
         try? await send(.object(["jsonrpc": .string("2.0"), "method": .string("exit")]))
-        try? await writer.finish()
+        await finishing()
     }
 
     /// Reads every frame the served tool writes until its output ends, then refuses what still waits.
-    func read(_ output: SubprocessOutputSequence) async {
+    func read<Chunks: AsyncSequence>(_ output: Chunks) async where Chunks.Element == [UInt8] {
         var frames = FrameReader()
         do {
-            for try await buffer in output {
-                let bytes = buffer.withUnsafeBytes { Array($0) }
+            for try await bytes in output {
                 for frame in try frames.take(bytes) { receive(frame) }
             }
         } catch {}
@@ -271,7 +309,7 @@ final class Conversation: Sendable {
 
     private func send(_ message: JSONValue) async throws {
         let body = try ToolingJSON.encoder().encode(message)
-        _ = try await writer.write(Array("Content-Length: \(body.count)\r\n\r\n".utf8) + Array(body))
+        try await writing(Array("Content-Length: \(body.count)\r\n\r\n".utf8) + Array(body))
     }
 }
 

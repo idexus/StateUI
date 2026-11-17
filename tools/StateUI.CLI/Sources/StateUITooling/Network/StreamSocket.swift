@@ -9,6 +9,7 @@ import Glibc
 import Darwin
 #endif
 import StateUIToolingProtocol
+import Synchronization
 
 /// A TCP socket of the system's own - BSD sockets on macOS and Linux, Winsock on Windows - listening or connected:
 /// the road another machine's tool is reached by, one implementation on every system. Reads and writes block; a
@@ -24,6 +25,7 @@ public final class StreamSocket: Sendable {
     #endif
 
     private let handle: Handle
+    private let alive = Mutex(true)
 
     private init(_ handle: Handle) {
         self.handle = handle
@@ -107,8 +109,10 @@ public final class StreamSocket: Sendable {
         }
     }
 
-    /// Ends both directions and gives the socket back: a read waiting on it returns.
+    /// Ends both directions and gives the socket back, once: a read waiting on it returns, and a second close does
+    /// nothing - a system's number given back twice could close another's file.
     public func close() {
+        guard alive.withLock({ was in defer { was = false }; return was }) else { return }
         #if os(Windows)
         _ = shutdown(handle, Int32(SD_BOTH))
         _ = closesocket(handle)
