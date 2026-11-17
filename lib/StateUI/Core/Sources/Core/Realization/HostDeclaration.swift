@@ -196,7 +196,7 @@
 
             func realize(_ names: Set<String>, among owners: some Collection<any Contract.Type>) {
                 for member in names {
-                    guard let owner = owners.first(where: { owner in owner.members.contains { $0.name == member } })
+                    guard let owner = owners.first(where: { HostRegister.declares(member, in: $0) })
                     else { continue }
 
                     members.insert(HostRealizedMember(element: name, owner: owner.name, member: member))
@@ -220,9 +220,7 @@
         // The shared machinery's under a tier, by the rule `realization` reads it with; an act under any contract.
         for member in shared.members.union(shared.events).union(acts).sorted() {
             let owners = acts.contains(member) ? LibraryContracts.all : LibraryContracts.tiers
-            guard let owner = owners.first(where: { owner in
-                owner.members.contains { $0.name == member }
-            }) else { continue }
+            guard let owner = owners.first(where: { HostRegister.declares(member, in: $0) }) else { continue }
 
             found.append((owner: owner.name, member: member))
         }
@@ -240,9 +238,7 @@
         // not listed: a host names each from its contract member, so none can be undeclared.
         // Design: docs/design/core/contracts.md#declarations
         for member in shared.members.union(shared.events).sorted()
-        where !LibraryContracts.all.contains(where: { owner in
-            owner.members.contains { $0.name == member }
-        }) {
+        where !LibraryContracts.all.contains(where: { HostRegister.declares(member, in: $0) }) {
             unknown.append((element: "", member: member))
         }
 
@@ -254,9 +250,7 @@
             }
 
             for member in declared.members.union(declared.events).sorted()
-            where !contract.worn.contains(where: { owner in
-                owner.members.contains { $0.name == member }
-            }) {
+            where !contract.worn.contains(where: { HostRegister.declares(member, in: $0) }) {
                 unknown.append((element: name, member: member))
             }
         }

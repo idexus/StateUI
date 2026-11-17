@@ -82,7 +82,7 @@
     /// The contract that declares `member` among what the library's element `element` wears, itself first - what a
     /// record of the register, written in words, is about.
     func declaring(_ member: String, on element: String) -> String? {
-        Self.wornBy[element]?.first { $0.members.contains { $0.name == member } }?.name
+        Self.wornBy[element]?.first { Self.declares(member, in: $0) }?.name
     }
 
     /// What the host says of `element` itself: never, with why, where its family never has it; the application's
@@ -136,7 +136,12 @@
     static func declares(_ member: String, owner: String) -> Bool {
         let contracts = LibraryContracts.tiers + LibraryContracts.elements.map { $0 as any Contract.Type }
         guard let contract = contracts.first(where: { $0.name == owner }) else { return false }
-        return contract.worn.contains { $0.members.contains { $0.name == member } }
+        return contract.worn.contains { Self.declares(member, in: $0) }
+    }
+
+    /// Whether `contract` itself declares a member named `member`.
+    static func declares(_ member: String, in contract: any Contract.Type) -> Bool {
+        memberNames[ObjectIdentifier(contract)]?.contains(member) ?? contract.members.contains { $0.name == member }
     }
 
     /// The records a declaration makes. A tier's record marks every element wearing the tier, so a member is
@@ -151,11 +156,14 @@
                 .insert(member.element.name)
         }
 
+        var wearers: [String: Set<String>] = [:]
+        for element in realization.elements {
+            for worn in Self.wornNames[element.name] ?? [] { wearers[worn, default: []].insert(element.name) }
+        }
+
         var pairs: Set<Pair> = []
         for (pair, elements) in realizedOn {
-            let wearers = Set(
-                realization.elements.map(\.name).filter { Self.wornNames[$0]?.contains(pair.owner) == true })
-            if elements.isSuperset(of: wearers) {
+            if elements.isSuperset(of: wearers[pair.owner] ?? []) {
                 pairs.insert(pair)
             } else {
                 for element in elements { pairs.insert(Pair(owner: element, member: pair.member)) }
@@ -199,6 +207,10 @@
 
     /// The names of the contracts each element of the library wears, itself included.
     private static let wornNames: [String: Set<String>] = wornBy.mapValues { worn in Set(worn.map { $0.name }) }
+
+    /// The names of the members each contract of the library declares, worked out once.
+    private static let memberNames: [ObjectIdentifier: Set<String>] = Dictionary(
+        LibraryContracts.all.map { (ObjectIdentifier($0), Set($0.members.map { $0.name })) }) { first, _ in first }
 
     /// One owner and one member: a record, before it is one.
     private struct Pair: Hashable {
