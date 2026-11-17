@@ -20,6 +20,8 @@ matrix, the control dictionary and the design notes beside them.
 - [Getting started](getting-started.md) lists what a machine needs, builds the
   smallest application, and explains the application module, native host,
   resources, and registration boundary.
+- [Every host from one Mac](every-host-from-a-mac.md) builds and runs the GTK
+  and WinUI heads in Parallels guests of a Mac, beside the Mac's own hosts.
 - [StateUI for VS Code](editors/VSCode/README.md) installs the StateUI
   extension and covers everything it does: the host and the application chosen
   once, the launches, the suites, deploying, the conformance marks and project

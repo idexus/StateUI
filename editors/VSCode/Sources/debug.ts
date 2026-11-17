@@ -30,6 +30,11 @@
 // executable written again - for this machine's architecture, and launched by
 // lldb-dap, which reads the DWARF the head carries.
 //
+// On a Mac, a GTK or WinUI head is built and started in the Parallels guest
+// chosen by the stateui tool (`application/run`), its output followed in
+// StateUI Run; the debugger does not reach a guest, so a Debug launch runs the
+// debug build without one, said, and neither has a session.
+//
 // A Web head is built, laid out and served by the stateui tool
 // (`application/run`), which opens the page in the browser chosen. A Debug
 // launch in one of Chromium's has the page served alone, and VS Code's own
@@ -46,7 +51,7 @@ import * as vscode from "vscode";
 import { Application, pathOf } from "./applications";
 import { Browser, isChromium } from "./browsers";
 import { lldbDapFinding } from "./toolchain";
-import { Host } from "./hosts";
+import { Host, inGuest } from "./hosts";
 import { LaunchedApplication } from "./Tooling/protocol";
 
 /** Which build a launch runs. */
@@ -83,6 +88,12 @@ export interface Choices {
     uiKitDevice(): Promise<string | undefined>;
 
     /**
+     * The guest of this Mac a launch of `host` - GTK or WinUI - is built and run in: the one chosen while it is listed,
+     * else asked for - or nothing, where none is picked.
+     */
+    guest(host: Host): Promise<string | undefined>;
+
+    /**
      * Has the stateui tool build `application` for `host` in `configuration` and start it on `device` - a debugger
      * readied where `debug` - following its output; once it started, what started and the token a debug session
      * carries, whose end stops the run - nothing where it failed or was cancelled, which the tool's error said.
@@ -99,7 +110,7 @@ export interface Choices {
 }
 
 /** What a machine that runs no host is told, wherever a host is asked for. */
-export const noHost = "no StateUI host runs on this machine yet - AppKit, UIKit and Android are built and run on macOS, WinUI on Windows, GTK on Linux, Web on macOS and Linux.";
+export const noHost = "no StateUI host runs on this machine yet - AppKit, UIKit and Android are built and run on macOS, WinUI on Windows, GTK on Linux, both in a Mac's guests too, Web on macOS and Linux.";
 
 
 /** The two configurations every workspace offers. */
@@ -143,9 +154,12 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
 
-        // A page needs no lldb-dap: its debugger is the browser's.
+        // A page needs no lldb-dap: its debugger is the browser's; a head in a guest runs without one.
         if (host === "web") {
             return this.web(root, application, configuration, name);
+        }
+        if (inGuest(host)) {
+            return this.inGuest(root, application, host, configuration);
         }
 
         // A debugger that cannot start stops the launch before the build, saying why: else the build ends and nothing runs.
@@ -278,6 +292,28 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             cwd: root.uri.fsPath,
             stopOnEntry: false,
         };
+    }
+
+    /**
+     * A GTK or WinUI head built and started by the stateui tool in the guest of this Mac chosen, which follows its
+     * output; the debugger does not reach a guest, so a Debug build runs without one, said - neither has a session.
+     */
+    private async inGuest(
+        root: vscode.WorkspaceFolder,
+        application: Application,
+        host: Host,
+        configuration: Configuration,
+    ): Promise<vscode.DebugConfiguration | undefined> {
+        const guest = await this.choices.guest(host);
+        if (!guest) {
+            return undefined;
+        }
+        if (configuration === "debug") {
+            void vscode.window.showInformationMessage(
+                `StateUI: the debugger does not reach a guest - ${application.name}'s debug build runs in ${guest} without one.`);
+        }
+        await this.choices.runHead(root, application, host, configuration, guest, false);
+        return undefined;
     }
 
     /**

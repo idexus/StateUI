@@ -15,6 +15,9 @@ export interface HostDescription {
 
     /** The machines that build and run this host's heads. */
     readonly platforms: readonly NodeJS.Platform[];
+
+    /** The machines that build and run this host's heads in a guest of theirs - a Parallels virtual machine. */
+    readonly guests?: readonly NodeJS.Platform[];
 }
 
 /** Every host, in the order the picker offers them. */
@@ -26,8 +29,14 @@ export const hosts: readonly HostDescription[] = [
     {
         id: "android", label: "Android", detail: "Android Views, in the application's own process", platforms: ["darwin"],
     },
-    { id: "winui", label: "WinUI", detail: "WinUI 3 on Windows, in the application's own process", platforms: ["win32"] },
-    { id: "gtk", label: "GTK", detail: "GTK 4 with libadwaita on Linux, in the application's own process", platforms: ["linux"] },
+    {
+        id: "winui", label: "WinUI", detail: "WinUI 3 on Windows or a Mac's Windows guest, in the application's own process",
+        platforms: ["win32"], guests: ["darwin"],
+    },
+    {
+        id: "gtk", label: "GTK", detail: "GTK 4 with libadwaita on Linux or a Mac's Linux guest, in the application's own process",
+        platforms: ["linux"], guests: ["darwin"],
+    },
     {
         id: "web", label: "Web", detail: "a page in the browser chosen, the application a WebAssembly module in it",
         platforms: ["darwin", "linux"],
@@ -35,9 +44,18 @@ export const hosts: readonly HostDescription[] = [
 ];
 
 
-/** The hosts this machine builds and runs - AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, Web on macOS and Linux. */
+/**
+ * The hosts this machine builds and runs, itself or in a guest - AppKit, UIKit and Android on macOS, WinUI on Windows,
+ * GTK on Linux, both in a Mac's guests too, Web on macOS and Linux.
+ */
 export function availableHosts(platform: NodeJS.Platform = process.platform): HostDescription[] {
-    return hosts.filter((each) => each.platforms.includes(platform));
+    return hosts.filter((each) => each.platforms.includes(platform) || (each.guests?.includes(platform) ?? false));
+}
+
+/** Whether this machine builds and runs `host`'s heads in a guest of its own, not itself. */
+export function inGuest(host: Host, platform: NodeJS.Platform = process.platform): boolean {
+    const described = describe(host);
+    return !described.platforms.includes(platform) && (described.guests?.includes(platform) ?? false);
 }
 
 /** The description of one host. */

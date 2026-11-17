@@ -24,6 +24,9 @@ export interface Finding {
 
     /** How to get it, where it is missing. */
     readonly advice: string;
+
+    /** The machine it was looked for on - a guest of this one - where not this one. */
+    readonly machine?: string;
 }
 
 /** Below 0, 0 or above 0 as version `a` is older than, the same as or newer than `b`, part by part. */
@@ -122,8 +125,12 @@ async function windowsLldbDapFinding(executable: string | undefined): Promise<Fi
 
 /** The findings as the output shows them: a line each, found, too old or missing, and what to install for each not found. */
 export function report(findings: readonly Finding[]): string[] {
-    return findings.map((each) => each.found !== undefined
-        ? `✓ ${each.component} - ${each.found} [${each.neededBy}]`
-        : `✗ ${each.component} - ${each.tooOld !== undefined ? `${each.tooOld} found, too old` : "not found"} [${
-            each.neededBy}]. ${each.advice}`);
+    return findings.flatMap((each, index) => [
+        // A heading wherever the machine changes - none while every finding is this machine's.
+        ...(each.machine !== (index === 0 ? undefined : findings[index - 1].machine) ? [`${each.machine ?? "This machine"}:`] : []),
+        each.found !== undefined
+            ? `✓ ${each.component} - ${each.found} [${each.neededBy}]`
+            : `✗ ${each.component} - ${each.tooOld !== undefined ? `${each.tooOld} found, too old` : "not found"} [${
+                each.neededBy}]. ${each.advice}`,
+    ]);
 }

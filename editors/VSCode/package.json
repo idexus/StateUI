@@ -82,6 +82,11 @@
         "category": "StateUI"
       },
       {
+        "command": "stateui.selectGuest",
+        "title": "Select Guest",
+        "category": "StateUI"
+      },
+      {
         "command": "stateui.newProjectGroup",
         "title": "New Project Group",
         "category": "StateUI"

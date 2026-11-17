@@ -21,7 +21,8 @@ import { androidDeviceOf, deviceAmong } from "../Sources/devices";
 import { browserOf, isChromium } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
 import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
-import { availableHosts, describe, Host, HostDescription, hosts } from "../Sources/hosts";
+import { guestOf } from "../Sources/guests";
+import { availableHosts, describe, Host, HostDescription, hosts, inGuest } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { editorCommandLine, hasExtensionSources } from "../Sources/reinstall";
 import { conformanceRequest, failedPhases } from "../Sources/conformance";
@@ -213,11 +214,12 @@ export async function run(): Promise<void> {
         }
 
         // 4. The hosts a machine is offered: AppKit, UIKit and Android on macOS,
-        //    WinUI on Windows, GTK on Linux, and the Web on macOS and Linux.
-        //    A launch on a machine that runs no host resolves to nothing.
+        //    WinUI on Windows, GTK on Linux - both in a Mac's guests too - and
+        //    the Web on macOS and Linux. A launch on a machine that runs no host
+        //    resolves to nothing.
         const gallery_ = api.applications().find((each) => each.name === "Gallery")!;
-        check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, and the Web on macOS and Linux",
-            JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android", "web"])
+        check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, both in a Mac's guests, and the Web on macOS and Linux",
+            JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android", "winui", "gtk", "web"])
             && JSON.stringify(availableHosts("win32").map((each) => each.id)) === JSON.stringify(["winui"])
             && JSON.stringify(availableHosts("linux").map((each) => each.id)) === JSON.stringify(["gtk", "web"])
             && availableHosts("freebsd").length === 0);
@@ -228,12 +230,46 @@ export async function run(): Promise<void> {
                 host: () => undefined, application: async () => gallery_,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
+                guest: async () => undefined,
                 runHead: async () => undefined,
                 browser: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
             check("with no host a launch runs nothing and opens no session", resolved === undefined && ran.length === 0);
+        }
+        {
+            // On a Mac a GTK or WinUI head is built and run by the tool in the guest chosen, with no session - a Debug
+            // build too, as the debugger does not reach a guest.
+            const runs: { host: string; device: string; debug: boolean; configuration: string }[] = [];
+            const inAGuest = (forHost: Host, named: string | undefined) => new StateUIDebugConfigurationProvider({
+                build: async () => undefined, host: () => forHost, application: async () => gallery_,
+                device: async () => undefined, uiKitDevice: async () => undefined, guest: async () => named,
+                runHead: async (_folder, _application, ran, asked, device, debug) => {
+                    runs.push({ host: ran, device, debug, configuration: asked });
+                    return undefined;
+                },
+                browser: async () => undefined,
+            });
+            const launch = (configuration: string) => ({ name: "StateUI", type: "stateui", request: "launch", configuration });
+            if (process.platform === "darwin") {
+                const released = await inAGuest("gtk", "Ubuntu").resolveDebugConfiguration(root, launch("release"));
+                const debugged = await inAGuest("winui", "Windows 11").resolveDebugConfiguration(root, launch("debug"));
+                const declined = await inAGuest("gtk", undefined).resolveDebugConfiguration(root, launch("release"));
+                check("on a Mac a GTK or WinUI launch runs in the guest chosen with no debugger and no session, and none without a guest",
+                    released === undefined && debugged === undefined && declined === undefined
+                    && JSON.stringify(runs) === JSON.stringify([
+                        { host: "gtk", device: "Ubuntu", debug: false, configuration: "release" },
+                        { host: "winui", device: "Windows 11", debug: false, configuration: "debug" },
+                    ]));
+            }
+            check("GTK and WinUI are built in a guest on a Mac alone, and a guest is listed by its name, system and state",
+                inGuest("gtk", "darwin") && inGuest("winui", "darwin") && !inGuest("gtk", "linux") && !inGuest("winui", "win32")
+                && !inGuest("appkit", "darwin")
+                && JSON.stringify(guestOf({
+                    id: "Ubuntu", udid: "{1}", name: "Ubuntu", kind: "guest", version: "ubuntu", booted: false, connection: "suspended",
+                    architecture: "arm64",
+                })) === JSON.stringify({ name: "Ubuntu", system: "ubuntu", state: "suspended" }));
         }
 
         // 5. The suites, found for each host as the stateui tool runs them; the core's is named by the checkout's folder.
@@ -384,6 +420,7 @@ export async function run(): Promise<void> {
                     host: () => "android", application: async () => helloWorld,
                     device: async () => serial,
                     uiKitDevice: async () => undefined,
+                    guest: async () => undefined,
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
                         runs.push({ host: forHost, device, debug, configuration: asked });
                         if (!starts) {
@@ -504,6 +541,7 @@ export async function run(): Promise<void> {
                     host: () => "uikit", application: async () => helloWorldHere,
                     device: async () => undefined,
                     uiKitDevice: async () => udid,
+                    guest: async () => undefined,
                     runHead: async (_folder, _application, _host, asked, device, debug) => {
                         runs.push({ device, debug, configuration: asked });
                         if (!starts) {
@@ -558,10 +596,10 @@ export async function run(): Promise<void> {
                 && !uiKitSuites.some((each) => each.id === "lib/StateUI/StateUI.AppKit" || each.id === "lib/StateUI/StateUI.Android/Tests"));
         }
 
-        // 6b. WinUI: HelloWorld's head, built by the stateui tool and launched under lldb-dap, and the host's own
-        //     package through stateui repo test.
+        // 6b. WinUI: HelloWorld's head, built by the stateui tool and launched under lldb-dap where Windows runs it - a
+        //     Mac's guest runs it with no debugger (4.) - and the host's own package through stateui repo test.
         check("HelloWorld has a WinUI head", hasHead(helloWorld, "winui"));
-        {
+        if (!inGuest("winui")) {
             const built: string[] = [];
             const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "winui-release", "HelloWorldWinUI.exe");
             const provider = new StateUIDebugConfigurationProvider({
@@ -572,6 +610,7 @@ export async function run(): Promise<void> {
                 host: () => "winui", application: async () => helloWorld,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
+                guest: async () => undefined,
                 runHead: async () => undefined,
                 browser: async () => undefined,
             });
@@ -591,9 +630,10 @@ export async function run(): Promise<void> {
         }
 
         // 6c. GTK: HelloWorld's head, built and installed by the stateui tool and
-        //     launched under lldb-dap, and the host's own suite by the tool.
+        //     launched under lldb-dap where Linux runs it - a Mac's guest runs it
+        //     with no debugger (4.) - and the host's own suite by the tool.
         check("HelloWorld has a GTK head", hasHead(helloWorld, "gtk"));
-        {
+        if (!inGuest("gtk")) {
             const built: string[] = [];
             const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "gtk-arm64-x-debug", "HelloWorldGTK");
             const provider = new StateUIDebugConfigurationProvider({
@@ -601,6 +641,7 @@ export async function run(): Promise<void> {
                 host: () => "gtk", application: async () => helloWorld,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
+                guest: async () => undefined,
                 runHead: async () => undefined,
                 browser: async () => undefined,
             });
@@ -650,6 +691,7 @@ export async function run(): Promise<void> {
                     host: () => "web", application: async () => helloWorld,
                     device: async () => undefined,
                     uiKitDevice: async () => undefined,
+                    guest: async () => undefined,
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
                         runs.push({ host: forHost, device, debug, configuration: asked });
                         return {
@@ -702,9 +744,9 @@ export async function run(): Promise<void> {
         }
 
         const palette = await vscode.commands.getCommands(true);
-        check("the palette has Select Android Device, Select UIKit Device and Select Browser, and no Select Debugger",
+        check("the palette has Select Android Device, Select UIKit Device, Select Browser and Select Guest, and no Select Debugger",
             palette.includes("stateui.selectAndroidDevice") && palette.includes("stateui.selectUIKitDevice")
-            && palette.includes("stateui.selectBrowser")
+            && palette.includes("stateui.selectBrowser") && palette.includes("stateui.selectGuest")
             && !palette.includes("stateui.selectDebugger") && !palette.includes("stateui.selectSimulator"));
 
         // 7. A new application is HelloWorld renamed in a checkout's apps/,
@@ -958,7 +1000,11 @@ export async function run(): Promise<void> {
                     + " in your Path.\r\n") === undefined
                 && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined
                 && report([{ component: "Node.js 20 or newer", neededBy: "it", tooOld: "19.4.0", advice: "Install it." }])[0]
-                    === "✗ Node.js 20 or newer - 19.4.0 found, too old [it]. Install it.");
+                    === "✗ Node.js 20 or newer - 19.4.0 found, too old [it]. Install it."
+                && JSON.stringify(report([
+                    { component: "Swift", neededBy: "every host", found: "6.4", advice: "" },
+                    { component: "Swift", neededBy: "GTK", found: "6.4.2", advice: "", machine: "Ubuntu" },
+                ])) === JSON.stringify(["✓ Swift - 6.4 [every host]", "Ubuntu:", "✓ Swift - 6.4.2 [GTK]"]));
             // As the command answers: the tool's components, the LLDB DAP extension, and whether the lldb-dap a launch
             // takes starts (Linux, Windows).
             const findings = await vscode.commands.executeCommand<Finding[] | undefined>("stateui.checkToolchain") ?? [];

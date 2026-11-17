@@ -26,7 +26,9 @@ the iOS simulator, [Android Views host](hosts/android.md#requirements) what the
 Android Views host needs as well, [WinUI host](hosts/winui.md#requirements) what the
 WinUI host needs on Windows, [GTK host](hosts/gtk.md#requirements) what
 the GTK host needs on Linux, and [Web host](hosts/web.md#requirements) what the
-Web host needs on macOS and Linux.
+Web host needs on macOS and Linux. A Mac builds and runs the GTK and WinUI
+heads too, in Linux and Windows guests of Parallels Desktop:
+[Every host from one Mac](every-host-from-a-mac.md).
 
 With the extension installed ([Installing](editors/VSCode/README.md#installing)),
 **StateUI: Check Toolchain** in the Command Palette looks on this machine for

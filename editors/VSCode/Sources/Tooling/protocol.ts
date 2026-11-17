@@ -282,6 +282,9 @@ export const ToolFinding = object<ToolFinding>({
     advice: string, machine: optional(string),
 });
 
+export interface ToolchainQuery { host?: HostFamily; device?: string; projectUri?: string }
+export const ToolchainQuery = object<ToolchainQuery>({ host: optional(HostFamily), device: optional(string), projectUri: optional(string) });
+
 export interface ToolchainReport { findings: ToolFinding[] }
 export const ToolchainReport = object<ToolchainReport>({ findings: array(ToolFinding) });
 
@@ -437,7 +440,7 @@ export const methods = {
     "server/info": query(NoParameters, ServerInfo),
     "project/describe": query(ProjectReference, Project),
     "settings/get": query(SettingsRequest, Settings),
-    "toolchain/check": query(NoParameters, ToolchainReport),
+    "toolchain/check": query(ToolchainQuery, ToolchainReport),
     "name/check": query(NameCheck, NameVerdict),
     "devices/list": query(DestinationQuery, DestinationList),
     "index/describe": query(IndexQuery, IndexContext),
