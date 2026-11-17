@@ -37,6 +37,8 @@ writes its result as words or as the message an editor receives.
   and simulators - which one a run means, and the SDK each is built against.
 - [Guests](guests.md): the virtual machines of a Mac a GTK or WinUI head is
   built and run in - which they are, and what of the Mac they share.
+- [The service](service.md): another machine's tool reached over the
+  network - its socket, and any machine reaching any other.
 - [Runs](runs.md): a run as one operation from its build to its
   application's end - on a simulator, on a device - and how a stop ends
   everything it started.
