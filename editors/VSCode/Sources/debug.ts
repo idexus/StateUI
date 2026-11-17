@@ -24,9 +24,10 @@
 // - in a browser (the Web): the page served and opened in the browser chosen;
 //   a Debug launch in one a debugger follows has it served alone, and VS
 //   Code's JavaScript debugger starts that browser on it;
-// - in a guest (GTK and WinUI on a Mac): built and started there by the
-//   tool; where no debugger reaches the guest, a Debug launch runs the debug
-//   build without one, said, and neither has a session.
+// - on another machine - a guest of a Mac for GTK and WinUI, a machine paired
+//   with the project for a host it runs: built and started there by the tool;
+//   where no debugger reaches it, a Debug launch runs the debug build without
+//   one, said, and neither has a session.
 //
 // The application is the one chosen with StateUI: Select Application; a launch
 // naming its `application` runs that one instead.
@@ -34,7 +35,7 @@
 import * as vscode from "vscode";
 import { Application, pathOf } from "./applications";
 import { Browser } from "./browsers";
-import { Guest } from "./guests";
+import { Machine } from "./machines";
 import { lldbDapFinding } from "./toolchain";
 import { Host } from "./hosts";
 import { DebugDescriptor, LaunchedApplication, Place, PreparedApplication } from "./Tooling/protocol";
@@ -79,10 +80,10 @@ export interface Choices {
     uiKitDevice(): Promise<string | undefined>;
 
     /**
-     * The guest a launch of `host` is built and run in, where this machine works it in one: the one chosen while it
-     * is listed, else asked for - or nothing, where none is picked.
+     * The machine a launch of `host` is built and run on, where this machine works it on another - a guest, a machine
+     * paired: the one chosen while it is listed, else asked for - or nothing, where none is picked.
      */
-    guest(host: Host): Promise<Guest | undefined>;
+    machine(host: Host): Promise<Machine | undefined>;
 
     /**
      * Has the stateui tool build `application` for `host` in `configuration` and start it on `device` - a debugger
@@ -145,13 +146,13 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
 
-        // A page's debugger is the browser's; a guest's is the tool's to give.
+        // A page's debugger is the browser's; another machine's is the tool's to give.
         const place = this.choices.place(host);
         if (place === "browser") {
             return this.inBrowser(root, application, host, configuration, name);
         }
-        if (place === "guest") {
-            return this.inGuest(root, application, host, configuration);
+        if (place === "guest" || place === "remote") {
+            return this.onMachine(root, application, host, configuration);
         }
 
         // A debugger that cannot start stops the launch before the build, saying why: else the build ends and nothing runs.
@@ -198,24 +199,24 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
     }
 
     /**
-     * A head built and started by the stateui tool in the guest chosen, which follows its output; where the tool says
-     * no debugger reaches the guest, a Debug build runs without one, said - neither has a session.
+     * A head built and started by the stateui tool on the machine chosen, which follows its output; where the tool
+     * says no debugger reaches the machine, a Debug build runs without one, said - neither has a session.
      */
-    private async inGuest(
+    private async onMachine(
         root: vscode.WorkspaceFolder,
         application: Application,
         host: Host,
         configuration: Configuration,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const guest = await this.choices.guest(host);
-        if (!guest) {
+        const machine = await this.choices.machine(host);
+        if (!machine) {
             return undefined;
         }
-        if (configuration === "debug" && !guest.debugger) {
+        if (configuration === "debug" && !machine.debugger) {
             void vscode.window.showInformationMessage(
-                `StateUI: no debugger reaches ${guest.name} - ${application.name}'s debug build runs there without one.`);
+                `StateUI: no debugger reaches ${machine.name} - ${application.name}'s debug build runs there without one.`);
         }
-        await this.choices.runHead(root, application, host, configuration, guest.name, false);
+        await this.choices.runHead(root, application, host, configuration, machine.name, false);
         return undefined;
     }
 

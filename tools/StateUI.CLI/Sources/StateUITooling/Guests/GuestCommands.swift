@@ -76,11 +76,11 @@ struct GuestCommands: Sendable {
     }
 
     /// Where the tool keeps what it lays in the guest, under its user's home; nil where the guest does not say.
-    func places() async -> GuestPlaces? {
+    func places() async -> WorkPlaces? {
         let asked = guest.system == .windows
             ? await run("powershell", ["-NoProfile", "-Command", "$HOME"]) : await run("printenv", ["HOME"])
         let home = asked.output.split(whereSeparator: \.isNewline).last.map { $0.trimmingCharacters(in: .whitespaces) } ?? ""
-        return asked.succeeded && !home.isEmpty ? GuestPlaces(home: home, windows: guest.system == .windows) : nil
+        return asked.succeeded && !home.isEmpty ? WorkPlaces(home: home, windows: guest.system == .windows) : nil
     }
 
     /// What a Linux guest's program needs of its user's environment beyond what `prlctl exec` hands it: the login
@@ -104,29 +104,5 @@ struct GuestCommands: Sendable {
         return ServedTool(
             executable: .path(prlctl.path), arguments: ["exec", guest.id, "--current-user"] + started + ["serve", "--stdio"],
             workspaceUri: workspaceUri)
-    }
-}
-
-/// Where a guest keeps what the tool lays in it: `stateui-guest` under its user's home - the copies of the Mac's
-/// folders, and the guest's own stateui in `bin`.
-/// Design: docs/design/tooling/guests.md#reaching-a-guest
-struct GuestPlaces: Sendable, Equatable {
-    let home: String
-    let windows: Bool
-
-    /// The folder holding everything the tool lays in the guest.
-    var root: String { join(home, "stateui-guest") }
-
-    /// The guest's own stateui.
-    var tool: String { join(root, "bin", windows ? "stateui.exe" : "stateui") }
-
-    /// `parts` joined as the guest's system joins a path.
-    func join(_ parts: String...) -> String {
-        join(parts)
-    }
-
-    /// `parts` joined as the guest's system joins a path.
-    func join(_ parts: [String]) -> String {
-        parts.joined(separator: windows ? "\\" : "/")
     }
 }

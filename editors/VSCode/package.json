@@ -82,8 +82,8 @@
         "category": "StateUI"
       },
       {
-        "command": "stateui.selectGuest",
-        "title": "Select Guest",
+        "command": "stateui.selectMachine",
+        "title": "Select Machine",
         "category": "StateUI"
       },
       {

@@ -63,9 +63,9 @@ final class TestDiscoveryTests: XCTestCase {
 
     /// A host worked in a guest - GTK's and WinUI's on a Mac - runs its own suite there, named as a device is.
     func testAGuestsHostRunsItsSuiteInTheGuest() {
-        let found = TestDiscovery.suites(in: root, host: .gtk, applications: [root.appendingPathComponent("apps/Notes")], inGuest: true)
+        let found = TestDiscovery.suites(in: root, host: .gtk, applications: [root.appendingPathComponent("apps/Notes")], elsewhere: true)
         XCTAssertEqual(found.filter(\.onDevice).map(\.id), ["lib/StateUI/StateUI.GTK/Testing"])
-        XCTAssertTrue(found.first { $0.onDevice }?.detail.contains("in the guest chosen") ?? false)
+        XCTAssertTrue(found.first { $0.onDevice }?.detail.contains("on the machine chosen") ?? false)
     }
 
     /// Android and UIKit run their host's suite last, on a device, and the application as plain Swift.
@@ -107,7 +107,8 @@ final class TestDiscoveryTests: XCTestCase {
     }
 
     #if os(macOS)
-    /// On a Mac a GTK or WinUI host suite runs in a guest, and one named by no guest is refused before anything runs.
+    /// On a Mac a GTK or WinUI host suite runs on another machine, and one named by no guest or machine paired is
+    /// refused before anything runs.
     func testAGuestsHostSuiteIsRefusedWithoutItsGuest() async throws {
         for marked in ["lib/StateUI.Head/Package.swift", "apps/HelloWorld/Package.swift"] { try write("", to: marked) }
         try write(#"{ "schemaVersion": 1, "library": { "path": "." }, "projects": ["apps/Notes"] }"#, to: "stateui-workspace.json")
@@ -120,7 +121,7 @@ final class TestDiscoveryTests: XCTestCase {
             XCTFail("host:gtk ran on the Mac")
         } catch let error as ToolingError {
             XCTAssertEqual(error.code, .invalidConfiguration)
-            XCTAssertTrue(error.message.contains("runs in a guest of this Mac"), error.message)
+            XCTAssertTrue(error.message.contains("runs on another machine"), error.message)
         }
     }
     #endif

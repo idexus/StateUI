@@ -59,7 +59,7 @@ runtime folder and session type, read from `systemctl --user
 show-environment`.
 
 What the tool lays in a guest stands under its user's home, `stateui-guest`
-(`GuestPlaces`). A folder of the Mac is reached in the guest through the
+(`WorkPlaces`), as on any machine another one works on. A folder of the Mac is reached in the guest through the
 nearest shared folder holding it - `/media/psf/<name>/…` on Linux,
 `\\Mac\<name>\…` on Windows - else through every disk where the guest
 shares them all, `AllFiles`.
@@ -123,12 +123,14 @@ project from a shared folder: a path of a Windows guest's share named as a URI
 
 `stateui build`, `package` and `run` of a GTK or WinUI head with a guest as
 its device - on the command line or chosen in `stateui settings` - are the
-guest's own stateui's work (`GuestWork`): the guest started (`prlctl start`)
+guest's own stateui's work ([Work on another machine](service.md#work-on-another-machine),
+`RemoteWork`): the guest started (`prlctl start`)
 or resumed (`prlctl resume`) where it does not run, its user's desktop
 session waited for; its stateui laid again where it is not this checkout's
 ([Laying the guest's tool](#laying-the-guests-tool)); the project and its
 checkout copied; then the request asked of it with the guest's path of the
-application. A build answers the guest's artifact, its device the guest. A
+application - through the guest's service where the Mac is paired with it and
+it answers as this release, else through `prlctl exec`. A build answers the guest's artifact, its device the guest. A
 package is laid in the Mac's output folder - the request's, else the
 project's `artifacts/<Name>/<Host>`, judged as a package's folder before the
 guest builds and again before it is filled: the guest lays it on its own

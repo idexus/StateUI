@@ -129,6 +129,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - A machine paired with a project is a destination of the hosts whose heads run there as its own programs:
   `server/info` tells them at the place `remote` and says the folder another machine's projects are copied into
   (`workFolder`), and `devices/list` lists the machine (`remote`).
+- `stateui build`, `run`, `package` and `repo test --suite host:<host>` with a machine paired as the device are that
+  machine's work, through its service: the project and its checkout copied there, the request asked of its own
+  `stateui` - which is to be this release - a package fetched home, a run's output told as it comes; a guest paired is
+  reached through its service too, else through `prlctl exec`. `stateui doctor --device <machine>` says whether its
+  service answers and admits this machine, its release, and what it has of what the host needs. The VS Code
+  extension's **StateUI: Select Machine** offers a host's guests and machines paired, and a launch on one runs there.
 - A folder travels to another machine's tool, and back, through the connection itself - `folder/survey`,
   `files/write`, `file/read`, `files/remove`, in pieces of at most 4 MiB, a file's time kept - over a guest's
   `prlctl exec` as over the service: a guest reads the project and hands a package back through no shared folder;

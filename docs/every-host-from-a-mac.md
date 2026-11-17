@@ -100,8 +100,8 @@ stateui package --project apps/Notes --host winui --device "Windows 11"
 
 On a Mac, **StateUI: Select Host** offers GTK and WinUI beside the Mac's own
 hosts, and while one of them is chosen the status bar shows the guest it is
-built in - click it, or run **StateUI: Select Guest**
-([The guest](editors/VSCode/README.md#the-guest)). **StateUI: Release** and
+built in - click it, or run **StateUI: Select Machine**
+([The machine](editors/VSCode/README.md#the-machine)). **StateUI: Release** and
 **StateUI: Debug** build and start the head in the guest, **StateUI Run**
 follows it, and its notification stops it; **StateUI: Package** lays it in the
 project's `artifacts`; **StateUI: Check Toolchain** checks the guest chosen
@@ -123,7 +123,9 @@ stateui repo test --suite host:gtk --device Ubuntu --filter GTKConformanceTests
 ## What stays in the guest
 
 The debugger does not reach a guest: **StateUI: Debug** runs the debug build
-there without one, and says so. A host's conformance marks are recorded on
+there without one, and says so. A guest paired with the project (`stateui guest
+pair --device <guest>`) is reached through its service, as any machine of the
+network is: [Working on another machine](another-machine.md). A host's conformance marks are recorded on
 its own system - in the guest, from a checkout of its own. How the tool
 reaches a guest, lays its `stateui` and copies a project:
 [Guests](design/tooling/guests.md).

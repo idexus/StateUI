@@ -22,6 +22,9 @@ matrix, the control dictionary and the design notes beside them.
   resources, and registration boundary.
 - [Every host from one Mac](every-host-from-a-mac.md) builds and runs the GTK
   and WinUI heads in Parallels guests of a Mac, beside the Mac's own hosts.
+- [Working on another machine](another-machine.md) pairs a project with the
+  `stateui` service of a machine of the network and builds, runs and packages
+  a head there.
 - [StateUI for VS Code](editors/VSCode/README.md) installs the StateUI
   extension and covers everything it does: the host and the application chosen
   once, the launches, the suites, deploying, the conformance marks and project

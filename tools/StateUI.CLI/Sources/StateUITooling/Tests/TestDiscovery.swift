@@ -16,9 +16,9 @@ enum TestDiscovery {
         return HostFamily.allCases.first { $0.folder == suffix }
     }
 
-    /// The suites of `root` for `host`, `applications` its applications' package folders; a host's own suite run in a
-    /// guest where `inGuest` - GTK's and WinUI's on a Mac.
-    static func suites(in root: URL, host: HostFamily?, applications: [URL], inGuest: Bool = false) -> [TestSuiteDescription] {
+    /// The suites of `root` for `host`, `applications` its applications' package folders; a host's own suite run on
+    /// another machine where `elsewhere` - GTK's and WinUI's in a guest of a Mac, a host's a machine paired runs.
+    static func suites(in root: URL, host: HostFamily?, applications: [URL], elsewhere: Bool = false) -> [TestSuiteDescription] {
         let files = FileManager.default
         func children(_ folder: URL) -> [URL] {
             ((try? files.contentsOfDirectory(atPath: folder.path)) ?? []).sorted().map { folder.appendingPathComponent($0) }
@@ -39,8 +39,8 @@ enum TestDiscovery {
             if let own = self.host(of: folder) {
                 guard own == host else { continue }
                 suites.append(TestSuiteDescription(
-                    id: id, detail: "stateui repo test - the \(own.folder) host's tests\(inGuest ? " in the guest chosen" : ""), every verdict held, then its API records",
-                    kind: .host, packageUri: uri, host: own, onDevice: inGuest))
+                    id: id, detail: "stateui repo test - the \(own.folder) host's tests\(elsewhere ? " on the machine chosen" : ""), every verdict held, then its API records",
+                    kind: .host, packageUri: uri, host: own, onDevice: elsewhere))
             } else if host == .appkit, owned.contains(folder.standardizedFileURL.path) {
                 suites.append(TestSuiteDescription(id: id, detail: "swift test as an AppKit build, on .build/appkit", kind: .package,
                                                    packageUri: uri, host: .appkit))

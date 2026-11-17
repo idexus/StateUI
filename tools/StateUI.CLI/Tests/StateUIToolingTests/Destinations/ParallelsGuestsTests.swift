@@ -59,8 +59,8 @@ final class ParallelsGuestsTests: XCTestCase {
 
     /// What the tool lays in a guest stands under its user's home, `stateui-guest`, the tool in its `bin`.
     func testWhatIsLaidStandsUnderTheUsersHome() {
-        XCTAssertEqual(GuestPlaces(home: "/home/me", windows: false).tool, "/home/me/stateui-guest/bin/stateui")
-        XCTAssertEqual(GuestPlaces(home: #"C:\Users\me"#, windows: true).tool, #"C:\Users\me\stateui-guest\bin\stateui.exe"#)
+        XCTAssertEqual(WorkPlaces(home: "/home/me", windows: false).tool, "/home/me/stateui-guest/bin/stateui")
+        XCTAssertEqual(WorkPlaces(home: #"C:\Users\me"#, windows: true).tool, #"C:\Users\me\stateui-guest\bin\stateui.exe"#)
     }
 
     /// A GTK head is built in a Linux guest, a WinUI head in a Windows one; a guest is a destination by its name,

@@ -164,8 +164,17 @@ public struct ToolingService: Sendable {
     public func checkToolchain(_ query: ToolchainQuery = ToolchainQuery()) async -> ToolchainReport {
         let here = await Doctor().check()
         guard let device = query.device, let host = query.host else { return here }
+        let projectFolder = query.projectUri.flatMap { try? FileURI.url($0) }
+        let remotes = projectFolder.map { (try? RemoteMachines(project: $0).list()) ?? [] } ?? []
+        if let paired = remotes.first(where: { $0.name == device && $0.machineHosts.contains(host) }) {
+            // A guest paired is checked as a guest: the way to it, then inside it.
+            let guests = HostPlaces.place(of: host) == .guest ? await ParallelsGuests().list() : []
+            if !guests.contains(where: { $0.name == device || $0.id == device }) {
+                return ToolchainReport(findings: here.findings + (await RemoteDoctor().check(host: host, machine: paired)).findings)
+            }
+        }
         var folders: [URL] = []
-        if let uri = query.projectUri, let folder = try? FileURI.url(uri), let project = try? await ProjectReader().describe(containing: folder) {
+        if let folder = projectFolder, let project = try? await ProjectReader().describe(containing: folder) {
             // The project itself travels through the connection; the checkout is shared, as the guest's tool is laid from it.
             folders.append(contentsOf: project.applications.compactMap { $0.libraryUri.flatMap { try? FileURI.url($0) } })
         }
@@ -209,8 +218,9 @@ public struct ToolingService: Sendable {
         let project = try await describeProject(containing: folder)
         let root = try project.workspaceUri.map(FileURI.url) ?? FileURI.url(project.rootUri)
         let applications = try project.applications.map { try FileURI.url($0.packageUri) }
+        let elsewhere = RemoteWork.elsewhere(host, remotes: try RemoteMachines(project: folder).list())
         return TestSuiteList(
-            host: host, suites: TestDiscovery.suites(in: root, host: host, applications: applications, inGuest: GuestWork.inGuest(host)))
+            host: host, suites: TestDiscovery.suites(in: root, host: host, applications: applications, elsewhere: elsewhere))
     }
 
     /// Runs suite `request.suite` of the folder holding `folder` - `tests/run`.
@@ -224,7 +234,7 @@ public struct ToolingService: Sendable {
         if suite.onDevice, request.device == nil {
             throw ToolingError(.invalidConfiguration, "\(suite.id) runs on a device: name it.")
         }
-        if suite.kind == .host, let host = suite.host, GuestWork.inGuest(host) {
+        if suite.kind == .host, let host = suite.host, suite.onDevice {
             let ran = try await testSuite("host:\(host.rawValue)", filter: request.filter, device: request.device, in: folder, reporter: reporter)
             return SuiteResult(suite: suite.id, phases: ran.phases)
         }
@@ -290,10 +300,17 @@ public struct ToolingService: Sendable {
         return DestinationList(host: host, destinations: destinations + paired.map(HostPlaces.remote))
     }
 
+    /// The work of `request` on another machine, where it asks for one - a guest of this Mac, a machine paired with the
+    /// project holding `folder`; nil where it is worked here.
+    private static func elsewhere(_ request: BuildRequest, in folder: URL) throws -> RemoteWork? {
+        let remotes = try RemoteMachines(project: try request.projectUri.map(FileURI.url) ?? folder).list()
+        return RemoteWork.asks(request.host, device: request.device, remotes: remotes) ? RemoteWork(guests: ParallelsGuests(), remotes: remotes) : nil
+    }
+
     /// Builds `request`'s application and publishes it - `application/build`.
     public func build(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> BuildResult {
         let chosen = try ApplicationBuilder.chosen(request, in: folder)
-        if GuestWork.asks(chosen) { return try await GuestWork(guests: ParallelsGuests()).build(chosen, in: folder, reporter: reporter) }
+        if let elsewhere = try Self.elsewhere(chosen, in: folder) { return try await elsewhere.build(chosen, in: folder, reporter: reporter) }
         return try await ApplicationBuilder().build(request, in: folder, operation: operation, reporter: reporter)
     }
 
@@ -317,7 +334,7 @@ public struct ToolingService: Sendable {
     /// Builds `request`'s application for release and lays it out to be shipped - `application/package`.
     public func package(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> BuildResult {
         let chosen = try ApplicationBuilder.chosen(request, in: folder)
-        if GuestWork.asks(chosen) { return try await GuestWork(guests: ParallelsGuests()).package(chosen, in: folder, reporter: reporter) }
+        if let elsewhere = try Self.elsewhere(chosen, in: folder) { return try await elsewhere.package(chosen, in: folder, reporter: reporter) }
         return try await ApplicationBuilder().package(request, in: folder, operation: operation, reporter: reporter)
     }
 
@@ -335,7 +352,7 @@ public struct ToolingService: Sendable {
     public func run(_ request: RunRequest, in folder: URL, operation: String, reporter: RunReporter) async throws -> RunResult {
         var chosen = request
         chosen.build = try ApplicationBuilder.chosen(request.build, in: folder)
-        if GuestWork.asks(chosen.build) { return try await GuestWork(guests: ParallelsGuests()).run(chosen, in: folder, reporter: reporter) }
+        if let elsewhere = try Self.elsewhere(chosen.build, in: folder) { return try await elsewhere.run(chosen, in: folder, reporter: reporter) }
         return try await ApplicationRunner().run(request, in: folder, operation: operation, reporter: reporter)
     }
 
@@ -355,11 +372,12 @@ public struct ToolingService: Sendable {
         guard suite.hasPrefix("host:"), let host = HostFamily(rawValue: String(suite.dropFirst("host:".count))) else {
             throw ToolingError(.invalidConfiguration, "No suite \(suite): host:appkit, host:uikit, host:android, host:winui, host:gtk and host:web are.")
         }
-        if GuestWork.inGuest(host) {
+        let remotes = try RemoteMachines(project: folder).list()
+        if RemoteWork.elsewhere(host, remotes: remotes) || RemoteWork.asks(host, device: device, remotes: remotes) {
             guard device != nil else {
-                throw ToolingError(.invalidConfiguration, "\(suite) runs in a guest of this Mac: name it with --device (`stateui devices --host \(host.rawValue)`).")
+                throw ToolingError(.invalidConfiguration, "\(suite) runs on another machine: name a guest or a machine paired with --device (`stateui devices --host \(host.rawValue)`).")
             }
-            return try await GuestWork(guests: ParallelsGuests()).test(host, filter: filter, device: device, checkout: checkout, reporter: reporter)
+            return try await RemoteWork(guests: ParallelsGuests(), remotes: remotes).test(host, filter: filter, device: device, checkout: checkout, reporter: reporter)
         }
         return try await HostSuite(checkout: checkout).run(
             host, filter: filter, device: device, buildOnly: buildOnly, architecture: architecture, artifact: artifact, reporter: reporter)

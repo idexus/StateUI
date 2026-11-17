@@ -29,11 +29,11 @@ final class HostPlacesTests: XCTestCase {
         XCTAssertEqual(HostPlaces.machine(Machine(system: "macos", architecture: "arm64")).emulated, [])
     }
 
-    /// The server tells a client the same list, and a host this machine builds in a guest is worked there alone.
+    /// The server tells a client the same list, and a host this machine builds in a guest is worked elsewhere.
     func testTheServerAndTheGuestWorkReadTheSameList() async throws {
         XCTAssertEqual(ToolingService().serverInfo().hosts, HostPlaces.here)
         for each in HostPlaces.here {
-            XCTAssertEqual(GuestWork.inGuest(each.host), each.place == .guest, "\(each.host)")
+            XCTAssertEqual(RemoteWork.elsewhere(each.host, remotes: []), each.place == .guest, "\(each.host)")
         }
         let own = try XCTUnwrap(HostPlaces.here.first { $0.place == .machine })
         let listed = try await ToolingService().listDestinations(of: own.host)

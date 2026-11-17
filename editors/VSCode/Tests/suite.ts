@@ -21,7 +21,7 @@ import { androidDeviceOf, deviceAmong } from "../Sources/devices";
 import { browserOf } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
 import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
-import { guestOf } from "../Sources/guests";
+import { machineOf } from "../Sources/machines";
 import { availableHosts, describe, Host, HostDescription, hosts, placeOf } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { editorCommandLine, hasExtensionSources } from "../Sources/reinstall";
@@ -252,7 +252,7 @@ export async function run(): Promise<void> {
                 host: () => undefined, application: async () => gallery_,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
-                guest: async () => undefined,
+                machine: async () => undefined,
                 place: () => undefined,
                 runHead: async () => undefined,
                 browser: async () => undefined,
@@ -262,14 +262,15 @@ export async function run(): Promise<void> {
             check("with no host a launch runs nothing and opens no session", resolved === undefined && ran.length === 0);
         }
         {
-            // On a Mac a GTK or WinUI head is built and run by the tool in the guest chosen, with no session - a Debug
-            // build too, as the debugger does not reach a guest.
+            // A head worked on another machine - a GTK or WinUI head in a guest of a Mac, a host a machine paired runs -
+            // is built and run by the tool on the machine chosen, with no session - a Debug build too, as no debugger
+            // reaches it.
             const runs: { host: string; device: string; debug: boolean; configuration: string }[] = [];
-            const inAGuest = (forHost: Host, named: string | undefined) => new StateUIDebugConfigurationProvider({
+            const onAMachine = (forHost: Host, named: string | undefined, at: "guest" | "remote" = "guest") => new StateUIDebugConfigurationProvider({
                 prepare: async () => undefined, host: () => forHost, application: async () => gallery_,
-                device: async () => undefined, uiKitDevice: async () => undefined, place: () => "guest",
-                guest: async () => named === undefined ? undefined
-                    : { name: named, system: "", state: "running", debugger: false, architectures: ["arm64"] },
+                device: async () => undefined, uiKitDevice: async () => undefined, place: () => at,
+                machine: async () => named === undefined ? undefined
+                    : { name: named, kind: at, system: "", state: "running", debugger: false, architectures: ["arm64"] },
                 runHead: async (_folder, _application, ran, asked, device, debug) => {
                     runs.push({ host: ran, device, debug, configuration: asked });
                     return undefined;
@@ -277,26 +278,31 @@ export async function run(): Promise<void> {
                 browser: async () => undefined,
             });
             const launch = (configuration: string) => ({ name: "StateUI", type: "stateui", request: "launch", configuration });
-            if (process.platform === "darwin") {
-                const released = await inAGuest("gtk", "Ubuntu").resolveDebugConfiguration(root, launch("release"));
-                const debugged = await inAGuest("winui", "Windows 11").resolveDebugConfiguration(root, launch("debug"));
-                const declined = await inAGuest("gtk", undefined).resolveDebugConfiguration(root, launch("release"));
-                check("on a Mac a GTK or WinUI launch runs in the guest chosen with no debugger and no session, and none without a guest",
-                    released === undefined && debugged === undefined && declined === undefined
-                    && JSON.stringify(runs) === JSON.stringify([
-                        { host: "gtk", device: "Ubuntu", debug: false, configuration: "release" },
-                        { host: "winui", device: "Windows 11", debug: false, configuration: "debug" },
-                    ]));
-            }
-            check("a guest is listed by its name, system and state, whether a debugger reaches it, and its architectures - its own first",
-                JSON.stringify(guestOf({
+            const released = await onAMachine("gtk", "Ubuntu").resolveDebugConfiguration(root, launch("release"));
+            const debugged = await onAMachine("winui", "Windows 11").resolveDebugConfiguration(root, launch("debug"));
+            const paired = await onAMachine("appkit", "studio", "remote").resolveDebugConfiguration(root, launch("debug"));
+            const declined = await onAMachine("gtk", undefined).resolveDebugConfiguration(root, launch("release"));
+            check("a launch on another machine runs on the machine chosen - a guest, a machine paired - with no debugger and no session, and none without one",
+                released === undefined && debugged === undefined && paired === undefined && declined === undefined
+                && JSON.stringify(runs) === JSON.stringify([
+                    { host: "gtk", device: "Ubuntu", debug: false, configuration: "release" },
+                    { host: "winui", device: "Windows 11", debug: false, configuration: "debug" },
+                    { host: "appkit", device: "studio", debug: false, configuration: "debug" },
+                ]));
+            check("a machine is listed by its name, kind, system and state, whether a debugger reaches it, and its architectures - its own first; no other destination is one",
+                JSON.stringify(machineOf({
                     id: "Ubuntu", udid: "{1}", emulated: [], debugger: false, name: "Ubuntu", kind: "guest", version: "ubuntu", booted: false, connection: "suspended",
                     architecture: "arm64",
-                })) === JSON.stringify({ name: "Ubuntu", system: "ubuntu", state: "suspended", debugger: false, architectures: ["arm64"] })
-                && JSON.stringify(guestOf({
+                })) === JSON.stringify({ name: "Ubuntu", kind: "guest", system: "ubuntu", state: "suspended", debugger: false, architectures: ["arm64"] })
+                && JSON.stringify(machineOf({
                     id: "Windows 11", udid: "{2}", emulated: ["x86_64"], debugger: false, name: "Windows 11", kind: "guest", version: "win-11",
                     booted: true, connection: "running", architecture: "arm64",
-                }).architectures) === JSON.stringify(["arm64", "x86_64"]));
+                })?.architectures) === JSON.stringify(["arm64", "x86_64"])
+                && JSON.stringify(machineOf({
+                    id: "office", udid: "", emulated: [], debugger: false, name: "office", kind: "remote", version: "windows", booted: false,
+                    connection: "192.168.1.20:7979", architecture: "x86_64",
+                })) === JSON.stringify({ name: "office", kind: "remote", system: "windows", state: "192.168.1.20:7979", debugger: false, architectures: ["x86_64"] })
+                && machineOf({ id: "machine", udid: "machine", emulated: [], debugger: true, name: "This machine", kind: "machine", version: "macos", booted: false }) === undefined);
         }
 
         // 5. The suites, found for each host as the stateui tool runs them; the core's is named by the checkout's folder.
@@ -447,7 +453,7 @@ export async function run(): Promise<void> {
                     host: () => "android", application: async () => helloWorld,
                     device: async () => serial,
                     uiKitDevice: async () => undefined,
-                    guest: async () => undefined,
+                    machine: async () => undefined,
                     place: () => "device",
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
                         runs.push({ host: forHost, device, debug, configuration: asked });
@@ -584,7 +590,7 @@ export async function run(): Promise<void> {
                     host: () => "uikit", application: async () => helloWorldHere,
                     device: async () => undefined,
                     uiKitDevice: async () => udid,
-                    guest: async () => undefined,
+                    machine: async () => undefined,
                     place: () => "device",
                     runHead: async (_folder, _application, _host, asked, device, debug) => {
                         runs.push({ device, debug, configuration: asked });
@@ -668,7 +674,7 @@ export async function run(): Promise<void> {
                 host: () => "winui", application: async () => helloWorld,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
-                guest: async () => undefined,
+                machine: async () => undefined,
                 place: () => "machine",
                 runHead: async () => undefined,
                 browser: async () => undefined,
@@ -713,7 +719,7 @@ export async function run(): Promise<void> {
                 host: () => "gtk", application: async () => helloWorld,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
-                guest: async () => undefined,
+                machine: async () => undefined,
                 place: () => "machine",
                 runHead: async () => undefined,
                 browser: async () => undefined,
@@ -766,7 +772,7 @@ export async function run(): Promise<void> {
                     host: () => "web", application: async () => helloWorld,
                     device: async () => undefined,
                     uiKitDevice: async () => undefined,
-                    guest: async () => undefined,
+                    machine: async () => undefined,
                     place: () => "browser",
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
                         runs.push({ host: forHost, device, debug, configuration: asked });
@@ -826,9 +832,9 @@ export async function run(): Promise<void> {
         }
 
         const palette = await vscode.commands.getCommands(true);
-        check("the palette has Select Android Device, Select UIKit Device, Select Browser and Select Guest, and no Select Debugger",
+        check("the palette has Select Android Device, Select UIKit Device, Select Browser and Select Machine, and no Select Debugger",
             palette.includes("stateui.selectAndroidDevice") && palette.includes("stateui.selectUIKitDevice")
-            && palette.includes("stateui.selectBrowser") && palette.includes("stateui.selectGuest")
+            && palette.includes("stateui.selectBrowser") && palette.includes("stateui.selectMachine")
             && !palette.includes("stateui.selectDebugger") && !palette.includes("stateui.selectSimulator"));
 
         // 7. A new application is HelloWorld renamed in a checkout's apps/,

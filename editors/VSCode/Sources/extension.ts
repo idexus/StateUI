@@ -17,7 +17,7 @@ import { chosenApplication, chosenHost, DeviceStore, offeredHosts } from "./choi
 import { AndroidLister, androidDeviceOf, askForDevice, chooseListedDevice, deviceToRunOn } from "./devices";
 import { askForBrowser, Browser, BrowserLister, browserOf, browserToRunOn, chooseListedBrowser } from "./browsers";
 import { applyEditorMode, cleanIndex, IndexAcquirer, IndexConflictError, IndexDescriber } from "./editorMode";
-import { askForGuest, Guest, GuestLister, guestOf, guestToRunIn } from "./guests";
+import { askForMachine, Machine, MachineLister, machineOf, machineToRunOn } from "./machines";
 import { availableHosts, describe, Host, HostDescription, placeOf } from "./hosts";
 import {
     askForUIKitDevice, chooseListedUIKitDevice, uiKitDeviceOf, UIKitLister, uiKitDeviceToRunOn, uiKitSimulatorToTestOn,
@@ -128,8 +128,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     };
     /** Where `forHost`'s heads run from this machine; nothing where it builds none. */
     const place = (forHost: Host) => placeOf(forHost, places);
-    /** Whether this machine works `forHost`'s heads in a guest of its own. */
-    const inGuest = (forHost: Host): boolean => place(forHost) === "guest";
+    /** Whether `forHost`'s heads are worked on another machine: a guest of this Mac, a machine paired with the project. */
+    const elsewhere = (forHost: Host): boolean => place(forHost) === "guest" || place(forHost) === "remote";
 
     // What was chosen, as the tool keeps it: each workspace's application to start, by its folder, and the chosen
     // application's host and devices - read with the applications, and again when a settings file changes.
@@ -291,10 +291,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             deviceItem.command = "stateui.selectBrowser";
             deviceItem.text = `$(globe) ${device ?? "Select Browser"}`;
             deviceItem.tooltip = "The browser StateUI: Debug and StateUI: Release open the application in - one of Chromium's under VS Code's debugger. Click to change.";
-        } else if (inGuest(described.id)) {
-            deviceItem.command = "stateui.selectGuest";
-            deviceItem.text = `$(vm) ${device ?? "Select Guest"}`;
-            deviceItem.tooltip = `The Parallels guest StateUI: Debug, StateUI: Release and StateUI: Package build and run ${described.label} heads in. Click to change.`;
+        } else if (elsewhere(described.id)) {
+            deviceItem.command = "stateui.selectMachine";
+            deviceItem.text = `$(${place(described.id) === "guest" ? "vm" : "remote"}) ${device ?? "Select Machine"}`;
+            deviceItem.tooltip = `The machine - a Parallels guest, a machine paired - StateUI: Debug, StateUI: Release and StateUI: Package build and run ${described.label} heads on. Click to change.`;
         } else if (described.id === "uikit") {
             deviceItem.command = "stateui.selectUIKitDevice";
             deviceItem.text = `$(device-mobile) ${device ?? "Select UIKit Device"}`;
@@ -304,7 +304,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             deviceItem.text = `$(device-mobile) ${device ?? "Select Android Device"}`;
             deviceItem.tooltip = "The Android device StateUI: Debug, StateUI: Release and StateUI: Run Tests run on. Click to change.";
         }
-        // A host whose heads run elsewhere than on this machine itself shows where: a device, a browser, a guest.
+        // A host whose heads run elsewhere than on this machine itself shows where: a device, a browser, a machine.
         place(described.id) !== undefined && place(described.id) !== "machine" ? deviceItem.show() : deviceItem.hide();
     };
 
@@ -442,21 +442,21 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return id;
     };
 
-    /** The guests of this Mac of `forHost`'s system the tool lists, through any folder's connection. */
-    const listGuests: GuestLister = async (forHost) => {
+    /** The machines `forHost`'s heads are worked on the tool lists - guests, machines paired - for the first folder. */
+    const listMachines: MachineLister = async (forHost) => {
         const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
         if (!folder) {
-            void vscode.window.showErrorMessage("StateUI: the guests are listed for a folder, and none is open.");
+            void vscode.window.showErrorMessage("StateUI: the machines are listed for a folder, and none is open.");
             return undefined;
         }
-        const listed = await withTool(tool, folder, "the guests could not be listed",
+        const listed = await withTool(tool, folder, "the machines could not be listed",
             (client) => client.request("devices/list", { host: forHost }));
-        return listed?.destinations.filter((each) => each.kind === "guest").map(guestOf);
+        return listed?.destinations.flatMap((each) => machineOf(each) ?? []);
     };
 
-    /** The guest a launch of a host worked in one is built and run in - asked for where none chosen is listed. */
-    const guest = async (forHost: Host): Promise<Guest | undefined> => {
-        const found = await guestToRunIn(devices, forHost, listGuests);
+    /** The machine a launch of a host worked on another is built and run on - asked for where none chosen is listed. */
+    const machine = async (forHost: Host): Promise<Machine | undefined> => {
+        const found = await machineToRunOn(devices, forHost, place(forHost) ?? "remote", listMachines);
         refresh();
         return found;
     };
@@ -473,7 +473,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     // The suites in the Testing view, found and run by the tool as the chosen host.
     const testSuites = new TestSuites({
         tool, host, device: async (forHost) => forHost === "uikit" ? uiKitSimulator()
-            : inGuest(forHost) ? (await guest(forHost))?.name : androidDevice(),
+            : elsewhere(forHost) ? (await machine(forHost))?.name : androidDevice(),
     });
     context.subscriptions.push(testSuites);
 
@@ -504,8 +504,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             void vscode.window.showErrorMessage(`StateUI: the marks are made in a StateUI checkout, as the host chosen - ${folder ? whyNoHost() : "no folder here is one"}.`);
             return;
         }
-        if (inGuest(chosen)) {
-            void vscode.window.showErrorMessage(`StateUI: ${describe(chosen).label}'s marks are made on its own system - a Mac does not make them in its guest.`);
+        if (elsewhere(chosen)) {
+            void vscode.window.showErrorMessage(`StateUI: ${describe(chosen).label}'s marks are made on its own system - this machine does not make them on another.`);
             return;
         }
         const device = chosen === "uikit" ? await uiKitSimulator() : chosen === "android" ? await androidDevice() : undefined;
@@ -563,13 +563,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             await askForBrowser(devices, listBrowsers);
             refresh();
         }),
-        vscode.commands.registerCommand("stateui.selectGuest", async () => {
+        vscode.commands.registerCommand("stateui.selectMachine", async () => {
             const forHost = host();
-            if (!forHost || !inGuest(forHost)) {
-                void vscode.window.showErrorMessage("StateUI: a guest is chosen for GTK or WinUI on a Mac - select one of them as the host first.");
+            const at = forHost && place(forHost);
+            if (!forHost || !at || !elsewhere(forHost)) {
+                void vscode.window.showErrorMessage("StateUI: a machine is chosen for a host whose heads run on another - GTK or WinUI on a Mac, a host a machine paired runs - select one as the host first.");
                 return;
             }
-            await askForGuest(devices, forHost, listGuests);
+            await askForMachine(devices, forHost, at, listMachines);
             refresh();
         }),
         vscode.commands.registerCommand("stateui.runTests", async () => {
@@ -751,14 +752,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         // The findings, as the command's answer too - for the suite.
         vscode.commands.registerCommand("stateui.checkToolchain", async (): Promise<Finding[] | undefined> => {
             const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? os.homedir();
-            // A host built in a guest: the guest chosen checked after this machine, for the chosen application.
+            // A host built on another machine: the machine chosen checked after this one, for the chosen application.
             const forHost = host();
-            const guested = forHost && inGuest(forHost) ? devices.device(forHost) : undefined;
+            const onMachine = forHost && elsewhere(forHost) ? devices.device(forHost) : undefined;
             const application = chosen();
             const checked = await withTool(tool, folder, "the toolchain was not checked", (client) => vscode.window.withProgress(
                 { location: vscode.ProgressLocation.Notification, title: "StateUI: checking the toolchain" },
-                () => client.request("toolchain/check", forHost && guested
-                    ? { host: forHost, device: guested, projectUri: application && pathToFileUri(application.directory) } : {})));
+                () => client.request("toolchain/check", forHost && onMachine
+                    ? { host: forHost, device: onMachine, projectUri: application && pathToFileUri(application.directory) } : {})));
             if (!checked) {
                 return undefined;
             }
@@ -797,23 +798,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             if (!application) {
                 return undefined;
             }
-            // A guest's head is built there: the guest first, its architectures with it.
-            const guested = inGuest(forHost) ? await guest(forHost) : undefined;
-            if (inGuest(forHost) && !guested) {
+            // A head of another machine is built there: the machine first, its architectures with it.
+            const onMachine = elsewhere(forHost) ? await machine(forHost) : undefined;
+            if (elsewhere(forHost) && !onMachine) {
                 return undefined;
             }
             const offered = forHost === "winui"
-                ? (guested?.architectures ?? await machineArchitectures(forHost)).flatMap((each) => windowsArchitecture(each) ?? [])
+                ? (onMachine?.architectures ?? await machineArchitectures(forHost)).flatMap((each) => windowsArchitecture(each) ?? [])
                 : [];
             const architecture = asked?.architecture ?? (offered.length > 1
                 ? (await vscode.window.showQuickPick(
-                    offered.map((each, index) => ({ label: each, description: index === 0 ? (guested ? "the guest's own" : "this machine's own") : "run by Windows' emulation" })),
+                    offered.map((each, index) => ({ label: each, description: index === 0 ? (onMachine ? `${onMachine.name}'s own` : "this machine's own") : "run by Windows' emulation" })),
                     { title: `StateUI: Package ${application.name} for which architecture?`, ignoreFocusOut: true }))?.label as Architecture | undefined
                 : offered[0]);
             if (forHost === "winui" && !architecture) {
                 return undefined;
             }
-            const device = forHost === "android" ? await androidDevice() : forHost === "uikit" ? await uiKitDevice() : guested?.name;
+            const device = forHost === "android" ? await androidDevice() : forHost === "uikit" ? await uiKitDevice() : onMachine?.name;
             if ((forHost === "android" || forHost === "uikit") && !device) {
                 return undefined;
             }
@@ -822,7 +823,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             const laid = await withTool(tool, application.directory, `${application.name} was not packaged`, (client) =>
                 runOperation(client, "application/package", {
                     projectUri: pathToFileUri(application.directory), host: forHost, outputUri: pathToFileUri(destination),
-                    device: forHost === "uikit" || inGuest(forHost) ? device : undefined, architecture: architecture && toolArchitecture(architecture),
+                    device: forHost === "uikit" || elsewhere(forHost) ? device : undefined, architecture: architecture && toolArchitecture(architecture),
                 }, `StateUI: packaging ${application.name}`, buildOutput));
             if (!laid) {
                 return undefined;
@@ -932,7 +933,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         place,
         device: androidDevice,
         uiKitDevice,
-        guest,
+        machine,
         runHead,
         browser,
         application: async (_folder, forHost, named) => {

@@ -135,6 +135,34 @@ through `prlctl exec` as the guest's system account, with no prompt - the
 guest is the Mac's own machine - so `install` finds the rule standing; a
 program run through `prlctl exec` as the user could show no UAC prompt.
 
+## Work on another machine
+
+A head of a project is built, packaged and run on another machine, and a
+host's own suite run there, by that machine's own stateui (`RemoteWork`):
+where the device names a machine paired with the project that runs the host
+as its own program, or, on a Mac, a guest for GTK and WinUI. A guest is
+reached through `prlctl exec` - started, its stateui laid where it is not the
+checkout's ([Guests](guests.md#a-head-worked-in-a-guest)) - and its
+connection is then its service's where the Mac is paired with it and it
+answers as this release, else the served program's. A machine paired is
+reached through its service alone: its `server/info` says where it keeps
+another machine's work (`workFolder`, `stateui-guest` under its user's home)
+and its system; its stateui must be this release, answering every method the
+work asks, or the work is refused saying so - nothing is laid on a machine
+the tool reaches only through the network. Then alike: the project and its
+checkout copied there through the connection, the request asked with that
+machine's path of the application, a package fetched home, a run's output
+told as it comes and cancelled with it, the result naming that machine as
+its destination (`remote` or `guest`). A host this machine builds none of is
+offered at `remote` in `tests/discover` as on a device, its suite refused
+without one.
+
+`toolchain/check` of a host with a machine paired as its device says what
+that machine has (`RemoteDoctor`): whether its service answers and admits
+this machine - else how to start it or pair again - its stateui's release,
+then the findings its own `toolchain/check` gives, each of that machine; a
+guest paired is checked as a guest.
+
 ## A service probed
 
 `stateui remote probe <address:port>` says whether a stateui service answers

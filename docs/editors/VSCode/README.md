@@ -36,11 +36,11 @@ The extension installs the **Swift** extension (swiftlang) with it. Install
 Open the repository folder. The status bar shows two StateUI items: the
 [application](#the-application) the launches run, and the [host](#the-host)
 it and the editor work as. While the host is UIKit, Android or the Web - or
-GTK or WinUI on a Mac - a third item after them shows the device: an iPhone,
-an iPad or a simulator for UIKit; an attached phone or an emulator, started
-when it is picked, for Android; the browser the page opens in, for the Web;
-the Parallels guest the head is built and runs in, for GTK and WinUI on a
-Mac.
+one this machine works on another - a third item after them shows the device:
+an iPhone, an iPad or a simulator for UIKit; an attached phone or an emulator,
+started when it is picked, for Android; the browser the page opens in, for the
+Web; the machine the head is built and runs on - a Parallels guest for GTK and
+WinUI on a Mac, a machine paired with the project - for the others.
 
 What is chosen there is the project's choice on this machine, which the
 `stateui` tool keeps out of git in its `.stateui/` - the workspace's
@@ -55,9 +55,9 @@ and Debug. The application's head is built, installed where the host needs
 it, and started under `lldb-dap`, a breakpoint holding from the first line -
 on Android `lldb-dap` attaches once the application has started, and a
 breakpoint holds from then on; on UIKit and Android **StateUI Run** follows the
-application's output, and the notification that follows it stops it. On a Mac
-a GTK or WinUI head is built and started in the guest chosen, followed the
-same way, with no debugger. On UIKit, Android and the Web a Release launch runs
+application's output, and the notification that follows it stops it. A head
+worked on another machine is built and started on the machine chosen, followed
+the same way, with no debugger. On UIKit, Android and the Web a Release launch runs
 without a debugger; on AppKit, WinUI and GTK `lldb-dap` starts the optimized
 build. A Web head is built, its page served and opened in the chosen browser;
 StateUI: Debug in Chrome, Edge or another of Chromium's browsers opens it
@@ -79,7 +79,7 @@ The Command Palette offers the rest under **StateUI:**
 | [Select UIKit Device](#the-uikit-device) | the iPhone, iPad or simulator a UIKit head runs on |
 | [Select Android Device](#the-android-device) | the device or emulator an Android head runs on |
 | [Select Browser](#the-browser) | the browser a Web head's page opens in |
-| [Select Guest](#the-guest) | the Parallels guest of a Mac a GTK or WinUI head is built and runs in |
+| [Select Machine](#the-machine) | the machine - a Parallels guest of a Mac, a machine paired - a head is built and runs on |
 | [Select Application](#the-application) | the application F5 runs |
 | [Run Tests](#tests) | the workspace's suites, run as the chosen host |
 | [Package](#package) | the chosen application built for release and laid, with what it runs with, in `artifacts/<application>/<platform>` of its workspace - on WinUI per architecture |
@@ -98,8 +98,9 @@ The status bar shows the host - **AppKit**, **UIKit**, **Android**, **WinUI**,
 runs, and those alone: an application with an Android head alone runs as
 Android. Which hosts this machine runs, and where, the `stateui` tool says
 (`stateui version` prints them): AppKit, UIKit and Android on macOS, WinUI on
-Windows, GTK on Linux - both on a Mac too, in a [guest](#the-guest) - the Web
-on macOS and Linux. Where none is offered - no head of the
+Windows, GTK on Linux - both on a Mac too, in a [guest](#the-machine) - the Web
+on macOS and Linux; and a host a [machine paired](#the-machine) with the
+project runs as its own program, at its place `remote`. Where none is offered - no head of the
 application runs here, or no application is here - the status bar says **no
 host**, a launch says why it runs nothing, and the editor and **StateUI: Run
 Tests** work as plain Swift.
@@ -154,12 +155,12 @@ Tests** work as plain Swift.
   chosen below on the page under VS Code's own JavaScript debugger: the page's
   console is in the Debug Console, and ending the session stops the server.
   Any other browser, and StateUI: Release, the tool opens itself.
-  On a Mac, GTK and WinUI are the [guest](#the-guest)'s: the `stateui` tool
-  copies the project into it, has the guest's own `stateui` build and start
-  the head there, and **StateUI Run** follows what it prints; the notification
-  that follows it stops it in the guest. Where the tool says no debugger
-  reaches the guest, StateUI: Debug runs the debug build without one, and says
-  so.
+  A head worked on another [machine](#the-machine) - GTK and WinUI in a guest
+  of a Mac, a host a machine paired runs - is that machine's: the `stateui`
+  tool copies the project to it, has its own `stateui` build and start the
+  head there, and **StateUI Run** follows what it prints; the notification
+  that follows it stops it there. Where the tool says no debugger reaches the
+  machine, StateUI: Debug runs the debug build without one, and says so.
 
 ## The Android device
 
@@ -193,19 +194,22 @@ tool lists them. It is the application's choice,
 by its name, so a launch asks only when none is chosen or the one chosen is
 no longer installed.
 
-## The guest
+## The machine
 
-While the host is GTK or WinUI on a Mac, the third status bar item shows the
-Parallels Desktop guest a launch and Package build in - click it, or run
-**StateUI: Select Guest**. It offers the virtual machines of the host's
-system - Linux for GTK, Windows for WinUI - as `stateui devices` lists them,
-each with its state; a guest suspended or stopped is resumed or started when a
-build needs it. It is the application's choice, by its name, so a launch asks
-only when none is chosen or the one chosen is gone. What a guest needs, and
-how a Mac makes one: [Every host from one Mac](../../every-host-from-a-mac.md);
-**StateUI: Check Toolchain** checks the guest chosen too, and **StateUI: Run
-Tests** runs the host's own suite there. Its conformance marks are made on its
-own system.
+While the host is one this machine works on another - GTK or WinUI on a Mac,
+or a host this machine builds none of that a machine paired with the project
+runs - the third status bar item shows the machine a launch and Package build
+on - click it, or run **StateUI: Select Machine**. It offers, as `stateui
+devices` lists them, the Parallels Desktop guests of the host's system - Linux
+for GTK, Windows for WinUI - each with its state, a guest suspended or stopped
+resumed or started when a build needs it; and the machines paired with the
+project (`stateui remote add`) that run the host as their own program, each
+with where its service listens. It is the application's choice, by its name,
+so a launch asks only when none is chosen or the one chosen is gone. What a
+guest needs, and how a Mac makes one: [Every host from one
+Mac](../../every-host-from-a-mac.md); **StateUI: Check Toolchain** checks the
+machine chosen too, and **StateUI: Run Tests** runs the host's own suite
+there. Its conformance marks are made on its own system.
 
 ## The application
 
@@ -305,7 +309,7 @@ one ticked, and runs them AS THE HOST, one after another, each through the tool
   own tests, `lib/StateUI/StateUI.GTK/Testing`, by
   `stateui repo test --suite host:gtk`, its windows on the desktop's display.
 - **WinUI and GTK on a Mac**: the library and each application as plain Swift
-  on the Mac, and the host's own tests in the [guest](#the-guest) chosen, by
+  on the Mac, and the host's own tests in the [guest](#the-machine) chosen, by
   `stateui repo test --suite host:<host> --device <guest>`.
 - **Web**: the library and each application as plain Swift, and the Web host's
   own tests, `lib/StateUI/StateUI.Web/Testing`, by
@@ -330,9 +334,9 @@ The `stateui` tool packages it:
   `artifacts/<application>/WinUI/arm64` or `.../x64`; an x64 machine builds x64
   without asking.
 - **GTK**: the head, the StateUI libraries it links and the pictures.
-- On a Mac, GTK and WinUI are packaged in the [guest](#the-guest) chosen, into
-  this Mac's `artifacts/<application>/<platform>`, which the guest writes
-  through the folder it shares.
+- A head worked on another [machine](#the-machine) is packaged there, into
+  this machine's `artifacts/<application>/<platform>`, which the tool fetches
+  through its connection.
 - **AppKit**: the application bundle where the checkout bundles the
   application, else the head and the StateUI libraries it links.
 - **UIKit**: the application bundle, for the simulator or device chosen.
@@ -385,9 +389,9 @@ findings, added to the tool's. The **StateUI Toolchain** output lists each
 with what was found - a version older than the one required marked as too old - and
 for each not found what to install. It looks where the tool's builds look
 (the NDK as an Android build finds it); it installs nothing. While the host is
-GTK or WinUI on a Mac and a guest is chosen, the guest's findings follow this
+worked on another machine and one is chosen, its findings follow this
 machine's, under its name - what `stateui doctor --host <host> --device
-<guest>` prints.
+<machine>` prints.
 
 ## The extension itself
 
