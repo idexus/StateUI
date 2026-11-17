@@ -4,12 +4,14 @@
 /// Where a head runs: a real device attached to or paired with this machine, a simulator, an emulator, or a
 /// browser a Web head's page opens in.
 public struct Destination: Codable, Equatable, Sendable {
-    /// Whether it is a real device, an iOS simulator, an Android emulator or a browser.
+    /// Whether it is a real device, an iOS simulator, an Android emulator, a browser or a virtual machine of this one.
     public enum Kind: String, Codable, Sendable {
         case device
         case simulator
         case emulator
         case browser
+        /// A virtual machine of this Mac - a Parallels guest - which a GTK or WinUI head is built and run in.
+        case guest
     }
 
     /// How a tool names it: a device's identifier as `devicectl` gives it, a simulator's UDID, an Android device's
@@ -23,7 +25,7 @@ public struct Destination: Codable, Equatable, Sendable {
     public var version: String
     /// A simulator's or an emulator's: whether it is running; a browser's: whether it is the system's own.
     public var booted: Bool
-    /// A device's: how it is reached - `USB`, `Wi-Fi`.
+    /// A device's: how it is reached - `USB`, `Wi-Fi`; a guest's: its state - `running`, `suspended`, `stopped`.
     public var connection: String?
     /// The architecture a build for it targets, where the platform says it: an Android device's ABI.
     public var architecture: Architecture?

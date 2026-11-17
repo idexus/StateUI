@@ -1,8 +1,9 @@
 # Destinations
 
 A destination is where a head runs. An AppKit, WinUI or GTK head runs on the
-machine that built it; a UIKit head runs on an iPhone or iPad simulator, or
-on a real iPhone or iPad paired with the Mac.
+machine that built it - from a Mac a GTK or WinUI head also in a virtual
+machine of its system ([Guests](guests.md)); a UIKit head runs on an iPhone
+or iPad simulator, or on a real iPhone or iPad paired with the Mac.
 
 ## Listing them
 
@@ -15,7 +16,8 @@ newer, the newest runtime first and each runtime's in its own order, each
 saying whether it is booted. A destination is known by `id` - a device's
 `devicectl` identifier, a simulator's UDID - and keeps the hardware's UDID
 apart, the one a development profile provisions. A host whose heads run on
-the machine itself has no destinations, and asking for them is refused.
+the machine itself has no destinations, and asking for them is refused - but
+on a Mac, where GTK's and WinUI's are its guests.
 
 ## Android
 

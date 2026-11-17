@@ -204,8 +204,9 @@ public struct ToolingService: Sendable {
             removedUris: cleaned.removed.map(FileURI.string), conflicts: cleaned.conflicts.isEmpty ? nil : cleaned.conflicts)
     }
 
-    /// Where `host`'s heads can run on this machine - `devices/list`: UIKit's iPhones, iPads and simulators on a Mac,
-    /// Android's devices and emulators.
+    /// Where `host`'s heads can run from this machine - `devices/list`: UIKit's iPhones, iPads and simulators on a Mac,
+    /// Android's devices and emulators, the Web's browsers, and on a Mac the virtual machines of GTK's and WinUI's
+    /// systems.
     ///
     /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose heads run on this machine itself.
     public func listDestinations(of host: HostFamily) async throws -> DestinationList {
@@ -220,6 +221,14 @@ public struct ToolingService: Sendable {
             return DestinationList(host: host, destinations: await AndroidDestinations().list())
         case .web:
             return DestinationList(host: host, destinations: await Browsers.list())
+        case .gtk, .winui:
+            #if os(macOS)
+            let system = ParallelsGuests.system(for: host)
+            return DestinationList(host: host, destinations: await ParallelsGuests().list()
+                .filter { $0.system == system }.map(ParallelsGuests.destination))
+            #else
+            throw ToolingError(.invalidConfiguration, "Heads of \(host.rawValue) run on this machine itself.")
+            #endif
         default:
             throw ToolingError(.invalidConfiguration, "Heads of \(host.rawValue) run on this machine itself; uikit's and android's run on devices, web's in browsers.")
         }

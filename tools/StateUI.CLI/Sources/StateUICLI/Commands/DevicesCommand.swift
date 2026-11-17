@@ -12,7 +12,7 @@ struct DevicesCommand: AsyncParsableCommand {
         abstract: "Lists the devices, simulators, emulators and browsers a host's heads run on here: --host uikit, android or web."
     )
 
-    @Option(help: "The host whose devices to list: uikit, android or web.")
+    @Option(help: "The host whose devices to list: uikit, android or web - and on a Mac gtk and winui, its virtual machines.")
     var host: HostFamily
 
     @OptionGroup var output: OutputOptions
@@ -26,7 +26,7 @@ struct DevicesCommand: AsyncParsableCommand {
         if list.destinations.isEmpty { return "No device or simulator for \(list.host.rawValue) here." }
         return list.destinations.map { each in
             let state = each.kind == .browser ? (each.booted ? "the system's own" : "")
-                : each.kind == .device ? each.connection ?? "" : each.booted ? "booted" : "not running"
+                : each.kind == .device || each.kind == .guest ? each.connection ?? "" : each.booted ? "booted" : "not running"
             let facts = [each.kind.rawValue, each.version, each.architecture?.rawValue ?? "", state].filter { !$0.isEmpty }.joined(separator: ", ")
             return "\(each.name) (\(facts)) \(each.id)"
         }.joined(separator: "\n")
