@@ -129,6 +129,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `files/write`, `file/read`, `files/remove`, in pieces of at most 4 MiB, a file's time kept - over a guest's
   `prlctl exec` as over the service: a guest reads the project and hands a package back through no shared folder;
   only its own stateui is laid from the shared checkout.
+- `stateui service install --listen <address:port>` lays the service to start with its user's desktop session - a
+  launch agent on macOS, a user unit of the graphical session on Linux, the user's `Run` value with no window on
+  Windows - and starts it; `uninstall` takes it away, `status` says where it listens and the code it shows. On Windows
+  it opens the service's port in the firewall to the local subnet alone, asking UAC once. `stateui guest pair --device
+  <guest>` lays a guest's service and pairs the Mac with it by its address, a Windows guest's firewall opened by the
+  Mac with no prompt.
 - `stateui new --platforms appkit,web,winui` makes an application with those hosts' heads alone; an application's
   hosts are its heads, so one is taken away by removing its `Platforms/<Host>`.
 - The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running; an

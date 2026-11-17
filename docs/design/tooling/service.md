@@ -90,3 +90,42 @@ only once whole. A path names a file inside its folder alone: none empty,
 absolute, with `.`, `..` or a backslash. These are queries, answered at once:
 a folder of the checkout's 4,476 files is some 27 MB.
 
+## The service in the background
+
+`stateui service install --listen <address:port>` lays the service to start
+with its user's desktop session, where an application it starts opens its
+windows, and starts it now (`ServiceAutostart`); `uninstall` stops it and
+takes it away. Each system starts it as it starts a user's own program: a
+launch agent on a Mac (`~/Library/LaunchAgents/com.stateui.service.plist`,
+started again should it end); a user unit of the graphical session on Linux
+(`~/.config/systemd/user/stateui.service`, whose process has the desktop's
+display and bus); on Windows the user's `Run` value, starting it in a console
+of no window (`conhost --headless`) - a logon task of the Task Scheduler is
+refused to a user who is not elevated. Running, the service keeps what it
+says of itself in its user's state folder (`ServiceState`, `service/state.json`):
+its process, where it listens and the pairing code it shows now, which
+`stateui service status` tells - running means its port answers.
+
+Windows' firewall holds a program listening on the network until someone
+answers its alert, and a Parallels network is a Public profile: the alert's
+answer allows or blocks the program for any address. `install` takes every
+rule laid for the program away and lays one, `StateUI service`, allowing the
+service's port from the local subnet alone, by a PowerShell script handed
+encoded (`-EncodedCommand`), which no command line's quoting breaks; it asks
+UAC on that machine's desktop once, unless the rule stands, and checks the
+rule after. On Windows a running program's file cannot be written: laying a
+guest's stateui again ends its service first.
+
+## A guest paired
+
+`stateui guest pair --device <guest>` pairs a Mac with its guest as with any
+machine of the network (`GuestPairing`): the guest's stateui laid where it is
+not the checkout's, the service laid in its user's session listening on the
+port given (7979), its code read through `prlctl exec` (`service status
+--format json`), and the guest paired by the first of its addresses - as
+Parallels Tools report them, IPv4 first - at which its service answers, kept
+by the guest's name. A Windows guest's firewall is opened by the Mac itself,
+through `prlctl exec` as the guest's system account, with no prompt - the
+guest is the Mac's own machine - so `install` finds the rule standing; a
+program run through `prlctl exec` as the user could show no UAC prompt.
+

@@ -42,6 +42,18 @@ struct GuestCommands: Sendable {
         return (nil, "")
     }
 
+    /// What `program`, run with `arguments` in the guest by its system - Parallels Tools' own account, with no user's
+    /// session and no prompt - wrote, and the status it ended with: what only the machine's owner may change.
+    func asSystem(_ program: String, _ arguments: [String]) async -> (status: Int?, output: String) {
+        let said = Gathered()
+        let outcome = try? await ProcessRunner().run(
+            ProcessRequest(.path(prlctl.path), arguments: ["exec", guest.id, program] + arguments, timeout: .seconds(120)),
+            output: said.add)
+        let text = (said.lines(of: .standardOutput) + said.lines(of: .standardError)).joined(separator: "\n")
+        guard let outcome, outcome.stop == nil, case .exited(let code) = outcome.termination else { return (nil, text) }
+        return (code, text)
+    }
+
     /// `program` as `prlctl exec` finds it: on Windows, where it searches no user's path, by its whole path, which
     /// `where.exe` - of the system's own folder - gives; elsewhere as named.
     private func located(_ program: String) async -> String {

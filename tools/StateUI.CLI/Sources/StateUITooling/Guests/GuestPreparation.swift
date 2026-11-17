@@ -70,6 +70,8 @@ struct GuestPreparation: Sendable {
         else { throw ToolingError(.toolFailed, "SwiftPM did not say where it laid the tool in \(guest.name).") }
 
         reporter.progress("laying the tool in \(places.tool)")
+        // Windows holds a running program's file: the guest's service, of the tool laid before, ends first.
+        if windows { _ = await commands.run("taskkill", ["/F", "/IM", "stateui.exe"]) }
         let laid = windows
             ? await commands.status("robocopy", [products, bin, "stateui.exe", "*.dll", "/NFL", "/NDL", "/NJH", "/NJS"])
             : await commands.status("install", ["-D", "-m", "755", products + "/stateui", places.tool])

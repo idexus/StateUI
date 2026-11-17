@@ -77,4 +77,14 @@ final class ParallelsGuestsTests: XCTestCase {
                 version: "win-11", booted: false, connection: "suspended", architecture: .arm64, emulated: [.x86_64],
                 debugger: false))
     }
+
+    /// A guest's addresses are read as Parallels Tools report them, IPv4 first, each once.
+    func testAGuestsAddressesAreReadIPv4First() {
+        let entry: [String: Any] = ["Network": ["ipAddresses": [
+            ["type": "ipv6", "ip": "fe80::1"], ["type": "ipv4", "ip": "10.0.7.77"], ["type": "ipv4", "ip": "10.211.55.4"],
+            ["type": "ipv4", "ip": "10.0.7.77"],
+        ]]]
+        XCTAssertEqual(ParallelsGuests.addresses(of: entry), ["10.0.7.77", "10.211.55.4", "fe80::1"])
+        XCTAssertEqual(ParallelsGuests.addresses(of: [:]), [])
+    }
 }

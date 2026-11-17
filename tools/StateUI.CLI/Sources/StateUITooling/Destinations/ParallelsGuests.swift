@@ -32,6 +32,8 @@ public struct ParallelsGuests: Sendable {
         public var sharesAllDisks: Bool
         /// Whether Parallels Tools stand in it, which `prlctl exec` and the shared folders need.
         public var hasTools: Bool
+        /// Its addresses on its networks, IPv4 first, as Parallels Tools report them.
+        public var addresses: [String] = []
 
         /// What the Mac's folder `folder` is reached through in the guest: the name of a folder it shares holding it,
         /// `every disk` where it shares them all; nil where it reaches it not. `home` is the Mac's, which `~` names.
@@ -99,7 +101,8 @@ public struct ParallelsGuests: Sendable {
                 id: id, name: name, os: os, system: Self.system(of: os), state: entry["State"] as? String ?? "",
                 architecture: (cpu?["type"] as? String).map { $0 == "arm" ? .arm64 : .x86_64 }, shares: shares,
                 sharesAllDisks: entry["Host defined sharing"] as? String == "All host disks",
-                hasTools: (entry["GuestTools"] as? [String: Any])?["state"] as? String == "installed")
+                hasTools: (entry["GuestTools"] as? [String: Any])?["state"] as? String == "installed",
+                addresses: Self.addresses(of: entry))
         }
     }
 
@@ -117,6 +120,17 @@ public struct ParallelsGuests: Sendable {
         case .winui: .windows
         default: nil
         }
+    }
+
+    /// The addresses `entry` - one guest of `prlctl list --info --json` - reports, IPv4 first, each once.
+    static func addresses(of entry: [String: Any]) -> [String] {
+        let listed = ((entry["Network"] as? [String: Any])?["ipAddresses"] as? [[String: Any]]) ?? []
+        let pairs = listed.compactMap { item -> (String, String)? in
+            guard let ip = item["ip"] as? String, let type = item["type"] as? String else { return nil }
+            return (type, ip)
+        }
+        var seen = Set<String>()
+        return (pairs.filter { $0.0 == "ipv4" } + pairs.filter { $0.0 != "ipv4" }).map(\.1).filter { seen.insert($0).inserted }
     }
 
     /// `guest` as a device a head is built for: named as Parallels names it, its system and state said.

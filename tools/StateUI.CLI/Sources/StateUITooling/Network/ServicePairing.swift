@@ -34,7 +34,7 @@ public final class ServicePairing: Sendable {
     /// The pairings kept in `file`, the service named `name`; each new code told to `said`.
     public init(
         file: URL = BuildPermit.userFolder.appendingPathComponent("service/clients.json"),
-        name: String = ProcessInfo.processInfo.hostName, now: @escaping @Sendable () -> Date = { Date() },
+        name: String = ProcessInfo.processInfo.environment["COMPUTERNAME"] ?? ProcessInfo.processInfo.hostName, now: @escaping @Sendable () -> Date = { Date() },
         said: @escaping @Sendable (String) -> Void = { _ in }
     ) {
         self.file = file
@@ -48,6 +48,9 @@ public final class ServicePairing: Sendable {
 
     /// The code a client pairs with now.
     public var code: String { state.withLock { $0.code } }
+
+    /// When the code shown now stops pairing.
+    public var codeUntil: Date { state.withLock { $0.issued.addingTimeInterval(600) } }
 
     /// Pairs the client `request` names where its code is the service's and still good: its id and token, kept here.
     func pair(_ request: PairingRequest) throws(ToolingError) -> PairingResult {

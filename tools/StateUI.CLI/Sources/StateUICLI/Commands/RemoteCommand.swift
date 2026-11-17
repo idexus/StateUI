@@ -28,7 +28,7 @@ struct RemoteCommand: AsyncParsableCommand {
 
         func run() async throws {
             do {
-                let (address, port) = try ServiceCommand.place(place)
+                let (address, port) = try ServiceListener.place(place)
                 let machine = try await RemoteMachines().pair(name: name, address: address, port: port, code: code)
                 print("stateui: paired with \(machine.service) as \(machine.name)")
             } catch let error as ToolingError {

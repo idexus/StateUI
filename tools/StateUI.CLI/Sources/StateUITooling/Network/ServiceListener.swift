@@ -21,6 +21,17 @@ public struct ServiceListener: Sendable {
         ServiceListener(socket: try StreamSocket.listen(on: address, port: port), pairing: pairing)
     }
 
+    /// The address and the port `listen` names: `address:port`, an IPv6 address within brackets.
+    public static func place(_ listen: String) throws(ToolingError) -> (String, UInt16) {
+        let bracketed = listen.hasPrefix("[")
+        guard let colon = listen.lastIndex(of: ":"), let port = UInt16(listen[listen.index(after: colon)...]) else {
+            throw ToolingError(.invalidConfiguration, "--listen is an address and a port, 127.0.0.1:7979 - not \(listen).")
+        }
+        var address = String(listen[..<colon])
+        if bracketed, address.hasSuffix("]") { address = String(address.dropFirst().dropLast()) }
+        return (address, port)
+    }
+
     /// Serves every connection made to it, each as long as its client keeps it, until the task is cancelled.
     public func serve() async {
         let accepted = AsyncStream<StreamSocket> { continuation in

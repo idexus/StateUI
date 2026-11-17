@@ -139,7 +139,7 @@ public struct GuestWork: Sendable {
 
     /// The guest `device` names, of `host`'s system, running, its stateui - of the StateUI checkout `checkout` -
     /// answering this tool's work.
-    private func reached(_ device: String?, host: HostFamily?, checkout: URL, reporter: BuildReporter) async throws -> Reached {
+    func reached(_ device: String?, host: HostFamily?, checkout: URL, reporter: BuildReporter) async throws -> Reached {
         guard let prlctl = guests.prlctl else {
             throw ToolingError(.missingToolchain, "Parallels Desktop's prlctl is not here: its Pro or Business edition has it.")
         }

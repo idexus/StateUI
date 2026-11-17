@@ -188,6 +188,16 @@ public struct ToolingService: Sendable {
         return try await GuestPreparation(commands: GuestCommands(prlctl: prlctl, guest: guest)).lay(checkout: library, reporter: reporter)
     }
 
+    /// Pairs this Mac with the guest `device` names as with any machine of the network: its stateui's service laid to
+    /// start with its user's session, listening on `port`, the guest kept as a paired machine by its name.
+    public func pairGuest(_ device: String, port: UInt16, in folder: URL, reporter: BuildReporter) async throws -> RemoteMachine {
+        let project = try? await ProjectReader().describe(containing: folder)
+        guard let library = project?.applications.compactMap(\.libraryUri).first.flatMap({ try? FileURI.url($0) })
+            ?? Checkout.holding(folder)?.root
+        else { throw ToolingError(.projectNotFound, "No StateUI checkout stands in or above \(folder.path).") }
+        return try await GuestPairing(guests: ParallelsGuests()).pair(device, port: port, checkout: library, reporter: reporter)
+    }
+
     /// The suites the folder holding `folder` - a checkout, a workspace, an application - holds for `host`, in the
     /// order they are best run - `tests/discover`.
     public func discoverTests(for host: HostFamily?, in folder: URL) async throws -> TestSuiteList {
