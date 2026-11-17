@@ -264,12 +264,16 @@ public struct ToolingService: Sendable {
 
     /// Builds `request`'s application and publishes it - `application/build`.
     public func build(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> BuildResult {
-        try await ApplicationBuilder().build(request, in: folder, operation: operation, reporter: reporter)
+        let chosen = try ApplicationBuilder.chosen(request, in: folder)
+        if GuestWork.asks(chosen) { return try await GuestWork(guests: ParallelsGuests()).build(chosen, in: folder, reporter: reporter) }
+        return try await ApplicationBuilder().build(request, in: folder, operation: operation, reporter: reporter)
     }
 
     /// Builds `request`'s application for release and lays it out to be shipped - `application/package`.
     public func package(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> BuildResult {
-        try await ApplicationBuilder().package(request, in: folder, operation: operation, reporter: reporter)
+        let chosen = try ApplicationBuilder.chosen(request, in: folder)
+        if GuestWork.asks(chosen) { return try await GuestWork(guests: ParallelsGuests()).package(chosen, in: folder, reporter: reporter) }
+        return try await ApplicationBuilder().package(request, in: folder, operation: operation, reporter: reporter)
     }
 
     /// gdb's commands for a GTK head run under it on `architecture`.
@@ -284,7 +288,10 @@ public struct ToolingService: Sendable {
 
     /// Builds `request`'s application, starts it and follows it until it ends - `application/run`.
     public func run(_ request: RunRequest, in folder: URL, operation: String, reporter: RunReporter) async throws -> RunResult {
-        try await ApplicationRunner().run(request, in: folder, operation: operation, reporter: reporter)
+        var chosen = request
+        chosen.build = try ApplicationBuilder.chosen(request.build, in: folder)
+        if GuestWork.asks(chosen.build) { return try await GuestWork(guests: ParallelsGuests()).run(chosen, in: folder, reporter: reporter) }
+        return try await ApplicationRunner().run(request, in: folder, operation: operation, reporter: reporter)
     }
 
     /// Runs suite `suite` - `host:<host>` - of the StateUI checkout holding `folder`, `filter`ed where given, a UIKit
@@ -511,6 +518,11 @@ public struct ToolingService: Sendable {
             return try await useLibrary(
                 in: try FileURI.url(uri), checkout: try request.checkoutUri.map(FileURI.url), release: request.release,
                 repository: request.repository)
+        }
+        methods.mutation("folder/mirror") { (request: FolderMirrorRequest, context: OperationContext) in
+            try FolderMirror().mirror(request) { said in
+                Task { await context.progress(OperationProgress(stage: "mirroring", message: said)) }
+            }
         }
         methods.mutation("project/create") { (request: ApplicationRequest, _: OperationContext) in
             try await createApplication(

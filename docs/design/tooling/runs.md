@@ -35,6 +35,18 @@ its platform's form, in the variables' order: a simulator's as `simctl`'s
 `--environment-variables`, Android's as extras, a page's as parameters of
 its address.
 
+## A desktop head
+
+A GTK or WinUI head run by `application/run` - as a guest of a Mac runs one
+the Mac asks of it ([Guests](guests.md#a-head-worked-in-a-guest)) - is
+started from the program its build names and followed until it ends, its
+output told as it comes (`DesktopLaunch`); a GTK head is installed first and
+a copy of it running stopped, as a GTK application is one instance. Cancelled,
+the program is stopped with everything it started. It is not held for a
+debugger: a debugger starts the program the build names. The terminal's
+`stateui run` of a head of its own machine runs the program itself, in the
+foreground.
+
 ## On a simulator
 
 The simulator is booted where it is not (`simctl bootstatus -b`) and the

@@ -110,6 +110,11 @@ struct GuestPlaces: Sendable, Equatable {
 
     /// `parts` joined as the guest's system joins a path.
     func join(_ parts: String...) -> String {
+        join(parts)
+    }
+
+    /// `parts` joined as the guest's system joins a path.
+    func join(_ parts: [String]) -> String {
         parts.joined(separator: windows ? "\\" : "/")
     }
 }

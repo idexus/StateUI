@@ -1,0 +1,29 @@
+{
+  "request" : {
+    "id" : "31",
+    "jsonrpc" : "2.0",
+    "method" : "folder/mirror",
+    "params" : {
+      "files" : [
+        "Package.swift",
+        "Sources/NotesApp.swift"
+      ],
+      "requestToken" : "1b6d2e4f-8a3c-4d5e-9f7a-2c4e6a8b0d13",
+      "sourcePath" : "/media/psf/Demo",
+      "targetPath" : "/home/example/stateui-guest/Demo"
+    }
+  },
+  "response" : {
+    "id" : "31",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "copied" : 1,
+    "removed" : 0,
+    "unchanged" : 1
+  }
+}

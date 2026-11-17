@@ -27,39 +27,80 @@ public struct ServedTool: Sendable {
         self.workspaceUri = workspaceUri
     }
 
+    /// What the served tool says of itself as a connection opens: the API version both speak and the methods it
+    /// answers.
+    public func opening() async throws -> InitializeResult {
+        try await converse { try $0.opened() }
+    }
+
     /// The result of the query `method` asked with `params`.
     public func query(_ method: String, _ params: JSONValue) async throws -> JSONValue {
         try await converse { try await $0.request(method, params) }
     }
 
     /// The operation `method` asked with `params`, followed to its end: its progress and output told to `reporter`,
-    /// its result returned, its failure thrown as the served tool said it. Cancelled here, it is cancelled there.
-    public func operation(_ method: String, _ params: JSONValue, reporter: BuildReporter) async throws -> JSONValue {
+    /// an application it started to `started`, its result returned, its failure thrown as the served tool said it.
+    /// Cancelled here, it is cancelled there, and the connection waits for its end - up to `cancelLimit` - before it
+    /// closes: a served tool torn down first leaves what its operation started running.
+    public func operation(
+        _ method: String, _ params: JSONValue, reporter: BuildReporter,
+        started: @escaping @Sendable (LaunchedApplication) -> Void = { _ in }, cancelLimit: Duration = .seconds(20)
+    ) async throws -> JSONValue {
         guard case .object(var fields) = params else { throw ToolingError(.internalError, "\(method) takes an object.") }
         fields["requestToken"] = .string(UUID().uuidString.lowercased())
         let asked = JSONValue.object(fields)
-        return try await converse { conversation in
-            let handle = try await conversation.request(method, asked).decode(OperationHandle.self)
-            let lines = OutputLines.Streams()
-            let ended: OperationState = try await withTaskCancellationHandler {
+        let following = Following()
+        // Unstructured, so a cancel here reaches the served tool as `operation/cancel` rather than tearing it down.
+        let work = Task {
+            try await converse { conversation in
+                let handle = try await conversation.request(method, asked).decode(OperationHandle.self)
+                following.follow(conversation, handle.operationId)
+                let lines = OutputLines.Streams()
+                var ended: OperationState?
                 for await event in conversation.events where event.operationId == handle.operationId {
                     switch event.event {
-                    case .state(let state) where state.isTerminal: return state
+                    case .state(let state) where state.isTerminal: ended = state
                     case .progress(let progress): reporter.progress(progress.message ?? progress.stage)
                     case .output(let chunk): for line in lines.take(chunk) { reporter.output(line) }
+                    case .started(let application): started(application)
                     default: break
                     }
+                    if ended != nil { break }
                 }
-                throw ToolingError(.toolFailed, "The served stateui ended before \(method) did.")
-            } onCancel: {
-                Task { _ = try? await conversation.request("operation/cancel", .object(["operationId": .string(handle.operationId)])) }
+                guard let ended else { throw ToolingError(.toolFailed, "The served stateui ended before \(method) did.") }
+                for line in lines.finish() { reporter.output(line) }
+                let snapshot = try await conversation.request("operation/get", .object(["operationId": .string(handle.operationId)]))
+                    .decode(OperationSnapshot.self)
+                if let failure = snapshot.failure { throw failure }
+                if ended == .cancelled { throw CancellationError() }
+                return snapshot.result ?? .null
             }
-            for line in lines.finish() { reporter.output(line) }
-            let snapshot = try await conversation.request("operation/get", .object(["operationId": .string(handle.operationId)]))
-                .decode(OperationSnapshot.self)
-            if let failure = snapshot.failure { throw failure }
-            if ended == .cancelled { throw CancellationError() }
-            return snapshot.result ?? .null
+        }
+        return try await withTaskCancellationHandler {
+            try await work.value
+        } onCancel: {
+            following.cancel()
+            Task {
+                try? await Task.sleep(for: cancelLimit)
+                work.cancel()
+            }
+        }
+    }
+
+    /// The operation a call follows, once the served tool named it: what a cancel asks to stop.
+    private final class Following: Sendable {
+        private let followed = Mutex<(conversation: Conversation, operation: String)?>(nil)
+        private let cancelled = Mutex(false)
+
+        func follow(_ conversation: Conversation, _ operation: String) {
+            followed.withLock { $0 = (conversation, operation) }
+            if cancelled.withLock({ $0 }) { cancel() }
+        }
+
+        func cancel() {
+            cancelled.withLock { $0 = true }
+            guard let (conversation, operation) = followed.withLock({ $0 }) else { return }
+            Task { _ = try? await conversation.request("operation/cancel", .object(["operationId": .string(operation)])) }
         }
     }
 
@@ -105,6 +146,7 @@ final class Conversation: Sendable {
         var next = 1
         var waiting: [String: CheckedContinuation<JSONValue, any Error>] = [:]
         var closed = false
+        var opening: InitializeResult?
     }
 
     init(writer: StandardInputWriter) {
@@ -117,8 +159,15 @@ final class Conversation: Sendable {
         let parameters = InitializeParameters(
             apiVersions: Release.apiVersions, client: ToolIdentity(name: "stateui", version: Release.version),
             workspaceUri: workspaceUri)
-        _ = try await request("initialize", try JSONValue(encoding: parameters))
+        let answer = try await request("initialize", try JSONValue(encoding: parameters)).decode(InitializeResult.self)
+        state.withLock { $0.opening = answer }
         try await send(.object(["jsonrpc": .string("2.0"), "method": .string("initialized")]))
+    }
+
+    /// What the served tool answered `initialize` with.
+    func opened() throws -> InitializeResult {
+        guard let answer = state.withLock({ $0.opening }) else { throw ToolingError(.toolFailed, "The connection is not open.") }
+        return answer
     }
 
     /// The answer to `method` asked with `params`; a refusal thrown as the served tool said it.

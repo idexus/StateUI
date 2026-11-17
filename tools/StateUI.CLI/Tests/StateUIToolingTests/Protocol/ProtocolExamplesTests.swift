@@ -287,6 +287,15 @@ final class ProtocolExamplesTests: XCTestCase {
                 ("response", try response("10", OperationHandle(operationId: operation, state: .queued))),
                 ("result", try JSONValue(encoding: made)),
             ], answeredAsWritten: false),
+            Example(name: "folder-mirror", messages: [
+                ("request", try request("31", "folder/mirror", Mutation(
+                    requestToken: "1b6d2e4f-8a3c-4d5e-9f7a-2c4e6a8b0d13",
+                    request: FolderMirrorRequest(
+                        sourcePath: "/media/psf/Demo", targetPath: "/home/example/stateui-guest/Demo",
+                        files: ["Package.swift", "Sources/NotesApp.swift"])))),
+                ("response", try response("31", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: FolderMirrorResult(copied: 1, removed: 0, unchanged: 1))),
+            ], answeredAsWritten: false),
             Example(name: "project-useLibrary", messages: [
                 ("request", try request("11", "project/useLibrary", Mutation(
                     requestToken: "7c3e1a9b-5f2d-4e8c-a6b4-1d3f5a7c9e20",

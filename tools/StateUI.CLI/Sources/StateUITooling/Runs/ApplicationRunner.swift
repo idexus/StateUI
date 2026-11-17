@@ -29,6 +29,10 @@ public struct ApplicationRunner: Sendable {
         if request.build.host == .android {
             return try await runAndroid(request, in: folder, operation: operation, reporter: reporter)
         }
+        if let host = request.build.host, [.gtk, .winui].contains(host) {
+            let (built, _) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
+            return try await DesktopLaunch().run(built, reporter: reporter)
+        }
         if request.build.host == .web {
             #if canImport(NIOPosix)
             let (built, _) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
@@ -73,10 +77,13 @@ public struct ApplicationRunner: Sendable {
 
     /// Refuses, before anything is read or built, a run of a host it does not start - another runs from the program
     /// its build names - and a release build held for a debugger; a request naming no host yet passes.
-    private static func refuse(_ request: RunRequest) throws {
+    static func refuse(_ request: RunRequest) throws {
         guard let host = request.build.host else { return }
-        guard [.uikit, .android, .web].contains(host) else {
-            throw ToolingError(.invalidConfiguration, "application/run starts UIKit, Android and Web heads; \(host.rawValue) runs from the program application/build names.")
+        guard [.uikit, .android, .web, .gtk, .winui].contains(host) else {
+            throw ToolingError(.invalidConfiguration, "application/run starts UIKit, Android, Web, GTK and WinUI heads; \(host.rawValue) runs from the program application/build names.")
+        }
+        if [.gtk, .winui].contains(host), request.debugger {
+            throw ToolingError(.invalidConfiguration, "A \(host.folder) head is debugged from the program application/build names.")
         }
         if request.debugger, request.build.configuration == .release {
             throw ToolingError(.invalidConfiguration, "Only a debug build is held for a debugger.")

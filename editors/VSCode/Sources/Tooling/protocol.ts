@@ -169,6 +169,13 @@ export const ApplicationRequest = object<ApplicationRequest>({
     checkoutUri: optional(string),
 });
 
+export interface FolderMirrorRequest { sourcePath: string; targetPath: string; files?: string[] }
+export const FolderMirrorRequest = object<FolderMirrorRequest>({
+    sourcePath: string, targetPath: string, files: optional(array(string)),
+});
+export interface FolderMirrorResult { copied: number; removed: number; unchanged: number }
+export const FolderMirrorResult = object<FolderMirrorResult>({ copied: number, removed: number, unchanged: number });
+
 export type Architecture = "arm64" | "x86_64" | "armv7" | "x86" | "wasm32";
 export const Architecture = oneOf<Architecture>("arm64", "x86_64", "armv7", "x86", "wasm32");
 
@@ -441,6 +448,7 @@ export const methods = {
     "operation/get": query(OperationReference, OperationSnapshot),
     "operation/cancel": query(OperationReference, CancelResult),
     "project/create": mutation(ApplicationRequest, ProjectCreation),
+    "folder/mirror": mutation(FolderMirrorRequest, FolderMirrorResult),
     "application/build": mutation(BuildRequest, BuildResult),
     "application/package": mutation(BuildRequest, BuildResult),
     "application/run": mutation(RunRequest, RunResult),

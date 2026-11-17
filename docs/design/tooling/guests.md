@@ -86,3 +86,38 @@ the Windows SDK's, a desktop session - in the same report. Every finding but
 `prlctl`'s names the guest as its machine; a guest that does not run says so,
 and what stands inside it waits until it runs.
 
+## The copy in the guest
+
+The application's project and the checkout it builds with are copied into
+the guest before the guest builds, each under `stateui-guest` at its place
+from the folder they share on the Mac - a project beside its checkout stays
+beside it, so the manifests' paths between them hold; a project inside its
+checkout is copied with it. The guest's stateui copies (`folder/mirror`,
+`FolderMirror`) from the shared folder to its own disk: the files git tracks
+and would track - `git ls-files --cached --others --exclude-standard`, so an
+ignored file, a key among them, never reaches the guest - or every file where
+no git work tree stands; a file copied where its size or time differs, the
+source's time kept on it, one the source lost removed. What a machine makes
+where it builds and indexes - `.build`, `.projection`, `.stateui`,
+`.sourcekit-lsp`, `.swiftpm`, `.gradle`, `.vs`, `.git`, `node_modules` - is
+neither copied nor removed, and a link is not followed.
+
+## A head worked in a guest
+
+`stateui build`, `package` and `run` of a GTK or WinUI head with a guest as
+its device - on the command line or chosen in `stateui settings` - are the
+guest's own stateui's work (`GuestWork`): the guest started (`prlctl start`)
+or resumed (`prlctl resume`) where it does not run, its user's desktop
+session waited for; its stateui laid again where it does not answer, answers
+as another release, or lacks a method the work needs; the project and its
+checkout copied; then the request asked of it with the guest's path of the
+application. A build answers the guest's artifact, its device the guest. A
+package is laid in the Mac's output folder - the request's, else the
+project's `artifacts/<Name>/<Host>` - which the guest writes through the
+folder it shares, and answers the Mac's paths. A run is the guest's
+`application/run`, its application's output told on the Mac as it comes;
+cancelled on the Mac - Ctrl+C - the guest's operation is cancelled and its
+end waited for, up to twenty seconds, before the connection closes, so the
+application stops with it: a served tool torn down first would leave it
+running.
+

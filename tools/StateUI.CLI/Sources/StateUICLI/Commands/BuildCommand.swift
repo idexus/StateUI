@@ -111,7 +111,7 @@ struct RunCommand: AsyncParsableCommand {
     func run() async throws {
         do {
             let request = try ApplicationBuilder.chosen(build.request(), in: build.here)
-            if let host = request.host, [.uikit, .android, .web].contains(host) {
+            if let host = request.host, [.uikit, .android, .web].contains(host) || GuestWork.asks(request) {
                 guard listen == nil || ["loopback", "lan"].contains(listen ?? "") else {
                     throw ToolingError(.invalidConfiguration, "--listen is loopback or lan.")
                 }
