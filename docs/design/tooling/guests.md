@@ -22,3 +22,21 @@ name and the Mac's path it shares, and whether it shares every disk - the
 folders the application and its checkout are reached through in the guest.
 Whether Parallels Tools stand in it is read too, as `prlctl exec` and the
 shared folders need them.
+
+## The guest's own tool
+
+The Mac's tool asks a guest's own `stateui` rather than driving its compiler:
+a build of each platform is one implementation, the guest's. It starts the
+guest's `stateui serve --stdio` through `prlctl exec <guest> --current-user`,
+which carries standard input and output both ways on Linux and Windows, and
+speaks the protocol an editor speaks ([The protocol](protocol.md)), one
+connection a call (`ServedTool`): `initialize` offering this tool's API
+versions, `initialized`, the method, then `shutdown`, `exit` and the end of
+the guest's input. A query answers its result. An operation is followed by
+its events - its progress and its programs' output told as the Mac's own,
+cut into lines per stream - to its terminal state, and read whole with
+`operation/get`: its result returned, its failure thrown as the guest's tool
+said it, a refusal (`-32010`) as the error it carries. Cancelled on the Mac,
+the operation is cancelled in the guest (`operation/cancel`); a connection
+whose input ends cancels the guest's operations itself. No command line
+carries quotes, which `prlctl exec` hands a guest's shell unreliably.
