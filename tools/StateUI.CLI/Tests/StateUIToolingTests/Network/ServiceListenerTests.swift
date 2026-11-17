@@ -14,7 +14,7 @@ final class ServiceListenerTests: XCTestCase {
     }
 
     /// A machine pairs with the code the service shows; then the service answers it over TCP as `serve --stdio` does:
-    /// a query, then an operation followed to its end, each on a connection of its own.
+    /// a query, and a folder carried over one connection.
     func testAPairedMachineIsAnsweredQueriesAndOperations() async throws {
         let state = folder()
         let pairing = ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
@@ -36,10 +36,10 @@ final class ServiceListenerTests: XCTestCase {
         addTeardownBlock { try? FileManager.default.removeItem(at: root) }
         try files.createDirectory(at: root.appendingPathComponent("from"), withIntermediateDirectories: true)
         try "a".write(to: root.appendingPathComponent("from/A.swift"), atomically: true, encoding: .utf8)
-        let mirrored = try await tool.operation("folder/mirror", try JSONValue(encoding: FolderMirrorRequest(
-            sourcePath: root.appendingPathComponent("from").path, targetPath: root.appendingPathComponent("to").path, files: nil)),
-            reporter: BuildReporter()).decode(FolderMirrorResult.self)
-        XCTAssertEqual(mirrored.copied, 1)
+        let carried = try await tool.session { session in
+            try await FolderTransfer.send(root.appendingPathComponent("from"), files: nil, to: root.appendingPathComponent("to").path, over: session, progress: { _ in })
+        }
+        XCTAssertEqual(carried.carried, 1)
         XCTAssertEqual(try String(contentsOf: root.appendingPathComponent("to/A.swift"), encoding: .utf8), "a")
     }
 

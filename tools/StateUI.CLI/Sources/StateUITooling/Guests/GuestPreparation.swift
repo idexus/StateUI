@@ -21,7 +21,7 @@ struct GuestPreparation: Sendable {
             for byte in bytes { hash = (hash ^ UInt64(byte)) &* 0x0000_0100_0000_01b3 }
             hash = (hash ^ 0xff) &* 0x0000_0100_0000_01b3
         }
-        for path in ((try? FolderMirror.every(under: tool)) ?? []).sorted() {
+        for path in ((try? FolderFiles.every(under: tool)) ?? []).sorted() {
             mix(path.utf8)
             mix((try? Data(contentsOf: tool.appendingPathComponent(path))) ?? Data())
         }

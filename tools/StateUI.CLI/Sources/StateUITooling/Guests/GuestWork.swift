@@ -51,7 +51,7 @@ public struct GuestWork: Sendable {
 
     /// Packages `request` in its guest into the Mac's output folder - its `outputUri`, else the project's
     /// `artifacts/<Name>/<Host>`, judged as a package's folder before the guest builds: the guest lays the package on its
-    /// own disk, then copies it through the folder it shares - by path, as a guest reads the Mac - into that folder.
+    /// own disk, and the Mac fetches it from there through the connection.
     func package(_ request: BuildRequest, in folder: URL, reporter: BuildReporter) async throws -> BuildResult {
         let ready = try await self.ready(request, in: folder, reporter: reporter)
         let (guest, places) = (ready.reached.guest, ready.reached.places)
@@ -62,20 +62,16 @@ public struct GuestWork: Sendable {
             ?? root.appendingPathComponent("artifacts").appendingPathComponent(ready.application.name).appendingPathComponent(host.folder)
         let keeping = [applicationFolder, root] + (try ready.application.libraryUri.map { [try FileURI.url($0)] } ?? [])
         try PackageOutput.check(output, keeping: keeping)
-        try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
-        guard let there = guest.path(of: output) else {
-            throw ToolingError(.invalidConfiguration, "\(guest.name) reaches no \(output.path): share it with the guest.")
-        }
         let made = Self.packagePlace(of: ready.application.name, host: host, in: places)
         var asked = request
         (asked.projectUri, asked.device, asked.outputUri) = (ready.applicationUri, nil, Self.uri(of: made, in: guest))
         var laid = try await ready.reached.served.operation("application/package", try JSONValue(encoding: asked), reporter: reporter)
             .decode(BuildResult.self)
         try PackageOutput.check(output, keeping: keeping)
-        reporter.progress("copying the package to \(output.path)")
-        _ = try await ready.reached.served.operation(
-            "folder/mirror", try JSONValue(encoding: FolderMirrorRequest(sourcePath: made, targetPath: there, files: nil)),
-            reporter: reporter)
+        try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
+        _ = try await ready.reached.served.session { session in
+            try await FolderTransfer.fetch(made, into: output, over: session, progress: reporter.progress)
+        }
         laid.destination = ParallelsGuests.destination(of: guest)
         (laid.programUri, laid.bundleUri, laid.folderUri) = (
             Self.moved(laid.programUri, from: laid.folderUri, to: output), laid.bundleUri.map { Self.moved($0, from: laid.folderUri, to: output) },
@@ -168,20 +164,17 @@ public struct GuestWork: Sendable {
         return Reached(guest: guest, commands: commands, places: places, served: served)
     }
 
-    /// Copies each of `roots` into the guest under `stateui-guest`, at its place from the folder they share; answers that
-    /// folder.
+    /// Sends each of `roots` into the guest under `stateui-guest`, at its place from the folder they share, through the
+    /// connection - what git tracks and would track; answers that folder.
     private func copied(_ roots: [URL], into reached: Reached, reporter: BuildReporter) async throws -> URL {
         let common = Self.commonFolder(of: roots)
         for root in roots {
-            guard let source = reached.guest.path(of: root) else {
-                throw ToolingError(.invalidConfiguration, "\(reached.guest.name) reaches no \(root.path): share it with the guest.")
-            }
             let target = reached.places.join([reached.places.root] + Self.relative(root, from: common))
             reporter.progress("copying \(root.lastPathComponent) into \(reached.guest.name)")
             let files = await Self.gitFiles(in: root)
-            _ = try await reached.served.operation(
-                "folder/mirror", try JSONValue(encoding: FolderMirrorRequest(sourcePath: source, targetPath: target, files: files)),
-                reporter: reporter)
+            _ = try await reached.served.session { session in
+                try await FolderTransfer.send(root, files: files, to: target, over: session, progress: reporter.progress)
+            }
         }
         return common
     }
@@ -204,7 +197,8 @@ public struct GuestWork: Sendable {
 
     /// The methods a guest's stateui answers for this tool's work there.
     static let needed = [
-        "folder/mirror", "application/build", "application/package", "application/run", "tests/discover", "tests/run",
+        "folder/survey", "files/write", "file/read", "files/remove", "application/build", "application/package", "application/run",
+        "tests/discover", "tests/run",
     ]
 
     /// Whether `served` opens a connection - at an API version this tool speaks - as this release, and answers every

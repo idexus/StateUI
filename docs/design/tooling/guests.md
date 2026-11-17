@@ -19,9 +19,9 @@ edition has no `prlctl`, the list is empty.
 
 What a guest shares of the Mac is read with it: each enabled shared folder by
 name and the Mac's path it shares, and whether it shares every disk - the
-folders the application and its checkout are reached through in the guest.
-Whether Parallels Tools stand in it is read too, as `prlctl exec` and the
-shared folders need them.
+folder the StateUI checkout is reached through as the guest's own stateui is
+laid from it. Whether Parallels Tools stand in it is read too, as `prlctl
+exec` and the shared folders need them.
 
 ## The guest's own tool
 
@@ -89,8 +89,9 @@ field it does not know as nothing.
 alike, and changes nothing - it neither starts the guest nor lays anything in
 it (`GuestDoctor`). After the Mac's own findings it checks the way to the
 guest from the Mac: Parallels' `prlctl`, the guest by its name
-and of the host's system, Parallels Tools in it, and each folder of the
-project - its applications and their checkout - shared with it. Then, where
+and of the host's system, Parallels Tools in it, and the StateUI checkout of
+each of the project's applications shared with it - what its stateui is laid
+from; the project itself travels through the connection. Then, where
 the guest runs: its user's desktop session, and its own stateui at the same
 API version. Last it asks that stateui for its own findings - Swift, GTK's or
 the Windows SDK's, a desktop session - in the same report. Every finding but
@@ -103,15 +104,14 @@ The application's project and the checkout it builds with are copied into
 the guest before the guest builds, each under `stateui-guest` at its place
 from the folder they share on the Mac - a project beside its checkout stays
 beside it, so the manifests' paths between them hold; a project inside its
-checkout is copied with it. The guest's stateui copies (`folder/mirror`,
-`FolderMirror`) from the shared folder to its own disk: the files git tracks
-and would track - `git ls-files --cached --others --exclude-standard`, so an
-ignored file, a key among them, never reaches the guest - or every file where
-no git work tree stands; a file copied where its size or time differs, the
-source's time kept on it, one the source lost removed. What a machine makes
-where it builds and indexes - `.build`, `.projection`, `.stateui`,
-`.sourcekit-lsp`, `.swiftpm`, `.gradle`, `.vs`, `.git`, `node_modules` - is
-neither copied nor removed, and a link is not followed.
+checkout is copied with it. They travel through the connection to the
+guest's stateui ([Files through the
+connection](service.md#files-through-the-connection)), as to any machine's: the
+files git tracks and would track - `git ls-files --cached --others
+--exclude-standard`, so an ignored file, a key among them, never reaches the
+guest - or every file where no git work tree stands. No guest reads the
+project from a shared folder: a path of a Windows guest's share named as a URI
+(`\\Mac\AllFiles\…`) is read there as a folder of its own drive.
 
 ## A head worked in a guest
 
@@ -126,11 +126,9 @@ application. A build answers the guest's artifact, its device the guest. A
 package is laid in the Mac's output folder - the request's, else the
 project's `artifacts/<Name>/<Host>`, judged as a package's folder before the
 guest builds and again before it is filled: the guest lays it on its own
-disk, `stateui-guest/artifacts/<Name>/<Host>`, then its stateui copies it into
-the Mac's folder through the folder it shares (`folder/mirror`), and the
-answer names the Mac's paths. A guest reads the Mac by plain paths alone: a
-path of a Windows guest's share written as a URI (`\\Mac\AllFiles\…`) is
-read there as a folder of its own drive. A run is the guest's
+disk, `stateui-guest/artifacts/<Name>/<Host>`, the Mac fetches it from there
+through the connection, and the answer names the Mac's paths. A run is the
+guest's
 `application/run`, its application's output told on the Mac as it comes;
 cancelled on the Mac - Ctrl+C - the guest's operation is cancelled and its
 end waited for, up to twenty seconds, before the connection closes, so the

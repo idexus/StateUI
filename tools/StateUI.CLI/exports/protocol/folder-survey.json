@@ -1,0 +1,28 @@
+{
+  "request" : {
+    "id" : "31",
+    "jsonrpc" : "2.0",
+    "method" : "folder/survey",
+    "params" : {
+      "root" : "/home/example/stateui-guest/Demo"
+    }
+  },
+  "response" : {
+    "id" : "31",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "files" : [
+        {
+          "modified" : 1763380800,
+          "path" : "Package.swift",
+          "size" : 812
+        },
+        {
+          "modified" : 1763380860,
+          "path" : "Sources/NotesApp.swift",
+          "size" : 2048
+        }
+      ]
+    }
+  }
+}

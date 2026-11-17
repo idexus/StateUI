@@ -1,0 +1,20 @@
+{
+  "request" : {
+    "id" : "34",
+    "jsonrpc" : "2.0",
+    "method" : "files/remove",
+    "params" : {
+      "paths" : [
+        "Sources/Gone.swift"
+      ],
+      "root" : "/home/example/stateui-guest/Demo"
+    }
+  },
+  "response" : {
+    "id" : "34",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "removed" : 1
+    }
+  }
+}

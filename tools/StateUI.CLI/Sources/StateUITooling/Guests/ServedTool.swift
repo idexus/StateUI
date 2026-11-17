@@ -46,6 +46,21 @@ public struct ServedTool: Sendable {
         self.workspaceUri = workspaceUri
     }
 
+    /// One connection to the served tool, asked many queries in turn - a folder's files carried over it.
+    public struct Session: Sendable {
+        let conversation: Conversation
+
+        /// The result of the query `method` asked with `params`.
+        public func query(_ method: String, _ params: JSONValue) async throws -> JSONValue {
+            try await conversation.request(method, params)
+        }
+    }
+
+    /// The result of `body`, run over one connection opened to the served tool.
+    public func session<Result: Sendable>(_ body: @Sendable (Session) async throws -> Result) async throws -> Result {
+        try await converse { try await body(Session(conversation: $0)) }
+    }
+
     /// The answer to `method`, asked before the connection opens - a service's pairing.
     func beforeOpening(_ method: String, _ params: JSONValue) async throws -> JSONValue {
         try await converseByService(opening: false) { try await $0.request(method, params) }

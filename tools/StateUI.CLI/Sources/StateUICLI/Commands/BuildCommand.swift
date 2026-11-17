@@ -67,7 +67,7 @@ struct BuildCommand: AsyncParsableCommand {
     func run() async throws {
         try await output.answer({
             try await ToolingService().build(build.request(), in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
-        }) { built in "Built \((try? FileURI.url(built.programUri).path) ?? built.programUri)\(BuildOptions.destination(of: built))" }
+        }) { built in "Built \(FileURI.shown(built.programUri))\(BuildOptions.destination(of: built))" }
     }
 }
 

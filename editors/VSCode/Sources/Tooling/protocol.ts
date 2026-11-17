@@ -16,7 +16,6 @@ export const APIVersionRange = object<APIVersionRange>({ major: number, minMinor
 export interface Machine { system: string; architecture: string }
 export const Machine = object<Machine>({ system: string, architecture: string });
 
-
 export interface InitializeParameters { apiVersions: APIVersionRange[]; client: ToolIdentity; workspaceUri: string }
 export const InitializeParameters = object<InitializeParameters>({
     apiVersions: array(APIVersionRange), client: ToolIdentity, workspaceUri: string,
@@ -178,12 +177,24 @@ export const ApplicationRequest = object<ApplicationRequest>({
     checkoutUri: optional(string),
 });
 
-export interface FolderMirrorRequest { sourcePath: string; targetPath: string; files?: string[] }
-export const FolderMirrorRequest = object<FolderMirrorRequest>({
-    sourcePath: string, targetPath: string, files: optional(array(string)),
-});
-export interface FolderMirrorResult { copied: number; removed: number; unchanged: number }
-export const FolderMirrorResult = object<FolderMirrorResult>({ copied: number, removed: number, unchanged: number });
+export interface FileEntry { path: string; size: number; modified: number }
+export const FileEntry = object<FileEntry>({ path: string, size: number, modified: number });
+export interface FolderSurveyRequest { root: string }
+export const FolderSurveyRequest = object<FolderSurveyRequest>({ root: string });
+export interface FolderSurvey { files: FileEntry[] }
+export const FolderSurvey = object<FolderSurvey>({ files: array(FileEntry) });
+export interface FilePiece { path: string; offset: number; size: number; modified: number; data: string }
+export const FilePiece = object<FilePiece>({ path: string, offset: number, size: number, modified: number, data: string });
+export interface FilesWriteRequest { root: string; pieces: FilePiece[] }
+export const FilesWriteRequest = object<FilesWriteRequest>({ root: string, pieces: array(FilePiece) });
+export interface FilesWritten { completed: number }
+export const FilesWritten = object<FilesWritten>({ completed: number });
+export interface FileReadRequest { root: string; path: string; offset: number; length: number }
+export const FileReadRequest = object<FileReadRequest>({ root: string, path: string, offset: number, length: number });
+export interface FilesRemoveRequest { root: string; paths: string[] }
+export const FilesRemoveRequest = object<FilesRemoveRequest>({ root: string, paths: array(string) });
+export interface FilesRemoved { removed: number }
+export const FilesRemoved = object<FilesRemoved>({ removed: number });
 
 export type Architecture = "arm64" | "x86_64" | "armv7" | "x86" | "wasm32";
 export const Architecture = oneOf<Architecture>("arm64", "x86_64", "armv7", "x86", "wasm32");
@@ -486,9 +497,12 @@ export const methods = {
     "operation/get": query(OperationReference, OperationSnapshot),
     "operation/cancel": query(OperationReference, CancelResult),
     "project/create": mutation(ApplicationRequest, ProjectCreation),
-    "folder/mirror": mutation(FolderMirrorRequest, FolderMirrorResult),
     "application/build": mutation(BuildRequest, BuildResult),
     "application/prepare": mutation(BuildRequest, PreparedApplication),
+    "folder/survey": query(FolderSurveyRequest, FolderSurvey),
+    "files/write": query(FilesWriteRequest, FilesWritten),
+    "file/read": query(FileReadRequest, FilePiece),
+    "files/remove": query(FilesRemoveRequest, FilesRemoved),
     "application/package": mutation(BuildRequest, BuildResult),
     "application/run": mutation(RunRequest, RunResult),
     "application/install": mutation(InstallRequest, InstallResult),

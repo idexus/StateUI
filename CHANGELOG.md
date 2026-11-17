@@ -100,7 +100,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   desktop session, its stateui - and then what its own stateui finds in it, each finding naming its machine. The tool
   asks the guest's stateui over the protocol an editor speaks, through `prlctl exec`. `stateui build`, `package` and
   `run --host gtk|winui --device <guest>` work there: the guest started or resumed, its stateui laid where it is not
-  this release, the project and its checkout copied in - the files git tracks and would track (`folder/mirror`) - and
+  this release, the project and its checkout copied in - the files git tracks and would track - and
   the request asked of it; a package lands in the Mac's `artifacts`, and Ctrl+C on the Mac stops the application in
   the guest. `application/run` starts a GTK or WinUI head of its own machine too, followed until it ends. The VS Code
   extension offers GTK and WinUI on a Mac, the guest chosen in the status bar (**StateUI: Select Guest**): a launch
@@ -125,6 +125,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   Linux and Windows. It admits a paired client alone: it shows a pairing code, `stateui remote add <name>
   <address:port> --code <code>` pairs another machine (`stateui remote list`, `remove`), and every connection proves
   its token by the HMAC-SHA256 of a challenge, the token never sent.
+- A folder travels to another machine's tool, and back, through the connection itself - `folder/survey`,
+  `files/write`, `file/read`, `files/remove`, in pieces of at most 4 MiB, a file's time kept - over a guest's
+  `prlctl exec` as over the service: a guest reads the project and hands a package back through no shared folder;
+  only its own stateui is laid from the shared checkout.
 - `stateui new --platforms appkit,web,winui` makes an application with those hosts' heads alone; an application's
   hosts are its heads, so one is taken away by removing its `Platforms/<Host>`.
 - The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running; an

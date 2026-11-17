@@ -10,7 +10,8 @@ import StateUIToolingProtocol
 struct GuestDoctor: Sendable {
     let guests: ParallelsGuests
 
-    /// The findings of `device`, a guest a head of `host` is built in, for the Mac's `folders` it is to reach.
+    /// The findings of `device`, a guest a head of `host` is built in, for the Mac's `folders` - the StateUI checkouts
+    /// its tool is laid from - it is to reach.
     func check(host: HostFamily, device: String, folders: [URL]) async -> ToolchainReport {
         var findings: [ToolFinding] = []
         let finding = { (component: String, neededBy: String, found: String?, advice: String, machine: String?) in
@@ -47,7 +48,7 @@ struct GuestDoctor: Sendable {
         for folder in folders {
             let share = guest.share(of: folder)
             findings.append(finding(
-                "\(folder.lastPathComponent) shared", "the copy into the guest", share.map { "\(folder.path), through \($0)" },
+                "\(folder.lastPathComponent) shared", "laying the guest's stateui", share.map { "\(folder.path), through \($0)" },
                 "Share \(folder.path) with \(device) - its Configuration ▸ Options ▸ Sharing - or every disk.", device))
         }
         guard guest.state == "running" else {

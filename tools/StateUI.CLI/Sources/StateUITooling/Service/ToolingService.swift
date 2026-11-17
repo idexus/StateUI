@@ -162,10 +162,8 @@ public struct ToolingService: Sendable {
         guard let device = query.device, let host = query.host else { return here }
         var folders: [URL] = []
         if let uri = query.projectUri, let folder = try? FileURI.url(uri), let project = try? await ProjectReader().describe(containing: folder) {
-            for application in project.applications {
-                let uris = [application.packageUri] + (application.libraryUri.map { [$0] } ?? [])
-                folders.append(contentsOf: uris.compactMap { try? FileURI.url($0) })
-            }
+            // The project itself travels through the connection; the checkout is shared, as the guest's tool is laid from it.
+            folders.append(contentsOf: project.applications.compactMap { $0.libraryUri.flatMap { try? FileURI.url($0) } })
         }
         var seen: Set<String> = []
         let there = await GuestDoctor(guests: ParallelsGuests())
@@ -553,11 +551,10 @@ public struct ToolingService: Sendable {
                 in: try FileURI.url(uri), checkout: try request.checkoutUri.map(FileURI.url), release: request.release,
                 repository: request.repository)
         }
-        methods.mutation("folder/mirror") { (request: FolderMirrorRequest, context: OperationContext) in
-            try FolderMirror().mirror(request) { said in
-                Task { await context.progress(OperationProgress(stage: "mirroring", message: said)) }
-            }
-        }
+        methods.query("folder/survey") { (request: FolderSurveyRequest) in try FolderFiles.survey(request) }
+        methods.query("files/write") { (request: FilesWriteRequest) in try FolderFiles.write(request) }
+        methods.query("file/read") { (request: FileReadRequest) in try FolderFiles.read(request) }
+        methods.query("files/remove") { (request: FilesRemoveRequest) in try FolderFiles.remove(request) }
         methods.mutation("project/create") { (request: ApplicationRequest, _: OperationContext) in
             try await createApplication(
                 request.name, identifier: request.identifier, platforms: request.platforms, in: try FileURI.url(request.parentUri),

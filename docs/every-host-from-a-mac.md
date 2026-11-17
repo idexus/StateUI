@@ -14,11 +14,11 @@ it there, and starts the head on the guest's desktop, where its window opens.
 - **A Linux guest** for GTK and **a Windows 11 guest** for WinUI, of the Mac's
   own architecture - on Apple silicon, ARM64 - each with Parallels Tools
   installed, which Parallels offers when the guest first starts.
-- **The project shared with each guest.** In the guest's configuration,
-  *Options ▸ Sharing* shares the Mac's folders with it - the home folder, every
-  disk, or folders chosen. The folder holding the application and the folder
-  holding its StateUI checkout must both be reached: the guest reads them from
-  there.
+- **The StateUI checkout shared with each guest.** In the guest's
+  configuration, *Options ▸ Sharing* shares the Mac's folders with it - the
+  home folder, every disk, or folders chosen. The guest's own `stateui` is laid
+  from the checkout there; the application itself travels to the guest through
+  the tool's connection.
 - **The guest's user logged in to its desktop.** Parallels runs a program in a
   guest only as a user who is, and a head's window opens on that desktop; an
   automatic login keeps it so after a restart.
@@ -44,7 +44,7 @@ stateui doctor --host gtk --device Ubuntu
 ```
 
 It checks Parallels' `prlctl`, the guest and its system, Parallels Tools, the
-project's folders shared with it, its user's desktop session, the guest's own
+StateUI checkout shared with it, its user's desktop session, the guest's own
 `stateui`, and then what that `stateui` finds inside: Swift, GTK, a desktop
 session - each finding under the guest's name. The guest's `stateui` is laid
 by the first build that needs it; to lay it at once:
@@ -89,9 +89,8 @@ stateui settings --project apps/Notes --host winui --device "Windows 11"
 stateui run --project apps/Notes
 ```
 
-A package is built in the guest and laid on the Mac, in the project's
-`artifacts/<application>/<platform>`, which the guest writes through the
-folder it shares:
+A package is built in the guest and fetched to the Mac, into the project's
+`artifacts/<application>/<platform>`:
 
 ```bash
 stateui package --project apps/Notes --host winui --device "Windows 11"
