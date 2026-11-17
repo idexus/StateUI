@@ -85,7 +85,7 @@ struct ServiceCommand: AsyncParsableCommand {
 
         func run() throws {
             guard let state = ServiceState.running() else {
-                let none = ToolingError(.notFound, "No service runs here.")
+                let none = ToolingError(.toolFailed, "No service runs here.")
                 try output.format.write(none)
                 throw ExitCode(ExitStatus.of(none))
             }

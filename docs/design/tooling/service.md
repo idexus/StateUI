@@ -129,3 +129,15 @@ through `prlctl exec` as the guest's system account, with no prompt - the
 guest is the Mac's own machine - so `install` finds the rule standing; a
 program run through `prlctl exec` as the user could show no UAC prompt.
 
+## A service probed
+
+`stateui remote probe <address:port>` says whether a stateui service answers
+at a place - it answers `service/challenge`, which no pairing is asked for -
+and whether this machine is paired with it; `stateui remote list` says of
+each machine paired whether its service answers and admits this one,
+showing its system, release and hosts (`server/info`), or that its pairing is
+gone (`ServiceProbe`). Each place is given three seconds: a connection to a
+place that answers nothing would wait for minutes, and is left to end by
+itself. A place answering none fails the command (status 1), as `stateui
+service status` does where no service runs.
+
