@@ -41,9 +41,9 @@ enum HostPlaces {
         here.first { $0.host == host }?.place
     }
 
-    /// The folder another machine's projects are copied into for work here.
+    /// The folder another machine's projects are copied into for work here, as this machine's system writes a path.
     static var workFolder: String {
-        FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("stateui-guest").path
+        FileURI.shown(FileURI.string(FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("stateui-guest")))
     }
 
     /// This machine, as the destination of a head that runs as its own program: its architecture, and the ones it runs

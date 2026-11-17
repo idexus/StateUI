@@ -40,6 +40,18 @@ final class HostPlacesTests: XCTestCase {
         XCTAssertEqual(listed.destinations.map(\.kind), [.machine])
     }
 
+    /// The work folder is told as this machine's system writes a path - a Windows drive's with backslashes - so a
+    /// path another machine joins to it reads alike throughout.
+    func testTheWorkFolderIsWrittenAsItsSystemWritesAPath() {
+        #if os(Windows)
+        XCTAssertFalse(HostPlaces.workFolder.contains("/"), HostPlaces.workFolder)
+        XCTAssertTrue(HostPlaces.workFolder.hasSuffix(#"\stateui-guest"#), HostPlaces.workFolder)
+        #else
+        XCTAssertEqual(HostPlaces.workFolder, FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("stateui-guest").path)
+        #endif
+        XCTAssertEqual(FileURI.shown("file:///C:/Users/me/stateui-guest"), #"C:\Users\me\stateui-guest"#)
+    }
+
     /// A debugger follows a page in Chromium's browsers alone.
     func testADebuggerFollowsChromiumsBrowsers() {
         for id in ["com.google.Chrome", "org.chromium.Chromium", "com.microsoft.edgemac", "com.brave.Browser", "company.thebrowser.Browser",
