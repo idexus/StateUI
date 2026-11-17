@@ -39,6 +39,30 @@ final class ParallelsGuestsTests: XCTestCase {
         XCTAssertEqual(ParallelsGuests.guests(fromJSON: Data("not a list".utf8)), [])
     }
 
+    /// A Mac folder is reached through the shared folder holding it - the nearest - else every disk where they all
+    /// are shared, else not at all; its path in the guest is the share's - `/media/psf/<name>` on Linux,
+    /// `\\Mac\<name>` on Windows - or `AllFiles`.
+    func testAMacFolderIsReachedThroughTheShareHoldingIt() {
+        let guests = ParallelsGuests.guests(fromJSON: Data(listed.utf8))
+        let (linux, windows) = (guests[0], guests[1])
+        let application = URL(fileURLWithPath: "/Users/me/Projects/StateUI/apps/Notes")
+        XCTAssertEqual(linux.share(of: application, home: "/Users/me"), "stateui")
+        XCTAssertEqual(linux.path(of: application, home: "/Users/me"), "/media/psf/stateui/apps/Notes")
+        XCTAssertEqual(linux.path(of: URL(fileURLWithPath: "/Users/me/Projects/StateUI"), home: "/Users/me"), "/media/psf/stateui")
+        XCTAssertNil(linux.share(of: URL(fileURLWithPath: "/Users/me/Projects/StateUIOther"), home: "/Users/me"))
+        XCTAssertEqual(windows.share(of: application, home: "/Users/me"), "every disk")
+        XCTAssertEqual(windows.path(of: application, home: "/Users/me"), #"\\Mac\AllFiles\Users\me\Projects\StateUI\apps\Notes"#)
+        var named = windows
+        named.shares = ["projects": "~/Projects"]
+        XCTAssertEqual(named.path(of: application, home: "/Users/me"), #"\\Mac\projects\StateUI\apps\Notes"#)
+    }
+
+    /// What the tool lays in a guest stands under its user's home, `stateui-guest`, the tool in its `bin`.
+    func testWhatIsLaidStandsUnderTheUsersHome() {
+        XCTAssertEqual(GuestPlaces(home: "/home/me", windows: false).tool, "/home/me/stateui-guest/bin/stateui")
+        XCTAssertEqual(GuestPlaces(home: #"C:\Users\me"#, windows: true).tool, #"C:\Users\me\stateui-guest\bin\stateui.exe"#)
+    }
+
     /// A GTK head is built in a Linux guest, a WinUI head in a Windows one; a guest is a destination by its name,
     /// its state said where a device says how it is reached.
     func testAGuestIsADestinationOfItsSystemsHost() {

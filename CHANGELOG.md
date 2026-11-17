@@ -92,6 +92,13 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### Tooling
 
+- A Mac works its GTK and WinUI heads in Parallels guests. `stateui devices --host gtk` (`winui`) lists the Mac's
+  Linux (Windows) guests as devices of the kind `guest`, with their state; `stateui guest prepare --device <guest>`
+  lays the checkout's stateui in the guest - copied from the folder it shares, built by the guest's Swift - under its
+  user's `stateui-guest`; `stateui doctor --host gtk --device <guest>` checks the way to it from the Mac - Parallels'
+  `prlctl` (the Pro and Business editions), the guest, Parallels Tools, the project's folders shared, its user's
+  desktop session, its stateui - and then what its own stateui finds in it, each finding naming its machine. The tool
+  asks the guest's stateui over the protocol an editor speaks, through `prlctl exec`.
 - `stateui new --platforms appkit,web,winui` makes an application with those hosts' heads alone; an application's
   hosts are its heads, so one is taken away by removing its `Platforms/<Host>`.
 - The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running; an

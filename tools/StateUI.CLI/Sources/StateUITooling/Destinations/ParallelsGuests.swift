@@ -32,6 +32,35 @@ public struct ParallelsGuests: Sendable {
         public var sharesAllDisks: Bool
         /// Whether Parallels Tools stand in it, which `prlctl exec` and the shared folders need.
         public var hasTools: Bool
+
+        /// What the Mac's folder `folder` is reached through in the guest: the name of a folder it shares holding it,
+        /// `every disk` where it shares them all; nil where it reaches it not. `home` is the Mac's, which `~` names.
+        public func share(of folder: URL, home: String = NSHomeDirectory()) -> String? {
+            let wanted = folder.standardizedFileURL.path
+            let holding = shares.filter { _, path in
+                let shared = path == "~" || path.hasPrefix("~/") ? home + path.dropFirst() : path
+                return wanted == shared || wanted.hasPrefix(shared.hasSuffix("/") ? shared : shared + "/")
+            }
+            if let name = holding.max(by: { $0.value.count < $1.value.count })?.key { return name }
+            return sharesAllDisks ? "every disk" : nil
+        }
+
+        /// The path the guest reaches the Mac's folder `folder` by: a shared folder's - `/media/psf/<name>/…` on
+        /// Linux, `\\Mac\<name>\…` on Windows - else every disk's, `AllFiles`; nil where it reaches it not.
+        public func path(of folder: URL, home: String = NSHomeDirectory()) -> String? {
+            guard let share = share(of: folder, home: home) else { return nil }
+            let wanted = folder.standardizedFileURL.path
+            let rest: String
+            let root: String
+            if share == "every disk" {
+                (root, rest) = ("AllFiles", String(wanted.drop { $0 == "/" }))
+            } else {
+                let shared = shares[share]!.hasPrefix("~") ? home + shares[share]!.dropFirst() : shares[share]!
+                (root, rest) = (share, String(wanted.dropFirst(shared.count).drop { $0 == "/" }))
+            }
+            let parts = [root] + rest.split(separator: "/").map(String.init)
+            return system == .windows ? "\\\\Mac\\" + parts.joined(separator: "\\") : "/media/psf/" + parts.joined(separator: "/")
+        }
     }
 
     private let path: SearchPath

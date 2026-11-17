@@ -31,6 +31,9 @@ once and are told in their order.
 Doctor fails - status 3 - when something is missing that every host needs, or,
 given `--host`, something that host needs. A machine lacking another
 platform's tools is no failure: a Mac without the Android NDK builds AppKit.
+Given `--device` naming a guest of the Mac, it checks that guest for the
+host's heads instead, each finding naming its machine
+([The doctor of a guest](guests.md#the-doctor-of-a-guest)).
 
 ## Android's tools
 

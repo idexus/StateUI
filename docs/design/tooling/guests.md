@@ -40,3 +40,49 @@ said it, a refusal (`-32010`) as the error it carries. Cancelled on the Mac,
 the operation is cancelled in the guest (`operation/cancel`); a connection
 whose input ends cancels the guest's operations itself. No command line
 carries quotes, which `prlctl exec` hands a guest's shell unreliably.
+
+## Reaching a guest
+
+The tool reaches a guest by its identifier, which no rename changes, through
+`prlctl exec <guest> --current-user`: as its user, who must be logged in to
+its desktop - Parallels runs nothing as a user who is not (`Unable to
+authenticate the user`), and a head's window opens in that session. A job
+Parallels loses before running anything (`PrlJob_GetResult`,
+`PrlJob_GetRetCode`) is asked again, up to five times. On Windows a program
+is named by its whole path, which `where.exe` gives: `prlctl exec` searches
+no user's path there. A Linux guest's program runs with what its user's
+login shell and desktop set and `prlctl exec` does not: the login shell's
+search path - where swiftly puts Swift - and the session's display, bus,
+runtime folder and session type, read from `systemctl --user
+show-environment`.
+
+What the tool lays in a guest stands under its user's home, `stateui-guest`
+(`GuestPlaces`). A folder of the Mac is reached in the guest through the
+nearest shared folder holding it - `/media/psf/<name>/…` on Linux,
+`\\Mac\<name>\…` on Windows - else through every disk where the guest
+shares them all, `AllFiles`.
+
+## Laying the guest's tool
+
+`stateui guest prepare --device <guest>` lays the stateui of the checkout the
+project builds with in the guest (`GuestPreparation`), each step a program of
+the guest's system: the checkout's `tools/StateUI.CLI` copied from the shared
+folder into `stateui-guest/tool` - `rsync` on Linux, `robocopy` on Windows,
+`.build` and `.swiftpm` left out - built for release by the guest's Swift, and
+its program laid in `stateui-guest/bin` (on Windows with the libraries beside
+it). The Mac's tool works with the guest's at the same API version.
+
+## The doctor of a guest
+
+`stateui doctor --host gtk --device <guest>` (`toolchain/check` given a
+`device`) checks a guest instead of the Mac, and changes nothing - it neither
+starts the guest nor lays anything in it (`GuestDoctor`). It checks the way
+to the guest from the Mac first: Parallels' `prlctl`, the guest by its name
+and of the host's system, Parallels Tools in it, and each folder of the
+project - its applications and their checkout - shared with it. Then, where
+the guest runs: its user's desktop session, and its own stateui at the same
+API version. Last it asks that stateui for its own findings - Swift, GTK's or
+the Windows SDK's, a desktop session - in the same report. Every finding but
+`prlctl`'s names the guest as its machine; a guest that does not run says so,
+and what stands inside it waits until it runs.
+

@@ -28,4 +28,18 @@ final class DoctorCommandTests: XCTestCase {
         XCTAssertEqual(outcome.termination, .exited(3))
         XCTAssertTrue(output.lines(of: .standardOutput).first?.hasPrefix("✗ Swift 6.4 or newer - not found") == true)
     }
+
+    /// A guest is checked for a host, and one that is not here is said missing - of the guest by its name, or for want
+    /// of Parallels' prlctl - with status 3; a guest named without a host is refused.
+    func testAGuestNotHereIsSaidMissing() async throws {
+        let (outcome, output, _) = try await Stateui.run("doctor", "--host", "gtk", "--device", "No Such Guest", "--format", "json")
+        let report = try ToolingJSON.decoder().decode(
+            Envelope<ToolchainReport>.self, from: Data(output.joined(separator: "\n").utf8)).result
+        let missing = try XCTUnwrap(report.findings.first { $0.found == nil })
+        XCTAssertTrue(missing.machine == "No Such Guest" || missing.component == "Parallels Desktop's prlctl", "\(missing)")
+        XCTAssertEqual(outcome.termination, .exited(3))
+
+        let (unnamed, _, _) = try await Stateui.run("doctor", "--device", "No Such Guest")
+        XCTAssertEqual(unnamed.termination, .exited(2))
+    }
 }

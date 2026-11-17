@@ -179,7 +179,9 @@ into `artifacts/stateui`: `stateui-<release>-<system>-<architecture>.tar.gz`
 (`.zip` on Windows) and its `.sha256`. Unpacked anywhere, its `bin` on the
 search path, it needs no Swift; the tool's workflow keeps one for macOS, Linux
 and Windows from every run. `stateui doctor` says what each host needs of the
-machine.
+machine - `stateui doctor --host gtk --device "Ubuntu 26"` of a Parallels guest
+of a Mac a GTK or WinUI head is built in, whose own stateui
+`stateui guest prepare --device "Ubuntu 26"` lays.
 
 ## Build
 

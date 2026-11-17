@@ -268,10 +268,11 @@ export interface ToolFinding {
     found?: string;
     tooOld?: string;
     advice: string;
+    machine?: string;
 }
 export const ToolFinding = object<ToolFinding>({
     component: string, neededBy: string, hosts: array(HostFamily), found: optional(string), tooOld: optional(string),
-    advice: string,
+    advice: string, machine: optional(string),
 });
 
 export interface ToolchainReport { findings: ToolFinding[] }

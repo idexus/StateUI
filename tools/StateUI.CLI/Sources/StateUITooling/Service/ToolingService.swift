@@ -155,9 +155,37 @@ public struct ToolingService: Sendable {
         return clone
     }
 
-    /// What this machine has of every component it needs - `toolchain/check`.
-    public func checkToolchain() async -> ToolchainReport {
-        await Doctor().check()
+    /// What this machine has of every component it needs - `toolchain/check` - or, where `query` names a guest, what
+    /// that guest has of what a head of its host needs, for the application and checkout of its project.
+    public func checkToolchain(_ query: ToolchainQuery = ToolchainQuery()) async -> ToolchainReport {
+        guard let device = query.device, let host = query.host else { return await Doctor().check() }
+        var folders: [URL] = []
+        if let uri = query.projectUri, let folder = try? FileURI.url(uri), let project = try? await ProjectReader().describe(containing: folder) {
+            for application in project.applications {
+                let uris = [application.packageUri] + (application.libraryUri.map { [$0] } ?? [])
+                folders.append(contentsOf: uris.compactMap { try? FileURI.url($0) })
+            }
+        }
+        var seen: Set<String> = []
+        return await GuestDoctor(guests: ParallelsGuests())
+            .check(host: host, device: device, folders: folders.filter { seen.insert($0.standardizedFileURL.path).inserted })
+    }
+
+    /// Lays the stateui of the checkout `folder` builds with in `device`, a guest of this Mac; its program's path
+    /// there.
+    public func prepareGuest(_ device: String, in folder: URL, reporter: BuildReporter) async throws -> String {
+        let guests = ParallelsGuests()
+        guard let prlctl = guests.prlctl else {
+            throw ToolingError(.missingToolchain, "Parallels Desktop's prlctl is not here: its Pro or Business edition has it.")
+        }
+        guard let guest = await guests.list().first(where: { $0.name == device || $0.id == device }) else {
+            throw ToolingError(.invalidConfiguration, "No guest named \(device) stands here: `stateui devices` lists them.")
+        }
+        let project = try? await ProjectReader().describe(containing: folder)
+        guard let library = project?.applications.compactMap(\.libraryUri).first.flatMap({ try? FileURI.url($0) })
+            ?? Checkout.holding(folder)?.root
+        else { throw ToolingError(.projectNotFound, "No StateUI checkout stands in or above \(folder.path).") }
+        return try await GuestPreparation(commands: GuestCommands(prlctl: prlctl, guest: guest)).lay(checkout: library, reporter: reporter)
     }
 
     /// The suites the folder holding `folder` - a checkout, a workspace, an application - holds for `host`, in the
@@ -419,7 +447,7 @@ public struct ToolingService: Sendable {
     public var methods: Methods {
         var methods = Methods()
         methods.query("server/info") { (_: NoParameters) in serverInfo() }
-        methods.query("toolchain/check") { (_: NoParameters) in await checkToolchain() }
+        methods.query("toolchain/check") { (query: ToolchainQuery) in await checkToolchain(query) }
         methods.query("devices/list") { (query: DestinationQuery) in try await listDestinations(of: query.host) }
         methods.query("index/describe") { (query: IndexQuery) in await describeIndex(of: query.host) }
         methods.query("tests/discover") { (query: TestDiscoveryQuery, caller: RequestContext) in
