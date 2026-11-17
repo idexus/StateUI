@@ -92,6 +92,7 @@ struct RemoteCommand: AsyncParsableCommand {
                 let hosts = info.hosts.map { "\($0.host.rawValue) (\($0.place.rawValue))" }.joined(separator: ", ")
                 return "answers: \(info.machine.system) \(info.machine.architecture), stateui \(info.server.version); hosts \(hosts.isEmpty ? "none" : hosts)"
             case .notAdmitted(let why): return "answers, but admits this machine not - pair it again: \(why)"
+            case .anotherMachine(let why): return why
             case .unreached(let why): return "does not answer: \(why)"
             case nil: return "not asked"
             }

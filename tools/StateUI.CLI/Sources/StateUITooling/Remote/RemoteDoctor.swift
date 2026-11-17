@@ -23,6 +23,8 @@ struct RemoteDoctor: Sendable {
         case .notAdmitted(let why):
             return ToolchainReport(findings: [finding(
                 service, nil, "It answers at \(machine.address):\(machine.port) but admits this machine not - pair again with the code it shows: `stateui remote add \(machine.name) \(machine.address):\(machine.port) --code <code>`. \(why)")])
+        case .anotherMachine(let why):
+            return ToolchainReport(findings: [finding(service, nil, why)])
         case .unreached(let why):
             return ToolchainReport(findings: [finding(
                 service, nil, "None answers at \(machine.address):\(machine.port) - `stateui service install` on \(machine.name) starts it with its user's session. \(why)")])

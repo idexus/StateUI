@@ -116,6 +116,9 @@ final class RemoteMachinesTests: XCTestCase {
         } catch let error as ToolingError {
             XCTAssertTrue(error.message.contains("Another machine answers"), error.message)
         }
+        let probed = await ServiceProbe.check(moved)
+        XCTAssertEqual(probed, .anotherMachine(
+            "Another machine answers at 127.0.0.1:\(listener.port): its identity is \(otherIdentity.prefix(12))…, not \(officeIdentity.prefix(12))…, studio's. Where it is that machine set up anew, pair it again."))
     }
 
     /// Declaring a machine paired writes its name, address and identity - no token - into the project's manifest, the

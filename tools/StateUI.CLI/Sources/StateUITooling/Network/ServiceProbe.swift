@@ -15,6 +15,8 @@ public enum ServiceProbe {
         case admitted(ServerInfo)
         /// A stateui service answers, and admits this machine not: unpaired, or its pairing gone.
         case notAdmitted(String)
+        /// A stateui service answers for another machine than the one paired or declared.
+        case anotherMachine(String)
         /// No stateui service answers there.
         case unreached(String)
     }
@@ -30,9 +32,11 @@ public enum ServiceProbe {
             return .admitted(info)
         } catch let error as ToolingError where error.message.contains("not paired") {
             return .notAdmitted(error.message)
+        } catch let error as ToolingError where error.message.hasPrefix(ServedTool.anotherMachine) {
+            return .anotherMachine(error.message)
         } catch {
             return await probe(machine.address, port: machine.port) == nil
-                ? .notAdmitted("\(error)") : .unreached(Self.words(error))
+                ? .notAdmitted(Self.words(error)) : .unreached(Self.words(error))
         }
     }
 

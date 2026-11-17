@@ -211,11 +211,13 @@ public struct ServedTool: Sendable {
 
     /// Refuses a service answering for another machine than `remote`'s identity - another machine at its address -
     /// before this machine proves itself to it.
+    static let anotherMachine = "Another machine answers"
+
     static func check(_ identity: String, of remote: RemoteMachine) throws(ToolingError) {
         guard let expected = remote.identity, expected != identity else { return }
         throw ToolingError(
             .invalidConfiguration,
-            "Another machine answers at \(remote.address):\(remote.port): its identity is \(identity.prefix(12))…, not \(expected.prefix(12))…, \(remote.name)'s. Where it is that machine set up anew, pair it again.")
+            "\(anotherMachine) at \(remote.address):\(remote.port): its identity is \(identity.prefix(12))…, not \(expected.prefix(12))…, \(remote.name)'s. Where it is that machine set up anew, pair it again.")
     }
 
     /// Whether `error` says the served tool itself ended - its output closed, its input broken - rather than refused.
