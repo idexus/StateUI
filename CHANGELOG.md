@@ -114,6 +114,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   doctor --host <host> --device <guest>` checks this machine and then the guest, in one report. The VS Code extension
   reads all of it from the tool - the hosts it offers, a browser's or a guest's debugger, WinUI's package
   architectures - and keeps no table of its own.
+- The tool says how a debugger reaches every application it readies (`DebugDescriptor`): `application/prepare`
+  builds and readies a head of this machine - AppKit, WinUI, GTK, a GTK head installed and a copy running stopped -
+  for LLDB to start its program; `application/run` with `debugger` hands the way to a simulator's, a device's or an
+  Android head's process in its `started` event (`debugger`, in place of `debuggerSocket`), and readies a page for a
+  browser a debugger follows, which it then opens in none. `stateui run --debugger` prints the LLDB commands. The VS
+  Code extension maps the way to lldb-dap or its JavaScript debugger and builds none itself.
 - `stateui new --platforms appkit,web,winui` makes an application with those hosts' heads alone; an application's
   hosts are its heads, so one is taken away by removing its `Platforms/<Host>`.
 - The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running; an

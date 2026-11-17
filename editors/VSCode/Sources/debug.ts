@@ -4,58 +4,40 @@
 // ONE Debug and ONE Release, whatever the host.
 //
 // A `stateui` configuration is never debugged itself: it is resolved into the
-// configuration the chosen host's own debugger takes - lldb-dap for an AppKit
-// head, which is built first. Resolved in the FIRST hook, so the new type's
-// resolvers still run over it. On a machine that runs no host, nothing is
-// resolved and the launch says so.
+// configuration a debugger takes - lldb-dap for Swift, VS Code's JavaScript
+// debugger for a page. Resolved in the FIRST hook, so the new type's resolvers
+// still run over it. On a machine that runs no host, nothing is resolved and
+// the launch says so.
 //
-// An Android head is built and started by the stateui tool (`application/run`)
-// on the device chosen, its log followed in StateUI Run. A Debug launch readies
-// the NDK's lldb-server in the application's sandbox; the run's `started` event
-// says its socket and the process, and lldb-dap attaches through it. The debug
-// session's end stops the run. A Release build has no session.
+// The stateui tool readies every launch and says how a debugger reaches the
+// application (`DebugDescriptor`); the editor only maps that to its debugger's
+// configuration. Where a host's heads run, the tool says too (`server/info`):
 //
-// A UIKit head is built and started by the stateui tool (`application/run`) on
-// the iPhone, iPad or simulator chosen, its output followed in StateUI Run. A
-// Debug launch starts it held until a debugger attaches; the run's `started`
-// event says its process - on a simulator one of this Mac's, a device's
-// reached through the device - and lldb-dap attaches, which lets it run. The
-// debug session's end stops the run. A Release launch has no session.
-//
-// A GTK head is built and installed for the user by the stateui tool, a copy
-// still running stopped, and launched by lldb-dap: the debugger is the
-// application's parent, which is what Ubuntu's ptrace scope permits.
-//
-// A WinUI head is built by the stateui tool - a running copy stopped first, its
-// executable written again - for this machine's architecture, and launched by
-// lldb-dap, which reads the DWARF the head carries.
-//
-// A head of a host this machine works in a guest - GTK and WinUI on a Mac, as
-// the stateui tool says (`server/info`) - is built and started in the guest
-// chosen by the tool (`application/run`), its output followed in StateUI Run.
-// Where the tool says no debugger reaches the guest, a Debug launch runs the
-// debug build without one, said, and neither has a session.
-//
-// A Web head is built, laid out and served by the stateui tool
-// (`application/run`), which opens the page in the browser chosen. A Debug
-// launch in a browser a debugger follows, as the tool says - one of
-// Chromium's - has the page served alone, and VS Code's own
-// JavaScript debugger starts that browser's program on the address the
-// `started` event says: the console in the Debug Console, a breakpoint in the
-// relay; the debug session's end stops the run. Any other browser the tool
-// opens, with no session.
+// - on this machine itself (AppKit, WinUI, GTK): `application/prepare` builds
+//   the head and readies it - a GTK head installed, a copy running stopped -
+//   and lldb-dap starts its program, Debug and Release alike;
+// - on a device (UIKit, Android): `application/run` builds, installs and
+//   starts it on the one chosen, StateUI Run following its output; a Debug
+//   launch has it readied for a debugger - held, or its lldb-server started -
+//   and lldb-dap attaches as the `started` event says, the session's end
+//   stopping the run. A Release launch has no session;
+// - in a browser (the Web): the page served and opened in the browser chosen;
+//   a Debug launch in one a debugger follows has it served alone, and VS
+//   Code's JavaScript debugger starts that browser on it;
+// - in a guest (GTK and WinUI on a Mac): built and started there by the
+//   tool; where no debugger reaches the guest, a Debug launch runs the debug
+//   build without one, said, and neither has a session.
 //
 // The application is the one chosen with StateUI: Select Application; a launch
 // naming its `application` runs that one instead.
 
-import { execFile } from "child_process";
 import * as vscode from "vscode";
 import { Application, pathOf } from "./applications";
 import { Browser } from "./browsers";
 import { Guest } from "./guests";
 import { lldbDapFinding } from "./toolchain";
 import { Host } from "./hosts";
-import { LaunchedApplication, Place } from "./Tooling/protocol";
+import { DebugDescriptor, LaunchedApplication, Place, PreparedApplication } from "./Tooling/protocol";
 
 /** Which build a launch runs. */
 export type Configuration = "debug" | "release";
@@ -75,10 +57,13 @@ export interface Choices {
     application(folder: vscode.WorkspaceFolder, host: Host, named?: string): Promise<Application | undefined>;
 
     /**
-     * Has the stateui tool build `application` for `host` in `configuration` and answers the program its build
-     * published - nothing where it failed or was cancelled, which the tool's error said.
+     * Has the stateui tool build `application` for `host` in `configuration` and ready it for a debugger to start on
+     * this machine - its build and how the debugger starts it - nothing where it failed or was cancelled, which the
+     * tool's error said.
      */
-    build(folder: vscode.WorkspaceFolder, application: Application, host: Host, configuration: Configuration): Promise<string | undefined>;
+    prepare(
+        folder: vscode.WorkspaceFolder, application: Application, host: Host, configuration: Configuration,
+    ): Promise<PreparedApplication | undefined>;
 
     /**
      * What the tool knows the Android device a launch runs on by - the one
@@ -160,11 +145,12 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
 
-        // A page needs no lldb-dap: its debugger is the browser's; a guest's is the tool's to give.
-        if (host === "web") {
-            return this.web(root, application, configuration, name);
+        // A page's debugger is the browser's; a guest's is the tool's to give.
+        const place = this.choices.place(host);
+        if (place === "browser") {
+            return this.inBrowser(root, application, host, configuration, name);
         }
-        if (this.choices.place(host) === "guest") {
+        if (place === "guest") {
             return this.inGuest(root, application, host, configuration);
         }
 
@@ -175,129 +161,40 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
 
-        if (host === "android") {
-            return this.android(root, application, configuration, name);
+        if (place === "device") {
+            return this.onDevice(root, application, host, configuration, name);
         }
-
-        if (host === "uikit") {
-            return this.uiKit(root, application, configuration, name);
-        }
-
-        if (host === "gtk") {
-            return this.gtk(root, application, configuration, name);
-        }
-
-        // AppKit and WinUI: built by the stateui tool, lldb-dap launching the program it published.
-        const program = await this.choices.build(root, application, host, configuration);
-        if (!program) {
-            return undefined;
-        }
-
-        return {
-            type: "lldb-dap",
-            request: "launch",
-            name,
-            program,
-            cwd: root.uri.fsPath,
-            stopOnEntry: false,
-        };
+        const prepared = await this.choices.prepare(root, application, host, configuration);
+        return prepared && debugConfiguration(name, prepared.debugger);
     }
 
     /**
-     * An Android head, built and started on the device chosen by the stateui tool, which follows its log; a Debug
-     * build's debugger server readied in its sandbox and attached to by lldb-dap, the session's end stopping the run -
-     * a Release build has no session.
+     * A head built and started by the stateui tool on the device chosen, which follows its output; a Debug build
+     * readied for a debugger, which lldb-dap reaches as the tool says, the session's end stopping the run - a Release
+     * build has no session.
      */
-    private async android(
+    private async onDevice(
         root: vscode.WorkspaceFolder,
         application: Application,
+        host: Host,
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const device = await this.choices.device();
+        const device = host === "uikit" ? await this.choices.uiKitDevice() : await this.choices.device();
         if (!device) {
             return undefined;
         }
         const debug = configuration === "debug";
-        const running = await this.choices.runHead(root, application, "android", configuration, device, debug);
+        const running = await this.choices.runHead(root, application, host, configuration, device, debug);
         if (!running || !debug) {
             return undefined;
         }
         const { launched, token } = running;
-        const serial = launched.build.destination?.id;
-        if (launched.process === undefined || !launched.debuggerSocket || !serial || !launched.build.symbolsUri) {
-            void vscode.window.showErrorMessage(`StateUI: ${application.name} started, but where a debugger attaches is not known.`);
+        if (!launched.debugger) {
+            void vscode.window.showErrorMessage(`StateUI: ${application.name} started, but the tool said no way for a debugger to reach it.`);
             return undefined;
         }
-        return {
-            ...androidAttach(name, serial, {
-                process: launched.process, socket: launched.debuggerSocket, symbols: pathOf(launched.build.symbolsUri),
-            }),
-            stateuiRun: token,
-        };
-    }
-
-    /**
-     * A UIKit head, built and started on the device chosen by the stateui tool, which follows its output; a Debug
-     * build started held and attached to by lldb-dap, the session's end stopping the run - a Release build has no
-     * session.
-     */
-    private async uiKit(
-        root: vscode.WorkspaceFolder,
-        application: Application,
-        configuration: Configuration,
-        name: string,
-    ): Promise<vscode.DebugConfiguration | undefined> {
-        const device = await this.choices.uiKitDevice();
-        if (!device) {
-            return undefined;
-        }
-        const debug = configuration === "debug";
-        const running = await this.choices.runHead(root, application, "uikit", configuration, device, debug);
-        if (!running || !debug) {
-            return undefined;
-        }
-        const { launched, token } = running;
-        if (launched.process === undefined) {
-            void vscode.window.showErrorMessage(`StateUI: ${application.name} started, but its process is not known to attach to.`);
-            return undefined;
-        }
-        const destination = launched.build.destination;
-        return {
-            ...uiKitAttach(name, {
-                process: launched.process,
-                device: destination?.kind === "device" ? destination.id : undefined,
-                symbols: launched.build.bundleUri && pathOf(launched.build.bundleUri),
-            }),
-            stateuiRun: token,
-        };
-    }
-
-    /**
-     * A GTK head, built and installed by the stateui tool, a copy still running stopped - a GTK application being one
-     * instance - and launched by lldb-dap.
-     */
-    private async gtk(
-        root: vscode.WorkspaceFolder,
-        application: Application,
-        configuration: Configuration,
-        name: string,
-    ): Promise<vscode.DebugConfiguration | undefined> {
-        const program = await this.choices.build(root, application, "gtk", configuration);
-        if (!program) {
-            return undefined;
-        }
-        // A GTK application is one instance: a copy still running would only be brought forward.
-        await new Promise((resolve) => execFile("pkill", ["-f", `^${program}( |$)`], () => resolve(undefined)));
-
-        return {
-            type: "lldb-dap",
-            request: "launch",
-            name,
-            program,
-            cwd: root.uri.fsPath,
-            stopOnEntry: false,
-        };
+        return { ...debugConfiguration(name, launched.debugger), stateuiRun: token };
     }
 
     /**
@@ -323,13 +220,14 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
     }
 
     /**
-     * A Web head, built and served by the stateui tool, which opens the page in the browser chosen; a Debug launch in
-     * a browser a debugger follows - one of Chromium's, as the tool says - has the page served alone and VS Code's
-     * JavaScript debugger starting that browser on it, the session's end stopping the run.
+     * A page, built and served by the stateui tool, which opens it in the browser chosen; a Debug launch in a browser
+     * a debugger follows has it served alone, and VS Code's JavaScript debugger starts that browser on it as the tool
+     * says, the session's end stopping the run.
      */
-    private async web(
+    private async inBrowser(
         root: vscode.WorkspaceFolder,
         application: Application,
+        host: Host,
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
@@ -337,18 +235,12 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         if (!browser) {
             return undefined;
         }
-
-        const debugged = configuration === "debug" && browser.debugger;
-        const running = await this.choices.runHead(root, application, "web", configuration, debugged ? "none" : browser.id, false);
-        if (!running || !debugged) {
+        const debug = configuration === "debug" && browser.debugger;
+        const running = await this.choices.runHead(root, application, host, configuration, browser.id, debug);
+        if (!running || !running.launched.debugger) {
             return undefined;
         }
-        const { launched, token } = running;
-        if (!launched.url) {
-            void vscode.window.showErrorMessage(`StateUI: ${application.name}'s page is served, but its address is not known.`);
-            return undefined;
-        }
-        return { ...webLaunch(name, launched.url, browser, pathOf(launched.build.folderUri)), stateuiRun: token };
+        return { ...debugConfiguration(name, running.launched.debugger), stateuiRun: running.token };
     }
 }
 
@@ -358,84 +250,29 @@ export function runPlace(directory: string, host: Host, device: string): string 
 }
 
 /**
- * VS Code's JavaScript debugger starting `browser`, one of Chromium's, on the page at `url`, in a profile of its own:
- * the page's console in the Debug Console, and the relay's sources read from `site`.
+ * The configuration of VS Code's debugger that reaches an application as the stateui tool said: lldb-dap starting
+ * its program or attaching to its process with the tool's commands, or VS Code's JavaScript debugger starting a
+ * browser on its page.
  */
-export function webLaunch(name: string, url: string, browser: Browser, site: string): vscode.DebugConfiguration {
-    return { type: "chrome", request: "launch", name, url, runtimeExecutable: browser.program, webRoot: site };
-}
-
-/** Where a run readied an Android head for a debugger: its process, the debugger server's socket, its symbols. */
-export interface AndroidDebugger {
-    /** The process started, the server's socket, and the libraries unstripped. */
-    process: number;
-    socket: string;
-    symbols: string;
-}
-
-/**
- * lldb-dap attached to an Android head's process through the lldb-server that
- * runs in its sandbox: the device named in the address, whichever others are
- * attached, and the libraries read from the build, which kept them unstripped.
- * The runtime raises SIGSEGV and SIGBUS on purpose - its null and suspend
- * checks - so they pass to it without stopping the session. LLDB does not
- * follow the code the runtime's JIT compiles: announced to it method by
- * method, each stopping the whole application, over USB it froze the UI
- * thread for seconds.
- */
-export function androidAttach(name: string, serial: string, server: AndroidDebugger): vscode.DebugConfiguration {
-    return {
-        type: "lldb-dap",
-        request: "attach",
-        name,
-        stopOnEntry: false,
-        initCommands: [
-            "settings set plugin.jit-loader.gdb.enable off",
-            "platform select remote-android",
-            `platform connect unix-abstract-connect://${serial}/${server.socket}`,
-            `settings append target.exec-search-paths ${server.symbols}`,
-        ],
-        attachCommands: [
-            `process attach --pid ${server.process}`,
-            "process handle SIGSEGV --pass true --stop false --notify false",
-            "process handle SIGBUS --pass true --stop false --notify false",
-        ],
+export function debugConfiguration(name: string, way: DebugDescriptor): vscode.DebugConfiguration {
+    if (way.kind === "browser") {
+        return {
+            type: "chrome", request: "launch", name, url: way.url,
+            runtimeExecutable: way.programUri && pathOf(way.programUri), webRoot: way.sourceUri && pathOf(way.sourceUri),
+        };
+    }
+    const commands = {
+        ...(way.initCommands.length > 0 ? { initCommands: way.initCommands } : {}),
+        ...(way.terminateCommands.length > 0 ? { terminateCommands: way.terminateCommands } : {}),
     };
-}
-
-/**
- * Where a UIKit head waits for a debugger: its process, held until one
- * attaches, and on a device the device and the bundle built.
- */
-export interface UIKitDebugger {
-    process: number;
-    device?: string;
-    symbols?: string;
-}
-
-/**
- * lldb-dap attached to a UIKit head's process, which lets it run: on a
- * simulator a process of this Mac, found by its number; on a device through
- * the device, its symbols read from the bundle built rather than copied back.
- * The session's end kills the process through the debugger.
- */
-export function uiKitAttach(name: string, facts: UIKitDebugger): vscode.DebugConfiguration {
-    // The session's end ends the application by the debugger itself, which then lets go of it whole.
-    const terminateCommands = ["process kill"];
-    if (!facts.device) {
-        return { type: "lldb-dap", request: "attach", name, pid: facts.process, stopOnEntry: false, terminateCommands };
+    if (way.request === "launch") {
+        return {
+            type: "lldb-dap", request: "launch", name, program: way.programUri && pathOf(way.programUri),
+            cwd: way.workingUri && pathOf(way.workingUri), stopOnEntry: false, ...commands,
+        };
     }
     return {
-        type: "lldb-dap",
-        request: "attach",
-        name,
-        stopOnEntry: false,
-        terminateCommands,
-        initCommands: facts.symbols
-            ? [`settings append target.exec-search-paths ${facts.symbols}`,
-                `settings append target.exec-search-paths ${facts.symbols}/Frameworks`]
-            : [],
-        attachCommands: [`device select ${facts.device}`, `device process attach --pid ${facts.process}`],
+        type: "lldb-dap", request: "attach", name, stopOnEntry: false, ...commands,
+        ...(way.attachCommands.length > 0 ? { attachCommands: way.attachCommands } : { pid: way.process }),
     };
 }
-

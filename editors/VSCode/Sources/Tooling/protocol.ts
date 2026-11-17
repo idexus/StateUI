@@ -254,10 +254,33 @@ export const BuildResult = object<BuildResult>({
 export interface RunRequest { build: BuildRequest; debugger: boolean; port?: number; lan?: boolean }
 export const RunRequest = object<RunRequest>({ build: BuildRequest, debugger: boolean, port: optional(number), lan: optional(boolean) });
 
-export interface LaunchedApplication { build: BuildResult; process?: number; held: boolean; debuggerSocket?: string; url?: string }
-export const LaunchedApplication = object<LaunchedApplication>({
-    build: BuildResult, process: optional(number), held: boolean, debuggerSocket: optional(string), url: optional(string),
+export type DebugKind = "lldb" | "browser";
+export type DebugRequest = "launch" | "attach";
+export interface DebugDescriptor {
+    kind: DebugKind;
+    request: DebugRequest;
+    programUri?: string;
+    workingUri?: string;
+    process?: number;
+    initCommands: string[];
+    attachCommands: string[];
+    terminateCommands: string[];
+    url?: string;
+    sourceUri?: string;
+}
+export const DebugDescriptor = object<DebugDescriptor>({
+    kind: oneOf<DebugKind>("lldb", "browser"), request: oneOf<DebugRequest>("launch", "attach"), programUri: optional(string),
+    workingUri: optional(string), process: optional(number), initCommands: array(string), attachCommands: array(string),
+    terminateCommands: array(string), url: optional(string), sourceUri: optional(string),
 });
+
+export interface LaunchedApplication { build: BuildResult; process?: number; held: boolean; debugger?: DebugDescriptor; url?: string }
+export const LaunchedApplication = object<LaunchedApplication>({
+    build: BuildResult, process: optional(number), held: boolean, debugger: optional(DebugDescriptor), url: optional(string),
+});
+
+export interface PreparedApplication { build: BuildResult; debugger: DebugDescriptor }
+export const PreparedApplication = object<PreparedApplication>({ build: BuildResult, debugger: DebugDescriptor });
 
 export interface RunResult { launched: LaunchedApplication; exitStatus?: number }
 export const RunResult = object<RunResult>({ launched: LaunchedApplication, exitStatus: optional(number) });
@@ -465,6 +488,7 @@ export const methods = {
     "project/create": mutation(ApplicationRequest, ProjectCreation),
     "folder/mirror": mutation(FolderMirrorRequest, FolderMirrorResult),
     "application/build": mutation(BuildRequest, BuildResult),
+    "application/prepare": mutation(BuildRequest, PreparedApplication),
     "application/package": mutation(BuildRequest, BuildResult),
     "application/run": mutation(RunRequest, RunResult),
     "application/install": mutation(InstallRequest, InstallResult),

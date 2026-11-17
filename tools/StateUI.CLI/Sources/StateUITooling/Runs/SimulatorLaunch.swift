@@ -46,7 +46,8 @@ struct SimulatorLaunch {
                 + " within a minute. Where `xcrun simctl spawn \(simulator.udid) launchctl list` still lists it, an earlier"
                 + " process of it never ended - one a stopped debugserver holds.")
         }
-        let launched = LaunchedApplication(build: built, process: process, held: held)
+        let launched = LaunchedApplication(
+            build: built, process: process, held: held, debugger: held ? DebugDescriptors.simulator(process: process) : nil)
         reporter.started(launched)
 
         var tails = [FileTail(out, as: .standardOutput), FileTail(err, as: .standardError)]

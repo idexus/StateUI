@@ -275,6 +275,23 @@ public struct ToolingService: Sendable {
         return try await ApplicationBuilder().build(request, in: folder, operation: operation, reporter: reporter)
     }
 
+    /// Builds `request`'s application and readies it for a debugger to start on this machine - `application/prepare`: a
+    /// GTK head installed and a copy of it running stopped; its build, and how LLDB starts its program.
+    ///
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a head that runs elsewhere than on this machine itself,
+    ///   which `application/run` readies on its device, browser or guest.
+    public func prepare(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> PreparedApplication {
+        let chosen = try ApplicationBuilder.chosen(request, in: folder)
+        guard let host = chosen.host, HostPlaces.place(of: host) == .machine else {
+            throw ToolingError(.invalidConfiguration, "A head of \(chosen.host?.rawValue ?? "no host") does not run on this machine itself: application/run readies it for a debugger where it runs.")
+        }
+        let built = try await ApplicationBuilder().build(chosen, in: folder, operation: operation, reporter: reporter)
+        try await DesktopLaunch.ready(built)
+        let project = try await ProjectReader().describe(containing: folder)
+        let working = try project.workspaceUri.map(FileURI.url) ?? FileURI.url(project.rootUri)
+        return PreparedApplication(build: built, debugger: DebugDescriptors.program(try FileURI.url(built.programUri), working: working))
+    }
+
     /// Builds `request`'s application for release and lays it out to be shipped - `application/package`.
     public func package(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> BuildResult {
         let chosen = try ApplicationBuilder.chosen(request, in: folder)
@@ -497,6 +514,11 @@ public struct ToolingService: Sendable {
         methods.mutation("application/build") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
             try await Self.reporting(context) { reporter in
                 try await build(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter.build)
+            }
+        }
+        methods.mutation("application/prepare") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
+            try await Self.reporting(context) { reporter in
+                try await prepare(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter.build)
             }
         }
         methods.mutation("application/package") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in

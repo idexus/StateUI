@@ -15,7 +15,7 @@ import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 import { Application, applicationsOf, hasHead, readApplications } from "../Sources/applications";
-import { Configuration, configurations, runPlace, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
+import { Configuration, configurations, debugConfiguration, runPlace, StateUIDebugConfigurationProvider } from "../Sources/debug";
 import { chosenApplication, chosenHost, offeredHosts } from "../Sources/choices";
 import { androidDeviceOf, deviceAmong } from "../Sources/devices";
 import { browserOf } from "../Sources/browsers";
@@ -248,7 +248,7 @@ export async function run(): Promise<void> {
         {
             const ran: string[] = [];
             const provider = new StateUIDebugConfigurationProvider({
-                build: async (_folder, application) => { ran.push(application.name); return undefined; },
+                prepare: async (_folder, application) => { ran.push(application.name); return undefined; },
                 host: () => undefined, application: async () => gallery_,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
@@ -266,7 +266,7 @@ export async function run(): Promise<void> {
             // build too, as the debugger does not reach a guest.
             const runs: { host: string; device: string; debug: boolean; configuration: string }[] = [];
             const inAGuest = (forHost: Host, named: string | undefined) => new StateUIDebugConfigurationProvider({
-                build: async () => undefined, host: () => forHost, application: async () => gallery_,
+                prepare: async () => undefined, host: () => forHost, application: async () => gallery_,
                 device: async () => undefined, uiKitDevice: async () => undefined, place: () => "guest",
                 guest: async () => named === undefined ? undefined
                     : { name: named, system: "", state: "running", debugger: false, architectures: ["arm64"] },
@@ -443,12 +443,12 @@ export async function run(): Promise<void> {
             const launchOnAndroid = async (serial: string | undefined, configuration = "release", starts = true) => {
                 const runs: { host: string; device: string; debug: boolean; configuration: string }[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
-                    build: async () => undefined,
+                    prepare: async () => undefined,
                     host: () => "android", application: async () => helloWorld,
                     device: async () => serial,
                     uiKitDevice: async () => undefined,
                     guest: async () => undefined,
-                    place: () => undefined,
+                    place: () => "device",
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
                         runs.push({ host: forHost, device, debug, configuration: asked });
                         if (!starts) {
@@ -458,7 +458,18 @@ export async function run(): Promise<void> {
                         return {
                             token: "RUN-2",
                             launched: {
-                                held: false, process: 4242, debuggerSocket: debug ? "com.stateui.helloworld/stateui-debugger.sock" : undefined,
+                                held: false, process: 4242, debugger: debug ? {
+                                    kind: "lldb" as const, request: "attach" as const, process: 4242, terminateCommands: [],
+                                    initCommands: [
+                                        "settings set plugin.jit-loader.gdb.enable off", "platform select remote-android",
+                                        `platform connect unix-abstract-connect://${device}/com.stateui.helloworld/stateui-debugger.sock`,
+                                        "settings append target.exec-search-paths /build/symbols/arm64-v8a",
+                                    ],
+                                    attachCommands: [
+                                        "process attach --pid 4242", "process handle SIGSEGV --pass true --stop false --notify false",
+                                        "process handle SIGBUS --pass true --stop false --notify false",
+                                    ],
+                                } : undefined,
                                 build: {
                                     application: "HelloWorld", host: "android" as const, configuration: asked as Configuration, architecture: "arm64" as const,
                                     folderUri: "file:///build", programUri: "file:///build/HelloWorld.apk", bundleUri: "file:///build/HelloWorld.apk",
@@ -487,13 +498,13 @@ export async function run(): Promise<void> {
 
             const debugged = await launchOnAndroid("emulator-5554", "debug");
             say(`     android debugged: ${JSON.stringify(debugged.resolved)}`);
-            check("Android Debug: the tool readies the debugger's server, then lldb-dap attaches through it to the process started, the session carrying the run",
+            check("Android Debug: the tool readies the debugger's server, then lldb-dap attaches through it as the tool says, the session carrying the run",
                 debugged.resolved?.type === "lldb-dap" && debugged.resolved.request === "attach" && debugged.resolved.stateuiRun === "RUN-2"
                 && JSON.stringify(debugged.resolved.initCommands) === JSON.stringify([
                     "settings set plugin.jit-loader.gdb.enable off",
                     "platform select remote-android",
                     "platform connect unix-abstract-connect://emulator-5554/com.stateui.helloworld/stateui-debugger.sock",
-                    `settings append target.exec-search-paths ${vscode.Uri.parse("file:///build/symbols/arm64-v8a").fsPath}`,
+                    "settings append target.exec-search-paths /build/symbols/arm64-v8a",
                 ])
                 && JSON.stringify(debugged.resolved.attachCommands) === JSON.stringify([
                     "process attach --pid 4242",
@@ -551,8 +562,12 @@ export async function run(): Promise<void> {
                     { id: "SIM", name: "iPhone 18 Pro", kind: "simulator", os: "27.0", state: "booted" },
                     { id: "PAD", name: "iPad Air 13-inch (M4)", kind: "simulator", os: "27.0", state: "" },
                 ]));
-            const onDevice = uiKitAttach("StateUI: Debug", { process: 37779, device: "PHONE", symbols: "/b/App.app" });
-            check("on a device lldb-dap selects the device, attaches to the process through it, reads symbols from the bundle built, and kills it as the session ends",
+            const onDevice = debugConfiguration("StateUI: Debug", {
+                kind: "lldb", request: "attach", process: 37779, terminateCommands: ["process kill"],
+                initCommands: ["settings append target.exec-search-paths /b/App.app", "settings append target.exec-search-paths /b/App.app/Frameworks"],
+                attachCommands: ["device select PHONE", "device process attach --pid 37779"],
+            });
+            check("lldb-dap reaches an application as the tool says - its commands as given, no process number where they attach",
                 onDevice.request === "attach" && onDevice.pid === undefined
                 && JSON.stringify(onDevice.terminateCommands) === JSON.stringify(["process kill"])
                 && JSON.stringify(onDevice.attachCommands) === JSON.stringify(["device select PHONE", "device process attach --pid 37779"])
@@ -565,12 +580,12 @@ export async function run(): Promise<void> {
             const launchOnUIKit = async (udid: string | undefined, configuration = "release", starts = true) => {
                 const runs: { device: string; debug: boolean; configuration: string }[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
-                    build: async () => undefined,
+                    prepare: async () => undefined,
                     host: () => "uikit", application: async () => helloWorldHere,
                     device: async () => undefined,
                     uiKitDevice: async () => udid,
                     guest: async () => undefined,
-                    place: () => undefined,
+                    place: () => "device",
                     runHead: async (_folder, _application, _host, asked, device, debug) => {
                         runs.push({ device, debug, configuration: asked });
                         if (!starts) {
@@ -581,6 +596,10 @@ export async function run(): Promise<void> {
                             token: "RUN-1",
                             launched: {
                                 held: debug, process: 4343,
+                                debugger: debug ? {
+                                    kind: "lldb" as const, request: "attach" as const, process: 4343, initCommands: [], attachCommands: [],
+                                    terminateCommands: ["process kill"],
+                                } : undefined,
                                 build: {
                                     application: "HelloWorld", host: "uikit" as const, configuration: asked as Configuration, architecture: "arm64" as const,
                                     folderUri: "file:///a", programUri: "file:///a/HelloWorldUIKit.app/HelloWorldUIKit",
@@ -610,6 +629,7 @@ export async function run(): Promise<void> {
             check("UIKit Debug: the tool runs it held, then lldb-dap attaches to the process it started, the session carrying the run",
                 JSON.stringify(debugged.runs) === JSON.stringify([{ device: "SIM-1", debug: true, configuration: "debug" }])
                 && debugged.resolved?.type === "lldb-dap" && debugged.resolved.request === "attach" && debugged.resolved.pid === 4343
+                && JSON.stringify(debugged.resolved.terminateCommands) === JSON.stringify(["process kill"])
                 && debugged.resolved.stateuiRun === "RUN-1");
 
             const failed = await launchOnUIKit("SIM-1", "debug", false);
@@ -632,23 +652,33 @@ export async function run(): Promise<void> {
             const built: string[] = [];
             const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "winui-release", "HelloWorldWinUI.exe");
             const provider = new StateUIDebugConfigurationProvider({
-                build: async (_folder, application, forHost, configuration) => {
+                prepare: async (_folder, application, forHost, configuration) => {
                     built.push(`${application.name} ${forHost} ${configuration}`);
-                    return program;
+                    return {
+                        build: {
+                            application: "HelloWorld", host: forHost, configuration, architecture: "arm64",
+                            folderUri: vscode.Uri.file(path.dirname(program)).toString(), programUri: vscode.Uri.file(program).toString(),
+                        },
+                        debugger: {
+                            kind: "lldb", request: "launch", programUri: vscode.Uri.file(program).toString(), workingUri: root.uri.toString(),
+                            initCommands: [], attachCommands: [], terminateCommands: [],
+                        },
+                    };
                 },
                 host: () => "winui", application: async () => helloWorld,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
                 guest: async () => undefined,
-                place: () => undefined,
+                place: () => "machine",
                 runHead: async () => undefined,
                 browser: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
-            check("WinUI: the tool builds HelloWorld for release, then lldb-dap launches the program it published",
+            check("WinUI: the tool builds and readies HelloWorld for release, then lldb-dap launches its program as the tool says",
                 JSON.stringify(built) === JSON.stringify(["HelloWorld winui release"])
-                && resolved?.type === "lldb-dap" && resolved.request === "launch" && resolved.program === program);
+                && resolved?.type === "lldb-dap" && resolved.request === "launch" && resolved.program === program
+                && resolved.cwd === root.uri.fsPath);
         }
         {
             const winUISuites = await discover("winui");
@@ -667,18 +697,30 @@ export async function run(): Promise<void> {
             const built: string[] = [];
             const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "gtk-arm64-x-debug", "HelloWorldGTK");
             const provider = new StateUIDebugConfigurationProvider({
-                build: async (_folder, _application, forHost, configuration) => { built.push(`${forHost} ${configuration}`); return program; },
+                prepare: async (_folder, _application, forHost, configuration) => {
+                    built.push(`${forHost} ${configuration}`);
+                    return {
+                        build: {
+                            application: "HelloWorld", host: forHost, configuration, architecture: "arm64",
+                            folderUri: vscode.Uri.file(path.dirname(program)).toString(), programUri: vscode.Uri.file(program).toString(),
+                        },
+                        debugger: {
+                            kind: "lldb", request: "launch", programUri: vscode.Uri.file(program).toString(), workingUri: root.uri.toString(),
+                            initCommands: [], attachCommands: [], terminateCommands: [],
+                        },
+                    };
+                },
                 host: () => "gtk", application: async () => helloWorld,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
                 guest: async () => undefined,
-                place: () => undefined,
+                place: () => "machine",
                 runHead: async () => undefined,
                 browser: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
-            check("GTK: the tool builds HelloWorld for GTK, then lldb-dap launches the program it published",
+            check("GTK: the tool builds and readies HelloWorld for GTK - installed, a running copy stopped - then lldb-dap launches its program",
                 JSON.stringify(built) === JSON.stringify(["gtk debug"])
                 && resolved?.type === "lldb-dap" && resolved.request === "launch" && resolved.program === program);
         }
@@ -720,18 +762,24 @@ export async function run(): Promise<void> {
             const launchOnWeb = async (browser: (typeof listed)[number], configuration: string) => {
                 const runs: { device: string; debug: boolean; configuration: string; host: string }[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
-                    build: async () => undefined,
+                    prepare: async () => undefined,
                     host: () => "web", application: async () => helloWorld,
                     device: async () => undefined,
                     uiKitDevice: async () => undefined,
                     guest: async () => undefined,
-                    place: () => undefined,
+                    place: () => "browser",
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
                         runs.push({ host: forHost, device, debug, configuration: asked });
+                        // As the tool answers: a page readied for the browser's debugger where the run asked one.
+                        const readied = debug && browser.program !== undefined ? {
+                            kind: "browser" as const, request: "launch" as const, programUri: vscode.Uri.file(browser.program).toString(),
+                            url: "http://127.0.0.1:8460/", sourceUri: vscode.Uri.file(site).toString(),
+                            initCommands: [], attachCommands: [], terminateCommands: [],
+                        } : undefined;
                         return {
                             token: "RUN-3",
                             launched: {
-                                held: false, url: "http://127.0.0.1:8460/",
+                                held: false, url: "http://127.0.0.1:8460/", debugger: readied,
                                 build: {
                                     application: "HelloWorld", host: "web" as const, configuration: asked as Configuration, architecture: "wasm32" as const,
                                     folderUri: vscode.Uri.file(site).toString(), programUri: vscode.Uri.file(path.join(site, "index.html")).toString(),
@@ -752,15 +800,15 @@ export async function run(): Promise<void> {
                     [{ host: "web", device: "com.apple.Safari", debug: false, configuration: "debug" }]));
 
             const chrome = await launchOnWeb(listed[1], "debug");
-            check("Web in Chrome: the page served with no browser opened, then VS Code's JavaScript debugger starts Chrome on it, its end stopping the run",
-                chrome.runs[0]?.device === "none"
-                && JSON.stringify(chrome.resolved) === JSON.stringify(
-                    { ...webLaunch("StateUI: Debug", "http://127.0.0.1:8460/", listed[1], spelled(site)), stateuiRun: "RUN-3" })
-                && chrome.resolved?.type === "chrome" && chrome.resolved.runtimeExecutable === listed[1].program);
+            check("Web in Chrome: the tool readies the page for its debugger, then VS Code's JavaScript debugger starts Chrome on it, its end stopping the run",
+                chrome.runs[0]?.device === "com.google.Chrome" && chrome.runs[0]?.debug === true
+                && chrome.resolved?.type === "chrome" && chrome.resolved.runtimeExecutable === listed[1].program
+                && chrome.resolved.url === "http://127.0.0.1:8460/" && chrome.resolved.webRoot === spelled(site)
+                && chrome.resolved.stateuiRun === "RUN-3");
 
             const unknown = await launchOnWeb(listed[3], "debug");
-            check("Web in a Chromium whose program is not known: the tool opens it, with no session",
-                unknown.resolved === undefined && unknown.runs[0]?.device === "chromium.desktop");
+            check("Web in a browser the tool says no debugger follows: the tool opens it, with no session",
+                unknown.resolved === undefined && unknown.runs[0]?.device === "chromium.desktop" && unknown.runs[0]?.debug === false);
 
             const released = await launchOnWeb(listed[1], "release");
             check("Web released in Chrome is opened by the tool, with no session",

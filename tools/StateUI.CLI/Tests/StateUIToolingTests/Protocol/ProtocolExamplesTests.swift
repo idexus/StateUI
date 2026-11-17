@@ -97,7 +97,7 @@ final class ProtocolExamplesTests: XCTestCase {
             build: BuildResult(
                 application: "Notes", host: .uikit, configuration: .debug, architecture: .arm64, folderUri: ran,
                 programUri: ran + "/NotesUIKit.app/NotesUIKit", bundleUri: ran + "/NotesUIKit.app", destination: simulator),
-            process: 33316, held: true)
+            process: 33316, held: true, debugger: DebugDescriptor(kind: .lldb, request: .attach, process: 33316, terminateCommands: ["process kill"]))
         let laid = demo + "/artifacts/Notes/UIKit"
         let packaged = BuildResult(
             application: "Notes", host: .uikit, configuration: .release, architecture: .arm64, folderUri: laid,
@@ -175,6 +175,15 @@ final class ProtocolExamplesTests: XCTestCase {
                     request: BuildRequest(projectUri: demo + "/apps/Notes", host: .appkit)))),
                 ("response", try response("13", OperationHandle(operationId: operation, state: .queued))),
                 ("result", try JSONValue(encoding: built)),
+            ], answeredAsWritten: false),
+            Example(name: "application-prepare", messages: [
+                ("request", try request("17", "application/prepare", Mutation(
+                    requestToken: "6e3a1c5b-7d2f-4b8e-a0c4-3f5b7d9e1a2c",
+                    request: BuildRequest(projectUri: demo + "/apps/Notes", host: .appkit)))),
+                ("response", try response("17", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: PreparedApplication(
+                    build: built,
+                    debugger: DebugDescriptor(kind: .lldb, request: .launch, programUri: built.programUri, workingUri: demo)))),
             ], answeredAsWritten: false),
             Example(name: "application-package", messages: [
                 ("request", try request("14", "application/package", Mutation(

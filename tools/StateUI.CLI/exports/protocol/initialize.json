@@ -28,6 +28,7 @@
           "application/build",
           "application/install",
           "application/package",
+          "application/prepare",
           "application/run",
           "devices/list",
           "folder/mirror",

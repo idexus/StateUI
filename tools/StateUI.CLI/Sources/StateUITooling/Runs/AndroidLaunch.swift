@@ -41,7 +41,10 @@ struct AndroidLaunch {
         guard let process else { throw ToolingError(.toolFailed, "\(package) did not start on \(device.name).") }
         let socket = debugger ? try await readyDebugger(adb) : nil
 
-        let launched = LaunchedApplication(build: built, process: process, held: false, debuggerSocket: socket)
+        let symbols = try built.symbolsUri.map(FileURI.url)
+        let launched = LaunchedApplication(
+            build: built, process: process, held: false,
+            debugger: socket.map { DebugDescriptors.android(serial: serial, socket: $0, process: process, symbols: symbols) })
         let log = Task {
             try await ProcessRunner().run(
                 ProcessRequest(adb, arguments: ["-s", serial, "logcat", "-v", "brief", "--pid=\(process)"]), output: reporter.output)

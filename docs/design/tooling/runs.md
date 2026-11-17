@@ -86,10 +86,9 @@ while the process stands. With `--debugger` the NDK's `lldb-server` for the
 device's ABI is pushed, copied by `run-as` into the application's own folder
 - a debug build allows it - renamed into place over one an earlier run left,
 and started there listening on the abstract socket
-`<package>/stateui-debugger.sock`, which the `started` event names beside the
-process; the build's result names the symbols (`symbols/<abi>`). A debugger
-then selects the `remote-android` platform, connects to that socket and
-attaches to the process. The run's stop is `am force-stop`, then the server
+`<package>/stateui-debugger.sock`; the build's result names the symbols
+(`symbols/<abi>`), and the `started` event says how LLDB reaches the process
+through that socket ([How a debugger reaches it](#how-a-debugger-reaches-it)). The run's stop is `am force-stop`, then the server
 ended and the log's follower; the application ending by itself ends the run.
 A cancelled run decides it was stopped by its cancel, not by asking the
 device, whose own answer the cancel cuts short.
@@ -100,6 +99,40 @@ The page is served (web-heads.md) and opened in the browser the run names
 - the system's own where none is named, none for `none` - what the run
 hands the application each a parameter of the page's address,
 `?STATEUI_TALLY=1`. The `started` event
-names that address. The run lasts until it is stopped, which closes the
+names that address. Readied for a debugger, in a browser one follows, the
+page is opened by none, and the `started` event says how the browser's
+debugger starts it there. The run lasts until it is stopped, which closes the
 server; the browser and its tab are the user's.
+
+## How a debugger reaches it
+
+The tool says how a debugger reaches every application it readies
+(`DebugDescriptor`, `DebugDescriptors`), and an editor only maps that to its
+own debugger - VS Code's lldb-dap and JavaScript debugger, Xcode's scheme -
+so none decides the way itself, and each gets the same one.
+
+- **A program of this machine** - AppKit, WinUI, GTK - is readied by
+  `application/prepare`: built, a GTK head installed and a copy of it running
+  stopped; LLDB starts its program (`launch`) in the project's folder. A
+  debugger that starts its program is its parent, which is what Ubuntu's
+  ptrace scope permits.
+- **A simulator's process** is one of this Mac's: LLDB attaches to it by its
+  number, and kills it as the session ends.
+- **A device's process** is reached through the device - `device select
+  <id>`, `device process attach --pid <process>` - its symbols read from the
+  bundle built (and its `Frameworks`) rather than copied back.
+- **An Android head** is reached through the `lldb-server` in its sandbox:
+  LLDB selects `remote-android`, connects to the socket on the device the
+  address names, whichever others are attached, reads the libraries
+  unstripped from the build's symbols, and attaches. It passes SIGSEGV and
+  SIGBUS to the runtime, which raises them on purpose - its null and suspend
+  checks - and follows no code the runtime's JIT compiles: announced method
+  by method, each stopping the whole application, it froze the UI thread for
+  seconds over USB.
+- **A page** is started by the browser's debugger: the browser's program on
+  the page's address, its sources read from the page's folder - in a browser
+  of Chromium's alone, whose pages a debugger follows.
+
+The terminal's `stateui run --debugger` prints the LLDB commands that reach
+the application as it starts.
 

@@ -36,9 +36,10 @@ public struct ApplicationRunner: Sendable {
         if request.build.host == .web {
             #if canImport(NIOPosix)
             let (built, _) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
+            let debugged = request.debugger ? await Self.debuggedBrowser(request.build.device) : nil
             return try await WebLaunch(
                 site: try FileURI.url(built.folderUri), port: request.port, lan: request.lan ?? false, browser: request.build.device,
-                environment: HandedEnvironment(of: ProcessInfo.processInfo.environment)
+                environment: HandedEnvironment(of: ProcessInfo.processInfo.environment), debugged: debugged
             ).run(built, reporter: reporter)
             #else
             throw ToolingError(.invalidConfiguration, "A Web head's page is served on macOS and Linux.")
@@ -73,6 +74,13 @@ public struct ApplicationRunner: Sendable {
         _ = (built, root)
         throw ToolingError(.invalidConfiguration, "A UIKit head runs from a Mac.")
         #endif
+    }
+
+    /// The browser `named` - by id or name, the system's own where none is named - where a debugger follows its pages.
+    static func debuggedBrowser(_ named: String?) async -> Destination? {
+        let browsers = await Browsers.list()
+        let chosen = named.flatMap { name in browsers.first { $0.id == name || $0.name == name } } ?? browsers.first(where: \.booted)
+        return chosen?.debugger == true ? chosen : nil
     }
 
     /// Refuses, before anything is read or built, a run of a host it does not start - another runs from the program

@@ -56,7 +56,10 @@ struct DeviceLaunch {
                 guard process != nil || !held else {
                     throw ToolingError(.toolFailed, "\(identifier) started on \(device.name), but devicectl does not list its process.")
                 }
-                reporter.started(LaunchedApplication(build: built, process: process, held: held))
+                let bundle = try built.bundleUri.map(FileURI.url)
+                reporter.started(LaunchedApplication(
+                    build: built, process: process, held: held,
+                    debugger: held ? process.map { DebugDescriptors.device(device.id, process: $0, bundle: bundle) } : nil))
                 _ = try await console.value
                 try Task.checkCancellation()
             } onCancel: {

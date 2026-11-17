@@ -152,13 +152,18 @@ struct RunCommand: AsyncParsableCommand {
         }
     }
 
-    /// What a run says as its application starts: where, as which process, and whether it waits for a debugger.
+    /// What a run says as its application starts: where, as which process, whether it waits for a debugger, and the
+    /// commands that bring LLDB to it, where the run readied one.
     static func words(_ launched: LaunchedApplication) -> String {
         let place = launched.build.destination.map { " on \($0.name)" } ?? ""
         let process = launched.process.map { ", process \($0)" } ?? ""
-        let server = launched.debuggerSocket.map { ", the debugger's server at unix-abstract:///\($0)" } ?? ""
+        let lldb = launched.debugger.flatMap { way -> String? in
+            guard way.kind == .lldb else { return nil }
+            let attach = way.attachCommands.isEmpty ? way.process.map { ["process attach --pid \($0)"] } ?? [] : way.attachCommands
+            return "\nstateui: LLDB reaches it with: " + (way.initCommands + attach).joined(separator: "; ")
+        } ?? ""
         if let url = launched.url { return "stateui: serving \(launched.build.application) at \(url)" }
-        return "stateui: started \(launched.build.application)\(place)\(process)\(launched.held ? ", held for a debugger" : "")\(server)"
+        return "stateui: started \(launched.build.application)\(place)\(process)\(launched.held ? ", held for a debugger" : "")\(lldb)"
     }
 }
 

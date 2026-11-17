@@ -8,7 +8,8 @@ import StateUIToolingProtocol
 
 /// A Web head's page served from its artifact while the run lasts, opened in a browser - the system's own unless the
 /// run names one, or none - what the run hands the application of the tool's environment each a parameter of the
-/// page's address. A stop closes the server; the browser and its tab are the user's.
+/// page's address; readied for a debugger, opened by none, the browser's debugger told how to start it on the page.
+/// A stop closes the server; the browser and its tab are the user's.
 /// Design: docs/design/tooling/runs.md#on-the-web
 struct WebLaunch {
     var site: URL
@@ -18,6 +19,8 @@ struct WebLaunch {
     var browser: String?
     /// What the run hands the application of the tool's environment.
     var environment: HandedEnvironment
+    /// The browser whose debugger starts on the page, where the run readies one.
+    var debugged: Destination?
 
     func run(_ built: BuildResult, reporter: RunReporter) async throws -> RunResult {
         let server = try await PageServer.start(site, port: port, lan: lan, said: { line in
@@ -28,9 +31,10 @@ struct WebLaunch {
         if lan {
             for address in Self.addresses() { reporter.build.progress("serving on the network at http://\(address):\(server.port)/\(query)") }
         }
-        let launched = LaunchedApplication(build: built, process: nil, held: false, url: url)
-        reporter.started(launched)
-        if browser != "none" { await Browsers.open(url, in: browser ?? "default") }
+        let program = try debugged?.programUri.map(FileURI.url)
+        let debugger = program.map { DebugDescriptors.page(url, browser: $0, site: site) }
+        reporter.started(LaunchedApplication(build: built, process: nil, held: false, debugger: debugger, url: url))
+        if debugger == nil, browser != "none" { await Browsers.open(url, in: browser ?? "default") }
         while !Task.isCancelled { try? await Task.sleep(for: .seconds(1)) }
         await server.stop()
         throw CancellationError()
