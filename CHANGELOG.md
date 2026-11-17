@@ -126,6 +126,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   <address:port> --code <code>` pairs a project with another machine (`stateui remote list`, `remove`, `--project`),
   kept in the project's `.stateui/remotes.json` out of git, and every connection proves its token by the HMAC-SHA256
   of a challenge, the token never sent.
+- A project's manifest declares the machines everyone works it on: `remotes` of `stateui-workspace.json`, else of
+  `stateui.json` - a name, an address and the identity the machine's service answers for, no secret. `stateui remote
+  declare <name>` writes a machine paired there, `stateui remote add <name> --code <code>` pairs a declared one by its
+  name, refused where another identity answers, and a declared machine is reached at the address declared.
 - A machine paired with a project is a destination of the hosts whose heads run there as its own programs:
   `server/info` tells them at the place `remote` and says the folder another machine's projects are copied into
   (`workFolder`), and `devices/list` lists the machine (`remote`).
@@ -133,7 +137,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   machine's work, through its service: the project and its checkout copied there, the request asked of its own
   `stateui` - which is to be this release - a package fetched home, a run's output told as it comes; each machine's
   copies and packages stand in a folder of its own there, `stateui-guest/<identity>`, named by the identity the tool
-  makes once in its state folder (`identity.json`); a guest paired is
+  makes once in its state folder (`identity.json`), which a service answers for in its challenge, its pairing and
+  `stateui service status`, and which every connection checks before it proves its token; a guest paired is
   reached through its service too, else through `prlctl exec`. `stateui doctor --device <machine>` says whether its
   service answers and admits this machine, its release, and what it has of what the host needs. The VS Code
   extension's **StateUI: Select Machine** offers a host's guests and machines paired, and a launch on one runs there.

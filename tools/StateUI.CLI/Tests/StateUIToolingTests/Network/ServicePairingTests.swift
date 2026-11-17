@@ -19,7 +19,7 @@ final class ServicePairingTests: XCTestCase {
     func testACodePairsOneClientThenIsRenewed() throws {
         let file = store()
         let said = Mutex<[String]>([])
-        let pairing = ServicePairing(file: file, name: "Office", said: { code in said.withLock { $0.append(code) } })
+        let pairing = try ServicePairing(file: file, name: "Office", said: { code in said.withLock { $0.append(code) } })
         let first = pairing.code
         let paired = try pairing.pair(PairingRequest(code: first, client: "Studio"))
         XCTAssertEqual(paired.service, "Office")
@@ -27,14 +27,14 @@ final class ServicePairingTests: XCTestCase {
         XCTAssertNotEqual(pairing.code, first)
         XCTAssertEqual(said.withLock { $0 }, [first, pairing.code])
         XCTAssertThrowsError(try pairing.pair(PairingRequest(code: first, client: "Other")))
-        let again = ServicePairing(file: file, name: "Office")
+        let again = try ServicePairing(file: file, name: "Office")
         XCTAssertTrue(Self.admits(again, client: paired.client, token: paired.token))
     }
 
     /// Five wrong codes retire the one shown, and a code ten minutes old pairs no one.
     func testWrongTriesAndTimeRetireACode() throws {
         let clock = Mutex(Date(timeIntervalSince1970: 0))
-        let pairing = ServicePairing(file: store(), name: "Office", now: { clock.withLock { $0 } })
+        let pairing = try ServicePairing(file: store(), name: "Office", now: { clock.withLock { $0 } })
         let shown = pairing.code
         for _ in 0..<4 { XCTAssertThrowsError(try pairing.pair(PairingRequest(code: "x", client: "Studio"))) }
         XCTAssertEqual(pairing.code, shown)
@@ -48,7 +48,7 @@ final class ServicePairingTests: XCTestCase {
     /// A connection admits a client answering its own challenge with its token, once; a wrong token, a client not
     /// paired, and no challenge asked are refused.
     func testAChallengeAdmitsItsTokenOnce() throws {
-        let pairing = ServicePairing(file: store(), name: "Office")
+        let pairing = try ServicePairing(file: store(), name: "Office")
         let paired = try pairing.pair(PairingRequest(code: pairing.code, client: "Studio"))
         XCTAssertTrue(Self.admits(pairing, client: paired.client, token: paired.token))
         XCTAssertFalse(Self.admits(pairing, client: paired.client, token: String(repeating: "0", count: 64)))
@@ -57,6 +57,8 @@ final class ServicePairingTests: XCTestCase {
 
         let admission = pairing.admission()
         guard case .result(let asked) = admission.answer("service/challenge", nil) else { return XCTFail("no challenge") }
+        XCTAssertEqual(try asked.decode(Challenge.self).identity, pairing.identity, "the machine it serves")
+        XCTAssertEqual(paired.identity, pairing.identity)
         let nonce = try asked.decode(Challenge.self).nonce
         let answer = SHA256.hex(SHA256.hmac(key: Array(paired.token.utf8), message: Array(nonce.utf8)))
         XCTAssertTrue(admission.admits(Credential(client: paired.client, answer: answer)))

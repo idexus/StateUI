@@ -53,7 +53,9 @@ three numbers joined by dots; the build a whole number from 1 to
 2 100 000 000, Android's largest version code; a name not empty. The file is read whole, as the
 workspace's is: a field missing, one the tool does not read, or another
 `schemaVersion` is refused by its place. The tool writes it the same every
-time - keys sorted, a line break at its end.
+time - keys sorted, a line break at its end. An application in no workspace
+may declare the machines it is worked on (`remotes`, [Machines a project
+declares](service.md#machines-a-project-declares)).
 
 The file stands beside the manifest, not in it: SwiftPM's description of a
 package has no field for an application's identity, and nothing reads a
@@ -90,6 +92,9 @@ read whole: a field the tool does not read, or another `schemaVersion`, is
 refused by its place. The tool writes it the same every time - keys and
 projects sorted, a line break at its end - so `stateui new` adds a project
 without rewriting the rest. An application inside a workspace stands in it.
+`remotes` declares the machines the workspace's applications are worked on
+([Machines a project declares](service.md#machines-a-project-declares)); an
+application of a workspace declaring its own is refused.
 The repository is a workspace of Gallery and HelloWorld.
 
 The file is JSON: a user's static configuration that the tool reads and also

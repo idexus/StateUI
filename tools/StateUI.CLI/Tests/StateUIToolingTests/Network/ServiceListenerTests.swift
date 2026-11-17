@@ -17,7 +17,7 @@ final class ServiceListenerTests: XCTestCase {
     /// a query, and a folder carried over one connection.
     func testAPairedMachineIsAnsweredQueriesAndOperations() async throws {
         let state = folder()
-        let pairing = ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
+        let pairing = try ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
         let listener = try ServiceListener.open(on: "127.0.0.1", port: 0, pairing: pairing)
         let serving = Task { await listener.serve() }
         defer { serving.cancel() }
@@ -47,7 +47,7 @@ final class ServiceListenerTests: XCTestCase {
     /// stops listening.
     func testAClientNotPairedIsRefusedUntilTheServiceStops() async throws {
         let state = folder()
-        let pairing = ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
+        let pairing = try ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
         let listener = try ServiceListener.open(on: "127.0.0.1", port: 0, pairing: pairing)
         let serving = Task { await listener.serve() }
         do {

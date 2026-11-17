@@ -191,7 +191,9 @@ public struct ServedTool: Sendable {
             if opening {
                 var credential: Credential?
                 if let remote {
-                    let nonce = try await conversation.request("service/challenge", .object([:])).decode(Challenge.self).nonce
+                    let challenge = try await conversation.request("service/challenge", .object([:])).decode(Challenge.self)
+                    try Self.check(challenge.identity, of: remote)
+                    let nonce = challenge.nonce
                     let answer = SHA256.hex(SHA256.hmac(key: Array(remote.token.utf8), message: Array(nonce.utf8)))
                     credential = Credential(client: remote.client, answer: answer)
                 }
@@ -205,6 +207,15 @@ public struct ServedTool: Sendable {
         socket.close()
         await reading
         return try result.get()
+    }
+
+    /// Refuses a service answering for another machine than `remote`'s identity - another machine at its address -
+    /// before this machine proves itself to it.
+    static func check(_ identity: String, of remote: RemoteMachine) throws(ToolingError) {
+        guard let expected = remote.identity, expected != identity else { return }
+        throw ToolingError(
+            .invalidConfiguration,
+            "Another machine answers at \(remote.address):\(remote.port): its identity is \(identity.prefix(12))…, not \(expected.prefix(12))…, \(remote.name)'s. Where it is that machine set up anew, pair it again.")
     }
 
     /// Whether `error` says the served tool itself ended - its output closed, its input broken - rather than refused.

@@ -40,6 +40,25 @@ workspace's, else its application's - out of git and readable by you alone;
 its name alone: `stateui guest pair --device "Windows 11"` ([Every host from
 one Mac](every-host-from-a-mac.md)).
 
+## For everyone on the project
+
+A machine the whole team works on is declared in the project's manifest -
+its workspace's `stateui-workspace.json`, else its `stateui.json` - by its
+name, address and the identity its service answers for, which `stateui
+service status` shows. No secret stands in it:
+
+```bash
+stateui remote declare office
+```
+
+Each clone then sees it in `stateui remote list`, and everyone pairs once by
+its name alone, with the code it shows; a service answering for another
+identity at that address is refused:
+
+```bash
+stateui remote add office --code 482913
+```
+
 ## Running there
 
 A machine paired is a device of the hosts it runs as its own program:

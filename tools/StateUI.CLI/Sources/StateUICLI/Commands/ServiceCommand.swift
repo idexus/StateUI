@@ -26,13 +26,14 @@ struct ServiceCommand: AsyncParsableCommand {
             do throws(ToolingError) {
                 let (address, port) = try ServiceListener.place(listen)
                 let bound = Mutex<UInt16?>(nil)
-                let pairing = ServicePairing(said: { code in
+                let identity = try MachineIdentity.current().id
+                let pairing = try ServicePairing(identity: identity, said: { code in
                     FileHandle.standardOutput.write(Data("stateui: pairing code \(code), good for ten minutes and one machine\n".utf8))
-                    if let port = bound.withLock({ $0 }) { ServiceCommand.keep(address, port, code: code) }
+                    if let port = bound.withLock({ $0 }) { ServiceCommand.keep(address, port, code: code, identity: identity) }
                 })
                 let listener = try ServiceListener.open(on: address, port: port, pairing: pairing)
                 bound.withLock { $0 = listener.port }
-                ServiceCommand.keep(address, listener.port, code: pairing.code, until: pairing.codeUntil)
+                ServiceCommand.keep(address, listener.port, code: pairing.code, until: pairing.codeUntil, identity: identity)
                 defer { try? FileManager.default.removeItem(at: ServiceState.file) }
                 let place = "\(address.contains(":") ? "[\(address)]" : address):\(listener.port)"
                 FileHandle.standardOutput.write(Data("stateui: serving on \(place) - pair another machine with `stateui remote add <name> <address>:\(listener.port) --code <code>`\n".utf8))
@@ -117,12 +118,14 @@ struct ServiceCommand: AsyncParsableCommand {
             guard let state else { return "No service runs here." }
             let until = state.codeUntil.formatted(date: .omitted, time: .shortened)
             return "stateui: serving on \(state.address):\(state.port); pairing code \(state.code), good until \(until) and for one machine"
+                + (state.identity.map { "; identity \($0)" } ?? "")
         }
     }
 
-    /// Writes what the service says of itself: where it listens, and the code it shows - new now where no end is said.
-    static func keep(_ address: String, _ port: UInt16, code: String, until: Date = Date().addingTimeInterval(600)) {
-        try? ServiceState(address: address, port: port, code: code, codeUntil: until).write()
+    /// Writes what the service says of itself: where it listens, the code it shows - new now where no end is said - and
+    /// the machine's identity.
+    static func keep(_ address: String, _ port: UInt16, code: String, until: Date = Date().addingTimeInterval(600), identity: String) {
+        try? ServiceState(address: address, port: port, code: code, codeUntil: until, identity: identity).write()
     }
 
 }

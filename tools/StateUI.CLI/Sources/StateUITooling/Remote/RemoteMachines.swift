@@ -4,8 +4,8 @@
 import Foundation
 import StateUIToolingProtocol
 
-/// A machine whose service this one is paired with: its name here, where its service listens, and the id and token
-/// this machine proves itself with.
+/// A machine whose service this one is paired with: its name here, where its service listens, the id and token this
+/// machine proves itself with, and the identity of the machine its service answered for.
 public struct RemoteMachine: Codable, Equatable, Sendable {
     public var name: String
     public var address: String
@@ -14,17 +14,19 @@ public struct RemoteMachine: Codable, Equatable, Sendable {
     public var token: String
     /// The name its service gave itself.
     public var service: String
+    /// The identity its service answered with, which every connection checks; none for a pairing kept before.
+    public var identity: String?
     /// The hosts its service builds there, and the machine it runs on, as it said them last.
     public var hosts: [HostPlace] = []
     public var machine: Machine?
 
     /// The machine `name`, its service at `address` and `port`, proved by `client` and `token`.
     public init(
-        name: String, address: String, port: UInt16, client: String, token: String, service: String, hosts: [HostPlace] = [],
-        machine: Machine? = nil
+        name: String, address: String, port: UInt16, client: String, token: String, service: String, identity: String? = nil,
+        hosts: [HostPlace] = [], machine: Machine? = nil
     ) {
         (self.name, self.address, self.port, self.client, self.token, self.service) = (name, address, port, client, token, service)
-        (self.hosts, self.machine) = (hosts, machine)
+        (self.identity, self.hosts, self.machine) = (identity, hosts, machine)
     }
 
     /// A machine as kept, what it said of itself read where kept.
@@ -36,6 +38,7 @@ public struct RemoteMachine: Codable, Equatable, Sendable {
         client = try fields.decode(String.self, forKey: .client)
         token = try fields.decode(String.self, forKey: .token)
         service = try fields.decode(String.self, forKey: .service)
+        identity = try fields.decodeIfPresent(String.self, forKey: .identity)
         hosts = try fields.decodeIfPresent([HostPlace].self, forKey: .hosts) ?? []
         machine = try fields.decodeIfPresent(Machine.self, forKey: .machine)
     }
@@ -60,22 +63,25 @@ struct RemotesFile: ToolFile, Equatable {
 }
 
 /// The machines a project is paired with: kept in its `.stateui/remotes.json` - its workspace's, else its
-/// application's - out of git and readable by the user alone; none outside a project.
+/// application's - out of git and readable by the user alone; none outside a project. A machine its manifest declares
+/// is reached at the address and identity declared.
 /// Design: docs/design/tooling/service.md#pairing
 public struct RemoteMachines: Sendable {
-    /// The folder asked for, and the file of the project holding it; nil outside a project.
+    /// The folder asked for, the project's folder holding it, and the file of its pairings; nil outside a project.
     let folder: URL
+    let project: URL?
     let file: URL?
 
     /// The machines of the project holding `folder`: its workspace's, else its application's.
     public init(project folder: URL) {
         self.folder = folder
-        file = Self.projectFolder(holding: folder).map(Self.file(in:))
+        project = Self.projectFolder(holding: folder)
+        file = project.map(Self.file(in:))
     }
 
-    /// The machines kept in `file`.
+    /// The machines kept in `file`, of no manifest.
     init(file: URL) {
-        (folder, self.file) = (file.deletingLastPathComponent(), file)
+        (folder, project, self.file) = (file.deletingLastPathComponent(), nil, file)
     }
 
     /// Where a project in `folder` keeps them: `.stateui/remotes.json`.
@@ -89,12 +95,19 @@ public struct RemoteMachines: Sendable {
         return (try? Workspace.nearest(from: real))?.folder ?? ProjectReader.application(holding: real)
     }
 
-    /// Every machine paired, in the order paired; none where the project keeps none.
+    /// Every machine paired, in the order paired - one the manifest declares at the address and identity declared;
+    /// none where the project keeps none.
     ///
     /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a file the tool does not read.
     public func list() throws(ToolingError) -> [RemoteMachine] {
-        guard let file, FileManager.default.fileExists(atPath: file.path) else { return [] }
-        return try RemotesFile.read(file).machines
+        let declared = try self.declared()
+        return try kept().map { machine in
+            guard let declaration = declared.first(where: { $0.name == machine.name }),
+                  let (address, port) = try? ServiceListener.place(declaration.address) else { return machine }
+            var meant = machine
+            (meant.address, meant.port, meant.identity) = (address, port, declaration.identity)
+            return meant
+        }
     }
 
     /// The machine named `name`.
@@ -102,17 +115,52 @@ public struct RemoteMachines: Sendable {
         try list().first { $0.name == name }
     }
 
+    /// The machines paired as the project keeps them.
+    private func kept() throws(ToolingError) -> [RemoteMachine] {
+        guard let file, FileManager.default.fileExists(atPath: file.path) else { return [] }
+        return try RemotesFile.read(file).machines
+    }
+
+    /// The machines the project's manifest declares: its workspace's `stateui-workspace.json`, else its `stateui.json`.
+    ///
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a manifest the tool does not read, or an application of a
+    ///   workspace declaring machines of its own.
+    public func declared() throws(ToolingError) -> [DeclaredMachine] {
+        guard let project else { return [] }
+        let workspaceFile = project.appendingPathComponent(WorkspaceFile.name)
+        guard FileManager.default.fileExists(atPath: workspaceFile.path) else {
+            return try ApplicationFile.read(project.appendingPathComponent(ApplicationFile.name)).remotes ?? []
+        }
+        let workspace = try WorkspaceFile.read(workspaceFile)
+        for path in workspace.projects {
+            let file = ApplicationMaker.folder(named: path, from: project).appendingPathComponent(ApplicationFile.name)
+            if FileManager.default.fileExists(atPath: file.path), try ApplicationFile.read(file).remotes?.isEmpty == false {
+                throw ToolingError(.invalidConfiguration, "\(file.path) declares remotes; in a workspace they stand in its \(WorkspaceFile.name).")
+            }
+        }
+        return workspace.remotes ?? []
+    }
+
     /// Pairs with the service listening on `address` at `port` with the code it shows, and keeps it as `name`; a
-    /// machine named so before is replaced.
+    /// machine named so before is replaced. A service answering for another identity than the one the manifest
+    /// declares `name` by is refused before its code is spent.
     public func pair(name: String, address: String, port: UInt16, code: String) async throws -> RemoteMachine {
         _ = try projectFile()
-        let kept = try list()
+        let kept = try self.kept()
+        let declaration = try declared().first { $0.name == name }
         let tool = ServedTool(address: address, port: port, workspaceUri: "file:///")
+        let identity = try await tool.beforeOpening("service/challenge", .object([:])).decode(Challenge.self).identity
+        if let declaration, declaration.identity != identity {
+            throw ToolingError(
+                .invalidConfiguration,
+                "The service at \(address):\(port) answers for \(identity.prefix(12))…, not \(declaration.identity.prefix(12))…, which the project declares \(name) by.")
+        }
         let paired = try await tool.beforeOpening(
             "service/pair", try JSONValue(encoding: PairingRequest(code: code, client: ProcessInfo.processInfo.hostName)))
             .decode(PairingResult.self)
         var machine = RemoteMachine(
-            name: name, address: address, port: port, client: paired.client, token: paired.token, service: paired.service)
+            name: name, address: address, port: port, client: paired.client, token: paired.token, service: paired.service,
+            identity: paired.identity)
         if let info = try? await ServedTool(remote: machine, workspaceUri: "file:///").query("server/info", .object([:])).decode(ServerInfo.self) {
             (machine.hosts, machine.machine) = (info.hosts, info.machine)
         }
@@ -120,9 +168,45 @@ public struct RemoteMachines: Sendable {
         return machine
     }
 
+    /// Pairs with the machine the manifest declares as `name`, at its declared address, with the code it shows.
+    public func pairDeclared(_ name: String, code: String) async throws -> RemoteMachine {
+        guard let declaration = try declared().first(where: { $0.name == name }) else {
+            throw ToolingError(.notFound, "The project declares no machine \(name): name where its service listens too.")
+        }
+        let (address, port) = try ServiceListener.place(declaration.address)
+        return try await pair(name: name, address: address, port: port, code: code)
+    }
+
+    /// Declares the machine paired as `name` in the project's manifest - its workspace's, else its application's - for
+    /// everyone who works on it: its name, address and identity, no secret; the manifest written.
+    public func declare(_ name: String) throws -> URL {
+        guard let project else { _ = try projectFile(); return folder }
+        guard let machine = try kept().first(where: { $0.name == name }) else {
+            throw ToolingError(.notFound, "No machine named \(name) is paired with this project: `stateui remote add` pairs it.")
+        }
+        guard let identity = machine.identity else {
+            throw ToolingError(.invalidConfiguration, "\(name) was paired before its service told its identity: pair it again, then declare it.")
+        }
+        let place = "\(machine.address.contains(":") ? "[\(machine.address)]" : machine.address):\(machine.port)"
+        let declaration = DeclaredMachine(name: name, address: place, identity: identity)
+        let merged = { (kept: [DeclaredMachine]?) in (kept ?? []).filter { $0.name != name } + [declaration] }
+        let workspaceFile = project.appendingPathComponent(WorkspaceFile.name)
+        if FileManager.default.fileExists(atPath: workspaceFile.path) {
+            var workspace = try WorkspaceFile.read(workspaceFile)
+            workspace.remotes = merged(workspace.remotes).sorted { $0.name < $1.name }
+            try workspace.write(to: workspaceFile)
+            return workspaceFile
+        }
+        let applicationFile = project.appendingPathComponent(ApplicationFile.name)
+        var application = try ApplicationFile.read(applicationFile)
+        application.remotes = merged(application.remotes).sorted { $0.name < $1.name }
+        try application.write(to: applicationFile)
+        return applicationFile
+    }
+
     /// Keeps what `machine`'s service said of itself now: its hosts and its machine.
     public func update(_ name: String, with info: ServerInfo) throws {
-        try save(try list().map { kept in
+        try save(try kept().map { kept in
             guard kept.name == name else { return kept }
             var updated = kept
             (updated.hosts, updated.machine) = (info.hosts, info.machine)
@@ -133,7 +217,7 @@ public struct RemoteMachines: Sendable {
     /// Forgets the machine named `name`; whether one was.
     @discardableResult
     public func remove(_ name: String) throws -> Bool {
-        let kept = try list()
+        let kept = try self.kept()
         guard kept.contains(where: { $0.name == name }) else { return false }
         try save(kept.filter { $0.name != name })
         return true

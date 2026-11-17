@@ -178,6 +178,38 @@ Its first twelve hexadecimal digits name this machine's own folder in another
 machine's work folder, so two machines working a project of one name there
 never write over each other's copy or package.
 
+A service answers for its machine's identity: with each challenge
+(`service/challenge`'s `identity`), in a pairing (`PairingResult.identity`,
+which the client keeps) and in `stateui service status`. Before a client
+proves its token on a connection it checks the identity against the one kept,
+and refuses a service answering for another - another machine at that address,
+or the machine set up anew, paired again. Without keys of their own the
+identity proves nothing by itself; it catches a machine mistaken for another.
+
+## Machines a project declares
+
+A project's manifest may declare the machines it is worked on for everyone
+who works on it (`DeclaredMachine`): `remotes` of its workspace's
+`stateui-workspace.json`, else of its application's `stateui.json` - each a
+name, where its service listens and the identity it answers for:
+
+```text
+"remotes" : [ { "address" : "192.168.1.20:7979", "identity" : "3f9c…", "name" : "office" } ]
+```
+
+It holds no secret - a public repository may hold it: each user still pairs
+with the machine once, by the code it shows (`stateui remote add office
+--code <code>`, the address taken from the declaration), and the token stays
+in the project's `.stateui`. A declared name is paired only with a service
+answering for the identity declared, checked before the code is spent; once
+paired, the machine is reached at the address and identity declared, whatever
+its pairing kept, so a changed address reaches everyone through git.
+`stateui remote declare <name>` writes a machine paired into the manifest,
+sorted by name; `stateui remote list` names the machines declared but not
+paired here. A name given twice, an address of no port or an identity not 64
+hexadecimal digits refuses the manifest, as does an application of a
+workspace declaring its own.
+
 ## A service probed
 
 `stateui remote probe <address:port>` says whether a stateui service answers

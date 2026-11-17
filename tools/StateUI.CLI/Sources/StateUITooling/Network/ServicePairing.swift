@@ -26,19 +26,25 @@ public final class ServicePairing: Sendable {
 
     /// The service's own name, which a paired client keeps.
     public let name: String
+    /// The identity of the machine it serves (`MachineIdentity`), which a client checks.
+    public let identity: String
     private let file: URL
     private let now: @Sendable () -> Date
     private let said: @Sendable (String) -> Void
     private let state: Mutex<State>
 
-    /// The pairings kept in `file`, the service named `name`; each new code told to `said`.
+    /// The pairings kept in `file`, the service named `name` of identity `identity` - this machine's where none is
+    /// given; each new code told to `said`.
+    ///
+    /// - Throws: ``ToolingError`` where this machine's identity can be neither read nor made.
     public init(
         file: URL = BuildPermit.userFolder.appendingPathComponent("service/clients.json"),
-        name: String = ProcessInfo.processInfo.environment["COMPUTERNAME"] ?? ProcessInfo.processInfo.hostName, now: @escaping @Sendable () -> Date = { Date() },
-        said: @escaping @Sendable (String) -> Void = { _ in }
-    ) {
+        name: String = ProcessInfo.processInfo.environment["COMPUTERNAME"] ?? ProcessInfo.processInfo.hostName, identity: String? = nil,
+        now: @escaping @Sendable () -> Date = { Date() }, said: @escaping @Sendable (String) -> Void = { _ in }
+    ) throws(ToolingError) {
         self.file = file
         self.name = name
+        if let identity { self.identity = identity } else { self.identity = try MachineIdentity.current().id }
         self.now = now
         self.said = said
         let kept = (try? JSONDecoder().decode([Client].self, from: Data(contentsOf: file))) ?? []
@@ -71,7 +77,7 @@ public final class ServicePairing: Sendable {
             throw ToolingError(.invalidConfiguration, "\(request.code) is not the pairing code the service shows now.")
         }
         try save()
-        return PairingResult(client: paired.id, token: paired.token, service: name)
+        return PairingResult(client: paired.id, token: paired.token, service: name, identity: identity)
     }
 
     /// Who a connection of the service admits: its pairing and its one challenge answered before `initialize`, then
@@ -85,7 +91,7 @@ public final class ServicePairing: Sendable {
                     if method == "service/challenge" {
                         let nonce = Self.randomHex(32)
                         challenge.withLock { $0 = nonce }
-                        return .result(try JSONValue(encoding: Challenge(nonce: nonce)))
+                        return .result(try JSONValue(encoding: Challenge(nonce: nonce, identity: identity)))
                     }
                     let request = try (params ?? .object([:])).decode(PairingRequest.self)
                     return .result(try JSONValue(encoding: try pair(request)))

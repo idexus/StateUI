@@ -5,7 +5,7 @@ import Foundation
 import StateUIToolingProtocol
 
 /// What a running service says of itself to its own machine, in its user's state folder, readable by the user alone:
-/// where it listens and the pairing code it shows now - what `stateui service status` tells, the service running in
+/// where it listens, the pairing code it shows now and the machine's identity - what `stateui service status` tells, the service running in
 /// the background where no one reads its output.
 /// Design: docs/design/tooling/service.md#the-service-in-the-background
 public struct ServiceState: Codable, Equatable, Sendable {
@@ -15,14 +15,20 @@ public struct ServiceState: Codable, Equatable, Sendable {
     public var port: UInt16
     public var code: String
     public var codeUntil: Date
+    /// The identity of the machine it serves, which a project's manifest names it by; none in a state written before.
+    public var identity: String?
 
-    /// The service of `process` listening on `address` at `port`, showing `code` until `codeUntil`.
-    public init(process: Int32 = ProcessInfo.processInfo.processIdentifier, address: String, port: UInt16, code: String, codeUntil: Date) {
+    /// The service of `process` listening on `address` at `port`, showing `code` until `codeUntil`, of `identity`.
+    public init(
+        process: Int32 = ProcessInfo.processInfo.processIdentifier, address: String, port: UInt16, code: String, codeUntil: Date,
+        identity: String? = nil
+    ) {
         self.process = process
         self.address = address
         self.port = port
         self.code = code
         self.codeUntil = codeUntil
+        self.identity = identity
     }
 
     /// Where the running service keeps it.

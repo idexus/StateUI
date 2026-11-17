@@ -5,7 +5,8 @@ import Foundation
 import StateUIToolingProtocol
 
 /// An application's file, `stateui.json`, beside its `Package.swift`: what the application is on every platform -
-/// its identifier, the name shown, its version and its build. A folder holding one is an application.
+/// its identifier, the name shown, its version and its build - and, outside a workspace, the machines it declares for
+/// everyone who works on it. A folder holding one is an application.
 /// Design: docs/design/tooling/projects.md#an-applications-file
 public struct ApplicationFile: ToolFile, Equatable {
     /// The file's name, which marks an application's folder.
@@ -25,14 +26,17 @@ public struct ApplicationFile: ToolFile, Equatable {
     public var version: String
     /// The build, which grows with every release of the application: `1`.
     public var build: Int
+    /// The machines it declares (`stateui remote declare`) where it stands in no workspace.
+    public var remotes: [DeclaredMachine]?
 
-    /// An application named `identifier`, at `version` and `build`, shown as `name`.
-    public init(identifier: String, version: String, build: Int, name: String? = nil) {
+    /// An application named `identifier`, at `version` and `build`, shown as `name`, declaring `remotes`.
+    public init(identifier: String, version: String, build: Int, name: String? = nil, remotes: [DeclaredMachine]? = nil) {
         schemaVersion = Self.currentVersion
         self.identifier = identifier
         self.name = name
         self.version = version
         self.build = build
+        self.remotes = remotes
     }
 
     /// What every platform would refuse of the file; nil where each takes it.
@@ -51,7 +55,7 @@ public struct ApplicationFile: ToolFile, Equatable {
         if !(1...Self.largestBuild).contains(build) {
             return "its build \(build) is not a number from 1 to \(Self.largestBuild)."
         }
-        return nil
+        return remotes.flatMap(DeclaredMachine.problem(of:))
     }
 
     /// Whether `identifier` is one every platform takes: two or more parts joined by dots, each an ASCII letter, then

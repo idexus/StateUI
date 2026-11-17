@@ -98,7 +98,7 @@ final class RemoteWorkTests: XCTestCase {
     func testAMachinePairedIsReachedThroughItsService() async throws {
         let state = FileManager.default.temporaryDirectory.appendingPathComponent("remote-\(UUID().uuidString)")
         addTeardownBlock { try? FileManager.default.removeItem(at: state) }
-        let pairing = ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
+        let pairing = try ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
         let listener = try ServiceListener.open(on: "127.0.0.1", port: 0, pairing: pairing)
         let serving = Task { await listener.serve() }
         defer { serving.cancel() }
@@ -131,7 +131,7 @@ final class RemoteWorkTests: XCTestCase {
     func testTheDoctorOfAMachinePairedAsksItsService() async throws {
         let state = FileManager.default.temporaryDirectory.appendingPathComponent("doctor-\(UUID().uuidString)")
         addTeardownBlock { try? FileManager.default.removeItem(at: state) }
-        let pairing = ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
+        let pairing = try ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
         let listener = try ServiceListener.open(on: "127.0.0.1", port: 0, pairing: pairing)
         let serving = Task { await listener.serve() }
         defer { serving.cancel() }

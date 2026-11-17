@@ -4,7 +4,8 @@
 import Foundation
 import StateUIToolingProtocol
 
-/// A workspace's file, `stateui-workspace.json`: the applications it lists and the StateUI they build with.
+/// A workspace's file, `stateui-workspace.json`: the applications it lists, the StateUI they build with, and the
+/// machines it declares for everyone who works on it.
 /// Design: docs/design/tooling/projects.md#a-workspace
 public struct WorkspaceFile: ToolFile, Equatable {
     /// The StateUI checkout a workspace's new applications build with.
@@ -29,12 +30,19 @@ public struct WorkspaceFile: ToolFile, Equatable {
     public var library: LibraryReference?
     /// The applications' folders, relative to the file.
     public var projects: [String]
+    /// The machines it declares (`stateui remote declare`).
+    public var remotes: [DeclaredMachine]?
 
-    /// A workspace listing `projects`.
-    public init(library: LibraryReference? = nil, projects: [String]) {
+    /// A workspace listing `projects`, declaring `remotes`.
+    public init(library: LibraryReference? = nil, projects: [String], remotes: [DeclaredMachine]? = nil) {
         schemaVersion = Self.currentVersion
         self.library = library
         self.projects = projects
+        self.remotes = remotes
+    }
+
+    public var problem: String? {
+        remotes.flatMap(DeclaredMachine.problem(of:))
     }
 
     /// Writes the file: its keys and projects in sorted order, a line break at its end - the same file every time.

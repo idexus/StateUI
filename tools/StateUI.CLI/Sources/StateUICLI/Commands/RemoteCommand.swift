@@ -10,8 +10,8 @@ import StateUIToolingProtocol
 struct RemoteCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "remote",
-        abstract: "Pairs a project with another machine's service, lists the machines paired or forgets one - kept in the project's .stateui, out of git.",
-        subcommands: [Add.self, List.self, Probe.self, Remove.self])
+        abstract: "Pairs a project with another machine's service, lists the machines paired and declared, declares one for everyone or forgets one - the pairings kept in the project's .stateui, out of git.",
+        subcommands: [Add.self, List.self, Probe.self, Declare.self, Remove.self])
 
     /// The project whose paired machines a command means.
     struct ProjectOptions: ParsableArguments {
@@ -30,7 +30,7 @@ struct RemoteCommand: AsyncParsableCommand {
         throw ExitCode(ExitStatus.of(error))
     }
 
-    /// `stateui remote add <name> <address:port> --code <code>`.
+    /// `stateui remote add <name> [<address:port>] --code <code>`.
     struct Add: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
             abstract: "Pairs with the service of another machine with the code it shows, and keeps it as <name>.")
@@ -38,8 +38,8 @@ struct RemoteCommand: AsyncParsableCommand {
         @Argument(help: "The machine's name here.")
         var name: String
 
-        @Argument(help: "Where its service listens: an address and a port, 192.168.1.20:7979.")
-        var place: String
+        @Argument(help: "Where its service listens: an address and a port, 192.168.1.20:7979; left out, where the project's manifest declares it.")
+        var place: String?
 
         @Option(help: "The pairing code its service shows.")
         var code: String
@@ -48,8 +48,13 @@ struct RemoteCommand: AsyncParsableCommand {
 
         func run() async throws {
             do {
-                let (address, port) = try ServiceListener.place(place)
-                let machine = try await options.remotes.pair(name: name, address: address, port: port, code: code)
+                let machine: RemoteMachine
+                if let place {
+                    let (address, port) = try ServiceListener.place(place)
+                    machine = try await options.remotes.pair(name: name, address: address, port: port, code: code)
+                } else {
+                    machine = try await options.remotes.pairDeclared(name, code: code)
+                }
                 print("stateui: paired with \(machine.service) as \(machine.name)")
             } catch let error as ToolingError {
                 try failed(error)
@@ -60,14 +65,18 @@ struct RemoteCommand: AsyncParsableCommand {
     /// `stateui remote list`.
     struct List: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
-            abstract: "Lists the machines paired, where their service listens, and whether it answers and admits this machine.")
+            abstract: "Lists the machines paired, where their service listens, and whether it answers and admits this machine; then those the project declares that are not paired here.")
 
         @OptionGroup var options: ProjectOptions
 
         func run() async throws {
-            let machines: [RemoteMachine]
-            do { machines = try options.remotes.list() } catch { try failed(error) }
-            guard !machines.isEmpty else { return print("No machine is paired with this project.") }
+            let (machines, declared): ([RemoteMachine], [DeclaredMachine])
+            do { (machines, declared) = (try options.remotes.list(), try options.remotes.declared()) } catch { try failed(error) }
+            let unpaired = declared.filter { each in !machines.contains { $0.name == each.name } }
+            for each in unpaired {
+                print("\(each.name) \(each.address) - declared by the project, not paired here: `stateui remote add \(each.name) --code <code>`")
+            }
+            guard !machines.isEmpty else { return unpaired.isEmpty ? print("No machine is paired with this project.") : () }
             let answers = await withTaskGroup(of: (Int, ServiceProbe.Answer).self) { group in
                 for (index, machine) in machines.enumerated() { group.addTask { (index, await ServiceProbe.check(machine)) } }
                 return await group.reduce(into: [Int: ServiceProbe.Answer]()) { $0[$1.0] = $1.1 }
@@ -111,6 +120,26 @@ struct RemoteCommand: AsyncParsableCommand {
                     return print("A stateui service answers at \(place); this project is not paired with it: `stateui remote add <name> \(place) --code <code>`.")
                 }
                 print("A stateui service answers at \(place), paired here as \(paired.name) - \(List.words(await ServiceProbe.check(paired)))")
+            } catch let error as ToolingError {
+                try failed(error)
+            }
+        }
+    }
+
+    /// `stateui remote declare <name>`.
+    struct Declare: ParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Declares a machine paired in the project's manifest - its workspace's, else its application's - for everyone who works on it: its name, address and identity, no secret.")
+
+        @Argument(help: "The machine's name here.")
+        var name: String
+
+        @OptionGroup var options: ProjectOptions
+
+        func run() throws {
+            do {
+                let manifest = try options.remotes.declare(name)
+                print("stateui: \(name) declared in \(manifest.path)")
             } catch let error as ToolingError {
                 try failed(error)
             }

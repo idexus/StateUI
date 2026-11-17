@@ -29,7 +29,7 @@ final class FolderTransferTests: XCTestCase {
     /// Runs `body` over a session of a service paired as another machine.
     private func overService<Result: Sendable>(_ body: @Sendable (ServedTool.Session) async throws -> Result) async throws -> Result {
         let state = try folder()
-        let pairing = ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
+        let pairing = try ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
         let listener = try ServiceListener.open(on: "127.0.0.1", port: 0, pairing: pairing)
         let serving = Task { await listener.serve() }
         defer { serving.cancel() }

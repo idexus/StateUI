@@ -14,27 +14,33 @@ public struct PairingRequest: Codable, Equatable, Sendable {
     }
 }
 
-/// A pairing made: the client's id and token, which it proves itself with ever after, and the service's name.
+/// A pairing made: the client's id and token, which it proves itself with ever after, and the service's name and
+/// identity.
 public struct PairingResult: Codable, Equatable, Sendable {
     public var client: String
     public var token: String
     public var service: String
+    public var identity: String
 
-    /// Client `client`, its token `token`, paired with the service `service`.
-    public init(client: String, token: String, service: String) {
+    /// Client `client`, its token `token`, paired with the service `service` of identity `identity`.
+    public init(client: String, token: String, service: String, identity: String) {
         self.client = client
         self.token = token
         self.service = service
+        self.identity = identity
     }
 }
 
-/// A service's challenge to a connection - `service/challenge`, before `initialize`: once, for that connection.
+/// A service's challenge to a connection - `service/challenge`, before `initialize`: once, for that connection - and
+/// the identity of the machine it serves, which a client checks before it answers.
 public struct Challenge: Codable, Equatable, Sendable {
     public var nonce: String
+    public var identity: String
 
-    /// The challenge `nonce`.
-    public init(nonce: String) {
+    /// The challenge `nonce` of the service of identity `identity`.
+    public init(nonce: String, identity: String) {
         self.nonce = nonce
+        self.identity = identity
     }
 }
 
