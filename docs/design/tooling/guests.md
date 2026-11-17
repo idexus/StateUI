@@ -72,7 +72,13 @@ the guest's system: the checkout's `tools/StateUI.CLI` copied from the shared
 folder into `stateui-guest/tool` - `rsync` on Linux, `robocopy` on Windows,
 `.build` and `.swiftpm` left out - built for release by the guest's Swift, and
 its program laid in `stateui-guest/bin` (on Windows with the libraries beside
-it). The Mac's tool works with the guest's at the same API version.
+it). The Mac's tool works with the guest's at the same API version. The tool
+laid is the `stateui` of the guest's terminals: on Linux `~/.local/bin/stateui`
+links to it, on Windows its folder stands first in the user's search path,
+which each new terminal reads. A service laid in the guest is started again
+on the tool laid (`stateui service restart`): on Windows laying it ended the
+service, whose file was held, and on Linux the service ran the tool laid
+before.
 
 A guest's stateui is laid again by the next work that needs it wherever it
 does not answer, answers as another release, lacks a method the work asks, or

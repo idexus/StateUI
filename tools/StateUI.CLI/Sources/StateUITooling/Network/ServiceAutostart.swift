@@ -107,8 +107,7 @@ public struct ServiceAutostart: Sendable {
         }
         _ = try? await uninstall()
         try await run("reg", ["add", Self.runKey, "/v", Self.runValue, "/t", "REG_SZ", "/d", Self.windowsCommand(program: exe, listen: listen), "/f"])
-        try await run("powershell", ["-NoProfile", "-Command",
-            "Start-Process -WindowStyle Hidden -FilePath 'C:\\Windows\\System32\\conhost.exe' -ArgumentList '--headless', '\"\(exe)\"', 'service', '--listen', '\(listen)'"])
+        try await start(exe, listen: listen)
         #else
         let log = BuildPermit.userFolder.appendingPathComponent("service/service.log")
         try FileManager.default.createDirectory(at: log.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -125,6 +124,37 @@ public struct ServiceAutostart: Sendable {
         #endif
         #endif
     }
+
+    /// Starts the service laid to start with the session again - its program laid anew, say - as what starts it says;
+    /// whether one was laid.
+    @discardableResult
+    public func restart() async throws -> Bool {
+        #if os(Windows)
+        guard let command = try? await run("reg", ["query", Self.runKey, "/v", Self.runValue]),
+              let range = command.range(of: "--listen ") else { return false }
+        let listen = String(command[range.upperBound...].prefix { !$0.isWhitespace })
+        if let running = ServiceState.running() { _ = try? await run("taskkill", ["/PID", String(running.process), "/F"]) }
+        guard let program = Bundle.main.executableURL else { return false }
+        try await start(Self.windowsPath(program), listen: listen)
+        return true
+        #else
+        guard FileManager.default.fileExists(atPath: file.path) else { return false }
+        #if os(macOS)
+        try await run("launchctl", ["kickstart", "-k", "gui/\(getuid())/\(Self.name)"])
+        #else
+        try await run("systemctl", ["--user", "restart", "stateui.service"])
+        #endif
+        return true
+        #endif
+    }
+
+    #if os(Windows)
+    /// Starts `program` serving on `listen` in a console of no window, apart from this process.
+    private func start(_ program: String, listen: String) async throws {
+        try await run("powershell", ["-NoProfile", "-Command",
+            "Start-Process -WindowStyle Hidden -FilePath 'C:\\Windows\\System32\\conhost.exe' -ArgumentList '--headless', '\"\(program)\"', 'service', '--listen', '\(listen)'"])
+    }
+    #endif
 
     /// Stops the service and takes away what starts it; whether one was laid.
     @discardableResult

@@ -78,9 +78,31 @@ struct GuestPreparation: Sendable {
         guard let status = laid.status, windows ? status < 8 : status == 0 else {
             throw ToolingError(.toolFailed, "The tool was not laid in \(guest.name):\n\(Self.last(laid.output))")
         }
+        reporter.progress("linking it as the stateui of \(guest.name)'s terminals")
+        if !windows { _ = await commands.run("mkdir", ["-p", places.join(places.home, ".local", "bin")]) }
+        let linked = windows
+            ? await commands.run("powershell", ["-NoProfile", "-EncodedCommand", ServiceAutostart.encoded(Self.pathScript(bin: bin))])
+            : await commands.run("ln", ["-sfn", places.tool, places.join(places.home, ".local", "bin", "stateui")])
+        guard linked.succeeded else {
+            throw ToolingError(.toolFailed, "The tool was not linked as \(guest.name)'s stateui:\n\(Self.last(linked.output))")
+        }
+        // A service laid in the guest runs the tool laid now: Windows ended it to lay the file, Linux runs the old one.
+        let session = await commands.sessionEnvironment()
+        let restart = session.isEmpty ? (places.tool, ["service", "restart"]) : ("env", session + [places.tool, "service", "restart"])
+        _ = await commands.status(restart.0, restart.1, timeout: .seconds(60))
         try? FileManager.default.createDirectory(at: stamps, withIntermediateDirectories: true)
         try? Self.sources(of: checkout).write(to: stamps.appendingPathComponent("\(guest.id).tool"), atomically: true, encoding: .utf8)
         return places.tool
+    }
+
+    /// The PowerShell that puts `bin` first in the user's search path on Windows - each new terminal told - so `stateui`
+    /// there is the one laid.
+    static func pathScript(bin: String) -> String {
+        """
+        $bin = '\(bin)'
+        $parts = @(([Environment]::GetEnvironmentVariable('Path', 'User') -split ';') | Where-Object { $_ -and $_ -ne $bin })
+        [Environment]::SetEnvironmentVariable('Path', ((@($bin) + $parts) -join ';'), 'User')
+        """
     }
 
     private static func last(_ output: String) -> String {

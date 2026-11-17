@@ -134,7 +134,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   Windows - and starts it; `uninstall` takes it away, `status` says where it listens and the code it shows. On Windows
   it opens the service's port in the firewall to the local subnet alone, asking UAC once. `stateui guest pair --device
   <guest>` lays a guest's service and pairs the Mac with it by its address, a Windows guest's firewall opened by the
-  Mac with no prompt. `stateui remote list` says whether each machine's service answers and admits this one, with its system
+  Mac with no prompt; `stateui service restart` starts the service again on its program laid anew. A guest's stateui laid by the Mac is
+  the `stateui` of the guest's terminals, and its service is started again on it. `stateui remote list` says whether each machine's service answers and admits this one, with its system
   and hosts; `stateui remote probe <address:port>` whether a stateui service answers at a place and is paired here.
 - `stateui new --platforms appkit,web,winui` makes an application with those hosts' heads alone; an application's
   hosts are its heads, so one is taken away by removing its `Platforms/<Host>`.

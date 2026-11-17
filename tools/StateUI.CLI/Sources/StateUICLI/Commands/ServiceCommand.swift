@@ -13,7 +13,7 @@ struct ServiceCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "service",
         abstract: "Serves the tool's protocol over TCP, as another machine's tool reaches it.",
-        subcommands: [Run.self, Install.self, Uninstall.self, Status.self], defaultSubcommand: Run.self)
+        subcommands: [Run.self, Install.self, Restart.self, Uninstall.self, Status.self], defaultSubcommand: Run.self)
 
     /// `stateui service [run] --listen <address:port>`.
     struct Run: AsyncParsableCommand {
@@ -57,6 +57,23 @@ struct ServiceCommand: AsyncParsableCommand {
                 _ = try ServiceListener.place(listen)
                 guard let program = Bundle.main.executableURL else { throw ToolingError(.internalError, "This program's path is not known.") }
                 try await ServiceAutostart().install(program: program, listen: listen)
+                for _ in 0..<40 where ServiceState.running() == nil { try await Task.sleep(for: .milliseconds(250)) }
+                print(Status.words(ServiceState.running()))
+            } catch let error as ToolingError {
+                try OutputFormat.text.write(error)
+                throw ExitCode(ExitStatus.of(error))
+            }
+        }
+    }
+
+    /// `stateui service restart`.
+    struct Restart: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Starts the service laid to start with the session again - its program laid anew - as it was laid.")
+
+        func run() async throws {
+            do {
+                guard try await ServiceAutostart().restart() else { return print("stateui: no service was laid to start.") }
                 for _ in 0..<40 where ServiceState.running() == nil { try await Task.sleep(for: .milliseconds(250)) }
                 print(Status.words(ServiceState.running()))
             } catch let error as ToolingError {

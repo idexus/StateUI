@@ -94,8 +94,8 @@ a folder of the checkout's 4,476 files is some 27 MB.
 
 `stateui service install --listen <address:port>` lays the service to start
 with its user's desktop session, where an application it starts opens its
-windows, and starts it now (`ServiceAutostart`); `uninstall` stops it and
-takes it away. Each system starts it as it starts a user's own program: a
+windows, and starts it now (`ServiceAutostart`); `restart` starts it again as it was
+laid - its program laid anew - and `uninstall` stops it and takes it away. Each system starts it as it starts a user's own program: a
 launch agent on a Mac (`~/Library/LaunchAgents/com.stateui.service.plist`,
 started again should it end); a user unit of the graphical session on Linux
 (`~/.config/systemd/user/stateui.service`, whose process has the desktop's

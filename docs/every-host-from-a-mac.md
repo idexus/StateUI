@@ -55,7 +55,7 @@ stateui guest prepare --device Ubuntu
 
 It copies the checkout's `tools/StateUI.CLI` into the guest, builds it with
 the guest's Swift and lays the program under its user's home, in
-`stateui-guest/bin`.
+`stateui-guest/bin` - the `stateui` a new terminal of the guest runs.
 
 ## Making an application
 

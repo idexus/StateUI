@@ -43,6 +43,15 @@ final class ServiceAutostartTests: XCTestCase {
         XCTAssertEqual(String(decoding: units, as: UTF16.self), script)
     }
 
+    /// A guest's laid tool is put first in the user's search path on Windows - each other entry kept, the same never
+    /// twice - so a new terminal's `stateui` is the one laid.
+    func testWindowsTerminalsFindTheLaidToolFirst() {
+        let script = GuestPreparation.pathScript(bin: #"C:\Users\me\stateui-guest\bin"#)
+        XCTAssertTrue(script.contains(#"$bin = 'C:\Users\me\stateui-guest\bin'"#), script)
+        XCTAssertTrue(script.contains("Where-Object { $_ -and $_ -ne $bin }"), script)
+        XCTAssertTrue(script.contains("SetEnvironmentVariable('Path', ((@($bin) + $parts) -join ';'), 'User')"), script)
+    }
+
     /// A running service says where it listens and its code; one whose port answers no more is no service.
     func testAServiceIsRunningWhileItsPortAnswers() throws {
         let file = FileManager.default.temporaryDirectory.appendingPathComponent("service-\(UUID().uuidString)/state.json")
