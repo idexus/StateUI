@@ -93,6 +93,35 @@ final class FolderTransferTests: XCTestCase {
         XCTAssertNil(data("Old.dll", in: home))
     }
 
+    #if !os(Windows)
+    /// A program stays a program both ways - its executable bit carried, and carried again when it alone changes - and
+    /// any other file stays one no one runs.
+    func testAProgramStaysAProgramBothWays() async throws {
+        let (source, target, home) = (try folder(), try folder(), try folder())
+        let executable = { (folder: URL, path: String) in
+            FileManager.default.isExecutableFile(atPath: folder.appendingPathComponent(path).path)
+        }
+        try write(Data("#!/bin/sh\n".utf8), "gradlew", in: source)
+        try write(Data("text".utf8), "README.md", in: source)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: source.appendingPathComponent("gradlew").path)
+
+        _ = try await overService { try await FolderTransfer.send(source, files: nil, to: target.path, over: $0, progress: { _ in }) }
+        XCTAssertTrue(executable(target, "gradlew"))
+        XCTAssertFalse(executable(target, "README.md"))
+
+        _ = try await overService { try await FolderTransfer.fetch(target.path, into: home, over: $0, progress: { _ in }) }
+        XCTAssertTrue(executable(home, "gradlew"), "fetched home")
+        XCTAssertFalse(executable(home, "README.md"))
+
+        let time = try source.appendingPathComponent("README.md").resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: source.appendingPathComponent("README.md").path)
+        try FileManager.default.setAttributes([.modificationDate: time as Any], ofItemAtPath: source.appendingPathComponent("README.md").path)
+        let again = try await overService { try await FolderTransfer.send(source, files: nil, to: target.path, over: $0, progress: { _ in }) }
+        XCTAssertEqual(again.carried, 1, "its mode alone changed")
+        XCTAssertTrue(executable(target, "README.md"))
+    }
+    #endif
+
     /// Every file of a folder is listed, however deep, on every system - a folder a build makes passed over with all it
     /// holds, its siblings and their folders after it still walked.
     func testEveryFileIsListedPastWhatABuildMakes() throws {

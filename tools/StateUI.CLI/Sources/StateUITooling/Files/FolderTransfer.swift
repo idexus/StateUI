@@ -42,7 +42,9 @@ enum FolderTransfer {
             repeat {
                 let piece = data.subdata(in: offset..<min(data.count, offset + limit))
                 if size + piece.count > limit { try await flush() }
-                pieces.append(FilePiece(path: entry.path, offset: offset, size: data.count, modified: entry.modified, data: piece.base64EncodedString()))
+                pieces.append(FilePiece(
+                    path: entry.path, offset: offset, size: data.count, modified: entry.modified, executable: entry.executable,
+                    data: piece.base64EncodedString()))
                 (size, offset) = (size + piece.count, offset + piece.count)
             } while offset < data.count
         }
@@ -76,13 +78,14 @@ enum FolderTransfer {
         return counts
     }
 
-    /// The files of `source` the `target` lacks or holds otherwise - by size, or a time two seconds apart - and the
-    /// paths `target` holds beyond `source`.
+    /// The files of `source` the `target` lacks or holds otherwise - by size, a time two seconds apart, or whether it is
+    /// a program where both systems say - and the paths `target` holds beyond `source`.
     static func differences(_ source: [FileEntry], _ target: [FileEntry]) -> (changed: [FileEntry], extra: [String], counts: Counts) {
         let held = Dictionary(target.map { ($0.path, $0) }, uniquingKeysWith: { first, _ in first })
         let changed = source.filter { entry in
             guard let other = held[entry.path] else { return true }
-            return other.size != entry.size || abs(other.modified - entry.modified) >= 2
+            let mode = entry.executable.flatMap { mine in other.executable.map { mine != $0 } } ?? false
+            return other.size != entry.size || abs(other.modified - entry.modified) >= 2 || mode
         }
         let wanted = Set(source.map(\.path))
         let extra = target.map(\.path).filter { !wanted.contains($0) }.sorted()

@@ -83,16 +83,18 @@ A folder travels between machines through the connection itself, whichever
 road it takes - a program's standard streams or the service - so no machine
 reads another's shared folder (`FolderFiles` answering, `FolderTransfer`
 asking, `ServedTool.Session` keeping one connection for all of it). The asking
-side lists the other's files (`folder/survey`: each file's path, size and
-time, but for what a machine makes where it builds - `.build`, `.git`,
+side lists the other's files (`folder/survey`: each file's path, size, time and
+whether it is a program, but for what a machine makes where it builds - `.build`, `.git`,
 `.stateui`, `.swiftpm` and the like - and never through a link), compares
-them with its own by size and by a time two seconds apart, and sends what
+them with its own by size, by a time two seconds apart and by that mark, and sends what
 differs (`files/write`) - or fetches it (`file/read`) - in pieces of at most
 4 MiB a message, base64 within the protocol's frames; what the other side
 holds beyond them is removed (`files/remove`). A file's first piece starts it
 anew beside itself (`<name>.stateui-part`), each next one must follow where
-the last ended, and its last puts it in place with its time - a file stands
-only once whole. A path names a file inside its folder alone: none empty,
+the last ended, and its last puts it in place with its time and mode - a
+file stands only once whole, a program still one (`0755`, any other `0644`).
+Windows keeps no such mark: its files say none (`executable` absent), and
+what it writes takes its own. A path names a file inside its folder alone: none empty,
 absolute, with `.`, `..` or a backslash. These are queries, answered at once:
 a folder of the checkout's 4,476 files is some 27 MB.
 

@@ -184,14 +184,16 @@ export const ApplicationRequest = object<ApplicationRequest>({
     checkoutUri: optional(string),
 });
 
-export interface FileEntry { path: string; size: number; modified: number }
-export const FileEntry = object<FileEntry>({ path: string, size: number, modified: number });
+export interface FileEntry { path: string; size: number; modified: number; executable?: boolean }
+export const FileEntry = object<FileEntry>({ path: string, size: number, modified: number, executable: optional(boolean) });
 export interface FolderSurveyRequest { root: string }
 export const FolderSurveyRequest = object<FolderSurveyRequest>({ root: string });
 export interface FolderSurvey { files: FileEntry[] }
 export const FolderSurvey = object<FolderSurvey>({ files: array(FileEntry) });
-export interface FilePiece { path: string; offset: number; size: number; modified: number; data: string }
-export const FilePiece = object<FilePiece>({ path: string, offset: number, size: number, modified: number, data: string });
+export interface FilePiece { path: string; offset: number; size: number; modified: number; executable?: boolean; data: string }
+export const FilePiece = object<FilePiece>({
+    path: string, offset: number, size: number, modified: number, executable: optional(boolean), data: string,
+});
 export interface FilesWriteRequest { root: string; pieces: FilePiece[] }
 export const FilesWriteRequest = object<FilesWriteRequest>({ root: string, pieces: array(FilePiece) });
 export interface FilesWritten { completed: number }

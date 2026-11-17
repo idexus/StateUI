@@ -15,6 +15,7 @@
     "jsonrpc" : "2.0",
     "result" : {
       "data" : "f0VMRg==",
+      "executable" : true,
       "modified" : 1763380900,
       "offset" : 0,
       "path" : "NotesGTK",

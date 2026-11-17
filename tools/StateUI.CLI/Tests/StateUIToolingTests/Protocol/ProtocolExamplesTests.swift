@@ -304,13 +304,13 @@ final class ProtocolExamplesTests: XCTestCase {
             Example(name: "folder-survey", messages: [
                 ("request", try request("31", "folder/survey", FolderSurveyRequest(root: "/home/example/stateui-guest/Demo"))),
                 ("response", try response("31", FolderSurvey(files: [
-                    FileEntry(path: "Package.swift", size: 812, modified: 1_763_380_800),
-                    FileEntry(path: "Sources/NotesApp.swift", size: 2_048, modified: 1_763_380_860),
+                    FileEntry(path: "Package.swift", size: 812, modified: 1_763_380_800, executable: false),
+                    FileEntry(path: "Sources/NotesApp.swift", size: 2_048, modified: 1_763_380_860, executable: false),
                 ]))),
             ], answeredAsWritten: false),
             Example(name: "files-write", messages: [
                 ("request", try request("32", "files/write", FilesWriteRequest(root: "/home/example/stateui-guest/Demo", pieces: [
-                    FilePiece(path: "Package.swift", offset: 0, size: 4, modified: 1_763_380_800, data: "LyogKi8="),
+                    FilePiece(path: "Package.swift", offset: 0, size: 4, modified: 1_763_380_800, executable: false, data: "LyogKi8="),
                 ]))),
                 ("response", try response("32", FilesWritten(completed: 1))),
             ], answeredAsWritten: false),
@@ -318,7 +318,7 @@ final class ProtocolExamplesTests: XCTestCase {
                 ("request", try request("33", "file/read", FileReadRequest(
                     root: "/home/example/stateui-guest/artifacts/Notes/GTK", path: "NotesGTK", offset: 0, length: 4_194_304))),
                 ("response", try response("33", FilePiece(
-                    path: "NotesGTK", offset: 0, size: 4, modified: 1_763_380_900, data: "f0VMRg=="))),
+                    path: "NotesGTK", offset: 0, size: 4, modified: 1_763_380_900, executable: true, data: "f0VMRg=="))),
             ], answeredAsWritten: false),
             Example(name: "files-remove", messages: [
                 ("request", try request("34", "files/remove", FilesRemoveRequest(

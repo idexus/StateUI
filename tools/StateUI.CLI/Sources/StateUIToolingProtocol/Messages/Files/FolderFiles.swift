@@ -1,18 +1,20 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A file of a folder: its path from the folder, written with `/`, its size, and the time it last changed, in
-/// seconds since 1970.
+/// A file of a folder: its path from the folder, written with `/`, its size, the time it last changed, in seconds
+/// since 1970, and whether it is a program - nil where its system keeps no such mark, as Windows.
 public struct FileEntry: Codable, Equatable, Sendable {
     public var path: String
     public var size: Int
     public var modified: Double
+    public var executable: Bool?
 
-    /// The file at `path`, `size` bytes, changed at `modified`.
-    public init(path: String, size: Int, modified: Double) {
+    /// The file at `path`, `size` bytes, changed at `modified`, a program where `executable`.
+    public init(path: String, size: Int, modified: Double, executable: Bool? = nil) {
         self.path = path
         self.size = size
         self.modified = modified
+        self.executable = executable
     }
 }
 
@@ -37,21 +39,24 @@ public struct FolderSurvey: Codable, Equatable, Sendable {
     }
 }
 
-/// A piece of a file: its bytes from `offset`, in base64, beside the whole file's size and time - written where it
-/// goes, read where it comes from.
+/// A piece of a file: its bytes from `offset`, in base64, beside the whole file's size, time and whether it is a
+/// program - written where it goes, read where it comes from.
 public struct FilePiece: Codable, Equatable, Sendable {
     public var path: String
     public var offset: Int
     public var size: Int
     public var modified: Double
+    public var executable: Bool?
     public var data: String
 
-    /// `data` of the file at `path` from `offset`, the file `size` bytes and changed at `modified`.
-    public init(path: String, offset: Int, size: Int, modified: Double, data: String) {
+    /// `data` of the file at `path` from `offset`, the file `size` bytes, changed at `modified`, a program where
+    /// `executable`.
+    public init(path: String, offset: Int, size: Int, modified: Double, executable: Bool? = nil, data: String) {
         self.path = path
         self.offset = offset
         self.size = size
         self.modified = modified
+        self.executable = executable
         self.data = data
     }
 }

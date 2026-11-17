@@ -13,11 +13,13 @@
     "result" : {
       "files" : [
         {
+          "executable" : false,
           "modified" : 1763380800,
           "path" : "Package.swift",
           "size" : 812
         },
         {
+          "executable" : false,
           "modified" : 1763380860,
           "path" : "Sources/NotesApp.swift",
           "size" : 2048

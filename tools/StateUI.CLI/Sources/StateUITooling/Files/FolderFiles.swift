@@ -4,8 +4,9 @@
 import Foundation
 import StateUIToolingProtocol
 
-/// A folder's files as another machine's tool reads and writes them through a connection: listed with their size and
-/// time, written in pieces - a file made whole only by its last, its time kept - read in pieces, removed. What a
+/// A folder's files as another machine's tool reads and writes them through a connection: listed with their size, time
+/// and whether each is a program, written in pieces - a file made whole only by its last, its time and mode kept - read
+/// in pieces, removed. What a
 /// machine makes where it builds - `left` - is neither listed nor touched, a link is not followed, and a path never
 /// leaves its folder.
 /// Design: docs/design/tooling/service.md#files-through-the-connection
@@ -23,10 +24,22 @@ enum FolderFiles {
         })
     }
 
-    /// `path`'s size and time under `root`.
+    /// `path`'s size, time and whether it is a program under `root`.
     static func entry(_ path: String, in root: URL) throws -> FileEntry {
-        let facts = try place(path, in: root).resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey])
-        return FileEntry(path: path, size: facts.fileSize ?? 0, modified: facts.contentModificationDate?.timeIntervalSince1970 ?? 0)
+        let file = try place(path, in: root)
+        let facts = try file.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey])
+        return FileEntry(
+            path: path, size: facts.fileSize ?? 0, modified: facts.contentModificationDate?.timeIntervalSince1970 ?? 0,
+            executable: executable(file))
+    }
+
+    /// Whether `file` is a program by its mode; nil on Windows, which keeps no such mark.
+    static func executable(_ file: URL) -> Bool? {
+        #if os(Windows)
+        nil
+        #else
+        ((try? FileManager.default.attributesOfItem(atPath: file.path)[.posixPermissions] as? Int) ?? 0) & 0o111 != 0
+        #endif
     }
 
     /// Writes `request`'s pieces: a file's first starts it anew beside it, each next one follows where the last ended,
@@ -56,7 +69,11 @@ enum FolderFiles {
             guard piece.offset + bytes.count >= piece.size else { continue }
             if files.fileExists(atPath: target.path) { try files.removeItem(at: target) }
             try files.moveItem(at: part, to: target)
-            try files.setAttributes([.modificationDate: Date(timeIntervalSince1970: piece.modified)], ofItemAtPath: target.path)
+            var attributes: [FileAttributeKey: Any] = [.modificationDate: Date(timeIntervalSince1970: piece.modified)]
+            #if !os(Windows)
+            if let executable = piece.executable { attributes[.posixPermissions] = executable ? 0o755 : 0o644 }
+            #endif
+            try files.setAttributes(attributes, ofItemAtPath: target.path)
             completed += 1
         }
         return FilesWritten(completed: completed)
@@ -70,7 +87,9 @@ enum FolderFiles {
         defer { try? handle.close() }
         try handle.seek(toOffset: UInt64(request.offset))
         let bytes = try handle.read(upToCount: request.length) ?? Data()
-        return FilePiece(path: request.path, offset: request.offset, size: entry.size, modified: entry.modified, data: bytes.base64EncodedString())
+        return FilePiece(
+            path: request.path, offset: request.offset, size: entry.size, modified: entry.modified, executable: entry.executable,
+            data: bytes.base64EncodedString())
     }
 
     /// Removes `request.paths`; the ones gone already are no failure.
