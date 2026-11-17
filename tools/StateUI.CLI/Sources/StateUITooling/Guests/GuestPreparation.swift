@@ -39,6 +39,8 @@ struct GuestPreparation: Sendable {
         guard let places = await commands.places() else {
             throw ToolingError(.invalidConfiguration, "\(guest.name) runs nothing as its user: log in to its desktop.")
         }
+        // The fingerprint of what is copied, taken before: a source edited while the guest builds is laid next time.
+        let laidFrom = Self.sources(of: checkout)
         let tool = checkout.appendingPathComponent("tools/StateUI.CLI")
         guard let source = guest.path(of: tool) else {
             throw ToolingError(.invalidConfiguration, "\(guest.name) reaches no \(checkout.path): share it with the guest.")
@@ -91,7 +93,7 @@ struct GuestPreparation: Sendable {
         let restart = session.isEmpty ? (places.tool, ["service", "restart"]) : ("env", session + [places.tool, "service", "restart"])
         _ = await commands.status(restart.0, restart.1, timeout: .seconds(60))
         try? FileManager.default.createDirectory(at: stamps, withIntermediateDirectories: true)
-        try? Self.sources(of: checkout).write(to: stamps.appendingPathComponent("\(guest.id).tool"), atomically: true, encoding: .utf8)
+        try? laidFrom.write(to: stamps.appendingPathComponent("\(guest.id).tool"), atomically: true, encoding: .utf8)
         return places.tool
     }
 
