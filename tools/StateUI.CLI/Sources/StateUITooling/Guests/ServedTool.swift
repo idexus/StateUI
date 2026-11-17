@@ -20,8 +20,8 @@ public struct ServedTool: Sendable {
     enum Road: Sendable {
         /// The program that serves it over its standard streams.
         case program(ProcessExecutable, [String])
-        /// Its service, at an address and a port.
-        case service(String, UInt16)
+        /// Its service, at an address and a port, the machine's pairing proved where one is kept.
+        case service(String, UInt16, RemoteMachine?)
     }
 
     let road: Road
@@ -36,8 +36,19 @@ public struct ServedTool: Sendable {
 
     /// The stateui whose service listens on `address` at `port`, its workspace `workspaceUri` as it names it.
     public init(address: String, port: UInt16, workspaceUri: String) {
-        road = .service(address, port)
+        road = .service(address, port, nil)
         self.workspaceUri = workspaceUri
+    }
+
+    /// The stateui of the paired machine `remote`, its workspace `workspaceUri` as it names it.
+    public init(remote: RemoteMachine, workspaceUri: String) {
+        road = .service(remote.address, remote.port, remote)
+        self.workspaceUri = workspaceUri
+    }
+
+    /// The answer to `method`, asked before the connection opens - a service's pairing.
+    func beforeOpening(_ method: String, _ params: JSONValue) async throws -> JSONValue {
+        try await converseByService(opening: false) { try await $0.request(method, params) }
     }
 
     /// What the served tool says of itself as a connection opens: the API version both speak and the methods it
@@ -120,7 +131,7 @@ public struct ServedTool: Sendable {
     /// Starts the served tool, opens a connection, runs `body` over it, then shuts it down. A served tool that ends
     /// before answering is said with the last lines it wrote to its standard error - a crash's own words.
     private func converse<Result: Sendable>(_ body: @Sendable (Conversation) async throws -> Result) async throws -> Result {
-        guard case .program(let executable, let arguments) = road else { return try await converseByService(body) }
+        guard case .program(let executable, let arguments) = road else { return try await converseByService(opening: true, body) }
         let configuration = Configuration(executable: executable.subprocess, arguments: Arguments(arguments))
         do {
             return try await Subprocess.run(configuration, input: .inputWriter, output: .sequence, error: .sequence) { execution in
@@ -149,9 +160,12 @@ public struct ServedTool: Sendable {
         }
     }
 
-    /// Connects to the served tool's service, opens a connection, runs `body` over it, then shuts it down.
-    private func converseByService<Result: Sendable>(_ body: @Sendable (Conversation) async throws -> Result) async throws -> Result {
-        guard case .service(let address, let port) = road else { throw ToolingError(.internalError, "No service to reach.") }
+    /// Connects to the served tool's service, opens a connection where `opening` - its pairing proved by the HMAC of
+    /// the service's challenge - runs `body` over it, then shuts it down.
+    private func converseByService<Result: Sendable>(
+        opening: Bool, _ body: @Sendable (Conversation) async throws -> Result
+    ) async throws -> Result {
+        guard case .service(let address, let port, let remote) = road else { throw ToolingError(.internalError, "No service to reach.") }
         let socket = try StreamSocket.connect(to: address, port: port)
         let writer = SocketWriter(socket)
         let conversation = Conversation(write: { writer.write(Data($0)) }, finish: { writer.flush() })
@@ -159,7 +173,15 @@ public struct ServedTool: Sendable {
         defer { conversation.endEvents() }
         let result: Swift.Result<Result, any Error>
         do {
-            try await conversation.open(workspaceUri: workspaceUri)
+            if opening {
+                var credential: Credential?
+                if let remote {
+                    let nonce = try await conversation.request("service/challenge", .object([:])).decode(Challenge.self).nonce
+                    let answer = SHA256.hex(SHA256.hmac(key: Array(remote.token.utf8), message: Array(nonce.utf8)))
+                    credential = Credential(client: remote.client, answer: answer)
+                }
+                try await conversation.open(workspaceUri: workspaceUri, credential: credential)
+            }
             result = .success(try await body(conversation))
         } catch {
             result = .failure(error)
@@ -213,10 +235,10 @@ final class Conversation: Sendable {
     }
 
     /// `initialize`, then `initialized`: the protocol's versions this tool speaks offered.
-    func open(workspaceUri: String) async throws {
+    func open(workspaceUri: String, credential: Credential? = nil) async throws {
         let parameters = InitializeParameters(
             apiVersions: Release.apiVersions, client: ToolIdentity(name: "stateui", version: Release.version),
-            workspaceUri: workspaceUri)
+            workspaceUri: workspaceUri, credential: credential)
         let answer = try await request("initialize", try JSONValue(encoding: parameters)).decode(InitializeResult.self)
         state.withLock { $0.opening = answer }
         try await send(.object(["jsonrpc": .string("2.0"), "method": .string("initialized")]))

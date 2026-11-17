@@ -7,7 +7,7 @@ import StateUITooling
 import StateUIToolingProtocol
 
 /// `stateui service --listen <address:port>`: the tool's service, which another machine's tool - or this one's -
-/// reaches over TCP with the protocol an editor speaks.
+/// reaches over TCP with the protocol an editor speaks, once paired with the code it shows.
 struct ServiceCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "service",
@@ -20,9 +20,12 @@ struct ServiceCommand: AsyncParsableCommand {
     func run() async throws {
         do throws(ToolingError) {
             let (address, port) = try Self.place(listen)
-            let listener = try ServiceListener.open(on: address, port: port)
+            let pairing = ServicePairing(said: { code in
+                FileHandle.standardOutput.write(Data("stateui: pairing code \(code), good for ten minutes and one machine\n".utf8))
+            })
+            let listener = try ServiceListener.open(on: address, port: port, pairing: pairing)
             let place = "\(address.contains(":") ? "[\(address)]" : address):\(listener.port)"
-            FileHandle.standardOutput.write(Data("stateui: serving on \(place)\n".utf8))
+            FileHandle.standardOutput.write(Data("stateui: serving on \(place) - pair another machine with `stateui remote add <name> <address>:\(listener.port) --code <code>`\n".utf8))
             await listener.serve()
         } catch {
             try OutputFormat.text.write(error)

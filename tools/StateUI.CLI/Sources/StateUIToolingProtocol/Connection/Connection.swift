@@ -42,6 +42,7 @@ public actor Connection {
     private let backlog: @Sendable () -> Int
     private let lostAfter: Duration
     private let stopLimit: Duration
+    private let admission: Admission?
     private var caller: Methods.Caller
     private var pending: [Int: Task<Void, Never>] = [:]
     private var nextPending = 0
@@ -51,7 +52,7 @@ public actor Connection {
     /// frame through `send` and each diagnostic - never a frame - through `diagnose`; `backlog` gives the bytes
     /// `send` was given but has not yet written - a writer must say it - and a client leaving more than the
     /// backlog's limit unread for `lostAfter` is lost. A stop of the client's work may take `stopLimit` before the
-    /// connection goes on without it.
+    /// connection goes on without it. A service's connection admits as `admission` says; one with none, every client.
     public init(
         server: ToolIdentity,
         apiVersions: [APIVersionRange],
@@ -60,7 +61,8 @@ public actor Connection {
         diagnose: @escaping @Sendable (String) -> Void,
         backlog: @escaping @Sendable () -> Int,
         lostAfter: Duration = .seconds(30),
-        stopLimit: Duration = .seconds(10)
+        stopLimit: Duration = .seconds(10),
+        admission: Admission? = nil
     ) {
         self.server = server
         self.apiVersions = apiVersions
@@ -70,6 +72,7 @@ public actor Connection {
         self.backlog = backlog
         self.lostAfter = lostAfter
         self.stopLimit = stopLimit
+        self.admission = admission
         let channel = EventChannel(
             deliver: { event in
                 guard let params = try? JSONValue(encoding: event) else { return }
@@ -245,6 +248,8 @@ public actor Connection {
             state = .shuttingDown
             shutDown = true
             return .afterPending(.response(id: id, outcome: .result(.null)))
+        case (_, .created) where admission?.methods.contains(method) == true:
+            outcome = admission!.answer(method, params)
         case (_, .created), (_, .initializing):
             outcome = .error(.notInitialized)
         case (_, .shuttingDown), (_, .closed):
@@ -262,6 +267,9 @@ public actor Connection {
         switch Methods.read(InitializeParameters.self, of: "initialize", from: params) {
         case .success(let read): parameters = read
         case .failure(let error): return .error(error)
+        }
+        if let admission, !admission.admits(parameters.credential) {
+            return .error(.notAdmitted("This client is not paired with the service, or does not prove it: pair it with `stateui remote add`."))
         }
         guard let version = APIVersionRange.newestShared(parameters.apiVersions, apiVersions) else {
             let spoken = apiVersions.map { "\($0.major).\($0.minMinor)-\($0.major).\($0.maxMinor)" }

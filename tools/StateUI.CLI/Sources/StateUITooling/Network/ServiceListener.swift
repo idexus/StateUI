@@ -7,22 +7,18 @@ import StateUIToolingProtocol
 import Synchronization
 
 /// The tool's service: clients connected over TCP, each served as `serve --stdio` serves one over standard streams -
-/// the protocol's connection, the tool's methods. It listens on this machine's loopback alone.
+/// the protocol's connection, the tool's methods - and admitted only paired (`ServicePairing`).
 /// Design: docs/design/tooling/service.md#the-service-listening
 public struct ServiceListener: Sendable {
     private let socket: StreamSocket
+    private let pairing: ServicePairing
 
     /// The port it listens on.
     public var port: UInt16 { socket.port }
 
-    /// A service listening on `address` at `port`, any free one for 0.
-    ///
-    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for an address other than this machine's loopback.
-    public static func open(on address: String, port: UInt16) throws(ToolingError) -> ServiceListener {
-        guard ["127.0.0.1", "::1", "localhost"].contains(address) else {
-            throw ToolingError(.invalidConfiguration, "The service listens on this machine's loopback alone - 127.0.0.1, ::1 - not \(address).")
-        }
-        return ServiceListener(socket: try StreamSocket.listen(on: address, port: port))
+    /// A service listening on `address` at `port` - any free one for 0 - admitting the clients `pairing` keeps.
+    public static func open(on address: String, port: UInt16, pairing: ServicePairing) throws(ToolingError) -> ServiceListener {
+        ServiceListener(socket: try StreamSocket.listen(on: address, port: port), pairing: pairing)
     }
 
     /// Serves every connection made to it, each as long as its client keeps it, until the task is cancelled.
@@ -38,7 +34,7 @@ public struct ServiceListener: Sendable {
         await withTaskCancellationHandler {
             await withDiscardingTaskGroup { group in
                 for await client in accepted {
-                    group.addTask { await Self.serve(client) }
+                    group.addTask { [pairing] in await Self.serve(client, admission: pairing.admission()) }
                 }
             }
         } onCancel: { [socket] in
@@ -47,12 +43,12 @@ public struct ServiceListener: Sendable {
     }
 
     /// One client's connection, served until it ends; the socket closed after.
-    private static func serve(_ client: StreamSocket) async {
+    private static func serve(_ client: StreamSocket, admission: Admission) async {
         let writer = SocketWriter(client)
         let connection = Connection(
             server: ToolingService.identity, apiVersions: Release.apiVersions, methods: ToolingService().methods,
             send: writer.write, diagnose: { line in try? FileHandle.standardError.write(contentsOf: Data((line + "\n").utf8)) },
-            backlog: writer.backlog)
+            backlog: writer.backlog, admission: admission)
         Task {
             for await bytes in client.chunks() {
                 guard await connection.receive(Data(bytes)) else { break }

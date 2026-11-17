@@ -4,7 +4,7 @@
 import Foundation
 
 /// SHA-256 (FIPS 180-4) in Swift alone, the same on every system: the checksum a distribution's archive is published
-/// with.
+/// with, and the HMAC a service's client proves its token with.
 enum SHA256 {
     private static let rounds: [UInt32] = [
         0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -19,8 +19,25 @@ enum SHA256 {
 
     /// The digest of `data`, as lowercase hexadecimal.
     static func hex(_ data: Data) -> String {
+        hex(digest([UInt8](data)))
+    }
+
+    /// `bytes` as lowercase hexadecimal.
+    static func hex(_ bytes: [UInt8]) -> String {
+        bytes.map { String($0, radix: 16).leftPadded(to: 2) }.joined()
+    }
+
+    /// HMAC-SHA256 (RFC 2104) of `message` under `key`.
+    static func hmac(key: [UInt8], message: [UInt8]) -> [UInt8] {
+        let short = key.count > 64 ? digest(key) : key
+        let padded = short + [UInt8](repeating: 0, count: 64 - short.count)
+        return digest(padded.map { $0 ^ 0x5c } + digest(padded.map { $0 ^ 0x36 } + message))
+    }
+
+    /// The digest of `bytes`.
+    static func digest(_ bytes: [UInt8]) -> [UInt8] {
         var state: [UInt32] = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]
-        var message = [UInt8](data)
+        var message = bytes
         let length = UInt64(message.count) * 8
         message.append(0x80)
         while message.count % 64 != 56 { message.append(0) }
@@ -43,7 +60,7 @@ enum SHA256 {
             }
             for (index, value) in [a, b, c, d, e, f, g, h].enumerated() { state[index] &+= value }
         }
-        return state.map { String($0, radix: 16).leftPadded(to: 8) }.joined()
+        return state.flatMap { word in (0..<4).map { UInt8(truncatingIfNeeded: word >> (24 - 8 * $0)) } }
     }
 }
 

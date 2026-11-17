@@ -141,16 +141,20 @@ public final class StreamSocket: Sendable {
         }
         defer { freeaddrinfo(first) }
         var place: UnsafeMutablePointer<addrinfo>? = first
+        var code = 0
         while let each = place {
             let handle = WinSDKOrPOSIX.socket(each.pointee.ai_family, each.pointee.ai_socktype, each.pointee.ai_protocol)
             if handle != invalid {
                 quietOnClose(handle)
                 if ready(handle, each.pointee) { return StreamSocket(handle) }
+                code = lastError()
                 StreamSocket(handle).close()
+            } else {
+                code = lastError()
             }
             place = each.pointee.ai_next
         }
-        throw failure(passive ? "listen on \(address):\(port)" : "connect to \(address):\(port)")
+        throw failure(passive ? "listen on \(address):\(port)" : "connect to \(address):\(port)", code: code)
     }
 
     /// A write to a socket whose other end closed fails, not ends the process: on a Mac by the socket's own option.
@@ -175,13 +179,17 @@ public final class StreamSocket: Sendable {
         _ = started
     }
 
-    private static func failure(_ step: String) -> ToolingError {
+    /// The system's code of the socket call that failed last - read before anything else calls it.
+    private static func lastError() -> Int {
         #if os(Windows)
-        let code = Int(WSAGetLastError())
+        Int(WSAGetLastError())
         #else
-        let code = Int(errno)
+        Int(errno)
         #endif
-        return ToolingError(.toolFailed, "The socket could not \(step): error \(code).")
+    }
+
+    private static func failure(_ step: String, code: Int = lastError()) -> ToolingError {
+        ToolingError(.toolFailed, "The socket could not \(step): error \(code).")
     }
 }
 

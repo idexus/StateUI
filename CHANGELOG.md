@@ -121,8 +121,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   browser a debugger follows, which it then opens in none. `stateui run --debugger` prints the LLDB commands. The VS
   Code extension maps the way to lldb-dap or its JavaScript debugger and builds none itself.
 - `stateui service --listen <address:port>` serves the tool's protocol over TCP - the one an editor speaks over
-  `serve --stdio` - to many clients at once, on this machine's loopback; its sockets are the tool's own on macOS,
-  Linux and Windows.
+  `serve --stdio` - to many clients at once, on any address it is given; its sockets are the tool's own on macOS,
+  Linux and Windows. It admits a paired client alone: it shows a pairing code, `stateui remote add <name>
+  <address:port> --code <code>` pairs another machine (`stateui remote list`, `remove`), and every connection proves
+  its token by the HMAC-SHA256 of a challenge, the token never sent.
 - `stateui new --platforms appkit,web,winui` makes an application with those hosts' heads alone; an application's
   hosts are its heads, so one is taken away by removing its `Platforms/<Host>`.
 - The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running; an
