@@ -391,9 +391,9 @@ export const TestSuiteDescription = object<TestSuiteDescription>({
 export interface TestSuiteList { host?: HostFamily; suites: TestSuiteDescription[] }
 export const TestSuiteList = object<TestSuiteList>({ host: optional(HostFamily), suites: array(TestSuiteDescription) });
 
-export interface TestRunRequest { suite: string; host?: HostFamily; device?: string; folderUri?: string }
+export interface TestRunRequest { suite: string; host?: HostFamily; device?: string; folderUri?: string; filter?: string }
 export const TestRunRequest = object<TestRunRequest>({
-    suite: string, host: optional(HostFamily), device: optional(string), folderUri: optional(string),
+    suite: string, host: optional(HostFamily), device: optional(string), folderUri: optional(string), filter: optional(string),
 });
 
 export interface SuitePhase { name: string; passed: boolean }

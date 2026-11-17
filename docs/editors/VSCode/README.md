@@ -201,8 +201,9 @@ each with its state; a guest suspended or stopped is resumed or started when a
 build needs it. It is the application's choice, by its name, so a launch asks
 only when none is chosen or the one chosen is gone. What a guest needs, and
 how a Mac makes one: [Every host from one Mac](../../every-host-from-a-mac.md);
-**StateUI: Check Toolchain** checks the guest chosen too. A host's own suites and its
-conformance marks run on its own system.
+**StateUI: Check Toolchain** checks the guest chosen too, and **StateUI: Run
+Tests** runs the host's own suite there. Its conformance marks are made on its
+own system.
 
 ## The application
 
@@ -301,6 +302,9 @@ one ticked, and runs them AS THE HOST, one after another, each through the tool
 - **GTK**: the library and each application as plain Swift, and the GTK host's
   own tests, `lib/StateUI/StateUI.GTK/Testing`, by
   `stateui repo test --suite host:gtk`, its windows on the desktop's display.
+- **WinUI and GTK on a Mac**: the library and each application as plain Swift
+  on the Mac, and the host's own tests in the [guest](#the-guest) chosen, by
+  `stateui repo test --suite host:<host> --device <guest>`.
 - **Web**: the library and each application as plain Swift, and the Web host's
   own tests, `lib/StateUI/StateUI.Web/Testing`, by
   `stateui repo test --suite host:web`, which compiles them for WebAssembly

@@ -18,7 +18,9 @@ plain Swift; an editor shows what it found and runs what is picked through it.
   application runs as plain Swift, its own head running only on its platform;
 - for Android and UIKit, last, the host's suite that runs on a device -
   `lib/StateUI/StateUI.Android/Tests` on the device chosen,
-  `lib/StateUI/StateUI.UIKit/Tests` on the simulator chosen.
+  `lib/StateUI/StateUI.UIKit/Tests` on the simulator chosen;
+- on a Mac, GTK's and WinUI's own suite runs on a device too: the guest
+  chosen ([Guests](guests.md#a-hosts-suite-in-a-guest)).
 
 A suite is named by its package's path from the folder, the folder's own name
 for its root, and says whether it runs on a device (`onDevice`), so a client

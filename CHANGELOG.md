@@ -105,7 +105,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the guest. `application/run` starts a GTK or WinUI head of its own machine too, followed until it ends. The VS Code
   extension offers GTK and WinUI on a Mac, the guest chosen in the status bar (**StateUI: Select Guest**): a launch
   and **StateUI: Package** work there - a Debug launch with no debugger, said - and **StateUI: Check Toolchain**
-  checks the guest chosen too.
+  checks the guest chosen too. In a checkout, `stateui repo test --suite host:gtk|winui --device <guest>` runs the
+  host's own suite in the guest, and **StateUI: Run Tests** there too; a test run (`tests/run`) takes a `filter`.
 - `stateui new --platforms appkit,web,winui` makes an application with those hosts' heads alone; an application's
   hosts are its heads, so one is taken away by removing its `Platforms/<Host>`.
 - The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running; an

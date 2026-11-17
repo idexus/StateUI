@@ -30,7 +30,8 @@ public struct TestSuiteDescription: Codable, Equatable, Sendable {
     public var packageUri: String
     /// The host it runs as: a host's suite's, or AppKit's for an application built as an AppKit head.
     public var host: HostFamily?
-    /// Whether it runs on a device - an Android device, a simulator for UIKit - named when it runs.
+    /// Whether it runs on a device - an Android device, a simulator for UIKit, a Mac's guest for GTK and WinUI - named
+    /// when it runs.
     public var onDevice: Bool
 
     /// Suite `id` of `packageUri`.
@@ -61,15 +62,18 @@ public struct TestRunRequest: Codable, Equatable, Sendable {
     /// The suite's id, as `tests/discover` gave it.
     public var suite: String
     public var host: HostFamily?
-    /// A suite on a device: its device, simulator or emulator.
+    /// A suite on a device: its device, simulator, emulator or guest.
     public var device: String?
     public var folderUri: String?
+    /// Only the tests whose names this matches, as `swift test --filter` takes it.
+    public var filter: String?
 
-    /// Suite `suite` of `folderUri` for `host`, on `device` where it runs on one.
-    public init(suite: String, host: HostFamily?, device: String? = nil, folderUri: String? = nil) {
+    /// Suite `suite` of `folderUri` for `host`, on `device` where it runs on one, `filter`ed where given.
+    public init(suite: String, host: HostFamily?, device: String? = nil, folderUri: String? = nil, filter: String? = nil) {
         self.suite = suite
         self.host = host
         self.device = device
         self.folderUri = folderUri
+        self.filter = filter
     }
 }

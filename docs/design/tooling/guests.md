@@ -72,6 +72,14 @@ folder into `stateui-guest/tool` - `rsync` on Linux, `robocopy` on Windows,
 its program laid in `stateui-guest/bin` (on Windows with the libraries beside
 it). The Mac's tool works with the guest's at the same API version.
 
+A guest's stateui is laid again by the next work that needs it wherever it
+does not answer, answers as another release, lacks a method the work asks, or
+was laid from other sources than the checkout's `tools/StateUI.CLI` now
+holds: the Mac remembers, guest by guest (`guests/<id>.tool` in the tool's
+state folder), a fingerprint of every file's path and bytes there but what a
+build makes. A tool of the same release built before a change would read a
+field it does not know as nothing.
+
 ## The doctor of a guest
 
 `stateui doctor --host gtk --device <guest>` (`toolchain/check` given a
@@ -108,8 +116,8 @@ neither copied nor removed, and a link is not followed.
 its device - on the command line or chosen in `stateui settings` - are the
 guest's own stateui's work (`GuestWork`): the guest started (`prlctl start`)
 or resumed (`prlctl resume`) where it does not run, its user's desktop
-session waited for; its stateui laid again where it does not answer, answers
-as another release, or lacks a method the work needs; the project and its
+session waited for; its stateui laid again where it is not this checkout's
+([Laying the guest's tool](#laying-the-guests-tool)); the project and its
 checkout copied; then the request asked of it with the guest's path of the
 application. A build answers the guest's artifact, its device the guest. A
 package is laid in the Mac's output folder - the request's, else the
@@ -120,4 +128,15 @@ cancelled on the Mac - Ctrl+C - the guest's operation is cancelled and its
 end waited for, up to twenty seconds, before the connection closes, so the
 application stops with it: a served tool torn down first would leave it
 running.
+
+## A host's suite in a guest
+
+On a Mac, the GTK and WinUI hosts' own suites run in a guest the same way:
+`stateui repo test --suite host:gtk` (`host:winui`) names its guest with
+`--device` - refused without one - and the host's suite `tests/discover`
+lists there runs on a device, the guest, as Android's runs on its phone. The
+guest is reached and the checkout copied as for a head; then the guest's
+stateui is asked for its own discovery of the host's suite in its copy, and
+to run it (`tests/run`, its `filter` carried), every phase as the guest says
+it. Its marks are held to the Mac's, never recorded there.
 

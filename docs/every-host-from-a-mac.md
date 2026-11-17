@@ -109,10 +109,22 @@ project's `artifacts`; **StateUI: Check Toolchain** checks the guest chosen
 too. The editor works as the host chosen, so the application's code under
 `#if GTK` or `#if WINUI` resolves on the Mac.
 
+## A host's suite in a guest
+
+In a StateUI checkout, the GTK and WinUI hosts' own suites run in a guest the
+same way - the checkout copied, the suite run by the guest's `stateui`, every
+verdict held to the marks recorded:
+
+```bash
+stateui repo test --suite host:gtk --device Ubuntu --filter GTKConformanceTests
+```
+
+**StateUI: Run Tests** in VS Code runs it in the guest chosen.
+
 ## What stays in the guest
 
 The debugger does not reach a guest: **StateUI: Debug** runs the debug build
-there without one, and says so. A host's own suites and its conformance marks
-run on its own system - in the guest, from a checkout of its own. How the
-tool reaches a guest, lays its `stateui` and copies a project:
+there without one, and says so. A host's conformance marks are recorded on
+its own system - in the guest, from a checkout of its own. How the tool
+reaches a guest, lays its `stateui` and copies a project:
 [Guests](design/tooling/guests.md).

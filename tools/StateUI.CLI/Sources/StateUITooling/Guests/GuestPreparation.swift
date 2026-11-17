@@ -6,10 +6,32 @@ import StateUIToolingProtocol
 
 /// Lays a guest's own stateui: the checkout's `tools/StateUI.CLI` copied from the folder the guest shares into
 /// `stateui-guest/tool`, built for release by the guest's Swift, and its program put in `stateui-guest/bin` - each
-/// step a program of the guest's system, never a script.
+/// step a program of the guest's system, never a script - the sources it was built from remembered on the Mac.
 /// Design: docs/design/tooling/guests.md#laying-the-guests-tool
 struct GuestPreparation: Sendable {
     let commands: GuestCommands
+    /// Where the Mac remembers, guest by guest, the sources each guest's stateui was last laid from.
+    var stamps: URL = BuildPermit.userFolder.appendingPathComponent("guests")
+
+    /// The sources of `checkout`'s tool, as one fingerprint: every file's path and bytes, but for what a build makes.
+    static func sources(of checkout: URL) -> String {
+        let tool = checkout.appendingPathComponent("tools/StateUI.CLI")
+        var hash: UInt64 = 0xcbf2_9ce4_8422_2325
+        func mix(_ bytes: some Sequence<UInt8>) {
+            for byte in bytes { hash = (hash ^ UInt64(byte)) &* 0x0000_0100_0000_01b3 }
+            hash = (hash ^ 0xff) &* 0x0000_0100_0000_01b3
+        }
+        for path in ((try? FolderMirror.every(under: tool)) ?? []).sorted() {
+            mix(path.utf8)
+            mix((try? Data(contentsOf: tool.appendingPathComponent(path))) ?? Data())
+        }
+        return String(hash, radix: 16)
+    }
+
+    /// The fingerprint of the sources the guest's stateui was last laid from, as the Mac remembers it.
+    func laidSources() -> String? {
+        try? String(contentsOf: stamps.appendingPathComponent("\(commands.guest.id).tool"), encoding: .utf8)
+    }
 
     /// Lays the stateui of `checkout` in the guest; the program's path there.
     func lay(checkout: URL, reporter: BuildReporter) async throws -> String {
@@ -54,6 +76,8 @@ struct GuestPreparation: Sendable {
         guard let status = laid.status, windows ? status < 8 : status == 0 else {
             throw ToolingError(.toolFailed, "The tool was not laid in \(guest.name):\n\(Self.last(laid.output))")
         }
+        try? FileManager.default.createDirectory(at: stamps, withIntermediateDirectories: true)
+        try? Self.sources(of: checkout).write(to: stamps.appendingPathComponent("\(guest.id).tool"), atomically: true, encoding: .utf8)
         return places.tool
     }
 

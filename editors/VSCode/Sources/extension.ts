@@ -446,7 +446,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
 
     // The suites in the Testing view, found and run by the tool as the chosen host.
     const testSuites = new TestSuites({
-        tool, host, device: (forHost) => forHost === "uikit" ? uiKitSimulator() : androidDevice(),
+        tool, host, device: (forHost) => forHost === "uikit" ? uiKitSimulator() : inGuest(forHost) ? guest(forHost) : androidDevice(),
     });
     context.subscriptions.push(testSuites);
 

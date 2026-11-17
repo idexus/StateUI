@@ -47,6 +47,35 @@ final class GuestWorkTests: XCTestCase {
         }
     }
 
+    /// A guest's stateui is laid again whenever the tool's sources differ from those it was laid from: the fingerprint
+    /// follows every file's bytes and path, and not what a build makes.
+    func testTheToolsSourcesAreFingerprinted() throws {
+        let checkout = FileManager.default.temporaryDirectory.appendingPathComponent("tool-\(UUID().uuidString)")
+        addTeardownBlock { try? FileManager.default.removeItem(at: checkout) }
+        let tool = checkout.appendingPathComponent("tools/StateUI.CLI")
+        func write(_ text: String, _ path: String) throws {
+            let file = tool.appendingPathComponent(path)
+            try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try text.write(to: file, atomically: true, encoding: .utf8)
+        }
+        try write("let a = 1", "Sources/A.swift")
+        let first = GuestPreparation.sources(of: checkout)
+        try write("made", ".build/release/stateui")
+        XCTAssertEqual(GuestPreparation.sources(of: checkout), first, "a build's own files")
+        try write("let a = 2", "Sources/A.swift")
+        let edited = GuestPreparation.sources(of: checkout)
+        XCTAssertNotEqual(edited, first)
+        try FileManager.default.moveItem(at: tool.appendingPathComponent("Sources/A.swift"), to: tool.appendingPathComponent("Sources/B.swift"))
+        XCTAssertNotEqual(GuestPreparation.sources(of: checkout), edited, "a file renamed")
+
+        let stamps = checkout.appendingPathComponent("stamps")
+        let preparation = GuestPreparation(commands: GuestCommands(prlctl: URL(fileURLWithPath: "/nowhere"), guest: guest("ubuntu")), stamps: stamps)
+        XCTAssertNil(preparation.laidSources())
+        try FileManager.default.createDirectory(at: stamps, withIntermediateDirectories: true)
+        try "abc".write(to: stamps.appendingPathComponent("id.tool"), atomically: true, encoding: .utf8)
+        XCTAssertEqual(preparation.laidSources(), "abc")
+    }
+
     /// What is copied is what git tracks and would track - an ignored file left out - and nothing where no git work
     /// tree stands.
     func testTheFilesCopiedAreWhatGitTracksAndWouldTrack() async throws {

@@ -22,7 +22,7 @@ struct RepoCommand: AsyncParsableCommand {
         @Option(help: "portable (the library, the host layer, the conformance runner, application testing, the Gallery, HelloWorld, the tool) or native (this machine's host suites): each run apart, in order.")
         var plan: RepositoryPlan.Kind?
 
-        @Option(help: "host:uikit's simulator, by name or UDID - the booted one, else an iPhone, when left out; host:android's device or emulator.")
+        @Option(help: "host:uikit's simulator, by name or UDID - the booted one, else an iPhone, when left out; host:android's device or emulator; host:gtk's or host:winui's guest, on a Mac.")
         var device: String?
 
         @Flag(help: "host:android: build the test APK alone, with its identity, and say its folder - to run elsewhere with --artifact.")

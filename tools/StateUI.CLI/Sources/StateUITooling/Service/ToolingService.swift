@@ -194,7 +194,8 @@ public struct ToolingService: Sendable {
         let project = try await describeProject(containing: folder)
         let root = try project.workspaceUri.map(FileURI.url) ?? FileURI.url(project.rootUri)
         let applications = try project.applications.map { try FileURI.url($0.packageUri) }
-        return TestSuiteList(host: host, suites: TestDiscovery.suites(in: root, host: host, applications: applications))
+        return TestSuiteList(
+            host: host, suites: TestDiscovery.suites(in: root, host: host, applications: applications, inGuest: GuestWork.inGuest(host)))
     }
 
     /// Runs suite `request.suite` of the folder holding `folder` - `tests/run`.
@@ -208,8 +209,12 @@ public struct ToolingService: Sendable {
         if suite.onDevice, request.device == nil {
             throw ToolingError(.invalidConfiguration, "\(suite.id) runs on a device: name it.")
         }
+        if suite.kind == .host, let host = suite.host, GuestWork.inGuest(host) {
+            let ran = try await testSuite("host:\(host.rawValue)", filter: request.filter, device: request.device, in: folder, reporter: reporter)
+            return SuiteResult(suite: suite.id, phases: ran.phases)
+        }
         return try await TestRunner(tools: ToolResolver()).run(
-            suite, device: request.device, checkout: Checkout.holding(folder)?.root, reporter: reporter)
+            suite, device: request.device, filter: request.filter, checkout: Checkout.holding(folder)?.root, reporter: reporter)
     }
 
     /// What an editor's language server indexes `host`'s code with - `index/describe`: its scratch folder, and the
@@ -295,8 +300,8 @@ public struct ToolingService: Sendable {
     }
 
     /// Runs suite `suite` - `host:<host>` - of the StateUI checkout holding `folder`, `filter`ed where given, a UIKit
-    /// or Android one on the device `device` names; an Android one built alone for `architecture`, or run from
-    /// `artifact`, what such a build made.
+    /// or Android one on the device `device` names, a GTK or WinUI one on a Mac in the guest it names; an Android one
+    /// built alone for `architecture`, or run from `artifact`, what such a build made.
     ///
     /// - Throws: ``ToolingError`` `PROJECT_NOT_FOUND` outside a checkout, `INVALID_CONFIGURATION` for a suite there is
     ///   none of.
@@ -309,6 +314,12 @@ public struct ToolingService: Sendable {
         }
         guard suite.hasPrefix("host:"), let host = HostFamily(rawValue: String(suite.dropFirst("host:".count))) else {
             throw ToolingError(.invalidConfiguration, "No suite \(suite): host:appkit, host:uikit, host:android, host:winui, host:gtk and host:web are.")
+        }
+        if GuestWork.inGuest(host) {
+            guard device != nil else {
+                throw ToolingError(.invalidConfiguration, "\(suite) runs in a guest of this Mac: name it with --device (`stateui devices --host \(host.rawValue)`).")
+            }
+            return try await GuestWork(guests: ParallelsGuests()).test(host, filter: filter, device: device, checkout: checkout, reporter: reporter)
         }
         return try await HostSuite(checkout: checkout).run(
             host, filter: filter, device: device, buildOnly: buildOnly, architecture: architecture, artifact: artifact, reporter: reporter)

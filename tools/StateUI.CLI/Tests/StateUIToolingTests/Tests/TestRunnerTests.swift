@@ -9,7 +9,7 @@ import XCTest
 
 /// A package's suite run with a stand-in for SwiftPM that writes what it was asked.
 final class TestRunnerTests: XCTestCase {
-    private func run(_ suite: TestSuiteDescription, says: String) async throws -> (passed: Bool, asked: String) {
+    private func run(_ suite: TestSuiteDescription, says: String, filter: String? = nil) async throws -> (passed: Bool, asked: String) {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("runner-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: root) }
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
@@ -19,7 +19,7 @@ final class TestRunnerTests: XCTestCase {
             .write(to: swift, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: swift.path)
         let ran = try await TestRunner(tools: ToolResolver(environment: ["SWIFT_BIN": swift.path]))
-            .run(suite, device: nil, checkout: nil, reporter: BuildReporter())
+            .run(suite, device: nil, filter: filter, checkout: nil, reporter: BuildReporter())
         return (ran.passed, try String(contentsOf: asked, encoding: .utf8))
     }
 
@@ -35,6 +35,13 @@ final class TestRunnerTests: XCTestCase {
         let plain = try await run(TestSuiteDescription(
             id: "Notes", detail: "", kind: .package, packageUri: FileURI.string(package)), says: "Executed 1 test")
         XCTAssertEqual(plain.asked, "test --package-path /Projects/Notes\n")
+    }
+
+    /// A run `filter`ed runs only the tests the filter matches.
+    func testAFilteredRunAsksForItsTestsAlone() async throws {
+        let filtered = try await run(TestSuiteDescription(
+            id: "Notes", detail: "", kind: .package, packageUri: "file:///Projects/Notes"), says: "Executed 1 test", filter: "NotesTests")
+        XCTAssertEqual(filtered.asked, "test --package-path /Projects/Notes --filter NotesTests\n")
     }
 
     /// A run that ran no test proves nothing, and fails.
