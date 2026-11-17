@@ -107,7 +107,8 @@ and what stands inside it waits until it runs.
 ## The copy in the guest
 
 The application's project and the checkout it builds with are copied into
-the guest before the guest builds, each under `stateui-guest` at its place
+the guest before the guest builds, each under the Mac's own folder there,
+`stateui-guest/<identity>` ([A machine's identity](service.md#a-machines-identity)), at its place
 from the folder they share on the Mac - a project beside its checkout stays
 beside it, so the manifests' paths between them hold; a project inside its
 checkout is copied with it. They travel through the connection to the
@@ -134,7 +135,7 @@ it answers as this release, else through `prlctl exec`. A build answers the gues
 package is laid in the Mac's output folder - the request's, else the
 project's `artifacts/<Name>/<Host>`, judged as a package's folder before the
 guest builds and again before it is filled: the guest lays it on its own
-disk, `stateui-guest/artifacts/<Name>/<Host>`, the Mac fetches it from there
+disk, `stateui-guest/<identity>/artifacts/<Name>/<Host>`, the Mac fetches it from there
 through the connection, and the answer names the Mac's paths. A run is the
 guest's
 `application/run`, its application's output told on the Mac as it comes;

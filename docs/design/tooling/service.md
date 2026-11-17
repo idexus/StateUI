@@ -152,7 +152,9 @@ another machine's work (`workFolder`, `stateui-guest` under its user's home)
 and its system; its stateui must be this release, answering every method the
 work asks, or the work is refused saying so - nothing is laid on a machine
 the tool reaches only through the network. Then alike: the project and its
-checkout copied there through the connection, the request asked with that
+checkout copied there through the connection into this machine's own folder
+of the work folder, `stateui-guest/<identity>`, which no other machine's work
+shares - its packages laid there too, `artifacts/<Name>/<Host>` - the request asked with that
 machine's path of the application, a package fetched home, a run's output
 told as it comes and cancelled with it, the result naming that machine as
 its destination (`remote` or `guest`). A host this machine builds none of is
@@ -164,6 +166,17 @@ that machine has (`RemoteDoctor`): whether its service answers and admits
 this machine - else how to start it or pair again - its stateui's release,
 then the findings its own `toolchain/check` gives, each of that machine; a
 guest paired is checked as a guest.
+
+## A machine's identity
+
+The tool knows itself on a machine, for its user, by one identity
+(`MachineIdentity`): 32 random bytes from the system's secure source, made
+the first time one is asked for and kept in the user's state folder
+(`identity.json`, a tool file of its version) - written so that two processes
+asking at once make one. A name or an address changes; the identity does not.
+Its first twelve hexadecimal digits name this machine's own folder in another
+machine's work folder, so two machines working a project of one name there
+never write over each other's copy or package.
 
 ## A service probed
 

@@ -25,6 +25,25 @@ final class RemoteWorkTests: XCTestCase {
         XCTAssertEqual(WorkPlaces(home: windows.home, windows: true), windows)
     }
 
+    /// Each machine's work stands in a folder of its own on another - named by its identity, made once and kept - so
+    /// two machines working one project there never share a copy or a package.
+    func testEachMachinesWorkStandsApart() throws {
+        let state = FileManager.default.temporaryDirectory.appendingPathComponent("identity-\(UUID().uuidString)")
+        addTeardownBlock { try? FileManager.default.removeItem(at: state) }
+        let made = try MachineIdentity.current(in: state)
+        XCTAssertEqual(made.id.count, 64)
+        XCTAssertEqual(try MachineIdentity.current(in: state), made, "kept")
+        XCTAssertNotEqual(try MachineIdentity.current(in: state.appendingPathComponent("other")), made)
+        XCTAssertEqual(made.short, String(made.id.prefix(12)))
+
+        let (linux, windows) = (WorkPlaces(home: "/home/me", windows: false), WorkPlaces(home: #"C:\Users\me"#, windows: true))
+        XCTAssertEqual(linux.of(made.short).root, "/home/me/stateui-guest/" + made.short)
+        XCTAssertEqual(RemoteWork.packagePlace(of: "Demo", host: .winui, in: windows.of("a1b2c3")), #"C:\Users\me\stateui-guest\a1b2c3\artifacts\Demo\WinUI"#)
+
+        try #"{"schemaVersion": 1, "id": "short"}"#.write(to: state.appendingPathComponent("identity.json"), atomically: true, encoding: .utf8)
+        XCTAssertThrowsError(try MachineIdentity.current(in: state))
+    }
+
     /// A project and its checkout keep their places beside each other in the guest: each copied under the folder they
     /// share, so the manifests' paths between them hold; a project inside its checkout is copied with it.
     func testAProjectAndItsCheckoutKeepTheirPlaces() {
@@ -94,7 +113,7 @@ final class RemoteWorkTests: XCTestCase {
         XCTAssertEqual(reached.name, "office")
         XCTAssertEqual(reached.destination.kind, .remote)
         XCTAssertEqual(reached.destination.version, Machine.current.system)
-        XCTAssertEqual(reached.places.root, HostPlaces.workFolder)
+        XCTAssertEqual(reached.places.root, HostPlaces.workFolder + "/" + (try RemoteWork.client()), "this machine's own folder there")
         let opening = try await reached.served.opening()
         XCTAssertEqual(opening.server.version, Release.version)
 

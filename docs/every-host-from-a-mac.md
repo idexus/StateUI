@@ -68,8 +68,9 @@ stateui new Notes --directory apps
 
 Nothing of it is made in the guest. Its project and checkout stay where they
 are on the Mac, and each build in a guest copies them there first: the files
-git tracks and would track, so an ignored file never reaches the guest, under
-`stateui-guest` beside each other as they stand on the Mac.
+git tracks and would track, so an ignored file never reaches the guest, in
+the Mac's own folder under `stateui-guest`, beside each other as they stand on
+the Mac.
 
 ## Running and packaging in a guest
 

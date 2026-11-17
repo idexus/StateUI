@@ -10,8 +10,8 @@ import StateUIToolingProtocol
 /// its checkout copied there, and the request asked of it.
 /// Design: docs/design/tooling/service.md#work-on-another-machine
 public struct RemoteWork: Sendable {
-    /// A machine reached: its name, the destination it is told as, where the tool lays its copies there, and its
-    /// stateui answering this tool's work.
+    /// A machine reached: its name, the destination it is told as, where the tool lays this machine's copies there -
+    /// a folder of this machine's own - and its stateui answering this tool's work.
     struct Reached: Sendable {
         let name: String
         let destination: Destination
@@ -97,7 +97,8 @@ public struct RemoteWork: Sendable {
         return laid
     }
 
-    /// Where a machine lays a package of `application` for `host` on its own disk: `stateui-guest/artifacts/<Name>/<Host>`.
+    /// Where a machine lays a package of `application` for `host` on its own disk, among this machine's `places` there:
+    /// `stateui-guest/<client>/artifacts/<Name>/<Host>`.
     static func packagePlace(of application: String, host: HostFamily, in places: WorkPlaces) -> String {
         places.join(places.root, "artifacts", application, host.folder)
     }
@@ -180,7 +181,9 @@ public struct RemoteWork: Sendable {
                     if await Self.speaks(network) { (served, road) = (network, "its service at \(paired.address):\(paired.port)") }
                 }
                 reporter.progress("working in \(guest.name) through \(road)")
-                return Reached(name: guest.name, destination: ParallelsGuests.destination(of: guest), places: readied.places, served: served)
+                return Reached(
+                    name: guest.name, destination: ParallelsGuests.destination(of: guest), places: readied.places.of(try Self.client()),
+                    served: served)
             }
         }
         guard let paired else {
@@ -239,7 +242,12 @@ public struct RemoteWork: Sendable {
         }
         var destination = HostPlaces.remote(remote)
         (destination.version, destination.architecture) = (info.machine.system, Architecture(rawValue: info.machine.architecture))
-        return Reached(name: remote.name, destination: destination, places: places, served: served)
+        return Reached(name: remote.name, destination: destination, places: places.of(try Self.client()), served: served)
+    }
+
+    /// The name this machine's work goes by on another: its identity's short form.
+    static func client() throws(ToolingError) -> String {
+        try MachineIdentity.current().short
     }
 
     /// Sends each of `roots` to the machine under `stateui-guest`, at its place from the folder they share, through the

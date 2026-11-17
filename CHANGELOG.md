@@ -131,7 +131,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   (`workFolder`), and `devices/list` lists the machine (`remote`).
 - `stateui build`, `run`, `package` and `repo test --suite host:<host>` with a machine paired as the device are that
   machine's work, through its service: the project and its checkout copied there, the request asked of its own
-  `stateui` - which is to be this release - a package fetched home, a run's output told as it comes; a guest paired is
+  `stateui` - which is to be this release - a package fetched home, a run's output told as it comes; each machine's
+  copies and packages stand in a folder of its own there, `stateui-guest/<identity>`, named by the identity the tool
+  makes once in its state folder (`identity.json`); a guest paired is
   reached through its service too, else through `prlctl exec`. `stateui doctor --device <machine>` says whether its
   service answers and admits this machine, its release, and what it has of what the host needs. The VS Code
   extension's **StateUI: Select Machine** offers a host's guests and machines paired, and a launch on one runs there.

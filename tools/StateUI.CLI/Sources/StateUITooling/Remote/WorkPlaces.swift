@@ -3,11 +3,10 @@
 
 import Foundation
 
-/// Where a machine keeps another machine's work: `stateui-guest` under its user's home - the copies of the other
-/// machine's folders, the packages laid for it, and in a guest of a Mac the guest's own stateui in `bin`.
+/// Where a machine keeps other machines' work, `root`: `stateui-guest` under its user's home - each one's copies and
+/// packages in its own folder, and in a guest of a Mac the guest's own stateui in `bin`.
 /// Design: docs/design/tooling/guests.md#reaching-a-guest
 struct WorkPlaces: Sendable, Equatable {
-    /// The folder holding everything another machine's work lays here.
     let root: String
     let windows: Bool
 
@@ -27,10 +26,14 @@ struct WorkPlaces: Sendable, Equatable {
         return root.split(separator: separator, omittingEmptySubsequences: false).dropLast().joined(separator: String(separator))
     }
 
+    /// The places of the work of the machine `client` names - its identity's short form: its own folder under `root`.
+    func of(_ client: String) -> WorkPlaces {
+        WorkPlaces(root: join(root, client), windows: windows)
+    }
+
     /// A guest's own stateui, laid by the Mac.
     var tool: String { join(root, "bin", windows ? "stateui.exe" : "stateui") }
 
-    /// `parts` joined as the machine's system joins a path.
     func join(_ parts: String...) -> String {
         join(parts)
     }
