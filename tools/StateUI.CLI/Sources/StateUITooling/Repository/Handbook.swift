@@ -14,7 +14,7 @@ struct Handbook {
 
     /// The dictionary and the platform contract held to the marks, or rendered from them where `update`.
     func documents(update: Bool, reporter: BuildReporter) async throws -> SuiteResult.Phase {
-        let base = ProcessEnvironment.inherited.removing("STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY")
+        let base = ProcessEnvironment.inherited.removing("STATEUI_UPDATE_EXPORTS", "STATEUI_STALE_ONLY")
         let environment = update ? base.setting("STATEUI_UPDATE_DOCS", to: "1") : base.removing("STATEUI_UPDATE_DOCS")
         reporter.progress(update ? "rendering the control dictionary and the platform contract" : "holding the documents to the marks")
         let passed = try await TestRun.swift(
@@ -25,7 +25,7 @@ struct Handbook {
     /// The samples' listings and the handbook's held to the code they are cut from, every sample's review standing -
     /// or the listings and the review's fingerprints written where `update`, once the notes were read.
     func samples(update: Bool, reporter: BuildReporter) async throws -> SuiteResult.Phase {
-        let base = ProcessEnvironment.inherited.removing("STATEUI_HOST")
+        let base = ProcessEnvironment.inherited
         let environment = update ? base.setting("STATEUI_UPDATE_SAMPLES", to: "1") : base.removing("STATEUI_UPDATE_SAMPLES")
         reporter.progress(update ? "writing the samples' listings and their review" : "holding the samples' listings to their code")
         let tests = update ? "SampleListingsTests|SampleReviewTests" : "SampleListingsTests|SampleReviewTests|SampleCodeTests"

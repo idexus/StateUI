@@ -15,10 +15,14 @@ public struct IndexQuery: Codable, Equatable, Sendable {
     }
 }
 
-/// What a language server indexes a host's code with - SwiftPM's scratch folder, and the triple and SDK it compiles
-/// for where the host's heads run elsewhere - and why it falls back to this machine where that SDK is missing.
+/// What a language server indexes a host's code with - the host's trait, SwiftPM's scratch folder, and the triple and
+/// SDK it compiles for where the host's heads run elsewhere - and why it falls back to this machine where that SDK is
+/// missing.
 public struct IndexContext: Codable, Equatable, Sendable {
     public var host: HostFamily?
+    /// The trait an application's own package enables to be indexed as the host - a head's package enables its own;
+    /// nil for plain Swift.
+    public var trait: String?
     /// The scratch folder, from a package's folder: `.build/uikit/index-build`.
     public var scratchPath: String
     public var triple: String?
@@ -30,8 +34,12 @@ public struct IndexContext: Codable, Equatable, Sendable {
     public var fallback: String?
 
     /// The index of `host` in `scratchPath`, for `triple` against an SDK where given.
-    public init(host: HostFamily?, scratchPath: String, triple: String? = nil, sdk: String? = nil, swiftSDK: String? = nil, fallback: String? = nil) {
+    public init(
+        host: HostFamily?, trait: String? = nil, scratchPath: String, triple: String? = nil, sdk: String? = nil,
+        swiftSDK: String? = nil, fallback: String? = nil
+    ) {
         self.host = host
+        self.trait = trait
         self.scratchPath = scratchPath
         self.triple = triple
         self.sdk = sdk

@@ -3,10 +3,11 @@
 
 // The integration suite, run inside VS Code by Tests/run.ts.
 //
-// The editor's host is asked of the LANGUAGE SERVER, which cannot be faked: a
-// symbol of the AppKit head resolves only while SourceKit-LSP runs with
-// STATEUI_HOST=appkit, and a symbol under no condition resolves in either mode -
-// which is what tells "not this host" from "not ready yet".
+// The editor's host is asked of the LANGUAGE SERVER, which cannot be faked: the
+// application's code under `#if UIKIT` resolves only while SourceKit-LSP indexes
+// it with the trait UIKit, a head - a package of its own - resolves as its host,
+// and a symbol under no condition resolves in every mode - which is what tells
+// "not this host" from "not ready yet".
 
 import { execSync, spawn } from "child_process";
 import * as fs from "fs";
@@ -20,7 +21,7 @@ import { androidDeviceOf, deviceAmong } from "../Sources/devices";
 import { browserOf, isChromium } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
 import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
-import { availableHosts, describe, environment, Host, HostDescription, hosts } from "../Sources/hosts";
+import { availableHosts, describe, Host, HostDescription, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { editorCommandLine, hasExtensionSources } from "../Sources/reinstall";
 import { conformanceRequest, failedPhases } from "../Sources/conformance";
@@ -57,6 +58,20 @@ async function resolves(file: string, needle: string, after?: string): Promise<b
     return (found?.length ?? 0) > 0;
 }
 
+// The line the definition of `needle` in `file` - asked `offset` characters into it - stands on; none where none is found.
+async function definitionLine(file: string, needle: string, offset: number): Promise<number | undefined> {
+    const document = await vscode.workspace.openTextDocument(file);
+    await vscode.window.showTextDocument(document, { preview: false });
+    const at = document.getText().indexOf(needle);
+    if (at < 0) {
+        throw new Error(`${needle} is not in ${file}`);
+    }
+    const found = await vscode.commands.executeCommand<(vscode.Location | vscode.LocationLink)[]>(
+        "vscode.executeDefinitionProvider", document.uri, document.positionAt(at + offset));
+    const first = found?.[0];
+    return first === undefined ? undefined : "targetUri" in first ? first.targetRange.start.line : first.range.start.line;
+}
+
 // A probe that throws has not yet seen it: a request the language server's restart rejected is asked again.
 async function until(what: string, probe: () => Promise<boolean>, seconds: number): Promise<void> {
     const deadline = Date.now() + seconds * 1000;
@@ -87,14 +102,22 @@ export async function run(): Promise<void> {
         const root = vscode.workspace.workspaceFolders![0];
         const gallery = path.join(root.uri.fsPath, "apps", "Gallery");
         const plain = path.join(gallery, "Sources", "Samples", "BasicInput", "SliderSample.swift");
-        // A head's own view exists only while the editor works as that host: its target is declared for it alone. A
-        // member under an inactive `#if` resolves all the same - the server reads it through its type.
-        const appKitOnly = (): Promise<boolean> =>
+        // A head's own view resolves in its own package, the head's index written as the editor works as its host. The
+        // light theme's sidebar is declared under `#if APPKIT` and under its `#else`, and used past both: the use
+        // resolves to the one the trait compiled - a member under an inactive `#if` resolves all the same, through its
+        // type, so where a use lands tells the trait, never whether one resolves.
+        const appKitHead = (): Promise<boolean> =>
             resolves(path.join(gallery, "Platforms", "AppKit", "Host", "GalleryControls.swift"), "MetalCube3DView.register");
-        const uiKitOnly = (): Promise<boolean> =>
+        const uiKitHead = (): Promise<boolean> =>
             resolves(path.join(gallery, "Platforms", "UIKit", "Host", "GalleryControls.swift"), "MetalCube3DView.register");
+        const looks = path.join(gallery, "Sources", "Gallery", "Looks.swift");
+        const looksLines = fs.readFileSync(looks, "utf8").split("\n");
+        const appKitSidebar = looksLines.findIndex((line) => line.includes("let sidebar = SurfaceLook(material: .glass"));
+        const otherSidebar = looksLines.findIndex((line) => line.includes("let sidebar = SurfaceLook.platform"));
+        const sidebarIs = (line: number) => async (): Promise<boolean> =>
+            (await definitionLine(looks, "sidebar: sidebar, sidebarOverlay: .platform", "sidebar: ".length + 1)) === line;
         const head = path.join(gallery, "Platforms", "AppKit", "Host", "MetalCube3DView.swift");
-        const uiKitHead = path.join(gallery, "Platforms", "UIKit", "Host", "MetalCube3DView.swift");
+        const uiKitCube = path.join(gallery, "Platforms", "UIKit", "Host", "MetalCube3DView.swift");
 
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
@@ -133,27 +156,28 @@ export async function run(): Promise<void> {
 
         // 1-3 ask the language server as the hosts only macOS builds.
         if (process.platform === "darwin") {
-            // 1. Android: the plain symbol resolves, the AppKit one does not.
+            // 1. Android: the plain symbol resolves, and the application's code is compiled with its trait, not AppKit's.
             await api.selectHost("android");
             await until("android: a symbol under no condition resolves", () => resolves(plain, "Palette.accent"), 900);
-            await until("android: neither head's own view resolves", async () => !(await appKitOnly()) && !(await uiKitOnly()), 900);
+            await until("android: the light theme's sidebar is the one every host but AppKit declares", sidebarIs(otherSidebar), 900);
 
-            // 2. AppKit, with no reload: the head's own view and the head resolve.
+            // 2. AppKit, with no reload: the head's own view and the head resolve in the head's package.
             await api.selectHost("appkit");
-            await until("appkit: its head's own view resolves", appKitOnly, 900);
-            // A target the package did not have a moment ago: the server has to
-            // load it, so this is waited for rather than asked once.
+            await until("appkit: its head's own view resolves", appKitHead, 900);
             await until("appkit: Cube3DContract in Platforms/AppKit resolves", () => resolves(head, "Cube3DContract.self"), 900);
+            await until("appkit: the light theme's sidebar is AppKit's own", sidebarIs(appKitSidebar), 900);
 
-            // 2b. UIKit, compiled for the iOS simulator by its triple and SDK: its head resolves, the AppKit symbol not.
+            // 2b. UIKit, compiled for the iOS simulator by its triple and SDK: its head resolves, and the application's
+            //     code is compiled with its trait, not AppKit's.
             await api.selectHost("uikit");
-            await until("uikit: Cube3DContract in Platforms/UIKit resolves", () => resolves(uiKitHead, "Cube3DContract.self"), 900);
-            await until("uikit: its head's own view resolves, and AppKit's does not", async () => (await uiKitOnly()) && !(await appKitOnly()), 900);
+            await until("uikit: Cube3DContract in Platforms/UIKit resolves", () => resolves(uiKitCube, "Cube3DContract.self"), 900);
+            await until("uikit: its head's own view resolves", uiKitHead, 900);
+            await until("uikit: the light theme's sidebar is no longer AppKit's", sidebarIs(otherSidebar), 900);
 
             // 3. And back, still with no reload.
             await api.selectHost("android");
-            await until("android again: the heads' views stop resolving while the plain symbol does", async () =>
-                (await resolves(plain, "Palette.accent")) && !(await appKitOnly()) && !(await uiKitOnly()), 900);
+            await until("android again: the plain symbol resolves, and the sidebar is every other host's", async () =>
+                (await resolves(plain, "Palette.accent")) && (await sidebarIs(otherSidebar)()), 900);
         } else {
             say("skip the language server as AppKit and Android: only macOS builds those hosts");
         }
@@ -242,20 +266,25 @@ export async function run(): Promise<void> {
             && plainSuites.every((each) => each.kind === "package" && each.host === undefined && !each.onDevice)
             && !plainSuites.some((each) => each.id === "lib/StateUI/StateUI.AppKit" || each.id === "lib/StateUI/StateUI.Android/Tests"));
 
-        // 6. Android: the environment, the language server's file, the
-        //    devices, and the commands a launch and a suite run - captured,
-        //    not run.
-        check("each host's environment names it in one variable - STATEUI_HOST=android for Android - and no host clears it",
-            hosts.every((host) => JSON.stringify(environment(host.id)) === JSON.stringify({ STATEUI_HOST: host.id }))
-            && environment("android").STATEUI_HOST === "android"
-            && JSON.stringify(Object.entries(environment(undefined))) === JSON.stringify([["STATEUI_HOST", undefined]]));
+        // 6. Android: the language server's file, the devices, and the
+        //    commands a launch and a suite run - captured, not run.
+        {
+            const asAndroid = { host: "android" as const, trait: "Android", scratchPath: ".build/android/index-build" };
+            check("an application's own package is indexed with the host's trait and its condition, its head's package with "
+                + "neither, plain Swift with neither",
+                JSON.stringify(serverSettings(asAndroid).traits) === JSON.stringify(["Android"])
+                && JSON.stringify(serverSettings(asAndroid).swiftCompilerFlags) === JSON.stringify(["-DANDROID"])
+                && serverSettings(asAndroid, "head").traits === undefined
+                && serverSettings(asAndroid, "head").swiftCompilerFlags === undefined
+                && serverSettings({ scratchPath: ".build/index-build" }).traits === undefined);
+        }
         {
             const asWinUI = otherHostsExcluded("winui", { "**/mine": true, "**/lib/StateUI/StateUI.WinUI": true });
             const excluded = Object.keys(asWinUI).filter((pattern) => asWinUI[pattern]);
-            check("as WinUI the Swift extension loads no other host's package nor backend, and the user's own exclusions stay",
+            check("as WinUI the Swift extension loads no other host's package, backend nor head, and the user's own exclusions stay",
                 excluded.includes("**/lib/StateUI/StateUI.Android") && excluded.includes("**/lib/Backends/*.GTK")
-                && !excluded.some((pattern) => pattern.endsWith(".WinUI")) && asWinUI["**/mine"] === true
-                && Object.keys(otherHostsExcluded(undefined, {})).length === hosts.length * 2);
+                && excluded.includes("**/Platforms/GTK") && !excluded.some((pattern) => pattern.endsWith("WinUI"))
+                && asWinUI["**/mine"] === true && Object.keys(otherHostsExcluded(undefined, {})).length === hosts.length * 3);
             check("every host's own package stands where its exclusion names it",
                 hosts.every((host) => fs.existsSync(path.join(root.uri.fsPath, "lib", "StateUI", `StateUI.${host.label}`, "Package.swift"))));
         }
@@ -263,16 +292,24 @@ export async function run(): Promise<void> {
             // The index's settings are the tool's context (`index/describe`), the server's file keeping the rest.
             const sdk = "swift-6.4.2-RELEASE_android";
             const android = serverConfig(
-                { swiftPM: { scratchPath: ".build/appkit/index-build", configuration: "debug" }, index: { indexStorePath: "x" } },
-                serverSettings({ host: "android", scratchPath: ".build/android/index-build", swiftSDK: sdk, triple: "aarch64-unknown-linux-android28" }));
-            const back = serverConfig(android, serverSettings({ host: "appkit", scratchPath: ".build/appkit/index-build" }));
-            check("as Android the language server indexes where the tool says, with the Swift SDK and the triple, by building",
+                { swiftPM: { scratchPath: ".build/appkit/index-build", configuration: "debug", swiftCompilerFlags: ["-DAPPKIT", "-DMINE"] },
+                    index: { indexStorePath: "x" } },
+                serverSettings({ host: "android", trait: "Android", scratchPath: ".build/android/index-build", swiftSDK: sdk,
+                    triple: "aarch64-unknown-linux-android28" }));
+            const back = serverConfig(android, serverSettings({ host: "appkit", trait: "AppKit", scratchPath: ".build/appkit/index-build" }));
+            const plainConfig = serverConfig(back, serverSettings({ scratchPath: ".build/index-build" }));
+            check("as Android the language server indexes where the tool says, with the trait, its condition, the Swift SDK and "
+                + "the triple, by building - the user's own flag kept",
                 android.swiftPM?.scratchPath === ".build/android/index-build" && android.swiftPM?.swiftSDK === sdk
+                && JSON.stringify(android.swiftPM?.swiftCompilerFlags) === JSON.stringify(["-DMINE", "-DANDROID"])
+                && JSON.stringify(android.swiftPM?.traits) === JSON.stringify(["Android"])
                 && android.swiftPM?.triple === "aarch64-unknown-linux-android28" && android.backgroundPreparationMode === "build");
-            check("the rest of the file is kept, and back on AppKit the SDK and the triple are gone",
+            check("the rest of the file is kept, back on AppKit the SDK and the triple are gone, and as plain Swift the trait",
                 android.swiftPM?.configuration === "debug" && JSON.stringify(android.index) === JSON.stringify({ indexStorePath: "x" })
                 && back.swiftPM?.scratchPath === ".build/appkit/index-build" && back.swiftPM?.configuration === "debug"
-                && !("swiftSDK" in back.swiftPM!) && !("triple" in back.swiftPM!));
+                && !("swiftSDK" in back.swiftPM!) && !("triple" in back.swiftPM!)
+                && JSON.stringify(back.swiftPM?.traits) === JSON.stringify(["AppKit"]) && !("traits" in plainConfig.swiftPM!)
+                && JSON.stringify(plainConfig.swiftPM?.swiftCompilerFlags) === JSON.stringify(["-DMINE"]));
             // What the tool answers here, for each host this machine runs and for plain Swift.
             const asked = await ToolingClient.start({
                 executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
@@ -703,11 +740,11 @@ export async function run(): Promise<void> {
             const manifest = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8"));
             const setting = manifest.contributes.configuration.properties;
             check("the palette has New Project Group; New Application shows where a folder is a workspace; "
-                + "stateui.checkout and stateui.cliPath are this machine's, stateui.minimumRelease 0.5.0",
+                + "stateui.checkout and stateui.cliPath are this machine's, stateui.minimumRelease 0.8.6",
                 commands.includes("stateui.newProjectGroup")
                 && manifest.contributes.commands.some((each: { command: string; enablement?: string }) =>
                     each.command === "stateui.newApplicationInApps" && each.enablement === "stateui.hasWorkspace")
-                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.5.0"
+                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.8.6"
                 && setting["stateui.cliPath"].scope === "machine");
             const helloWorld = api.applications().find((each) => each.name === "HelloWorld");
             check("the tool finds this checkout's applications, each building with the checkout its Package.swift names: this one",
@@ -731,11 +768,11 @@ export async function run(): Promise<void> {
                 const appKit = process.platform === "darwin";
                 const name = path.basename(application);
                 try {
-                    // As an AppKit build on macOS, as plain Swift elsewhere.
-                    const env = Object.fromEntries(Object.entries({ ...process.env, ...environment(appKit ? "appkit" : undefined) })
-                        .filter((entry): entry is [string, string] => entry[1] !== undefined));
-                    execSync(`swift build --package-path "${application}"${appKit ? ` --scratch-path "${path.join(application, ".build", "appkit")}" --product ${name}AppKit` : ""}`,
-                        { env, stdio: "pipe" });
+                    // Its AppKit head's package on macOS, the application as plain Swift elsewhere.
+                    const head = path.join(application, "Platforms", "AppKit");
+                    execSync(appKit
+                        ? `swift build --package-path "${head}" --scratch-path "${path.join(application, ".build", "appkit")}" --product ${name}AppKit`
+                        : `swift build --package-path "${application}"`, { stdio: "pipe" });
                     return true;
                 } catch (error) {
                     say(`     ${String((error as { stdout?: Buffer }).stdout ?? error).split("\n").slice(-8).join("\n     ")}`);
@@ -832,7 +869,7 @@ export async function run(): Promise<void> {
             // The releases as the command lists them: by the stateui tool on the search path.
             const every = await tool.request("releases/list", { minimum: "0.0.0", repository: "https://github.com/idexus/StateUI.git" });
             const offered = await tool.request("releases/list", { minimum, repository: "https://github.com/idexus/StateUI.git" });
-            check(`GitHub lists its releases, and none older than ${minimum} is offered - 0.4.0 builds differently`,
+            check(`GitHub lists its releases, and none older than ${minimum} is offered - those build differently`,
                 every.releases.includes("0.4.0") && !offered.releases.includes("0.4.0")
                 && offered.releases.every((each) => every.releases.includes(each)));
             const newest = offered.releases[0];

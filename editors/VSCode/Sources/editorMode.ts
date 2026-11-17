@@ -3,14 +3,12 @@
 
 // What makes the EDITOR work as one host.
 //
-// Every extension runs in one extension-host process, and the Swift extension
-// starts SourceKit-LSP with that process's environment beneath the
-// `swift.swiftEnvironmentVariables` setting. So the host's variable is set
-// here, on this process, and the language server is restarted: the variable is
-// written to no settings file, and the manifest - whose cache keys on the
-// environment - declares the host's head and defines its condition. StateUI
-// does not wait for the Swift extension to activate: it sets the variable as it
-// activates itself, before that extension starts the server.
+// A host is a trait. The language server reads each package's own file,
+// .sourcekit-lsp/config.json, so the editor writes there: beside every
+// application's Package.swift the host's trait (`swiftPM.traits`), which
+// defines the host's condition in the application's code, and beside the
+// host's head - a package of its own, Platforms/<Host>, which enables the trait
+// itself - that head's index. Then the language server is restarted.
 //
 // EACH HOST INDEXES IN A DIRECTORY OF ITS OWN. The server prepares modules for
 // its index with a build, and one directory shared by two hosts is two
@@ -28,6 +26,14 @@
 // exit 1, where a plain build of the target succeeds in 8 s. Without the module,
 // nothing in Platforms/AppKit that imports the application resolves. So the
 // same file says `backgroundPreparationMode: build`.
+//
+// AND THE HOST'S CONDITION IS GIVEN AS A FLAG TOO. SourceKit-LSP 6.4.2's
+// build system enables no trait the file names - measured, Looks.swift was
+// compiled without `-DAPPKIT` under `traits: ["AppKit"]` - and its Swift Build
+// one leaves a build server running in the index's folder, which no restart
+// stops. In an application's own package a trait defines its condition and
+// nothing else, so `swiftCompilerFlags: ["-DAPPKIT"]` beside it is the same
+// build, until the server enables the trait itself.
 //
 // AND A RESTART WAITS FOR THE BUILDS ALREADY RUNNING THERE. A server that is
 // stopped does not stop the build it started, so a quick switch there and back
@@ -55,7 +61,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { pathOf } from "./applications";
-import { describe, environment, Host, HostDescription, hostVariable, hosts } from "./hosts";
+import { describe, Host, HostDescription, hosts } from "./hosts";
 import { IndexCleaning, IndexConflict, IndexContext, IndexLease } from "./Tooling/protocol";
 
 /** What the stateui tool says `host`'s code is indexed with - nothing where it could not say, which it said. */
@@ -74,10 +80,10 @@ export class IndexConflictError extends Error {
 let queue: Promise<unknown> = Promise.resolve();
 
 /**
- * Makes the editor work as `host` for the packages in `roots` - as plain Swift
- * with no host: this process's environment, each package's index directory,
- * and - where either changed - a restart of the language server once nothing
- * is building where it will build.
+ * Makes the editor work as `host` for the applications in `roots` - as plain
+ * Swift with no host: each application's trait and index directory, its head's
+ * index, and - where any changed - a restart of the language server once
+ * nothing is building where it will build.
  *
  * Calls are queued, so a second switch waits for the first to finish.
  *
@@ -97,26 +103,31 @@ async function apply(host: Host | undefined, roots: readonly string[], describeI
     if (conflict) {
         throw new IndexConflictError(conflict);
     }
-    let changed = setHostEnvironment(host);
     const context = roots.length > 0 ? await describeIndex(host) : undefined;
     if (!context) {
         await excludeOtherHosts(host);
-        return changed;
+        return false;
     }
     if (context.fallback && host) {
         void vscode.window.showWarningMessage(
             `StateUI: ${context.fallback}, so the editor compiles the code for this machine rather than for ${describe(host).label}.`);
     }
-    const settings = serverSettings(context);
+    const trait = context.trait;
+    const heads = trait === undefined ? [] : roots.map((root) => path.join(root, "Platforms", trait))
+        .filter((head) => fs.existsSync(path.join(head, "Package.swift")));
 
+    let changed = false;
     for (const root of roots) {
-        changed = writeServerConfig(root, settings) || changed;
+        changed = writeServerConfig(root, serverSettings(context)) || changed;
+    }
+    for (const head of heads) {
+        changed = writeServerConfig(head, serverSettings(context, "head")) || changed;
     }
     await excludeOtherHosts(host);
 
     if (changed) {
         // A Swift extension still activating starts its server after this; the restart then waits for it, unawaited.
-        const restart = settle(roots.map((root) => path.join(root, settings.scratchPath))).then(() => restartServer());
+        const restart = settle([...roots, ...heads].map((folder) => path.join(folder, context.scratchPath))).then(() => restartServer());
         if (vscode.extensions.getExtension(swiftExtension)?.isActive) {
             await restart;
         } else {
@@ -127,39 +138,18 @@ async function apply(host: Host | undefined, roots: readonly string[], describeI
     return changed;
 }
 
-/** The Swift extension, which starts the language server with this process's environment. */
+/** The Swift extension, which starts the language server. */
 const swiftExtension = "swiftlang.swift-vscode";
 
 /**
- * Sets this process's environment for `host` at once: called before the Swift extension starts its server, it starts
- * the server as that host with no restart.
- *
- * @returns whether anything changed.
- */
-export function setHostEnvironment(host: Host | undefined): boolean {
-    let changed = false;
-    for (const [variable, value] of Object.entries(environment(host))) {
-        if (process.env[variable] === value) {
-            continue;
-        }
-        if (value === undefined) {
-            delete process.env[variable];
-        } else {
-            process.env[variable] = value;
-        }
-        changed = true;
-    }
-    return changed;
-}
-
-/**
  * `exclusions` - `swift.excludePathsFromActivation` - excluding the packages of every host but `host`, and of every
- * host with none: each host's own `lib/StateUI/StateUI.<Host>` (with the packages inside it) and its backends
- * `lib/Backends/<Element>.<Host>`. Anything else it says is kept.
+ * host with none: each host's own `lib/StateUI/StateUI.<Host>` (with the packages inside it), its backends
+ * `lib/Backends/<Element>.<Host>` and every application's head for it, `Platforms/<Host>`. Anything else it says is
+ * kept.
  */
 export function otherHostsExcluded(host: Host | undefined, exclusions: Readonly<Record<string, boolean>>): Record<string, boolean> {
     const patterns = (each: HostDescription): string[] =>
-        [`**/lib/StateUI/StateUI.${each.label}`, `**/lib/Backends/*.${each.label}`];
+        [`**/lib/StateUI/StateUI.${each.label}`, `**/lib/Backends/*.${each.label}`, `**/Platforms/${each.label}`];
     const owned = new Set(hosts.flatMap(patterns));
     const kept = Object.entries(exclusions).filter(([pattern]) => !owned.has(pattern));
     const excluded = hosts.filter((each) => each.id !== host).flatMap(patterns).map((pattern) => [pattern, true] as const);
@@ -255,19 +245,10 @@ export async function restartServer(
     }
 }
 
-/**
- * The host variable, where a settings file sets it. The setting is laid over
- * this process's environment, so the variable found there decides the editor's
- * mode whatever host is chosen.
- */
-export function variablesInSettings(): string[] {
-    const settings = vscode.workspace.getConfiguration("swift").get<Record<string, string>>("swiftEnvironmentVariables") ?? {};
-
-    return Object.keys(settings).filter((variable) => variable === hostVariable);
-}
-
 /** What the language server is told about one host, under `swiftPM`. */
 export interface ServerSettings {
+    readonly traits?: readonly string[];
+    readonly swiftCompilerFlags?: readonly string[];
     readonly scratchPath: string;
     readonly swiftSDK?: string;
     readonly sdk?: string;
@@ -281,20 +262,39 @@ export interface ServerConfig {
     [key: string]: unknown;
 }
 
-/** What the language server is told for an index `context`: its scratch folder, and its SDK and triple where it has them. */
-export function serverSettings(context: IndexContext): ServerSettings {
+/**
+ * What the language server is told for an index `context` in a package of `kind`: its scratch folder, its SDK and
+ * triple where it has them, and in an application's own package the host's trait and the condition it defines - a
+ * head's package enables its own.
+ */
+export function serverSettings(context: IndexContext, kind: "application" | "head" = "application"): ServerSettings {
+    const trait = kind === "application" ? context.trait : undefined;
     return Object.fromEntries(Object.entries({
+        traits: trait !== undefined ? [trait] : undefined,
+        swiftCompilerFlags: trait !== undefined ? [`-D${trait.toUpperCase()}`] : undefined,
         scratchPath: context.scratchPath, swiftSDK: context.swiftSDK, sdk: context.sdk, triple: context.triple,
     }).filter((entry) => entry[1] !== undefined)) as unknown as ServerSettings;
 }
 
+/** The flags a host's trait stands for in an application: its condition, `-DAPPKIT`. */
+const hostConditions = new Set(hosts.map((each) => `-D${each.label.toUpperCase()}`));
+
 /**
- * `config` saying `settings` and preparing by building: an SDK and a triple
- * that `settings` leave out are removed, anything else the file says is kept.
+ * `config` saying `settings` and preparing by building: traits, an SDK, a
+ * triple and a host's condition that `settings` leave out are removed, anything
+ * else the file says - flags of the user's own too - is kept.
  */
 export function serverConfig(config: ServerConfig, settings: ServerSettings): ServerConfig {
-    const kept = Object.entries(config.swiftPM ?? {}).filter(([key]) => !["swiftSDK", "sdk", "triple"].includes(key));
-    return { ...config, swiftPM: { ...Object.fromEntries(kept), ...settings }, backgroundPreparationMode: "build" };
+    const owned = ["traits", "swiftSDK", "sdk", "triple", "swiftCompilerFlags"];
+    const kept = Object.entries(config.swiftPM ?? {}).filter(([key]) => !owned.includes(key));
+    const own = ((config.swiftPM?.swiftCompilerFlags as string[] | undefined) ?? []).filter((flag) => !hostConditions.has(flag));
+    const flags = [...own, ...(settings.swiftCompilerFlags ?? [])];
+    const { swiftCompilerFlags: _, ...rest } = settings;
+    return {
+        ...config,
+        swiftPM: { ...Object.fromEntries(kept), ...rest, ...(flags.length > 0 ? { swiftCompilerFlags: flags } : {}) },
+        backgroundPreparationMode: "build",
+    };
 }
 
 /**

@@ -28,8 +28,8 @@ asks for one only when such a suite runs.
 
 `TestRunner` runs a package's tests with `swift test`, every `STATEUI_`
 switch that records something taken away; an application built as an AppKit
-head with `STATEUI_HOST=appkit` and its own scratch folder, `.build/appkit`,
-so its plain build stays. A host's suite runs as `stateui repo test --suite
+head with the trait `AppKit` and its own scratch folder, `.build/appkit`, so
+its plain build stays. A host's suite runs as `stateui repo test --suite
 host:<host>` does, in the checkout the folder belongs to. The result is the
 suite's phases, each passed or not, and the run's output its events.
 

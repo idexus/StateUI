@@ -36,8 +36,6 @@ fs.writeFileSync(settings, JSON.stringify({ "stateui.cliPath": program }));
 // The tool's state of its own - its index leases and build permit - so the suite switches hosts on this checkout's
 // packages while a window of the user's works on them: as before, it rewrites that window's index configuration.
 const env: NodeJS.ProcessEnv = { ...process.env, STATEUI_TEST_RESULTS: results, STATEUI_STATE: path.join(profile, "stateui") };
-// The suite starts from no host at all; an inherited one would decide the first answer.
-delete env.STATEUI_HOST;
 delete env.ELECTRON_RUN_AS_NODE;
 
 // Nor from anything chosen: the checkout's own choices - its workspace's and each application's `.stateui/`

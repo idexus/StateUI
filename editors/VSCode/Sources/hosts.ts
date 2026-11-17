@@ -45,14 +45,3 @@ export function describe(host: Host): HostDescription {
     return hosts.find((each) => each.id === host) ?? hosts[0];
 }
 
-/**
- * The variable a build names its host by - `STATEUI_HOST=appkit` - which an
- * application's manifest reads to declare that host's head and define its
- * condition. One variable holds one host, so no build is two hosts' at once.
- */
-export const hostVariable = "STATEUI_HOST";
-
-/** The environment that makes a process work as `host`: the variable naming it, and absent with no host. */
-export function environment(host: Host | undefined): Record<string, string | undefined> {
-    return { [hostVariable]: host };
-}

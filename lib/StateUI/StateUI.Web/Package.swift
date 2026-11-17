@@ -4,7 +4,7 @@ import PackageDescription
 // The Web host: Swift compiled to WebAssembly in the page, reading the typed patch and calling the DOM through the
 // JavaScript relay in JavaScript/, whose functions CStateUIWeb declares as the module's imports. A sibling package,
 // as every host is. WebAssembly links no library dynamically: the application, StateUI and this host are one
-// module. It builds with the Swift SDK for WebAssembly, under STATEUI_HOST=web.
+// module, so it takes StateUI's and the host layer's static products. It builds with the Swift SDK for WebAssembly.
 let package = Package(
     name: "StateUIWeb",
     products: [
@@ -19,8 +19,8 @@ let package = Package(
         .systemLibrary(name: "CStateUIWeb", path: "Sources/CStateUIWeb"),
         .target(
             name: "StateUIWeb",
-            dependencies: ["CStateUIWeb", .product(name: "StateUI", package: "StateUIRoot"),
-                .product(name: "StateUIHost", package: "StateUIHost")],
+            dependencies: ["CStateUIWeb", .product(name: "StateUIStatic", package: "StateUIRoot"),
+                .product(name: "StateUIHostStatic", package: "StateUIHost")],
             path: "Sources/StateUIWeb",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),

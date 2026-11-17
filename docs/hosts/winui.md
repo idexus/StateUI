@@ -112,10 +112,11 @@ The application's `stateui.json` - which the tool lays beside the program,
 and the host reads as it starts - gives its identifier, name, version and
 build, which `app.info` tells.
 
-`STATEUI_HOST=winui` is what makes a build a WinUI one: the application's
-manifest reads it, declares its `Platforms/WinUI` head, the executable it
-makes, and defines the `WINUI` compilation condition for every module of the
-application; `lib/StateUI.Head` brings the `StateUIWinUI` host to the head.
+The trait `WinUI` is what makes a build a WinUI one: the head's own package,
+`Platforms/WinUI`, makes the executable and enables the trait on the
+application, which defines the `WINUI` compilation condition for every module
+of the application, and on `lib/StateUI.Head`, which brings the `StateUIWinUI`
+host to the head.
 The executable links as a windowed application - `/SUBSYSTEM:WINDOWS` with `/ENTRY:mainCRTStartup` -
 so started by itself it opens no console; started from a terminal it writes
 there. Swift written for this host

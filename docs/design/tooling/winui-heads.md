@@ -27,7 +27,7 @@ writing it at once.
 
 ## The head
 
-`stateui build --host winui` builds the head with `STATEUI_HOST=winui` - the
+`stateui build --host winui` builds the head's package, `Platforms/WinUI` - the
 toolchain's own architecture as it is, the other with `--arch` - and
 publishes, from SwiftPM's folder, the program and every library and
 package's resources beside it, never what only a build reads (`WinUIHead`):

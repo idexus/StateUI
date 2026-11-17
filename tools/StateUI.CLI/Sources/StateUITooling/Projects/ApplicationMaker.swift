@@ -44,7 +44,9 @@ public struct ApplicationMaker: Sendable {
             .appendingPathComponent(".\(name).stateui-new-\(UUID().uuidString.lowercased())")
         do {
             try copy(checkout.root.appendingPathComponent("apps/HelloWorld"), to: staging, naming: name)
-            try nameCheckout(checkout.root, in: staging, standingAt: destination)
+            for (manifest, text) in try ApplicationManifest.naming(checkout.root, in: staging) {
+                try Data(text.utf8).write(to: manifest)
+            }
             try file.write(to: staging.appendingPathComponent(ApplicationFile.name))
             for host in HostFamily.allCases where platforms.map({ !$0.contains(host) }) ?? false {
                 try? files.removeItem(at: staging.appendingPathComponent("Platforms").appendingPathComponent(host.folder))
@@ -78,16 +80,6 @@ public struct ApplicationMaker: Sendable {
                 try (renamed ?? contents).write(to: target)
             }
         }
-    }
-
-    /// Names `checkout` in the manifest of the application in `folder`, which will stand at `destination`: every
-    /// `../..` - the checkout's root as HelloWorld says it - the path from there instead.
-    private func nameCheckout(_ checkout: URL, in folder: URL, standingAt destination: URL) throws {
-        let path = Self.relativePath(from: destination, to: checkout)
-        guard path != "../.." else { return }
-        let manifest = folder.appendingPathComponent("Package.swift")
-        let text = try String(contentsOf: manifest, encoding: .utf8)
-        try Data(text.replacingOccurrences(of: "../..", with: path).utf8).write(to: manifest)
     }
 
     /// The path from folder `from` to `to`, written with `/` as SwiftPM reads it everywhere.

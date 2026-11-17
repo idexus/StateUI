@@ -3,8 +3,15 @@ import PackageDescription
 
 // The host layer: the half of every StateUI runtime no toolkit decides, which every host - AppKit, UIKit, Android
 // Views, WinUI, GTK, Web - stands on. A dynamic library, as the core is, so a process holds one copy of its types;
-// in a Web build (STATEUI_HOST=web) a static one, as WebAssembly links one module.
-let linkage: Product.Library.LibraryType? = Context.environment["STATEUI_HOST"] == "web" ? nil : .dynamic
+// StateUIHostStatic for WebAssembly, which links one module, as StateUI's own two products are taken.
+
+// The platforms that link a library dynamically: every one but WebAssembly.
+let dynamicLinking: [Platform] = [.macOS, .macCatalyst, .iOS, .linux, .windows, .android]
+
+let stateUI: [Target.Dependency] = [
+    .product(name: "StateUI", package: "StateUIRoot", condition: .when(platforms: dynamicLinking)),
+    .product(name: "StateUIStatic", package: "StateUIRoot", condition: .when(platforms: [.wasi])),
+]
 
 let package = Package(
     name: "StateUIHost",
@@ -14,7 +21,8 @@ let package = Package(
         .macOS("26.4"),
     ],
     products: [
-        .library(name: "StateUIHost", type: linkage, targets: ["StateUIHost"]),
+        .library(name: "StateUIHost", type: .dynamic, targets: ["StateUIHost"]),
+        .library(name: "StateUIHostStatic", type: .static, targets: ["StateUIHost"]),
     ],
     dependencies: [
         .package(name: "StateUIRoot", path: "../../.."),
@@ -24,7 +32,7 @@ let package = Package(
         .systemLibrary(name: "CStateUIHost", path: "CStateUIHost"),
         .target(
             name: "StateUIHost",
-            dependencies: ["CStateUIHost", .product(name: "StateUI", package: "StateUIRoot")],
+            dependencies: ["CStateUIHost"] + stateUI,
             path: "Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),

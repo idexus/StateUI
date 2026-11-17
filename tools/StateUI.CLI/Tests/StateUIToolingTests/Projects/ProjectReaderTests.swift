@@ -61,10 +61,10 @@ final class ProjectReaderTests: XCTestCase {
     /// the project is that application, standing in its workspace.
     func testAWorkspaceIsTheApplicationsItsFileLists() async throws {
         let root = try package([
-            "a/One/Package.swift": "", "a/One/stateui.json": Self.mark, "a/One/Platforms/AppKit/main.swift": "",
+            "a/One/Package.swift": "", "a/One/stateui.json": Self.mark, "a/One/Platforms/AppKit/Package.swift": "",
             "b/c/Two/Package.swift": "", "b/c/Two/stateui.json": Self.mark,
-            "b/c/Two/Platforms/Android/build.gradle.kts": "",
-            "Unlisted/Package.swift": "", "Unlisted/stateui.json": Self.mark, "Unlisted/Platforms/GTK/main.swift": "",
+            "b/c/Two/Platforms/Android/Package.swift": "",
+            "Unlisted/Package.swift": "", "Unlisted/stateui.json": Self.mark, "Unlisted/Platforms/GTK/Package.swift": "",
         ])
         try WorkspaceFile(projects: ["b/c/Two", "a/One"])
             .write(to: root.appendingPathComponent("stateui-workspace.json"))
@@ -77,7 +77,7 @@ final class ProjectReaderTests: XCTestCase {
     /// A workspace file listing a folder that is no application, or saying what the tool does not read, is refused
     /// by what and where.
     func testAWorkspaceFileIsReadWhole() throws {
-        let root = try package(["notes/Package.swift": "", "notes/Platforms/AppKit/main.swift": ""])
+        let root = try package(["notes/Package.swift": "", "notes/Platforms/AppKit/Package.swift": ""])
         let file = root.appendingPathComponent("stateui-workspace.json")
         try WorkspaceFile(projects: ["notes"]).write(to: file)
         XCTAssertThrowsError(try Workspace.nearest(from: root)?.applications()) {
@@ -117,7 +117,7 @@ final class ProjectReaderTests: XCTestCase {
     /// the folder holding the file is one wherever its heads are.
     func testAnApplicationIsAFolderHoldingItsFile() throws {
         let root = try package([
-            "Heads/Package.swift": "", "Heads/Platforms/AppKit/main.swift": "",
+            "Heads/Package.swift": "", "Heads/Platforms/AppKit/Package.swift": "",
             "Marked/Package.swift": "", "Marked/stateui.json": Self.mark,
         ])
         XCTAssertNil(ProjectReader.application(holding: root.appendingPathComponent("Heads/Platforms")))
@@ -154,20 +154,11 @@ final class ProjectReaderTests: XCTestCase {
         XCTAssertEqual(try ApplicationFile.read(file), ApplicationFile(identifier: "pl.example.notes", version: "1.10.0", build: 7))
     }
 
-    /// A host this tool inherited reaches no description: SwiftPM reads the package without one.
-    func testAnInheritedHostChangesNoDescription() async throws {
-        TestEnvironment.set("STATEUI_HOST", "appkit")
-        defer { TestEnvironment.set("STATEUI_HOST", nil) }
-        let project = try await ProjectReader().describe(containing: Self.repository.appendingPathComponent("apps/HelloWorld"))
-
-        XCTAssertEqual(project.applications.first?.products, ["HelloWorldUI"])
-    }
-
-    /// The hosts a package has heads for: a `main.swift` in `Platforms/<Host>`, Android's Gradle build there.
+    /// The hosts a package has heads for: a package of its own in `Platforms/<Host>`.
     func testAPackagesHostsAreItsHeads() throws {
         let folder = try package([
-            "Package.swift": "", "Platforms/UIKit/main.swift": "", "Platforms/Android/build.gradle.kts": "",
-            "Platforms/GTK/notes.txt": "",
+            "Package.swift": "", "Platforms/UIKit/Package.swift": "", "Platforms/Android/Package.swift": "",
+            "Platforms/GTK/main.swift": "",
         ])
         XCTAssertEqual(ProjectReader.hosts(of: folder), [.uikit, .android])
     }
@@ -187,7 +178,7 @@ final class ProjectReaderTests: XCTestCase {
     func testAManifestSwiftPMCannotReadIsAToolFailure() async throws {
         let folder = try package([
             "Package.swift": "// swift-tools-version:6.4\nimport PackageDescription\nlet package = Package(nonsense)\n",
-            "Platforms/AppKit/main.swift": "", "stateui.json": Self.mark,
+            "Platforms/AppKit/Package.swift": "", "stateui.json": Self.mark,
         ])
         do {
             _ = try await ProjectReader().describe(containing: folder)
@@ -200,7 +191,7 @@ final class ProjectReaderTests: XCTestCase {
 
     /// Swift that cannot be found is a missing toolchain, saying how to name it.
     func testSwiftThatCannotBeFoundIsAMissingToolchain() async throws {
-        let folder = try package(["Package.swift": "", "Platforms/AppKit/main.swift": "", "stateui.json": Self.mark])
+        let folder = try package(["Package.swift": "", "Platforms/AppKit/Package.swift": "", "stateui.json": Self.mark])
         let reader = ProjectReader(tools: ToolResolver(environment: ["SWIFT_BIN": "/no/such/swift"]))
         do {
             _ = try await reader.describe(containing: folder)

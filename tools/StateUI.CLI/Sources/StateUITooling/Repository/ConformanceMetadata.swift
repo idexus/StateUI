@@ -33,11 +33,11 @@ struct ConformanceMetadata {
         reporter.progress("building stateui-conformance-metadata")
         let built = try await ProcessRunner().run(
             ProcessRequest(tools.swift, arguments: ["build", "--package-path", package, "--product", "stateui-conformance-metadata"],
-                           environment: ProcessEnvironment.inherited.removing("STATEUI_HOST")),
+                           environment: ProcessEnvironment.inherited),
             output: reporter.output)
         guard built.succeeded,
               let folder = (await ToolOutput.text(tools.swift, ["build", "--package-path", package, "--show-bin-path"],
-                                                  environment: ProcessEnvironment.inherited.removing("STATEUI_HOST")))?
+                                                  environment: ProcessEnvironment.inherited))?
                 .split(separator: "\n").last.map({ String($0).trimmingCharacters(in: .whitespaces) })
         else { throw ToolingError(.toolFailed, "stateui-conformance-metadata did not build.") }
         #if os(Windows)

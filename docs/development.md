@@ -24,7 +24,7 @@ lib/StateUI.Head/                  the package that brings each application's he
 lib/Backends/                      backends: one element on one host, its engine not shipped - WebView.GTK, WebView.WinUI
 tools/StateUI.CLI/                 the stateui tool: making, building, running, testing and packaging applications
 apps/Gallery/Sources/              platform-neutral Gallery application
-apps/Gallery/Platforms/AppKit/     Gallery AppKit entry point
+apps/Gallery/Platforms/AppKit/     Gallery AppKit head, a package of its own as every head is
 apps/Gallery/Platforms/UIKit/      Gallery UIKit head
 apps/Gallery/Platforms/Android/    Gallery Android head
 apps/Gallery/Platforms/WinUI/      Gallery WinUI head
@@ -33,7 +33,7 @@ apps/Gallery/Platforms/Web/        Gallery Web head
 apps/Gallery/Tests/                Gallery acceptance tests
 apps/HelloWorld/Sources/           small platform-neutral example application
 apps/HelloWorld/Tests/             its example test, which every new application starts with: a click in a test window
-apps/HelloWorld/Platforms/AppKit/  HelloWorld AppKit entry point
+apps/HelloWorld/Platforms/AppKit/  HelloWorld AppKit head
 apps/HelloWorld/Platforms/UIKit/   HelloWorld UIKit head
 apps/HelloWorld/Platforms/Android/ HelloWorld Android head
 apps/HelloWorld/Platforms/WinUI/   HelloWorld WinUI head
@@ -49,29 +49,27 @@ platform entry points.
 Swift written for one host alone stands under the condition named for it:
 `#if APPKIT`, `#if UIKIT`, `#if ANDROID`, `#if WINUI`, `#if GTK` and
 `#if WEB`, which every build of an application for that host defines through
-its manifest, from the one variable a build names its host by:
-`STATEUI_HOST=appkit`, `uikit`, `android`, `winui`, `gtk` or `web`. One
-variable holds one host, so no build is two hosts' at once.
-`NativeProjectTests` refuses a mention of AppKit, WinUI or GTK outside its
-condition in the core's and the applications' `Sources/`.
+its manifest, from the one package trait a build names its host by: `AppKit`,
+`UIKit`, `Android`, `WinUI`, `GTK` or `Web`. `NativeProjectTests` refuses a
+mention of AppKit, WinUI or GTK outside its condition in the core's and the
+applications' `Sources/`.
 
-`STATEUI_HOST=appkit` is what makes a build an AppKit one. An application's
-manifest reads it, declares its `Platforms/AppKit` head and defines `APPKIT`
-for every module of the application. The head depends on
-`lib/StateUI.Head`, whose manifest reads the same variable once for every
-application and brings the `StateUIAppKit` host; an application names no host
-package itself. A manifest cannot read a compiler flag - a flag reaches the
-targets of a build, never the manifest describing them - so no
-`-Xswiftc -DAPPKIT` is given beside the variable. Without it, `swift test`
-resolves no host package and compiles no line of one host's half, and a
-`Platforms/AppKit/` folder needs no condition inside it.
+An application's own package is its module and its tests, and declares the
+six traits. Each head is a package of its own, `Platforms/<Host>`, which
+builds the application with its host's trait -
+`.package(name: "HelloWorldUI", path: "../..", traits: ["AppKit"])` - and
+depends on `lib/StateUI.Head` with the same trait, which brings the
+`StateUIAppKit` host; no head names a host package itself. The trait defines
+`APPKIT` for every module of the application. A build of the application's
+own package enables none, so `swift test` resolves no host package and
+compiles no line of one host's half, and a head's folder needs no condition
+inside it. A trait is declared, never inherited: Xcode, the language server
+and SwiftPM's caches all see it.
 
-The `stateui` tool and the AppKit tasks, which call it, set the variable for a
-build. The editor gets it from the StateUI extension: the host chosen in
-its status bar sets the variable for the Swift language server
-([StateUI for VS Code](editors/VSCode/README.md#the-host)). A
-`swift.swiftEnvironmentVariables` setting naming the variable would override
-that choice, so `.vscode/settings.json` sets none.
+The `stateui` tool, and the AppKit tasks, which call it, build a head by its
+package. The editor indexes the application with the trait of the host chosen
+in its status bar, and that host's head by its package
+([StateUI for VS Code](editors/VSCode/README.md#the-host)).
 
 ## Gallery
 
@@ -310,7 +308,7 @@ swift test --package-path apps/HelloWorld
 
 `stateui repo test --plan portable` runs the owner packages' suites every
 machine runs, each apart; `--plan native` this machine's host suites, and on a
-Mac the Gallery and HelloWorld again as AppKit builds (`STATEUI_HOST=appkit`),
+Mac the Gallery and HelloWorld again with the trait `AppKit`,
 on a build directory of their own:
 
 ```bash
@@ -550,8 +548,8 @@ an Android application sends to logcat:
 The host layer's runtime reads them from the process's environment as it
 starts (`DiagnosticText`), so they hold on every host. `stateui run` hands
 every `STATEUI_` variable of the shell that runs it to the application on
-every host - on a simulator, a device, Android and the Web all but the
-build's own `STATEUI_HOST`, the Web's as a parameter of the page's address:
+every host - on a simulator, a device, Android and the Web too, the Web's as a
+parameter of the page's address:
 
 ```bash
 STATEUI_TALLY=1 stateui run --project apps/Gallery --host gtk

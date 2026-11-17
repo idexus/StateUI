@@ -263,7 +263,7 @@ final class ProtocolExamplesTests: XCTestCase {
             Example(name: "index-describe", messages: [
                 ("request", try request("16", "index/describe", IndexQuery(host: .uikit))),
                 ("response", try response("16", IndexContext(
-                    host: .uikit, scratchPath: ".build/uikit/index-build", triple: "arm64-apple-ios26.4-simulator",
+                    host: .uikit, trait: "UIKit", scratchPath: ".build/uikit/index-build", triple: "arm64-apple-ios26.4-simulator",
                     sdk: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk"))),
             ], answeredAsWritten: false),
             Example(name: "index-acquire", messages: [

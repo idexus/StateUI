@@ -96,8 +96,8 @@ final class WorkspaceMakerTests: XCTestCase {
         XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: parent.path), [])
     }
 
-    /// A library changed is named by every listed application's manifest and by the file; a manifest naming its
-    /// checkout in another form is refused, and nothing is rewritten.
+    /// A library changed is named by every manifest of every listed application - its own and each head's - and by the
+    /// file; a manifest naming its checkout in another form is refused, and nothing is rewritten.
     func testALibraryChangedRewritesEveryManifest() async throws {
         let origin = try await GitFixture.repository(tagged: ["0.9.1"])
         let parent = try folder()
@@ -111,7 +111,9 @@ final class WorkspaceMakerTests: XCTestCase {
         let path = ApplicationMaker.relativePath(from: demo.appendingPathComponent("Notes"), to: origin.folder)
         XCTAssertTrue(manifest.contains("path: \"\(path)\")"), manifest)
         XCTAssertTrue(manifest.contains("path: \"\(path)/lib/StateUI/StateUI.Testing\")"), manifest)
-        XCTAssertEqual(rewritten.map(\.lastPathComponent), ["Package.swift", "stateui-workspace.json"])
+        let notes = demo.appendingPathComponent("Notes")
+        XCTAssertEqual(rewritten.map(\.path), (ApplicationManifest.manifests(of: notes) + [demo.appendingPathComponent("stateui-workspace.json")]).map(\.path))
+        XCTAssertEqual(ApplicationManifest.manifests(of: notes).count, 1 + HostFamily.allCases.count)
 
         let other = demo.appendingPathComponent("Notes/Package.swift")
         try manifest.replacingOccurrences(of: "\"StateUIRoot\", path:", with: "\"StateUIRoot\",  path:").write(to: other, atomically: true, encoding: .utf8)
@@ -134,7 +136,7 @@ final class WorkspaceMakerTests: XCTestCase {
         let path = ApplicationMaker.relativePath(from: made, to: origin.folder)
         XCTAssertEqual(change.projectUri, FileURI.string(made))
         XCTAssertEqual(change.library, path)
-        XCTAssertEqual(change.changedUris, [FileURI.string(made.appendingPathComponent("Package.swift"))])
+        XCTAssertEqual(change.changedUris, ApplicationManifest.manifests(of: made).map(FileURI.string))
         let manifest = try text(made.appendingPathComponent("Package.swift"))
         XCTAssertTrue(manifest.contains("path: \"\(path)\")"), manifest)
 

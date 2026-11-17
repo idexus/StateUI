@@ -85,7 +85,7 @@ public struct ProjectReader: Sendable {
         let output = Gathered()
         let request = ProcessRequest(
             tools.swift, arguments: ["package", "describe", "--type", "json"],
-            environment: ProcessEnvironment.inherited.removing("STATEUI_HOST"),
+            environment: ProcessEnvironment.inherited,
             workingDirectory: package.path, timeout: .seconds(300))
         let outcome: ProcessOutcome
         do {
@@ -157,14 +157,13 @@ public struct ProjectReader: Sendable {
         FileManager.default.fileExists(atPath: folder.appendingPathComponent(ApplicationFile.name).path)
     }
 
-    /// The hosts a package has a head for: a `main.swift` in `Platforms/<Host>`, or Android's Gradle build there.
+    /// The hosts a package has a head for: a package of its own in `Platforms/<Host>`.
     static func hosts(of package: URL) -> [HostFamily] {
         let files = FileManager.default
         guard files.fileExists(atPath: package.appendingPathComponent("Package.swift").path) else { return [] }
         return HostFamily.allCases.filter { host in
             let head = package.appendingPathComponent("Platforms").appendingPathComponent(host.folder)
-            let file = host == .android ? "build.gradle.kts" : "main.swift"
-            return files.fileExists(atPath: head.appendingPathComponent(file).path)
+            return files.fileExists(atPath: head.appendingPathComponent("Package.swift").path)
         }
     }
 

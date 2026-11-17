@@ -61,7 +61,7 @@ public struct RepositoryPlan: Sendable {
             reporter.progress("suite \(id)")
             if kind == .portable, let package = Self.portable.first(where: { $0.0 == id })?.1 {
                 let environment = ProcessEnvironment.inherited.removing(
-                    "STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_UPDATE_DOCS", "STATEUI_UPDATE_SAMPLES", "STATEUI_STALE_ONLY")
+                    "STATEUI_UPDATE_EXPORTS", "STATEUI_UPDATE_DOCS", "STATEUI_UPDATE_SAMPLES", "STATEUI_STALE_ONLY")
                 let passed = try await TestRun.swift(
                     tools.swift, ["test", "--package-path", checkout.appendingPathComponent(package).path], environment, reporter)
                 phases.append(SuiteResult.Phase(name: id, passed: passed))

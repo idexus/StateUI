@@ -19,8 +19,15 @@ struct IndexContexts: Sendable {
     /// Every scratch folder an index stands in.
     static var scratchPaths: [String] { HostFamily.allCases.map { scratchPath(of: $0) } + [scratchPath(of: nil)] }
 
-    /// The context of `host`.
+    /// The context of `host`, its trait named.
     func describe(_ host: HostFamily?) async -> IndexContext {
+        var context = await platform(host)
+        context.trait = host?.folder
+        return context
+    }
+
+    /// What `host`'s code compiles for, and where.
+    private func platform(_ host: HostFamily?) async -> IndexContext {
         let scratch = Self.scratchPath(of: host)
         switch host {
         case .uikit:
@@ -54,10 +61,13 @@ struct IndexContexts: Sendable {
         return IndexContext(host: host, scratchPath: scratch, triple: triple, swiftSDK: sdk)
     }
 
-    /// Takes every index's scratch folder away from `roots`.
+    /// Takes every index's scratch folder away from `roots` - each an application - and from their heads' packages.
     static func clean(_ roots: [URL]) -> [URL] {
         let files = FileManager.default
-        return roots.flatMap { root in scratchPaths.map { root.appendingPathComponent($0) } }
+        let packages = roots.flatMap { root in
+            [root] + HostFamily.allCases.map { root.appendingPathComponent("Platforms").appendingPathComponent($0.folder) }
+        }
+        return packages.flatMap { package in scratchPaths.map { package.appendingPathComponent($0) } }
             .filter { files.fileExists(atPath: $0.path) && (try? files.removeItem(at: $0)) != nil }
     }
 }

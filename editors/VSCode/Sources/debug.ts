@@ -46,7 +46,7 @@ import * as vscode from "vscode";
 import { Application, pathOf } from "./applications";
 import { Browser, isChromium } from "./browsers";
 import { lldbDapFinding } from "./toolchain";
-import { environment, Host } from "./hosts";
+import { Host } from "./hosts";
 import { LaunchedApplication } from "./Tooling/protocol";
 
 /** Which build a launch runs. */

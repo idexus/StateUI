@@ -4,14 +4,14 @@
 import Foundation
 
 /// What a run hands an application it starts elsewhere - a simulator, a device, Android, a page - of the tool's
-/// environment: each `STATEUI_` variable, a switch such as `STATEUI_TALLY=1`, but `STATEUI_HOST`.
+/// environment: each `STATEUI_` variable, a switch such as `STATEUI_TALLY=1`.
 /// Design: docs/design/tooling/runs.md#what-a-run-hands-the-application
 struct HandedEnvironment: Sendable, Equatable {
     let variables: [String: String]
 
     /// What of `environment` a run hands its application.
     init(of environment: [String: String]) {
-        variables = environment.filter { $0.key.hasPrefix("STATEUI_") && $0.key != "STATEUI_HOST" }
+        variables = environment.filter { $0.key.hasPrefix("STATEUI_") }
     }
 
     var sorted: [(name: String, value: String)] {

@@ -98,12 +98,13 @@ host**, a launch says why it runs nothing, and the editor and **StateUI: Run
 Tests** work as plain Swift.
 
 - **The editor works as that host.** Code under `#if APPKIT` is compiled and
-  completed while AppKit is chosen, and an application's `Platforms/AppKit`
-  head belongs to its package only then. Switching restarts the Swift language
+  completed while AppKit is chosen: the application's package is indexed with
+  the trait `AppKit`, and its `Platforms/AppKit` head - a package of its own,
+  always AppKit's - with AppKit's index. Switching restarts the Swift language
   server; the window does not reload. From the editor's next start the Swift
-  extension loads no other host's packages - `lib/StateUI/StateUI.<Host>` and
-  `lib/Backends/*.<Host>`, set in the user's `swift.excludePathsFromActivation`
-  - so it starts sooner. As
+  extension loads no other host's packages - `lib/StateUI/StateUI.<Host>`,
+  `lib/Backends/*.<Host>` and every application's `Platforms/<Host>`, set in
+  the user's `swift.excludePathsFromActivation` - so it starts sooner. As
   Android the server compiles for Android - the Swift SDK for Android of the
   toolchain's release, `aarch64-unknown-linux-android28` - so code under
   `#if ANDROID` and `Platforms/Android/Swift` resolve. With no such SDK
@@ -248,7 +249,7 @@ stateui project library --release <release>
 | Setting | What it holds |
 | --- | --- |
 | `stateui.checkout` | the local checkout a group builds with - set on this machine, so it is not asked for |
-| `stateui.minimumRelease` | the oldest release offered, `0.5.0` - the first that builds into `.build/<host>` and reads `STATEUI_HOST`, as the extension does; until it is published, a group builds with the local checkout |
+| `stateui.minimumRelease` | the oldest release offered, `0.8.6` - the first whose heads are packages of their own, each naming its host by a trait, as the extension builds them; until it is published, a group builds with the local checkout |
 
 ## Tests
 
@@ -258,8 +259,8 @@ found again when the host changes. **StateUI: Run Tests** offers them, every
 one ticked, and runs them AS THE HOST, one after another, each through the tool
 (`stateui test run --suite <suite>`), its output in Test Results:
 
-- **AppKit**: the library, `lib/StateUI/StateUI.AppKit`, and each application as an
-  AppKit build (`STATEUI_HOST=appkit`, on `.build/appkit`).
+- **AppKit**: the library, `lib/StateUI/StateUI.AppKit`, and each application with
+  the trait `AppKit` (on `.build/appkit`).
 - **UIKit**: the library and each application as plain Swift, and the UIKit
   host's own tests, `lib/StateUI/StateUI.UIKit/Tests` - an application of tests - run
   on the simulator chosen by `stateui repo test --suite host:uikit`.
@@ -408,5 +409,3 @@ launch file at all:
   the toolchain was built for, its Python library installed (Check
   Toolchain names the one missing, and F5 stops before the build).
 
-Do not set `STATEUI_HOST` in `swift.swiftEnvironmentVariables`: that setting
-is laid over the host chosen here, and the extension offers to remove it.

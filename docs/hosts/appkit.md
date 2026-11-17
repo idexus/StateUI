@@ -33,7 +33,8 @@ names the versions the host's suite passes on.
 
 ## The head
 
-An application's AppKit head is `Platforms/AppKit/main.swift`. It registers the
+An application's AppKit head is a package of its own, `Platforms/AppKit`, its
+program `Platforms/AppKit/main.swift`. It registers the
 application, says what this host answers for it, then starts the host - here
 the Gallery's:
 

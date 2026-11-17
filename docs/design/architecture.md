@@ -53,7 +53,7 @@ the packages, what crosses between them, and where each part of the work runs.
                                           WebView.WinUI - registered by the application's head
   lib/StateUI/StateUI.Conformance         the conformance families every host's tests run
   lib/StateUI.Head                        StateUIHead: what every head is built with - the
-                                          host STATEUI_HOST names, re-exported
+                                          host its trait names, brought into its graph
   editors/VSCode                          the editor extension: new application,
                                           build, run and debug for every head
 ```

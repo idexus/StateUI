@@ -59,7 +59,7 @@ enum TestDiscovery {
 }
 
 /// One suite run as `TestDiscovery` describes it: a package's by `swift test` - an application built as an AppKit head
-/// with `STATEUI_HOST=appkit` in `.build/appkit`, every other as plain Swift - a host's by its repository suite.
+/// with the trait `AppKit` in `.build/appkit`, every other as plain Swift - a host's by its repository suite.
 /// Design: docs/design/tooling/tests.md
 struct TestRunner {
     let tools: ToolResolver
@@ -72,12 +72,11 @@ struct TestRunner {
             return SuiteResult(suite: suite.id, phases: ran.phases)
         }
         let package = try FileURI.url(suite.packageUri)
-        var environment = ProcessEnvironment.inherited.removing(
-            "STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_UPDATE_DOCS", "STATEUI_UPDATE_SAMPLES", "STATEUI_STALE_ONLY")
+        let environment = ProcessEnvironment.inherited.removing(
+            "STATEUI_UPDATE_EXPORTS", "STATEUI_UPDATE_DOCS", "STATEUI_UPDATE_SAMPLES", "STATEUI_STALE_ONLY")
         var arguments = ["test", "--package-path", package.path]
         if suite.host == .appkit {
-            environment = environment.setting("STATEUI_HOST", to: "appkit")
-            arguments += ["--scratch-path", package.appendingPathComponent(".build/appkit").path]
+            arguments += ["--traits", HostFamily.appkit.folder, "--scratch-path", package.appendingPathComponent(".build/appkit").path]
         }
         reporter.progress("testing \(suite.id)")
         let passed = try await TestRun.swift(tools.swift, arguments, environment, reporter)

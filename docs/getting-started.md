@@ -51,10 +51,10 @@ AppKit head from the repository root:
 stateui run --project apps/HelloWorld --host appkit
 ```
 
-The `stateui` tool builds it with `STATEUI_HOST=appkit`, the variable that makes it an
-AppKit build: the manifest then declares the
-AppKit head and defines `APPKIT`, and without it `swift test` compiles no part
-of one host's half; see
+The `stateui` tool builds its head's own package, `Platforms/AppKit`, which
+builds the application with the trait `AppKit`: the trait defines `APPKIT`
+and brings the AppKit host, and the application's own package, which enables
+none, has `swift test` compile no part of one host's half; see
 [Project structure and development](development.md). Each host builds an
 application in a directory of its own inside the application's `.build` -
 `.build/appkit`, `.build/uikit`, `.build/android`, `.build/winui`,
@@ -308,20 +308,26 @@ apps/Notes/
       AppStyles.swift
   Platforms/
     AppKit/
+      Package.swift
       main.swift
     UIKit/
+      Package.swift
       main.swift
     Android/
+      Package.swift
       build.gradle.kts
       settings.gradle.kts
       AndroidManifest.xml
       Swift/
         NotesAndroid.swift
     WinUI/
+      Package.swift
       main.swift
     GTK/
+      Package.swift
       main.swift
     Web/
+      Package.swift
       main.swift
   Resources/
     AppIcon/
@@ -329,6 +335,10 @@ apps/Notes/
   Tests/
     MainPageTests.swift
 ```
+
+The application's `Package.swift` is its module and its tests; each head is a
+package of its own, `Platforms/<Host>/Package.swift`, which builds the
+application for its host.
 
 `stateui.json` says what the application is on every platform - the
 identifier that names it, the version shown to its user and its build, and
@@ -396,7 +406,7 @@ declaration explains its focused semantics.
 
 SwiftPM discovers every `.swift` file below a target's `path`; a source list is
 unnecessary. Add application files below `Sources/` and keep native entry
-points below `Platforms/<Host>/`.
+points below `Platforms/<Host>/`, in the head's own package.
 
 Image names are application data. Put image files under the resource directory
 passed to the host and refer to them through `ImageSource` or a string-literal

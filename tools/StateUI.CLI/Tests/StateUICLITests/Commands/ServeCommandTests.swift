@@ -70,7 +70,7 @@ final class ServeCommandTests: XCTestCase {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("lost-\(UUID().uuidString)")
         addTeardownBlock { try? FileManager.default.removeItem(at: root) }
         let (state, package) = (root.appendingPathComponent("state"), root.appendingPathComponent("Notes"))
-        for path in ["Package.swift", "Platforms/AppKit/main.swift"] {
+        for path in ["Package.swift", "Platforms/AppKit/Package.swift"] {
             let file = package.appendingPathComponent(path)
             try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
             try Data().write(to: file)

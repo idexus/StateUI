@@ -16,7 +16,7 @@ import { Configuration, runPlace, configurations, noHost, StateUIDebugConfigurat
 import { chosenApplication, chosenHost, DeviceStore, offeredHosts } from "./choices";
 import { AndroidLister, androidDeviceOf, askForDevice, chooseListedDevice, deviceToRunOn } from "./devices";
 import { askForBrowser, Browser, BrowserLister, browserOf, browserToRunOn, chooseListedBrowser } from "./browsers";
-import { applyEditorMode, cleanIndex, IndexAcquirer, IndexConflictError, IndexDescriber, setHostEnvironment, variablesInSettings } from "./editorMode";
+import { applyEditorMode, cleanIndex, IndexAcquirer, IndexConflictError, IndexDescriber } from "./editorMode";
 import { availableHosts, describe, Host, HostDescription } from "./hosts";
 import {
     askForUIKitDevice, chooseListedUIKitDevice, uiKitDeviceOf, UIKitLister, uiKitDeviceToRunOn, uiKitSimulatorToTestOn,
@@ -175,7 +175,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 ?? settings;
         },
     };
-    setHostEnvironment(host());
 
     /** What the suites and the editor run as: the host chosen, or plain Swift. */
     const runningAs = (): string => {
@@ -595,7 +594,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             const group = path.join(location, name);
 
             // Where its StateUI comes from: a release cloned into the group, or the local checkout.
-            const minimum = vscode.workspace.getConfiguration("stateui").get<string>("minimumRelease", "0.5.0");
+            const minimum = vscode.workspace.getConfiguration("stateui").get<string>("minimumRelease", "0.8.6");
             let release = given?.release;
             let checkout = given?.checkout;
             if (!release && !checkout) {
@@ -896,23 +895,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         vscode.debug.registerDebugConfigurationProvider("stateui", provider),
         vscode.debug.registerDebugConfigurationProvider("stateui", { provideDebugConfigurations: configurations },
             vscode.DebugConfigurationProviderTriggerKind.Dynamic));
-
-    // A settings file that sets a host variable decides the editor's mode over
-    // anything chosen here, so it is said once, with the way out.
-    const settled = variablesInSettings();
-    if (settled.length > 0) {
-        void vscode.window.showWarningMessage(
-            `StateUI: swift.swiftEnvironmentVariables sets ${settled.join(", ")}, which decides the editor's host whatever is chosen in the status bar.`,
-            "Remove it").then(async (answer) => {
-                if (answer) {
-                    const configuration = vscode.workspace.getConfiguration("swift");
-                    const inspected = configuration.inspect<Record<string, string>>("swiftEnvironmentVariables");
-                    const kept = Object.fromEntries(Object.entries(inspected?.workspaceValue ?? {}).filter(([key]) => !settled.includes(key)));
-                    await configuration.update("swiftEnvironmentVariables",
-                        Object.keys(kept).length > 0 ? kept : undefined, vscode.ConfigurationTarget.Workspace);
-                }
-            });
-    }
 
     // A checkout's own commands show in a checkout alone; New Application in a workspace.
     const updateFolderContexts = (): void => {

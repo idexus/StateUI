@@ -65,7 +65,7 @@ struct WebSuite {
         // The tests' archive only gains members: one of a source since renamed or gone would link twice. Made anew.
         try? FileManager.default.removeItem(at: scratch.appendingPathComponent("out/Products/Debug-webassembly-wasm32/libStateUIWebTests.a"))
         let common = ["--package-path", testing.path, "--scratch-path", scratch.path, "--swift-sdk", sdk]
-        let building = environment.setting("STATEUI_HOST", to: "web")
+        let building = environment
         reporter.progress("building the Web host's tests")
         let built = try await ProcessRunner().run(
             ProcessRequest(tools.swift, arguments: ["build", "--build-tests"] + common, environment: building), output: reporter.output)

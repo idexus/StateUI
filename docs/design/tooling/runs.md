@@ -26,8 +26,8 @@ Nothing a run started outlives it.
 A program of this machine - an AppKit, GTK or WinUI head - runs in the
 tool's own environment. An application the run starts elsewhere - on a
 simulator, a device, Android or a page - is handed each `STATEUI_` variable
-of it but `STATEUI_HOST`, which names the host a build is for, so a switch
-such as `STATEUI_TALLY=1` reaches the application on every host
+of it, so a switch such as `STATEUI_TALLY=1` reaches the application on every
+host
 (`HandedEnvironment`). Each launch takes what is handed as it takes its
 destination, so none can start an application without it, and gives it in
 its platform's form, in the variables' order: a simulator's as `simctl`'s

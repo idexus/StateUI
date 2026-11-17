@@ -122,7 +122,7 @@ struct AndroidSuite {
             compiler: (await ToolOutput.text(compiler, ["--version"]))?.split(separator: "\n").first.map(String.init) ?? "",
             sdk: target.sdkIdentity, library: checkout)
         let common = ["--package-path", tests.path, "--scratch-path", context.scratch.path, "--configuration", "debug"] + target.arguments
-        let building = target.environment.reduce(environment.setting("STATEUI_HOST", to: "android")) { $0.setting($1.key, to: $1.value) }
+        let building = target.environment.reduce(environment) { $0.setting($1.key, to: $1.value) }
         reporter.progress("building the Android host's tests for \(abi)")
         let outcome = try await ProcessRunner().run(
             ProcessRequest(compiler, arguments: ["build", "--product", product] + common, environment: building), output: reporter.output)

@@ -339,6 +339,7 @@ export const IndexQuery = object<IndexQuery>({ host: optional(HostFamily), rootU
 
 export interface IndexContext {
     host?: HostFamily;
+    trait?: string;
     scratchPath: string;
     triple?: string;
     sdk?: string;
@@ -346,8 +347,8 @@ export interface IndexContext {
     fallback?: string;
 }
 export const IndexContext = object<IndexContext>({
-    host: optional(HostFamily), scratchPath: string, triple: optional(string), sdk: optional(string), swiftSDK: optional(string),
-    fallback: optional(string),
+    host: optional(HostFamily), trait: optional(string), scratchPath: string, triple: optional(string), sdk: optional(string),
+    swiftSDK: optional(string), fallback: optional(string),
 });
 
 export interface IndexConflict { rootUri: string; host?: HostFamily }

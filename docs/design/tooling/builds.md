@@ -41,9 +41,9 @@ application - the one named, else the only one - and refuses before anything
 runs what cannot be: a host whose row has not moved to the tool, an
 application with no head for it, one naming no checkout. It resolves the
 build's context, waits for the machine's permit, journals the operation, and
-runs `swift build --product <Name><Host>` with exactly the host's
-`STATEUI_HOST`, `--disable-build-manifest-caching` (the manifest reads that
-variable) and the target's triple and SDK: an AppKit head's only for an
+runs `swift build --product <Name><Host>` in the head's own package,
+`Platforms/<Host>` - which enables the host's trait on the application - with
+the target's triple and SDK: an AppKit head's only for an
 architecture not the machine's own, a UIKit head's always - the simulator's
 or the device's the build is for (destinations.md) - and an Android head's
 Swift SDK and triple, built by the swift.org compiler of the SDK's release

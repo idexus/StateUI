@@ -130,12 +130,11 @@ application keeps its host and devices as its own.
 
 ## SwiftPM reads a package without a host
 
-An application's manifest chooses its head by `STATEUI_HOST`: with
-`appkit`, its package has an AppKit executable and depends on the host. A
-description is of the application, not of one host's build, so SwiftPM reads
-it with `STATEUI_HOST` taken out of its environment. A host a terminal set for
-another purpose - or an editor's leftover - changes no description; the hosts
-an application has come from its heads.
+An application's own package declares no head: it is the application's
+module and tests, with a trait per host, and each head is a package of its
+own, `Platforms/<Host>`, which enables its host's trait on it. So a
+description of the application is the same whatever is built, and the hosts
+an application has are its heads' packages.
 
 ## A checkout
 

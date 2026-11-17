@@ -20,10 +20,6 @@ import PackageDescription
 //
 // Sources are never listed: SwiftPM globs the target's path, and every build
 // of the library goes through SwiftPM. A new .swift file is picked up by itself.
-// Dynamic, so a process holds one StateUI runtime however many libraries link it. WebAssembly links no library
-// dynamically: a Web build (STATEUI_HOST=web) is one module holding the application, StateUI and its host.
-let linkage: Product.Library.LibraryType? = Context.environment["STATEUI_HOST"] == "web" ? nil : .dynamic
-
 let package = Package(
     name: "StateUI",
     // iOS 26.4, Mac Catalyst 26.4 and macOS 26.4: the oldest releases whose Swift runtime StateUI runs on, built
@@ -36,12 +32,11 @@ let package = Package(
     ],
     products: [
         // StateUIFoundation travels in the same library: the basics StateUI and an
-        // application build on, one copy in a process.
-        .library(
-            name: "StateUI",
-            type: linkage,
-            targets: ["StateUI", "StateUIFoundation"]
-        ),
+        // application build on, one copy in a process. Dynamic, so a process holds one
+        // StateUI runtime however many libraries link it; WebAssembly links no library
+        // dynamically, so a dependency names StateUIStatic for `.wasi` alone.
+        .library(name: "StateUI", type: .dynamic, targets: ["StateUI", "StateUIFoundation"]),
+        .library(name: "StateUIStatic", type: .static, targets: ["StateUI", "StateUIFoundation"]),
     ],
     // NO DEPENDENCIES, and it is worth a sentence: everything here is this
     // library's own code - state, the differ, the typed boundary, the views. A class's

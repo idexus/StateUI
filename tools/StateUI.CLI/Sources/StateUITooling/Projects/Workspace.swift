@@ -65,7 +65,7 @@ struct Workspace: Sendable {
     /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a manifest naming its checkout in a form the tool does
     ///   not write - nothing is rewritten then.
     mutating func use(_ checkout: URL) throws -> [URL] {
-        let rewritten = try applications().compactMap { try ApplicationManifest.naming(checkout, in: $0) }
+        let rewritten = try applications().flatMap { try ApplicationManifest.naming(checkout, in: $0) }
         for (manifest, text) in rewritten { try Data(text.utf8).write(to: manifest) }
         file.library = .init(path: ApplicationMaker.relativePath(from: folder, to: checkout))
         let own = folder.appendingPathComponent(WorkspaceFile.name)

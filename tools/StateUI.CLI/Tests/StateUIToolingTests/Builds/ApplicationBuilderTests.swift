@@ -34,7 +34,7 @@ final class ApplicationBuilderTests: XCTestCase {
         let application = root.appendingPathComponent("Notes")
         for host in ["AppKit", "UIKit"] {
             try files.createDirectory(at: application.appendingPathComponent("Platforms/\(host)"), withIntermediateDirectories: true)
-            try Data().write(to: application.appendingPathComponent("Platforms/\(host)/main.swift"))
+            try Data().write(to: application.appendingPathComponent("Platforms/\(host)/Package.swift"))
         }
         try Data().write(to: application.appendingPathComponent("Package.swift"))
         try ApplicationFile(identifier: "com.example.notes", version: "1.0.0", build: 1)
@@ -53,7 +53,7 @@ final class ApplicationBuilderTests: XCTestCase {
               "build --show-bin-path") echo '\(bin.path)' ;;
               "build --product")
                 if [ -e '\(failing.path)' ]; then echo 'error: the compiler stopped'; exit 1; fi
-                [ "Notes$STATEUI_HOST" = "$(echo "$3" | tr '[:upper:]' '[:lower:]' | sed 's/^notes/Notes/')" ] || { echo 'no host'; exit 1; }
+                all="$*"; rest="${all#*--package-path }"; head="${rest%% *}"; [ "Notes${head##*/}" = "$3" ] || { echo 'no head'; exit 1; }
                 echo "$@" > '\(arguments.path)'
                 if [ -e '\(during.path)' ]; then sh '\(during.path)'; fi
                 mkdir -p '\(bin.path)' && cp /usr/bin/true "\(bin.path)/$3" && echo 'Build complete!' ;;
@@ -104,7 +104,7 @@ final class ApplicationBuilderTests: XCTestCase {
                                 (BuildRequest(host: .android), "has no android head")] {
             do {
                 _ = try await builder.build(request, in: bench.application, operation: "op")
-                XCTFail("\(request.host) was built")
+                XCTFail("\(request.host?.rawValue ?? "no host") was built")
             } catch let error as ToolingError {
                 XCTAssertTrue(error.message.contains(said), error.message)
             }
@@ -150,7 +150,7 @@ final class ApplicationBuilderTests: XCTestCase {
         let files = FileManager.default
         let other = bench.root.appendingPathComponent("Other")
         try files.createDirectory(at: other.appendingPathComponent("Platforms/AppKit"), withIntermediateDirectories: true)
-        try Data().write(to: other.appendingPathComponent("Platforms/AppKit/main.swift"))
+        try Data().write(to: other.appendingPathComponent("Platforms/AppKit/Package.swift"))
         try Data().write(to: other.appendingPathComponent("Package.swift"))
         try ApplicationFile(identifier: "com.example.other", version: "1.0.0", build: 1)
             .write(to: other.appendingPathComponent("stateui.json"))

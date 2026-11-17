@@ -7,6 +7,33 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### Breaking changes
 
+- **A build names its host by a package trait, and each head is a package of its own.** `STATEUI_HOST` is gone: a
+  head, `Platforms/<Host>`, has a `Package.swift` of its own that builds the application with its host's trait and
+  depends on `lib/StateUI.Head` with the same trait, which brings the host. The application's own package is its
+  module and its tests, declares a trait per host and defines each host's condition from it; it declares no head and
+  depends on no `StateUIHead`. Nothing is inherited from an environment any more - Xcode, SourceKit-LSP and SwiftPM's
+  caches see the host as declared - and a head's files need no condition. An application made before moves each
+  head's target into its folder's manifest and writes its own as HelloWorld's:
+
+  ```swift
+  // Package.swift
+  let hosts = ["AppKit", "UIKit", "Android", "WinUI", "GTK", "Web"]
+  let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+      + hosts.map { .define($0.uppercased(), .when(traits: [$0])) }
+  // traits: Set(hosts.map { Trait(name: $0) }), the module's StateUI dynamic on every platform but WebAssembly
+
+  // Platforms/AppKit/Package.swift
+  .package(name: "NotesUI", path: "../..", traits: ["AppKit"]),
+  .package(name: "StateUIHead", path: "../../../../lib/StateUI.Head", traits: ["AppKit"]),
+  ```
+
+  WebAssembly links no library dynamically, so StateUI and the host layer have a static product beside the dynamic
+  one, `StateUIStatic` and `StateUIHostStatic`, which a package built for it takes `.when(platforms: [.wasi])`; an
+  application's own library is linked into its head. `stateui build` builds a head by its package, `stateui new` and
+  `stateui project library` name the checkout in every manifest of the application, and the VS Code extension indexes
+  the application with the chosen host's trait (`swiftPM.traits`, and its condition as a flag, which SourceKit-LSP's
+  build system does not yet take from the trait) and the head by its package; it offers releases
+  from 0.8.6 on.
 - **An application is a folder holding its `stateui.json`.** Beside its `Package.swift`, the file says what the
   application is on every platform - the `identifier` naming it, the `name` shown (its folder's where none is given),
   the `version` shown to its user and its `build` - and neither `stateui` nor the VS Code extension takes a folder
@@ -51,6 +78,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### Fixed
 
+- The tool: a checkout named by a path that begins as the old one did - `../..` changed to `../../StateUI` - is
+  written once in an application's manifest; it was written twice, `../../StateUI/StateUI`.
 - Web: a bar button whose look follows the pointer and the press takes its click in Safari. The page wrote its words
   and attributes again as the press came and went, its words in a new text node, and WebKit sends no click where the
   node under the pointer was replaced; what already stands is written no more, and new words change the one text node

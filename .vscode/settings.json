@@ -1,14 +1,11 @@
 {
   // SourceKit resolves imports through SwiftPM manifests, and this repository
-  // has several: the library at the root, the AppKit host, one per app.
+  // has several: the library at the root, each host, each application and each
+  // application's head. The editor's host is chosen in the StateUI extension's
+  // status bar (editors/VSCode), which writes the packages' own
+  // .sourcekit-lsp/config.json.
   "swift.searchSubfoldersForPackages": true,
   "swift.autoGenerateLaunchConfigurations": false,
-
-  // NO swift.swiftEnvironmentVariables HERE. The editor's host - which of
-  // the STATEUI_HOST SourceKit-LSP starts with - is chosen in the
-  // StateUI extension's status bar (editors/VSCode), which sets it on the
-  // extension host's own environment. A value here is laid OVER that and would
-  // decide the host whatever is chosen.
 
   "files.associations": {
     "*.swift": "swift"

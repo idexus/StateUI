@@ -6,11 +6,11 @@ import Foundation
 import XCTest
 
 final class HandedEnvironmentTests: XCTestCase {
-    private let tool = ["STATEUI_TALLY": "1", "STATEUI_INSPECT": "1", "STATEUI_HOST": "web", "PATH": "/usr/bin", "HOME": "/Users/a"]
+    private let tool = ["STATEUI_TALLY": "1", "STATEUI_INSPECT": "1", "PATH": "/usr/bin", "HOME": "/Users/a"]
 
-    /// A run hands an application it starts elsewhere each `STATEUI_` variable of the tool's environment but the
-    /// host's, which names what a build is for, and nothing else of it.
-    func testARunHandsItsApplicationEveryStateUIVariableButTheHost() {
+    /// A run hands an application it starts elsewhere each `STATEUI_` variable of the tool's environment, and nothing
+    /// else of it.
+    func testARunHandsItsApplicationEveryStateUIVariable() {
         XCTAssertEqual(HandedEnvironment(of: tool).variables, ["STATEUI_TALLY": "1", "STATEUI_INSPECT": "1"])
         XCTAssertEqual(HandedEnvironment(of: ["PATH": "/usr/bin"]).variables, [:])
     }
@@ -32,7 +32,6 @@ final class HandedEnvironmentTests: XCTestCase {
         let simctl = SimulatorLaunch.environment(handing: handed).set
         XCTAssertEqual(simctl["SIMCTL_CHILD_STATEUI_TALLY"], "1")
         XCTAssertEqual(simctl["SIMCTL_CHILD_STATEUI_INSPECT"], "1")
-        XCTAssertNil(simctl["SIMCTL_CHILD_STATEUI_HOST"])
         XCTAssertEqual(SimulatorLaunch.environment(handing: none).set.keys.filter { $0.hasPrefix("SIMCTL_CHILD_") }, [])
         #endif
     }

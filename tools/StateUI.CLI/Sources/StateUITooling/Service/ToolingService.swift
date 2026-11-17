@@ -98,10 +98,10 @@ public struct ToolingService: Sendable {
                 throw ToolingError(.projectNotFound, "No StateUI checkout stands at \(named.path).")
             }
             let rewritten = try ApplicationManifest.naming(named, in: application)
-            if let (manifest, text) = rewritten { try Data(text.utf8).write(to: manifest) }
+            for (manifest, text) in rewritten { try Data(text.utf8).write(to: manifest) }
             return LibraryChange(
                 projectUri: FileURI.string(application), library: ApplicationMaker.relativePath(from: application, to: named),
-                changedUris: rewritten.map { [FileURI.string($0.manifest)] } ?? [])
+                changedUris: rewritten.map { FileURI.string($0.manifest) })
         }
         guard var workspace = try Workspace.nearest(from: folder) else {
             throw ToolingError(

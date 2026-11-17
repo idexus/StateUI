@@ -83,13 +83,14 @@ build - is its `stateui.json`'s, which the tool lays beside the page's
 application of its own. The browser keeps the application's values under its
 identifier.
 
-`STATEUI_HOST=web` is what makes a build a Web one: the application's manifest
-reads it, declares its `Platforms/Web` head and the module it makes, links the
-application's own library into it rather than beside it - a page loads one
-module - and defines the `WEB` compilation condition for every module of the
-application; `lib/StateUI.Head` brings the `StateUIWeb` host to the head and
-links it with an 8 MB stack. Swift written for this host alone stands under
-`#if WEB`.
+The trait `Web` is what makes a build a Web one: the head's own package,
+`Platforms/Web`, makes the module and enables the trait on the application,
+which defines the `WEB` compilation condition for every module of the
+application, and on `lib/StateUI.Head`, which brings the `StateUIWeb` host to
+the head and links it with an 8 MB stack. A page loads one module, so the
+application, StateUI and the host link into it: built for WebAssembly, a
+package takes StateUI's static product, `StateUIStatic`. Swift written for
+this host alone stands under `#if WEB`.
 
 A new application - **StateUI: New Application**, `stateui new`, or
 `stateui new` - has a Web head, as HelloWorld does.
@@ -333,9 +334,8 @@ it is taken. The page is served to this machine alone; `--listen lan` serves
 it on every interface, so a phone or a tablet on its network opens it, each
 address said. `--device` names the browser - `stateui devices --host web`
 lists those installed, the system's own marked - and `--device none` opens
-none. Every `STATEUI_` variable of the shell that runs it but the build's own
-`STATEUI_HOST` - `STATEUI_TALLY=1` - reaches the application as a parameter
-of the page's address, which the application reads as its environment.
+none. Every `STATEUI_` variable of the shell that runs it - `STATEUI_TALLY=1` -
+reaches the application as a parameter of the page's address, which the application reads as its environment.
 `stateui build` builds and lays the page out, serving nothing.
 
 Safari on iOS and iPadOS 27 runs a page served over plain http with no JIT

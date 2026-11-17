@@ -86,11 +86,11 @@ knows the application by, its entry and icon named by it; its name and
 version are what `app.info` tells. GTK keeps one instance of it: launched
 again, the running application brings its window forward.
 
-`STATEUI_HOST=gtk` is what makes a build a GTK one: the application's
-manifest reads it, declares its `Platforms/GTK` head, the executable it makes,
-and defines the `GTK` compilation condition for every module of the
-application; `lib/StateUI.Head` brings the `StateUIGTK` host to the head. Swift written for this host alone stands under
-`#if GTK`.
+The trait `GTK` is what makes a build a GTK one: the head's own package,
+`Platforms/GTK`, makes the executable and enables the trait on the
+application, which defines the `GTK` compilation condition for every module of
+the application, and on `lib/StateUI.Head`, which brings the `StateUIGTK`
+host to the head. Swift written for this host alone stands under `#if GTK`.
 
 A new application - **StateUI: New Application**, `stateui new`, or
 `stateui new` - has a GTK head,

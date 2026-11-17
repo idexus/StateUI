@@ -30,7 +30,7 @@ final class ApplicationMakerTests: XCTestCase {
 
     /// A new application is HelloWorld under another name: the same files, no build's leftovers, the name changed in
     /// every file's name and text, the application identifier in lower case - its own `stateui.json` at 1.0.0, build
-    /// 1 - and its checkout named by the path from it.
+    /// 1 - and its checkout named by the path from each manifest's folder, the application's and each head's.
     func testANewApplicationIsHelloWorldUnderAnotherName() throws {
         let parent = try folder()
         let made = try ApplicationMaker().make("Probe", in: parent, from: ProjectReaderTests.repository)
@@ -38,7 +38,7 @@ final class ApplicationMakerTests: XCTestCase {
         let model = files(under: helloWorld)
         XCTAssertFalse(model.isEmpty)
         XCTAssertEqual(files(under: made), model.map { $0.replacingOccurrences(of: "HelloWorld", with: "Probe") }.sorted())
-        for original in model where !["Package.swift", "stateui.json"].contains(original) {
+        for original in model where !original.hasSuffix("Package.swift") && original != "stateui.json" {
             let source = try Data(contentsOf: helloWorld.appendingPathComponent(original))
             let expected = String(data: source, encoding: .utf8).map {
                 Data($0.replacingOccurrences(of: "HelloWorld", with: "Probe").replacingOccurrences(of: "helloworld", with: "probe").utf8)
@@ -56,13 +56,17 @@ final class ApplicationMakerTests: XCTestCase {
             ApplicationFile(identifier: "com.example.probe", version: "1.0.0", build: 1))
         let gradle = try String(contentsOf: made.appendingPathComponent("Platforms/Android/build.gradle.kts"), encoding: .utf8)
         XCTAssertTrue(gradle.contains("applicationId = stated(\"stateui.identifier\")"), gradle)
-        let head = try String(contentsOf: made.appendingPathComponent("Platforms/AppKit/main.swift"), encoding: .utf8)
-        XCTAssertTrue(head.contains("ProbeApp.register()"))
+        let program = try String(contentsOf: made.appendingPathComponent("Platforms/AppKit/main.swift"), encoding: .utf8)
+        XCTAssertTrue(program.contains("ProbeApp.register()"))
 
         let checkout = ApplicationMaker.relativePath(from: made, to: ProjectReaderTests.repository)
         let manifest = try String(contentsOf: made.appendingPathComponent("Package.swift"), encoding: .utf8)
         XCTAssertTrue(manifest.contains(".package(name: \"StateUIRoot\", path: \"\(checkout)\")"), manifest)
         XCTAssertFalse(manifest.contains("\"../..\""))
+        let head = try String(contentsOf: made.appendingPathComponent("Platforms/AppKit/Package.swift"), encoding: .utf8)
+        let fromHead = ApplicationMaker.relativePath(from: made.appendingPathComponent("Platforms/AppKit"), to: ProjectReaderTests.repository)
+        XCTAssertTrue(head.contains(".package(name: \"StateUIRoot\", path: \"\(fromHead)\")"), head)
+        XCTAssertTrue(head.contains(".package(name: \"ProbeUI\", path: \"../..\", traits: [\"AppKit\"])"), head)
     }
 
     /// An application made for some platforms has their heads alone, and the project says those hosts; none at all

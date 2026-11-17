@@ -172,11 +172,9 @@ public struct ApplicationBuilder: Sendable {
         _ context: BuildContext, _ target: BuildTarget, name: String, identity: ApplicationFile, operation: String,
         entry: OperationJournal.Entry, reporter: BuildReporter
     ) async throws -> BuildResult {
-        let common = ["--package-path", context.application.path, "--scratch-path", context.scratch.path,
-                      "--configuration", context.configuration.rawValue, "--disable-build-manifest-caching"] + target.arguments
-        let environment = target.environment.reduce(ProcessEnvironment.inherited.setting("STATEUI_HOST", to: context.host.rawValue)) {
-            $0.setting($1.key, to: $1.value)
-        }
+        let common = ["--package-path", context.head.path, "--scratch-path", context.scratch.path,
+                      "--configuration", context.configuration.rawValue] + target.arguments
+        let environment = target.environment.reduce(ProcessEnvironment.inherited) { $0.setting($1.key, to: $1.value) }
         let compiler = target.compiler ?? tools.swift
         if context.host == .winui {
             // A running head holds its executable, which publishing writes again: it stops first.
@@ -263,7 +261,7 @@ public struct ApplicationBuilder: Sendable {
                 application: context.application, product: context.product, binaries: binaries, architecture: context.architecture,
                 machine: Architecture(rawValue: Machine.current.architecture) ?? .arm64,
                 dependencies: try await WinUIHead.resolvedDependencies(
-                    of: context.application, scratch: ["--scratch-path", context.scratch.path], compiler: tools.swift, environment: environment),
+                    of: context.head, scratch: ["--scratch-path", context.scratch.path], compiler: tools.swift, environment: environment),
                 packages: WinUIPackages(environment: self.environment),
                 compiler: compiler, cache: ArtifactStore(application: context.application).cache("swift-runtime-\(context.architecture.rawValue)"))
             try await head.assemble(in: staging, reporter: reporter)

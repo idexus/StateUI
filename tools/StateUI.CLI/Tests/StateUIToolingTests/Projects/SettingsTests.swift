@@ -18,8 +18,8 @@ final class SettingsTests: XCTestCase {
             .appendingPathComponent("stateui-settings-\(UUID().uuidString)")
         addTeardownBlock { try? FileManager.default.removeItem(at: root) }
         for (path, text) in [
-            "One/Package.swift": "", "One/stateui.json": Self.mark, "One/Platforms/AppKit/main.swift": "",
-            "b/Two/Package.swift": "", "b/Two/stateui.json": Self.mark, "b/Two/Platforms/Android/build.gradle.kts": "",
+            "One/Package.swift": "", "One/stateui.json": Self.mark, "One/Platforms/AppKit/Package.swift": "",
+            "b/Two/Package.swift": "", "b/Two/stateui.json": Self.mark, "b/Two/Platforms/Android/Package.swift": "",
         ] {
             let file = root.appendingPathComponent(path)
             try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
