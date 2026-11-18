@@ -93,6 +93,28 @@ final class RemoteWorkTests: XCTestCase {
         }
     }
 
+    /// A path git quotes - a tab, a quote, a backslash, a line feed, a byte it writes in octal - is the path itself;
+    /// one it writes as it is stays so.
+    func testAPathGitQuotesIsReadAsTheFileItNames() {
+        XCTAssertEqual(RemoteWork.unquoted("Źródła.swift"), "Źródła.swift")
+        XCTAssertEqual(RemoteWork.unquoted(#""a\tb.swift""#), "a\tb.swift")
+        XCTAssertEqual(RemoteWork.unquoted(#""say \"hi\".swift""#), "say \"hi\".swift")
+        XCTAssertEqual(RemoteWork.unquoted(#""back\\slash\nline.swift""#), "back\\slash\nline.swift")
+        XCTAssertEqual(RemoteWork.unquoted(#""\305\271r\303\263d\305\202a.swift""#), "Źródła.swift")
+    }
+
+    /// Every file git tracks and would track is sent by the name it has, whatever git quotes.
+    func testGitsFilesAreListedByTheirNames() async throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("gitfiles-\(UUID().uuidString)")
+        addTeardownBlock { try? FileManager.default.removeItem(at: folder) }
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let names = ["Źródła.swift", "a\tb.swift", "say \"hi\".swift", "plain.swift"]
+        for name in names { try Data(name.utf8).write(to: folder.appendingPathComponent(name)) }
+        _ = try await ProcessRunner().run(ProcessRequest(.name("git"), arguments: ["-C", folder.path, "init", "-q"]), output: { _ in })
+        let listed = await RemoteWork.gitFiles(in: folder)
+        XCTAssertEqual(listed?.sorted(), names.sorted())
+    }
+
     /// A request naming a machine paired goes there for a host that machine runs on its devices, its device the
     /// machine's own; a result names that machine beside the device its tool said.
     func testAMachinesDeviceIsNamedByTheMachine() throws {

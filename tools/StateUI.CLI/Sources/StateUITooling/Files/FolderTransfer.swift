@@ -24,7 +24,7 @@ enum FolderTransfer {
     static func send(
         _ root: URL, files: [String]?, to remote: String, over session: ServedTool.Session, progress: @Sendable (String) -> Void
     ) async throws -> Counts {
-        let local = try (files.map(Set.init) ?? FolderFiles.every(under: root)).sorted().compactMap { try? FolderFiles.entry($0, in: root) }
+        let local = try (files.map(Set.init) ?? FolderFiles.every(under: root)).sorted().compactMap { try FolderFiles.listed($0, in: root) }
         let there = try await session.query("folder/survey", try JSONValue(encoding: FolderSurveyRequest(root: remote)))
             .decode(FolderSurvey.self).files
         let (changed, extra, counts) = differences(local, there)
@@ -78,14 +78,15 @@ enum FolderTransfer {
         return counts
     }
 
-    /// The files of `source` the `target` lacks or holds otherwise - by size, a time two seconds apart, or whether it is
-    /// a program where both systems say - and the paths `target` holds beyond `source`.
+    /// The files of `source` the `target` lacks or holds otherwise - by size, a time apart by a millisecond or more, or
+    /// whether it is a program where both systems say - and the paths `target` holds beyond `source`.
+    /// Design: docs/design/tooling/service.md#files-through-the-connection
     static func differences(_ source: [FileEntry], _ target: [FileEntry]) -> (changed: [FileEntry], extra: [String], counts: Counts) {
         let held = Dictionary(target.map { ($0.path, $0) }, uniquingKeysWith: { first, _ in first })
         let changed = source.filter { entry in
             guard let other = held[entry.path] else { return true }
             let mode = entry.executable.flatMap { mine in other.executable.map { mine != $0 } } ?? false
-            return other.size != entry.size || abs(other.modified - entry.modified) >= 2 || mode
+            return other.size != entry.size || abs(other.modified - entry.modified) >= 0.001 || mode
         }
         let wanted = Set(source.map(\.path))
         let extra = target.map(\.path).filter { !wanted.contains($0) }.sorted()

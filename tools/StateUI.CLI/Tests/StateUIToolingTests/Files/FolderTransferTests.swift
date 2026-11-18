@@ -79,6 +79,27 @@ final class FolderTransferTests: XCTestCase {
         XCTAssertNil(data("key.js", in: target))
     }
 
+    /// A file named but gone, or a link, is not carried and its copy there goes; one that cannot be read stops the
+    /// transfer, its copy there kept - never taken for a file gone.
+    func testAFileThatCannotBeReadStopsTheTransfer() async throws {
+        #if os(Windows)
+        throw XCTSkip("a link is made on Windows by an administrator or in Developer Mode alone")
+        #else
+        let (source, target, outside) = (try folder(), try folder(), try folder())
+        try write(Data("x".utf8), "L/X.swift", in: outside)
+        try FileManager.default.createSymbolicLink(at: source.appendingPathComponent("L"), withDestinationURL: outside.appendingPathComponent("L"))
+        try write(Data("kept".utf8), "L/X.swift", in: target)
+        try write(Data("gone".utf8), "Gone.swift", in: target)
+        do {
+            _ = try await overService { try await FolderTransfer.send(source, files: ["L/X.swift", "Gone.swift"], to: target.path, over: $0, progress: { _ in }) }
+            XCTFail("a file that cannot be read was taken for one gone")
+        } catch {}
+        XCTAssertEqual(data("L/X.swift", in: target), Data("kept".utf8))
+        _ = try await overService { try await FolderTransfer.send(source, files: ["Gone.swift"], to: target.path, over: $0, progress: { _ in }) }
+        XCTAssertNil(data("Gone.swift", in: target), "a file named but gone")
+        #endif
+    }
+
     /// Fetching brings another machine's folder here - a file larger than a message in pieces - and removes what it
     /// lacks.
     func testFetchingBringsAFolderHome() async throws {
@@ -146,6 +167,18 @@ final class FolderTransferTests: XCTestCase {
         _ = try FolderFiles.write(FilesWriteRequest(root: root.path, pieces: [FilePiece(path: "f", offset: 0, size: 4, modified: 0, data: Data("ab".utf8).base64EncodedString())]))
         XCTAssertThrowsError(try FolderFiles.write(FilesWriteRequest(root: root.path, pieces: [FilePiece(path: "f", offset: 3, size: 4, modified: 0, data: Data("d".utf8).base64EncodedString())])))
         XCTAssertNil(data("f", in: root), "a file stands only once whole")
+    }
+
+    /// A file written again to the same length a second after its copy was carried is carried again - and once
+    /// carried, its time kept there, it is the same however long after; a time apart by less than what a file's
+    /// time keeps through the connection is the same file.
+    func testAChangeOfTheSameLengthIsCarried() {
+        let copy = FileEntry(path: "a.swift", size: 9, modified: 1_000_000)
+        let edited = FileEntry(path: "a.swift", size: 9, modified: 1_000_001)
+        XCTAssertEqual(FolderTransfer.differences([edited], [copy]).changed.map(\.path), ["a.swift"])
+        XCTAssertEqual(FolderTransfer.differences([edited], [edited]).changed, [])
+        let roundTripped = FileEntry(path: "a.swift", size: 9, modified: 1_000_001.000_000_2)
+        XCTAssertEqual(FolderTransfer.differences([edited], [roundTripped]).changed, [])
     }
 
     /// A path through a link - a folder of the copy linked elsewhere, or a linked file - is refused for writing, reading

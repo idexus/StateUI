@@ -116,7 +116,11 @@ guest's stateui ([Files through the
 connection](service.md#files-through-the-connection)), as to any machine's: the
 files git tracks and would track - `git ls-files --cached --others
 --exclude-standard`, so an ignored file, a key among them, never reaches the
-guest - or every file where no git work tree stands. No guest reads the
+guest - or every file where no git work tree stands. A name git quotes - a
+quote, a tab, a line feed in it, and with `core.quotePath=false` nothing else
+- is read back as the name it is (`RemoteWork.unquoted`). A file listed but
+gone since, or a link, is not carried and its copy there goes; one that cannot
+be read stops the transfer, never taken for a file gone. No guest reads the
 project from a shared folder: a path of a Windows guest's share named as a URI
 (`\\Mac\AllFiles\…`) is read there as a folder of its own drive.
 

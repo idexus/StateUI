@@ -33,6 +33,14 @@ enum FolderFiles {
             executable: executable(file))
     }
 
+    /// `path`'s entry where it is a file of `root`; none where it is gone or a link, which are not carried - any other
+    /// failure to read it thrown, never taken for a file gone.
+    static func listed(_ path: String, in root: URL) throws -> FileEntry? {
+        let named = root.appendingPathComponent(path).path
+        guard (try? FileManager.default.attributesOfItem(atPath: named)[.type] as? FileAttributeType) == .typeRegular else { return nil }
+        return try entry(path, in: root)
+    }
+
     /// Whether `file` is a program by its mode; nil on Windows, which keeps no such mark.
     static func executable(_ file: URL) -> Bool? {
         #if os(Windows)

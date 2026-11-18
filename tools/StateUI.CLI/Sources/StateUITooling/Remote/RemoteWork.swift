@@ -416,10 +416,32 @@ public struct RemoteWork: Sendable {
     static func gitFiles(in folder: URL) async -> [String]? {
         let said = Gathered()
         guard let outcome = try? await ProcessRunner().run(
-            ProcessRequest(.name("git"), arguments: ["-C", folder.path, "ls-files", "--cached", "--others", "--exclude-standard"],
+            ProcessRequest(.name("git"), arguments: ["-C", folder.path, "-c", "core.quotePath=false", "ls-files", "--cached", "--others", "--exclude-standard"],
                            timeout: .seconds(120)),
             output: said.add), outcome.succeeded else { return nil }
-        return said.lines(of: .standardOutput).filter { !$0.isEmpty }
+        return said.lines(of: .standardOutput).filter { !$0.isEmpty }.map(unquoted)
+    }
+
+    /// The path git wrote as `line`: as it is, or within quotes with C's escapes - `\t`, `\n`, `\"`, `\\`, a byte in
+    /// octal - for a name with such characters.
+    static func unquoted(_ line: String) -> String {
+        guard line.count >= 2, line.hasPrefix("\""), line.hasSuffix("\"") else { return line }
+        let escapes: [UInt8: UInt8] = [
+            UInt8(ascii: "a"): 0x07, UInt8(ascii: "b"): 0x08, UInt8(ascii: "t"): 0x09, UInt8(ascii: "n"): 0x0A,
+            UInt8(ascii: "v"): 0x0B, UInt8(ascii: "f"): 0x0C, UInt8(ascii: "r"): 0x0D,
+        ]
+        var bytes = Array(line.utf8.dropFirst().dropLast())[...]
+        var path: [UInt8] = []
+        while let byte = bytes.popFirst() {
+            guard byte == UInt8(ascii: "\\"), let next = bytes.popFirst() else { path.append(byte); continue }
+            if (UInt8(ascii: "0")...UInt8(ascii: "7")).contains(next), bytes.count >= 2 {
+                let digits = [next, bytes.removeFirst(), bytes.removeFirst()].map { $0 - UInt8(ascii: "0") }
+                path.append(digits[0] << 6 | digits[1] << 3 | digits[2])
+            } else {
+                path.append(escapes[next] ?? next)
+            }
+        }
+        return String(decoding: path, as: UTF8.self)
     }
 
     static func within(_ folder: URL, _ holder: URL) -> Bool {

@@ -86,13 +86,17 @@ asking, `ServedTool.Session` keeping one connection for all of it). The asking
 side lists the other's files (`folder/survey`: each file's path, size, time and
 whether it is a program, but for what a machine makes where it builds - `.build`, `.git`,
 `.stateui`, `.swiftpm` and the like - and never through a link), compares
-them with its own by size, by a time two seconds apart and by that mark, and sends what
+them with its own by size, by a time a millisecond or more apart and by that
+mark, and sends what
 differs (`files/write`) - or fetches it (`file/read`) - in pieces of at most
 4 MiB a message, base64 within the protocol's frames; what the other side
 holds beyond them is removed (`files/remove`). A file's first piece starts it
 anew beside itself (`<name>.stateui-part`), each next one must follow where
 the last ended, and its last puts it in place with its time and mode - a
 file stands only once whole, a program still one (`0755`, any other `0644`).
+A copy keeps its source's time, which APFS, ext4 and NTFS hold finer than a
+millisecond: a file written again to the same length a moment later is
+another file, and one carried stays the same however long after.
 Windows keeps no such mark: its files say none (`executable` absent), and
 what it writes takes its own. A path names a file inside its folder alone: none empty,
 absolute, with `.`, `..` or a backslash, and none passing a link there - written,
