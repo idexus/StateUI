@@ -166,16 +166,16 @@ public struct ServiceAutostart: Sendable {
         return laid
         #else
         guard FileManager.default.fileExists(atPath: file.path) else { return false }
-        #endif
         #if os(macOS)
         _ = try? await run("launchctl", ["bootout", "gui/\(getuid())", file.path])
         try FileManager.default.removeItem(at: file)
-        #elseif !os(Windows)
+        #else
         _ = try? await run("systemctl", ["--user", "disable", "--now", "stateui.service"])
         try FileManager.default.removeItem(at: file)
         _ = try? await run("systemctl", ["--user", "daemon-reload"])
         #endif
         return true
+        #endif
     }
 
     @discardableResult
