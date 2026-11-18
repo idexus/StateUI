@@ -124,6 +124,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   Android head's process in its `started` event (`debugger`, in place of `debuggerSocket`), and readies a page for a
   browser a debugger follows, which it then opens in none. `stateui run --debugger` prints the LLDB commands. The VS
   Code extension maps the way to lldb-dap or its JavaScript debugger and builds none itself.
+- The VS Code extension offers the WebAssembly DWARF Debugging extension before a Debug launch in a browser where it is
+  missing, and **StateUI: Check Toolchain** says whether it is installed wherever the machine offers the Web: through
+  it a breakpoint on a line of Swift holds in the page, the call stack naming Swift's functions; the variables are
+  WebAssembly's, as the browser's debugger reads no Swift types.
 - `stateui service --listen <address:port>` serves the tool's protocol over TCP - the one an editor speaks over
   `serve --stdio` - to many clients at once, on any address it is given; its sockets are the tool's own on macOS,
   Linux and Windows. It admits a paired client alone: it shows a pairing code, `stateui remote add <name>

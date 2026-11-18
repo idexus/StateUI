@@ -28,7 +28,7 @@ import { editorCommandLine, hasExtensionSources } from "../Sources/reinstall";
 import { conformanceRequest, failedPhases } from "../Sources/conformance";
 import { Architecture, packageDestination, toolArchitecture, windowsArchitecture } from "../Sources/packaging";
 import {
-    atLeast, checkedPythonIn, debuggerFinding, Finding, lldbDapFailure, report,
+    atLeast, checkedPythonIn, debuggerFinding, Finding, lldbDapFailure, report, wasmDebuggingFinding,
 } from "../Sources/toolchain";
 import { pathToFileUri, ToolingClient } from "../Sources/Tooling/client";
 import { BuildResult, DebugDescriptor, HostPlace, TestSuiteDescription } from "../Sources/Tooling/protocol";
@@ -256,6 +256,7 @@ export async function run(): Promise<void> {
                 place: () => undefined,
                 runHead: async () => undefined,
                 browser: async () => undefined,
+                wasmDebugging: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
@@ -281,6 +282,7 @@ export async function run(): Promise<void> {
                     return debug ? { launched: { build: { application: "Gallery" } as unknown as BuildResult, held: true, debugger: relayed }, token: "run-1" } : undefined;
                 },
                 browser: async () => undefined,
+                wasmDebugging: async () => undefined,
             });
             const launch = (configuration: string) => ({ name: "StateUI", type: "stateui", request: "launch", configuration });
             const released = await onAMachine("gtk", "Ubuntu").resolveDebugConfiguration(root, launch("release"));
@@ -500,6 +502,7 @@ export async function run(): Promise<void> {
                         };
                     },
                     browser: async () => undefined,
+                    wasmDebugging: async () => undefined,
                 });
                 const resolved = await provider.resolveDebugConfiguration(root, {
                     name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
@@ -639,6 +642,7 @@ export async function run(): Promise<void> {
                         };
                     },
                     browser: async () => undefined,
+                    wasmDebugging: async () => undefined,
                 });
                 const resolved = await provider.resolveDebugConfiguration(root, {
                     name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
@@ -702,6 +706,7 @@ export async function run(): Promise<void> {
                 place: () => "machine",
                 runHead: async () => undefined,
                 browser: async () => undefined,
+                wasmDebugging: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
@@ -747,6 +752,7 @@ export async function run(): Promise<void> {
                 place: () => "machine",
                 runHead: async () => undefined,
                 browser: async () => undefined,
+                wasmDebugging: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
@@ -791,6 +797,7 @@ export async function run(): Promise<void> {
             const site = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "web-debug");
             const launchOnWeb = async (browser: (typeof listed)[number], configuration: string) => {
                 const runs: { device: string; debug: boolean; configuration: string; host: string }[] = [];
+                const offered: string[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
                     prepare: async () => undefined,
                     host: () => "web", application: async () => helloWorld,
@@ -799,6 +806,7 @@ export async function run(): Promise<void> {
                     machine: async () => undefined,
                     place: () => "browser",
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
+                        offered.push(`run ${device}`);
                         runs.push({ host: forHost, device, debug, configuration: asked });
                         // As the tool answers: a page readied for the browser's debugger where the run asked one.
                         const readied = debug && browser.program !== undefined ? {
@@ -818,10 +826,11 @@ export async function run(): Promise<void> {
                         };
                     },
                     browser: async () => browser,
+                    wasmDebugging: async () => { offered.push("WebAssembly DWARF Debugging"); },
                 });
                 const resolved = await provider.resolveDebugConfiguration(root,
                     { name: "StateUI: Debug", type: "stateui", request: "launch", configuration });
-                return { resolved, runs };
+                return { resolved, runs, offered };
             };
 
             const safari = await launchOnWeb(listed[0], "debug");
@@ -835,6 +844,9 @@ export async function run(): Promise<void> {
                 && chrome.resolved?.type === "chrome" && chrome.resolved.runtimeExecutable === listed[1].program
                 && chrome.resolved.url === "http://127.0.0.1:8460/" && chrome.resolved.webRoot === spelled(site)
                 && chrome.resolved.stateuiRun === "RUN-3");
+            check("Web in Chrome: WebAssembly DWARF Debugging, which the debugger reads Swift's lines through, offered before the run; in Safari and released none",
+                JSON.stringify(chrome.offered) === JSON.stringify(["WebAssembly DWARF Debugging", "run com.google.Chrome"])
+                && JSON.stringify(safari.offered) === JSON.stringify(["run com.apple.Safari"]));
 
             const unknown = await launchOnWeb(listed[3], "debug");
             check("Web in a browser the tool says no debugger follows: the tool opens it, with no session",
@@ -842,7 +854,8 @@ export async function run(): Promise<void> {
 
             const released = await launchOnWeb(listed[1], "release");
             check("Web released in Chrome is opened by the tool, with no session",
-                released.resolved === undefined && released.runs[0]?.device === "com.google.Chrome" && released.runs[0]?.configuration === "release");
+                released.resolved === undefined && released.runs[0]?.device === "com.google.Chrome" && released.runs[0]?.configuration === "release"
+                && !released.offered.includes("WebAssembly DWARF Debugging"));
         }
         {
             const webSuites = await discover("web");
@@ -1121,6 +1134,8 @@ export async function run(): Promise<void> {
                 && checkedPythonIn("error: unable to find 'python310.dll'.\r\nEnsure Python 3.10 (arm64) is installed and available"
                     + " in your Path.\r\n") === undefined
                 && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined
+                && wasmDebuggingFinding(true).found === "installed" && wasmDebuggingFinding(false).found === undefined
+                && wasmDebuggingFinding(false).advice.includes("ms-vscode.wasm-dwarf-debugging")
                 && report([{ component: "Node.js 20 or newer", neededBy: "it", tooOld: "19.4.0", advice: "Install it." }])[0]
                     === "✗ Node.js 20 or newer - 19.4.0 found, too old [it]. Install it."
                 && JSON.stringify(report([

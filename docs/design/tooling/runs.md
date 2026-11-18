@@ -139,7 +139,11 @@ so none decides the way itself, and each gets the same one.
   seconds over USB.
 - **A page** is started by the browser's debugger: the browser's program on
   the page's address, its sources read from the page's folder - in a browser
-  of Chromium's alone, whose pages a debugger follows.
+  of Chromium's alone, whose pages a debugger follows. Swift's lines come
+  from the module's DWARF, which a debug build keeps
+  ([The build](web-heads.md#the-build)) and VS Code's JavaScript debugger
+  reads through WebAssembly DWARF Debugging, which the extension offers; that
+  reader knows no Swift types, so the variables are WebAssembly's.
 
 The terminal's `stateui run --debugger` prints the LLDB commands that reach
 the application as it starts.

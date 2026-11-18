@@ -358,6 +358,14 @@ on the page, in a profile of its own: the page's console is in the Debug
 Console, and ending the session stops the server. Any other browser, and
 **StateUI: Release**, the tool opens.
 
+A breakpoint on a line of Swift holds there through VS Code's WebAssembly
+DWARF Debugging extension (`ms-vscode.wasm-dwarf-debugging`), which
+**StateUI: Debug** offers to install where it is missing: the debugger reads
+the module's DWARF, which a debug build keeps, steps through Swift's lines and
+names Swift's functions in the call stack. The variables it shows are
+WebAssembly's - the module's locals, globals and stack - not Swift's: the
+browser's debugger reads no Swift types.
+
 ## Packaging
 
 ```bash

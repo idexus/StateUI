@@ -26,7 +26,7 @@ import { TestSuites } from "./tests";
 import { writeEditorFiles } from "./projectGroup";
 import { editorCommandLine, hasExtensionSources } from "./reinstall";
 import { conformanceRequest, failedPhases, Rebuild } from "./conformance";
-import { debuggerFinding, Finding, lldbDapFinding, report } from "./toolchain";
+import { debuggerFinding, Finding, lldbDapFinding, report, wasmDebuggingExtension, wasmDebuggingFinding } from "./toolchain";
 import { pathToFileUri } from "./Tooling/client";
 import { Architecture as ToolArchitecture, HostPlace, LaunchedApplication, NameKind, Settings } from "./Tooling/protocol";
 import { runOperation, sayProblem, toolingClients, withTool } from "./Tooling/presentation";
@@ -497,6 +497,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return found;
     };
 
+    // Offered before a Debug launch in a browser, installed on the user's word before the session starts; declined, it
+    // is not offered again until the window reloads, and StateUI: Check Toolchain still says it is missing.
+    let wasmDebuggingDeclined = false;
+    const wasmDebugging = async (): Promise<void> => {
+        if (wasmDebuggingDeclined || vscode.extensions.getExtension(wasmDebuggingExtension)) {
+            return;
+        }
+        const answer = await vscode.window.showInformationMessage(
+            "StateUI: the browser's debugger stops on lines of Swift with the WebAssembly DWARF Debugging extension.",
+            { modal: true, detail: `Install ${wasmDebuggingExtension} from the Marketplace?` }, "Install");
+        if (answer === "Install") {
+            await vscode.commands.executeCommand("workbench.extensions.installExtension", wasmDebuggingExtension);
+        } else {
+            wasmDebuggingDeclined = true;
+        }
+    };
+
     /** The chosen host's marks made again in the checkout - `rebuild` says which families - and the documents rendered. */
     const rebuildConformance = async (rebuild: Rebuild): Promise<void> => {
         const folder = (vscode.workspace.workspaceFolders ?? []).find((each) => isCheckout(each.uri.fsPath));
@@ -766,7 +783,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             const types = vscode.extensions.all.flatMap((each) =>
                 ((each.packageJSON?.contributes?.debuggers ?? []) as { type?: string }[]).map((debug) => debug.type ?? ""));
             const starts = await lldbDapFinding(vscode.workspace.getConfiguration("lldb-dap").get<string>("executable-path"));
-            const all = [...findings, debuggerFinding(types), ...(starts ? [starts] : [])];
+            // A page is debugged in a browser wherever this machine offers the Web.
+            const page = availableHosts(places).some((each) => each.id === "web")
+                ? [wasmDebuggingFinding(vscode.extensions.getExtension(wasmDebuggingExtension) !== undefined)] : [];
+            const all = [...findings, debuggerFinding(types), ...page, ...(starts ? [starts] : [])];
             const served = availableHosts(places).map((each) => each.label).join(", ");
             toolchain.clear();
             toolchain.appendLine(`What ${served || "StateUI"} needs on this machine (${process.platform}, ${process.arch}):`);
@@ -935,6 +955,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         machine,
         runHead,
         browser,
+        wasmDebugging,
         application: async (_folder, forHost, named) => {
             const candidates = runnable(forHost);
 

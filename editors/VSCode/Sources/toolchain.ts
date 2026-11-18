@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What only the editor knows of what a Debug launch needs - the LLDB DAP extension, and whether the lldb-dap
-// `lldb-dap.executable-path` names starts - beside the stateui tool's own findings (`toolchain/check`), and the
-// findings as StateUI: Check Toolchain shows them.
+// What only the editor knows of what a Debug launch needs - the LLDB DAP extension, WebAssembly DWARF Debugging for a
+// page, and whether the lldb-dap `lldb-dap.executable-path` names starts - beside the stateui tool's own findings
+// (`toolchain/check`), and the findings as StateUI: Check Toolchain shows them.
 
 import { execFile } from "child_process";
 import { onPath } from "./Tooling/locate";
@@ -65,6 +65,18 @@ export function debuggerFinding(types: readonly string[]): Finding {
     return {
         component: "the LLDB DAP extension", neededBy: "Debug", found: types.includes("lldb-dap") ? "installed" : undefined,
         advice: "Install LLDB DAP (llvm-vs-code-extensions.lldb-dap) from the Extensions view.",
+    };
+}
+
+/** The extension through which VS Code's JavaScript debugger reads a page's DWARF: Swift's lines, its functions. */
+export const wasmDebuggingExtension = "ms-vscode.wasm-dwarf-debugging";
+
+/** WebAssembly DWARF Debugging, which a Debug launch in a browser reads Swift's lines through, found or not. */
+export function wasmDebuggingFinding(installed: boolean): Finding {
+    return {
+        component: "the WebAssembly DWARF Debugging extension", neededBy: "Debug in a browser",
+        found: installed ? "installed" : undefined,
+        advice: `Install WebAssembly DWARF Debugging (${wasmDebuggingExtension}) from the Extensions view: the browser's debugger then stops on lines of Swift.`,
     };
 }
 

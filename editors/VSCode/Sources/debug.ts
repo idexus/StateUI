@@ -23,7 +23,8 @@
 //   stopping the run. A Release launch has no session;
 // - in a browser (the Web): the page served and opened in the browser chosen;
 //   a Debug launch in one a debugger follows has it served alone, and VS
-//   Code's JavaScript debugger starts that browser on it;
+//   Code's JavaScript debugger starts that browser on it, reading Swift's
+//   lines through WebAssembly DWARF Debugging, offered where it is missing;
 // - on another machine - a guest of a Mac for GTK and WinUI, a machine paired
 //   with the project for a host it runs: built and started there by the tool;
 //   a Debug launch on one paired is held there for LLDB, which lldb-dap reaches
@@ -101,6 +102,12 @@ export interface Choices {
      * where none is picked.
      */
     browser(): Promise<Browser | undefined>;
+
+    /**
+     * Offers WebAssembly DWARF Debugging, through which VS Code's JavaScript debugger stops on lines of Swift in a
+     * page, where it is missing.
+     */
+    wasmDebugging(): Promise<void>;
 }
 
 /** What a machine that runs no host is told, wherever a host is asked for. */
@@ -245,6 +252,9 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
         const debug = configuration === "debug" && browser.debugger;
+        if (debug) {
+            await this.choices.wasmDebugging();
+        }
         const running = await this.choices.runHead(root, application, host, configuration, browser.id, debug);
         if (!running || !running.launched.debugger) {
             return undefined;
