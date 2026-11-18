@@ -16,6 +16,15 @@ final class FolderTransferTests: XCTestCase {
         return folder
     }
 
+    /// Closes a folder to this user until the test ends, or skips: a user whose rights pass every mode - root, as in
+    /// CI's container - meets no folder out of its reach.
+    private func close(_ folder: URL) throws {
+        try FileManager.default.setAttributes([.posixPermissions: 0], ofItemAtPath: folder.path)
+        addTeardownBlock { try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: folder.path) }
+        try XCTSkipIf((try? FileManager.default.contentsOfDirectory(atPath: folder.path)) != nil,
+                      "this user enters a folder of any mode, so none is out of its reach")
+    }
+
     private func write(_ data: Data, _ relative: String, in folder: URL) throws {
         let file = folder.appendingPathComponent(relative)
         try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -109,9 +118,7 @@ final class FolderTransferTests: XCTestCase {
         let (source, target) = (try folder(), try folder())
         try write(Data("secret".utf8), "Private/config.json", in: source)
         try write(Data("kept".utf8), "Private/config.json", in: target)
-        let closed = source.appendingPathComponent("Private")
-        try FileManager.default.setAttributes([.posixPermissions: 0], ofItemAtPath: closed.path)
-        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: closed.path) }
+        try close(source.appendingPathComponent("Private"))
         do {
             _ = try await overService { try await FolderTransfer.send(source, files: ["Private/config.json"], to: target.path, over: $0, progress: { _ in }) }
             XCTFail("a file out of reach was taken for one gone")
@@ -130,9 +137,7 @@ final class FolderTransferTests: XCTestCase {
         try write(Data("secret".utf8), "Private/config.json", in: source)
         try write(Data("open".utf8), "Open.swift", in: source)
         try write(Data("kept".utf8), "Private/config.json", in: target)
-        let closed = source.appendingPathComponent("Private")
-        try FileManager.default.setAttributes([.posixPermissions: 0], ofItemAtPath: closed.path)
-        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: closed.path) }
+        try close(source.appendingPathComponent("Private"))
         do {
             _ = try await overService { try await FolderTransfer.send(source, files: nil, to: target.path, over: $0, progress: { _ in }) }
             XCTFail("a folder out of reach was taken for one gone, sending")
@@ -156,8 +161,7 @@ final class FolderTransferTests: XCTestCase {
         let source = parent.appendingPathComponent("Source")
         try write(Data("open".utf8), "Open.swift", in: source)
         try write(Data("kept".utf8), "Open.swift", in: target)
-        try FileManager.default.setAttributes([.posixPermissions: 0], ofItemAtPath: parent.path)
-        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: parent.path) }
+        try close(parent)
         do {
             _ = try await overService { try await FolderTransfer.send(source, files: nil, to: target.path, over: $0, progress: { _ in }) }
             XCTFail("a folder out of reach was taken for one gone, sending")
