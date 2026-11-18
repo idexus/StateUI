@@ -81,22 +81,26 @@ final class StreamSocketTests: XCTestCase {
         XCTAssertTrue(returns({ _ = try? served.read() }, closing: served), "read")
     }
 
-    /// A listening socket closed while an accept waits on it keeps its number until that accept returns - one admitted
-    /// may not yet have reached the system - and gives it back after.
-    func testAListeningSocketKeepsItsNumberWhileAnAcceptWaits() throws {
+    /// A socket closed while a call holds its handle - an accept admitted, one not yet in the system - keeps its number
+    /// until that call returns, takes no call after, and gives the number back as the call returns.
+    func testASocketKeepsItsNumberWhileACallHoldsIt() throws {
         #if os(Windows)
         throw XCTSkip("a socket's number is a handle on Windows, which fcntl does not read")
         #else
         let listening = try StreamSocket.listen(on: "127.0.0.1", port: 0)
         let number = Int32(listening.number)
-        let done = DispatchSemaphore(value: 0)
-        Thread { _ = try? listening.accept(); done.signal() }.start()
-        Thread.sleep(forTimeInterval: 0.2)
+        let (held, release, done) = (DispatchSemaphore(value: 0), DispatchSemaphore(value: 0), DispatchSemaphore(value: 0))
+        Thread {
+            _ = listening.holding { _ in held.signal(); release.wait() }
+            done.signal()
+        }.start()
+        held.wait()
         listening.close()
-        XCTAssertNotEqual(fcntl(number, F_GETFD), -1, "given back while its accept waits")
-        XCTAssertEqual(done.wait(timeout: .now() + 5), .success, "the accept returned")
-        Thread.sleep(forTimeInterval: 0.05)
-        XCTAssertEqual(fcntl(number, F_GETFD), -1, "given back once its accept returned")
+        XCTAssertNotEqual(fcntl(number, F_GETFD), -1, "given back while a call holds it")
+        XCTAssertNil(listening.holding { _ in true }, "a call started once it is closed")
+        release.signal()
+        XCTAssertEqual(done.wait(timeout: .now() + 5), .success)
+        XCTAssertEqual(fcntl(number, F_GETFD), -1, "kept once the call returned")
         #endif
     }
 }

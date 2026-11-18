@@ -67,7 +67,7 @@ public final class StreamSocket: Sendable {
     public var port: UInt16 {
         var storage = sockaddr_storage()
         var length = socklen_t(MemoryLayout<sockaddr_storage>.size)
-        guard (with { handle in
+        guard (holding { handle in
             withUnsafeMutablePointer(to: &storage) {
                 $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { getsockname(handle, $0, &length) }
             }
@@ -84,7 +84,7 @@ public final class StreamSocket: Sendable {
     /// The next connection made to a listening socket; it waits for one.
     public func accept() throws(ToolingError) -> StreamSocket {
         try ready("accept")
-        guard let accepted = with({ WinSDKOrPOSIX.accept($0, nil, nil) }) else { throw Self.closed("accept") }
+        guard let accepted = holding({ WinSDKOrPOSIX.accept($0, nil, nil) }) else { throw Self.closed("accept") }
         guard accepted != Self.invalid else { throw Self.failure("accept") }
         Self.quietOnClose(accepted)
         return StreamSocket(accepted)
@@ -97,7 +97,7 @@ public final class StreamSocket: Sendable {
         try ready("read")
         #endif
         var buffer = [UInt8](repeating: 0, count: count)
-        let read = with { handle in
+        let read = holding { handle in
             buffer.withUnsafeMutableBytes { bytes in
                 #if os(Windows)
                 Int(recv(handle, bytes.baseAddress!.assumingMemoryBound(to: CChar.self), Int32(count), 0))
@@ -115,7 +115,7 @@ public final class StreamSocket: Sendable {
     public func write(_ bytes: [UInt8]) throws(ToolingError) {
         var sent = 0
         while sent < bytes.count {
-            let wrote = with { handle in
+            let wrote = holding { handle in
                 bytes.withUnsafeBytes { all in
                     let rest = all.baseAddress! + sent
                     #if os(Windows)
@@ -158,7 +158,7 @@ public final class StreamSocket: Sendable {
     /// system would not return: an accept anywhere, a read on Windows.
     private func ready(_ step: String) throws(ToolingError) {
         while true {
-            guard let polled = with({ handle -> Int32 in
+            guard let polled = holding({ handle -> Int32 in
                 #if os(Windows)
                 var poll = WSAPOLLFD(fd: handle, events: Int16(POLLRDNORM), revents: 0)
                 return WSAPoll(&poll, 1, 100)
@@ -171,8 +171,8 @@ public final class StreamSocket: Sendable {
         }
     }
 
-    /// `call` given the handle while the socket stands; nil once it is closed.
-    private func with<Result>(_ call: (Handle) -> Result) -> Result? {
+    /// `call` given the handle while the socket stands, the handle held for it until it returns; nil once it is closed.
+    func holding<Result>(_ call: (Handle) -> Result) -> Result? {
         guard life.withLock({ life in
             guard life.open else { return false }
             life.calls += 1
