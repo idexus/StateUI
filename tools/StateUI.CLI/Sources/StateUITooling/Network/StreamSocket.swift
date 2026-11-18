@@ -25,11 +25,24 @@ public final class StreamSocket: Sendable {
     #endif
 
     private let handle: Handle
-    private let alive = Mutex(true)
+    private let listening: Bool
+    private let life = Mutex(Life())
 
-    private init(_ handle: Handle) {
-        self.handle = handle
+    /// Whether the socket stands, the calls using its handle now, and whether the handle went back to the system - once
+    /// it is closed and the last of them returned, so no call reaches a number the system gave another socket.
+    private struct Life {
+        var open = true
+        var calls = 0
+        var released = false
     }
+
+    private init(_ handle: Handle, listening: Bool = false) {
+        self.handle = handle
+        self.listening = listening
+    }
+
+    /// The system's number of the socket.
+    var number: Int { Int(handle) }
 
     /// A socket listening on `address` - `127.0.0.1`, `0.0.0.0`, a host's name - at `port`, any free one for 0.
     public static func listen(on address: String, port: UInt16) throws(ToolingError) -> StreamSocket {
@@ -52,13 +65,15 @@ public final class StreamSocket: Sendable {
         }
     }
 
-    /// The port it listens on or is connected from.
+    /// The port it listens on or is connected from; 0 once it is closed.
     public var port: UInt16 {
         var storage = sockaddr_storage()
         var length = socklen_t(MemoryLayout<sockaddr_storage>.size)
-        _ = withUnsafeMutablePointer(to: &storage) {
-            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { getsockname(handle, $0, &length) }
-        }
+        guard (with { handle in
+            withUnsafeMutablePointer(to: &storage) {
+                $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { getsockname(handle, $0, &length) }
+            }
+        }) != nil else { return 0 }
         let family = Int32(storage.ss_family)
         return withUnsafePointer(to: &storage) { stored in
             if family == AF_INET6 {
@@ -70,7 +85,7 @@ public final class StreamSocket: Sendable {
 
     /// The next connection made to a listening socket; it waits for one.
     public func accept() throws(ToolingError) -> StreamSocket {
-        let accepted = WinSDKOrPOSIX.accept(handle, nil, nil)
+        guard let accepted = with({ WinSDKOrPOSIX.accept($0, nil, nil) }) else { throw Self.closed("accept") }
         guard accepted != Self.invalid else { throw Self.failure("accept") }
         Self.quietOnClose(accepted)
         return StreamSocket(accepted)
@@ -78,14 +93,28 @@ public final class StreamSocket: Sendable {
 
     /// What the other end wrote next, at most `count` bytes; none once it closed.
     public func read(upTo count: Int = 65_536) throws(ToolingError) -> [UInt8] {
-        var buffer = [UInt8](repeating: 0, count: count)
-        let read = buffer.withUnsafeMutableBytes { bytes in
-            #if os(Windows)
-            Int(recv(handle, bytes.baseAddress!.assumingMemoryBound(to: CChar.self), Int32(count), 0))
-            #else
-            recv(handle, bytes.baseAddress!, count, 0)
-            #endif
+        #if os(Windows)
+        // Winsock's shutdown wakes no recv waiting: the read waits for bytes a tenth of a second at a time, so a close
+        // ends it - a poll that is not 0 is bytes, the end, or an error recv then says.
+        while true {
+            guard let ready = with({ handle -> Int32 in
+                var poll = WSAPOLLFD(fd: handle, events: Int16(POLLRDNORM), revents: 0)
+                return WSAPoll(&poll, 1, 100)
+            }) else { throw Self.closed("read") }
+            if ready != 0 { break }
         }
+        #endif
+        var buffer = [UInt8](repeating: 0, count: count)
+        let read = with { handle in
+            buffer.withUnsafeMutableBytes { bytes in
+                #if os(Windows)
+                Int(recv(handle, bytes.baseAddress!.assumingMemoryBound(to: CChar.self), Int32(count), 0))
+                #else
+                recv(handle, bytes.baseAddress!, count, 0)
+                #endif
+            }
+        }
+        guard let read else { throw Self.closed("read") }
         guard read >= 0 else { throw Self.failure("read") }
         return Array(buffer.prefix(read))
     }
@@ -94,30 +123,68 @@ public final class StreamSocket: Sendable {
     public func write(_ bytes: [UInt8]) throws(ToolingError) {
         var sent = 0
         while sent < bytes.count {
-            let wrote = bytes.withUnsafeBytes { all in
-                let rest = all.baseAddress! + sent
-                #if os(Windows)
-                return Int(send(handle, rest.assumingMemoryBound(to: CChar.self), Int32(bytes.count - sent), 0))
-                #elseif os(Linux)
-                return send(handle, rest, bytes.count - sent, Int32(MSG_NOSIGNAL))
-                #else
-                return send(handle, rest, bytes.count - sent, 0)
-                #endif
+            let wrote = with { handle in
+                bytes.withUnsafeBytes { all in
+                    let rest = all.baseAddress! + sent
+                    #if os(Windows)
+                    return Int(send(handle, rest.assumingMemoryBound(to: CChar.self), Int32(bytes.count - sent), 0))
+                    #elseif os(Linux)
+                    return send(handle, rest, bytes.count - sent, Int32(MSG_NOSIGNAL))
+                    #else
+                    return send(handle, rest, bytes.count - sent, 0)
+                    #endif
+                }
             }
+            guard let wrote else { throw Self.closed("write") }
             guard wrote > 0 else { throw Self.failure("write") }
             sent += wrote
         }
     }
 
-    /// Ends both directions and gives the socket back, once: a read waiting on it returns, and a second close does
-    /// nothing - a system's number given back twice could close another's file.
+    /// Ends both directions, once - a read or a write waiting on it returns, and no call starts after - and gives the
+    /// socket back to the system as the last call on it returns.
+    /// Design: docs/design/tooling/service.md#the-socket
     public func close() {
-        guard alive.withLock({ was in defer { was = false }; return was }) else { return }
+        let release = life.withLock { life -> Bool in
+            guard life.open else { return false }
+            life.open = false
+            // Under the lock: no call returning can give the number back before it is shut.
+            #if os(Windows)
+            _ = shutdown(handle, Int32(SD_BOTH))
+            #else
+            _ = shutdown(handle, Int32(SHUT_RDWR))
+            #endif
+            // A listening socket's accept returns only as its handle goes back, on Windows: it reads and writes nothing.
+            guard life.calls == 0 || listening else { return false }
+            life.released = true
+            return true
+        }
+        if release { Self.release(handle) }
+    }
+
+    /// `call` given the handle while the socket stands; nil once it is closed.
+    private func with<Result>(_ call: (Handle) -> Result) -> Result? {
+        guard life.withLock({ life in
+            guard life.open else { return false }
+            life.calls += 1
+            return true
+        }) else { return nil }
+        defer {
+            let release = life.withLock { life -> Bool in
+                life.calls -= 1
+                guard !life.open, life.calls == 0, !life.released else { return false }
+                life.released = true
+                return true
+            }
+            if release { Self.release(handle) }
+        }
+        return call(handle)
+    }
+
+    private static func release(_ handle: Handle) {
         #if os(Windows)
-        _ = shutdown(handle, Int32(SD_BOTH))
         _ = closesocket(handle)
         #else
-        _ = shutdown(handle, Int32(SHUT_RDWR))
         _ = WinSDKOrPOSIX.close(handle)
         #endif
     }
@@ -146,7 +213,7 @@ public final class StreamSocket: Sendable {
             let handle = WinSDKOrPOSIX.socket(each.pointee.ai_family, each.pointee.ai_socktype, each.pointee.ai_protocol)
             if handle != invalid {
                 quietOnClose(handle)
-                if ready(handle, each.pointee) { return StreamSocket(handle) }
+                if ready(handle, each.pointee) { return StreamSocket(handle, listening: passive) }
                 code = lastError()
                 StreamSocket(handle).close()
             } else {
@@ -186,6 +253,10 @@ public final class StreamSocket: Sendable {
         #else
         Int(errno)
         #endif
+    }
+
+    private static func closed(_ step: String) -> ToolingError {
+        ToolingError(.toolFailed, "The socket could not \(step): it is closed.")
     }
 
     private static func failure(_ step: String, code: Int = lastError()) -> ToolingError {

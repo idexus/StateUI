@@ -40,4 +40,44 @@ final class StreamSocketTests: XCTestCase {
             XCTAssertEqual((error as? ToolingError)?.code, .toolFailed)
         }
     }
+
+    /// A socket closed takes no call after: its number, given back, may be another socket's, so a write through it
+    /// never reaches that one's peer.
+    func testAClosedSocketNeverReachesTheNumberItGaveBack() throws {
+        let listening = try StreamSocket.listen(on: "127.0.0.1", port: 0)
+        defer { listening.close() }
+        let old = try StreamSocket.connect(to: "127.0.0.1", port: listening.port)
+        let oldServed = try listening.accept()
+        defer { oldServed.close() }
+        let number = old.number
+        old.close()
+        let fresh = try StreamSocket.connect(to: "127.0.0.1", port: listening.port)
+        defer { fresh.close() }
+        let served = try listening.accept()
+        defer { served.close() }
+        guard fresh.number == number else { throw XCTSkip("the system gave the new socket another number") }
+        _ = try? old.write(Array("stale".utf8))
+        try fresh.write(Array("fresh".utf8))
+        XCTAssertEqual(String(decoding: try served.read(), as: UTF8.self), "fresh")
+    }
+
+    /// An accept waiting on a listening socket, and a read waiting on a connected one, return once that socket is
+    /// closed from another thread.
+    func testAWaitingCallReturnsOnceItsSocketCloses() throws {
+        func returns(_ call: @escaping @Sendable () -> Void, closing socket: StreamSocket) -> Bool {
+            let done = DispatchSemaphore(value: 0)
+            Thread { call(); done.signal() }.start()
+            Thread.sleep(forTimeInterval: 0.2)
+            socket.close()
+            return done.wait(timeout: .now() + 5) == .success
+        }
+        let listening = try StreamSocket.listen(on: "127.0.0.1", port: 0)
+        XCTAssertTrue(returns({ _ = try? listening.accept() }, closing: listening), "accept")
+        let other = try StreamSocket.listen(on: "127.0.0.1", port: 0)
+        defer { other.close() }
+        let peer = try StreamSocket.connect(to: "127.0.0.1", port: other.port)
+        defer { peer.close() }
+        let served = try other.accept()
+        XCTAssertTrue(returns({ _ = try? served.read() }, closing: served), "read")
+    }
 }

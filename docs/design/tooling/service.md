@@ -19,7 +19,11 @@ first of its places that binds or connects is taken. Reads and writes block,
 each on a thread of its own; a read answers nothing once the other end
 closed, and a write to a closed connection fails rather than ending the
 process (`MSG_NOSIGNAL` on Linux, `SO_NOSIGPIPE` on a Mac). Closing a socket
-ends both directions, so a read waiting on it returns. A name nothing
+ends both directions, so a read or a write waiting on it returns, and no call
+starts on it after; its number goes back to the system only as the last call
+on it returns - a number given back is the next socket's, and a write queued
+for a client lost must never reach another's peer. A listening socket gives
+its number back at once, the only way a waiting accept returns on Windows. A name nothing
 resolves is refused as a configuration; a place that answers no connection,
 as a failure of the socket - on Windows only after its retries, some seconds
 later (both tests of it take 13 s there, against milliseconds on a Mac and
