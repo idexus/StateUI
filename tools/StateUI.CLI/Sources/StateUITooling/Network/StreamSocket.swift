@@ -25,7 +25,6 @@ public final class StreamSocket: Sendable {
     #endif
 
     private let handle: Handle
-    private let listening: Bool
     private let life = Mutex(Life())
 
     /// Whether the socket stands, the calls using its handle now, and whether the handle went back to the system - once
@@ -36,9 +35,8 @@ public final class StreamSocket: Sendable {
         var released = false
     }
 
-    private init(_ handle: Handle, listening: Bool = false) {
+    private init(_ handle: Handle) {
         self.handle = handle
-        self.listening = listening
     }
 
     /// The system's number of the socket.
@@ -85,6 +83,7 @@ public final class StreamSocket: Sendable {
 
     /// The next connection made to a listening socket; it waits for one.
     public func accept() throws(ToolingError) -> StreamSocket {
+        try ready("accept")
         guard let accepted = with({ WinSDKOrPOSIX.accept($0, nil, nil) }) else { throw Self.closed("accept") }
         guard accepted != Self.invalid else { throw Self.failure("accept") }
         Self.quietOnClose(accepted)
@@ -94,15 +93,8 @@ public final class StreamSocket: Sendable {
     /// What the other end wrote next, at most `count` bytes; none once it closed.
     public func read(upTo count: Int = 65_536) throws(ToolingError) -> [UInt8] {
         #if os(Windows)
-        // Winsock's shutdown wakes no recv waiting: the read waits for bytes a tenth of a second at a time, so a close
-        // ends it - a poll that is not 0 is bytes, the end, or an error recv then says.
-        while true {
-            guard let ready = with({ handle -> Int32 in
-                var poll = WSAPOLLFD(fd: handle, events: Int16(POLLRDNORM), revents: 0)
-                return WSAPoll(&poll, 1, 100)
-            }) else { throw Self.closed("read") }
-            if ready != 0 { break }
-        }
+        // Winsock's shutdown wakes no recv waiting.
+        try ready("read")
         #endif
         var buffer = [UInt8](repeating: 0, count: count)
         let read = with { handle in
@@ -154,12 +146,29 @@ public final class StreamSocket: Sendable {
             #else
             _ = shutdown(handle, Int32(SHUT_RDWR))
             #endif
-            // A listening socket's accept returns only as its handle goes back, on Windows: it reads and writes nothing.
-            guard life.calls == 0 || listening else { return false }
+            guard life.calls == 0 else { return false }
             life.released = true
             return true
         }
         if release { Self.release(handle) }
+    }
+
+    /// Returns once the socket has something for `step` - a connection to accept, bytes to read, its end or an error the
+    /// call then says - waiting a tenth of a second at a time, so a close ends the wait where a call waiting in the
+    /// system would not return: an accept anywhere, a read on Windows.
+    private func ready(_ step: String) throws(ToolingError) {
+        while true {
+            guard let polled = with({ handle -> Int32 in
+                #if os(Windows)
+                var poll = WSAPOLLFD(fd: handle, events: Int16(POLLRDNORM), revents: 0)
+                return WSAPoll(&poll, 1, 100)
+                #else
+                var poll = pollfd(fd: handle, events: Int16(POLLIN), revents: 0)
+                return WinSDKOrPOSIX.poll(&poll, 1, 100)
+                #endif
+            }) else { throw Self.closed(step) }
+            if polled != 0 { return }
+        }
     }
 
     /// `call` given the handle while the socket stands; nil once it is closed.
@@ -213,7 +222,7 @@ public final class StreamSocket: Sendable {
             let handle = WinSDKOrPOSIX.socket(each.pointee.ai_family, each.pointee.ai_socktype, each.pointee.ai_protocol)
             if handle != invalid {
                 quietOnClose(handle)
-                if ready(handle, each.pointee) { return StreamSocket(handle, listening: passive) }
+                if ready(handle, each.pointee) { return StreamSocket(handle) }
                 code = lastError()
                 StreamSocket(handle).close()
             } else {
@@ -282,6 +291,7 @@ private enum WinSDKOrPOSIX {
     }
     static func connect(_ handle: Int32, _ address: UnsafePointer<sockaddr>!, _ length: socklen_t) -> Int32 { Glibc.connect(handle, address, length) }
     static func close(_ handle: Int32) -> Int32 { Glibc.close(handle) }
+    static func poll(_ fds: UnsafeMutablePointer<pollfd>, _ count: nfds_t, _ timeout: Int32) -> Int32 { Glibc.poll(fds, count, timeout) }
     #else
     static func socket(_ family: Int32, _ type: Int32, _ proto: Int32) -> Int32 { Darwin.socket(family, type, proto) }
     static func listen(_ handle: Int32, _ backlog: Int32) -> Int32 { Darwin.listen(handle, backlog) }
@@ -290,6 +300,7 @@ private enum WinSDKOrPOSIX {
     }
     static func connect(_ handle: Int32, _ address: UnsafePointer<sockaddr>!, _ length: socklen_t) -> Int32 { Darwin.connect(handle, address, length) }
     static func close(_ handle: Int32) -> Int32 { Darwin.close(handle) }
+    static func poll(_ fds: UnsafeMutablePointer<pollfd>, _ count: nfds_t, _ timeout: Int32) -> Int32 { Darwin.poll(fds, count, timeout) }
     #endif
     #endif
 }

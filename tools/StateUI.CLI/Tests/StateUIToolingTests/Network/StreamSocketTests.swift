@@ -80,4 +80,23 @@ final class StreamSocketTests: XCTestCase {
         let served = try other.accept()
         XCTAssertTrue(returns({ _ = try? served.read() }, closing: served), "read")
     }
+
+    /// A listening socket closed while an accept waits on it keeps its number until that accept returns - one admitted
+    /// may not yet have reached the system - and gives it back after.
+    func testAListeningSocketKeepsItsNumberWhileAnAcceptWaits() throws {
+        #if os(Windows)
+        throw XCTSkip("a socket's number is a handle on Windows, which fcntl does not read")
+        #else
+        let listening = try StreamSocket.listen(on: "127.0.0.1", port: 0)
+        let number = Int32(listening.number)
+        let done = DispatchSemaphore(value: 0)
+        Thread { _ = try? listening.accept(); done.signal() }.start()
+        Thread.sleep(forTimeInterval: 0.2)
+        listening.close()
+        XCTAssertNotEqual(fcntl(number, F_GETFD), -1, "given back while its accept waits")
+        XCTAssertEqual(done.wait(timeout: .now() + 5), .success, "the accept returned")
+        Thread.sleep(forTimeInterval: 0.05)
+        XCTAssertEqual(fcntl(number, F_GETFD), -1, "given back once its accept returned")
+        #endif
+    }
 }
