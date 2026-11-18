@@ -47,20 +47,30 @@ extension RemoteWork {
         }
     }
 
-    /// The port of the other machine's loopback `way` connects LLDB to, where it is an `lldb-server`'s.
+    /// The port of the other machine's loopback `way` connects to, where it is an `lldb-server`'s or an `lldb-dap`'s.
     static func relayedPort(of way: DebugDescriptor?) -> UInt16? {
-        way?.attachCommands.lazy.compactMap { command -> UInt16? in
+        if let adapter = way?.adapterPort { return UInt16(exactly: adapter) }
+        return way?.attachCommands.lazy.compactMap { command -> UInt16? in
             guard command.hasPrefix("gdb-remote 127.0.0.1:") else { return nil }
             return UInt16(command.dropFirst("gdb-remote 127.0.0.1:".count))
         }.first
     }
 
-    /// `launched`'s program folder fetched into the application's `.build/stateui/<machine>`, a relay opened to `port`
-    /// of `remote`'s loopback, and the way to it: the program read from the copy here, the sources mapped from where
-    /// they were built there.
+    /// A relay opened to `port` of `remote`'s loopback and the way to it: an `lldb-dap` there reached at the relay's
+    /// port, the relay turning its messages' paths between there and here; else the program folder fetched into the
+    /// application's `.build/stateui/<machine>` and LLDB reading the program from the copy here.
     private func relayed(
         _ launched: LaunchedApplication, port: UInt16, remote: RemoteMachine, ready: Ready, reporter: BuildReporter
     ) async throws -> (LaunchedApplication, DebugRelay) {
+        if var way = launched.debugger, way.adapterPort != nil {
+            // LLDB there takes no source map to a folder it has not: the relay turns the paths instead.
+            let translation = PathTranslation(here: ready.common.path, there: ready.commonThere, windows: ready.reached.places.windows)
+            let relay = try DebugRelay.open(to: remote, port: port, translation: translation)
+            way.adapterPort = Int(relay.port)
+            var rewritten = launched
+            rewritten.debugger = way
+            return (rewritten, relay)
+        }
         let built = launched.build
         let home = try FileURI.url(ready.application.packageUri).appendingPathComponent(".build/stateui")
             .appendingPathComponent(remote.name.replacingOccurrences(of: "/", with: "-"))

@@ -35,19 +35,28 @@ struct DesktopLaunch: Sendable {
         return RunResult(launched: LaunchedApplication(build: built, process: nil, held: false), exitStatus: Int(outcome.exitStatus))
     }
 
-    /// `program` held by the toolchain's `lldb-server` on a free port of the loopback until LLDB connects, the way
-    /// said as it starts; the port held for a relay while it runs.
+    /// `program` held for LLDB on a free port of the loopback, the way said as it starts, the port held for a relay
+    /// while it runs: by the toolchain's `lldb-server` until LLDB connects - on Windows, whose `lldb-server` tells LLDB
+    /// no module, by its `lldb-dap`, which starts the program as the editor's debugger asks.
     private func held(_ built: BuildResult, program: URL, reporter: RunReporter) async throws -> RunResult {
-        guard let server = ToolResolver().lldbServer else {
-            throw ToolingError(.missingToolchain, "lldb-server is not here: it comes with the Swift toolchain, beside swift.")
+        #if os(Windows)
+        let (name, found) = ("lldb-dap", ToolResolver().lldbDap)
+        #else
+        let (name, found) = ("lldb-server", ToolResolver().lldbServer)
+        #endif
+        guard let server = found else {
+            throw ToolingError(.missingToolchain, "\(name) is not here: it comes with the Swift toolchain, beside swift.")
         }
         let port = try DebugPorts.free()
+        #if os(Windows)
+        let (way, arguments) = (DebugDescriptors.adapter(program: program, port: port), ["--connection", "listen://127.0.0.1:\(port)"])
+        #else
+        let (way, arguments) = (DebugDescriptors.gdbServer(program: program, port: port), ["gdbserver", "127.0.0.1:\(port)", "--", program.path])
+        #endif
         return try await DebugPorts.holding(port) {
-            let launched = LaunchedApplication(
-                build: built, process: nil, held: true, debugger: DebugDescriptors.gdbServer(program: program, port: port))
+            let launched = LaunchedApplication(build: built, process: nil, held: true, debugger: way)
             reporter.started(launched)
-            let outcome = try await ProcessRunner().run(
-                ProcessRequest(.path(server.path), arguments: ["gdbserver", "127.0.0.1:\(port)", "--", program.path]), output: reporter.output)
+            let outcome = try await ProcessRunner().run(ProcessRequest(.path(server.path), arguments: arguments), output: reporter.output)
             try Task.checkCancellation()
             return RunResult(launched: launched, exitStatus: Int(outcome.exitStatus))
         }

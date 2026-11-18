@@ -593,6 +593,15 @@ export async function run(): Promise<void> {
                 && JSON.stringify(onDevice.attachCommands) === JSON.stringify(["device select PHONE", "device process attach --pid 37779"])
                 && JSON.stringify(onDevice.initCommands) === JSON.stringify([
                     "settings append target.exec-search-paths /b/App.app", "settings append target.exec-search-paths /b/App.app/Frameworks"]));
+            const onWindows = debugConfiguration("StateUI: Debug", {
+                kind: "lldb", request: "launch", programUri: "file:///C:/Users/me/stateui-guest/abc/Notes/NotesWinUI.exe",
+                workingUri: "file:///C:/Users/me/stateui-guest/abc/Notes", adapterPort: 51200, attachCommands: [], terminateCommands: [],
+                initCommands: ["settings set target.source-map \"C:\\Users\\me\\stateui-guest\\abc\" \"/Users/me\""],
+            });
+            check("an lldb-dap already listening - another machine's, through the relay - is connected to, and starts that machine's program",
+                onWindows.request === "launch" && onWindows.debugAdapterHostname === "127.0.0.1" && onWindows.debugAdapterPort === 51200
+                && /^c:[\\/]Users[\\/]me[\\/]stateui-guest/i.test(onWindows.program) && onWindows.initCommands?.length === 1
+                && onDevice.debugAdapterPort === undefined);
         }
         {
             const helloWorldHere = api.applications().find((each) => each.name === "HelloWorld")!;

@@ -18,12 +18,13 @@ public final class DebugRelay: Sendable {
         self.listener = listener
     }
 
-    /// A relay to `port` of `remote`'s loopback, carrying connections until closed.
-    public static func open(to remote: RemoteMachine, port: UInt16) throws(ToolingError) -> DebugRelay {
+    /// A relay to `port` of `remote`'s loopback, carrying connections until closed - a debug adapter's messages with
+    /// their paths translated where `translation` is given.
+    public static func open(to remote: RemoteMachine, port: UInt16, translation: PathTranslation? = nil) throws(ToolingError) -> DebugRelay {
         let listener = try StreamSocket.listen(on: "127.0.0.1", port: 0)
         let accepting = Thread {
             while let local = try? listener.accept() {
-                let carrying = Thread { carry(local, to: remote, port: port) }
+                let carrying = Thread { carry(local, to: remote, port: port, translation: translation) }
                 carrying.name = "stateui relay"
                 carrying.start()
             }
@@ -38,18 +39,36 @@ public final class DebugRelay: Sendable {
         listener.close()
     }
 
-    /// `local`'s bytes carried to `port` of `remote`'s loopback through its service, and back, until either end closes.
-    private static func carry(_ local: StreamSocket, to remote: RemoteMachine, port: UInt16) {
+    /// `local`'s bytes carried to `port` of `remote`'s loopback through its service, and back, until either end closes -
+    /// as messages whose paths `translation` turns, where given.
+    private static func carry(_ local: StreamSocket, to remote: RemoteMachine, port: UInt16, translation: PathTranslation?) {
         defer { local.close() }
         guard let service = try? granted(remote, port: port) else { return }
         let back = Thread {
-            while let bytes = try? service.read(), !bytes.isEmpty, (try? local.write(bytes)) != nil {}
+            pipe(from: service, to: local, translation: translation, toward: .here)
             local.close()
         }
         back.name = "stateui relay"
         back.start()
-        while let bytes = try? local.read(), !bytes.isEmpty, (try? service.write(bytes)) != nil {}
+        pipe(from: local, to: service, translation: translation, toward: .there)
         service.close()
+    }
+
+    /// What `source` says, written to `target` until either closes: as it comes, or message by message - each a
+    /// `Content-Length` frame - with its paths translated `direction`.
+    private static func pipe(from source: StreamSocket, to target: StreamSocket, translation: PathTranslation?, toward direction: PathTranslation.Direction) {
+        guard let translation else {
+            while let bytes = try? source.read(), !bytes.isEmpty, (try? target.write(bytes)) != nil {}
+            return
+        }
+        var reader = FrameReader()
+        while let bytes = try? source.read(), !bytes.isEmpty, let frames = try? reader.take(bytes) {
+            for frame in frames {
+                guard let message = try? ToolingJSON.decoder().decode(JSONValue.self, from: frame),
+                      let body = try? ToolingJSON.encoder().encode(translation.translated(message, toward: direction)),
+                      (try? target.write(Array("Content-Length: \(body.count)\r\n\r\n".utf8) + Array(body))) != nil else { return }
+            }
+        }
     }
 
     /// `remote`'s service connected, its challenge answered with the token - its identity checked first - and the
@@ -81,6 +100,60 @@ public final class DebugRelay: Sendable {
         } catch {
             socket.close()
             throw error
+        }
+    }
+}
+
+/// The paths a debug adapter's messages name, turned from this machine's into the other's on the way there and back
+/// again: a source under `here` stands under `there`, written as that machine writes a path.
+public struct PathTranslation: Sendable, Equatable {
+    /// Which way a message goes.
+    public enum Direction: Sendable {
+        case there, here
+    }
+
+    let here: String
+    let there: String
+    let windows: Bool
+
+    /// The translation of the folder `here` of this machine, copied to `there` on a machine writing paths as Windows
+    /// does where `windows`.
+    public init(here: String, there: String, windows: Bool) {
+        (self.here, self.there, self.windows) = (here, there, windows)
+    }
+
+    /// `value` with each `path` under the folder of the side it leaves translated to the other's.
+    func translated(_ value: JSONValue, toward direction: Direction) -> JSONValue {
+        switch value {
+        case .object(let fields):
+            return .object(fields.reduce(into: [:]) { result, field in
+                if field.key == "path", case .string(let path) = field.value, let moved = moved(path, toward: direction) {
+                    result[field.key] = .string(moved)
+                } else {
+                    result[field.key] = translated(field.value, toward: direction)
+                }
+            })
+        case .array(let items):
+            return .array(items.map { translated($0, toward: direction) })
+        default:
+            return value
+        }
+    }
+
+    /// `path` under the folder of the side it leaves, as the same file under the other's; nil for any other path.
+    private func moved(_ path: String, toward direction: Direction) -> String? {
+        let (separator, theirs) = (windows ? "\\" : "/", windows ? path.replacingOccurrences(of: "/", with: "\\") : path)
+        switch direction {
+        case .there:
+            guard path == here || path.hasPrefix(here + "/") else { return nil }
+            let rest = String(path.dropFirst(here.count))
+            return there + (windows ? rest.replacingOccurrences(of: "/", with: "\\") : rest)
+        case .here:
+            let start = theirs.prefix(there.count)
+            let same = windows ? start.lowercased() == there.lowercased() : start == there
+            guard same, theirs.count == there.count || theirs.dropFirst(there.count).hasPrefix(separator) else { return nil }
+            let rest = String(theirs.dropFirst(there.count))
+            return here + (windows ? rest.replacingOccurrences(of: "\\", with: "/") : rest)
         }
     }
 }

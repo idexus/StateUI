@@ -35,12 +35,16 @@ public struct DebugDescriptor: Codable, Equatable, Sendable {
     public var url: String?
     /// The folder a page's files stand in, as a file URI: where a browser's debugger reads its sources.
     public var sourceUri: String?
+    /// The port of the editor's machine's loopback a debug adapter already listens on - `lldb-dap` where the
+    /// application runs, reached through the tool's relay - which the editor's debugger connects to rather than
+    /// starting one: LLDB's commands, the program and its folder are then that machine's.
+    public var adapterPort: Int?
 
     /// A debugger reaching an application as `kind` and `request` say.
     public init(
         kind: Kind, request: Request, programUri: String? = nil, workingUri: String? = nil, process: Int? = nil,
         initCommands: [String] = [], attachCommands: [String] = [], terminateCommands: [String] = [], url: String? = nil,
-        sourceUri: String? = nil
+        sourceUri: String? = nil, adapterPort: Int? = nil
     ) {
         self.kind = kind
         self.request = request
@@ -52,5 +56,6 @@ public struct DebugDescriptor: Codable, Equatable, Sendable {
         self.terminateCommands = terminateCommands
         self.url = url
         self.sourceUri = sourceUri
+        self.adapterPort = adapterPort
     }
 }

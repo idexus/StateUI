@@ -293,11 +293,13 @@ export interface DebugDescriptor {
     terminateCommands: string[];
     url?: string;
     sourceUri?: string;
+    /** The port of this machine's loopback an lldb-dap already listens on, reached through the tool's relay. */
+    adapterPort?: number;
 }
 export const DebugDescriptor = object<DebugDescriptor>({
     kind: oneOf<DebugKind>("lldb", "browser"), request: oneOf<DebugRequest>("launch", "attach"), programUri: optional(string),
     workingUri: optional(string), process: optional(number), initCommands: array(string), attachCommands: array(string),
-    terminateCommands: array(string), url: optional(string), sourceUri: optional(string),
+    terminateCommands: array(string), url: optional(string), sourceUri: optional(string), adapterPort: optional(number),
 });
 
 export interface LaunchedApplication { build: BuildResult; process?: number; held: boolean; debugger?: DebugDescriptor; url?: string }

@@ -260,8 +260,8 @@ export function runPlace(directory: string, host: Host, device: string): string 
 
 /**
  * The configuration of VS Code's debugger that reaches an application as the stateui tool said: lldb-dap starting
- * its program or attaching to its process with the tool's commands, or VS Code's JavaScript debugger starting a
- * browser on its page.
+ * its program or attaching to its process with the tool's commands - an lldb-dap already listening where the tool says
+ * one is - or VS Code's JavaScript debugger starting a browser on its page.
  */
 export function debugConfiguration(name: string, way: DebugDescriptor): vscode.DebugConfiguration {
     if (way.kind === "browser") {
@@ -274,10 +274,12 @@ export function debugConfiguration(name: string, way: DebugDescriptor): vscode.D
         ...(way.initCommands.length > 0 ? { initCommands: way.initCommands } : {}),
         ...(way.terminateCommands.length > 0 ? { terminateCommands: way.terminateCommands } : {}),
     };
+    // An lldb-dap already listening - another machine's, through the tool's relay - starts that machine's program.
+    const listening = way.adapterPort !== undefined ? { debugAdapterHostname: "127.0.0.1", debugAdapterPort: way.adapterPort } : {};
     if (way.request === "launch") {
         return {
             type: "lldb-dap", request: "launch", name, program: way.programUri && pathOf(way.programUri),
-            cwd: way.workingUri && pathOf(way.workingUri), stopOnEntry: false, ...commands,
+            cwd: way.workingUri && pathOf(way.workingUri), stopOnEntry: false, ...commands, ...listening,
         };
     }
     return {

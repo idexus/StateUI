@@ -156,6 +156,10 @@ struct RunCommand: AsyncParsableCommand {
         let process = launched.process.map { ", process \($0)" } ?? ""
         let lldb = launched.debugger.flatMap { way -> String? in
             guard way.kind == .lldb else { return nil }
+            if let port = way.adapterPort {
+                return "\nstateui: lldb-dap reaches it at 127.0.0.1:\(port), launching \(way.programUri.map(FileURI.shown) ?? "its program")"
+                    + (way.initCommands.isEmpty ? "" : " after: " + way.initCommands.joined(separator: "; "))
+            }
             let attach = way.attachCommands.isEmpty ? way.process.map { ["process attach --pid \($0)"] } ?? [] : way.attachCommands
             return "\nstateui: LLDB reaches it with: " + (way.initCommands + attach).joined(separator: "; ")
         } ?? ""

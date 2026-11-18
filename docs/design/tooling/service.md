@@ -239,6 +239,19 @@ stack into StateUI's libraries; the Clang modules a Swift library's debug
 information names (`.pcm`) stand on the machine that built it, so LLDB says
 some types of the libraries are missing.
 
+Windows' `lldb-server` tells a debugger no module it loaded
+(`qXfer:libraries:read` is unimplemented there), so no LLDB off Windows could
+place a breakpoint. On Windows the run starts the toolchain's `lldb-dap`
+instead, listening on the loopback port (`--connection
+listen://127.0.0.1:<port>`), and `started` names it (`adapterPort`): the
+editor's debugger connects to that adapter through the relay rather than
+starting its own, and the adapter starts the program there with LLDB's own
+Windows process plugin. LLDB there takes no source map to a folder it has not,
+so the relay carries the adapter's messages one by one and turns every `path`
+under this machine's folder into the copy's - written as Windows writes it -
+and back (`PathTranslation`): the editor sets and sees breakpoints in its own
+files.
+
 ## A service probed
 
 `stateui remote probe <address:port>` says whether a stateui service answers

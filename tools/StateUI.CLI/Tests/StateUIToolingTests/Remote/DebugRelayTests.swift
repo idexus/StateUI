@@ -57,4 +57,29 @@ final class DebugRelayTests: XCTestCase {
             XCTAssertThrowsError(try DebugRelay.granted(stranger, port: echo.port))
         }
     }
+
+    /// A debug adapter's messages name sources as each side writes them: a path under this machine's folder goes there
+    /// under the copy - in Windows' way of writing it - and a path of the copy comes back as this machine's; any
+    /// other path, and every other field, stays.
+    func testADebugAdaptersPathsAreEachSidesOwn() throws {
+        let translation = PathTranslation(here: "/Users/me/StateUI", there: #"C:\Users\me\stateui-guest\abc\StateUI"#, windows: true)
+        let request: JSONValue = .object([
+            "command": .string("setBreakpoints"),
+            "arguments": .object(["source": .object(["path": .string("/Users/me/StateUI/apps/Notes/Sources/MainPage.swift")]),
+                                  "breakpoints": .array([.object(["line": .number(12)])])]),
+        ])
+        let sent = translation.translated(request, toward: .there)
+        XCTAssertEqual(sent, .object([
+            "command": .string("setBreakpoints"),
+            "arguments": .object(["source": .object(["path": .string(#"C:\Users\me\stateui-guest\abc\StateUI\apps\Notes\Sources\MainPage.swift"#)]),
+                                  "breakpoints": .array([.object(["line": .number(12)])])]),
+        ]))
+        let frame: JSONValue = .object(["source": .object(["path": .string(#"c:\users\me\stateui-guest\abc\StateUI\apps\Notes\Sources\MainPage.swift"#)])])
+        XCTAssertEqual(translation.translated(frame, toward: .here),
+                       .object(["source": .object(["path": .string("/Users/me/StateUI/apps/Notes/Sources/MainPage.swift")])]))
+        let elsewhere: JSONValue = .object(["source": .object(["path": .string(#"C:\Windows\System32\ntdll.dll"#)])])
+        XCTAssertEqual(translation.translated(elsewhere, toward: .here), elsewhere)
+        let line = try ToolingJSON.encoder().encode(ToolingJSON.decoder().decode(JSONValue.self, from: Data(#"{"line":12,"id":3}"#.utf8)))
+        XCTAssertEqual(String(decoding: line, as: UTF8.self), #"{"id":3,"line":12}"#, "a whole number stays one")
+    }
 }

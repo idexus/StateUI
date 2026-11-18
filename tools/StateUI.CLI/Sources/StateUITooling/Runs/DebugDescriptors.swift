@@ -53,6 +53,14 @@ enum DebugDescriptors {
             terminateCommands: ["process kill"])
     }
 
+    /// `lldb-dap` listening at `port` of this machine's loopback, the editor's debugger connecting to it and it starting
+    /// `program` in its folder - LLDB on Windows, whose own process plugin knows a program's modules.
+    static func adapter(program: URL, port: UInt16) -> DebugDescriptor {
+        DebugDescriptor(
+            kind: .lldb, request: .launch, programUri: FileURI.string(program),
+            workingUri: FileURI.string(program.deletingLastPathComponent()), adapterPort: Int(port))
+    }
+
     /// A browser's debugger starting `browser` on the page at `url`, the page's sources read from `site`.
     static func page(_ url: String, browser: URL, site: URL) -> DebugDescriptor {
         DebugDescriptor(kind: .browser, request: .launch, programUri: FileURI.string(browser), url: url, sourceUri: FileURI.string(site))
