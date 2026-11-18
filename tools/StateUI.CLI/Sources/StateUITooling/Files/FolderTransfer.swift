@@ -61,7 +61,7 @@ enum FolderTransfer {
     ) async throws -> Counts {
         let there = try await session.query("folder/survey", try JSONValue(encoding: FolderSurveyRequest(root: remote)))
             .decode(FolderSurvey.self).files
-        let local = try FolderFiles.every(under: root).sorted().compactMap { try? FolderFiles.entry($0, in: root) }
+        let local = try FolderFiles.every(under: root).sorted().compactMap { try FolderFiles.listed($0, in: root) }
         let (changed, extra, counts) = differences(there, local)
         progress("fetching \(changed.count) of \(there.count) files from \(remote)")
         for entry in changed {

@@ -89,7 +89,9 @@ reads another's shared folder (`FolderFiles` answering, `FolderTransfer`
 asking, `ServedTool.Session` keeping one connection for all of it). The asking
 side lists the other's files (`folder/survey`: each file's path, size, time and
 whether it is a program, but for what a machine makes where it builds - `.build`, `.git`,
-`.stateui`, `.swiftpm` and the like - and never through a link), compares
+`.stateui`, `.swiftpm` and the like - and never through a link; a folder that
+cannot be read fails the survey, as a list without it would not be whole and
+its files would be removed as gone), compares
 them with its own by size, by a time a millisecond or more apart and by that
 mark, and sends what
 differs (`files/write`) - or fetches it (`file/read`) - in pieces of at most

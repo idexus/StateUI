@@ -20,7 +20,7 @@ enum FolderFiles {
     static func survey(_ request: FolderSurveyRequest) throws -> FolderSurvey {
         let root = URL(fileURLWithPath: request.root)
         return FolderSurvey(files: try every(under: root).sorted().compactMap { path in
-            try? entry(path, in: root)
+            try listed(path, in: root)
         })
     }
 
@@ -126,13 +126,15 @@ enum FolderFiles {
     }
 
     /// Every regular file under `folder`, by its path from it written with `/`, none under what `left` names - walked
-    /// folder by folder, as a directory enumerator told to skip a folder skips its siblings too on Windows.
+    /// folder by folder, as a directory enumerator told to skip a folder skips its siblings too on Windows. None where
+    /// `folder` stands not; a folder under it that cannot be read is thrown, as a list without it would not be whole.
     static func every(under folder: URL) throws -> Set<String> {
+        guard FileManager.default.fileExists(atPath: folder.path) else { return [] }
         var found: Set<String> = []
         var folders: [(URL, [String])] = [(folder, [])]
         let keys: [URLResourceKey] = [.isRegularFileKey, .isDirectoryKey, .isSymbolicLinkKey]
         while let (current, path) = folders.popLast() {
-            guard let entries = try? FileManager.default.contentsOfDirectory(at: current, includingPropertiesForKeys: keys) else { continue }
+            let entries = try FileManager.default.contentsOfDirectory(at: current, includingPropertiesForKeys: keys)
             for entry in entries where !left.contains(entry.lastPathComponent) {
                 let facts = try entry.resourceValues(forKeys: Set(keys))
                 if facts.isSymbolicLink == true { continue }

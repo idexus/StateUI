@@ -120,6 +120,32 @@ final class FolderTransferTests: XCTestCase {
         #endif
     }
 
+    /// A folder this user may not enter makes no list whole: sending every file, or fetching a folder holding one, stops
+    /// - the copies on the other side kept, never removed as files gone.
+    func testAFolderOutOfReachMakesNoListWhole() async throws {
+        #if os(Windows)
+        throw XCTSkip("a folder's access is Windows' own lists, not a mode")
+        #else
+        let (source, target) = (try folder(), try folder())
+        try write(Data("secret".utf8), "Private/config.json", in: source)
+        try write(Data("open".utf8), "Open.swift", in: source)
+        try write(Data("kept".utf8), "Private/config.json", in: target)
+        let closed = source.appendingPathComponent("Private")
+        try FileManager.default.setAttributes([.posixPermissions: 0], ofItemAtPath: closed.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: closed.path) }
+        do {
+            _ = try await overService { try await FolderTransfer.send(source, files: nil, to: target.path, over: $0, progress: { _ in }) }
+            XCTFail("a folder out of reach was taken for one gone, sending")
+        } catch {}
+        XCTAssertEqual(data("Private/config.json", in: target), Data("kept".utf8))
+        do {
+            _ = try await overService { try await FolderTransfer.fetch(source.path, into: target, over: $0, progress: { _ in }) }
+            XCTFail("a folder out of reach was taken for one gone, fetching")
+        } catch {}
+        XCTAssertEqual(data("Private/config.json", in: target), Data("kept".utf8))
+        #endif
+    }
+
     /// Fetching brings another machine's folder here - a file larger than a message in pieces - and removes what it
     /// lacks.
     func testFetchingBringsAFolderHome() async throws {
