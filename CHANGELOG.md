@@ -86,6 +86,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   with `--plan`, which dropped them.
 - The tool: a failed operation's last output - the compiler's error - reaches the editor before the operation's end;
   told after it, it was dropped.
+- The tool: a launch on a simulator that `simctl` refuses says what `simctl` said and how it ended; it was told as
+  one that named no process within a minute, `simctl`'s own words dropped.
 - VS Code: Run Without Debugging (Ctrl+F5) runs the Debug build with no debugger on every host; it readied one and
   attached it.
 - VS Code: no language server's configuration is written while the tool answers no lease of the index; a lease not

@@ -78,7 +78,7 @@ public struct UIKitBundle: Sendable {
             try files.copyItem(at: binaries.appendingPathComponent(library), to: frameworks.appendingPathComponent(library))
         }
         // SwiftPM's rpaths point into its own folders; the bundle's libraries stand in Frameworks.
-        try? await ToolStep.run(.name("install_name_tool"), ["-add_rpath", "@executable_path/Frameworks", program.path])
+        _ = try? await ToolStep.run(.name("install_name_tool"), ["-add_rpath", "@executable_path/Frameworks", program.path])
 
         let images = application.appendingPathComponent("Resources/Images")
         if files.fileExists(atPath: images.path) {

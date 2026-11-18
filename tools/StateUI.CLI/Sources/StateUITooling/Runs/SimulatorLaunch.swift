@@ -28,7 +28,7 @@ struct SimulatorLaunch {
     func run(_ built: BuildResult, held: Bool, reporter: RunReporter) async throws -> RunResult {
         reporter.build.progress("booting \(simulator.name)")
         try await ToolStep.run(.name("xcrun"), ["simctl", "bootstatus", simulator.udid, "-b"], limit: .seconds(300))
-        try? await ToolStep.run(.name("open"), ["-a", "Simulator", "--args", "-CurrentDeviceUDID", simulator.udid])
+        _ = try? await ToolStep.run(.name("open"), ["-a", "Simulator", "--args", "-CurrentDeviceUDID", simulator.udid])
         reporter.build.progress("installing on \(simulator.name)")
         try await ToolStep.run(.name("xcrun"), ["simctl", "install", simulator.udid, bundle.path], limit: .seconds(300))
 
@@ -37,15 +37,7 @@ struct SimulatorLaunch {
         let (out, err) = (logs.appendingPathComponent("stdout.log"), logs.appendingPathComponent("stderr.log"))
         for file in [out, err] { try? files.removeItem(at: file) }
         reporter.build.progress("starting \(identifier)")
-        let handed = Self.environment(handing: environment)
-        let said = await ToolOutput.standardOutput(.name("xcrun"), ["simctl", "launch", "--terminate-running-process"]
-            + (held ? ["--wait-for-debugger"] : []) + ["--stdout=\(out.path)", "--stderr=\(err.path)", simulator.udid, identifier],
-            environment: handed, limit: .seconds(60))
-        guard let process = said.flatMap({ $0.split(separator: ":").last.flatMap { Int($0.trimmingCharacters(in: .whitespaces)) } }) else {
-            throw ToolingError(.toolFailed, "\(identifier) did not start on \(simulator.name): simctl launch named no process"
-                + " within a minute. Where `xcrun simctl spawn \(simulator.udid) launchctl list` still lists it, an earlier"
-                + " process of it never ended - one a stopped debugserver holds.")
-        }
+        let process = try await launch(held: held, out: out, err: err)
         let launched = LaunchedApplication(
             build: built, process: process, held: held, debugger: held ? DebugDescriptors.simulator(process: process) : nil)
         reporter.started(launched)
@@ -62,6 +54,27 @@ struct SimulatorLaunch {
         }
         for index in tails.indices { tails[index].read(end: true).forEach(reporter.output) }
         return RunResult(launched: launched, exitStatus: nil)
+    }
+
+    /// The process `simctl launch` started of the application, its two streams written to `out` and `err`.
+    ///
+    /// - Throws: ``ToolingError`` `TOOL_FAILED` with what simctl said and how it ended, where it started none.
+    func launch(held: Bool, out: URL, err: URL) async throws -> Int {
+        let said: String
+        do {
+            said = try await ToolStep.run(.name("xcrun"), ["simctl", "launch", "--terminate-running-process"]
+                + (held ? ["--wait-for-debugger"] : []) + ["--stdout=\(out.path)", "--stderr=\(err.path)", simulator.udid, identifier],
+                environment: Self.environment(handing: environment), limit: .seconds(60))
+        } catch let refused as ToolingError {
+            throw ToolingError(.toolFailed, "\(identifier) did not start on \(simulator.name): \(refused.message)\nWhere"
+                + " `xcrun simctl spawn \(simulator.udid) launchctl list` still lists it, an earlier process of it never"
+                + " ended - one a stopped debugserver holds.")
+        }
+        guard let process = said.split(separator: ":").last.flatMap({ Int($0.trimmingCharacters(in: .whitespaces)) }) else {
+            throw ToolingError(.toolFailed, "\(identifier) did not start on \(simulator.name): simctl launch named no process"
+                + " - it said \"\(said)\"")
+        }
+        return process
     }
 
     /// Whether process `process` of this Mac still runs - a held one too.
