@@ -67,4 +67,22 @@ final class ServiceListenerTests: XCTestCase {
         await serving.value
         XCTAssertThrowsError(try StreamSocket.connect(to: "127.0.0.1", port: listener.port))
     }
+
+    /// A client found lost reads nothing: its connection ends without waiting for it to take what was sent - the frames
+    /// still unwritten fail as its socket shuts - while every frame reaches a client that reads.
+    func testALostClientsConnectionEndsWithoutIt() throws {
+        let listening = try StreamSocket.listen(on: "127.0.0.1", port: 0)
+        defer { listening.close() }
+        let peer = try StreamSocket.connect(to: "127.0.0.1", port: listening.port)
+        defer { peer.close() }
+        let client = try listening.accept()
+        let writer = SocketWriter(client)
+        writer.write(Data(count: 64 << 20))
+        let ended = DispatchSemaphore(value: 0)
+        let ending = Thread { ServiceListener.end(client, writer: writer, lost: true); ended.signal() }
+        ending.start()
+        let done = ended.wait(timeout: .now() + 5) == .success
+        if !done { client.close() }
+        XCTAssertTrue(done, "the end waited for a client that reads nothing")
+    }
 }

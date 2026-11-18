@@ -76,6 +76,13 @@ public struct ServiceListener: Sendable {
         }
         await connection.closed()
         await connection.end()
+        Self.end(client, writer: writer, lost: await connection.lost)
+    }
+
+    /// Ends `client`'s connection: what it was sent written before its socket closes - but a `lost` client reads
+    /// nothing, so its socket shuts first and the frames still waiting fail rather than wait for it.
+    static func end(_ client: StreamSocket, writer: SocketWriter, lost: Bool) {
+        if lost { client.close() }
         writer.flush()
         client.close()
     }

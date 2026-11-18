@@ -133,7 +133,10 @@ started end with it, and one that hears no call is waited for no longer than
 a stop may take. What the connection held goes with its process:
 a package it indexed is another connection's to take. The input is read
 beside the connection's life, so its end, an `exit` and a client lost all
-end the service the same way.
+end the service the same way. A TCP client of `stateui service` lost ends its connection
+alone: its socket shuts before the frames still waiting for it are written,
+so they fail rather than wait (`ServiceListener.end`), and the service goes
+on for its other clients.
 
 ## The recorded examples
 
