@@ -92,7 +92,8 @@ struct PackageCommand: AsyncParsableCommand {
 }
 
 /// `stateui run`: an application built, then run in the foreground until it ends or Ctrl+C stops it - an AppKit
-/// head on this Mac, a UIKit or Android head on its device, simulator or emulator, its output followed.
+/// head on this Mac, a UIKit or Android head on its device, simulator or emulator, a page in a browser, a GTK or WinUI
+/// head on this machine or another - its output followed.
 struct RunCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "run", abstract: "Builds an application and runs it in the foreground; Ctrl+C stops it.")
@@ -112,11 +113,11 @@ struct RunCommand: AsyncParsableCommand {
         do {
             let request = try ApplicationBuilder.chosen(build.request(), in: build.here)
             let remotes = try RemoteMachines(project: build.project.map { URL(fileURLWithPath: $0) } ?? build.here).list()
-            if let host = request.host, [.uikit, .android, .web].contains(host) || RemoteWork.asks(host, device: request.device, remotes: remotes) {
+            if let host = request.host, host != .appkit || RemoteWork.asks(host, device: request.device, remotes: remotes) {
                 guard listen == nil || ["loopback", "lan"].contains(listen ?? "") else {
                     throw ToolingError(.invalidConfiguration, "--listen is loopback or lan.")
                 }
-                _ = try await ToolingService().run(
+                let ran = try await ToolingService().run(
                     RunRequest(build: request, debugger: debugger, port: port, lan: listen.map { $0 == "lan" }), in: build.here,
                     operation: BuildOptions.operation,
                     reporter: RunReporter(
@@ -125,26 +126,14 @@ struct RunCommand: AsyncParsableCommand {
                             (line.stream == .standardError ? FileHandle.standardError : FileHandle.standardOutput)
                                 .write(Data((line.text + "\n").utf8))
                         }))
+                // A desktop head's end is the command's: a crash under gdb, its signal's.
+                if [.gtk, .winui].contains(host), let status = ran.exitStatus, status != 0 { throw ExitCode(Int32(status)) }
                 return
             }
             let built = try await ToolingService().build(request, in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
             let program = try FileURI.url(built.programUri)
-            if request.host == .gtk {
-                // A GTK application is one instance: a second start would only bring a running copy forward.
-                _ = try await ToolingService().install(try FileURI.url(built.folderUri))
-                _ = try? await ProcessRunner().run(ProcessRequest(.name("pkill"), arguments: ["-f", "^\(program.path)( |$)"]))
-            }
             FileHandle.standardError.write(Data("stateui: running \(program.path)\n".utf8))
-            var started = ProcessRequest(.path(program.path), streams: .terminal)
-            let commands = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-gdb-\(UUID().uuidString).cmd")
-            defer { try? FileManager.default.removeItem(at: commands) }
-            if request.host == .gtk, debugger {
-                // Under gdb, each GTK critical's stack and a crash's are said as they come.
-                try Data(ToolingService.gdbCommands(for: built.architecture).utf8).write(to: commands)
-                started = ProcessRequest(
-                    .name("gdb"), arguments: ["-batch", "-x", commands.path, "--args", program.path],
-                    environment: ProcessEnvironment.inherited.setting("SWIFT_BACKTRACE", to: "enable=no"), streams: .terminal)
-            }
+            let started = ProcessRequest(.path(program.path), streams: .terminal)
             let outcome = try await ProcessRunner().run(started)
             if outcome.exitStatus != 0 { throw ExitCode(outcome.exitStatus) }
         } catch let error as ToolingError {

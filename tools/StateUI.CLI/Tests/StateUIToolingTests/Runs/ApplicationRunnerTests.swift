@@ -8,13 +8,12 @@ import XCTest
 
 final class ApplicationRunnerTests: XCTestCase {
     /// A run starts UIKit, Android, Web, GTK and WinUI heads - an AppKit head runs from the program its build names -
-    /// holds a GTK or WinUI head for no debugger, and holds only a debug build for one; each is refused before anything
-    /// is built.
+    /// holds a WinUI head for no debugger, and holds only a debug build for one; each is refused before anything is
+    /// built.
     func testWhatARunCannotStartIsRefusedFirst() async throws {
         let nowhere = FileManager.default.temporaryDirectory.appendingPathComponent("run-\(UUID().uuidString)")
         for (request, said) in [
             (RunRequest(build: BuildRequest(host: .appkit)), "starts UIKit, Android, Web, GTK and WinUI heads"),
-            (RunRequest(build: BuildRequest(host: .gtk), debugger: true), "GTK head is debugged from the program"),
             (RunRequest(build: BuildRequest(host: .winui), debugger: true), "WinUI head is debugged from the program"),
             (RunRequest(build: BuildRequest(host: .uikit, configuration: .release), debugger: true), "Only a debug build"),
         ] {
@@ -26,6 +25,19 @@ final class ApplicationRunnerTests: XCTestCase {
                 XCTAssertTrue(error.message.contains(said), error.message)
             }
         }
+    }
+
+    /// A GTK head run for a debugger runs under gdb - every GTK critical's stack and a crash's said, Swift's own
+    /// backtrace off - and any other run is its program alone.
+    func testAGTKHeadForADebuggerRunsUnderGDB() throws {
+        XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: .gtk), debugger: true)))
+        let (program, commands) = (URL(fileURLWithPath: "/home/me/Notes/NotesGTK"), URL(fileURLWithPath: "/tmp/gdb.cmd"))
+        let under = DesktopLaunch.request(program, gdbCommands: commands)
+        XCTAssertEqual(under.executable, .name("gdb"))
+        XCTAssertEqual(under.arguments, ["-batch", "-x", "/tmp/gdb.cmd", "--args", "/home/me/Notes/NotesGTK"])
+        XCTAssertEqual(under.environment.set["SWIFT_BACKTRACE"], "enable=no")
+        XCTAssertEqual(DesktopLaunch.request(program, gdbCommands: nil).executable, .path("/home/me/Notes/NotesGTK"))
+        XCTAssertTrue(GTKHead.gdbCommands(for: .arm64).contains("break g_return_if_fail_warning"))
     }
 
     /// A file another process writes is read in lines as it grows, the last one at the end though no line feed ended it.

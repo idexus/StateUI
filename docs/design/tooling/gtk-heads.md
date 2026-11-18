@@ -35,8 +35,9 @@ takes a published artifact as it stands.
 
 `stateui run --host gtk` builds, installs, stops a copy of the program still
 running - a GTK application is one instance, and a second start would only
-bring the first forward - and runs it in the foreground, sharing the
-terminal; Ctrl+C ends it.
+bring the first forward - and runs it, its output told as it comes; Ctrl+C
+ends it. With `--device` naming a guest or a machine paired, all of it happens
+there, the output told here.
 
 With `--debugger` it runs under gdb. A breakpoint on
 `g_return_if_fail_warning` says each GTK critical - its domain and
@@ -44,4 +45,5 @@ expression read from the architecture's argument registers - with its stack,
 and the program goes on; a signal that stops it says its stack and every
 thread's. gdb ends as the program does: one that ends by itself with its own
 status and no stop said, one a signal stopped as that signal would, 128 and
-its number - so the run fails on a crash and only on one.
+its number - so the run fails on a crash and only on one, on another machine
+as here (`application/run`'s `debugger`).

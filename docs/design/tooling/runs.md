@@ -37,15 +37,17 @@ its address.
 
 ## A desktop head
 
-A GTK or WinUI head run by `application/run` - as a guest of a Mac runs one
-the Mac asks of it ([Guests](guests.md#a-head-worked-in-a-guest)) - is
-started from the program its build names and followed until it ends, its
+A GTK or WinUI head run by `application/run` - on its own machine, or on one
+another machine asks ([Work on another machine](service.md#work-on-another-machine))
+- is started from the program its build names and followed until it ends, its
 output told as it comes (`DesktopLaunch`); a GTK head is installed first and
 a copy of it running stopped, as a GTK application is one instance. Cancelled,
-the program is stopped with everything it started. It is not held for a
-debugger: a debugger starts the program the build names. The terminal's
-`stateui run` of a head of its own machine runs the program itself, in the
-foreground.
+the program is stopped with everything it started. A GTK head asked with
+`debugger` runs under gdb ([Running](gtk-heads.md#running)), on whichever
+machine runs it; a WinUI head is not held for a debugger - one starts the
+program `application/prepare` readies. The terminal's `stateui run` of a GTK
+or WinUI head takes this road too, ending as the head ends; an AppKit head's
+runs its program itself, in the foreground.
 
 ## On a simulator
 

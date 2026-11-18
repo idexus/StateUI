@@ -146,6 +146,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   WinUI on a Mac - on that machine, the checkout copied there; `--record` fetches the host's
   `lib/StateUI/exports/marks/<host>` home and renders the documents here. The VS Code extension's conformance commands
   run there for such a host.
+- `stateui run --host gtk --debugger` runs the head under gdb through `application/run`, so on another machine too -
+  `--device <guest>` - each GTK critical's stack and a crash's told here, the command ending as gdb does; `stateui run`
+  of a GTK or WinUI head takes the protocol's road, and a WinUI run held for a debugger is refused, as
+  `application/prepare` readies one.
 - A folder travels to another machine's tool, and back, through the connection itself - `folder/survey`,
   `files/write`, `file/read`, `files/remove`, in pieces of at most 4 MiB, a file's time kept - over a guest's
   `prlctl exec` as over the service: a guest reads the project and hands a package back through no shared folder;

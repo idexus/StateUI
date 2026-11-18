@@ -31,7 +31,7 @@ public struct ApplicationRunner: Sendable {
         }
         if let host = request.build.host, [.gtk, .winui].contains(host) {
             let (built, _) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
-            return try await DesktopLaunch().run(built, reporter: reporter)
+            return try await DesktopLaunch().run(built, underGDB: host == .gtk && request.debugger, reporter: reporter)
         }
         if request.build.host == .web {
             #if canImport(NIOPosix)
@@ -90,8 +90,8 @@ public struct ApplicationRunner: Sendable {
         guard [.uikit, .android, .web, .gtk, .winui].contains(host) else {
             throw ToolingError(.invalidConfiguration, "application/run starts UIKit, Android, Web, GTK and WinUI heads; \(host.rawValue) runs from the program application/build names.")
         }
-        if [.gtk, .winui].contains(host), request.debugger {
-            throw ToolingError(.invalidConfiguration, "A \(host.folder) head is debugged from the program application/build names.")
+        if host == .winui, request.debugger {
+            throw ToolingError(.invalidConfiguration, "A WinUI head is debugged from the program application/prepare readies.")
         }
         if request.debugger, request.build.configuration == .release {
             throw ToolingError(.invalidConfiguration, "Only a debug build is held for a debugger.")
