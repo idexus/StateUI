@@ -224,8 +224,8 @@ workspace declaring its own.
 
 A debug server knows no client: a port of one open to the network would give
 anyone reaching it a process on the machine. So a debugger reaches another
-machine through the service alone. A GTK or WinUI head run there with
-`debugger` is held by that machine's own `lldb-dap`, listening on a free port
+machine through the service alone. A desktop head - AppKit's, GTK's, WinUI's -
+run there with `debugger` is held by that machine's own `lldb-dap`, listening on a free port
 of its loopback ([A desktop head](runs.md#a-desktop-head)), which the run
 holds while it lasts (`DebugPorts`). The client asks for a relay to it on a
 connection of its own (`service/relay`, before `initialize`): the challenge's

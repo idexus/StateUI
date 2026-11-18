@@ -8,13 +8,11 @@ import Synchronization
 import XCTest
 
 final class ApplicationRunnerTests: XCTestCase {
-    /// A run starts UIKit, Android, Web, GTK and WinUI heads - an AppKit head runs from the program its build names -
-    /// runs a GTK head alone under gdb, never one both under gdb and held for LLDB, and holds only a debug build; each
-    /// is refused before anything is built.
+    /// A run runs a GTK head alone under gdb, never one both under gdb and held for LLDB, and holds only a debug build;
+    /// each is refused before anything is built.
     func testWhatARunCannotStartIsRefusedFirst() async throws {
         let nowhere = FileManager.default.temporaryDirectory.appendingPathComponent("run-\(UUID().uuidString)")
         for (request, said) in [
-            (RunRequest(build: BuildRequest(host: .appkit)), "starts UIKit, Android, Web, GTK and WinUI heads"),
             (RunRequest(build: BuildRequest(host: .winui), gdb: true), "A GTK head alone runs under gdb"),
             (RunRequest(build: BuildRequest(host: .gtk), debugger: true, gdb: true), "under gdb, or is held for LLDB"),
             (RunRequest(build: BuildRequest(host: .uikit, configuration: .release), debugger: true), "Only a debug build"),
@@ -34,7 +32,12 @@ final class ApplicationRunnerTests: XCTestCase {
     /// its program alone.
     func testAGTKHeadForADebuggerRunsUnderGDB() throws {
         XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: .gtk), gdb: true)))
-        for host in [HostFamily.gtk, .winui] {
+        // Every host's head runs - an AppKit head as a desktop one, another machine's too - and a desktop head is held
+        // for LLDB alike.
+        for host in HostFamily.allCases {
+            XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: host))), "\(host)")
+        }
+        for host in [HostFamily.appkit, .gtk, .winui] {
             XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: host), debugger: true)))
         }
         let held = DebugDescriptors.adapter(program: URL(fileURLWithPath: "/home/me/Notes/NotesGTK"), port: 41300)

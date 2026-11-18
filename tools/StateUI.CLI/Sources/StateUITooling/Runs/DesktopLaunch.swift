@@ -5,8 +5,8 @@ import Foundation
 import StateUIToolingProtocol
 import Synchronization
 
-/// A GTK or WinUI head of this machine started from its program and followed until it ends, its output told as it
-/// comes - here, or on another machine asking it. A GTK head is installed first and a copy of it running stopped: a GTK
+/// A desktop head of this machine - AppKit's, GTK's, WinUI's - started from its program and followed until it ends, its
+/// output told as it comes - here, or on another machine asking it. A GTK head is installed first and a copy of it running stopped: a GTK
 /// application is one instance; under gdb, each GTK critical's stack and a crash's are said as they come; held for LLDB,
 /// the toolchain's `lldb-dap` starts it. Cancelled, the program is stopped with everything it started.
 /// Design: docs/design/tooling/runs.md#a-desktop-head

@@ -29,7 +29,7 @@ public struct ApplicationRunner: Sendable {
         if request.build.host == .android {
             return try await runAndroid(request, in: folder, operation: operation, reporter: reporter)
         }
-        if let host = request.build.host, [.gtk, .winui].contains(host) {
+        if let host = request.build.host, [.appkit, .gtk, .winui].contains(host) {
             let (built, _) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
             return try await DesktopLaunch().run(built, underGDB: request.gdb == true, held: request.debugger, reporter: reporter)
         }
@@ -83,13 +83,10 @@ public struct ApplicationRunner: Sendable {
         return chosen?.debugger == true ? chosen : nil
     }
 
-    /// Refuses, before anything is read or built, a run of a host it does not start - another runs from the program
-    /// its build names - and a release build held for a debugger; a request naming no host yet passes.
+    /// Refuses, before anything is read or built, a run under gdb of another head than GTK's, one both under gdb and
+    /// held for LLDB, and a release build held for a debugger; a request naming no host yet passes.
     static func refuse(_ request: RunRequest) throws {
         guard let host = request.build.host else { return }
-        guard [.uikit, .android, .web, .gtk, .winui].contains(host) else {
-            throw ToolingError(.invalidConfiguration, "application/run starts UIKit, Android, Web, GTK and WinUI heads; \(host.rawValue) runs from the program application/build names.")
-        }
         if request.gdb == true, host != .gtk {
             throw ToolingError(.invalidConfiguration, "A GTK head alone runs under gdb.")
         }

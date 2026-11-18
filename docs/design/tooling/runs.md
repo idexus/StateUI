@@ -37,14 +37,14 @@ its address.
 
 ## A desktop head
 
-A GTK or WinUI head run by `application/run` - on its own machine, or on one
-another machine asks ([Work on another machine](service.md#work-on-another-machine))
+A desktop head - AppKit's, GTK's or WinUI's - run by `application/run` - on
+its own machine, or on one another machine asks ([Work on another machine](service.md#work-on-another-machine))
 - is started from the program its build names and followed until it ends, its
 output told as it comes (`DesktopLaunch`); a GTK head is installed first and
 a copy of it running stopped, as a GTK application is one instance. Cancelled,
 the program is stopped with everything it started. A GTK head asked with
 `gdb` runs under gdb ([Running](gtk-heads.md#running)), on whichever machine
-runs it. A GTK or WinUI head asked with `debugger` is held by the toolchain's
+runs it. A desktop head asked with `debugger` is held by the toolchain's
 `lldb-dap` - found beside `swift` - listening on a free port of the loopback
 (`--connection listen://127.0.0.1:<port>`), and `started` names the way once
 the adapter says it listens (`Listening for:`) - told sooner, a debugger
@@ -53,7 +53,9 @@ editor's debugger connects to that adapter (`adapterPort`), which starts the
 program as asked (`DebugDescriptors.adapter`); the port is held for a relay
 while the run lasts ([A debugger relayed](service.md#a-debugger-relayed)). The terminal's
 `stateui run` of a GTK or WinUI head takes this road too, ending as the head
-ends; an AppKit head's runs its program itself, in the foreground.
+ends, and so does one of an AppKit head on a Mac paired; an AppKit head of
+this Mac the terminal runs itself, in the foreground, its program's input and
+output the terminal's.
 
 ## On a simulator
 
