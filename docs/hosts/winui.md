@@ -141,7 +141,10 @@ A control of the application's own is an object holding the WinUI element it
 shows, a `WinUIControl`. Swift never calls WinRT itself: the element is made
 by a relay of the application's own - C++/WinRT beside its head, behind C
 functions, a C++ target of the head's package that includes the projection
-the host generated - and handed over as the host's own handles are, a
+the host generated and defines `_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH`, as
+the host's relay does, since Visual Studio's C++ library refuses the Swift
+toolchain's older Clang without it - and handed over as the host's own
+handles are, a
 `UIElement`'s default interface, `AddRef`'d. `StateUIControls.add` says which
 contract it realizes:
 

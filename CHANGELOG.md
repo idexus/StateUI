@@ -102,6 +102,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   and attributes again as the press came and went, its words in a new text node, and WebKit sends no click where the
   node under the pointer was replaced; what already stands is written no more, and new words change the one text node
   in place.
+- WinUI: the host and the web view's backend build with Visual Studio 18.12, whose C++ library, MSVC 14.52, refuses
+  every Clang below 22 - the Swift toolchain's is 21 - and stopped their relays' first file. Each relay defines
+  `_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH`; an application with a relay of its own defines it in that target's
+  `cxxSettings` too.
 - GTK: a page replaced while the focus stood in it is let go. A link replacing the stack's top page left that page,
   and everything it held, alive for the rest of the run; the focus is taken out of a page before it is replaced away.
 - GTK on Wayland: a field that takes the keyboard and goes at once no longer ends the process. GTK 4.22 binds its input

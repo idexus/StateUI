@@ -31,8 +31,10 @@ let package = Package(
         .target(
             name: "CGalleryWinUI",
             path: "Relay",
+            // Design: docs/design/platforms/winui/relay.md#the-compiler-the-library-expects
             cxxSettings: [
                 .unsafeFlags(["-I", Context.packageDirectory + "/../../../../lib/StateUI/StateUI.WinUI/.projection"]),
+                .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH"),
             ],
             linkerSettings: [
                 .linkedLibrary("d3d11"), .linkedLibrary("dxgi"), .linkedLibrary("d3dcompiler"),
