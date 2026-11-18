@@ -42,9 +42,11 @@ test("an operation whose signal aborts is cancelled, and ends as a refusal sayin
     await client.dispose();
 });
 
-test("a tool of another API is refused at opening, by its code", async () => {
-    await assert.rejects(opened({ refusesAPI: true }),
+test("a tool of another API is refused at opening, by its code, and closed", async () => {
+    const tool = new FakeTool({ refusesAPI: true });
+    await assert.rejects(ToolingClient.open(tool, { folder: os.tmpdir(), clientVersion: "test" }),
         (error: unknown) => error instanceof ToolRequestError && error.code === incompatibleAPICode);
+    assert.strictEqual(tool.closed, true);
 });
 
 test("bytes that are no frame end the connection: what waits is refused, and the tool is closed", async () => {
@@ -77,6 +79,24 @@ test("a folder keeps one connection while it is open, and gets another once it e
     assert.ok(again.isOpen);
     await clients.dispose();
     assert.ok(tools.slice(1).every((each) => each.calls.includes("shutdown")));
+});
+
+test("a folder asked for at once by several opens one connection, and one again once it ended", async () => {
+    const tools: FakeTool[] = [];
+    const clients = new ToolingClients((folder) => {
+        const tool = new FakeTool();
+        tools.push(tool);
+        return ToolingClient.open(tool, { folder, clientVersion: "test" });
+    });
+    const [first, second, third] = await Promise.all([clients.for("/same"), clients.for("/same"), clients.for("/same")]);
+    assert.strictEqual(tools.length, 1);
+    assert.ok(first === second && second === third);
+    tools[0].end(new Error("stateui ended (6)"));
+    const again = await Promise.all([clients.for("/same"), clients.for("/same")]);
+    assert.strictEqual(tools.length, 2);
+    assert.strictEqual(again[0], again[1]);
+    await clients.dispose();
+    assert.ok(tools[1].calls.includes("shutdown"));
 });
 
 test("the tool is the program stateui.cliPath names, else the search path's stateui", (context) => {

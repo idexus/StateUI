@@ -97,15 +97,23 @@ export class ToolingClient {
         }, options);
     }
 
-    /** Opens the connection over `channel`; refused when the tool speaks no API version the extension does. */
+    /**
+     * Opens the connection over `channel`; refused when the tool speaks no API version the extension does. A connection
+     * that does not open closes its channel - the tool's process with it.
+     */
     static async open(channel: Channel, options: OpeningOptions): Promise<ToolingClient> {
         const client = new ToolingClient(channel, undefined as unknown as InitializeResult);
         channel.listen((bytes) => client.receive(bytes), (error) => client.end(error));
-        const result = await client.call("initialize", {
-            apiVersions, client: { name: "stateui-vscode", version: options.clientVersion },
-            workspaceUri: pathToFileUri(options.folder),
-        });
-        (client as { initialized: InitializeResult }).initialized = decode(InitializeResult, result);
+        try {
+            const result = await client.call("initialize", {
+                apiVersions, client: { name: "stateui-vscode", version: options.clientVersion },
+                workspaceUri: pathToFileUri(options.folder),
+            });
+            (client as { initialized: InitializeResult }).initialized = decode(InitializeResult, result);
+        } catch (error) {
+            channel.close();
+            throw error;
+        }
         client.notify("initialized");
         return client;
     }
