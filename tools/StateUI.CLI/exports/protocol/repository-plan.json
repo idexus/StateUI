@@ -1,0 +1,30 @@
+{
+  "request" : {
+    "id" : "35",
+    "jsonrpc" : "2.0",
+    "method" : "repository/plan",
+    "params" : {
+      "device" : "Ubuntu 26",
+      "kind" : "portable",
+      "only" : "tool",
+      "requestToken" : "6e8a0c2e-4f5b-4d7c-8a9e-1b3d5f7a9c35"
+    }
+  },
+  "response" : {
+    "id" : "35",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "phases" : [
+      {
+        "name" : "tool",
+        "passed" : true
+      }
+    ],
+    "suite" : "plan:portable"
+  }
+}

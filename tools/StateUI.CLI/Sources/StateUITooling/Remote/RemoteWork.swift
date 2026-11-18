@@ -164,6 +164,24 @@ public struct RemoteWork: Sendable {
         return ran
     }
 
+    /// Runs the `kind` plan of the checkout at `checkout` - its suite `only` where named - on the machine `device` names,
+    /// the checkout copied there; its phases as that machine says them.
+    func plan(_ kind: PlanKind, only: String?, device: String, checkout: URL, reporter: BuildReporter) async throws -> SuiteResult {
+        let reached = try await self.reached(device, host: nil, checkout: checkout, reporter: reporter)
+        let common = try await copied([checkout], into: reached, reporter: reporter)
+        let there = reached.places.uri(of: reached.places.join([reached.places.root] + Self.relative(checkout, from: common)))
+        return try await reached.served.operation(
+            "repository/plan", try JSONValue(encoding: PlanRequest(kind: kind, only: only, folderUri: there)), reporter: reporter)
+            .decode(SuiteResult.self)
+    }
+
+    /// Whether `device` names a machine this one works on: a machine paired, or a guest of this Mac.
+    func names(_ device: String) async -> Bool {
+        if remotes.contains(where: { $0.name == device }) { return true }
+        guard guests.prlctl != nil else { return false }
+        return await guests.list().contains { $0.name == device || $0.id == device }
+    }
+
     /// The machine `request` names, reached, with the application's project - its `projectUri`, else `folder`'s - and
     /// checkout copied into it.
     private func ready(_ request: BuildRequest, in folder: URL, reporter: BuildReporter) async throws -> Ready {
@@ -190,17 +208,18 @@ public struct RemoteWork: Sendable {
         return (project, application, library)
     }
 
-    /// The machine `device` names, its stateui - of the StateUI checkout `checkout` where this Mac lays it in its guest -
-    /// answering this tool's work: a guest of this Mac, through its service where it is paired and answers, else
-    /// `prlctl exec`; a machine paired, through its service.
+    /// The machine `device` names - for `host`'s work, or any work of the checkout where none is given - its stateui
+    /// of the StateUI checkout `checkout` where this Mac lays it in its guest, answering this tool's work: a guest of
+    /// this Mac, through its service where it is paired and answers, else `prlctl exec`; a machine paired, through its
+    /// service.
     func reached(_ device: String?, host: HostFamily?, checkout: URL, reporter: BuildReporter) async throws -> Reached {
-        guard let device, let host else {
-            throw ToolingError(.invalidConfiguration, "No machine is named for \(host?.folder ?? "the") head: `stateui devices` lists them.")
+        guard let device else {
+            throw ToolingError(.invalidConfiguration, "No machine is named for \(host?.folder ?? "the") work: `stateui devices` lists them.")
         }
-        let paired = remotes.first { $0.name == device && $0.machineHosts.contains(host) }
-        if HostPlaces.place(of: host) == .guest, guests.prlctl != nil || paired == nil {
+        let paired = remotes.first { machine in machine.name == device && (host.map(machine.machineHosts.contains) ?? true) }
+        if host.map({ HostPlaces.place(of: $0) == .guest }) ?? true, guests.prlctl != nil || paired == nil {
             if let guest = try await guest(device, host: host, needed: paired == nil) {
-                let readied = try await self.readied(guest, host: host, checkout: checkout, reporter: reporter)
+                let readied = try await self.readied(guest, checkout: checkout, reporter: reporter)
                 var (served, road) = (readied.served, "prlctl exec")
                 if let paired {
                     let network = ServedTool(remote: paired, workspaceUri: readied.places.uri(of: readied.places.root))
@@ -213,14 +232,16 @@ public struct RemoteWork: Sendable {
             }
         }
         guard let paired else {
-            throw ToolingError(.invalidConfiguration, "No guest or machine paired named \(device) works \(host.folder) heads here: `stateui devices --host \(host.rawValue)` lists them.")
+            let listed = host.map { "`stateui devices --host \($0.rawValue)`" } ?? "`stateui remote list`"
+            throw ToolingError(.invalidConfiguration, "No guest or machine paired named \(device) works \(host.map { "\($0.folder) heads" } ?? "this checkout") here: \(listed) lists them.")
         }
         reporter.progress("working on \(paired.name) through its service at \(paired.address):\(paired.port)")
         return try await self.paired(paired)
     }
 
-    /// The guest of this Mac `device` names, of `host`'s system; nil where none is and it is not `needed`.
-    private func guest(_ device: String, host: HostFamily, needed: Bool) async throws -> ParallelsGuests.Guest? {
+    /// The guest of this Mac `device` names, of `host`'s system where one is given; nil where none is and it is not
+    /// `needed`.
+    private func guest(_ device: String, host: HostFamily?, needed: Bool) async throws -> ParallelsGuests.Guest? {
         guard guests.prlctl != nil else {
             throw ToolingError(.missingToolchain, "Parallels Desktop's prlctl is not here: its Pro or Business edition has it.")
         }
@@ -228,7 +249,7 @@ public struct RemoteWork: Sendable {
             if needed { throw ToolingError(.invalidConfiguration, "No guest named \(device) stands here: `stateui devices` lists them.") }
             return nil
         }
-        guard guest.system == ParallelsGuests.system(for: host) else {
+        if let host, guest.system != ParallelsGuests.system(for: host) {
             throw ToolingError(.invalidConfiguration, "\(guest.name) runs \(guest.os): a \(host.folder) head is built in another system.")
         }
         return guest
@@ -236,7 +257,7 @@ public struct RemoteWork: Sendable {
 
     /// `guest` running, its stateui - of the StateUI checkout `checkout` - laid where it stands not, was laid from other
     /// sources or speaks not this tool's work, and answering over `prlctl exec`.
-    func readied(_ guest: ParallelsGuests.Guest, host: HostFamily, checkout: URL, reporter: BuildReporter) async throws -> Readied {
+    func readied(_ guest: ParallelsGuests.Guest, checkout: URL, reporter: BuildReporter) async throws -> Readied {
         guard let prlctl = guests.prlctl else {
             throw ToolingError(.missingToolchain, "Parallels Desktop's prlctl is not here: its Pro or Business edition has it.")
         }
@@ -310,7 +331,7 @@ public struct RemoteWork: Sendable {
     /// The methods another machine's stateui answers for this tool's work there.
     static let needed = [
         "folder/survey", "files/write", "file/read", "files/remove", "application/build", "application/package", "application/run",
-        "tests/discover", "tests/run", "repository/conformance",
+        "tests/discover", "tests/run", "repository/conformance", "repository/plan",
     ]
 
     /// Whether `served` opens a connection - at an API version this tool speaks - as this release, and answers every

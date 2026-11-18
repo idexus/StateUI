@@ -146,6 +146,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   WinUI on a Mac - on that machine, the checkout copied there; `--record` fetches the host's
   `lib/StateUI/exports/marks/<host>` home and renders the documents here. The VS Code extension's conformance commands
   run there for such a host.
+- `stateui repo test --plan portable|native --device <machine>` runs the plan on a guest or a machine paired, the
+  checkout copied there - `repository/plan`, the plan's operation, which any client asks.
 - `stateui run --host gtk --debugger` runs the head under gdb through `application/run`, so on another machine too -
   `--device <guest>` - each GTK critical's stack and a crash's told here, the command ending as gdb does; `stateui run`
   of a GTK or WinUI head takes the protocol's road, and a WinUI run held for a debugger is refused, as

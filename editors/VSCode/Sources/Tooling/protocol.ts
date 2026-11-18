@@ -480,6 +480,14 @@ export const ConformanceRequest = object<ConformanceRequest>({
     host: HostFamily, selection: ConformanceSelection, record: boolean, device: optional(string), folderUri: optional(string),
 });
 
+export type PlanKind = "portable" | "native";
+export const PlanKind = oneOf<PlanKind>("portable", "native");
+
+export interface PlanRequest { kind: PlanKind; only?: string; device?: string; folderUri?: string }
+export const PlanRequest = object<PlanRequest>({
+    kind: PlanKind, only: optional(string), device: optional(string), folderUri: optional(string),
+});
+
 export type Editor = "vscode";
 export const Editor = oneOf<Editor>("vscode");
 
@@ -522,6 +530,7 @@ export const methods = {
     "settings/set": mutation(SettingsChange, Settings),
     "tests/run": mutation(TestRunRequest, SuiteResult),
     "repository/conformance": mutation(ConformanceRequest, SuiteResult),
+    "repository/plan": mutation(PlanRequest, SuiteResult),
     "repository/integrationPackage": mutation(IntegrationPackageRequest, EditorExtension),
     "repository/integrationInstall": mutation(IntegrationInstallRequest, EditorExtension),
 };

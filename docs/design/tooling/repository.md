@@ -215,6 +215,13 @@ those after it, and a suite this machine cannot run - an Android one with no
 device running - stands as not run, never as passed. `--suite <id>` runs one
 of the plan's. Full WinUI conformance is never part of a plan.
 
+`--device` naming a guest of this Mac or a machine paired runs the plan on
+that machine ([Work on another machine](service.md#work-on-another-machine)):
+the checkout copied there and its stateui asked for the plan in its copy
+(`repository/plan`, `folderUri`), every phase as that machine says it - the
+portable plan on Linux and Windows from the Mac, a machine's native suites on
+it.
+
 ## An editor's extension
 
 `stateui repo integration package --editor vscode`

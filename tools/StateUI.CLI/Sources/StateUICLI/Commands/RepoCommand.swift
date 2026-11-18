@@ -20,9 +20,9 @@ struct RepoCommand: AsyncParsableCommand {
         var suite: String?
 
         @Option(help: "portable (the library, the host layer, the conformance runner, application testing, the Gallery, HelloWorld, the tool) or native (this machine's host suites): each run apart, in order.")
-        var plan: RepositoryPlan.Kind?
+        var plan: PlanKind?
 
-        @Option(help: "host:uikit's simulator, by name or UDID - the booted one, else an iPhone, when left out; host:android's device or emulator; host:gtk's or host:winui's guest, on a Mac.")
+        @Option(help: "host:uikit's simulator, by name or UDID - the booted one, else an iPhone, when left out; host:android's device or emulator; host:gtk's or host:winui's guest, on a Mac; with --plan, a guest or a machine paired runs the plan.")
         var device: String?
 
         @Flag(help: "host:android: build the test APK alone, with its identity, and say its folder - to run elsewhere with --artifact.")
@@ -256,4 +256,4 @@ struct RepoCommand: AsyncParsableCommand {
         }
     }
 }
-extension RepositoryPlan.Kind: ExpressibleByArgument {}
+extension PlanKind: ExpressibleByArgument {}

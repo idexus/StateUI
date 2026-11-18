@@ -413,12 +413,17 @@ public struct ToolingService: Sendable {
     }
 
     /// Runs the `kind` plan of the StateUI checkout holding `folder` - its suite `only` where named - on the device
-    /// `device` names for UIKit and Android.
+    /// `device` names for UIKit and Android, or on the machine it names: a guest of this Mac, a machine paired -
+    /// `repository/plan`.
     public func runPlan(
-        _ kind: RepositoryPlan.Kind, only: String?, device: String?, in folder: URL, reporter: BuildReporter
+        _ kind: PlanKind, only: String?, device: String?, in folder: URL, reporter: BuildReporter
     ) async throws -> SuiteResult {
         guard let checkout = Checkout.holding(folder)?.root else {
             throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        let elsewhere = RemoteWork(guests: ParallelsGuests(), remotes: try RemoteMachines(project: folder).list())
+        if let device, await elsewhere.names(device) {
+            return try await elsewhere.plan(kind, only: only, device: device, checkout: checkout, reporter: reporter)
         }
         return try await RepositoryPlan(checkout: checkout).run(kind, only: only, device: device, reporter: reporter)
     }
@@ -551,6 +556,13 @@ public struct ToolingService: Sendable {
             try await Self.reporting(context) { reporter in
                 try await runConformance(
                     request.host, selection: request.selection, record: request.record, device: request.device,
+                    in: try request.folderUri.map(FileURI.url) ?? Self.folder(of: caller), reporter: reporter.build)
+            }
+        }
+        methods.mutation("repository/plan") { (request: PlanRequest, context: OperationContext, caller: RequestContext) in
+            try await Self.reporting(context) { reporter in
+                try await runPlan(
+                    request.kind, only: request.only, device: request.device,
                     in: try request.folderUri.map(FileURI.url) ?? Self.folder(of: caller), reporter: reporter.build)
             }
         }

@@ -10,11 +10,6 @@ import StateUIToolingProtocol
 /// with why. A suite failing never stops those after it.
 /// Design: docs/design/tooling/repository.md#a-plan
 public struct RepositoryPlan: Sendable {
-    /// Which suites a plan holds.
-    public enum Kind: String, Sendable, CaseIterable {
-        case portable, native
-    }
-
     /// The portable suites, in their order: an id and the package it tests.
     static let portable = [
         ("core", "."), ("host-layer", "lib/StateUI/StateUI.Host"), ("conformance", "lib/StateUI/StateUI.Conformance"),
@@ -45,13 +40,13 @@ public struct RepositoryPlan: Sendable {
     }
 
     /// The ids `kind` holds on this machine.
-    public static func suites(of kind: Kind) -> [String] {
+    public static func suites(of kind: PlanKind) -> [String] {
         kind == .portable ? portable.map(\.0) : native(on: Machine.current.system)
     }
 
     /// Runs `kind`'s suites - `only` that one where named - each a phase or phases under its id; a UIKit or Android
     /// suite on the device `device` names, an Android one with no device running listed as not run.
-    public func run(_ kind: Kind, only: String? = nil, device: String? = nil, reporter: BuildReporter) async throws -> SuiteResult {
+    public func run(_ kind: PlanKind, only: String? = nil, device: String? = nil, reporter: BuildReporter) async throws -> SuiteResult {
         let ids = Self.suites(of: kind)
         if let only, !ids.contains(only) {
             throw ToolingError(.invalidConfiguration, "The \(kind.rawValue) plan here holds \(ids.joined(separator: ", ")); not \(only).")

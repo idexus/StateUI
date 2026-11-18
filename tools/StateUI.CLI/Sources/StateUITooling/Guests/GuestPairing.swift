@@ -19,8 +19,7 @@ struct GuestPairing: Sendable {
         guard let found = await guests.list().first(where: { $0.name == device || $0.id == device }) else {
             throw ToolingError(.invalidConfiguration, "No guest named \(device) stands here: `stateui devices` lists them.")
         }
-        let host: HostFamily = found.system == .windows ? .winui : .gtk
-        let readied = try await RemoteWork(guests: guests, remotes: []).readied(found, host: host, checkout: checkout, reporter: reporter)
+        let readied = try await RemoteWork(guests: guests, remotes: []).readied(found, checkout: checkout, reporter: reporter)
         let (commands, tool) = (readied.commands, readied.places.tool)
         let environment = await commands.sessionEnvironment()
         func command(_ arguments: [String]) -> (String, [String]) {

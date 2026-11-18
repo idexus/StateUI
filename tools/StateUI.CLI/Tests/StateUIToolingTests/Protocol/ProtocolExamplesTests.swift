@@ -257,6 +257,15 @@ final class ProtocolExamplesTests: XCTestCase {
                     SuiteResult.Phase(name: "tests", passed: true), SuiteResult.Phase(name: "documents", passed: true),
                 ]))),
             ], answeredAsWritten: false),
+            Example(name: "repository-plan", messages: [
+                ("request", try request("35", "repository/plan", Mutation(
+                    requestToken: "6e8a0c2e-4f5b-4d7c-8a9e-1b3d5f7a9c35",
+                    request: PlanRequest(kind: .portable, only: "tool", device: "Ubuntu 26")))),
+                ("response", try response("35", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: SuiteResult(suite: "plan:portable", phases: [
+                    SuiteResult.Phase(name: "tool", passed: true),
+                ]))),
+            ], answeredAsWritten: false),
             Example(name: "repository-integrationPackage", messages: [
                 ("request", try request("21", "repository/integrationPackage", Mutation(
                     requestToken: "4c6e8a0c-2d3f-4b5a-8e7c-9b1d3f5a7c22", request: IntegrationPackageRequest(editor: .vscode)))),
