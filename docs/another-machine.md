@@ -99,8 +99,10 @@ stateui run --project apps/Notes --host uikit --machine studio --device "iPhone 
 ```
 
 The machine builds the head and starts it on its device; the output comes
-here. VS Code offers this machine's own devices; another machine's is run
-from the terminal.
+here. A debugger reaches a desktop head there alone - AppKit's, GTK's,
+WinUI's - so a run on another machine's device or browser asked with
+`--debugger` is refused. VS Code offers this machine's own devices; another
+machine's is run from the terminal.
 
 How a service admits a machine, carries a folder and is started with its
 user's session: [The tool's service](design/tooling/service.md).

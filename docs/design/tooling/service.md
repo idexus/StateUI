@@ -223,7 +223,11 @@ workspace declaring its own.
 ## A debugger relayed
 
 A debug server knows no client: a port of one open to the network would give
-anyone reaching it a process on the machine. So a debugger reaches another
+anyone reaching it a process on the machine. A debugger reaches a desktop
+head of another machine alone - the one way relayed here, its adapter's -
+so a run of a device's, a simulator's or a browser's head there asking for
+one is refused before that machine is touched (`RemoteWork.refuse`): the
+process it would name, its device and its paths are that machine's. So a debugger reaches another
 machine through the service alone. A desktop head - AppKit's, GTK's, WinUI's -
 run there with `debugger` is held by that machine's own `lldb-dap`, listening on a free port
 of its loopback ([A desktop head](runs.md#a-desktop-head)), which the run

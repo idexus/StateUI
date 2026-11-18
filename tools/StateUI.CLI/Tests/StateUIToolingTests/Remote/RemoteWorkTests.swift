@@ -93,6 +93,18 @@ final class RemoteWorkTests: XCTestCase {
         }
     }
 
+    /// On another machine a debugger reaches a desktop head alone - held there by `lldb-dap`, relayed here; a run of a
+    /// device's, a simulator's or a browser's head there for a debugger is refused before the machine is touched.
+    func testADebuggerReachesADesktopHeadOfAnotherMachineAlone() {
+        for host in [HostFamily.appkit, .gtk, .winui] {
+            XCTAssertNoThrow(try RemoteWork.refuse(RunRequest(build: BuildRequest(host: host, device: "studio"), debugger: true)), "\(host)")
+        }
+        for host in [HostFamily.uikit, .android, .web] {
+            XCTAssertThrowsError(try RemoteWork.refuse(RunRequest(build: BuildRequest(host: host, device: "A1", machine: "studio"), debugger: true)), "\(host)")
+            XCTAssertNoThrow(try RemoteWork.refuse(RunRequest(build: BuildRequest(host: host, device: "A1", machine: "studio"))), "\(host) with none")
+        }
+    }
+
     /// A path git quotes - a tab, a quote, a backslash, a line feed, a byte it writes in octal - is the path itself;
     /// one it writes as it is stays so.
     func testAPathGitQuotesIsReadAsTheFileItNames() {

@@ -76,6 +76,17 @@ public struct RemoteWork: Sendable {
         return true
     }
 
+    /// Refuses what a run cannot start, as here, and a debugger for a head another machine starts on a device, a
+    /// simulator or a browser: only a desktop head there - held by its `lldb-dap` - is reached from here, through the
+    /// service's relay.
+    /// Design: docs/design/tooling/service.md#a-debugger-relayed
+    static func refuse(_ request: RunRequest) throws {
+        try ApplicationRunner.refuse(request)
+        if request.debugger, let host = request.build.host, ![.appkit, .gtk, .winui].contains(host) {
+            throw ToolingError(.invalidConfiguration, "A debugger reaches a desktop head on another machine alone - AppKit's, GTK's, WinUI's; run the \(host.rawValue) head there without one.")
+        }
+    }
+
     /// The destinations of `host` on the devices of `machines`, each asked within a few seconds - one that answers not
     /// lists none - each named by its machine.
     static func devices(of host: HostFamily, on machines: [RemoteMachine]) async -> [Destination] {
@@ -154,7 +165,7 @@ public struct RemoteWork: Sendable {
     /// Runs `request` on its machine and follows it until it ends; cancelled, it stops there. What a run cannot start is
     /// refused before the machine is touched.
     func run(_ request: RunRequest, in folder: URL, reporter: RunReporter) async throws -> RunResult {
-        try ApplicationRunner.refuse(request)
+        try Self.refuse(request)
         let ready = try await self.ready(request.build, in: folder, reporter: reporter.build)
         if request.debugger, ready.reached.remote == nil {
             throw ToolingError(
