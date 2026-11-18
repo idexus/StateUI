@@ -22,7 +22,7 @@ import { browserOf } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
 import { applyEditorMode, buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
 import { machineOf } from "../Sources/machines";
-import { availableHosts, describe, Host, HostDescription, hosts, placeOf, worksAnew } from "../Sources/hosts";
+import { availableHosts, describe, Host, HostDescription, hosts, placeOf, reconsidered, worksAnew } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { editorCommandLine, hasExtensionSources } from "../Sources/reinstall";
 import { conformanceRequest, failedPhases } from "../Sources/conformance";
@@ -381,6 +381,18 @@ export async function run(): Promise<void> {
                 && worksAnew({ host: "appkit", roots: ["/a"] }, { host: undefined, roots: ["/a"] })
                 && worksAnew({ host: "appkit", roots: ["/a"] }, { host: "appkit", roots: ["/a", "/b"] })
                 && !worksAnew({ host: "appkit", roots: ["/a"] }, { host: "appkit", roots: ["/a"] }));
+        }
+        {
+            // A choice changing the host as it is made - an application of no workspace chosen, the window's own key
+            // deciding at once - is a change: what the window worked as is taken before the choice.
+            let current: Host | undefined = "appkit";
+            const worked: (Host | undefined)[] = [];
+            await reconsidered(() => ({ host: current, roots: ["/a", "/b"] }), async () => { current = "uikit"; }, async () => undefined,
+                async (forHost) => { worked.push(forHost); });
+            await reconsidered(() => ({ host: current, roots: ["/a", "/b"] }), async () => undefined, async () => undefined,
+                async (forHost) => { worked.push(forHost); });
+            check("a choice that changes the host as it is made works the window anew as the new host, and one changing nothing does not",
+                JSON.stringify(worked) === JSON.stringify(["uikit"]));
         }
         {
             // The tool unreachable, or answering no lease: nothing of the index is written - a write needs a lease held.

@@ -25,6 +25,27 @@ export function worksAnew(before: { host: Host | undefined; roots: readonly stri
     return before.host !== after.host || before.roots.join("\n") !== after.roots.join("\n");
 }
 
+/** What the window works as and the packages it indexes, as they stand. */
+export interface WindowWork {
+    readonly host: Host | undefined;
+    readonly roots: readonly string[];
+}
+
+/**
+ * `change` made, `then` done, and the window worked anew - `work` given its host - where its host or its packages
+ * changed: what it worked as taken before `change`, so a choice that changes the host as it is made is seen as a change.
+ */
+export async function reconsidered(now: () => WindowWork, change: () => Promise<void>, then: () => Promise<void>,
+    work: (host: Host | undefined) => Promise<unknown>): Promise<void> {
+    const before = now();
+    await change();
+    await then();
+    const after = now();
+    if (worksAnew(before, after)) {
+        await work(after.host);
+    }
+}
+
 /** Every host, in the order the picker offers them. */
 export const hosts: readonly HostDescription[] = [
     { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process" },

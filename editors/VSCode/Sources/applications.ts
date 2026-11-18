@@ -61,7 +61,6 @@ export async function readApplications(client: ToolingClient, folder?: string): 
     }
 }
 
-/** Whether `application` has a head for `host`. */
 /**
  * The folder of `folders` that `directory` stands in - the deepest where several hold it - else the first: the folder
  * a window's hosts and machines are read for, an application's project.
@@ -74,6 +73,7 @@ export function folderHolding(directory: string | undefined, folders: readonly s
     return holding.sort((a, b) => b.length - a.length)[0] ?? folders[0];
 }
 
+/** Whether `application` has a head for `host`. */
 export function hasHead(application: Application, host: Host): boolean {
     return application.hosts.includes(host);
 }

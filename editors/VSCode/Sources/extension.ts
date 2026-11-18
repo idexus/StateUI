@@ -18,7 +18,7 @@ import { AndroidLister, androidDeviceOf, askForDevice, chooseListedDevice, devic
 import { askForBrowser, Browser, BrowserLister, browserOf, browserToRunOn, chooseListedBrowser } from "./browsers";
 import { applyEditorMode, cleanIndex, IndexAcquirer, IndexConflictError, IndexDescriber } from "./editorMode";
 import { askForMachine, Machine, MachineLister, machineOf, machineToRunOn } from "./machines";
-import { availableHosts, describe, Host, HostDescription, placeOf, worksAnew } from "./hosts";
+import { availableHosts, describe, Host, HostDescription, placeOf, reconsidered } from "./hosts";
 import {
     askForUIKitDevice, chooseListedUIKitDevice, uiKitDeviceOf, UIKitLister, uiKitDeviceToRunOn, uiKitSimulatorToTestOn,
 } from "./uiKitDevices";
@@ -358,29 +358,25 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     // What `read` reads again - the choices, the folders' applications - then the hosts of the chosen application's
     // project, the view, and the window working anew where its host or its packages changed: one road for a choice made
     // here, one another window or `stateui settings` made, a pairing and a folder changed.
-    const reconsider = async (read: () => Promise<void>): Promise<void> => {
-        const before = { host: host(), roots: roots() };
-        await read();
-        await readPlaces(projectFolder());
-        refresh();
-        updateFolderContexts();
-        testSuites.changed();
-        if (worksAnew(before, { host: host(), roots: roots() })) {
-            await workAs(host());
-        }
-    };
+    const reconsider = (read: () => Promise<void>): Promise<void> => reconsidered(() => ({ host: host(), roots: roots() }), read,
+        async () => {
+            await readPlaces(projectFolder());
+            refresh();
+            updateFolderContexts();
+            testSuites.changed();
+        }, workAs);
 
     // The application chosen: its workspace's to start, through the tool, and the window's own; the window then works
-    // as its host.
-    const selectApplication = async (name: string): Promise<void> => {
+    // as its host - the one before taken before the choice is made.
+    const selectApplication = (name: string): Promise<void> => reconsider(async () => {
         await state.update(applicationKey, name);
         const workspace = applications().find((each) => each.name === name)?.workspace;
         if (workspace) {
             await withTool(tool, workspace, `${name} was not chosen to start`,
                 (client) => client.run("settings/set", { projectUri: pathToFileUri(workspace), startup: name }));
         }
-        await reconsider(readChoices);
-    };
+        await readChoices();
+    });
 
     /** Asks for an application - one with a head for `forHost`, where one is given - the chosen one offered first. */
     const askForApplication = async (forHost?: Host): Promise<Application | undefined> => {
