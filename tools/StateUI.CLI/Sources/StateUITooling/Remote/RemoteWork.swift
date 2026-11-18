@@ -138,6 +138,32 @@ public struct RemoteWork: Sendable {
             reporter: reporter).decode(SuiteResult.self)
     }
 
+    /// Runs `host`'s conformance families `selection` takes on the machine `device` names - the checkout at `checkout`
+    /// copied there - held to the marks there, or recorded: the host's marks then fetched into `checkout` and its
+    /// documents rendered here from them, a phase of its own.
+    func conformance(
+        _ host: HostFamily, selection: ConformanceSelection, record: Bool, device: String?, checkout: URL, reporter: BuildReporter
+    ) async throws -> SuiteResult {
+        let reached = try await self.reached(device, host: host, checkout: checkout, reporter: reporter)
+        let common = try await copied([checkout], into: reached, reporter: reporter)
+        let there = reached.places.join([reached.places.root] + Self.relative(checkout, from: common))
+        var ran = try await reached.served.operation(
+            "repository/conformance",
+            try JSONValue(encoding: ConformanceRequest(host: host, selection: selection, record: record, folderUri: reached.places.uri(of: there))),
+            reporter: reporter).decode(SuiteResult.self)
+        guard record else { return ran }
+        let marks = ["lib", "StateUI", "exports", "marks", host.rawValue]
+        let home = marks.reduce(checkout) { $0.appendingPathComponent($1) }
+        try FileManager.default.createDirectory(at: home, withIntermediateDirectories: true)
+        _ = try await reached.served.session { session in
+            try await FolderTransfer.fetch(reached.places.join([there] + marks), into: home, over: session, progress: reporter.progress)
+        }
+        var rendered = try await Handbook(checkout: checkout, tools: ToolResolver()).documents(update: true, reporter: reporter)
+        rendered.name += " here from the marks fetched"
+        ran.phases.append(rendered)
+        return ran
+    }
+
     /// The machine `request` names, reached, with the application's project - its `projectUri`, else `folder`'s - and
     /// checkout copied into it.
     private func ready(_ request: BuildRequest, in folder: URL, reporter: BuildReporter) async throws -> Ready {
@@ -284,7 +310,7 @@ public struct RemoteWork: Sendable {
     /// The methods another machine's stateui answers for this tool's work there.
     static let needed = [
         "folder/survey", "files/write", "file/read", "files/remove", "application/build", "application/package", "application/run",
-        "tests/discover", "tests/run",
+        "tests/discover", "tests/run", "repository/conformance",
     ]
 
     /// Whether `served` opens a connection - at an API version this tool speaks - as this release, and answers every

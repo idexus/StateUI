@@ -124,5 +124,21 @@ final class TestDiscoveryTests: XCTestCase {
             XCTAssertTrue(error.message.contains("runs on another machine"), error.message)
         }
     }
+
+    /// On a Mac a GTK or WinUI conformance run goes to another machine, and one named by no guest or machine paired is
+    /// refused before anything runs.
+    func testAGuestsConformanceRunIsRefusedWithoutItsMachine() async throws {
+        for marked in ["lib/StateUI.Head/Package.swift", "apps/HelloWorld/Package.swift"] { try write("", to: marked) }
+        try write(#"{ "schemaVersion": 1, "library": { "path": "." }, "projects": [] }"#, to: "stateui-workspace.json")
+        for host in [HostFamily.gtk, .winui] {
+            do {
+                _ = try await ToolingService().runConformance(host, selection: .all, record: true, device: nil, in: root, reporter: BuildReporter())
+                XCTFail("\(host)'s families ran on the Mac")
+            } catch let error as ToolingError {
+                XCTAssertEqual(error.code, .invalidConfiguration)
+                XCTAssertTrue(error.message.contains("families run on another machine"), error.message)
+            }
+        }
+    }
     #endif
 }

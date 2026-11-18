@@ -473,9 +473,11 @@ export const ConformanceSelection: Decoder<ConformanceSelection> = (value, path)
     throw new DecodingError(path, "a selection is changed, families or all");
 };
 
-export interface ConformanceRequest { host: HostFamily; selection: ConformanceSelection; record: boolean; device?: string }
+export interface ConformanceRequest {
+    host: HostFamily; selection: ConformanceSelection; record: boolean; device?: string; folderUri?: string;
+}
 export const ConformanceRequest = object<ConformanceRequest>({
-    host: HostFamily, selection: ConformanceSelection, record: boolean, device: optional(string),
+    host: HostFamily, selection: ConformanceSelection, record: boolean, device: optional(string), folderUri: optional(string),
 });
 
 export type Editor = "vscode";

@@ -209,7 +209,8 @@ so a launch asks only when none is chosen or the one chosen is gone. What a
 guest needs, and how a Mac makes one: [Every host from one
 Mac](../../every-host-from-a-mac.md); **StateUI: Check Toolchain** checks the
 machine chosen too, and **StateUI: Run Tests** runs the host's own suite
-there. Its conformance marks are made on its own system.
+there. Its conformance marks are made there too, and the tool brings them
+home.
 
 ## The application
 

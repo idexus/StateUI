@@ -14,8 +14,8 @@ export type Rebuild = "all" | "changed";
 
 /**
  * What the tool is asked to make `host`'s marks again with: every family or the stale ones, recorded - the documents
- * its last phase. `device` - an Android serial, a simulator's UDID - is where a UIKit or Android suite runs;
- * undefined where it needs one and was given none.
+ * its last phase. `device` - an Android serial, a simulator's UDID, the machine a host worked on another runs on - is
+ * where its suite runs; undefined where UIKit or Android needs one and was given none.
  */
 export function conformanceRequest(host: Host, rebuild: Rebuild, device?: string): ConformanceRequest | undefined {
     if ((host === "uikit" || host === "android") && !device) {

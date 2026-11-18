@@ -504,13 +504,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             void vscode.window.showErrorMessage(`StateUI: the marks are made in a StateUI checkout, as the host chosen - ${folder ? whyNoHost() : "no folder here is one"}.`);
             return;
         }
-        if (elsewhere(chosen)) {
-            void vscode.window.showErrorMessage(`StateUI: ${describe(chosen).label}'s marks are made on its own system - this machine does not make them on another.`);
-            return;
-        }
-        const device = chosen === "uikit" ? await uiKitSimulator() : chosen === "android" ? await androidDevice() : undefined;
+        // A host worked on another machine makes its marks there, the tool bringing them home.
+        const device = chosen === "uikit" ? await uiKitSimulator() : chosen === "android" ? await androidDevice()
+            : elsewhere(chosen) ? (await machine(chosen))?.name : undefined;
         const request = conformanceRequest(chosen, rebuild, device);
-        if (!request) {
+        if (!request || (elsewhere(chosen) && !device)) {
             return;
         }
         buildOutput.clear();

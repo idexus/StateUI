@@ -153,5 +153,6 @@ lists there runs on a device, the guest, as Android's runs on its phone. The
 guest is reached and the checkout copied as for a head; then the guest's
 stateui is asked for its own discovery of the host's suite in its copy, and
 to run it (`tests/run`, its `filter` carried), every phase as the guest says
-it. Its marks are held to the Mac's, never recorded there.
+it. Its marks are held to the Mac's; a conformance run records them there and
+brings them home ([A conformance run](repository.md#a-conformance-run)).
 

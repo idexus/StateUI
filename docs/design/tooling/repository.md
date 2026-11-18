@@ -161,6 +161,16 @@ helper gives its family. On UIKit and Android a family's name selects the
 tests whose names hold it, so `Button` takes `ButtonMenu` along: a family
 more, whole, never one less.
 
+A host this machine works on another - GTK and WinUI on a Mac, a host a
+machine paired runs - makes its run there ([Work on another
+machine](service.md#work-on-another-machine)): `--device` names the guest or
+the machine, the checkout is copied there and that machine's stateui runs the
+families in its copy (`repository/conformance` with the copy's `folderUri`),
+holding them to the marks copied with it. Recorded, the host's
+`lib/StateUI/exports/marks/<host>` is fetched home - what the copy lacks
+removed - and the documents rendered here from it, a phase after that
+machine's; nothing else of its copy returns.
+
 An editor asks for the same run as an operation, `repository/conformance`:
 the host, the selection - `{"changed": true}`, `{"families": [...]}` or
 `{"all": true}` - whether it records, and the device; its result is the run's

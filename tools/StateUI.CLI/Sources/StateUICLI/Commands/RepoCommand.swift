@@ -113,7 +113,7 @@ struct RepoCommand: AsyncParsableCommand {
             @Flag(help: "Write the verdicts into lib/StateUI/exports/marks and render the control dictionary and the platform contract from them, instead of holding them.")
             var record = false
 
-            @Option(help: "UIKit's simulator or Android's device or emulator, by name or id.")
+            @Option(help: "UIKit's simulator, Android's device or emulator, or the machine a host this one works on another runs on - a guest, a machine paired - by name or id.")
             var device: String?
 
             @OptionGroup var output: OutputOptions

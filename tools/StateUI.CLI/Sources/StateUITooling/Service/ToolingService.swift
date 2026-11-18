@@ -444,8 +444,9 @@ public struct ToolingService: Sendable {
         return SuiteResult(suite: samples ? "samples" : "docs", phases: [phase])
     }
 
-    /// Runs `host`'s conformance families `selection` takes in the StateUI checkout holding `folder`, recording their
-    /// verdicts and rendering the documents where `record`.
+    /// Runs `host`'s conformance families `selection` takes in the StateUI checkout holding `folder` - on the machine
+    /// `device` names where this one works the host on another - recording their verdicts and rendering the documents
+    /// where `record`.
     ///
     /// - Throws: ``ToolingError`` `PROJECT_NOT_FOUND` outside a checkout, `INVALID_CONFIGURATION` for an unknown family.
     public func runConformance(
@@ -453,6 +454,14 @@ public struct ToolingService: Sendable {
     ) async throws -> SuiteResult {
         guard let checkout = Checkout.holding(folder)?.root else {
             throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        let remotes = try RemoteMachines(project: folder).list()
+        if RemoteWork.elsewhere(host, remotes: remotes) || RemoteWork.asks(host, device: device, remotes: remotes) {
+            guard device != nil else {
+                throw ToolingError(.invalidConfiguration, "\(host.folder)'s families run on another machine: name a guest or a machine paired with --device (`stateui devices --host \(host.rawValue)`).")
+            }
+            return try await RemoteWork(guests: ParallelsGuests(), remotes: remotes).conformance(
+                host, selection: selection, record: record, device: device, checkout: checkout, reporter: reporter)
         }
         return try await ConformanceRun(checkout: checkout).run(host, selection: selection, record: record, device: device, reporter: reporter)
     }
@@ -542,7 +551,7 @@ public struct ToolingService: Sendable {
             try await Self.reporting(context) { reporter in
                 try await runConformance(
                     request.host, selection: request.selection, record: request.record, device: request.device,
-                    in: try Self.folder(of: caller), reporter: reporter.build)
+                    in: try request.folderUri.map(FileURI.url) ?? Self.folder(of: caller), reporter: reporter.build)
             }
         }
         methods.mutation("repository/integrationPackage") { (request: IntegrationPackageRequest, context: OperationContext, caller: RequestContext) in

@@ -142,6 +142,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   reached through its service too, else through `prlctl exec`. `stateui doctor --device <machine>` says whether its
   service answers and admits this machine, its release, and what it has of what the host needs. The VS Code
   extension's **StateUI: Select Machine** offers a host's guests and machines paired, and a launch on one runs there.
+- `stateui repo conformance run --host <host> --device <machine>` runs a host this machine works on another - GTK and
+  WinUI on a Mac - on that machine, the checkout copied there; `--record` fetches the host's
+  `lib/StateUI/exports/marks/<host>` home and renders the documents here. The VS Code extension's conformance commands
+  run there for such a host.
 - A folder travels to another machine's tool, and back, through the connection itself - `folder/survey`,
   `files/write`, `file/read`, `files/remove`, in pieces of at most 4 MiB, a file's time kept - over a guest's
   `prlctl exec` as over the service: a guest reads the project and hands a package back through no shared folder;
