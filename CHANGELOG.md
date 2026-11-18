@@ -156,7 +156,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `--debugger` means LLDB on every host: a GTK or WinUI head is held by the toolchain's `lldb-server` on a port of the
   loopback, which `started` names (`gdb-remote`). On another machine the debugger is relayed through its service -
   `service/relay`, granted to a paired client for a port a run holds - the program fetched home and LLDB's way
-  rewritten to a port of this machine's loopback; no debugger port listens on the network. `stateui run` of a GTK or WinUI head takes the protocol's road.
+  rewritten to a port of this machine's loopback; no debugger port listens on the network. The VS Code extension's
+  Debug launch on a machine paired - a paired guest too - holds the head there and attaches lldb-dap that way. `stateui run` of a GTK or WinUI head takes the protocol's road.
 - A folder travels to another machine's tool, and back, through the connection itself - `folder/survey`,
   `files/write`, `file/read`, `files/remove`, in pieces of at most 4 MiB, a file's time kept - over a guest's
   `prlctl exec` as over the service: a guest reads the project and hands a package back through no shared folder;

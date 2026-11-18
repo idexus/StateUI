@@ -287,8 +287,13 @@ public struct ToolingService: Sendable {
         case .browser:
             destinations = await Browsers.list()
         case .guest:
+            // A guest paired is reached through its service, and a debugger with it.
             let system = ParallelsGuests.system(for: host)
-            destinations = await ParallelsGuests().list().filter { $0.system == system }.map(ParallelsGuests.destination)
+            destinations = await ParallelsGuests().list().filter { $0.system == system }.map { guest in
+                var destination = ParallelsGuests.destination(of: guest)
+                destination.debugger = remotes.contains { $0.name == guest.name }
+                return destination
+            }
         case .remote, nil:
             destinations = []
         }

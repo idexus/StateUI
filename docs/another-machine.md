@@ -75,9 +75,16 @@ stateui package --project apps/Notes --host winui --device office
 that machine has of what the host needs. A run's output comes back as it is
 written, and Ctrl+C stops the head there; a package is laid in the project's
 `artifacts`. In VS Code the machine is chosen with **StateUI: Select Machine**
-([The machine](editors/VSCode/README.md#the-machine)). The debugger does not
-reach another machine yet: **StateUI: Debug** runs the debug build without
-one, and says so.
+([The machine](editors/VSCode/README.md#the-machine)), and **StateUI: Debug**
+holds the head there for `lldb-dap`, a breakpoint of this machine's sources
+stopping it. From the terminal, `--debugger` says the LLDB commands:
+
+```bash
+stateui run --project apps/Notes --host gtk --device ubuntu-box --debugger
+```
+
+The debugger's bytes travel through the machine's service alone; no port of
+its opens to the network.
 
 ## A device of another machine
 

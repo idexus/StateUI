@@ -56,12 +56,12 @@ enum HostPlaces {
     }
 
     /// A machine paired, as the destination of the heads that run there as its own programs: its system and
-    /// architecture as its service said them, and where it listens.
+    /// architecture as its service said them, where it listens, and a debugger reaching it through its service.
     static func remote(_ remote: RemoteMachine) -> Destination {
         Destination(
             id: remote.name, udid: "", name: remote.name, kind: .remote, version: remote.machine?.system ?? "",
             connection: "\(remote.address):\(remote.port)", architecture: remote.machine.flatMap { Architecture(rawValue: $0.architecture) },
-            emulated: remote.machine.map(emulated(on:)) ?? [], debugger: false)
+            emulated: remote.machine.map(emulated(on:)) ?? [], debugger: true)
     }
 
     /// The architectures `machine` runs emulated beside its own: x86_64 on an ARM64 Windows.

@@ -189,7 +189,7 @@ final class RemoteMachinesTests: XCTestCase {
         XCTAssertEqual(destination.connection, "192.168.1.20:7979")
         XCTAssertEqual(destination.architecture, .arm64)
         XCTAssertEqual(destination.emulated, [.x86_64])
-        XCTAssertFalse(destination.debugger)
+        XCTAssertTrue(destination.debugger, "through its service")
     }
 
     /// The machines paired with a project are told to its clients: in the server's information, and as the

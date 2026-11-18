@@ -130,9 +130,10 @@ stateui repo conformance run --host gtk --device Ubuntu --changed --record
 
 ## What stays in the guest
 
-The debugger does not reach a guest: **StateUI: Debug** runs the debug build
-there without one, and says so. A guest paired with the project (`stateui guest
-pair --device <guest>`) is reached through its service, as any machine of the
-network is: [Working on another machine](another-machine.md). How the tool
+A guest paired with the project (`stateui guest pair --device <guest>`) is
+reached through its service, as any machine of the network is: [Working on
+another machine](another-machine.md) - and the debugger with it: **StateUI:
+Debug** holds the head there and `lldb-dap` reaches it through the tool's
+relay. In a guest not paired the debug build runs without one, said. How the tool
 reaches a guest, lays its `stateui` and copies a project:
 [Guests](design/tooling/guests.md).

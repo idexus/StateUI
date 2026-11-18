@@ -26,8 +26,10 @@
 //   Code's JavaScript debugger starts that browser on it;
 // - on another machine - a guest of a Mac for GTK and WinUI, a machine paired
 //   with the project for a host it runs: built and started there by the tool;
-//   where no debugger reaches it, a Debug launch runs the debug build without
-//   one, said, and neither has a session.
+//   a Debug launch on one paired is held there for LLDB, which lldb-dap reaches
+//   through the tool's relay as the `started` event says, the session's end
+//   stopping the run; where no debugger reaches it - a guest not paired - the
+//   debug build runs without one, said. A Release launch has no session.
 //
 // The application is the one chosen with StateUI: Select Application; a launch
 // naming its `application` runs that one instead.
@@ -152,7 +154,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return this.inBrowser(root, application, host, configuration, name);
         }
         if (place === "guest" || place === "remote") {
-            return this.onMachine(root, application, host, configuration);
+            return this.onMachine(root, application, host, configuration, name);
         }
 
         // A debugger that cannot start stops the launch before the build, saying why: else the build ends and nothing runs.
@@ -199,25 +201,31 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
     }
 
     /**
-     * A head built and started by the stateui tool on the machine chosen, which follows its output; where the tool
-     * says no debugger reaches the machine, a Debug build runs without one, said - neither has a session.
+     * A head built and started by the stateui tool on the machine chosen, which follows its output; a Debug build on a
+     * machine a debugger reaches is held for LLDB, which lldb-dap reaches as the tool says, the session's end stopping
+     * the run - elsewhere it runs without one, said. A Release build has no session.
      */
     private async onMachine(
         root: vscode.WorkspaceFolder,
         application: Application,
         host: Host,
         configuration: Configuration,
+        name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
         const machine = await this.choices.machine(host);
         if (!machine) {
             return undefined;
         }
+        const debug = configuration === "debug" && machine.debugger;
         if (configuration === "debug" && !machine.debugger) {
             void vscode.window.showInformationMessage(
-                `StateUI: no debugger reaches ${machine.name} - ${application.name}'s debug build runs there without one.`);
+                `StateUI: no debugger reaches ${machine.name} - pair it (\`stateui guest pair\`); ${application.name}'s debug build runs there without one.`);
         }
-        await this.choices.runHead(root, application, host, configuration, machine.name, false);
-        return undefined;
+        const running = await this.choices.runHead(root, application, host, configuration, machine.name, debug);
+        if (!running || !debug || !running.launched.debugger) {
+            return undefined;
+        }
+        return { ...debugConfiguration(name, running.launched.debugger), stateuiRun: running.token };
     }
 
     /**

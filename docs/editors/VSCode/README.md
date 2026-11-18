@@ -57,7 +57,8 @@ on Android `lldb-dap` attaches once the application has started, and a
 breakpoint holds from then on; on UIKit and Android **StateUI Run** follows the
 application's output, and the notification that follows it stops it. A head
 worked on another machine is built and started on the machine chosen, followed
-the same way, with no debugger. On UIKit, Android and the Web a Release launch runs
+the same way - on a machine paired held for `lldb-dap`, which reaches it
+through the `stateui` tool's relay, a breakpoint holding from the first line. On UIKit, Android and the Web a Release launch runs
 without a debugger; on AppKit, WinUI and GTK `lldb-dap` starts the optimized
 build. A Web head is built, its page served and opened in the chosen browser;
 StateUI: Debug in Chrome, Edge or another of Chromium's browsers opens it
@@ -159,8 +160,11 @@ Tests** work as plain Swift.
   of a Mac, a host a machine paired runs - is that machine's: the `stateui`
   tool copies the project to it, has its own `stateui` build and start the
   head there, and **StateUI Run** follows what it prints; the notification
-  that follows it stops it there. Where the tool says no debugger reaches the
-  machine, StateUI: Debug runs the debug build without one, and says so.
+  that follows it stops it there. On a machine paired with the project the
+  debug build is held there, and `lldb-dap` reaches it through the tool's
+  relay - the program fetched here, its sources mapped to this machine's; on a
+  guest not paired StateUI: Debug runs the debug build without one, and says
+  so.
 
 ## The Android device
 

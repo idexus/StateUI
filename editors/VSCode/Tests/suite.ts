@@ -31,7 +31,7 @@ import {
     atLeast, checkedPythonIn, debuggerFinding, Finding, lldbDapFailure, report,
 } from "../Sources/toolchain";
 import { pathToFileUri, ToolingClient } from "../Sources/Tooling/client";
-import { HostPlace, TestSuiteDescription } from "../Sources/Tooling/protocol";
+import { BuildResult, DebugDescriptor, HostPlace, TestSuiteDescription } from "../Sources/Tooling/protocol";
 import { locateTool } from "../Sources/Tooling/locate";
 
 const started = Date.now();
@@ -263,17 +263,21 @@ export async function run(): Promise<void> {
         }
         {
             // A head worked on another machine - a GTK or WinUI head in a guest of a Mac, a host a machine paired runs -
-            // is built and run by the tool on the machine chosen, with no session - a Debug build too, as no debugger
-            // reaches it.
+            // is built and run by the tool on the machine chosen; a Debug build on one a debugger reaches is held, and
+            // lldb-dap reaches it as the tool says; elsewhere there is no session.
             const runs: { host: string; device: string; debug: boolean; configuration: string }[] = [];
-            const onAMachine = (forHost: Host, named: string | undefined, at: "guest" | "remote" = "guest") => new StateUIDebugConfigurationProvider({
+            const relayed: DebugDescriptor = {
+                kind: "lldb", request: "attach", initCommands: [], attachCommands: ["target create \"/tmp/NotesGTK\"", "gdb-remote 127.0.0.1:51000"],
+                terminateCommands: ["process kill"],
+            };
+            const onAMachine = (forHost: Host, named: string | undefined, at: "guest" | "remote" = "guest", reached = false) => new StateUIDebugConfigurationProvider({
                 prepare: async () => undefined, host: () => forHost, application: async () => gallery_,
                 device: async () => undefined, uiKitDevice: async () => undefined, place: () => at,
                 machine: async () => named === undefined ? undefined
-                    : { name: named, kind: at, system: "", state: "running", debugger: false, architectures: ["arm64"] },
+                    : { name: named, kind: at, system: "", state: "running", debugger: reached, architectures: ["arm64"] },
                 runHead: async (_folder, _application, ran, asked, device, debug) => {
                     runs.push({ host: ran, device, debug, configuration: asked });
-                    return undefined;
+                    return debug ? { launched: { build: { application: "Gallery" } as unknown as BuildResult, held: true, debugger: relayed }, token: "run-1" } : undefined;
                 },
                 browser: async () => undefined,
             });
@@ -282,12 +286,22 @@ export async function run(): Promise<void> {
             const debugged = await onAMachine("winui", "Windows 11").resolveDebugConfiguration(root, launch("debug"));
             const paired = await onAMachine("appkit", "studio", "remote").resolveDebugConfiguration(root, launch("debug"));
             const declined = await onAMachine("gtk", undefined).resolveDebugConfiguration(root, launch("release"));
-            check("a launch on another machine runs on the machine chosen - a guest, a machine paired - with no debugger and no session, and none without one",
+            check("a launch on another machine runs on the machine chosen - a guest, a machine paired - with no session where no debugger reaches it, and none without one",
                 released === undefined && debugged === undefined && paired === undefined && declined === undefined
                 && JSON.stringify(runs) === JSON.stringify([
                     { host: "gtk", device: "Ubuntu", debug: false, configuration: "release" },
                     { host: "winui", device: "Windows 11", debug: false, configuration: "debug" },
                     { host: "appkit", device: "studio", debug: false, configuration: "debug" },
+                ]));
+            runs.length = 0;
+            const held = await onAMachine("gtk", "Ubuntu", "guest", true).resolveDebugConfiguration(root, launch("debug"));
+            const heldRelease = await onAMachine("gtk", "Ubuntu", "guest", true).resolveDebugConfiguration(root, launch("release"));
+            check("a Debug launch on a machine a debugger reaches is held there, and lldb-dap attaches through the tool's relay; a Release launch has no session",
+                held?.type === "lldb-dap" && held?.request === "attach" && held?.stateuiRun === "run-1"
+                && JSON.stringify(held?.attachCommands) === JSON.stringify(relayed.attachCommands) && heldRelease === undefined
+                && JSON.stringify(runs) === JSON.stringify([
+                    { host: "gtk", device: "Ubuntu", debug: true, configuration: "debug" },
+                    { host: "gtk", device: "Ubuntu", debug: false, configuration: "release" },
                 ]));
             check("a machine is listed by its name, kind, system and state, whether a debugger reaches it, and its architectures - its own first; no other destination is one",
                 JSON.stringify(machineOf({
