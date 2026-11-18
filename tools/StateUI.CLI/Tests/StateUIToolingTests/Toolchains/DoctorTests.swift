@@ -31,6 +31,14 @@ final class DoctorTests: XCTestCase {
         XCTAssertEqual(report.findings.first?.hosts, HostFamily.allCases)
     }
 
+    /// The Web is built with Swift and its Swift SDK for WebAssembly alone: the tool serves the page itself.
+    func testTheWebNeedsSwiftAndItsSDKAlone() async {
+        #if os(macOS) || os(Linux)
+        let web = await Doctor().check().findings.filter { $0.hosts.contains(.web) }.map(\.component)
+        XCTAssertEqual(web, ["Swift 6.4 or newer", "the Swift SDK for WebAssembly of Swift's release"])
+        #endif
+    }
+
     /// A program on the search path is found by its name - with Windows' own extensions there.
     func testAProgramOnTheSearchPathIsFound() throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-cli-tests-\(UUID().uuidString)")

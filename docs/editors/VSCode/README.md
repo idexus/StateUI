@@ -393,7 +393,7 @@ what it needs to build and run the hosts it runs - what `stateui doctor` prints 
 as [Requirements](#requirements) and the handbook's host pages say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
 JDK and Swift SDK on macOS; Visual Studio's C++ tools, the Windows SDK and the
 WebView2 runtime on Windows; GTK, libadwaita, WebKitGTK, gdk-pixbuf's SVG
-loader and a desktop session on Linux; the Swift SDK for WebAssembly and Python 3 for the Web on macOS and
+loader and a desktop session on Linux; the Swift SDK for WebAssembly for the Web on macOS and
 Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch - on Linux
 and Windows an `lldb-dap` that starts with the Python its LLDB loads; the
 WebAssembly DWARF Debugging extension for a Debug launch in one of Chromium's

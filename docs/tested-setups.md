@@ -63,8 +63,8 @@ Node, and the conformance suite in a headless browser
 | --- | --- |
 | Swift | the swift.org toolchain `swift-6.4.2-RELEASE` |
 | Swift SDK | `swift-6.4.2-RELEASE_wasm` |
-| Server | Python 3.14.4 |
-| Browser | Safari 26.6.2; Google Chrome 152.0.7977.84, headless, for the conformance suite |
+| Server | the `stateui` tool's own |
+| Browser | Safari 27.2, its WebAssembly debugger for LLDB; Google Chrome 152.0.7977.84, headless, for the conformance suite |
 | Node.js | 26.10.0, for the host's own suite and the conformance run's controller |
 
 ### GTK 4, in Docker

@@ -164,7 +164,7 @@ public struct Doctor: Sendable {
     }
 
     private func webChecks() -> [Check] {
-        let (tools, path) = (tools, path)
+        let tools = tools
         return [
             Check(
                 component: "the Swift SDK for WebAssembly of Swift's release", neededBy: "Web", hosts: [.web],
@@ -172,12 +172,6 @@ public struct Doctor: Sendable {
                     let release = await ToolOutput.text(tools.swift, ["--version"]).flatMap { Versions.swiftRelease(in: $0) }
                     let list = await ToolOutput.text(tools.swift, ["sdk", "list"]) ?? ""
                     return Self.present(Versions.swiftSDK(of: release, in: list, family: "wasm"))
-                },
-            Check(
-                component: "Python 3", neededBy: "Web, which serves its page with it", hosts: [.web],
-                advice: "Install Python 3: macOS's comes with Xcode's command line tools; on Linux, the distribution's python3.") {
-                    guard path.find("python3") != nil else { return .missing }
-                    return Self.present(await ToolOutput.text(.name("python3"), ["--version"]).flatMap { Versions.first(in: $0) })
                 },
         ]
     }

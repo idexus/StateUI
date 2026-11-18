@@ -80,6 +80,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 - The tool: a checkout named by a path that begins as the old one did - `../..` changed to `../../StateUI` - is
   written once in an application's manifest; it was written twice, `../../StateUI/StateUI`.
+- The tool: `stateui doctor` asks for no Python 3 for the Web, which nothing uses - the tool serves a page itself; a
+  machine without it was told it could not build the Web.
 - Web: a debug build's module keeps its DWARF, which the browser's debugger reads. The head's release-only
   `--strip-debug` reached debug builds too - SwiftPM's build system applies a library's linker settings conditioned
   on a configuration in every configuration - so a debugger found no Swift in the page; the tool now links a release
