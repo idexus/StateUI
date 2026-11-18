@@ -197,6 +197,12 @@ final class FolderTransferTests: XCTestCase {
         XCTAssertThrowsError(try FolderFiles.remove(FilesRemoveRequest(root: root.path, paths: ["Sources/X.swift"])))
         XCTAssertThrowsError(try FolderFiles.read(FileReadRequest(root: root.path, path: "Sources/X.swift", offset: 0, length: 4)))
         XCTAssertThrowsError(try FolderFiles.read(FileReadRequest(root: root.path, path: "Y.swift", offset: 0, length: 4)))
+        // A piece's staging file is written too: one that is a link is refused, never written through.
+        try write(Data("keep".utf8), "keep", in: outside)
+        try FileManager.default.createSymbolicLink(at: root.appendingPathComponent("Z.swift.stateui-part"), withDestinationURL: outside.appendingPathComponent("keep"))
+        let staged = FilePiece(path: "Z.swift", offset: 0, size: 3, modified: 0, data: Data("new".utf8).base64EncodedString())
+        XCTAssertThrowsError(try FolderFiles.write(FilesWriteRequest(root: root.path, pieces: [staged])))
+        XCTAssertEqual(data("keep", in: outside), Data("keep".utf8))
         XCTAssertEqual(data("Sources/X.swift", in: outside), Data("keep".utf8))
         #endif
     }

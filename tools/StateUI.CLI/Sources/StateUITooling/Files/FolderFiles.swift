@@ -61,7 +61,8 @@ enum FolderFiles {
                 throw ToolingError(.invalidConfiguration, "A piece of \(piece.path) stands at \(piece.offset) of \(piece.size) bytes.")
             }
             let target = try place(piece.path, in: root)
-            let part = target.appendingPathExtension("stateui-part")
+            // The staging file is written too, so it passes the same check: a link there is refused.
+            let part = try place(piece.path + ".stateui-part", in: root)
             guard let bytes = Data(base64Encoded: piece.data) else {
                 throw ToolingError(.invalidConfiguration, "A piece of \(piece.path) is not base64.")
             }
