@@ -17,6 +17,9 @@ public struct RemoteWork: Sendable {
         let destination: Destination
         let places: WorkPlaces
         let served: ServedTool
+        /// The machine paired whose service answers - nil for a guest reached through `prlctl exec` - which a
+        /// debugger's relay goes through.
+        var remote: RemoteMachine?
     }
 
     /// A guest of this Mac readied by `prlctl exec`: running, its stateui laid from this checkout and answering.
@@ -33,6 +36,9 @@ public struct RemoteWork: Sendable {
         let applicationUri: String
         let application: Application
         let project: Project
+        /// The folder the copies were made from here, and where it stands there: what a debugger maps sources by.
+        let common: URL
+        let commonThere: String
     }
 
     let guests: ParallelsGuests
@@ -143,11 +149,19 @@ public struct RemoteWork: Sendable {
     func run(_ request: RunRequest, in folder: URL, reporter: RunReporter) async throws -> RunResult {
         try ApplicationRunner.refuse(request)
         let ready = try await self.ready(request.build, in: folder, reporter: reporter.build)
+        if request.debugger, ready.reached.remote == nil {
+            throw ToolingError(
+                .invalidConfiguration,
+                "A debugger reaches \(ready.reached.name) through its service alone: pair it - `stateui guest pair --device \"\(ready.reached.name)\"`.")
+        }
         var asked = request
         (asked.build.projectUri, asked.build.device, asked.build.machine) = (ready.applicationUri, Self.theirDevice(of: request.build), nil)
         let output = BuildReporter(progress: reporter.build.progress, output: reporter.output)
+        let relays = Relays()
+        defer { relays.end() }
         return try await ready.reached.served.operation(
-            "application/run", try JSONValue(encoding: asked), reporter: output, started: reporter.started)
+            "application/run", try JSONValue(encoding: asked), reporter: output,
+            started: { launched in self.started(launched, ready: ready, relays: relays, reporter: reporter) })
             .decode(RunResult.self)
     }
 
@@ -237,7 +251,9 @@ public struct RemoteWork: Sendable {
             request.machine ?? request.device, host: request.host, onItsDevice: request.machine != nil, checkout: library, reporter: reporter)
         let common = try await copied(roots, into: reached, reporter: reporter)
         let there = reached.places.join([reached.places.root] + Self.relative(applicationFolder, from: common))
-        return Ready(reached: reached, applicationUri: reached.places.uri(of: there), application: application, project: project)
+        return Ready(
+            reached: reached, applicationUri: reached.places.uri(of: there), application: application, project: project, common: common,
+            commonThere: reached.places.join([reached.places.root] + Self.relative(common, from: common)))
     }
 
     /// The project `request` names - its `projectUri`, else `folder` - the application it means, and its checkout.
@@ -268,15 +284,15 @@ public struct RemoteWork: Sendable {
         if !onItsDevice, host.map({ HostPlaces.place(of: $0) == .guest }) ?? true, guests.prlctl != nil || paired == nil {
             if let guest = try await guest(device, host: host, needed: paired == nil) {
                 let readied = try await self.readied(guest, checkout: checkout, reporter: reporter)
-                var (served, road) = (readied.served, "prlctl exec")
+                var (served, road, through) = (readied.served, "prlctl exec", RemoteMachine?.none)
                 if let paired {
                     let network = ServedTool(remote: paired, workspaceUri: readied.places.uri(of: readied.places.root))
-                    if await Self.speaks(network) { (served, road) = (network, "its service at \(paired.address):\(paired.port)") }
+                    if await Self.speaks(network) { (served, road, through) = (network, "its service at \(paired.address):\(paired.port)", paired) }
                 }
                 reporter.progress("working in \(guest.name) through \(road)")
                 return Reached(
                     name: guest.name, destination: ParallelsGuests.destination(of: guest), places: readied.places.of(try Self.client()),
-                    served: served)
+                    served: served, remote: through)
             }
         }
         guard let paired else {
@@ -337,7 +353,7 @@ public struct RemoteWork: Sendable {
         }
         var destination = HostPlaces.remote(remote)
         (destination.version, destination.architecture) = (info.machine.system, Architecture(rawValue: info.machine.architecture))
-        return Reached(name: remote.name, destination: destination, places: places.of(try Self.client()), served: served)
+        return Reached(name: remote.name, destination: destination, places: places.of(try Self.client()), served: served, remote: remote)
     }
 
     /// The name this machine's work goes by on another: its identity's short form.

@@ -81,32 +81,46 @@ public final class ServicePairing: Sendable {
     }
 
     /// Who a connection of the service admits: its pairing and its one challenge answered before `initialize`, then
-    /// a credential answering that challenge with a paired client's token.
-    public func admission() -> Admission {
+    /// a credential answering that challenge with a paired client's token; or, proved the same way, a relay to a port a
+    /// run's `lldb-server` holds now, told to `relaying`.
+    public func admission(relaying: @escaping @Sendable (UInt16) -> Void = { _ in }) -> Admission {
         let challenge = Mutex<String?>(nil)
+        let proves: @Sendable (Credential) -> Bool = { [self] credential in
+            guard let nonce = challenge.withLock({ taken in defer { taken = nil }; return taken }),
+                  let client = state.withLock({ $0.clients.first { $0.id == credential.client } }) else { return false }
+            let expected = SHA256.hex(SHA256.hmac(key: Array(client.token.utf8), message: Array(nonce.utf8)))
+            return Self.equal(expected, credential.answer)
+        }
         return Admission(
-            methods: ["service/pair", "service/challenge"],
+            methods: ["service/pair", "service/challenge", "service/relay"],
             answer: { [self] method, params in
                 do {
-                    if method == "service/challenge" {
+                    switch method {
+                    case "service/challenge":
                         let nonce = Self.randomHex(32)
                         challenge.withLock { $0 = nonce }
                         return .result(try JSONValue(encoding: Challenge(nonce: nonce, identity: identity)))
+                    case "service/relay":
+                        let relay = try (params ?? .object([:])).decode(RelayRequest.self)
+                        guard proves(Credential(client: relay.client, answer: relay.answer)) else {
+                            return .error(.notAdmitted("This client is not paired with the service, or answered not its challenge."))
+                        }
+                        guard DebugPorts.holds(relay.port) else {
+                            return .error(.notAdmitted("No run's lldb-server holds port \(relay.port) here."))
+                        }
+                        relaying(relay.port)
+                        return .result(.object([:]))
+                    default:
+                        let request = try (params ?? .object([:])).decode(PairingRequest.self)
+                        return .result(try JSONValue(encoding: try pair(request)))
                     }
-                    let request = try (params ?? .object([:])).decode(PairingRequest.self)
-                    return .result(try JSONValue(encoding: try pair(request)))
                 } catch let error as ToolingError {
                     return .error(.notAdmitted(error.message))
                 } catch {
-                    return .error(.invalidParams("\(method) takes a code and a client's name."))
+                    return .error(.invalidParams("\(method) takes what its message says."))
                 }
             },
-            admits: { [self] credential in
-                guard let credential, let nonce = challenge.withLock({ taken in defer { taken = nil }; return taken }),
-                      let client = state.withLock({ $0.clients.first { $0.id == credential.client } }) else { return false }
-                let expected = SHA256.hex(SHA256.hmac(key: Array(client.token.utf8), message: Array(nonce.utf8)))
-                return Self.equal(expected, credential.answer)
-            })
+            admits: { credential in credential.map(proves) ?? false })
     }
 
     /// Writes the clients, readable by this machine's user alone.

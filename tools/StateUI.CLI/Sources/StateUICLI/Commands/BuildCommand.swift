@@ -110,8 +110,11 @@ struct RunCommand: AsyncParsableCommand {
     @Option(help: "A Web head's page served on this machine alone, loopback, or shared with the network, lan.")
     var listen: String?
 
-    @Flag(help: "Ready a debugger: a UIKit head starts held until one attaches, an Android head with the debugger's server in its sandbox - what to attach to said as it starts; a GTK head runs under gdb, each GTK critical's stack and a crash's said as they come.")
+    @Flag(help: "Ready LLDB: a UIKit head starts held until it attaches, an Android head with the debugger's server in its sandbox, a GTK or WinUI head held by lldb-server - what to attach to said as it starts.")
     var debugger = false
+
+    @Flag(help: "A GTK head runs under gdb, each GTK critical's stack and a crash's said as they come.")
+    var gdb = false
 
     func run() async throws {
         do {
@@ -122,7 +125,7 @@ struct RunCommand: AsyncParsableCommand {
                     throw ToolingError(.invalidConfiguration, "--listen is loopback or lan.")
                 }
                 let ran = try await ToolingService().run(
-                    RunRequest(build: request, debugger: debugger, port: port, lan: listen.map { $0 == "lan" }), in: build.here,
+                    RunRequest(build: request, debugger: debugger, gdb: gdb ? true : nil, port: port, lan: listen.map { $0 == "lan" }), in: build.here,
                     operation: BuildOptions.operation,
                     reporter: RunReporter(
                         build: BuildOptions.terminal, started: { FileHandle.standardError.write(Data((Self.words($0) + "\n").utf8)) },

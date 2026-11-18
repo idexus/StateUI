@@ -212,6 +212,33 @@ paired here. A name given twice, an address of no port or an identity not 64
 hexadecimal digits refuses the manifest, as does an application of a
 workspace declaring its own.
 
+## A debugger relayed
+
+`lldb-server` knows no client: a port of it open to the network would give
+anyone reaching it a process on the machine. So a debugger reaches another
+machine through the service alone. A GTK or WinUI head run there with
+`debugger` is held by `lldb-server gdbserver` on a free port of that machine's
+loopback ([A desktop head](runs.md#a-desktop-head)), which the run holds
+while it lasts (`DebugPorts`). The client asks for a relay to it on a
+connection of its own (`service/relay`, before `initialize`): the challenge's
+nonce answered with the token, as `initialize`'s credential would, and the
+port - refused for a port no run holds now; granted, the service writes its
+answer and carries the rest of the connection's bytes to that port and back
+until either end closes. On the client, `DebugRelay` listens on a port of its
+own loopback and makes such a connection for each the debugger makes. As the
+run starts there, the tool fetches its program's folder into the
+application's `.build/stateui/<machine>`, opens the relay, and rewrites the
+way `started` says: LLDB reads the program and its libraries from the copy
+here (`target.exec-search-paths`), maps the sources from where they were
+built there (`target.source-map`), and connects with `gdb-remote` to the
+relay's port. A guest reached through `prlctl exec` alone has no service to
+relay through: a debugger there asks it be paired.
+
+LLDB on a Mac stops a Linux head at a breakpoint of its sources and walks its
+stack into StateUI's libraries; the Clang modules a Swift library's debug
+information names (`.pcm`) stand on the machine that built it, so LLDB says
+some types of the libraries are missing.
+
 ## A service probed
 
 `stateui remote probe <address:port>` says whether a stateui service answers

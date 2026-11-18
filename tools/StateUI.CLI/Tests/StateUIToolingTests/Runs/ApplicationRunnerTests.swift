@@ -8,13 +8,14 @@ import XCTest
 
 final class ApplicationRunnerTests: XCTestCase {
     /// A run starts UIKit, Android, Web, GTK and WinUI heads - an AppKit head runs from the program its build names -
-    /// holds a WinUI head for no debugger, and holds only a debug build for one; each is refused before anything is
-    /// built.
+    /// runs a GTK head alone under gdb, never one both under gdb and held for LLDB, and holds only a debug build; each
+    /// is refused before anything is built.
     func testWhatARunCannotStartIsRefusedFirst() async throws {
         let nowhere = FileManager.default.temporaryDirectory.appendingPathComponent("run-\(UUID().uuidString)")
         for (request, said) in [
             (RunRequest(build: BuildRequest(host: .appkit)), "starts UIKit, Android, Web, GTK and WinUI heads"),
-            (RunRequest(build: BuildRequest(host: .winui), debugger: true), "WinUI head is debugged from the program"),
+            (RunRequest(build: BuildRequest(host: .winui), gdb: true), "A GTK head alone runs under gdb"),
+            (RunRequest(build: BuildRequest(host: .gtk), debugger: true, gdb: true), "under gdb, or is held for LLDB"),
             (RunRequest(build: BuildRequest(host: .uikit, configuration: .release), debugger: true), "Only a debug build"),
         ] {
             do {
@@ -27,10 +28,25 @@ final class ApplicationRunnerTests: XCTestCase {
         }
     }
 
-    /// A GTK head run for a debugger runs under gdb - every GTK critical's stack and a crash's said, Swift's own
-    /// backtrace off - and any other run is its program alone.
+    /// A GTK head run under gdb says every GTK critical's stack and a crash's, Swift's own backtrace off; a GTK or WinUI
+    /// head held for LLDB is reached by `gdb-remote` on the loopback port its `lldb-server` holds; any other run is its
+    /// program alone.
     func testAGTKHeadForADebuggerRunsUnderGDB() throws {
-        XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: .gtk), debugger: true)))
+        XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: .gtk), gdb: true)))
+        for host in [HostFamily.gtk, .winui] {
+            XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: host), debugger: true)))
+        }
+        let way = DebugDescriptors.gdbServer(
+            program: URL(fileURLWithPath: "/home/me/Notes/NotesGTK"), port: 41234,
+            sourceMap: ("/home/me/stateui-guest/abc/Notes", URL(fileURLWithPath: "/Users/me/Notes")))
+        XCTAssertEqual(way.attachCommands, ["target create \"/home/me/Notes/NotesGTK\"", "gdb-remote 127.0.0.1:41234"])
+        XCTAssertEqual(way.initCommands, [
+            "settings append target.exec-search-paths \"/home/me/Notes\"",
+            "settings set target.source-map \"/home/me/stateui-guest/abc/Notes\" \"/Users/me/Notes\"",
+        ])
+        XCTAssertEqual(way.terminateCommands, ["process kill"])
+        XCTAssertEqual(RemoteWork.relayedPort(of: way), 41234, "the port a relay goes to")
+        XCTAssertNil(RemoteWork.relayedPort(of: DebugDescriptors.simulator(process: 7)))
         let (program, commands) = (URL(fileURLWithPath: "/home/me/Notes/NotesGTK"), URL(fileURLWithPath: "/tmp/gdb.cmd"))
         let under = DesktopLaunch.request(program, gdbCommands: commands)
         XCTAssertEqual(under.executable, .name("gdb"))
@@ -50,6 +66,15 @@ final class ApplicationRunnerTests: XCTestCase {
                      "During symbol reading: unsupported tag"] {
             XCTAssertFalse(DesktopLaunch.gdbNoise(kept), kept)
         }
+    }
+
+    /// A port is relayed to only while a run's `lldb-server` holds it.
+    func testADebugPortIsHeldWhileItsRunLasts() async throws {
+        let port = try DebugPorts.free()
+        XCTAssertFalse(DebugPorts.holds(port))
+        let inside = await DebugPorts.holding(port) { DebugPorts.holds(port) }
+        XCTAssertTrue(inside)
+        XCTAssertFalse(DebugPorts.holds(port))
     }
 
     /// A file another process writes is read in lines as it grows, the last one at the end though no line feed ended it.

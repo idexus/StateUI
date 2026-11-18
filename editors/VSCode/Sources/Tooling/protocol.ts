@@ -275,8 +275,10 @@ export const BuildResult = object<BuildResult>({
     symbolsUri: optional(string),
 });
 
-export interface RunRequest { build: BuildRequest; debugger: boolean; port?: number; lan?: boolean }
-export const RunRequest = object<RunRequest>({ build: BuildRequest, debugger: boolean, port: optional(number), lan: optional(boolean) });
+export interface RunRequest { build: BuildRequest; debugger: boolean; gdb?: boolean; port?: number; lan?: boolean }
+export const RunRequest = object<RunRequest>({
+    build: BuildRequest, debugger: boolean, gdb: optional(boolean), port: optional(number), lan: optional(boolean),
+});
 
 export type DebugKind = "lldb" | "browser";
 export type DebugRequest = "launch" | "attach";

@@ -56,3 +56,19 @@ public struct Credential: Codable, Equatable, Sendable {
         self.answer = answer
     }
 }
+
+/// A paired client asking its service to carry the rest of the connection to a port of the service's loopback - a
+/// run's `lldb-server` - `service/relay`, before `initialize`: its id, its answer to the connection's challenge, and the
+/// port.
+public struct RelayRequest: Codable, Equatable, Sendable {
+    public var client: String
+    public var answer: String
+    public var port: UInt16
+
+    /// Client `client`, answering `answer`, asking for `port`.
+    public init(client: String, answer: String, port: UInt16) {
+        self.client = client
+        self.answer = answer
+        self.port = port
+    }
+}

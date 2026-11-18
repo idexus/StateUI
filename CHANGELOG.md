@@ -151,10 +151,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   (`BuildRequest.machine`) builds, packages and runs a head there.
 - `stateui repo test --plan portable|native --device <machine>` runs the plan on a guest or a machine paired, the
   checkout copied there - `repository/plan`, the plan's operation, which any client asks.
-- `stateui run --host gtk --debugger` runs the head under gdb through `application/run`, so on another machine too -
-  `--device <guest>` - each GTK critical's stack and a crash's told here, the command ending as gdb does; `stateui run`
-  of a GTK or WinUI head takes the protocol's road, and a WinUI run held for a debugger is refused, as
-  `application/prepare` readies one.
+- `stateui run --host gtk --gdb` (`RunRequest.gdb`) runs the head under gdb through `application/run`, so on another
+  machine too - `--device <guest>` - each GTK critical's stack and a crash's told here, the command ending as gdb does.
+  `--debugger` means LLDB on every host: a GTK or WinUI head is held by the toolchain's `lldb-server` on a port of the
+  loopback, which `started` names (`gdb-remote`). On another machine the debugger is relayed through its service -
+  `service/relay`, granted to a paired client for a port a run holds - the program fetched home and LLDB's way
+  rewritten to a port of this machine's loopback; no debugger port listens on the network. `stateui run` of a GTK or WinUI head takes the protocol's road.
 - A folder travels to another machine's tool, and back, through the connection itself - `folder/survey`,
   `files/write`, `file/read`, `files/remove`, in pieces of at most 4 MiB, a file's time kept - over a guest's
   `prlctl exec` as over the service: a guest reads the project and hands a package back through no shared folder;
@@ -173,7 +175,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   application `stateui new` makes outside a workspace has a `.gitignore` keeping `.stateui/` out of git.
 - `stateui run` hands an application it starts on a simulator, a device, Android or a page every `STATEUI_` variable
   of its own environment, `STATEUI_TALLY=1` among them, as a head on the Mac, Linux or Windows has always had.
-- A GTK head run with `--debugger` ends as its program does: its exit status, or a crash's signal with every thread's
+- A GTK head run with `--gdb` ends as its program does: its exit status, or a crash's signal with every thread's
   stack.
 
 ## 0.8.5 - 2026-11-13

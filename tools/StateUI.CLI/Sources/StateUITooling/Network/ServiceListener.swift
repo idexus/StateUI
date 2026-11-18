@@ -45,7 +45,7 @@ public struct ServiceListener: Sendable {
         await withTaskCancellationHandler {
             await withDiscardingTaskGroup { group in
                 for await client in accepted {
-                    group.addTask { [pairing] in await Self.serve(client, admission: pairing.admission()) }
+                    group.addTask { [pairing] in await Self.serve(client, pairing: pairing) }
                 }
             }
         } onCancel: { [socket] in
@@ -53,16 +53,24 @@ public struct ServiceListener: Sendable {
         }
     }
 
-    /// One client's connection, served until it ends; the socket closed after.
-    private static func serve(_ client: StreamSocket, admission: Admission) async {
+    /// One client's connection, served until it ends - or, a relay granted, carried as bytes to the port it names
+    /// until either end closes; the socket closed after.
+    private static func serve(_ client: StreamSocket, pairing: ServicePairing) async {
         let writer = SocketWriter(client)
+        let relayed = Mutex<UInt16?>(nil)
         let connection = Connection(
             server: ToolingService.identity, apiVersions: Release.apiVersions, methods: ToolingService().methods,
             send: writer.write, diagnose: { line in try? FileHandle.standardError.write(contentsOf: Data((line + "\n").utf8)) },
-            backlog: writer.backlog, admission: admission)
+            backlog: writer.backlog, admission: pairing.admission(relaying: { port in relayed.withLock { $0 = port } }))
         Task {
-            for await bytes in client.chunks() {
+            var chunks = client.chunks().makeAsyncIterator()
+            while let bytes = await chunks.next() {
                 guard await connection.receive(Data(bytes)) else { break }
+                if let port = relayed.withLock({ $0 }) {
+                    writer.flush()
+                    await Self.carry(client, rest: &chunks, to: port)
+                    break
+                }
             }
             await connection.end()
         }
@@ -70,6 +78,20 @@ public struct ServiceListener: Sendable {
         await connection.end()
         writer.flush()
         client.close()
+    }
+
+    /// The rest of `client`'s bytes carried to `port` of the loopback, and that port's back, until either end closes.
+    /// Design: docs/design/tooling/service.md#a-debugger-relayed
+    private static func carry(_ client: StreamSocket, rest chunks: inout AsyncStream<[UInt8]>.Iterator, to port: UInt16) async {
+        guard let target = try? StreamSocket.connect(to: "127.0.0.1", port: port) else { return }
+        let back = Thread {
+            while let bytes = try? target.read(), !bytes.isEmpty, (try? client.write(bytes)) != nil {}
+            client.close()
+        }
+        back.name = "stateui relay"
+        back.start()
+        while let bytes = await chunks.next(), (try? target.write(bytes)) != nil {}
+        target.close()
     }
 }
 

@@ -18,10 +18,12 @@ struct DesktopLaunch: Sendable {
         _ = try? await ProcessRunner().run(ProcessRequest(.name("pkill"), arguments: ["-f", "^\(program.path)( |$)"]))
     }
 
-    /// Runs `built`'s program - a GTK head's under gdb where `underGDB` - and follows it.
-    func run(_ built: BuildResult, underGDB: Bool = false, reporter: RunReporter) async throws -> RunResult {
+    /// Runs `built`'s program - a GTK head's under gdb where `underGDB`, held by `lldb-server` for LLDB where `held` -
+    /// and follows it.
+    func run(_ built: BuildResult, underGDB: Bool = false, held: Bool = false, reporter: RunReporter) async throws -> RunResult {
         let program = try FileURI.url(built.programUri)
         try await Self.ready(built)
+        if held { return try await self.held(built, program: program, reporter: reporter) }
         let commands = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-gdb-\(UUID().uuidString).cmd")
         defer { try? FileManager.default.removeItem(at: commands) }
         if underGDB { try Data(GTKHead.gdbCommands(for: built.architecture).utf8).write(to: commands) }
@@ -31,6 +33,24 @@ struct DesktopLaunch: Sendable {
             Self.request(program, gdbCommands: underGDB ? commands : nil), output: { line in if !underGDB || !Self.gdbNoise(line.text) { said(line) } })
         try Task.checkCancellation()
         return RunResult(launched: LaunchedApplication(build: built, process: nil, held: false), exitStatus: Int(outcome.exitStatus))
+    }
+
+    /// `program` held by the toolchain's `lldb-server` on a free port of the loopback until LLDB connects, the way
+    /// said as it starts; the port held for a relay while it runs.
+    private func held(_ built: BuildResult, program: URL, reporter: RunReporter) async throws -> RunResult {
+        guard let server = ToolResolver().lldbServer else {
+            throw ToolingError(.missingToolchain, "lldb-server is not here: it comes with the Swift toolchain, beside swift.")
+        }
+        let port = try DebugPorts.free()
+        return try await DebugPorts.holding(port) {
+            let launched = LaunchedApplication(
+                build: built, process: nil, held: true, debugger: DebugDescriptors.gdbServer(program: program, port: port))
+            reporter.started(launched)
+            let outcome = try await ProcessRunner().run(
+                ProcessRequest(.path(server.path), arguments: ["gdbserver", "127.0.0.1:\(port)", "--", program.path]), output: reporter.output)
+            try Task.checkCancellation()
+            return RunResult(launched: launched, exitStatus: Int(outcome.exitStatus))
+        }
     }
 
     /// Whether gdb's `line` is its word on a Clang module's debug information, which it cannot read as split DWARF.

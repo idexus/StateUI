@@ -41,6 +41,18 @@ enum DebugDescriptors {
                              "process handle SIGBUS --pass true --stop false --notify false"])
     }
 
+    /// LLDB connecting to the `lldb-server` holding `program` at `port` of this machine's loopback - LLDB's
+    /// `gdb-remote` - the program and its libraries read from `program`'s folder, its sources found through
+    /// `sourceMap` where they were built elsewhere.
+    static func gdbServer(program: URL, port: UInt16, sourceMap: (built: String, here: URL)? = nil) -> DebugDescriptor {
+        DebugDescriptor(
+            kind: .lldb, request: .attach,
+            initCommands: ["settings append target.exec-search-paths \"\(program.deletingLastPathComponent().path)\""]
+                + (sourceMap.map { ["settings set target.source-map \"\($0.built)\" \"\($0.here.path)\""] } ?? []),
+            attachCommands: ["target create \"\(program.path)\"", "gdb-remote 127.0.0.1:\(port)"],
+            terminateCommands: ["process kill"])
+    }
+
     /// A browser's debugger starting `browser` on the page at `url`, the page's sources read from `site`.
     static func page(_ url: String, browser: URL, site: URL) -> DebugDescriptor {
         DebugDescriptor(kind: .browser, request: .launch, programUri: FileURI.string(browser), url: url, sourceUri: FileURI.string(site))

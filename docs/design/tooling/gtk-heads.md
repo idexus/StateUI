@@ -39,7 +39,7 @@ bring the first forward - and runs it, its output told as it comes; Ctrl+C
 ends it. With `--device` naming a guest or a machine paired, all of it happens
 there, the output told here.
 
-With `--debugger` it runs under gdb. A breakpoint on
+With `--gdb` (`RunRequest.gdb`) it runs under gdb. A breakpoint on
 `g_return_if_fail_warning` says each GTK critical - its domain and
 expression read from the architecture's argument registers - with its stack,
 and the program goes on; a signal that stops it says its stack and every

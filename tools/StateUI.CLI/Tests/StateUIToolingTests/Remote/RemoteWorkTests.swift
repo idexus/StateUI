@@ -213,17 +213,17 @@ final class RemoteWorkTests: XCTestCase {
         XCTAssertEqual(library.standardizedFileURL.path, RealPath.of(checkout).standardizedFileURL.path)
     }
 
-    /// A WinUI run held for a debugger on another machine is refused here, before the machine is reached or anything
-    /// copied; a GTK one goes on - to run under gdb there - and fails only on what it reaches.
-    func testARunHeldForADebuggerElsewhereIsRefusedFirst() async throws {
+    /// A WinUI run under gdb on another machine is refused here, before the machine is reached or anything copied; a
+    /// GTK one goes on - to run under gdb there - and fails only on what it reaches.
+    func testARunUnderGDBElsewhereIsRefusedFirst() async throws {
         let nowhere = FileManager.default.temporaryDirectory.appendingPathComponent("run-\(UUID().uuidString)")
         for (host, refused) in [(HostFamily.winui, true), (.gtk, false)] {
-            let request = RunRequest(build: BuildRequest(host: host, device: "No Such Guest"), debugger: true)
+            let request = RunRequest(build: BuildRequest(host: host, device: "No Such Guest"), gdb: true)
             do {
                 _ = try await RemoteWork(guests: ParallelsGuests(), remotes: []).run(request, in: nowhere, reporter: RunReporter())
                 XCTFail("\(host) ran")
             } catch let error as ToolingError {
-                XCTAssertEqual(error.message.contains("head is debugged from the program"), refused, "\(host): \(error.message)")
+                XCTAssertEqual(error.message.contains("alone runs under gdb"), refused, "\(host): \(error.message)")
             }
         }
     }
