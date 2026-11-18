@@ -25,7 +25,7 @@ struct RepoCommand: AsyncParsableCommand {
         @Option(help: "host:uikit's simulator, by name or UDID - the booted one, else an iPhone, when left out; host:android's device or emulator; host:gtk's or host:winui's guest, on a Mac; with --plan, a guest or a machine paired runs the plan.")
         var device: String?
 
-        @Flag(help: "host:android: build the test APK alone, with its identity, and say its folder - to run elsewhere with --artifact.")
+        @Flag(help: "host:android: build the test APK alone, with its identity, and say its folder - to run elsewhere with --artifact; never with --plan.")
         var buildOnly = false
 
         @Option(help: "host:android with --build-only: the architecture the test APK is built for, arm64 or x86_64.")
@@ -34,13 +34,16 @@ struct RepoCommand: AsyncParsableCommand {
         @Option(help: "host:android: run the test APK a --build-only made, from its folder, instead of building one.")
         var artifact: String?
 
-        @Option(help: "Only the tests whose names this matches, as swift test --filter takes it.")
+        @Option(help: "Only the tests whose names this matches, as swift test --filter takes it; a suite's alone, never with --plan.")
         var filter: String?
 
         @OptionGroup var output: OutputOptions
 
         func validate() throws {
             guard plan != nil || suite != nil else { throw ValidationError("Name a --suite, or a --plan.") }
+            if plan != nil, filter != nil || buildOnly || architecture != nil || artifact != nil {
+                throw ValidationError("--filter, --build-only, --architecture and --artifact are a suite's: run it with --suite alone, without --plan.")
+            }
         }
 
         func run() async throws {

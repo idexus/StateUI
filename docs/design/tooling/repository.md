@@ -216,7 +216,10 @@ any suite runs. Each suite is a
 phase of its own, a host suite's phases under its id; one failing never stops
 those after it, and a suite this machine cannot run - an Android one with no
 device running - stands as not run, never as passed. `--suite <id>` runs one
-of the plan's. Full WinUI conformance is never part of a plan.
+of the plan's. A suite's own options - `--filter`, `--build-only`,
+`--architecture`, `--artifact` - are refused with a plan, as it runs its
+suites whole; they go with `--suite` alone. Full WinUI conformance is never
+part of a plan.
 
 `--device` naming a guest of this Mac or a machine paired runs the plan on
 that machine ([Work on another machine](service.md#work-on-another-machine)):
