@@ -54,7 +54,9 @@ public enum ServiceProbe {
 
     /// `work`'s result, or a failure once `limit` passed - whichever comes first; a connection still waiting is left to
     /// end by itself, as a task group would wait for it.
-    private static func within<Result: Sendable>(_ work: @escaping @Sendable () async throws -> Result) async throws -> Result {
+    static func within<Result: Sendable>(
+        _ limit: Duration = Self.limit, _ work: @escaping @Sendable () async throws -> Result
+    ) async throws -> Result {
         try await withCheckedThrowingContinuation { continuation in
             let settled = Mutex(false)
             let finish = { @Sendable (outcome: Swift.Result<Result, any Error>) in

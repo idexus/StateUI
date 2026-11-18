@@ -12,11 +12,11 @@ enum HostPlaces {
     /// This machine's own.
     static var here: [HostPlace] { of(system: Machine.current.system) }
 
-    /// This machine's own, and beside them the hosts whose heads run as their own programs on a machine of `remotes` -
-    /// each at `remote` - in the matrix's order.
+    /// This machine's own, and beside them the hosts whose heads run on a machine of `remotes` - as its own programs,
+    /// on its devices or in its browsers - each at `remote`, in the matrix's order.
     static func available(remotes: [RemoteMachine]) -> [HostPlace] {
         let own = here
-        let elsewhere = Set(remotes.flatMap(\.machineHosts)).subtracting(own.map(\.host))
+        let elsewhere = Set(remotes.flatMap { $0.machineHosts + $0.deviceHosts }).subtracting(own.map(\.host))
         return (own + elsewhere.map { HostPlace(host: $0, place: .remote) }).sorted { $0.host < $1.host }
     }
 

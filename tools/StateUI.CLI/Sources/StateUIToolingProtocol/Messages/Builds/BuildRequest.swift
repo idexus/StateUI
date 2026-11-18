@@ -17,13 +17,17 @@ public struct BuildRequest: Codable, Equatable, Sendable {
     /// emulator, a Web head's browser; the one chosen for the host when left out, else the booted simulator, else an
     /// iPhone.
     public var device: String?
+    /// The machine paired with the project whose device `device` names - a remote Mac's simulator, another machine's
+    /// Android device - which builds and runs the head; nil where the device is this machine's, or names a guest or
+    /// a machine paired itself.
+    public var machine: String?
     /// Where a package is laid, as a file URI; `<workspace>/artifacts/<Name>/<Host>` when left out.
     public var outputUri: String?
 
     /// A build of `application` of the project at `projectUri` for `host`.
     public init(
         projectUri: String? = nil, application: String? = nil, host: HostFamily? = nil, configuration: BuildConfiguration? = nil,
-        architecture: Architecture? = nil, device: String? = nil, outputUri: String? = nil
+        architecture: Architecture? = nil, device: String? = nil, machine: String? = nil, outputUri: String? = nil
     ) {
         self.projectUri = projectUri
         self.application = application
@@ -31,6 +35,7 @@ public struct BuildRequest: Codable, Equatable, Sendable {
         self.configuration = configuration
         self.architecture = architecture
         self.device = device
+        self.machine = machine
         self.outputUri = outputUri
     }
 }

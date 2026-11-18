@@ -50,6 +50,7 @@ final class SettingsTests: XCTestCase {
         let request = try ApplicationBuilder.chosen(BuildRequest(), in: root)
         XCTAssertEqual([request.host?.rawValue, request.device], ["android", "emulator-5554"])
         XCTAssertEqual(try ApplicationBuilder.chosen(BuildRequest(device: "Pixel"), in: root).device, "Pixel")
+        XCTAssertNil(try ApplicationBuilder.chosen(BuildRequest(machine: "studio"), in: root).device, "this machine's device stays here")
     }
 
     /// A choice the project cannot take is refused and nothing is written: an application the workspace does not

@@ -142,7 +142,9 @@ program run through `prlctl exec` as the user could show no UAC prompt.
 A head of a project is built, packaged and run on another machine, and a
 host's own suite run there, by that machine's own stateui (`RemoteWork`):
 where the device names a machine paired with the project that runs the host
-as its own program, or, on a Mac, a guest for GTK and WinUI. A guest is
+as its own program, or, on a Mac, a guest for GTK and WinUI; or where the
+request's `machine` names a machine paired that runs the host on its devices,
+its `device` then that machine's own ([Destinations](destinations.md#where-a-hosts-heads-run)). A guest is
 reached through `prlctl exec` - started, its stateui laid where it is not the
 checkout's ([Guests](guests.md#a-head-worked-in-a-guest)) - and its
 connection is then its service's where the Mac is paired with it and it

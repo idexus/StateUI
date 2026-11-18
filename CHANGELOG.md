@@ -146,6 +146,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   WinUI on a Mac - on that machine, the checkout copied there; `--record` fetches the host's
   `lib/StateUI/exports/marks/<host>` home and renders the documents here. The VS Code extension's conformance commands
   run there for such a host.
+- A machine paired offers its devices and browsers - a Mac's simulators and iPhones, Android devices: `devices/list`
+  asks it through its service, each destination named by its `machine`, and `--machine <name> --device <its device>`
+  (`BuildRequest.machine`) builds, packages and runs a head there.
 - `stateui repo test --plan portable|native --device <machine>` runs the plan on a guest or a machine paired, the
   checkout copied there - `repository/plan`, the plan's operation, which any client asks.
 - `stateui run --host gtk --debugger` runs the head under gdb through `application/run`, so on another machine too -

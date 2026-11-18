@@ -42,11 +42,14 @@ public struct Destination: Codable, Equatable, Sendable {
     public var debugger: Bool
     /// A browser's program, as a file URI: what a debugger starts on a page.
     public var programUri: String?
+    /// The machine paired with the project it stands on - a remote Mac's simulator; nil for this machine's own.
+    public var machine: String?
 
     /// Destination `name`, reached as `id`.
     public init(
         id: String, udid: String, name: String, kind: Kind, version: String, booted: Bool = false, connection: String? = nil,
-        architecture: Architecture? = nil, emulated: [Architecture] = [], debugger: Bool = true, programUri: String? = nil
+        architecture: Architecture? = nil, emulated: [Architecture] = [], debugger: Bool = true, programUri: String? = nil,
+        machine: String? = nil
     ) {
         self.id = id
         self.udid = udid
@@ -59,5 +62,6 @@ public struct Destination: Codable, Equatable, Sendable {
         self.emulated = emulated
         self.debugger = debugger
         self.programUri = programUri
+        self.machine = machine
     }
 }

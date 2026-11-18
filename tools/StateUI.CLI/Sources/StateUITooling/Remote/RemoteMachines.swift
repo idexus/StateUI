@@ -47,6 +47,11 @@ public struct RemoteMachine: Codable, Equatable, Sendable {
     public var machineHosts: [HostFamily] {
         hosts.filter { $0.place == .machine }.map(\.host)
     }
+
+    /// The hosts whose heads run there on its devices or in its browsers - which this machine reaches through it.
+    public var deviceHosts: [HostFamily] {
+        hosts.filter { $0.place == .device || $0.place == .browser }.map(\.host)
+    }
 }
 
 /// The machines a project is paired with, as its `.stateui/remotes.json` holds them.

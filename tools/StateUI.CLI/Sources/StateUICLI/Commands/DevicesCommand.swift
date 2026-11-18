@@ -37,7 +37,7 @@ struct DevicesCommand: AsyncParsableCommand {
             case .simulator, .emulator: each.booted ? "booted" : "not running"
             }
             let facts = [each.kind.rawValue, each.version, each.architecture?.rawValue ?? "", state].filter { !$0.isEmpty }.joined(separator: ", ")
-            return "\(each.name) (\(facts)) \(each.id)"
+            return "\(each.name) (\(facts)) \(each.id)\(each.machine.map { " on \($0)" } ?? "")"
         }.joined(separator: "\n")
     }
 }

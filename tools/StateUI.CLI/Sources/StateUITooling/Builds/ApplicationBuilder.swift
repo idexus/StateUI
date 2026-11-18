@@ -340,7 +340,8 @@ public struct ApplicationBuilder: Sendable {
                 "Name the host with --host, or choose one for \(application.lastPathComponent): `stateui settings --host <host>`.")
         }
         chosen.host = host
-        chosen.device = request.device ?? settings.device(for: host)
+        // A machine paired picks its own device where none is named: the one chosen here is of this machine.
+        chosen.device = request.device ?? (request.machine == nil ? settings.device(for: host) : nil)
         return chosen
     }
 

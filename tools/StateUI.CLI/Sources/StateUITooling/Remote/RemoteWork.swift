@@ -56,14 +56,42 @@ public struct RemoteWork: Sendable {
         return HostPlaces.place(of: host) == .guest || remotes.contains { $0.name == device && $0.machineHosts.contains(host) }
     }
 
+    /// Whether `request` is worked on another machine: on a machine of `remotes` its `machine` names, a device of that
+    /// one's, or as `asks(_:device:remotes:)` says.
+    public static func asks(_ request: BuildRequest, remotes: [RemoteMachine]) -> Bool {
+        guard let machine = request.machine else { return asks(request.host, device: request.device, remotes: remotes) }
+        return remotes.contains { $0.name == machine && request.host.map($0.deviceHosts.contains) ?? false }
+    }
+
+    /// The destinations of `host` on the devices of `machines`, each asked within a few seconds - one that answers not
+    /// lists none - each named by its machine.
+    static func devices(of host: HostFamily, on machines: [RemoteMachine]) async -> [Destination] {
+        await withTaskGroup(of: (Int, [Destination]).self) { group in
+            for (index, machine) in machines.enumerated() {
+                group.addTask {
+                    let listed = try? await ServiceProbe.within(.seconds(15)) {
+                        try await ServedTool(remote: machine, workspaceUri: "file:///")
+                            .query("devices/list", try JSONValue(encoding: DestinationQuery(host: host))).decode(DestinationList.self)
+                    }
+                    return (index, (listed?.destinations ?? []).filter { $0.machine == nil }.map { each in
+                        var theirs = each
+                        theirs.machine = machine.name
+                        return theirs
+                    })
+                }
+            }
+            return await group.reduce(into: [:]) { $0[$1.0] = $1.1 }.sorted { $0.key < $1.key }.flatMap(\.value)
+        }
+    }
+
     /// Builds `request` on its machine; the machine's answer, its destination said.
     func build(_ request: BuildRequest, in folder: URL, reporter: BuildReporter) async throws -> BuildResult {
         let ready = try await self.ready(request, in: folder, reporter: reporter)
         var asked = request
-        (asked.projectUri, asked.device) = (ready.applicationUri, nil)
+        (asked.projectUri, asked.device, asked.machine) = (ready.applicationUri, Self.theirDevice(of: request), nil)
         var built = try await ready.reached.served.operation("application/build", try JSONValue(encoding: asked), reporter: reporter)
             .decode(BuildResult.self)
-        built.destination = ready.reached.destination
+        built.destination = Self.destination(built.destination, of: request, on: ready.reached)
         return built
     }
 
@@ -82,7 +110,8 @@ public struct RemoteWork: Sendable {
         try PackageOutput.check(output, keeping: keeping)
         let made = Self.packagePlace(of: ready.application.name, host: host, in: places)
         var asked = request
-        (asked.projectUri, asked.device, asked.outputUri) = (ready.applicationUri, nil, places.uri(of: made))
+        (asked.projectUri, asked.device, asked.machine, asked.outputUri) = (
+            ready.applicationUri, Self.theirDevice(of: request), nil, places.uri(of: made))
         var laid = try await ready.reached.served.operation("application/package", try JSONValue(encoding: asked), reporter: reporter)
             .decode(BuildResult.self)
         try PackageOutput.check(output, keeping: keeping)
@@ -90,7 +119,7 @@ public struct RemoteWork: Sendable {
         _ = try await ready.reached.served.session { session in
             try await FolderTransfer.fetch(made, into: output, over: session, progress: reporter.progress)
         }
-        laid.destination = ready.reached.destination
+        laid.destination = Self.destination(laid.destination, of: request, on: ready.reached)
         (laid.programUri, laid.bundleUri, laid.folderUri) = (
             Self.moved(laid.programUri, from: laid.folderUri, to: output), laid.bundleUri.map { Self.moved($0, from: laid.folderUri, to: output) },
             FileURI.string(output))
@@ -115,7 +144,7 @@ public struct RemoteWork: Sendable {
         try ApplicationRunner.refuse(request)
         let ready = try await self.ready(request.build, in: folder, reporter: reporter.build)
         var asked = request
-        (asked.build.projectUri, asked.build.device) = (ready.applicationUri, nil)
+        (asked.build.projectUri, asked.build.device, asked.build.machine) = (ready.applicationUri, Self.theirDevice(of: request.build), nil)
         let output = BuildReporter(progress: reporter.build.progress, output: reporter.output)
         return try await ready.reached.served.operation(
             "application/run", try JSONValue(encoding: asked), reporter: output, started: reporter.started)
@@ -175,6 +204,20 @@ public struct RemoteWork: Sendable {
             .decode(SuiteResult.self)
     }
 
+    /// The device `request` names on the machine that works it: one of that machine's where `machine` is named, else
+    /// none - the machine itself is the destination.
+    static func theirDevice(of request: BuildRequest) -> String? {
+        request.machine == nil ? nil : request.device
+    }
+
+    /// The destination of a result `request` asked of `reached`: the device of that machine its own tool said, named
+    /// by the machine, where one was asked for; else the machine itself.
+    static func destination(_ theirs: Destination?, of request: BuildRequest, on reached: Reached) -> Destination? {
+        guard request.machine != nil, var device = theirs else { return reached.destination }
+        device.machine = reached.name
+        return device
+    }
+
     /// Whether `device` names a machine this one works on: a machine paired, or a guest of this Mac.
     func names(_ device: String) async -> Bool {
         if remotes.contains(where: { $0.name == device }) { return true }
@@ -190,7 +233,8 @@ public struct RemoteWork: Sendable {
         let projectRoot = try project.workspaceUri.map(FileURI.url) ?? applicationFolder
         let roots = Self.within(library, projectRoot) ? [projectRoot] : Self.within(projectRoot, library) ? [library] : [projectRoot, library]
 
-        let reached = try await self.reached(request.device, host: request.host, checkout: library, reporter: reporter)
+        let reached = try await self.reached(
+            request.machine ?? request.device, host: request.host, onItsDevice: request.machine != nil, checkout: library, reporter: reporter)
         let common = try await copied(roots, into: reached, reporter: reporter)
         let there = reached.places.join([reached.places.root] + Self.relative(applicationFolder, from: common))
         return Ready(reached: reached, applicationUri: reached.places.uri(of: there), application: application, project: project)
@@ -212,12 +256,16 @@ public struct RemoteWork: Sendable {
     /// of the StateUI checkout `checkout` where this Mac lays it in its guest, answering this tool's work: a guest of
     /// this Mac, through its service where it is paired and answers, else `prlctl exec`; a machine paired, through its
     /// service.
-    func reached(_ device: String?, host: HostFamily?, checkout: URL, reporter: BuildReporter) async throws -> Reached {
+    func reached(
+        _ device: String?, host: HostFamily?, onItsDevice: Bool = false, checkout: URL, reporter: BuildReporter
+    ) async throws -> Reached {
         guard let device else {
             throw ToolingError(.invalidConfiguration, "No machine is named for \(host?.folder ?? "the") work: `stateui devices` lists them.")
         }
-        let paired = remotes.first { machine in machine.name == device && (host.map(machine.machineHosts.contains) ?? true) }
-        if host.map({ HostPlaces.place(of: $0) == .guest }) ?? true, guests.prlctl != nil || paired == nil {
+        let paired = remotes.first { machine in
+            machine.name == device && (host.map { onItsDevice ? machine.deviceHosts.contains($0) : machine.machineHosts.contains($0) } ?? true)
+        }
+        if !onItsDevice, host.map({ HostPlaces.place(of: $0) == .guest }) ?? true, guests.prlctl != nil || paired == nil {
             if let guest = try await guest(device, host: host, needed: paired == nil) {
                 let readied = try await self.readied(guest, checkout: checkout, reporter: reporter)
                 var (served, road) = (readied.served, "prlctl exec")

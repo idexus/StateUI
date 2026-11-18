@@ -406,7 +406,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         }
         const listed = await withTool(tool, folder, "the Android devices could not be listed",
             (client) => client.request("devices/list", { host: "android" }));
-        return listed?.destinations.map(androidDeviceOf);
+        // A device of a machine paired is reached by `stateui run --machine`; the editor offers this machine's own.
+        return listed?.destinations.filter((each) => !each.machine).map(androidDeviceOf);
     };
 
     /** The Android device a launch or a suite runs on - asked for where none chosen is listed. */
@@ -425,7 +426,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         }
         const listed = await withTool(tool, folder, "the iPhones, iPads and simulators could not be listed",
             (client) => client.request("devices/list", { host: "uikit" }));
-        return listed?.destinations.map(uiKitDeviceOf);
+        return listed?.destinations.filter((each) => !each.machine).map(uiKitDeviceOf);
     };
 
     /** The iPhone, iPad or simulator a UIKit launch or suite runs on - asked for where none chosen is listed. */
@@ -486,7 +487,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         }
         const listed = await withTool(tool, folder, "the browsers could not be listed",
             (client) => client.request("devices/list", { host: "web" }));
-        return listed?.destinations.map(browserOf);
+        return listed?.destinations.filter((each) => !each.machine).map(browserOf);
     };
 
     /** The browser a Web launch opens the page in - asked for where none chosen is installed. */

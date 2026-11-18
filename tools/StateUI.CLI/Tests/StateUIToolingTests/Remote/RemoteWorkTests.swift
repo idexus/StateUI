@@ -93,6 +93,51 @@ final class RemoteWorkTests: XCTestCase {
         }
     }
 
+    /// A request naming a machine paired goes there for a host that machine runs on its devices, its device the
+    /// machine's own; a result names that machine beside the device its tool said.
+    func testAMachinesDeviceIsNamedByTheMachine() {
+        var mac = paired("studio", runs: [.appkit])
+        mac.hosts += [HostPlace(host: .uikit, place: .device), HostPlace(host: .web, place: .browser)]
+        XCTAssertEqual(mac.deviceHosts, [.uikit, .web])
+        XCTAssertTrue(RemoteWork.asks(BuildRequest(host: .uikit, device: "iPhone 18 Pro", machine: "studio"), remotes: [mac]))
+        XCTAssertFalse(RemoteWork.asks(BuildRequest(host: .android, device: "Pixel", machine: "studio"), remotes: [mac]), "a host it runs not")
+        XCTAssertFalse(RemoteWork.asks(BuildRequest(host: .uikit, device: "iPhone 18 Pro", machine: "nowhere"), remotes: [mac]))
+        XCTAssertTrue(HostPlaces.available(remotes: [mac]).contains { $0.host == .uikit })
+
+        XCTAssertEqual(RemoteWork.theirDevice(of: BuildRequest(device: "iPhone 18 Pro", machine: "studio")), "iPhone 18 Pro")
+        XCTAssertNil(RemoteWork.theirDevice(of: BuildRequest(device: "studio")), "the machine itself")
+        let reached = RemoteWork.Reached(
+            name: "studio", destination: HostPlaces.remote(mac), places: WorkPlaces(home: "/Users/me", windows: false),
+            served: ServedTool(address: "127.0.0.1", port: 1, workspaceUri: "file:///"))
+        let phone = Destination(id: "A1", udid: "A1", name: "iPhone 18 Pro", kind: .simulator, version: "27.0")
+        XCTAssertEqual(RemoteWork.destination(phone, of: BuildRequest(device: "iPhone 18 Pro", machine: "studio"), on: reached)?.machine, "studio")
+        XCTAssertEqual(RemoteWork.destination(phone, of: BuildRequest(device: "studio"), on: reached)?.kind, .remote)
+    }
+
+    /// A machine paired that runs a host on its devices or in its browsers lists them through its service, each named
+    /// by the machine; one that answers not lists none.
+    func testAPairedMachinesDevicesAreListedThroughIt() async throws {
+        guard HostPlaces.here.contains(where: { $0.host == .web }) else { throw XCTSkip("this machine runs no browsers' heads") }
+        let state = FileManager.default.temporaryDirectory.appendingPathComponent("devices-\(UUID().uuidString)")
+        addTeardownBlock { try? FileManager.default.removeItem(at: state) }
+        let pairing = try ServicePairing(file: state.appendingPathComponent("clients.json"), name: "Office")
+        let listener = try ServiceListener.open(on: "127.0.0.1", port: 0, pairing: pairing)
+        let serving = Task { await listener.serve() }
+        defer { serving.cancel() }
+        let office = try await RemoteMachines(file: state.appendingPathComponent("remotes.json"))
+            .pair(name: "office", address: "127.0.0.1", port: listener.port, code: pairing.code)
+        XCTAssertTrue(office.deviceHosts.contains(.web))
+
+        let own = try await ToolingService().listDestinations(of: .web)
+        let theirs = await RemoteWork.devices(of: .web, on: [office])
+        XCTAssertEqual(theirs.map(\.name), own.destinations.map(\.name))
+        XCTAssertTrue(theirs.allSatisfy { $0.machine == "office" })
+        var gone = office
+        gone.port = 1
+        let none = await RemoteWork.devices(of: .web, on: [gone])
+        XCTAssertEqual(none, [])
+    }
+
     /// A machine paired is reached through its service: its work kept where its service says, told as the machine
     /// it is, its stateui of this release answering every method the work asks; a name of no machine is refused.
     func testAMachinePairedIsReachedThroughItsService() async throws {

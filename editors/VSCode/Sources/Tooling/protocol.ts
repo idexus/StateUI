@@ -226,11 +226,13 @@ export interface Destination {
     emulated: Architecture[];
     debugger: boolean;
     programUri?: string;
+    /** The machine paired with the project it stands on; nothing for this machine's own. */
+    machine?: string;
 }
 export const Destination = object<Destination>({
     id: string, udid: string, name: string, kind: DestinationKind, version: string, booted: boolean,
     connection: optional(string), architecture: optional(Architecture), emulated: array(Architecture), debugger: boolean,
-    programUri: optional(string),
+    programUri: optional(string), machine: optional(string),
 });
 
 export interface DestinationQuery { host: HostFamily }
@@ -246,11 +248,13 @@ export interface BuildRequest {
     configuration?: BuildConfiguration;
     architecture?: Architecture;
     device?: string;
+    /** The machine paired with the project whose device `device` names, which works the head. */
+    machine?: string;
     outputUri?: string;
 }
 export const BuildRequest = object<BuildRequest>({
     projectUri: optional(string), application: optional(string), host: optional(HostFamily), configuration: optional(BuildConfiguration),
-    architecture: optional(Architecture), device: optional(string), outputUri: optional(string),
+    architecture: optional(Architecture), device: optional(string), machine: optional(string), outputUri: optional(string),
 });
 
 export interface BuildResult {

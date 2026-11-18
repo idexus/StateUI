@@ -26,11 +26,15 @@ struct BuildOptions: ParsableArguments {
     @Option(help: "A UIKit head's device or simulator, an Android head's device or emulator, a Web head's browser, a GTK or WinUI head's guest on a Mac, by name or id (stateui devices --host <host>); left out, the one chosen for the host (stateui settings), else the booted simulator, else an iPhone - the only Android device running.")
     var device: String?
 
+    @Option(help: "A machine paired with the project (stateui remote list) whose device --device names - its simulator or iPhone, its Android device, its browser - which builds and runs the head; left out, the device is this machine's.")
+    var machine: String?
+
     /// The request these options name, laid in `output` where given.
     func request(output: String? = nil) -> BuildRequest {
         BuildRequest(
             projectUri: project.map { FileURI.string(URL(fileURLWithPath: $0)) }, application: application, host: host,
-            configuration: configuration, architecture: architecture, device: device, outputUri: output.map { FileURI.string(URL(fileURLWithPath: $0)) })
+            configuration: configuration, architecture: architecture, device: device, machine: machine,
+            outputUri: output.map { FileURI.string(URL(fileURLWithPath: $0)) })
     }
 
     /// The folder a project is read from where none is named.
@@ -46,7 +50,7 @@ struct BuildOptions: ParsableArguments {
 
     /// The words naming the device or simulator a build was for, where it was for one.
     static func destination(of built: BuildResult) -> String {
-        built.destination.map { " for \($0.name) (\($0.kind.rawValue), \($0.version))" } ?? ""
+        built.destination.map { " for \($0.name) (\($0.kind.rawValue), \($0.version))\($0.machine.map { " on \($0)" } ?? "")" } ?? ""
     }
 
     /// An operation's id of its own.
@@ -113,7 +117,7 @@ struct RunCommand: AsyncParsableCommand {
         do {
             let request = try ApplicationBuilder.chosen(build.request(), in: build.here)
             let remotes = try RemoteMachines(project: build.project.map { URL(fileURLWithPath: $0) } ?? build.here).list()
-            if let host = request.host, host != .appkit || RemoteWork.asks(host, device: request.device, remotes: remotes) {
+            if let host = request.host, host != .appkit || RemoteWork.asks(request, remotes: remotes) {
                 guard listen == nil || ["loopback", "lan"].contains(listen ?? "") else {
                     throw ToolingError(.invalidConfiguration, "--listen is loopback or lan.")
                 }

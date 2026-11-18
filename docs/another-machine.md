@@ -79,5 +79,21 @@ written, and Ctrl+C stops the head there; a package is laid in the project's
 reach another machine yet: **StateUI: Debug** runs the debug build without
 one, and says so.
 
+## A device of another machine
+
+A machine paired offers its devices too - a Mac its iPhones, iPads and
+simulators, any machine its Android devices and browsers. `stateui devices`
+lists them, each `on` its machine, and `--machine` names the machine whose
+device `--device` names:
+
+```bash
+stateui devices --host uikit
+stateui run --project apps/Notes --host uikit --machine studio --device "iPhone 18 Pro"
+```
+
+The machine builds the head and starts it on its device; the output comes
+here. VS Code offers this machine's own devices; another machine's is run
+from the terminal.
+
 How a service admits a machine, carries a folder and is started with its
 user's session: [The tool's service](design/tooling/service.md).

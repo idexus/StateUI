@@ -265,7 +265,8 @@ public struct ToolingService: Sendable {
     /// Where `host`'s heads can run from this machine - `devices/list`, as its place says (`HostPlaces`): this machine
     /// itself, UIKit's iPhones, iPads and simulators, Android's devices and emulators, the Web's browsers, and on a Mac
     /// the virtual machines of GTK's and WinUI's systems; and after them the machines paired with the project holding
-    /// `folder` whose own programs `host`'s heads run as, a guest paired listed once, as a guest.
+    /// `folder` whose own programs `host`'s heads run as, a guest paired listed once, as a guest; then the devices of
+    /// the machines paired that run `host` on theirs, each named by its `machine`.
     ///
     /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose heads this machine does not build, nor a
     ///   machine paired, or a project's paired machines the tool does not read.
@@ -293,18 +294,20 @@ public struct ToolingService: Sendable {
         }
         let listed = Set(destinations.map(\.name))
         let paired = remotes.filter { $0.machineHosts.contains(host) && !listed.contains($0.name) }
-        guard HostPlaces.place(of: host) != nil || !paired.isEmpty else {
+        let theirs = remotes.filter { $0.deviceHosts.contains(host) }
+        guard HostPlaces.place(of: host) != nil || !paired.isEmpty || !theirs.isEmpty else {
             let built = HostPlaces.available(remotes: remotes).map(\.host.rawValue).joined(separator: ", ")
             throw ToolingError(.invalidConfiguration, "This machine builds no heads of \(host.rawValue), nor a machine paired: \(built.isEmpty ? "none" : built).")
         }
-        return DestinationList(host: host, destinations: destinations + paired.map(HostPlaces.remote))
+        return DestinationList(
+            host: host, destinations: destinations + paired.map(HostPlaces.remote) + (await RemoteWork.devices(of: host, on: theirs)))
     }
 
     /// The work of `request` on another machine, where it asks for one - a guest of this Mac, a machine paired with the
     /// project holding `folder`; nil where it is worked here.
     private static func elsewhere(_ request: BuildRequest, in folder: URL) throws -> RemoteWork? {
         let remotes = try RemoteMachines(project: try request.projectUri.map(FileURI.url) ?? folder).list()
-        return RemoteWork.asks(request.host, device: request.device, remotes: remotes) ? RemoteWork(guests: ParallelsGuests(), remotes: remotes) : nil
+        return RemoteWork.asks(request, remotes: remotes) ? RemoteWork(guests: ParallelsGuests(), remotes: remotes) : nil
     }
 
     /// Builds `request`'s application and publishes it - `application/build`.

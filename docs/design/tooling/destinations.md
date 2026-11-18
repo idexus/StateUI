@@ -25,6 +25,16 @@ listed once, as a guest. Its devices, browsers and guests are reached on that
 machine itself. `server/info` says the folder another machine's projects are
 copied into there (`workFolder`).
 
+A machine paired that runs a host on its devices or in its browsers - a Mac's
+iPhones, iPads and simulators, its Android devices, its browsers - offers
+them too: the host stands at `remote` where this machine builds none of it,
+and `devices/list` asks each such machine for its own list through its
+service, within fifteen seconds, each destination named by its `machine`; one
+that answers not lists none. A request names such a device by `machine` and
+`device` together (`--machine studio --device "iPhone 18 Pro"`): the machine
+builds and runs the head on its device, the device chosen here never handed
+to it - where none is named, the machine picks its own.
+
 Each destination says what a client needs to offer it: whether a debugger
 reaches an application run there (`debugger`) - not in a guest, nor in a
 browser not of Chromium's, whose pages no debugger follows - and the
