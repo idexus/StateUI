@@ -129,12 +129,17 @@ enum FolderFiles {
     /// folder by folder, as a directory enumerator told to skip a folder skips its siblings too on Windows. None where
     /// `folder` stands not; a folder under it that cannot be read is thrown, as a list without it would not be whole.
     static func every(under folder: URL) throws -> Set<String> {
-        guard FileManager.default.fileExists(atPath: folder.path) else { return [] }
         var found: Set<String> = []
         var folders: [(URL, [String])] = [(folder, [])]
         let keys: [URLResourceKey] = [.isRegularFileKey, .isDirectoryKey, .isSymbolicLinkKey]
         while let (current, path) = folders.popLast() {
-            let entries = try FileManager.default.contentsOfDirectory(at: current, includingPropertiesForKeys: keys)
+            let entries: [URL]
+            do {
+                entries = try FileManager.default.contentsOfDirectory(at: current, includingPropertiesForKeys: keys)
+            } catch let error as CocoaError where path.isEmpty && [.fileNoSuchFile, .fileReadNoSuchFile].contains(error.code) {
+                // The folder stands not - told by its listing, as an existence check also says no where it cannot see.
+                return []
+            }
             for entry in entries where !left.contains(entry.lastPathComponent) {
                 let facts = try entry.resourceValues(forKeys: Set(keys))
                 if facts.isSymbolicLink == true { continue }

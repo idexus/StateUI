@@ -146,6 +146,35 @@ final class FolderTransferTests: XCTestCase {
         #endif
     }
 
+    /// A folder whose own folder this user may not enter is no folder gone: sending every file of it, or fetching it,
+    /// stops - the copies on the other side kept, never removed as files gone.
+    func testAFolderBehindOneOutOfReachIsNoFolderGone() async throws {
+        #if os(Windows)
+        throw XCTSkip("a folder's access is Windows' own lists, not a mode")
+        #else
+        let (parent, target) = (try folder(), try folder())
+        let source = parent.appendingPathComponent("Source")
+        try write(Data("open".utf8), "Open.swift", in: source)
+        try write(Data("kept".utf8), "Open.swift", in: target)
+        try FileManager.default.setAttributes([.posixPermissions: 0], ofItemAtPath: parent.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: parent.path) }
+        do {
+            _ = try await overService { try await FolderTransfer.send(source, files: nil, to: target.path, over: $0, progress: { _ in }) }
+            XCTFail("a folder out of reach was taken for one gone, sending")
+        } catch {}
+        XCTAssertEqual(data("Open.swift", in: target), Data("kept".utf8))
+        do {
+            _ = try await overService { try await FolderTransfer.fetch(source.path, into: target, over: $0, progress: { _ in }) }
+            XCTFail("a folder out of reach was taken for one gone, fetching")
+        } catch {}
+        XCTAssertEqual(data("Open.swift", in: target), Data("kept".utf8))
+        // A folder that stands not is none: an empty one there, nothing removed here.
+        let empty = try folder()
+        let fresh = try await overService { try await FolderTransfer.fetch(target.appendingPathComponent("none").path, into: empty, over: $0, progress: { _ in }) }
+        XCTAssertEqual(fresh, FolderTransfer.Counts())
+        #endif
+    }
+
     /// Fetching brings another machine's folder here - a file larger than a message in pieces - and removes what it
     /// lacks.
     func testFetchingBringsAFolderHome() async throws {
