@@ -513,21 +513,35 @@ public struct ToolingService: Sendable {
     private static func reporting<Result: Sendable>(
         _ context: OperationContext, _ work: (RunReporter) async throws -> Result
     ) async throws -> Result {
+        try await reporting(tell: { each in
+            switch each {
+            case .progress(let words): await context.progress(OperationProgress(stage: words))
+            case .output(let line): await context.output(Array((line.text + "\n").utf8), on: line.stream == .standardError ? .stderr : .stdout)
+            case .started(let application): await context.started(application)
+            }
+        }, work)
+    }
+
+    /// `work` given a reporter whose words `tell` takes in the order they were said - every one told before the work's
+    /// end is, a failure's last words included, as an operation ended takes no more.
+    static func reporting<Result: Sendable>(
+        tell: @escaping @Sendable (Reported) async -> Void, _ work: (RunReporter) async throws -> Result
+    ) async throws -> Result {
         let (said, saying) = AsyncStream<Reported>.makeStream()
         let telling = Task {
-            for await each in said {
-                switch each {
-                case .progress(let words): await context.progress(OperationProgress(stage: words))
-                case .output(let line): await context.output(Array((line.text + "\n").utf8), on: line.stream == .standardError ? .stderr : .stdout)
-                case .started(let application): await context.started(application)
-                }
-            }
+            for await each in said { await tell(each) }
         }
-        defer { saying.finish() }
         let reporter = RunReporter(
             build: BuildReporter(progress: { saying.yield(.progress($0)) }, output: { saying.yield(.output($0)) }),
             started: { saying.yield(.started($0)) }, output: { saying.yield(.output($0)) })
-        let result = try await work(reporter)
+        let result: Result
+        do {
+            result = try await work(reporter)
+        } catch {
+            saying.finish()
+            await telling.value
+            throw error
+        }
         saying.finish()
         await telling.value
         return result
@@ -656,7 +670,8 @@ public struct ToolingService: Sendable {
 }
 
 /// What a build said, kept in order on its way to an editor.
-private enum Reported: Sendable {
+/// A word an operation's work says: how far it came, a program's line, an application started.
+enum Reported: Sendable {
     case progress(String)
     case output(ProcessOutput)
     case started(LaunchedApplication)

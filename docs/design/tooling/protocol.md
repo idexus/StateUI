@@ -93,7 +93,10 @@ the answer that names its operation - for a batch, before the whole batch's
 answer. Events go to the connection that started the operation, numbered from
 1 in the order they happened (`operation/event`): a state reached, progress a
 tool told, a program's output. The snapshot is written before the event that
-tells it, and the terminal state is the operation's last event.
+tells it, and the terminal state is the operation's last event: every word
+its work said - a failure's last ones, the compiler's error among them - is
+told before the work's end is (`ToolingService.reporting`), as an operation
+ended takes no more.
 
 A cancel stops a queued operation at once and a running one through
 `cancelling`, which cancels its work's task; the operation is `cancelled`
