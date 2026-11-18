@@ -136,8 +136,7 @@ enum FolderFiles {
             let entries: [URL]
             do {
                 entries = try FileManager.default.contentsOfDirectory(at: current, includingPropertiesForKeys: keys)
-            } catch let error as CocoaError where path.isEmpty && [.fileNoSuchFile, .fileReadNoSuchFile].contains(error.code) {
-                // The folder stands not - told by its listing, as an existence check also says no where it cannot see.
+            } catch where path.isEmpty && standsNot(current) {
                 return []
             }
             for entry in entries where !left.contains(entry.lastPathComponent) {
@@ -151,6 +150,24 @@ enum FolderFiles {
             }
         }
         return found
+    }
+
+    /// Whether `folder` stands not - its system says no such file there - rather than standing out of reach: Foundation
+    /// says "no such file" for both on Linux, and an existence check says no where it cannot see.
+    static func standsNot(_ folder: URL) -> Bool {
+        #if os(Windows)
+        do {
+            _ = try FileManager.default.attributesOfItem(atPath: folder.path)
+            return false
+        } catch let error as CocoaError {
+            return [.fileNoSuchFile, .fileReadNoSuchFile].contains(error.code)
+        } catch {
+            return false
+        }
+        #else
+        var facts = stat()
+        return lstat(folder.path, &facts) != 0 && (errno == ENOENT || errno == ENOTDIR)
+        #endif
     }
 
     /// `path` under `root` - refused where it names no file of the folder: empty, absolute, climbing out of it, or
