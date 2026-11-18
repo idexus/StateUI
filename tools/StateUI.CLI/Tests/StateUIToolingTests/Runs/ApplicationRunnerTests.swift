@@ -4,6 +4,7 @@
 import Foundation
 @testable import StateUITooling
 import StateUIToolingProtocol
+import Synchronization
 import XCTest
 
 final class ApplicationRunnerTests: XCTestCase {
@@ -59,6 +60,20 @@ final class ApplicationRunnerTests: XCTestCase {
                      "During symbol reading: unsupported tag"] {
             XCTAssertFalse(DesktopLaunch.gdbNoise(kept), kept)
         }
+    }
+
+    /// A held head is told started only once its `lldb-dap` says it listens: a debugger connecting before then finds
+    /// no one, and the relay closes on it. Every line is told as it comes.
+    func testAHeldHeadStartsOnceItsAdapterListens() {
+        let said = Mutex<[String]>([])
+        let started = Mutex(0)
+        let output = DesktopLaunch.announcing(output: { line in said.withLock { $0.append(line.text) } }, started: { started.withLock { $0 += 1 } })
+        output(ProcessOutput(stream: .standardOutput, text: "lldb-dap starting"))
+        XCTAssertEqual(started.withLock { $0 }, 0, "not before it listens")
+        output(ProcessOutput(stream: .standardOutput, text: "Listening for: connection://[127.0.0.1]:36663"))
+        output(ProcessOutput(stream: .standardOutput, text: "Listening for: connection://[127.0.0.1]:36663"))
+        XCTAssertEqual(started.withLock { $0 }, 1, "once")
+        XCTAssertEqual(said.withLock { $0 }.count, 3)
     }
 
     /// A port is relayed to only while a run's `lldb-server` holds it.

@@ -43,7 +43,14 @@ public final class DebugRelay: Sendable {
     /// as messages whose paths `translation` turns, where given.
     private static func carry(_ local: StreamSocket, to remote: RemoteMachine, port: UInt16, translation: PathTranslation?) {
         defer { local.close() }
-        guard let service = try? granted(remote, port: port) else { return }
+        let service: StreamSocket
+        do {
+            service = try granted(remote, port: port)
+        } catch {
+            // The editor sees a closed connection alone: the reason goes where the tool's words go.
+            try? FileHandle.standardError.write(contentsOf: Data("stateui: the relay to \(remote.name) was not granted: \(error)\n".utf8))
+            return
+        }
         let back = Thread {
             pipe(from: service, to: local, translation: translation, toward: .here)
             local.close()

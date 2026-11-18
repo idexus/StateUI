@@ -3,6 +3,7 @@
 
 import Foundation
 import StateUIToolingProtocol
+import Synchronization
 
 /// A GTK or WinUI head of this machine started from its program and followed until it ends, its output told as it
 /// comes - here, or on another machine asking it. A GTK head is installed first and a copy of it running stopped: a GTK
@@ -36,7 +37,7 @@ struct DesktopLaunch: Sendable {
     }
 
     /// `program` held for LLDB by the toolchain's `lldb-dap`, listening on a free port of the loopback, which starts
-    /// the program as the editor's debugger asks; the way said as it starts, the port held for a relay while it runs.
+    /// the program as the editor's debugger asks; the way said once it listens, the port held for a relay while it runs.
     private func held(_ built: BuildResult, program: URL, reporter: RunReporter) async throws -> RunResult {
         guard let adapter = ToolResolver().lldbDap else {
             throw ToolingError(.missingToolchain, "lldb-dap is not here: it comes with the Swift toolchain, beside swift.")
@@ -45,11 +46,23 @@ struct DesktopLaunch: Sendable {
         return try await DebugPorts.holding(port) {
             let launched = LaunchedApplication(
                 build: built, process: nil, held: true, debugger: DebugDescriptors.adapter(program: program, port: port))
-            reporter.started(launched)
             let outcome = try await ProcessRunner().run(
-                ProcessRequest(.path(adapter.path), arguments: ["--connection", "listen://127.0.0.1:\(port)"]), output: reporter.output)
+                ProcessRequest(.path(adapter.path), arguments: ["--connection", "listen://127.0.0.1:\(port)"]),
+                output: Self.announcing(output: reporter.output, started: { reporter.started(launched) }))
             try Task.checkCancellation()
             return RunResult(launched: launched, exitStatus: Int(outcome.exitStatus))
+        }
+    }
+
+    /// The output of an adapter's run: each line told to `output`, and `started` told once, as the adapter says it
+    /// listens - a debugger connecting before then would find no one.
+    static func announcing(
+        output: @escaping @Sendable (ProcessOutput) -> Void, started: @escaping @Sendable () -> Void
+    ) -> @Sendable (ProcessOutput) -> Void {
+        let told = Mutex(false)
+        return { line in
+            output(line)
+            if line.text.hasPrefix("Listening for:"), told.withLock({ was in defer { was = true }; return !was }) { started() }
         }
     }
 

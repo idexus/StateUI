@@ -83,7 +83,13 @@ public struct ServiceListener: Sendable {
     /// The rest of `client`'s bytes carried to `port` of the loopback, and that port's back, until either end closes.
     /// Design: docs/design/tooling/service.md#a-debugger-relayed
     private static func carry(_ client: StreamSocket, rest chunks: inout AsyncStream<[UInt8]>.Iterator, to port: UInt16) async {
-        guard let target = try? StreamSocket.connect(to: "127.0.0.1", port: port) else { return }
+        let target: StreamSocket
+        do {
+            target = try StreamSocket.connect(to: "127.0.0.1", port: port)
+        } catch {
+            try? FileHandle.standardError.write(contentsOf: Data("stateui: the relay to port \(port) found no one listening: \(error)\n".utf8))
+            return
+        }
         let back = Thread {
             while let bytes = try? target.read(), !bytes.isEmpty, (try? client.write(bytes)) != nil {}
             client.close()
