@@ -113,7 +113,8 @@ final class RemoteWorkTests: XCTestCase {
         XCTAssertEqual(reached.name, "office")
         XCTAssertEqual(reached.destination.kind, .remote)
         XCTAssertEqual(reached.destination.version, Machine.current.system)
-        XCTAssertEqual(reached.places.root, HostPlaces.workFolder + "/" + (try RemoteWork.client()), "this machine's own folder there")
+        let workFolder = WorkPlaces(root: HostPlaces.workFolder, windows: Machine.current.system == "windows")
+        XCTAssertEqual(reached.places.root, workFolder.of(try RemoteWork.client()).root, "this machine's own folder there")
         let opening = try await reached.served.opening()
         XCTAssertEqual(opening.server.version, Release.version)
 
