@@ -39,8 +39,6 @@ let package = Package(
                 .unsafeFlags(["-Xlinker", "/SUBSYSTEM:WINDOWS", "-Xlinker", "/ENTRY:mainCRTStartup"], .when(traits: ["WinUI"])),
                 .unsafeFlags(["-Xlinker", "--export-table", "-Xlinker", "--stack-first",
                     "-Xlinker", "-z", "-Xlinker", "stack-size=8388608", "-Xlinker", "--global-base=8388608"], .when(traits: ["Web"])),
-                // A release page carries no debugging information: 14.5 MB of HelloWorld rather than 23.7.
-                .unsafeFlags(["-Xlinker", "--strip-debug"], .when(configuration: .release, traits: ["Web"])),
             ]
         ),
     ]

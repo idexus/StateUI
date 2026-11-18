@@ -31,8 +31,13 @@ final class ApplicationBuilderTests: XCTestCase {
             try Data().write(to: checkout.appendingPathComponent(mark).appendingPathComponent("Package.swift"))
         }
         try Data().write(to: checkout.appendingPathComponent("Package.swift"))
+        let relay = checkout.appendingPathComponent("lib/StateUI/StateUI.Web/JavaScript")
+        try files.createDirectory(at: relay, withIntermediateDirectories: true)
+        for file in ["index.html", "stateui-web.js", "stateui-web.css"] {
+            try Data().write(to: relay.appendingPathComponent(file))
+        }
         let application = root.appendingPathComponent("Notes")
-        for host in ["AppKit", "UIKit"] {
+        for host in ["AppKit", "UIKit", "Web"] {
             try files.createDirectory(at: application.appendingPathComponent("Platforms/\(host)"), withIntermediateDirectories: true)
             try Data().write(to: application.appendingPathComponent("Platforms/\(host)/Package.swift"))
         }
@@ -50,13 +55,14 @@ final class ApplicationBuilderTests: XCTestCase {
             case "$1 $2" in
               "package describe") echo '\(describe)' ;;
               "--version ") echo 'Swift version 6.4.2 (swift-6.4.2-RELEASE)' ;;
+              "sdk list") echo 'swift-6.4.2-RELEASE_wasm' ;;
               "build --show-bin-path") echo '\(bin.path)' ;;
               "build --product")
                 if [ -e '\(failing.path)' ]; then echo 'error: the compiler stopped'; exit 1; fi
                 all="$*"; rest="${all#*--package-path }"; head="${rest%% *}"; [ "Notes${head##*/}" = "$3" ] || { echo 'no head'; exit 1; }
                 echo "$@" > '\(arguments.path)'
                 if [ -e '\(during.path)' ]; then sh '\(during.path)'; fi
-                mkdir -p '\(bin.path)' && cp /usr/bin/true "\(bin.path)/$3" && echo 'Build complete!' ;;
+                mkdir -p '\(bin.path)' && cp /usr/bin/true "\(bin.path)/$3" && : > "\(bin.path)/$3.wasm" && echo 'Build complete!' ;;
             esac
             """
         try script.write(to: swift, atomically: true, encoding: .utf8)
@@ -93,6 +99,19 @@ final class ApplicationBuilderTests: XCTestCase {
         XCTAssertEqual(try journal.record(of: "op-2").state, .failed)
         XCTAssertEqual(try FileManager.default.attributesOfItem(atPath: program.path)[.modificationDate] as? Date, written)
         XCTAssertNil(bench.permit.holder)
+    }
+
+    /// A Web head built for debugging keeps its DWARF, which the browser's debugger reads; a release module is linked
+    /// without it, as it is the page's first download.
+    func testOnlyAReleaseWebHeadIsLinkedWithoutItsDebuggingInformation() async throws {
+        let bench = try bench()
+        let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
+        for (configuration, stripped) in [(BuildConfiguration.debug, false), (.release, true)] {
+            _ = try await builder.build(
+                BuildRequest(host: .web, configuration: configuration), in: bench.application, operation: "op-\(configuration)")
+            let told = try String(contentsOf: bench.arguments, encoding: .utf8)
+            XCTAssertEqual(told.contains("-Xlinker --strip-debug"), stripped, "\(configuration): \(told)")
+        }
     }
 
     /// A host the tool does not build yet, an application without its head, and an application not named among

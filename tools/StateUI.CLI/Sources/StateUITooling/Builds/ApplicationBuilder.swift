@@ -133,7 +133,7 @@ public struct ApplicationBuilder: Sendable {
         case .winui:
             try BuildTarget.winUI(request.architecture ?? machine, machine: machine)
         case .web:
-            try await BuildTarget.web(compiler: tools.swift)
+            try await BuildTarget.web(compiler: tools.swift, configuration: configuration)
         default:
             await BuildTarget.appKit(request.architecture ?? machine, machine: machine)
         }

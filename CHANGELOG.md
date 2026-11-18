@@ -80,6 +80,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 - The tool: a checkout named by a path that begins as the old one did - `../..` changed to `../../StateUI` - is
   written once in an application's manifest; it was written twice, `../../StateUI/StateUI`.
+- Web: a debug build's module keeps its DWARF, which the browser's debugger reads. The head's release-only
+  `--strip-debug` reached debug builds too - SwiftPM's build system applies a library's linker settings conditioned
+  on a configuration in every configuration - so a debugger found no Swift in the page; the tool now links a release
+  module without its debugging information itself.
 - Web: a bar button whose look follows the pointer and the press takes its click in Safari. The page wrote its words
   and attributes again as the press came and went, its words in a new text node, and WebKit sends no click where the
   node under the pointer was replaced; what already stands is written no more, and new words change the one text node

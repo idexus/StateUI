@@ -326,8 +326,8 @@ hand takes no frame of the browser's.
 
 A page downloads the application's module before anything shows, so its size
 is the Web's first cost. A release head links with `--strip-debug`
-(`lib/StateUI.Head`): no DWARF, while the name section stays, so a trap still
-names its functions. A server sends the module compressed; the size that
+([The build](../../tooling/web-heads.md#the-build)): no DWARF, while the name
+section stays, so a trap still names its functions. A server sends the module compressed; the size that
 counts is the module gzipped.
 
 `stateui repo web-size check` builds each application's release head

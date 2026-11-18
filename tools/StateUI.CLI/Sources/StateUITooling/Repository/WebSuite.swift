@@ -59,7 +59,7 @@ struct WebSuite {
     private var relay: String { checkout.appendingPathComponent("lib/StateUI/StateUI.Web/JavaScript/stateui-web.js").path }
 
     func run(filter: String?, environment: ProcessEnvironment, reporter: BuildReporter) async throws -> [SuiteResult.Phase] {
-        let target = try await BuildTarget.web(compiler: tools.swift)
+        let target = try await BuildTarget.web(compiler: tools.swift, configuration: .debug)
         guard let sdk = target.webSDK else { throw ToolingError(.internalError, "The Web target named no Swift SDK.") }
         let scratch = testing.appendingPathComponent(".build/web")
         // The tests' archive only gains members: one of a source since renamed or gone would link twice. Made anew.
