@@ -53,7 +53,8 @@ editor's debugger connects to that adapter (`adapterPort`), which starts the
 program as asked (`DebugDescriptors.adapter`); the port is held for a relay
 while the run lasts ([A debugger relayed](service.md#a-debugger-relayed)). The terminal's
 `stateui run` of a GTK or WinUI head takes this road too, ending as the head
-ends, and so does one of an AppKit head on a Mac paired; an AppKit head of
+ends, with its program's status - 128 and the signal where one ended it
+(`RunResult.failureStatus`) - and so does one of an AppKit head on a Mac paired; an AppKit head of
 this Mac the terminal runs itself, in the foreground, its program's input and
 output the terminal's.
 

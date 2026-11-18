@@ -29,7 +29,7 @@ public struct ApplicationRunner: Sendable {
         if request.build.host == .android {
             return try await runAndroid(request, in: folder, operation: operation, reporter: reporter)
         }
-        if let host = request.build.host, [.appkit, .gtk, .winui].contains(host) {
+        if let host = request.build.host, HostFamily.desktop.contains(host) {
             let (built, _) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
             return try await DesktopLaunch().run(built, underGDB: request.gdb == true, held: request.debugger, reporter: reporter)
         }

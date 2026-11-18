@@ -82,7 +82,7 @@ public struct RemoteWork: Sendable {
     /// Design: docs/design/tooling/service.md#a-debugger-relayed
     static func refuse(_ request: RunRequest) throws {
         try ApplicationRunner.refuse(request)
-        if request.debugger, let host = request.build.host, ![.appkit, .gtk, .winui].contains(host) {
+        if request.debugger, let host = request.build.host, !HostFamily.desktop.contains(host) {
             throw ToolingError(.invalidConfiguration, "A debugger reaches a desktop head on another machine alone - AppKit's, GTK's, WinUI's; run the \(host.rawValue) head there without one.")
         }
     }

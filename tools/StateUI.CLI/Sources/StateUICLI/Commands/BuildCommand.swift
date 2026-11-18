@@ -134,7 +134,7 @@ struct RunCommand: AsyncParsableCommand {
                                 .write(Data((line.text + "\n").utf8))
                         }))
                 // A desktop head's end is the command's: a crash under gdb, its signal's.
-                if [.gtk, .winui].contains(host), let status = ran.exitStatus, status != 0 { throw ExitCode(Int32(status)) }
+                if let status = ran.failureStatus { throw ExitCode(status) }
                 return
             }
             let built = try await ToolingService().build(request, in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
