@@ -26,9 +26,16 @@ struct DesktopLaunch: Sendable {
         defer { try? FileManager.default.removeItem(at: commands) }
         if underGDB { try Data(GTKHead.gdbCommands(for: built.architecture).utf8).write(to: commands) }
         reporter.started(LaunchedApplication(build: built, process: nil, held: false))
-        let outcome = try await ProcessRunner().run(Self.request(program, gdbCommands: underGDB ? commands : nil), output: reporter.output)
+        let said = reporter.output
+        let outcome = try await ProcessRunner().run(
+            Self.request(program, gdbCommands: underGDB ? commands : nil), output: { line in if !underGDB || !Self.gdbNoise(line.text) { said(line) } })
         try Task.checkCancellation()
         return RunResult(launched: LaunchedApplication(build: built, process: nil, held: false), exitStatus: Int(outcome.exitStatus))
+    }
+
+    /// Whether gdb's `line` is its word on a Clang module's debug information, which it cannot read as split DWARF.
+    static func gdbNoise(_ line: String) -> Bool {
+        line.hasPrefix("During symbol reading: Could not find DWO CU ") && line.contains(".pcm(")
     }
 
     /// What starts `program`: itself, or gdb running it with the commands in `gdbCommands` - Swift's own backtrace off,

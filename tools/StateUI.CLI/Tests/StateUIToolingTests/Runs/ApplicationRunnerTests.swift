@@ -40,6 +40,18 @@ final class ApplicationRunnerTests: XCTestCase {
         XCTAssertTrue(GTKHead.gdbCommands(for: .arm64).contains("break g_return_if_fail_warning"))
     }
 
+    /// What gdb says of Clang modules' debug information it cannot read as split DWARF - thousands of lines a start,
+    /// which no setting of gdb 17 quiets - is left out of a run's output; a critical, a stop and the program's own
+    /// words stay.
+    func testGDBsNoiseOfModulesIsLeftOut() {
+        XCTAssertTrue(DesktopLaunch.gdbNoise(
+            "During symbol reading: Could not find DWO CU /home/me/.build/out/ModuleCache.noindex/3VP/Dispatch-3U3.pcm(0x5174cdc4c6e3d656) referenced by CU at offset 0x878e7 [in module /home/me/libStateUIHost.so]"))
+        for kept in ["=== CRITICAL Gtk: GTK_IS_WIDGET (widget)", "=== STOPPED", "StateUI-Message: 01:05:15.012: StateUI GTK: x",
+                     "During symbol reading: unsupported tag"] {
+            XCTAssertFalse(DesktopLaunch.gdbNoise(kept), kept)
+        }
+    }
+
     /// A file another process writes is read in lines as it grows, the last one at the end though no line feed ended it.
     func testAFilesLinesAreReadAsItGrows() throws {
         let file = FileManager.default.temporaryDirectory.appendingPathComponent("tail-\(UUID().uuidString).log")

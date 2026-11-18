@@ -46,4 +46,8 @@ and the program goes on; a signal that stops it says its stack and every
 thread's. gdb ends as the program does: one that ends by itself with its own
 status and no stop said, one a signal stopped as that signal would, 128 and
 its number - so the run fails on a crash and only on one, on another machine
-as here (`application/run`'s `debugger`).
+as here (`application/run`'s `debugger`). gdb 17 says of every Clang module a Swift
+library's debug information names - read as split DWARF, which it is not -
+`During symbol reading: Could not find DWO CU ….pcm(…)`, some two thousand
+lines a start that no setting of its own quiets (`complaints`, its worker
+threads): the run leaves those lines out, and every other gdb word stays.
