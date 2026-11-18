@@ -137,6 +137,8 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         // F5 with no launch.json at all arrives as an empty configuration.
         const configuration: Configuration = launch.configuration === "release" ? "release" : "debug";
         const name = launch.name || (configuration === "release" ? "StateUI: Release" : "StateUI: Debug");
+        // Run Without Debugging keeps the build it names and asks for no debugger: the build and the debugger apart.
+        const debugging = configuration === "debug" && launch.noDebug !== true;
         const host = this.choices.host();
 
         if (!host) {
@@ -159,10 +161,10 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         // A page's debugger is the browser's; another machine's is the tool's to give.
         const place = this.choices.place(host);
         if (place === "browser") {
-            return this.inBrowser(root, application, host, configuration, name);
+            return this.inBrowser(root, application, host, configuration, name, debugging);
         }
         if (place === "guest" || place === "remote") {
-            return this.onMachine(root, application, host, configuration, name);
+            return this.onMachine(root, application, host, configuration, name, debugging);
         }
 
         // A debugger that cannot start stops the launch before the build, saying why: else the build ends and nothing runs.
@@ -173,16 +175,16 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         }
 
         if (place === "device") {
-            return this.onDevice(root, application, host, configuration, name);
+            return this.onDevice(root, application, host, configuration, name, debugging);
         }
         const prepared = await this.choices.prepare(root, application, host, configuration);
-        return prepared && debugConfiguration(name, prepared.debugger);
+        return prepared && { ...debugConfiguration(name, prepared.debugger), ...(launch.noDebug === true ? { noDebug: true } : {}) };
     }
 
     /**
      * A head built and started by the stateui tool on the device chosen, which follows its output; a Debug build
      * readied for a debugger, which lldb-dap reaches as the tool says, the session's end stopping the run - a Release
-     * build has no session.
+     * build, or one run without debugging, has no session.
      */
     private async onDevice(
         root: vscode.WorkspaceFolder,
@@ -190,12 +192,12 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         host: Host,
         configuration: Configuration,
         name: string,
+        debug: boolean,
     ): Promise<vscode.DebugConfiguration | undefined> {
         const device = host === "uikit" ? await this.choices.uiKitDevice() : await this.choices.device();
         if (!device) {
             return undefined;
         }
-        const debug = configuration === "debug";
         const running = await this.choices.runHead(root, application, host, configuration, device, debug);
         if (!running || !debug) {
             return undefined;
@@ -211,7 +213,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
     /**
      * A head built and started by the stateui tool on the machine chosen, which follows its output; a Debug build on a
      * machine a debugger reaches is held for LLDB, which lldb-dap reaches as the tool says, the session's end stopping
-     * the run - elsewhere it runs without one, said. A Release build has no session.
+     * the run - elsewhere it runs without one, said. A Release build, or one run without debugging, has no session.
      */
     private async onMachine(
         root: vscode.WorkspaceFolder,
@@ -219,13 +221,14 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         host: Host,
         configuration: Configuration,
         name: string,
+        debugging: boolean,
     ): Promise<vscode.DebugConfiguration | undefined> {
         const machine = await this.choices.machine(host);
         if (!machine) {
             return undefined;
         }
-        const debug = configuration === "debug" && machine.debugger;
-        if (configuration === "debug" && !machine.debugger) {
+        const debug = debugging && machine.debugger;
+        if (debugging && !machine.debugger) {
             void vscode.window.showInformationMessage(
                 `StateUI: no debugger reaches ${machine.name} - pair it (\`stateui guest pair\`); ${application.name}'s debug build runs there without one.`);
         }
@@ -247,12 +250,13 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         host: Host,
         configuration: Configuration,
         name: string,
+        debugging: boolean,
     ): Promise<vscode.DebugConfiguration | undefined> {
         const browser = await this.choices.browser();
         if (!browser) {
             return undefined;
         }
-        const debug = configuration === "debug" && browser.debugger;
+        const debug = debugging && browser.debugger;
         const running = await this.choices.runHead(root, application, host, configuration, browser.id, debug);
         if (!running || !running.launched.debugger) {
             return undefined;

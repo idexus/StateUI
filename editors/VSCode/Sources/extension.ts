@@ -10,7 +10,7 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, applicationsOf, hasHead, pathOf, readApplications } from "./applications";
+import { Application, applicationsOf, folderHolding, hasHead, pathOf, readApplications } from "./applications";
 import { isCheckout } from "./checkouts";
 import { Configuration, runPlace, configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
 import { chosenApplication, chosenHost, DeviceStore, offeredHosts } from "./choices";
@@ -111,21 +111,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 return { applications: [] };
             }
         }));
-        await readPlaces(folders[0]);
         await readChoices();
+        await readPlaces(projectFolder());
     };
     const applications = (): Application[] => found.flatMap((each) => each.applications);
 
-    // The hosts this machine builds and where their heads run, as the tool says them (`server/info`) - read once.
+    // The hosts this machine builds and where their heads run, as the tool says them (`server/info`) for the project
+    // of the application chosen - its machines paired among them - read again as the folders, the choice or the
+    // pairings change.
     let places: HostPlace[] = [];
     const readPlaces = async (folder: string | undefined): Promise<void> => {
-        if (places.length > 0) {
-            return;
-        }
         const info = await withTool(tool, folder ?? os.homedir(), "this machine's hosts were not read",
             (client) => client.request("server/info", {}));
-        places = info?.hosts ?? [];
+        places = info?.hosts ?? places;
     };
+    /** The folder the chosen application stands in - its project's hosts and machines are the window's - else the first. */
+    const projectFolder = (): string | undefined =>
+        folderHolding(chosen()?.directory, (vscode.workspace.workspaceFolders ?? []).map((each) => each.uri.fsPath));
     /** Where `forHost`'s heads run from this machine; nothing where it builds none. */
     const place = (forHost: Host) => placeOf(forHost, places);
     /** Whether `forHost`'s heads are worked on another machine: a guest of this Mac, a machine paired with the project. */
@@ -443,9 +445,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return id;
     };
 
-    /** The machines `forHost`'s heads are worked on the tool lists - guests, machines paired - for the first folder. */
+    /** The machines `forHost`'s heads are worked on the tool lists - guests, machines paired - for the chosen project. */
     const listMachines: MachineLister = async (forHost) => {
-        const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+        const folder = projectFolder();
         if (!folder) {
             void vscode.window.showErrorMessage("StateUI: the machines are listed for a folder, and none is open.");
             return undefined;
@@ -1013,7 +1015,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             rediscover();
         }
     };
-    for (const pattern of ["**/stateui-workspace.json", "**/stateui.json", "**/Package.swift", "**/Platforms/*/main.swift", "**/Platforms/Android/build.gradle.kts"]) {
+    for (const pattern of ["**/stateui-workspace.json", "**/stateui.json", "**/.stateui/remotes.json", "**/Package.swift",
+        "**/Platforms/*/main.swift", "**/Platforms/Android/build.gradle.kts"]) {
         const watcher = vscode.workspace.createFileSystemWatcher(pattern);
         context.subscriptions.push(watcher, watcher.onDidCreate(watched), watcher.onDidDelete(watched), watcher.onDidChange(watched));
     }
@@ -1022,6 +1025,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     const rechoose = async (): Promise<void> => {
         const before = host();
         await readChoices();
+        await readPlaces(projectFolder());
         refresh();
         testSuites.changed();
         if (host() !== before) {

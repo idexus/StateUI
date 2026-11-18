@@ -14,13 +14,13 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, applicationsOf, hasHead, readApplications } from "../Sources/applications";
+import { Application, applicationsOf, folderHolding, hasHead, readApplications } from "../Sources/applications";
 import { Configuration, configurations, debugConfiguration, runPlace, StateUIDebugConfigurationProvider } from "../Sources/debug";
 import { chosenApplication, chosenHost, offeredHosts } from "../Sources/choices";
 import { androidDeviceOf, deviceAmong } from "../Sources/devices";
 import { browserOf } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
-import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
+import { applyEditorMode, buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
 import { machineOf } from "../Sources/machines";
 import { availableHosts, describe, Host, HostDescription, hosts, placeOf } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
@@ -365,6 +365,25 @@ export async function run(): Promise<void> {
                 && serverSettings({ scratchPath: ".build/index-build" }).traits === undefined);
         }
         {
+            // The hosts and machines of a window of two folders are the chosen application's project's, else the first's.
+            const [one, two] = [path.join(os.tmpdir(), "one"), path.join(os.tmpdir(), "two")];
+            check("the hosts and machines are read for the folder the chosen application stands in, else the first folder",
+                folderHolding(path.join(two, "apps", "Notes"), [one, two]) === two
+                && folderHolding(undefined, [one, two]) === one
+                && folderHolding(path.join(os.tmpdir(), "elsewhere"), [one, two]) === one
+                && folderHolding(path.join(os.tmpdir(), "one-more", "Notes"), [two, one]) === two
+                && folderHolding(undefined, []) === undefined);
+        }
+        {
+            // The tool unreachable, or answering no lease: nothing of the index is written - a write needs a lease held.
+            const unleased = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-unleased-"));
+            const wrote = await applyEditorMode("android", [unleased],
+                async () => ({ host: "android", trait: "Android", scratchPath: ".build/android/index-build" }), async () => undefined);
+            check("no lease of the index answered: the editor's mode writes no language server's file",
+                wrote === false && !fs.existsSync(path.join(unleased, ".sourcekit-lsp", "config.json")));
+            fs.rmSync(unleased, { recursive: true, force: true });
+        }
+        {
             const asWinUI = otherHostsExcluded("winui", { "**/mine": true, "**/lib/StateUI/StateUI.WinUI": true });
             const excluded = Object.keys(asWinUI).filter((pattern) => asWinUI[pattern]);
             check("as WinUI the Swift extension loads no other host's package, backend nor head, and the user's own exclusions stay",
@@ -463,7 +482,7 @@ export async function run(): Promise<void> {
             hasHead(helloWorld, "android") && hasHead(gallery_, "android"));
         {
             // What the tool's run says once the application runs, faked - or nothing, where it never starts.
-            const launchOnAndroid = async (serial: string | undefined, configuration = "release", starts = true) => {
+            const launchOnAndroid = async (serial: string | undefined, configuration = "release", starts = true, noDebug = false) => {
                 const runs: { host: string; device: string; debug: boolean; configuration: string }[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
                     prepare: async () => undefined,
@@ -506,10 +525,37 @@ export async function run(): Promise<void> {
                 });
                 const resolved = await provider.resolveDebugConfiguration(root, {
                     name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
-                    request: "launch", configuration,
+                    request: "launch", configuration, ...(noDebug ? { noDebug: true } : {}),
                 });
                 return { resolved, runs };
             };
+
+            // Run Without Debugging (Ctrl+F5) of a debug build: the build is a debug one, and no debugger is readied.
+            const undebugged = await launchOnAndroid("emulator-5554", "debug", true, true);
+            check("Android Debug run without debugging: the tool runs the debug build with no debugger readied, and no session",
+                undebugged.resolved === undefined
+                && JSON.stringify(undebugged.runs) === JSON.stringify([{ host: "android", device: "emulator-5554", debug: false, configuration: "debug" }]));
+
+            // A head of this machine run without debugging: lldb-dap starts it, told to debug nothing.
+            const own = new StateUIDebugConfigurationProvider({
+                prepare: async (_folder, _application, forHost, asked) => ({
+                    build: {
+                        application: "HelloWorld", host: forHost, configuration: asked, architecture: "arm64",
+                        folderUri: "file:///build", programUri: "file:///build/HelloWorldAppKit",
+                    },
+                    debugger: {
+                        kind: "lldb", request: "launch", programUri: "file:///build/HelloWorldAppKit", workingUri: root.uri.toString(),
+                        initCommands: [], attachCommands: [], terminateCommands: [],
+                    },
+                }),
+                host: () => "appkit", application: async () => helloWorld,
+                device: async () => undefined, uiKitDevice: async () => undefined, machine: async () => undefined,
+                place: () => "machine", runHead: async () => undefined, browser: async () => undefined, wasmDebugging: async () => undefined,
+            });
+            const ownUndebugged = await own.resolveDebugConfiguration(root,
+                { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug", noDebug: true });
+            check("A head of this machine run without debugging: lldb-dap launches its debug build told to debug nothing",
+                ownUndebugged?.type === "lldb-dap" && ownUndebugged.request === "launch" && ownUndebugged.noDebug === true);
 
             const released = await launchOnAndroid("emulator-5554");
             check("Android Release: the tool runs HelloWorld on that device, no debugger readied, and no session",

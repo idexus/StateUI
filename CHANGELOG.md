@@ -80,6 +80,18 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 - The tool: a checkout named by a path that begins as the old one did - `../..` changed to `../../StateUI` - is
   written once in an application's manifest; it was written twice, `../../StateUI/StateUI`.
+- The tool: `stateui repo test --plan native --device <device>` gives the device to the suite whose host it is a device
+  of - an iPhone to UIKit's, a serial to Android's - and a device of neither is refused; it went to both, so the other
+  stood as not run. A suite's own options - `--filter`, `--build-only`, `--architecture`, `--artifact` - are refused
+  with `--plan`, which dropped them.
+- The tool: a failed operation's last output - the compiler's error - reaches the editor before the operation's end;
+  told after it, it was dropped.
+- VS Code: Run Without Debugging (Ctrl+F5) runs the Debug build with no debugger on every host; it readied one and
+  attached it.
+- VS Code: no language server's configuration is written while the tool answers no lease of the index; a lease not
+  answered was taken for one held.
+- VS Code: folders asked for at once share one connection to the tool, and one opens again once it ended; each opened
+  its own `stateui serve`, and all but the last were lost. A connection refused at opening ends the process it started.
 - The tool: `stateui doctor` asks for no Python 3 for the Web, which nothing uses - the tool serves a page itself; a
   machine without it was told it could not build the Web.
 - Web: a debug build's module keeps its DWARF, which the browser's debugger reads. The head's release-only

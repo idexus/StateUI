@@ -4,6 +4,7 @@
 // The applications the stateui tool finds in a folder (`project/describe`): the nearest application up from it, else
 // the ones its workspace's stateui-workspace.json lists.
 
+import * as path from "path";
 import * as vscode from "vscode";
 import { pathToFileUri, ToolingClient, toolingErrorCode, ToolRequestError } from "./Tooling/client";
 import { Project } from "./Tooling/protocol";
@@ -61,6 +62,18 @@ export async function readApplications(client: ToolingClient, folder?: string): 
 }
 
 /** Whether `application` has a head for `host`. */
+/**
+ * The folder of `folders` that `directory` stands in - the deepest where several hold it - else the first: the folder
+ * a window's hosts and machines are read for, an application's project.
+ */
+export function folderHolding(directory: string | undefined, folders: readonly string[]): string | undefined {
+    const holding = directory === undefined ? [] : folders.filter((folder) => {
+        const inside = path.relative(folder, directory);
+        return inside === "" || (!inside.startsWith("..") && !path.isAbsolute(inside));
+    });
+    return holding.sort((a, b) => b.length - a.length)[0] ?? folders[0];
+}
+
 export function hasHead(application: Application, host: Host): boolean {
     return application.hosts.includes(host);
 }

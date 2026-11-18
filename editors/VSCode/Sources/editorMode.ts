@@ -87,7 +87,7 @@ let queue: Promise<unknown> = Promise.resolve();
  *
  * Calls are queued, so a second switch waits for the first to finish.
  *
- * @returns whether anything changed.
+ * @returns whether anything changed - nothing where the tool answered no lease of `roots`.
  * @throws IndexConflictError where another window indexes one of `roots` as another host, nothing changed.
  */
 export function applyEditorMode(host: Host | undefined, roots: readonly string[], describeIndex: IndexDescriber,
@@ -99,9 +99,13 @@ export function applyEditorMode(host: Host | undefined, roots: readonly string[]
 
 async function apply(host: Host | undefined, roots: readonly string[], describeIndex: IndexDescriber,
     acquireIndex: IndexAcquirer): Promise<boolean> {
-    const conflict = roots.length > 0 ? (await acquireIndex(host, roots))?.conflict : undefined;
-    if (conflict) {
-        throw new IndexConflictError(conflict);
+    // A lease held comes before anything is written: none answered - the tool unreachable - writes nothing.
+    const lease = roots.length > 0 ? await acquireIndex(host, roots) : undefined;
+    if (roots.length > 0 && lease === undefined) {
+        return false;
+    }
+    if (lease?.conflict) {
+        throw new IndexConflictError(lease.conflict);
     }
     const context = roots.length > 0 ? await describeIndex(host) : undefined;
     if (!context) {

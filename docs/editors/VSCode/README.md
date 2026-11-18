@@ -58,7 +58,9 @@ breakpoint holds from then on; on UIKit and Android **StateUI Run** follows the
 application's output, and the notification that follows it stops it. A head
 worked on another machine is built and started on the machine chosen, followed
 the same way - on a machine paired held for `lldb-dap`, which reaches it
-through the `stateui` tool's relay, a breakpoint holding from the first line. On UIKit, Android and the Web a Release launch runs
+through the `stateui` tool's relay, a breakpoint holding from the first line. Run Without Debugging
+(Ctrl+F5) runs the Debug build with no debugger on every host - on AppKit,
+WinUI and GTK `lldb-dap` starts it told to debug nothing. On UIKit, Android and the Web a Release launch runs
 without a debugger; on AppKit, WinUI and GTK `lldb-dap` starts the optimized
 build. A Web head is built, its page served and opened in the chosen browser;
 StateUI: Debug in Chrome, Edge or another of Chromium's browsers opens it
@@ -216,7 +218,9 @@ devices` lists them, the Parallels Desktop guests of the host's system - Linux
 for GTK, Windows for WinUI - each with its state, a guest suspended or stopped
 resumed or started when a build needs it; and the machines paired with the
 project (`stateui remote add`) that run the host as their own program, each
-with where its service listens. It is the application's choice, by its name,
+with where its service listens - the project of the chosen application, its
+hosts and machines read again as the choice, the folders or a pairing
+(`.stateui/remotes.json`) change. It is the application's choice, by its name,
 so a launch asks only when none is chosen or the one chosen is gone. What a
 guest needs, and how a Mac makes one: [Every host from one
 Mac](../../every-host-from-a-mac.md); **StateUI: Check Toolchain** checks the

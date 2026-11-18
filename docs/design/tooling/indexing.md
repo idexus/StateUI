@@ -57,7 +57,9 @@ package's guard is held until what is cleaned is gone, so no connection
 takes it meanwhile. The editor then restarts no server and says which
 window holds it.
 
-The editor takes the lease before it writes a package's configuration. Where
+The editor takes the lease before it writes a package's configuration, and
+writes nothing without one: the tool unreachable, or answering no lease,
+leaves every configuration as it was. Where
 another window holds one as another host it writes nothing: a host chosen is
 refused and the one before kept; a window opening on such a package works as
 the host it is held as. The extension's own suite names a state folder of its
