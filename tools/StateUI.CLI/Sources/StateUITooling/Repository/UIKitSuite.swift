@@ -52,10 +52,8 @@ struct UIKitSuite {
         let built = try await ProcessRunner().run(
             ProcessRequest(tools.swift, arguments: ["build", "--product", product] + common, environment: environment), output: reporter.output)
         try Task.checkCancellation()
-        guard built.succeeded,
-              let binaries = (await ToolOutput.text(tools.swift, ["build", "--show-bin-path"] + common, environment: environment))?
-                .split(separator: "\n").last.map({ URL(fileURLWithPath: String($0).trimmingCharacters(in: .whitespaces)) })
-        else { return [SuiteResult.Phase(name: "tests", passed: false)] }
+        guard built.succeeded else { return [SuiteResult.Phase(name: "tests", passed: false)] }
+        let binaries = try await ProductFolder.of(tools.swift, placing: common, environment: environment)
 
         let work = context.scratch.appendingPathComponent("stateui")
         let staging = work.appendingPathComponent("suite")

@@ -115,8 +115,7 @@ public struct HostSuite: Sendable {
         var phases = [SuiteResult.Phase(name: "tests", passed: tests)]
 
         reporter.progress("checking the API records")
-        let modules = (await ToolOutput.text(tools.swift, ["build", "--package-path", package, "--show-bin-path"], environment: checked))?
-            .split(separator: "\n").last.map { String($0).trimmingCharacters(in: .whitespaces) } ?? ""
+        let modules = try await ProductFolder.of(tools.swift, placing: ["--package-path", package], environment: checked).path
         for module in ["StateUIAppKit", "StateUITesting"] {
             let environment = checked.forAPIRecord(recording: recordingAPI).setting("STATEUI_API_MODULE", to: module)
                 .setting("STATEUI_API_MODULES", to: modules).setting("STATEUI_API_TRIPLE", to: "").setting("STATEUI_API_SDK", to: "")

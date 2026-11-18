@@ -35,15 +35,12 @@ struct ConformanceMetadata {
             ProcessRequest(tools.swift, arguments: ["build", "--package-path", package, "--product", "stateui-conformance-metadata"],
                            environment: ProcessEnvironment.inherited),
             output: reporter.output)
-        guard built.succeeded,
-              let folder = (await ToolOutput.text(tools.swift, ["build", "--package-path", package, "--show-bin-path"],
-                                                  environment: ProcessEnvironment.inherited))?
-                .split(separator: "\n").last.map({ String($0).trimmingCharacters(in: .whitespaces) })
-        else { throw ToolingError(.toolFailed, "stateui-conformance-metadata did not build.") }
+        guard built.succeeded else { throw ToolingError(.toolFailed, "stateui-conformance-metadata did not build.") }
+        let folder = try await ProductFolder.of(tools.swift, placing: ["--package-path", package])
         #if os(Windows)
-        return URL(fileURLWithPath: folder).appendingPathComponent("stateui-conformance-metadata.exe")
+        return folder.appendingPathComponent("stateui-conformance-metadata.exe")
         #else
-        return URL(fileURLWithPath: folder).appendingPathComponent("stateui-conformance-metadata")
+        return folder.appendingPathComponent("stateui-conformance-metadata")
         #endif
     }
 }

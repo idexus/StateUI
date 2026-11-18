@@ -88,6 +88,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   told after it, it was dropped.
 - The tool: a launch on a simulator that `simctl` refuses says what `simctl` said and how it ended; it was told as
   one that named no process within a minute, `simctl`'s own words dropped.
+- The tool: a build gives SwiftPM five minutes, as any build step, to say where it laid the products, reads the folder
+  from SwiftPM's standard output alone, and where SwiftPM names none says what it said and how it ended. Given half a
+  minute, a busy machine's answer was lost and a host's suite failed its tests without a word; a warning SwiftPM wrote
+  to its errors was taken for the folder.
 - VS Code: Run Without Debugging (Ctrl+F5) runs the Debug build with no debugger on every host; it readied one and
   attached it.
 - VS Code: no language server's configuration is written while the tool answers no lease of the index; a lease not

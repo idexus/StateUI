@@ -127,10 +127,8 @@ struct AndroidSuite {
         let outcome = try await ProcessRunner().run(
             ProcessRequest(compiler, arguments: ["build", "--product", product] + common, environment: building), output: reporter.output)
         try Task.checkCancellation()
-        guard outcome.succeeded,
-              let binaries = (await ToolOutput.text(compiler, ["build", "--show-bin-path"] + common, environment: building))?
-                .split(separator: "\n").last.map({ URL(fileURLWithPath: String($0).trimmingCharacters(in: .whitespaces)) })
-        else { throw ToolingError(.toolFailed, "The Android host's tests did not build.") }
+        guard outcome.succeeded else { throw ToolingError(.toolFailed, "The Android host's tests did not build.") }
+        let binaries = try await ProductFolder.of(compiler, placing: common, environment: building)
 
         let work = context.scratch.appendingPathComponent("stateui")
         let folder = work.appendingPathComponent("suite")

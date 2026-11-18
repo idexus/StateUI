@@ -195,9 +195,7 @@ public struct ApplicationBuilder: Sendable {
             let last = (said.lines(of: .standardOutput) + said.lines(of: .standardError)).suffix(12).joined(separator: "\n")
             throw ToolingError(.toolFailed, "\(context.product) did not build; nothing was published:\n\(last)")
         }
-        let binaries = (await ToolOutput.text(compiler, ["build", "--show-bin-path"] + common, environment: environment))?
-            .split(separator: "\n").last.map { URL(fileURLWithPath: String($0).trimmingCharacters(in: .whitespaces)) }
-        guard let binaries else { throw ToolingError(.toolFailed, "SwiftPM did not say where it laid \(context.product).") }
+        let binaries = try await ProductFolder.of(compiler, placing: common, environment: environment)
 
         reporter.progress("assembling \(context.product)")
         let store = ArtifactStore(application: context.application)

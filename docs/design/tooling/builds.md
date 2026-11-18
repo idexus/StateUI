@@ -65,6 +65,21 @@ result alone, the build's words going to standard error. The run ends with
 the program's status - one a signal ended as 128 and the signal, as a shell
 says it - so a crash is never a success.
 
+## Where SwiftPM laid a build
+
+Every build the tool runs - an application's head, a host's tests, the
+tool's own release - finds its products where SwiftPM says it laid them:
+`swift build --show-bin-path` with the arguments that placed the build (its
+package, scratch, configuration, triple and SDK), one step for all of them
+(`ProductFolder.swift`). The folder is the last line of SwiftPM's standard
+output; what it writes to its errors - a warning about an unhandled file - is
+never taken for it. The answer is a step of the build, not a query: SwiftPM
+reads the whole package graph again, which a busy machine takes more than
+half a minute to do, so it has the limit any build step has, five minutes.
+Where SwiftPM names no folder, the build fails saying what SwiftPM said and
+how it ended - its status, a signal, the limit it ran past - and never as a
+test phase failed without a word.
+
 ## A package
 
 A package is laid, made anew, in a folder that stands empty or where a

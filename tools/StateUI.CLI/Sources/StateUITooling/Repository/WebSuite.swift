@@ -70,10 +70,8 @@ struct WebSuite {
         let built = try await ProcessRunner().run(
             ProcessRequest(tools.swift, arguments: ["build", "--build-tests"] + common, environment: building), output: reporter.output)
         try Task.checkCancellation()
-        guard built.succeeded,
-              let products = (await ToolOutput.text(tools.swift, ["build", "--show-bin-path"] + common, environment: building))?
-                .split(separator: "\n").last.map({ String($0).trimmingCharacters(in: .whitespaces) })
-        else { return [SuiteResult.Phase(name: "tests", passed: false)] }
+        guard built.succeeded else { return [SuiteResult.Phase(name: "tests", passed: false)] }
+        let products = try await ProductFolder.of(tools.swift, placing: common, environment: building).path
 
         var phases = [SuiteResult.Phase(name: "api StateUIWeb", passed: try await recordAPI(sdk: sdk, products: products, environment: environment, reporter: reporter))]
         let program = "\(products)/StateUIWebTests-test-runner.wasm"
