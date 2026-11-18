@@ -22,7 +22,7 @@ import { browserOf } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
 import { applyEditorMode, buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
 import { machineOf } from "../Sources/machines";
-import { availableHosts, describe, Host, HostDescription, hosts, placeOf } from "../Sources/hosts";
+import { availableHosts, describe, Host, HostDescription, hosts, placeOf, worksAnew } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { editorCommandLine, hasExtensionSources } from "../Sources/reinstall";
 import { conformanceRequest, failedPhases } from "../Sources/conformance";
@@ -373,6 +373,14 @@ export async function run(): Promise<void> {
                 && folderHolding(path.join(os.tmpdir(), "elsewhere"), [one, two]) === one
                 && folderHolding(path.join(os.tmpdir(), "one-more", "Notes"), [two, one]) === two
                 && folderHolding(undefined, []) === undefined);
+        }
+        {
+            // A pairing alone can give the window another host, a folder alone other packages: either works it anew.
+            check("the window works anew where its host or its packages changed, a pairing's host with the same packages too",
+                worksAnew({ host: undefined, roots: ["/a"] }, { host: "appkit", roots: ["/a"] })
+                && worksAnew({ host: "appkit", roots: ["/a"] }, { host: undefined, roots: ["/a"] })
+                && worksAnew({ host: "appkit", roots: ["/a"] }, { host: "appkit", roots: ["/a", "/b"] })
+                && !worksAnew({ host: "appkit", roots: ["/a"] }, { host: "appkit", roots: ["/a"] }));
         }
         {
             // The tool unreachable, or answering no lease: nothing of the index is written - a write needs a lease held.

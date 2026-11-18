@@ -18,7 +18,7 @@ import { AndroidLister, androidDeviceOf, askForDevice, chooseListedDevice, devic
 import { askForBrowser, Browser, BrowserLister, browserOf, browserToRunOn, chooseListedBrowser } from "./browsers";
 import { applyEditorMode, cleanIndex, IndexAcquirer, IndexConflictError, IndexDescriber } from "./editorMode";
 import { askForMachine, Machine, MachineLister, machineOf, machineToRunOn } from "./machines";
-import { availableHosts, describe, Host, HostDescription, placeOf } from "./hosts";
+import { availableHosts, describe, Host, HostDescription, placeOf, worksAnew } from "./hosts";
 import {
     askForUIKitDevice, chooseListedUIKitDevice, uiKitDeviceOf, UIKitLister, uiKitDeviceToRunOn, uiKitSimulatorToTestOn,
 } from "./uiKitDevices";
@@ -355,22 +355,31 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         }
     };
 
+    // What `read` reads again - the choices, the folders' applications - then the hosts of the chosen application's
+    // project, the view, and the window working anew where its host or its packages changed: one road for a choice made
+    // here, one another window or `stateui settings` made, a pairing and a folder changed.
+    const reconsider = async (read: () => Promise<void>): Promise<void> => {
+        const before = { host: host(), roots: roots() };
+        await read();
+        await readPlaces(projectFolder());
+        refresh();
+        updateFolderContexts();
+        testSuites.changed();
+        if (worksAnew(before, { host: host(), roots: roots() })) {
+            await workAs(host());
+        }
+    };
+
     // The application chosen: its workspace's to start, through the tool, and the window's own; the window then works
     // as its host.
     const selectApplication = async (name: string): Promise<void> => {
-        const before = host();
         await state.update(applicationKey, name);
         const workspace = applications().find((each) => each.name === name)?.workspace;
         if (workspace) {
             await withTool(tool, workspace, `${name} was not chosen to start`,
                 (client) => client.run("settings/set", { projectUri: pathToFileUri(workspace), startup: name }));
         }
-        await readChoices();
-        refresh();
-        testSuites.changed();
-        if (host() !== before) {
-            await workAs(host());
-        }
+        await reconsider(readChoices);
     };
 
     /** Asks for an application - one with a head for `forHost`, where one is given - the chosen one offered first. */
@@ -999,16 +1008,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     let pending: NodeJS.Timeout | undefined;
     const rediscover = (): void => {
         clearTimeout(pending);
-        pending = setTimeout(async () => {
-            const before = roots().join("\n");
-            await discover();
-            refresh();
-            updateFolderContexts();
-            testSuites.changed();
-            if (roots().join("\n") !== before) {
-                await workAs(host());
-            }
-        }, 500);
+        pending = setTimeout(() => void reconsider(discover), 500);
     };
     const watched = (uri: vscode.Uri): void => {
         if (!uri.fsPath.split(/[\\/]/).some((part) => part === ".build" || part === "node_modules")) {
@@ -1022,16 +1022,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     }
     // What was chosen, read again as `stateui settings` or another window changes it; the window then works as the
     // host chosen.
-    const rechoose = async (): Promise<void> => {
-        const before = host();
-        await readChoices();
-        await readPlaces(projectFolder());
-        refresh();
-        testSuites.changed();
-        if (host() !== before) {
-            await workAs(host());
-        }
-    };
+    const rechoose = (): Promise<void> => reconsider(readChoices);
     for (const pattern of ["**/.stateui/workspace-settings.json", "**/.stateui/settings.json"]) {
         const watcher = vscode.workspace.createFileSystemWatcher(pattern);
         const changed = (): void => void rechoose();

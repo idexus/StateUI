@@ -16,6 +16,15 @@ export interface HostDescription {
     readonly detail: string;
 }
 
+/**
+ * Whether the window works anew - its editor's mode applied again - after what it read changed its host or the packages
+ * it indexes: a pairing alone can give it another host, a folder alone other packages.
+ */
+export function worksAnew(before: { host: Host | undefined; roots: readonly string[] },
+    after: { host: Host | undefined; roots: readonly string[] }): boolean {
+    return before.host !== after.host || before.roots.join("\n") !== after.roots.join("\n");
+}
+
 /** Every host, in the order the picker offers them. */
 export const hosts: readonly HostDescription[] = [
     { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process" },
