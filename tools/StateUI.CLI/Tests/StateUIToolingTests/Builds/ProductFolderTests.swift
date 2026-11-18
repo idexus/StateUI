@@ -31,9 +31,9 @@ final class ProductFolderTests: XCTestCase {
     /// SwiftPM is asked by the arguments that placed the build: its package, scratch, configuration, triple and SDK.
     func testSwiftPMIsAskedByTheArgumentsThatPlacedTheBuild() async throws {
         let swift = try fake("echo \"$*\" > \"$(dirname \"$0\")/asked\"; echo /work/.build/debug")
-        _ = try await ProductFolder.of(.path(swift.path), placing: ["--package-path", "/work", "--triple", "arm64-apple-ios27.0-simulator"])
+        _ = try await ProductFolder.of(.path(swift.path), placing: ["--package-path", "/work", "--triple", "aarch64-unknown-linux-gnu"])
         let asked = try String(contentsOf: swift.deletingLastPathComponent().appendingPathComponent("asked"), encoding: .utf8)
-        XCTAssertEqual(asked, "build --show-bin-path --package-path /work --triple arm64-apple-ios27.0-simulator\n")
+        XCTAssertEqual(asked, "build --show-bin-path --package-path /work --triple aarch64-unknown-linux-gnu\n")
     }
 
     /// A program named `swift` in a folder of its own, running `script` in a shell; the folder goes when the test ends.
