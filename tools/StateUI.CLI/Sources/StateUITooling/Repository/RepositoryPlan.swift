@@ -39,18 +39,39 @@ public struct RepositoryPlan: Sendable {
         tools = ToolResolver(environment: environment)
     }
 
+    /// The device UIKit's and Android's suites take of `named`: the host whose destinations hold it by id, UDID or name
+    /// - the other taking its own - none where nothing is named.
+    ///
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` where neither host's destinations hold it.
+    static func devices(_ named: String?, uikit: [Destination], android: [Destination]) throws -> [HostFamily: String] {
+        guard let named else { return [:] }
+        func holds(_ listed: [Destination]) -> Bool { listed.contains { [$0.id, $0.udid, $0.name].contains(named) } }
+        let chosen = [(HostFamily.uikit, holds(uikit)), (.android, holds(android))].filter(\.1)
+        guard !chosen.isEmpty else {
+            throw ToolingError(.invalidConfiguration, "No UIKit or Android device here is \(named) - `stateui devices` lists them.")
+        }
+        return Dictionary(uniqueKeysWithValues: chosen.map { ($0.0, named) })
+    }
+
+    private static func listed(_ host: HostFamily) async -> [Destination] {
+        (try? await ToolingService().listDestinations(of: host).destinations) ?? []
+    }
+
     /// The ids `kind` holds on this machine.
     public static func suites(of kind: PlanKind) -> [String] {
         kind == .portable ? portable.map(\.0) : native(on: Machine.current.system)
     }
 
-    /// Runs `kind`'s suites - `only` that one where named - each a phase or phases under its id; a UIKit or Android
-    /// suite on the device `device` names, an Android one with no device running listed as not run.
+    /// Runs `kind`'s suites - `only` that one where named - each a phase or phases under its id; UIKit's or Android's
+    /// suite on the device `device` names where it is that host's, an Android one with no device running listed as not
+    /// run.
     public func run(_ kind: PlanKind, only: String? = nil, device: String? = nil, reporter: BuildReporter) async throws -> SuiteResult {
         let ids = Self.suites(of: kind)
         if let only, !ids.contains(only) {
             throw ToolingError(.invalidConfiguration, "The \(kind.rawValue) plan here holds \(ids.joined(separator: ", ")); not \(only).")
         }
+        let devices = device != nil && ids.contains(where: { $0 == "host:uikit" || $0 == "host:android" })
+            ? try Self.devices(device, uikit: await Self.listed(.uikit), android: await Self.listed(.android)) : [:]
         var phases: [SuiteResult.Phase] = []
         for id in ids where only == nil || only == id {
             reporter.progress("suite \(id)")
@@ -73,7 +94,7 @@ public struct RepositoryPlan: Sendable {
             }
             guard let host = HostFamily(rawValue: String(id.dropFirst("host:".count))) else { continue }
             do {
-                let ran = try await suites.run(host, device: host == .uikit || host == .android ? device : nil, reporter: reporter)
+                let ran = try await suites.run(host, device: devices[host], reporter: reporter)
                 phases += ran.phases.map { SuiteResult.Phase(name: "\(id) \($0.name)", passed: $0.passed) }
             } catch let error as ToolingError where error.code == .invalidConfiguration || error.code == .missingToolchain {
                 reporter.output(ProcessOutput(stream: .standardError, text: "\(id) not run: \(error.message)"))

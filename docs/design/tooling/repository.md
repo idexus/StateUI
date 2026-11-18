@@ -209,7 +209,10 @@ machine runs, in their order - the library, the host layer, the conformance
 runner, application testing, the Gallery, HelloWorld, the tool
 (`RepositoryPlan`); `--plan native` this machine's host suites - AppKit,
 UIKit, Android and the Web on a Mac, GTK and the Web on Linux, WinUI on
-Windows - a UIKit or Android suite on the `--device` named. Each suite is a
+Windows - the `--device` named going to the suite whose host it is a device
+of, by its UDID, serial or name: an iPhone to UIKit's, an Android serial to
+Android's, the other taking its own; a device neither has is refused before
+any suite runs. Each suite is a
 phase of its own, a host suite's phases under its id; one failing never stops
 those after it, and a suite this machine cannot run - an Android one with no
 device running - stands as not run, never as passed. `--suite <id>` runs one
