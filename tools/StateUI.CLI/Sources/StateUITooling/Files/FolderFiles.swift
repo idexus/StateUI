@@ -49,6 +49,9 @@ enum FolderFiles {
         let root = URL(fileURLWithPath: request.root)
         var completed = 0
         for piece in request.pieces {
+            guard piece.offset >= 0, piece.size >= 0 else {
+                throw ToolingError(.invalidConfiguration, "A piece of \(piece.path) stands at \(piece.offset) of \(piece.size) bytes.")
+            }
             let target = try place(piece.path, in: root)
             let part = target.appendingPathExtension("stateui-part")
             guard let bytes = Data(base64Encoded: piece.data) else {
@@ -81,6 +84,9 @@ enum FolderFiles {
 
     /// At most `request.length` bytes of a file, from `request.offset`.
     static func read(_ request: FileReadRequest) throws -> FilePiece {
+        guard request.offset >= 0, request.length >= 0 else {
+            throw ToolingError(.invalidConfiguration, "\(request.length) bytes from \(request.offset) of \(request.path) are none to read.")
+        }
         let root = URL(fileURLWithPath: request.root)
         let entry = try entry(request.path, in: root)
         let handle = try FileHandle(forReadingFrom: try place(request.path, in: root))
@@ -126,13 +132,21 @@ enum FolderFiles {
         return found
     }
 
-    /// `path` under `root` - refused where it names no file of the folder: empty, absolute, or climbing out of it.
+    /// `path` under `root` - refused where it names no file of the folder: empty, absolute, climbing out of it, or
+    /// passing a link there, which would lead out of it.
     static func place(_ path: String, in root: URL) throws(ToolingError) -> URL {
         let parts = path.split(separator: "/", omittingEmptySubsequences: false).map(String.init)
         guard !path.isEmpty, !path.hasPrefix("/"), !path.contains("\\"), !path.contains(":"),
               parts.allSatisfy({ !$0.isEmpty && $0 != "." && $0 != ".." }) else {
             throw ToolingError(.invalidConfiguration, "\(path) names no file inside its folder.")
         }
-        return parts.reduce(root) { $0.appendingPathComponent($1) }
+        var place = root
+        for part in parts {
+            place.appendPathComponent(part)
+            if (try? place.resourceValues(forKeys: [.isSymbolicLinkKey]))?.isSymbolicLink == true {
+                throw ToolingError(.invalidConfiguration, "\(path) passes a link, which is not followed.")
+            }
+        }
+        return place
     }
 }

@@ -95,7 +95,11 @@ the last ended, and its last puts it in place with its time and mode - a
 file stands only once whole, a program still one (`0755`, any other `0644`).
 Windows keeps no such mark: its files say none (`executable` absent), and
 what it writes takes its own. A path names a file inside its folder alone: none empty,
-absolute, with `.`, `..` or a backslash. These are queries, answered at once:
+absolute, with `.`, `..` or a backslash, and none passing a link there - written,
+read or removed, a path through a linked folder or a linked file is refused, as
+what lies past the link is another folder's. An offset, a length or a size below
+zero is a refused request: the service answers it and stays for its other
+clients. These are queries, answered at once:
 a folder of the checkout's 4,476 files is some 27 MB.
 
 ## The service in the background

@@ -147,4 +147,34 @@ final class FolderTransferTests: XCTestCase {
         XCTAssertThrowsError(try FolderFiles.write(FilesWriteRequest(root: root.path, pieces: [FilePiece(path: "f", offset: 3, size: 4, modified: 0, data: Data("d".utf8).base64EncodedString())])))
         XCTAssertNil(data("f", in: root), "a file stands only once whole")
     }
+
+    /// A path through a link - a folder of the copy linked elsewhere, or a linked file - is refused for writing, reading
+    /// and removing alike: what lies past the link stays as it was.
+    func testALinkIsNeverPassedThrough() throws {
+        #if os(Windows)
+        throw XCTSkip("a link is made on Windows by an administrator or in Developer Mode alone")
+        #else
+        let outside = try folder()
+        try write(Data("keep".utf8), "Sources/X.swift", in: outside)
+        let root = try folder()
+        try FileManager.default.createSymbolicLink(at: root.appendingPathComponent("Sources"), withDestinationURL: outside.appendingPathComponent("Sources"))
+        try FileManager.default.createSymbolicLink(at: root.appendingPathComponent("Y.swift"), withDestinationURL: outside.appendingPathComponent("Sources/X.swift"))
+        let piece = FilePiece(path: "Sources/X.swift", offset: 0, size: 3, modified: 0, data: Data("new".utf8).base64EncodedString())
+        XCTAssertThrowsError(try FolderFiles.write(FilesWriteRequest(root: root.path, pieces: [piece])))
+        XCTAssertThrowsError(try FolderFiles.remove(FilesRemoveRequest(root: root.path, paths: ["Sources/X.swift"])))
+        XCTAssertThrowsError(try FolderFiles.read(FileReadRequest(root: root.path, path: "Sources/X.swift", offset: 0, length: 4)))
+        XCTAssertThrowsError(try FolderFiles.read(FileReadRequest(root: root.path, path: "Y.swift", offset: 0, length: 4)))
+        XCTAssertEqual(data("Sources/X.swift", in: outside), Data("keep".utf8))
+        #endif
+    }
+
+    /// An offset or a length out of range is a refused request, never the end of the service that read it.
+    func testAnOffsetOutOfRangeIsRefused() throws {
+        let root = try folder()
+        try write(Data("abcd".utf8), "f", in: root)
+        XCTAssertThrowsError(try FolderFiles.read(FileReadRequest(root: root.path, path: "f", offset: -1, length: 1)))
+        XCTAssertThrowsError(try FolderFiles.read(FileReadRequest(root: root.path, path: "f", offset: 0, length: -1)))
+        let piece = FilePiece(path: "g", offset: -1, size: 1, modified: 0, data: Data("a".utf8).base64EncodedString())
+        XCTAssertThrowsError(try FolderFiles.write(FilesWriteRequest(root: root.path, pieces: [piece])))
+    }
 }
