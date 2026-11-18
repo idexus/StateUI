@@ -100,6 +100,26 @@ final class FolderTransferTests: XCTestCase {
         #endif
     }
 
+    /// A file named that stands in a folder this user may not enter is no file gone: the transfer stops, its copy there
+    /// kept.
+    func testAFileOutOfReachStopsTheTransfer() async throws {
+        #if os(Windows)
+        throw XCTSkip("a folder's access is Windows' own lists, not a mode")
+        #else
+        let (source, target) = (try folder(), try folder())
+        try write(Data("secret".utf8), "Private/config.json", in: source)
+        try write(Data("kept".utf8), "Private/config.json", in: target)
+        let closed = source.appendingPathComponent("Private")
+        try FileManager.default.setAttributes([.posixPermissions: 0], ofItemAtPath: closed.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: closed.path) }
+        do {
+            _ = try await overService { try await FolderTransfer.send(source, files: ["Private/config.json"], to: target.path, over: $0, progress: { _ in }) }
+            XCTFail("a file out of reach was taken for one gone")
+        } catch {}
+        XCTAssertEqual(data("Private/config.json", in: target), Data("kept".utf8))
+        #endif
+    }
+
     /// Fetching brings another machine's folder here - a file larger than a message in pieces - and removes what it
     /// lacks.
     func testFetchingBringsAFolderHome() async throws {

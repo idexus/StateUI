@@ -36,8 +36,13 @@ enum FolderFiles {
     /// `path`'s entry where it is a file of `root`; none where it is gone or a link, which are not carried - any other
     /// failure to read it thrown, never taken for a file gone.
     static func listed(_ path: String, in root: URL) throws -> FileEntry? {
-        let named = root.appendingPathComponent(path).path
-        guard (try? FileManager.default.attributesOfItem(atPath: named)[.type] as? FileAttributeType) == .typeRegular else { return nil }
+        let type: FileAttributeType?
+        do {
+            type = try FileManager.default.attributesOfItem(atPath: root.appendingPathComponent(path).path)[.type] as? FileAttributeType
+        } catch let error as CocoaError where [.fileNoSuchFile, .fileReadNoSuchFile].contains(error.code) {
+            return nil
+        }
+        guard type == .typeRegular else { return nil }
         return try entry(path, in: root)
     }
 
