@@ -34,7 +34,8 @@ final class DebugRelayTests: XCTestCase {
 
         let refused = try StreamSocket.connect(to: "127.0.0.1", port: relay.port)
         try refused.write(packet)
-        XCTAssertEqual(try refused.read(), [], "a port no run holds")
+        // Refused, the connection ends: closed - or, on Windows, reset over the bytes it never read.
+        XCTAssertEqual((try? refused.read()) ?? [], [], "a port no run holds")
         refused.close()
 
         let answered: [UInt8] = try await DebugPorts.holding(echo.port) {

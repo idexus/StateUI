@@ -120,7 +120,11 @@ final class RemoteWorkTests: XCTestCase {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("gitfiles-\(UUID().uuidString)")
         addTeardownBlock { try? FileManager.default.removeItem(at: folder) }
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        #if os(Windows)
+        let names = ["Źródła.swift", "back's.swift", "plain.swift"]
+        #else
         let names = ["Źródła.swift", "a\tb.swift", "say \"hi\".swift", "plain.swift"]
+        #endif
         for name in names { try Data(name.utf8).write(to: folder.appendingPathComponent(name)) }
         _ = try await ProcessRunner().run(ProcessRequest(.name("git"), arguments: ["-C", folder.path, "init", "-q"]), output: { _ in })
         let listed = await RemoteWork.gitFiles(in: folder)
