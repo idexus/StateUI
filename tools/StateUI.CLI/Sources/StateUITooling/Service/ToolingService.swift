@@ -312,7 +312,7 @@ public struct ToolingService: Sendable {
     /// project holding `folder`; nil where it is worked here.
     private static func elsewhere(_ request: BuildRequest, in folder: URL) throws -> RemoteWork? {
         let remotes = try RemoteMachines(project: try request.projectUri.map(FileURI.url) ?? folder).list()
-        return RemoteWork.asks(request, remotes: remotes) ? RemoteWork(guests: ParallelsGuests(), remotes: remotes) : nil
+        return try RemoteWork.asks(request, remotes: remotes) ? RemoteWork(guests: ParallelsGuests(), remotes: remotes) : nil
     }
 
     /// Builds `request`'s application and publishes it - `application/build`.

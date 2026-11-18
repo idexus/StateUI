@@ -110,7 +110,7 @@ struct RunCommand: AsyncParsableCommand {
     @Option(help: "A Web head's page served on this machine alone, loopback, or shared with the network, lan.")
     var listen: String?
 
-    @Flag(help: "Ready LLDB: a UIKit head starts held until it attaches, an Android head with the debugger's server in its sandbox, a GTK or WinUI head held by lldb-server - what to attach to said as it starts.")
+    @Flag(help: "Ready LLDB: a UIKit head starts held until it attaches, an Android head with the debugger's server in its sandbox, a GTK or WinUI head held by the toolchain's lldb-dap, a page in Safari reached through Safari's WebAssembly debugger - the way said as it starts.")
     var debugger = false
 
     @Flag(help: "A GTK head runs under gdb, each GTK critical's stack and a crash's said as they come.")
@@ -120,7 +120,7 @@ struct RunCommand: AsyncParsableCommand {
         do {
             let request = try ApplicationBuilder.chosen(build.request(), in: build.here)
             let remotes = try RemoteMachines(project: build.project.map { URL(fileURLWithPath: $0) } ?? build.here).list()
-            if let host = request.host, host != .appkit || RemoteWork.asks(request, remotes: remotes) {
+            if let host = request.host, try host != .appkit || RemoteWork.asks(request, remotes: remotes) {
                 guard listen == nil || ["loopback", "lan"].contains(listen ?? "") else {
                     throw ToolingError(.invalidConfiguration, "--listen is loopback or lan.")
                 }

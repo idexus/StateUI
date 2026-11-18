@@ -33,7 +33,9 @@ service, within fifteen seconds, each destination named by its `machine`; one
 that answers not lists none. A request names such a device by `machine` and
 `device` together (`--machine studio --device "iPhone 18 Pro"`): the machine
 builds and runs the head on its device, the device chosen here never handed
-to it - where none is named, the machine picks its own.
+to it - where none is named, the machine picks its own. A `machine` that is
+no machine paired with the project running the host on its devices is
+refused before anything is built: the work never falls back to this one.
 
 Each destination says what a client needs to offer it: whether a debugger
 reaches an application run there (`debugger`) - not in a guest, nor in a

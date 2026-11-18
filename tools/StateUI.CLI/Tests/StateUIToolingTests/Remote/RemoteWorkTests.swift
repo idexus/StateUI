@@ -95,13 +95,16 @@ final class RemoteWorkTests: XCTestCase {
 
     /// A request naming a machine paired goes there for a host that machine runs on its devices, its device the
     /// machine's own; a result names that machine beside the device its tool said.
-    func testAMachinesDeviceIsNamedByTheMachine() {
+    func testAMachinesDeviceIsNamedByTheMachine() throws {
         var mac = paired("studio", runs: [.appkit])
         mac.hosts += [HostPlace(host: .uikit, place: .device), HostPlace(host: .web, place: .browser)]
         XCTAssertEqual(mac.deviceHosts, [.uikit, .web])
-        XCTAssertTrue(RemoteWork.asks(BuildRequest(host: .uikit, device: "iPhone 18 Pro", machine: "studio"), remotes: [mac]))
-        XCTAssertFalse(RemoteWork.asks(BuildRequest(host: .android, device: "Pixel", machine: "studio"), remotes: [mac]), "a host it runs not")
-        XCTAssertFalse(RemoteWork.asks(BuildRequest(host: .uikit, device: "iPhone 18 Pro", machine: "nowhere"), remotes: [mac]))
+        XCTAssertTrue(try RemoteWork.asks(BuildRequest(host: .uikit, device: "iPhone 18 Pro", machine: "studio"), remotes: [mac]))
+        XCTAssertFalse(try RemoteWork.asks(BuildRequest(host: .uikit, device: "iPhone 18 Pro"), remotes: [mac]), "no machine named")
+        // A machine named is where the work goes: one that is not there, or runs not the host on its devices, is refused
+        // before anything is built - never worked here instead.
+        XCTAssertThrowsError(try RemoteWork.asks(BuildRequest(host: .android, device: "Pixel", machine: "studio"), remotes: [mac]))
+        XCTAssertThrowsError(try RemoteWork.asks(BuildRequest(host: .uikit, device: "iPhone 18 Pro", machine: "nowhere"), remotes: [mac]))
         XCTAssertTrue(HostPlaces.available(remotes: [mac]).contains { $0.host == .uikit })
 
         XCTAssertEqual(RemoteWork.theirDevice(of: BuildRequest(device: "iPhone 18 Pro", machine: "studio")), "iPhone 18 Pro")

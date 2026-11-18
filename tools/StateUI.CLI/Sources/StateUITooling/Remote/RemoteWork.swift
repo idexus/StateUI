@@ -64,9 +64,16 @@ public struct RemoteWork: Sendable {
 
     /// Whether `request` is worked on another machine: on a machine of `remotes` its `machine` names, a device of that
     /// one's, or as `asks(_:device:remotes:)` says.
-    public static func asks(_ request: BuildRequest, remotes: [RemoteMachine]) -> Bool {
+    ///
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` where `machine` names none of `remotes` running the host on its
+    ///   devices: a machine named is where the work goes, never this one instead.
+    public static func asks(_ request: BuildRequest, remotes: [RemoteMachine]) throws -> Bool {
         guard let machine = request.machine else { return asks(request.host, device: request.device, remotes: remotes) }
-        return remotes.contains { $0.name == machine && request.host.map($0.deviceHosts.contains) ?? false }
+        guard remotes.contains(where: { $0.name == machine && request.host.map($0.deviceHosts.contains) ?? false }) else {
+            let host = request.host?.rawValue ?? "no host"
+            throw ToolingError(.invalidConfiguration, "No machine paired with the project is \(machine) running \(host) on its devices - `stateui remote list` says which are.")
+        }
+        return true
     }
 
     /// The destinations of `host` on the devices of `machines`, each asked within a few seconds - one that answers not
