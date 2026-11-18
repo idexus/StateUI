@@ -147,6 +147,7 @@ public struct ServedTool: Sendable {
     /// before answering is said with the last lines it wrote to its standard error - a crash's own words.
     private func converse<Result: Sendable>(_ body: @Sendable (Conversation) async throws -> Result) async throws -> Result {
         guard case .program(let executable, let arguments) = road else { return try await converseByService(opening: true, body) }
+        BrokenPipe.ignore()
         let configuration = Configuration(executable: executable.subprocess, arguments: Arguments(arguments))
         do {
             return try await Subprocess.run(configuration, input: .inputWriter, output: .sequence, error: .sequence) { execution in

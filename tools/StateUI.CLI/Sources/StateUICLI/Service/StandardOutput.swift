@@ -3,12 +3,8 @@
 
 import Dispatch
 import Foundation
+import StateUITooling
 import Synchronization
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Glibc)
-import Glibc
-#endif
 
 /// This process's standard output as one writer: each frame written whole, in the order given, and the bytes given
 /// but not yet written counted - what a client that stops reading leaves.
@@ -18,9 +14,7 @@ final class StandardOutput: Sendable {
     private let unwritten = Mutex(0)
 
     init() {
-        #if !os(Windows)
-        signal(SIGPIPE, SIG_IGN)
-        #endif
+        BrokenPipe.ignore()
     }
 
     /// Writes `frame` after every frame given before it.
