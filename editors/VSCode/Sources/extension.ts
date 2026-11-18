@@ -497,8 +497,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return found;
     };
 
-    // Offered before a Debug launch in a browser, installed on the user's word before the session starts; declined, it
-    // is not offered again until the window reloads, and StateUI: Check Toolchain still says it is missing.
+    // Offered as a Debug launch in one of Chromium's browsers is readied, installed on the user's word before the session
+    // starts; declined, it is not offered again until the window reloads, and StateUI: Check Toolchain still says so.
     let wasmDebuggingDeclined = false;
     const wasmDebugging = async (): Promise<void> => {
         if (wasmDebuggingDeclined || vscode.extensions.getExtension(wasmDebuggingExtension)) {

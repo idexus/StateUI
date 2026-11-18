@@ -74,7 +74,7 @@ export const wasmDebuggingExtension = "ms-vscode.wasm-dwarf-debugging";
 /** WebAssembly DWARF Debugging, which a Debug launch in a browser reads Swift's lines through, found or not. */
 export function wasmDebuggingFinding(installed: boolean): Finding {
     return {
-        component: "the WebAssembly DWARF Debugging extension", neededBy: "Debug in a browser",
+        component: "the WebAssembly DWARF Debugging extension", neededBy: "Debug in Chromium's browsers",
         found: installed ? "installed" : undefined,
         advice: `Install WebAssembly DWARF Debugging (${wasmDebuggingExtension}) from the Extensions view: the browser's debugger then stops on lines of Swift.`,
     };

@@ -107,10 +107,18 @@ The page is served (web-heads.md) and opened in the browser the run names
 - the system's own where none is named, none for `none` - what the run
 hands the application each a parameter of the page's address,
 `?STATEUI_TALLY=1`. The `started` event
-names that address. Readied for a debugger, in a browser one follows, the
+names that address. Readied for a debugger, in a browser of Chromium's, the
 page is opened by none, and the `started` event says how the browser's
-debugger starts it there. The run lasts until it is stopped, which closes the
-server; the browser and its tab are the user's.
+debugger starts it there. In Safari the run opens it, at an address of its
+own - `STATEUI_RUN`, the run's second, so Safari loads it anew rather than
+bringing forward an earlier run's tab - and waits up to 30 s for the page
+among those Safari's WebAssembly debugger offers: new since it opened, named
+by the address's host (another site's tab, opened meanwhile, is not it).
+LLDB lists them (`platform select webinspector-wasm`, `platform process
+list`); a page appears only with Safari's feature flag *Experimental
+WebAssembly Debugger* on, so none appearing, the run says to turn it on and
+ends. The `started` event then names LLDB's way to it. The run lasts until it
+is stopped, which closes the server; the browser and its tab are the user's.
 
 ## How a debugger reaches it
 
@@ -137,13 +145,22 @@ so none decides the way itself, and each gets the same one.
   checks - and follows no code the runtime's JIT compiles: announced method
   by method, each stopping the whole application, it froze the UI thread for
   seconds over USB.
-- **A page** is started by the browser's debugger: the browser's program on
-  the page's address, its sources read from the page's folder - in a browser
-  of Chromium's alone, whose pages a debugger follows. Swift's lines come
-  from the module's DWARF, which a debug build keeps
-  ([The build](web-heads.md#the-build)) and VS Code's JavaScript debugger
-  reads through WebAssembly DWARF Debugging, which the extension offers; that
-  reader knows no Swift types, so the variables are WebAssembly's.
+- **A page** in a browser of Chromium's is started by the browser's
+  debugger: the browser's program on the page's address, its sources read
+  from the page's folder. Swift's lines come from the module's DWARF, which a
+  debug build keeps ([The build](web-heads.md#the-build)) and VS Code's
+  JavaScript debugger reads through WebAssembly DWARF Debugging, which the
+  extension offers; that reader knows no Swift types, so the variables are
+  WebAssembly's.
+- **A page in Safari** is reached by LLDB through Safari's WebAssembly
+  debugger: `platform select webinspector-wasm`, then `process attach --pid`
+  the page's WebContent process, the session's end leaving the page. LLDB
+  reads the module's DWARF from the page - attaching takes some 9 s for the
+  Gallery's 56 MB - stops on lines of Swift and walks Swift's call stack into
+  the library. Xcode's LLDB names each variable's Swift type but reads no
+  WebAssembly local's value (`DW_OP_WASM_location`); the swift.org
+  toolchain's reads the locals but makes its Swift types for the Mac, not
+  for WebAssembly, so it resolves none.
 
 The terminal's `stateui run --debugger` prints the LLDB commands that reach
 the application as it starts.

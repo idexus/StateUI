@@ -28,7 +28,8 @@ enum Browsers {
             let name = FileManager.default.displayName(atPath: application.path).replacingOccurrences(of: ".app", with: "")
             let program = Bundle(url: application)?.executableURL
             return Destination(id: id, udid: id, name: name, kind: .browser, version: "", booted: application == preferred,
-                               debugger: Self.chromium(id) && program != nil, programUri: program.map(FileURI.string))
+                               debugger: Self.followed(id, safariDebugger: SafariDebugger.present) && program != nil,
+                               programUri: program.map(FileURI.string))
         }
         #else
         let home = FileManager.default.homeDirectoryForCurrentUser
@@ -48,11 +49,18 @@ enum Browsers {
                 else { continue }
                 let program = browser.program.hasPrefix("/") ? URL(fileURLWithPath: browser.program) : SearchPath().find(browser.program)
                 found.append(Destination(id: id, udid: id, name: browser.name, kind: .browser, version: "", booted: id == preferred,
-                                         debugger: Self.chromium(id) && program != nil, programUri: program.map(FileURI.string)))
+                                         debugger: Self.followed(id, safariDebugger: false) && program != nil,
+                                         programUri: program.map(FileURI.string)))
             }
         }
         return found
         #endif
+    }
+
+    /// Whether a debugger follows a page in browser `id`: one of Chromium's, or Safari where its WebAssembly debugger
+    /// stands.
+    static func followed(_ id: String, safariDebugger: Bool) -> Bool {
+        chromium(id) || (id == SafariDebugger.browser && safariDebugger)
     }
 
     /// Whether the browser `id` names is one of Chromium's - Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc - whose

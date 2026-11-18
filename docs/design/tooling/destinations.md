@@ -80,7 +80,10 @@ bundle id; on Linux every desktop entry taking `x-scheme-handler/https` and
 The system's own is marked, and each names its program (`programUri`): the
 bundle's executable, the entry's `Exec` past `env` and its variables. A
 browser of Chromium's - Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc,
-told by its id - with its program found is one a debugger follows. A run
+told by its id - with its program found is one a debugger follows, and so is
+Safari where its WebAssembly debugger stands: Safari 27 lays the program
+LLDB's `webinspector-wasm` platform starts
+(`/System/Cryptexes/App/usr/libexec/webinspector-wasm-lldb-platform`). A run
 opens the page in the one it names, the system's own where it names none, and
 no browser for `none` - the page left to a debugger, which starts a browser's
 program on it.

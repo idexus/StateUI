@@ -366,6 +366,17 @@ names Swift's functions in the call stack. The variables it shows are
 WebAssembly's - the module's locals, globals and stack - not Swift's: the
 browser's debugger reads no Swift types.
 
+In Safari 27 or newer, **StateUI: Debug** has the tool open the page in
+Safari and `lldb-dap` attach to it through Safari's WebAssembly debugger.
+Turn it on once: Safari's Settings, Advanced, *Show features for web
+developers*, then Develop, Feature Flags, *Experimental WebAssembly
+Debugger (Disables JIT)*. Safari 27 comes to macOS 26 by Software Update;
+`stateui doctor` says whether this Mac has it. LLDB stops on a line of Swift
+and walks Swift's call stack into StateUI itself; attaching takes some
+seconds while it reads the module's debugging information, and the page runs
+without Safari's JIT while the flag is on. It does not yet read a variable's
+value: the variables show their Swift types alone.
+
 ## Packaging
 
 ```bash

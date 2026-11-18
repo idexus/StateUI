@@ -158,7 +158,10 @@ Tests** work as plain Swift.
   A breakpoint on a line of Swift holds through the WebAssembly DWARF
   Debugging extension, which StateUI: Debug offers to install where it is
   missing; the variables shown are WebAssembly's, not Swift's
-  ([The Web](../../hosts/web.md)).
+  ([The Web](../../hosts/web.md)). In Safari 27, its WebAssembly debugger
+  turned on, the tool opens the page there and `lldb-dap` attaches to it:
+  Swift's lines and call stack, the variables' Swift types without their
+  values.
   Any other browser, and StateUI: Release, the tool opens itself.
   A head worked on another [machine](#the-machine) - GTK and WinUI in a guest
   of a Mac, a host a machine paired runs - is that machine's: the `stateui`
@@ -393,8 +396,9 @@ WebView2 runtime on Windows; GTK, libadwaita, WebKitGTK, gdk-pixbuf's SVG
 loader and a desktop session on Linux; the Swift SDK for WebAssembly and Python 3 for the Web on macOS and
 Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch - on Linux
 and Windows an `lldb-dap` that starts with the Python its LLDB loads; the
-WebAssembly DWARF Debugging extension for a Debug launch in a browser, where
-this machine offers the Web; Git for a project group's
+WebAssembly DWARF Debugging extension for a Debug launch in one of Chromium's
+browsers, where this machine offers the Web, and Safari 27 with its
+WebAssembly debugger for one in Safari, on macOS; Git for a project group's
 releases; and Node.js for this extension's own build. The two extensions
 and whether the `lldb-dap` LLDB DAP is set to starts are the extension's own
 findings, added to the tool's. The **StateUI Toolchain** output lists each

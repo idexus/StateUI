@@ -24,6 +24,9 @@ public struct ToolResolver: Sendable {
     /// stands.
     var lldbDap: URL? { toolchainProgram("lldb-dap") }
 
+    /// The Swift toolchain's `lldb`, found as `lldbDap` is.
+    var lldb: URL? { toolchainProgram("lldb") }
+
     /// The Swift toolchain's program `name`: beside `swift` - its links followed - else on the search path.
     private func toolchainProgram(_ name: String) -> URL? {
         let path = SearchPath(environment: environment)

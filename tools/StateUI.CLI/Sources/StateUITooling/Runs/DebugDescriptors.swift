@@ -49,6 +49,14 @@ enum DebugDescriptors {
             workingUri: FileURI.string(program.deletingLastPathComponent()), adapterPort: Int(port))
     }
 
+    /// LLDB attaching to a page in Safari through its WebAssembly debugger, by the page's WebContent `process`; the
+    /// page stays as the session ends.
+    static func safari(process: Int) -> DebugDescriptor {
+        DebugDescriptor(
+            kind: .lldb, request: .attach, process: process, initCommands: ["platform select webinspector-wasm"],
+            attachCommands: ["process attach --pid \(process)"])
+    }
+
     /// A browser's debugger starting `browser` on the page at `url`, the page's sources read from `site`.
     static func page(_ url: String, browser: URL, site: URL) -> DebugDescriptor {
         DebugDescriptor(kind: .browser, request: .launch, programUri: FileURI.string(browser), url: url, sourceUri: FileURI.string(site))

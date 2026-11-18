@@ -8,7 +8,8 @@ import StateUIToolingProtocol
 
 /// A Web head's page served from its artifact while the run lasts, opened in a browser - the system's own unless the
 /// run names one, or none - what the run hands the application of the tool's environment each a parameter of the
-/// page's address; readied for a debugger, opened by none, the browser's debugger told how to start it on the page.
+/// page's address; readied for a debugger, opened by none, the browser's debugger told how to start it on the page -
+/// in Safari opened by the run, LLDB told the page's process.
 /// A stop closes the server; the browser and its tab are the user's.
 /// Design: docs/design/tooling/runs.md#on-the-web
 struct WebLaunch {
@@ -31,13 +32,36 @@ struct WebLaunch {
         if lan {
             for address in Self.addresses() { reporter.build.progress("serving on the network at http://\(address):\(server.port)/\(query)") }
         }
+        do {
+            try await started(built, url: url, reporter: reporter)
+        } catch {
+            await server.stop()
+            throw error
+        }
+        while !Task.isCancelled { try? await Task.sleep(for: .seconds(1)) }
+        await server.stop()
+        throw CancellationError()
+    }
+
+    /// The page opened as the run asks and `started` told: in Safari for a debugger, LLDB's way to the page Safari
+    /// opened; in another a debugger follows, how its debugger starts the browser on the page.
+    private func started(_ built: BuildResult, url: String, reporter: RunReporter) async throws {
+        #if os(macOS)
+        if debugged?.id == SafariDebugger.browser {
+            guard let lldb = ToolResolver().lldb else {
+                throw ToolingError(.missingToolchain, "lldb is not here: it comes with the Swift toolchain, beside swift.")
+            }
+            let address = SafariDebugger.address(url, run: Int(Date().timeIntervalSince1970))
+            let page = try await SafariDebugger.open(address, lldb: lldb)
+            reporter.started(LaunchedApplication(
+                build: built, process: nil, held: false, debugger: DebugDescriptors.safari(process: page), url: address))
+            return
+        }
+        #endif
         let program = try debugged?.programUri.map(FileURI.url)
         let debugger = program.map { DebugDescriptors.page(url, browser: $0, site: site) }
         reporter.started(LaunchedApplication(build: built, process: nil, held: false, debugger: debugger, url: url))
         if debugger == nil, browser != "none" { await Browsers.open(url, in: browser ?? "default") }
-        while !Task.isCancelled { try? await Task.sleep(for: .seconds(1)) }
-        await server.stop()
-        throw CancellationError()
     }
 
     /// The page address's query: what the run hands the application, each a parameter.

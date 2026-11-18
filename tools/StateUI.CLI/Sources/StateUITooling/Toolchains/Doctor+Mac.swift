@@ -5,6 +5,15 @@ import Foundation
 import StateUIToolingProtocol
 
 extension Doctor {
+    /// Safari with its WebAssembly debugger, which a Debug run of a page in Safari attaches LLDB through.
+    func safariCheck() -> Check {
+        Check(
+            component: "Safari 27 or newer, with its WebAssembly debugger", neededBy: "Debug in Safari", hosts: [],
+            advice: "Update Safari - Safari 27 comes to macOS 26 by Software Update - then turn on \(SafariDebugger.flag).") {
+                Self.safari(version: SafariDebugger.version, debugger: SafariDebugger.present)
+            }
+    }
+
     /// What AppKit, UIKit and Android need on macOS.
     func macChecks() -> [Check] {
         let floor = Self.appleFloor

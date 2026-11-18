@@ -163,7 +163,7 @@ struct RunCommand: AsyncParsableCommand {
             let attach = way.attachCommands.isEmpty ? way.process.map { ["process attach --pid \($0)"] } ?? [] : way.attachCommands
             return "\nstateui: LLDB reaches it with: " + (way.initCommands + attach).joined(separator: "; ")
         } ?? ""
-        if let url = launched.url { return "stateui: serving \(launched.build.application) at \(url)" }
+        if let url = launched.url { return "stateui: serving \(launched.build.application) at \(url)\(lldb)" }
         return "stateui: started \(launched.build.application)\(place)\(process)\(launched.held ? ", held for a debugger" : "")\(lldb)"
     }
 }

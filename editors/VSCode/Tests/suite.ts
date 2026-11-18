@@ -784,6 +784,7 @@ export async function run(): Promise<void> {
                 browserOn("com.google.Chrome", "Google Chrome", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", false, true),
                 browserOn("firefox.desktop", "Firefox", "/usr/bin/firefox", false),
                 browserOn("chromium.desktop", "Chromium", undefined, false),
+                browserOn("com.apple.Safari", "Safari", "/Applications/Safari.app/Contents/MacOS/Safari", true, true),
             ];
             // A program reads as this system spells a path.
             const spelled = (file: string): string => vscode.Uri.file(file).fsPath;
@@ -808,12 +809,17 @@ export async function run(): Promise<void> {
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
                         offered.push(`run ${device}`);
                         runs.push({ host: forHost, device, debug, configuration: asked });
-                        // As the tool answers: a page readied for the browser's debugger where the run asked one.
-                        const readied = debug && browser.program !== undefined ? {
+                        // As the tool answers: a page readied for the browser's debugger where the run asked one - in
+                        // Safari LLDB's way to the page through Safari's WebAssembly debugger.
+                        const safariPage = {
+                            kind: "lldb" as const, request: "attach" as const, process: 26206,
+                            initCommands: ["platform select webinspector-wasm"], attachCommands: ["process attach --pid 26206"], terminateCommands: [],
+                        };
+                        const readied = !debug || browser.program === undefined ? undefined : device === "com.apple.Safari" ? safariPage : {
                             kind: "browser" as const, request: "launch" as const, programUri: vscode.Uri.file(browser.program).toString(),
                             url: "http://127.0.0.1:8460/", sourceUri: vscode.Uri.file(site).toString(),
                             initCommands: [], attachCommands: [], terminateCommands: [],
-                        } : undefined;
+                        };
                         return {
                             token: "RUN-3",
                             launched: {
@@ -844,9 +850,18 @@ export async function run(): Promise<void> {
                 && chrome.resolved?.type === "chrome" && chrome.resolved.runtimeExecutable === listed[1].program
                 && chrome.resolved.url === "http://127.0.0.1:8460/" && chrome.resolved.webRoot === spelled(site)
                 && chrome.resolved.stateuiRun === "RUN-3");
-            check("Web in Chrome: WebAssembly DWARF Debugging, which the debugger reads Swift's lines through, offered before the run; in Safari and released none",
-                JSON.stringify(chrome.offered) === JSON.stringify(["WebAssembly DWARF Debugging", "run com.google.Chrome"])
+            check("Web in Chrome: WebAssembly DWARF Debugging, which the debugger reads Swift's lines through, offered once the run readies the page; in Safari and released none",
+                JSON.stringify(chrome.offered) === JSON.stringify(["run com.google.Chrome", "WebAssembly DWARF Debugging"])
                 && JSON.stringify(safari.offered) === JSON.stringify(["run com.apple.Safari"]));
+
+            const debuggedSafari = await launchOnWeb(listed[4], "debug");
+            check("Web in Safari with its WebAssembly debugger: the tool opens the page, then lldb-dap attaches to it as the tool says, no DWARF extension offered",
+                debuggedSafari.runs[0]?.device === "com.apple.Safari" && debuggedSafari.runs[0]?.debug === true
+                && debuggedSafari.resolved?.type === "lldb-dap" && debuggedSafari.resolved.request === "attach"
+                && JSON.stringify(debuggedSafari.resolved.initCommands) === JSON.stringify(["platform select webinspector-wasm"])
+                && JSON.stringify(debuggedSafari.resolved.attachCommands) === JSON.stringify(["process attach --pid 26206"])
+                && debuggedSafari.resolved.stateuiRun === "RUN-3"
+                && JSON.stringify(debuggedSafari.offered) === JSON.stringify(["run com.apple.Safari"]));
 
             const unknown = await launchOnWeb(listed[3], "debug");
             check("Web in a browser the tool says no debugger follows: the tool opens it, with no session",

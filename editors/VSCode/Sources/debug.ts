@@ -22,9 +22,10 @@
 //   and lldb-dap attaches as the `started` event says, the session's end
 //   stopping the run. A Release launch has no session;
 // - in a browser (the Web): the page served and opened in the browser chosen;
-//   a Debug launch in one a debugger follows has it served alone, and VS
-//   Code's JavaScript debugger starts that browser on it, reading Swift's
-//   lines through WebAssembly DWARF Debugging, offered where it is missing;
+//   a Debug launch in one of Chromium's has it served alone, and VS Code's
+//   JavaScript debugger starts that browser on it, reading Swift's lines
+//   through WebAssembly DWARF Debugging, offered where it is missing; in
+//   Safari the tool opens it, and lldb-dap attaches as `started` says;
 // - on another machine - a guest of a Mac for GTK and WinUI, a machine paired
 //   with the project for a host it runs: built and started there by the tool;
 //   a Debug launch on one paired is held there for LLDB, which lldb-dap reaches
@@ -237,8 +238,8 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
 
     /**
      * A page, built and served by the stateui tool, which opens it in the browser chosen; a Debug launch in a browser
-     * a debugger follows has it served alone, and VS Code's JavaScript debugger starts that browser on it as the tool
-     * says, the session's end stopping the run.
+     * a debugger follows has it readied as the tool says - VS Code's JavaScript debugger starting one of Chromium's on
+     * it, lldb-dap attaching to it in Safari - the session's end stopping the run.
      */
     private async inBrowser(
         root: vscode.WorkspaceFolder,
@@ -252,12 +253,12 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
         const debug = configuration === "debug" && browser.debugger;
-        if (debug) {
-            await this.choices.wasmDebugging();
-        }
         const running = await this.choices.runHead(root, application, host, configuration, browser.id, debug);
         if (!running || !running.launched.debugger) {
             return undefined;
+        }
+        if (running.launched.debugger.kind === "browser") {
+            await this.choices.wasmDebugging();
         }
         return { ...debugConfiguration(name, running.launched.debugger), stateuiRun: running.token };
     }

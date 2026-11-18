@@ -20,6 +20,7 @@ Linux     pkg-config, GTK, libadwaita, WebKitGTK (the web view), gdk-pixbuf's
 Windows   Swift from swift.org, Visual Studio with the C++ tools, the WebView2
           runtime (the web view), the Windows SDK
 macOS and Linux   the Swift SDK for WebAssembly, Python 3 (the Web)
+macOS     Safari 27 with its WebAssembly debugger (Debug in Safari)
 ```
 
 Each finding names its component with the least of it that serves, who needs

@@ -60,7 +60,7 @@ public struct Doctor: Sendable {
 
     func checks() -> [Check] {
         #if os(macOS)
-        let own = macChecks() + webChecks()
+        let own = macChecks() + webChecks() + [safariCheck()]
         #elseif os(Linux)
         let own = linuxChecks() + webChecks()
         #elseif os(Windows)
@@ -99,6 +99,12 @@ public struct Doctor: Sendable {
     }
 
     static func present(_ what: String?) -> Look { what.map(Look.found) ?? .missing }
+
+    /// Safari by its version where its WebAssembly debugger stands, else as too old; no Safari, missing.
+    static func safari(version: String?, debugger: Bool) -> Look {
+        guard let version else { return .missing }
+        return debugger ? .found(version) : .tooOld(version)
+    }
 
     private func swiftCheck() -> Check {
         let (tools, path) = (tools, path)
