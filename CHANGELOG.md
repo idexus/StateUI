@@ -153,12 +153,11 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   checkout copied there - `repository/plan`, the plan's operation, which any client asks.
 - `stateui run --host gtk --gdb` (`RunRequest.gdb`) runs the head under gdb through `application/run`, so on another
   machine too - `--device <guest>` - each GTK critical's stack and a crash's told here, the command ending as gdb does.
-  `--debugger` means LLDB on every host: a GTK or WinUI head is held by the toolchain's `lldb-server` on a port of the
-  loopback, which `started` names (`gdb-remote`). On another machine the debugger is relayed through its service -
-  `service/relay`, granted to a paired client for a port a run holds - the program fetched home and LLDB's way
-  rewritten to a port of this machine's loopback; no debugger port listens on the network. On Windows the run starts
-  `lldb-dap` there instead (`DebugDescriptor.adapterPort`), which the editor's debugger connects to through the relay,
-  the relay turning the messages' paths between the two machines. The VS Code extension's Debug launch on a machine
+  `--debugger` means LLDB on every host: a GTK or WinUI head is held by the toolchain's `lldb-dap`, listening on a port
+  of the loopback (`DebugDescriptor.adapterPort`), which the editor's debugger connects to. On another machine the
+  debugger is relayed through its service - `service/relay`, granted to a paired client for a port a run holds - to a
+  port of this machine's loopback, the relay turning the adapter's paths between the two machines; no debugger port
+  listens on the network. The VS Code extension's Debug launch on a machine
   paired - a paired guest too - holds the head there and attaches lldb-dap that way. `stateui run` of a GTK or WinUI head takes the protocol's road.
 - A folder travels to another machine's tool, and back, through the connection itself - `folder/survey`,
   `files/write`, `file/read`, `files/remove`, in pieces of at most 4 MiB, a file's time kept - over a guest's

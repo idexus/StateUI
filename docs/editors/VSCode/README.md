@@ -161,8 +161,9 @@ Tests** work as plain Swift.
   tool copies the project to it, has its own `stateui` build and start the
   head there, and **StateUI Run** follows what it prints; the notification
   that follows it stops it there. On a machine paired with the project the
-  debug build is held there, and `lldb-dap` reaches it through the tool's
-  relay - the program fetched here, its sources mapped to this machine's; on a
+  debug build is held there by that machine's `lldb-dap`, which VS Code's
+  debugger reaches through the tool's relay - the paths turned to this
+  machine's files; on a
   guest not paired StateUI: Debug runs the debug build without one, and says
   so.
 

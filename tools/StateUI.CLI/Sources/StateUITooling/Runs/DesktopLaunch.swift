@@ -6,8 +6,8 @@ import StateUIToolingProtocol
 
 /// A GTK or WinUI head of this machine started from its program and followed until it ends, its output told as it
 /// comes - here, or on another machine asking it. A GTK head is installed first and a copy of it running stopped: a GTK
-/// application is one instance; under gdb, each GTK critical's stack and a crash's are said as they come. Cancelled,
-/// the program is stopped with everything it started.
+/// application is one instance; under gdb, each GTK critical's stack and a crash's are said as they come; held for LLDB,
+/// the toolchain's `lldb-dap` starts it. Cancelled, the program is stopped with everything it started.
 /// Design: docs/design/tooling/runs.md#a-desktop-head
 struct DesktopLaunch: Sendable {
     /// Readies `built`'s program to start: a GTK head installed for the user, a copy of it running stopped.
@@ -18,8 +18,8 @@ struct DesktopLaunch: Sendable {
         _ = try? await ProcessRunner().run(ProcessRequest(.name("pkill"), arguments: ["-f", "^\(program.path)( |$)"]))
     }
 
-    /// Runs `built`'s program - a GTK head's under gdb where `underGDB`, held by `lldb-server` for LLDB where `held` -
-    /// and follows it.
+    /// Runs `built`'s program - a GTK head's under gdb where `underGDB`, held by `lldb-dap` for LLDB where `held` - and
+    /// follows it.
     func run(_ built: BuildResult, underGDB: Bool = false, held: Bool = false, reporter: RunReporter) async throws -> RunResult {
         let program = try FileURI.url(built.programUri)
         try await Self.ready(built)
@@ -35,28 +35,19 @@ struct DesktopLaunch: Sendable {
         return RunResult(launched: LaunchedApplication(build: built, process: nil, held: false), exitStatus: Int(outcome.exitStatus))
     }
 
-    /// `program` held for LLDB on a free port of the loopback, the way said as it starts, the port held for a relay
-    /// while it runs: by the toolchain's `lldb-server` until LLDB connects - on Windows, whose `lldb-server` tells LLDB
-    /// no module, by its `lldb-dap`, which starts the program as the editor's debugger asks.
+    /// `program` held for LLDB by the toolchain's `lldb-dap`, listening on a free port of the loopback, which starts
+    /// the program as the editor's debugger asks; the way said as it starts, the port held for a relay while it runs.
     private func held(_ built: BuildResult, program: URL, reporter: RunReporter) async throws -> RunResult {
-        #if os(Windows)
-        let (name, found) = ("lldb-dap", ToolResolver().lldbDap)
-        #else
-        let (name, found) = ("lldb-server", ToolResolver().lldbServer)
-        #endif
-        guard let server = found else {
-            throw ToolingError(.missingToolchain, "\(name) is not here: it comes with the Swift toolchain, beside swift.")
+        guard let adapter = ToolResolver().lldbDap else {
+            throw ToolingError(.missingToolchain, "lldb-dap is not here: it comes with the Swift toolchain, beside swift.")
         }
         let port = try DebugPorts.free()
-        #if os(Windows)
-        let (way, arguments) = (DebugDescriptors.adapter(program: program, port: port), ["--connection", "listen://127.0.0.1:\(port)"])
-        #else
-        let (way, arguments) = (DebugDescriptors.gdbServer(program: program, port: port), ["gdbserver", "127.0.0.1:\(port)", "--", program.path])
-        #endif
         return try await DebugPorts.holding(port) {
-            let launched = LaunchedApplication(build: built, process: nil, held: true, debugger: way)
+            let launched = LaunchedApplication(
+                build: built, process: nil, held: true, debugger: DebugDescriptors.adapter(program: program, port: port))
             reporter.started(launched)
-            let outcome = try await ProcessRunner().run(ProcessRequest(.path(server.path), arguments: arguments), output: reporter.output)
+            let outcome = try await ProcessRunner().run(
+                ProcessRequest(.path(adapter.path), arguments: ["--connection", "listen://127.0.0.1:\(port)"]), output: reporter.output)
             try Task.checkCancellation()
             return RunResult(launched: launched, exitStatus: Int(outcome.exitStatus))
         }

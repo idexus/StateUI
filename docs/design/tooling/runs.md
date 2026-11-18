@@ -45,11 +45,11 @@ a copy of it running stopped, as a GTK application is one instance. Cancelled,
 the program is stopped with everything it started. A GTK head asked with
 `gdb` runs under gdb ([Running](gtk-heads.md#running)), on whichever machine
 runs it. A GTK or WinUI head asked with `debugger` is held by the toolchain's
-`lldb-server` - found beside `swift` - on a free port of the loopback
-(`gdbserver 127.0.0.1:<port> -- <program>`), and `started` names the way:
-LLDB creates the target from the program and connects with `gdb-remote`
-(`DebugDescriptors.gdbServer`); the port is held for a relay while the run
-lasts ([A debugger relayed](service.md#a-debugger-relayed)). The terminal's
+`lldb-dap` - found beside `swift` - listening on a free port of the loopback
+(`--connection listen://127.0.0.1:<port>`), and `started` names the way: the
+editor's debugger connects to that adapter (`adapterPort`), which starts the
+program as asked (`DebugDescriptors.adapter`); the port is held for a relay
+while the run lasts ([A debugger relayed](service.md#a-debugger-relayed)). The terminal's
 `stateui run` of a GTK or WinUI head takes this road too, ending as the head
 ends; an AppKit head's runs its program itself, in the foreground.
 

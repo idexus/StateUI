@@ -20,11 +20,8 @@ public struct ToolResolver: Sendable {
     /// Git, on the search path.
     public var git: ProcessExecutable { .name("git") }
 
-    /// The Swift toolchain's `lldb-server`: beside `swift` - its links followed - else on the search path; nil where
-    /// none stands.
-    var lldbServer: URL? { toolchainProgram("lldb-server") }
-
-    /// The Swift toolchain's `lldb-dap`, found as `lldbServer` is.
+    /// The Swift toolchain's `lldb-dap`: beside `swift` - its links followed - else on the search path; nil where none
+    /// stands.
     var lldbDap: URL? { toolchainProgram("lldb-dap") }
 
     /// The Swift toolchain's program `name`: beside `swift` - its links followed - else on the search path.

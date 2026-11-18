@@ -214,43 +214,29 @@ workspace declaring its own.
 
 ## A debugger relayed
 
-`lldb-server` knows no client: a port of it open to the network would give
+A debug server knows no client: a port of one open to the network would give
 anyone reaching it a process on the machine. So a debugger reaches another
 machine through the service alone. A GTK or WinUI head run there with
-`debugger` is held by `lldb-server gdbserver` on a free port of that machine's
-loopback ([A desktop head](runs.md#a-desktop-head)), which the run holds
-while it lasts (`DebugPorts`). The client asks for a relay to it on a
+`debugger` is held by that machine's own `lldb-dap`, listening on a free port
+of its loopback ([A desktop head](runs.md#a-desktop-head)), which the run
+holds while it lasts (`DebugPorts`). The client asks for a relay to it on a
 connection of its own (`service/relay`, before `initialize`): the challenge's
 nonce answered with the token, as `initialize`'s credential would, and the
 port - refused for a port no run holds now; granted, the service writes its
 answer and carries the rest of the connection's bytes to that port and back
 until either end closes. On the client, `DebugRelay` listens on a port of its
-own loopback and makes such a connection for each the debugger makes. As the
-run starts there, the tool fetches its program's folder into the
-application's `.build/stateui/<machine>`, opens the relay, and rewrites the
-way `started` says: LLDB reads the program and its libraries from the copy
-here (`target.exec-search-paths`), maps the sources from where they were
-built there (`target.source-map`), and connects with `gdb-remote` to the
-relay's port. A guest reached through `prlctl exec` alone has no service to
-relay through: a debugger there asks it be paired.
+own loopback and makes such a connection for each the editor's debugger
+makes; `started` names that port (`adapterPort`), and the editor connects to
+the adapter rather than starting its own.
 
-LLDB on a Mac stops a Linux head at a breakpoint of its sources and walks its
-stack into StateUI's libraries; the Clang modules a Swift library's debug
-information names (`.pcm`) stand on the machine that built it, so LLDB says
-some types of the libraries are missing.
-
-Windows' `lldb-server` tells a debugger no module it loaded
-(`qXfer:libraries:read` is unimplemented there), so no LLDB off Windows could
-place a breakpoint. On Windows the run starts the toolchain's `lldb-dap`
-instead, listening on the loopback port (`--connection
-listen://127.0.0.1:<port>`), and `started` names it (`adapterPort`): the
-editor's debugger connects to that adapter through the relay rather than
-starting its own, and the adapter starts the program there with LLDB's own
-Windows process plugin. LLDB there takes no source map to a folder it has not,
-so the relay carries the adapter's messages one by one and turns every `path`
-under this machine's folder into the copy's - written as Windows writes it -
-and back (`PathTranslation`): the editor sets and sees breakpoints in its own
-files.
+LLDB runs where the program was built: with that machine's SDK, its Clang
+modules and its process plugin, so a stop shows every type at once. LLDB
+there takes no source map to a folder it has not, so the relay carries the
+adapter's messages one by one and turns every `path` under this machine's
+folder into the copy's - written as that machine writes a path - and back
+(`PathTranslation`): the editor sets and sees breakpoints in its own files. A
+guest reached through `prlctl exec` alone has no service to relay through: a
+debugger there asks it be paired.
 
 ## A service probed
 

@@ -29,28 +29,17 @@ final class ApplicationRunnerTests: XCTestCase {
     }
 
     /// A GTK head run under gdb says every GTK critical's stack and a crash's, Swift's own backtrace off; a GTK or WinUI
-    /// head held for LLDB is reached by `gdb-remote` on the loopback port its `lldb-server` holds; any other run is its
-    /// program alone.
+    /// head held for LLDB is started by the `lldb-dap` listening on the loopback port the way names; any other run is
+    /// its program alone.
     func testAGTKHeadForADebuggerRunsUnderGDB() throws {
         XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: .gtk), gdb: true)))
         for host in [HostFamily.gtk, .winui] {
             XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: host), debugger: true)))
         }
-        let way = DebugDescriptors.gdbServer(
-            program: URL(fileURLWithPath: "/home/me/Notes/NotesGTK"), port: 41234,
-            sourceMap: ("/home/me/stateui-guest/abc/Notes", URL(fileURLWithPath: "/Users/me/Notes")))
-        XCTAssertEqual(way.attachCommands, ["target create \"/home/me/Notes/NotesGTK\"", "gdb-remote 127.0.0.1:41234"])
-        XCTAssertEqual(way.initCommands, [
-            "settings append target.exec-search-paths \"/home/me/Notes\"",
-            "settings set target.source-map \"/home/me/stateui-guest/abc/Notes\" \"/Users/me/Notes\"",
-        ])
-        XCTAssertEqual(way.terminateCommands, ["process kill"])
-        XCTAssertEqual(RemoteWork.relayedPort(of: way), 41234, "the port a relay goes to")
-        let windows = DebugDescriptors.adapter(program: URL(fileURLWithPath: "/C/Notes/NotesWinUI.exe"), port: 41300)
-        XCTAssertEqual([windows.request.rawValue, String(windows.adapterPort ?? 0)], ["launch", "41300"], "an lldb-dap listening")
-        XCTAssertEqual(windows.workingUri, FileURI.string(URL(fileURLWithPath: "/C/Notes")))
-        XCTAssertEqual(RemoteWork.relayedPort(of: windows), 41300)
-        XCTAssertNil(RemoteWork.relayedPort(of: DebugDescriptors.simulator(process: 7)))
+        let held = DebugDescriptors.adapter(program: URL(fileURLWithPath: "/home/me/Notes/NotesGTK"), port: 41300)
+        XCTAssertEqual([held.request.rawValue, String(held.adapterPort ?? 0)], ["launch", "41300"], "an lldb-dap listening")
+        XCTAssertEqual(held.programUri, FileURI.string(URL(fileURLWithPath: "/home/me/Notes/NotesGTK")))
+        XCTAssertEqual(held.workingUri, FileURI.string(URL(fileURLWithPath: "/home/me/Notes")))
         let (program, commands) = (URL(fileURLWithPath: "/home/me/Notes/NotesGTK"), URL(fileURLWithPath: "/tmp/gdb.cmd"))
         let under = DesktopLaunch.request(program, gdbCommands: commands)
         XCTAssertEqual(under.executable, .name("gdb"))

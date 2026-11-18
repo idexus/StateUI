@@ -267,8 +267,9 @@ export async function run(): Promise<void> {
             // lldb-dap reaches it as the tool says; elsewhere there is no session.
             const runs: { host: string; device: string; debug: boolean; configuration: string }[] = [];
             const relayed: DebugDescriptor = {
-                kind: "lldb", request: "attach", initCommands: [], attachCommands: ["target create \"/tmp/NotesGTK\"", "gdb-remote 127.0.0.1:51000"],
-                terminateCommands: ["process kill"],
+                kind: "lldb", request: "launch", programUri: "file:///home/me/stateui-guest/abc/Notes/NotesGTK",
+                workingUri: "file:///home/me/stateui-guest/abc/Notes", adapterPort: 51000, initCommands: [], attachCommands: [],
+                terminateCommands: [],
             };
             const onAMachine = (forHost: Host, named: string | undefined, at: "guest" | "remote" = "guest", reached = false) => new StateUIDebugConfigurationProvider({
                 prepare: async () => undefined, host: () => forHost, application: async () => gallery_,
@@ -296,9 +297,9 @@ export async function run(): Promise<void> {
             runs.length = 0;
             const held = await onAMachine("gtk", "Ubuntu", "guest", true).resolveDebugConfiguration(root, launch("debug"));
             const heldRelease = await onAMachine("gtk", "Ubuntu", "guest", true).resolveDebugConfiguration(root, launch("release"));
-            check("a Debug launch on a machine a debugger reaches is held there, and lldb-dap attaches through the tool's relay; a Release launch has no session",
-                held?.type === "lldb-dap" && held?.request === "attach" && held?.stateuiRun === "run-1"
-                && JSON.stringify(held?.attachCommands) === JSON.stringify(relayed.attachCommands) && heldRelease === undefined
+            check("a Debug launch on a machine a debugger reaches is held there, and its lldb-dap is reached through the tool's relay; a Release launch has no session",
+                held?.type === "lldb-dap" && held?.request === "launch" && held?.stateuiRun === "run-1"
+                && held?.debugAdapterPort === 51000 && held?.program === "/home/me/stateui-guest/abc/Notes/NotesGTK" && heldRelease === undefined
                 && JSON.stringify(runs) === JSON.stringify([
                     { host: "gtk", device: "Ubuntu", debug: true, configuration: "debug" },
                     { host: "gtk", device: "Ubuntu", debug: false, configuration: "release" },
