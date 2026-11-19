@@ -405,6 +405,16 @@ extension Differ {
         if describeAll || previous == nil ? !followed.isEmpty : followed != previous!.followed {
             patch.followed = .replace(followed.map(HostStateBinding.init))
         }
+        // A program is told again where its description made another; one no longer written is cleared.
+        if let program = node.layout {
+            let told = previous?.layout
+            if describeAll || told?.slot != program.slot || told?.revision != program.revision {
+                patch.layout = .replace(program)
+            }
+            pass.layout = (program.slot, program.revision)
+        } else if previous?.layout != nil, !describeAll {
+            patch.layout = .clear
+        }
         pass.driven = driven
         pass.patch = patch
     }

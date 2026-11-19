@@ -12,6 +12,11 @@
     /// The movements an engine of the application finished in this cycle: the host answers each once it has
     /// shown the frame (`HostBoundary.complete(_:as:)`).
     public let finished: [HostFinishedMotion]
+
+    /// The layouts whose program was worked out in this cycle, by their slots, in the order they ran: the host
+    /// reads where each one's children stand now.
+    /// Design: docs/design/core/layout-program.md#what-runs-it-again
+    public let stirred: [UInt64]
 }
 
 /// A movement an engine of the application ended, for the host to answer after it presents.

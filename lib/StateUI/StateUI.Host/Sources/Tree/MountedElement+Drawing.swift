@@ -35,12 +35,15 @@ extension MountedElement {
     /// The property carrying the layout's own placing run, where a state drives one: the run moves the children
     /// without changing what the layout measures.
     public var ownPlacementRun: Set<Prop> {
-        driven[.area]?.kind == .placement ? [.area] : []
+        layoutProgram != nil || driven[.area]?.kind == .placement ? [.area] : []
     }
 
     /// The places an engine gives the layout's children, one each, standing in the run's direction; nil while no
     /// state drives them.
     public var placement: HostPlacementRun? {
+        if layoutProgram != nil {
+            return HostPlacementRun(placements: programPlaces, direction: runDirection)
+        }
         guard !ownPlacementRun.isEmpty, let carried = carriedValue(.area),
               let run = HostBoundary.placements(from: carried) else { return nil }
         return HostPlacementRun(placements: run.placements, direction: runDirection)

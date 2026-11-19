@@ -70,6 +70,11 @@
     /// Nil means unchanged - none, in a complete message; `.replace([])` lets every one go.
     public var followed: HostFollowedUpdate?
 
+    /// The layout program the element runs, sent when its description made another, and `.clear` when it runs
+    /// none any more. Nil means unchanged - none, in a complete message.
+    /// Design: docs/design/core/layout-program.md#the-program
+    public var layout: HostLayoutUpdate?
+
     /// The complete event map, sent only when the set of handled events changed.
     /// Nil means unchanged - none, in a complete message; `.replace([:])` removes
     /// every handler.

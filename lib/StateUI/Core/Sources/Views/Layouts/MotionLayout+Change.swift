@@ -73,7 +73,7 @@ extension MotionLayout.Run {
         states.shown.wrappedValue = LayoutShown(
             description: description, parameters: parameters, from: from, room: room, poses: byIdentity(poses),
             shown: byIdentity(shown), bodies: bodies, resting: memory.resting)
-        states.placements.wrappedValue = PlacedRun(shown)
+        states.slot.placed = PlacedRun(shown)
         return !bodies.isEmpty || holding
     }
 }

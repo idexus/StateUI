@@ -208,8 +208,12 @@
     public static func placements(from value: HostStateValue) -> HostPlacementRun? {
         guard let run = PlacedRun(carried: value) else { return nil }
 
-        return HostPlacementRun(
-            placements: run.placements.map {
+        return HostPlacementRun(placements: placements(of: run), direction: .leftToRight)
+    }
+
+    /// A run's places as a host draws them.
+    static func placements(of run: PlacedRun) -> [HostPlacement] {
+        run.placements.map {
                 HostPlacement(
                     bounds: $0.bounds,
                     translationX: $0.transform.x,
@@ -220,8 +224,7 @@
                     opacity: $0.opacity,
                     zIndex: $0.zIndex,
                     shade: $0.shade)
-            },
-            direction: .leftToRight)
+        }
     }
 
     /// Builds and returns a typed patch against the generation the host holds.

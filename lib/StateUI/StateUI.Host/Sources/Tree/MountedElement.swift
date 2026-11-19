@@ -43,6 +43,10 @@
     /// Design: docs/design/host/motion.md#state-channels
     public private(set) var followed: [HostStateBinding] = []
 
+    /// The layout program the element runs: the host says it the room, and reads where its children stand.
+    /// Design: docs/design/host/layout.md#a-layout-program
+    public private(set) var layoutProgram: HostLayoutProgram?
+
     /// The handlers of the events the tree listens to, by event.
     public private(set) var events: [Event: Int32] = [:]
 
@@ -68,6 +72,20 @@
     /// come since, which hears where the element stands once (`frameReportDue`).
     var reportedFrame: [Double] = []
     var frameReportDue = false
+
+    /// The room the toolkit last laid the element out in; nil before it said.
+    var laidOutRoom: (width: Double, height: Double)?
+
+    /// Where the layout program last put the children, as the element presents them.
+    private(set) var programPlaces: [HostPlacement] = []
+
+    /// Takes where the layout program puts the children now; whether that changed what the element presents.
+    func takeProgramPlaces() -> Bool {
+        let placed = layoutProgram?.placed() ?? []
+        guard placed != programPlaces else { return false }
+        programPlaces = placed
+        return true
+    }
 
     /// Where a split view last said its sidebar stands, and onto which state; nil before it said.
     var reportedOverlays: (binding: HostStateBinding, over: Bool)?
@@ -196,6 +214,7 @@
         if patch.events == nil, !events.isEmpty { whole.events = .replace([:]) }
         if patch.driven == nil, !driven.isEmpty { whole.driven = .replace([:]) }
         if patch.followed == nil, !followed.isEmpty { whole.followed = .replace([]) }
+        if patch.layout == nil, layoutProgram != nil { whole.layout = .clear }
         return whole
     }
 
@@ -277,6 +296,22 @@
             }
         }
         if case .replace(let followed) = patch.followed { self.followed = followed }
+        switch patch.layout {
+        case .replace(let program)?:
+            if layoutProgram?.slot != program.slot {
+                if let before = layoutProgram { tree.layoutLeft(before.slot) }
+                tree.layoutStands(program.slot, on: self)
+            }
+            layoutProgram = program
+            // The room the toolkit laid it out in stands: a program that came since is told it.
+            if let room = laidOutRoom { program.layOut(room.width, room.height) }
+        case .clear?:
+            if let before = layoutProgram { tree.layoutLeft(before.slot) }
+            layoutProgram = nil
+            programPlaces = []
+        case nil:
+            break
+        }
         wear(driven)
         // A journey followed with no property has no view to read it: its channel opens here.
         if patch.followed != nil {
@@ -533,7 +568,9 @@
             for state in wornStates { tree.stateChannels.detach(state) }
             tree.removeMotions(mount: mount)
             tree.unmounted(self, presenting: presentedStates)
+            if let program = layoutProgram { tree.layoutLeft(program.slot) }
         }
+        layoutProgram = nil
         wornStates = []
         presentedStates = []
         isLeaving = false

@@ -73,11 +73,10 @@ final class GalleryViewTests: XCTestCase {
     /// answered is a cycle with nothing to do.
     private var turned = 0.0
 
-    /// The two states the gallery's layout was described with, remembered from
-    /// the FIRST render: a patch carries a property only when it changed, so a
-    /// second render says nothing about states that have not moved.
-    private var placer: Int32?
-    private var feeder: Int32?
+    /// The program the gallery's layout runs, remembered from the render that
+    /// described it: a patch names a program only when its description made
+    /// another.
+    private var program: HostLayoutProgram?
 
     /// Renders, tells every reader how big the room is, and renders again -
     /// until no reader stands that has not been told, as the run of cards
@@ -93,10 +92,7 @@ final class GalleryViewTests: XCTestCase {
         room = Rect(0, 0, width, height)
 
         let first = renders.render(tree())
-        let described = board(first).driven
-
-        placer = described?[.area]?.state ?? placer
-        feeder = described?[.frame]?.state ?? feeder
+        program = board(first).program ?? program
 
         var told: Set<Int> = []
         var patch = first
@@ -108,16 +104,14 @@ final class GalleryViewTests: XCTestCase {
                 told.insert(id)
             }
             patch = renders.render(tree())
-            let described = board(patch).driven
-            placer = described?[.area]?.state ?? placer
-            feeder = described?[.frame]?.state ?? feeder
+            program = board(patch).program ?? program
         }
 
         // The run told its room as well, as the host tells it: the hand is measured against the cards it draws.
-        if let feeder {
+        if let program {
             turned += 16
             _ = HostBoundary.cycle(now: turned, reducesMotion: false)
-            moved(feeder, to: [0, 0, width, height])
+            program.layOut(width, height)
             turned += 16
             _ = HostBoundary.cycle(now: turned, reducesMotion: false)
         }
@@ -167,14 +161,11 @@ final class GalleryViewTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> [Placement] {
-        let described = board(patch).driven
-
-        guard let fed = described?[.frame]?.state ?? feeder,
-              let run = described?[.area]?.state ?? placer
-        else {
-            XCTFail("the gallery's layout is placed by no number", file: file, line: line)
+        guard let run = board(patch).program ?? program else {
+            XCTFail("the gallery's layout runs no program", file: file, line: line)
             return []
         }
+        program = run
 
         // THE FIRST CYCLE OF ALL LATCHES rather than runs, so the room is fed
         // after it: a write swallowed by the latch is a write no engine ever
@@ -183,13 +174,13 @@ final class GalleryViewTests: XCTestCase {
 
         _ = board.cycle(now: turned, reducesMotion: false)
 
-        moved(fed, to: [room.x, room.y, room.width, room.height])
+        run.layOut(room.width, room.height)
 
         turned += 16
         _ = board.cycle(now: turned, reducesMotion: false)
         turned += 16
 
-        return standing(run, as: PlacedRun.self)?.placements ?? []
+        return run.run?().placements ?? []
     }
 
     /// Where one card was put.
@@ -603,7 +594,7 @@ final class GalleryViewTests: XCTestCase {
             _ = laid(renders, tree)
             hand(renders, tree, .began)
             hand(renders, tree, .changed, moved: Point(-reach, 0))
-            let run = try XCTUnwrap(standing(try XCTUnwrap(placer), as: PlacedRun.self))
+            let run = try XCTUnwrap(try XCTUnwrap(program).run?())
             return try XCTUnwrap(run.placements.dropFirst().first).bounds.x
         }
         let placed = try carried(nil)
@@ -627,7 +618,7 @@ final class GalleryViewTests: XCTestCase {
         hand(renders, tree, .ended)
         XCTAssertEqual(shown.wrappedValue, 4)
 
-        if let feeder { moved(feeder, to: [0, 0, 700, 300]) }
+        program?.layOut(700, 300)
         turned += 16
         _ = HostBoundary.cycle(now: turned, reducesMotion: false)
 
@@ -936,17 +927,17 @@ final class GalleryViewTests: XCTestCase {
 
     // MARK: - What the host is told
 
-    /// The cards are placed by an ENGINE the host turns, so the message names
-    /// two states - the run the placements ride on and the room they are worked
-    /// out from - and turning one cycle answers where the cards go.
+    /// The cards are placed by a layout PROGRAM: the message names it, no
+    /// state carries the run or the room, and one cycle after the host said
+    /// the room answers where the cards go.
     func testTheCardsArePlacedByAStateTheHostTurns() throws {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).node }).whole
         let placer = board(showing)
 
-        XCTAssertEqual(placer.driven?[.area]?.kind, .placement)
-        XCTAssertEqual(placer.driven?[.area]?.mode, .out)
-        XCTAssertEqual(placer.driven?[.frame]?.kind, .feed)
+        XCTAssertNotNil(program, "the layout runs a program")
+        XCTAssertNil(placer.driven?[.area])
+        XCTAssertNil(placer.driven?[.frame])
 
         let run = placements(showing)
 

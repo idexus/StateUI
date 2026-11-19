@@ -16,7 +16,7 @@ extension MountedElement {
     /// or - a split view - the state its sidebar's place drives (`reportSidebarOverlays(_:in:)`), said with it once
     /// laid out.
     public var readsOwnFrame: Bool {
-        frameReaders != nil || driven[.sidebarOverlays] != nil
+        frameReaders != nil || driven[.sidebarOverlays] != nil || layoutProgram != nil
     }
 
     /// What reads this element's frame itself - a state it drives, a handler of its changes - or nil for nothing.
@@ -29,6 +29,12 @@ extension MountedElement {
     /// or a reader came since: its place in its parent onto the state its frame drives, and the whole report to its
     /// handler.
     public func reportFrame(_ numbers: [Double], in runtime: HostRuntime) {
+        // A layout's program works its children's places out of the room: it is told every room laid out.
+        // Design: docs/design/host/layout.md#a-layout-program
+        if numbers.count >= 4 {
+            laidOutRoom = (numbers[2], numbers[3])
+            layoutProgram?.layOut(numbers[2], numbers[3])
+        }
         guard let readers = frameReaders, numbers != reportedFrame || frameReportDue else { return }
         reportedFrame = numbers
         frameReportDue = false

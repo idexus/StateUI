@@ -271,10 +271,9 @@ final class LayoutChangeTests: XCTestCase {
             .dynamics(.spring(response: .milliseconds(160)))
             .node
         }
-        let laid = bench.laid(renders, tree)
-        let fed = try XCTUnwrap(laid.patch.first(.motionLayout)?.driven?[.frame]?.state)
+        _ = bench.laid(renders, tree)
 
-        moved(fed, to: [10, 20, 500, 200])
+        bench.room(500, 200)
 
         XCTAssertEqual(after(1, renders, tree)[1].bounds.x, 500)
     }

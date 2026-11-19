@@ -160,6 +160,9 @@ final class RenderedNode {
     /// Design: docs/design/core/journeys.md#a-channels-life
     var followed: [StateEntry] = []
 
+    /// The layout program the host was told it runs, by its slot and revision; nil for none.
+    var layout: (slot: UInt64, revision: UInt64)?
+
     /// The conversions whose derived states it wears, held: the graph keeps each up to date while it stands.
     /// Design: docs/design/core/journeys.md#the-graph-of-destinations
     var conversions: [Conversion] = []
@@ -259,6 +262,7 @@ extension HostPatch {
             && motion == nil
             && properties.isEmpty
             && clearedProperties.isEmpty
+            && layout == nil
             && events == nil
             && driven == nil
             && !children.hasChange
@@ -297,6 +301,7 @@ extension HostPatch {
         merged.menuKey = later.menuKey ?? menuKey
         merged.driven = later.driven ?? driven
         merged.followed = later.followed ?? followed
+        merged.layout = later.layout ?? layout
         merged.events = later.events ?? events
         merged.children = HostChildrenUpdate.merging(children, with: later.children)
 

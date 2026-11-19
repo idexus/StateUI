@@ -246,7 +246,7 @@ extension MotionLayout {
 
             // A room not yet measured places nothing: every view stands in the whole of it until it is.
             guard room.width > 0, room.height > 0 else {
-                states.placements.wrappedValue = PlacedRun()
+                states.slot.placed = PlacedRun()
                 return .wait
             }
 

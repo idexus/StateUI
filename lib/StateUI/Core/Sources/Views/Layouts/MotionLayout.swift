@@ -46,8 +46,9 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// The view the hand holds by itself, while it does, and on its way out once dismissed.
     @State private var item: LayoutItemHand?
 
-    /// Where every child stands, written by the engine on the host's frames.
-    @State private var placements = PlacedRun()
+    /// The layout's slot: its number, the room the host said last and where the run last put every child.
+    /// Design: docs/design/core/layout-program.md#the-program
+    @State private var slot = LayoutProgramSlot()
 
     /// What the run last showed and the changes on their way to its poses.
     @State private var shown = LayoutShown<Parameters>()
@@ -55,7 +56,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// The parameters the run stood at when its motion set out, kept until it rests again.
     @State private var from: Parameters?
 
-    /// The room the layout was given, as the platform reports it.
+    /// The room the host laid the layout out in, as its program was last told.
     @State private var room = Rect.zero
 
     /// The layout's own number for each item's identity, which its frames key the views by.
@@ -637,6 +638,10 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
                         velocity: velocity.told)
                 }
             }
+            element.layout = run.states.slot.program(revision: UInt64(run.description)) { width, height in
+                let room = Rect(0, 0, width, height)
+                if run.states.room.wrappedValue != room { run.states.room.wrappedValue = room }
+            }
             element.describe(MotionLayoutContract.itemDrag, run.itemStart)
             if run.itemStart != nil {
                 element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still in
@@ -644,16 +649,18 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
                 }
             }
         }
-        .setValue(ViewContract.area.token, on: $placements, mode: .out, kind: .placement)
         .setValue(MotionLayoutContract.parameters.token, on: run.parameters, mode: .inOut, kind: .property)
         .motion(law)
         .parameters(run.parameters, travelUnder: law)
-        .frame(into: $room)
-        // The parameters' frames too: the run places the views where the host walks them.
-        .engine([$room.followed, run.parameters.followed, run.parameters.storage.presentation, $held.followed,
-                 $item.followed] + followed,
-                priority: 0) { cycle in
-            run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)
+        // The program is worked out on the cycle whenever what it works from was written - the room the host said,
+        // the parameters and their frames, the hand - and the host reads the slots worked out.
+        // Design: docs/design/core/layout-program.md#what-runs-it-again
+        .engine([slot, run.parameters.followed, run.parameters.storage.presentation, $held.followed, $item.followed]
+                    + followed,
+                priority: 0) { [slot] cycle in
+            let answer = run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)
+            Renderer.shared.board.stirred.append(slot.number)
+            return answer
         }
     }
 
@@ -763,7 +770,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             dismissals: dismissals,
             parameters: parameters,
             states: States(
-                held: _held, placements: _placements, room: _room, shown: _shown, from: _from,
+                held: _held, slot: slot, room: _room, shown: _shown, from: _from,
                 grip: _grip, item: _item, dismissals: dismissalRuns, settles: settledRuns, drags: dragRuns),
             hands: hands,
             focus: hands.first { $0.way != nil },
@@ -778,7 +785,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// The layout's states, handed on whole: what its engine and handlers read and write.
     struct States {
         let held: State<[Int: Double]>
-        let placements: State<PlacedRun>
+        let slot: LayoutProgramSlot
         let room: State<Rect>
         let shown: State<LayoutShown<Parameters>>
         let from: State<Parameters?>
@@ -816,7 +823,7 @@ extension MotionLayout: WalkedView {
     var walkedParts: [(label: String, value: Any)] {
         [
             ("_held", _held), ("_grip", _grip), ("_item", _item),
-            ("_placements", _placements), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
+            ("_slot", _slot), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
             ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns), ("_dragRuns", _dragRuns),
             ("source", source), ("parameters", parameters), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("mask", mask as Any), ("activated", activated),

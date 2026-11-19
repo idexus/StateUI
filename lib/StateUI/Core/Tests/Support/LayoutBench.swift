@@ -28,10 +28,21 @@ final class LayoutBench {
         _ = Renderer.shared.board.cycle(now: turned, reducesMotion: reducesMotion)
     }
 
+    /// The program of the layout last laid or shown, which a patch names only when its description made another.
+    private(set) var program: HostLayoutProgram?
+
     /// Where the layout of `patch` shows its views, in the items' order, as the host reads the run.
     func shown(_ patch: HostPatch) -> [Placement] {
-        guard let placed = patch.first(.motionLayout)?.driven?[.area]?.state else { return [] }
-        return standing(placed, as: PlacedRun.self)?.placements ?? []
+        if let described = patch.first(.motionLayout)?.program { program = described }
+        return placed
+    }
+
+    /// Where the layout last laid or shown puts its views now, no tree described again.
+    var placed: [Placement] { program?.run?().placements ?? [] }
+
+    /// Says the layout its room, as the host does when its toolkit lays it out anew.
+    func room(_ width: Double, _ height: Double) {
+        program?.layOut(width, height)
     }
 
     /// The journey of the phase the host walks, as it set out, and when: what `walk` samples its law from; and what
@@ -143,21 +154,26 @@ final class LayoutBench {
     ) -> (patch: HostPatch, run: [Placement]) {
         let patch = renders.render(tree())
 
-        guard let layout = patch.first(.motionLayout),
-              let fed = layout.driven?[.frame]?.state,
-              let placed = layout.driven?[.area]?.state
-        else {
-            XCTFail("the layout is placed by no number", file: file, line: line)
+        guard let layout = patch.first(.motionLayout), let described = layout.program else {
+            XCTFail("the layout runs no program", file: file, line: line)
             return (patch, [])
         }
 
-        // THE FIRST CYCLE OF ALL LATCHES rather than runs, so the room is fed after it.
+        program = described
         worn = layout.driven?[.parameters]?.state
         cycle()
-        moved(fed, to: [room.x, room.y, room.width, room.height])
+        described.layOut(room.width, room.height)
         cycle()
 
-        return (patch, standing(placed, as: PlacedRun.self)?.placements ?? [])
+        return (patch, placed)
+    }
+}
+
+extension HostPatch {
+    /// The layout program this patch says its element runs from now on; nil where it says none.
+    var program: HostLayoutProgram? {
+        if case .replace(let program)? = layout { return program }
+        return nil
     }
 }
 

@@ -181,9 +181,10 @@ extension Renderer {
                     lanes: kind == .text ? 0 : StateValueLanes.own))
         }
 
-        let finished = board.finished
+        let (finished, stirred) = (board.finished, board.stirred)
         board.finished = []
-        return HostCycle(changes: changes, continues: report.awake, finished: finished)
+        board.stirred = []
+        return HostCycle(changes: changes, continues: report.awake, finished: finished, stirred: stirred)
     }
 
     /// A mask naming `count` lanes, including values wider than one word.

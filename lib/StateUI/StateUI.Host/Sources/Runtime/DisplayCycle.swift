@@ -16,6 +16,10 @@
 
     /// Renders when the core has changed since the last render.
     func renderIfNeeded()
+
+    /// The element running the layout program `slot` names, by its mount, where its children stand somewhere new;
+    /// nil where none runs it or nothing moved.
+    func mount(ofLayout slot: UInt64) -> UInt64?
 }
 
 /// One frame of the display's clock, in the order every runtime keeps.
@@ -101,6 +105,11 @@
         for change in cycle.changes {
             states[change.state] = change.value
             stateChannels.receive(change, now: now, reducesMotion: reducesMotion)
+        }
+        // A layout whose program was worked out presents where its children stand now.
+        // Design: docs/design/host/layout.md#a-layout-program
+        for slot in cycle.stirred {
+            if let mount = presenter?.mount(ofLayout: slot) { properties[mount, default: []].insert(.area) }
         }
 
         collectStateChannels()

@@ -1557,12 +1557,14 @@ final class CatalogTests: XCTestCase {
         let page = Renders().laid { HomePage(catalog: shown, nav: nav).node }
         var heights: [String] = []
         var rooms: [String] = []
+        var programs: [String] = []
         var fades: [String] = []
         var engines = 0
 
         func walk(_ node: RenderedNode) {
             if node.driven[VisualElementContract.height.token] != nil { heights.append(node.type.name) }
             if node.driven[.frame] != nil { rooms.append(node.type.name) }
+            if node.layout != nil { programs.append(node.type.name) }
             if node.driven[.opacity] != nil { fades.append(node.type.name) }
 
             engines += node.engines.count
@@ -1577,10 +1579,11 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(heights.count, 1,
                        "the run's height is described rather than driven")
 
-        // TWO rooms: the page's own, which that height is arithmetic over,
-        // and the gallery's, which its cards are placed in.
-        XCTAssertEqual(rooms, ["Grid", "MotionLayout"],
-                       "the page and its run are measured onto numbers")
+        // ONE room measured onto a number: the page's own, which that height
+        // is arithmetic over. The gallery's goes to its layout's program, which
+        // its cards are placed by.
+        XCTAssertEqual(rooms, ["Grid"], "the page is measured onto a number")
+        XCTAssertEqual(programs, ["MotionLayout"], "the run is told its room by its program")
 
         // And the entrance is the third number - so the page waits for its room
         // to settle and then comes in, with nothing built for either.
@@ -1832,8 +1835,8 @@ final class CatalogTests: XCTestCase {
             patch.type == .motionLayout ? patch : patch.children.lazy.compactMap(layout).first
         }
         let engine = try XCTUnwrap(layout(in: first))
-        guard case .replace(let driven)? = engine.driven, let room = driven[.frame] else {
-            return XCTFail("the boards report no room")
+        guard case .replace(let program)? = engine.layout else {
+            return XCTFail("the boards run no program")
         }
         let moved = try XCTUnwrap(engine.events?[.itemDragUpdated])
 
@@ -1844,7 +1847,7 @@ final class CatalogTests: XCTestCase {
             _ = HostBoundary.cycle(now: now, reducesMotion: false)
         }
         frame()
-        XCTAssertTrue(HostBoundary.report(.lanes([0, 0, 360, 600]), through: room, origin: .measurement))
+        program.layOut(360, 600)
         frame()
         frame()
 

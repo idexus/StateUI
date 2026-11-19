@@ -29,6 +29,7 @@ extension Differ {
             children: children
         )
         result.followed = pass.followed
+        result.layout = pass.layout
         result.conversions = pass.conversions
         result.contentAim = node.aim
         result.identity = pass.identity

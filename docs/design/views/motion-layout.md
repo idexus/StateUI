@@ -20,9 +20,10 @@ the three owners every other moving value has
 ## The element
 
 The layout is an element of its own, `MotionLayoutContract`, which every host
-stands on its ZStack: children one over another, each where a run of
-placements on the element's own `area` puts it, or in the whole room until a
-run comes. It is the element an author's modifiers reach - a background, a
+stands on its ZStack: children one over another, each where the run its
+layout program answers puts it
+([a layout's program](../core/layout-program.md)), or in the whole room until
+a run comes. It is the element an author's modifiers reach - a background, a
 border, a clip - so the node its contract describes is the one the author
 writes on, and its row in the matrix is proven by its own family. It wears
 the parameters both ways (`MotionLayoutContract.parameters`), so the host layer's
@@ -61,10 +62,11 @@ author's own carousel says.
 ## The run
 
 The arithmetic runs on the host's frames, never in a render: whenever the
-room, the parameters - written by the program or walked by the host - where the
-hand holds the run, a throw going on, or a state named in `following(_:)` is
-written, and once in the turn of every render that describes the layout,
-before the views it puts in are drawn (host/runtime.md, one turn). It is
+host says a new room, the parameters - written by the program or walked by the
+host - where the hand holds the run, a throw going on, or a state named in
+`following(_:)` is written, and once in the turn of every render that
+describes the layout, before the views it puts in are drawn (host/runtime.md,
+one turn). It is
 handed the room at the layout's own origin and the parameters as they stand this
 frame, and answers one placement a view. An answer of another length is
 said once and made to fit, a missing view standing at the top left.
@@ -75,7 +77,7 @@ draws a straight line - a chord across a ring, nothing at all for a whole
 turn - where the arithmetic run on parameters keeps every view on its path.
 
 A room not yet measured places nothing: each child stands in the whole room
-until the platform reports one, never placed by arithmetic over a room of
+until the host says one, never placed by arithmetic over a room of
 nothing - and a hand over it moves nothing where the input gives no unit, as
 no view is drawn to carry.
 

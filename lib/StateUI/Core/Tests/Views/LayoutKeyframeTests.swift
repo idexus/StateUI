@@ -154,11 +154,11 @@ final class LayoutKeyframeTests: XCTestCase {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
         let built = tree(phase, asked) { $0.axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1)) }
         let patch = bench.laid(renders, built).patch
-        let (worn, fed) = (try worn(patch), try XCTUnwrap(patch.first(.motionLayout)?.driven?[.frame]?.state))
+        let worn = try worn(patch)
 
         stand(worn, at: 0.5)
         let before = asked.phases.count
-        moved(fed, to: [0, 0, 400, 300])
+        bench.room(400, 300)
         bench.cycle()
         XCTAssertEqual(Set(asked.phases.dropFirst(before)), [0, 1])
     }

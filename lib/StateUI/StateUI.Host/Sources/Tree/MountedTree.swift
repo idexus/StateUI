@@ -135,6 +135,23 @@
     private var byMount: [UInt64: Held] = [:]
     private var presenters: [Int32: Set<UInt64>] = [:]
 
+    /// The elements running a layout program, by the program's slot: what a cycle's worked-out slots name.
+    /// Design: docs/design/host/layout.md#a-layout-program
+    private var layouts: [UInt64: UInt64] = [:]
+
+    /// The element running the layout program `slot` names, by its mount, where the program put its children
+    /// somewhere new since the element last presented them; nil where none runs it or nothing moved.
+    public func mount(ofLayout slot: UInt64) -> UInt64? {
+        guard let mount = layouts[slot], byMount[mount]?.element?.takeProgramPlaces() == true else { return nil }
+        return mount
+    }
+
+    /// `element` runs the layout program `slot` names.
+    func layoutStands(_ slot: UInt64, on element: MountedElement) { layouts[slot] = element.mount }
+
+    /// No element runs the layout program `slot` names any more.
+    func layoutLeft(_ slot: UInt64) { layouts[slot] = nil }
+
     /// How many elements frames have visited, an element a visit: what says a frame costs what it touches, however
     /// large the tree.
     var frameVisits = 0

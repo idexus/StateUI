@@ -364,4 +364,6 @@ extension HostRuntime: FramePresenter {
         guard presenter != nil, core.needsRender else { return }
         pump.turn()
     }
+
+    func mount(ofLayout slot: UInt64) -> UInt64? { tree.mount(ofLayout: slot) }
 }

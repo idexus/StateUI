@@ -301,10 +301,9 @@ final class DrivenPatchTests: XCTestCase {
         let layout = try XCTUnwrap(page.subtree.first { $0.type == .motionLayout })
         let ties = layout.driven?.bindings ?? [:]
 
-        XCTAssertEqual(ties[.area]?.kind, .placement)
-        XCTAssertEqual(ties[.area]?.mode, .out)
-        XCTAssertEqual(ties[.frame]?.kind, .feed)
-        XCTAssertEqual(ties[.frame]?.mode, .in)
+        XCTAssertNotNil(layout.program, "the run and its room go through the layout's program")
+        XCTAssertNil(ties[.area])
+        XCTAssertNil(ties[.frame])
         XCTAssertEqual(ties[.parameters]?.kind, .property, "the phase worn, so the host walks it")
         XCTAssertEqual(ties[.parameters]?.mode, .inOut)
         XCTAssertEqual(layout.children.map(\.type), [.grid, .grid], "each face wrapped")

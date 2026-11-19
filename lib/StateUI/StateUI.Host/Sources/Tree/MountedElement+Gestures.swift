@@ -334,7 +334,7 @@ extension MountedElement {
     /// it last said it has.
     private func inRun(_ point: Point) -> [Double] {
         guard runDirection == .rightToLeft else { return [point.x, point.y] }
-        let width = reportedFrame.count >= 4 ? reportedFrame[2] : 0
+        let width = laidOutRoom?.width ?? 0
         return [width - point.x, point.y]
     }
 

@@ -154,7 +154,7 @@ final class PumpTests: XCTestCase {
         let runtime = TurnRuntime(DealingApplication())
         runtime.pump.turn()
         let layout = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
-        _ = runtime.core.report(.lanes([0, 0, 300, 200]), through: try XCTUnwrap(layout.driven[.frame]), origin: .measurement)
+        try XCTUnwrap(layout.layoutProgram).layOut(300, 200)
         runtime.frame()
         XCTAssertEqual(layout.placement?.placements.count, 2)
 
@@ -185,7 +185,7 @@ final class PumpTests: XCTestCase {
         let runtime = TurnRuntime(DealingApplication())
         runtime.pump.turn()
         let layout = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
-        _ = runtime.core.report(.lanes([0, 0, 300, 200]), through: try XCTUnwrap(layout.driven[.frame]), origin: .measurement)
+        try XCTUnwrap(layout.layoutProgram).layOut(300, 200)
         runtime.frame()
         runtime.time += 16
         runtime.pump.dispatch(runtime.add)
@@ -340,6 +340,8 @@ private final class TurnRuntime: TurnPresenter, FramePresenter, FrameClock {
     func renderIfNeeded() {
         if core.needsRender { pump.turn() }
     }
+
+    func mount(ofLayout slot: UInt64) -> UInt64? { tree.mount(ofLayout: slot) }
 
     func perform(_ call: HostActCall) {
         performed.append("\(call.act.name) on \(words)")

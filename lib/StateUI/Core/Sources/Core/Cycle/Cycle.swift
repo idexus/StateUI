@@ -41,6 +41,10 @@ final class CycleBoard {
     /// Design: docs/design/core/journeys.md#an-engine-that-animates
     var finished: [HostFinishedMotion] = []
 
+    /// The layouts whose program was worked out this cycle, for the host to read once the cycle is over.
+    /// Design: docs/design/core/layout-program.md#what-runs-it-again
+    var stirred: [UInt64] = []
+
     /// The samples the animators offered this cycle, published together once they have all run.
     private var offered: [() -> Void] = []
 

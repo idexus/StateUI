@@ -149,9 +149,9 @@ final class PlacedRunTests: XCTestCase {
 
     // MARK: - The tree
 
-    /// A MOTION LAYOUT DESCRIBES NO PLACEMENT AT ALL: its own `area` says
-    /// which number carries the run, and not one of the twelve properties is
-    /// on any child - every view wrapped.
+    /// A MOTION LAYOUT DESCRIBES NO PLACEMENT AT ALL: it runs a layout program
+    /// the host reads the run from, no state carries a place, and not one of
+    /// the twelve properties is on any child - every view wrapped.
     func testAMotionLayoutDescribesNothingAboutWhereItsViewsGo() {
         let renders = Renders()
 
@@ -162,8 +162,9 @@ final class PlacedRunTests: XCTestCase {
 
         guard let placed = Self.layout(patch) else { return XCTFail("no layout was described") }
 
-        XCTAssertEqual(placed.driven?[.area]?.kind, .placement)
-        XCTAssertEqual(placed.driven?[.area]?.mode, .out)
+        XCTAssertNotNil(placed.program, "the layout runs a program")
+        XCTAssertNil(placed.driven?[.area], "no state carries the run")
+        XCTAssertNil(placed.driven?[.frame], "nor the room")
         XCTAssertEqual(placed.children.count, 2, "two views")
 
         for wrapper in placed.children.prefix(2) {

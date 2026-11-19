@@ -320,6 +320,29 @@ where the run says, no size below nothing, drawn at the run's opacity within
 among equals, the children it places none of after them in their order
 (`ZStackArithmetic.drawingOrder`, `HostPlacement.place`, `drawnOpacity`).
 
+## A layout program
+
+An element whose patch names a layout program (`MountedElement.layoutProgram`,
+[the core's note](../core/layout-program.md)) is told the room its toolkit
+laid it out in, and reads its children's places from the program, the same
+on every host:
+
+- It says where it stands as an element whose frame is read does
+  (`readsOwnFrame`), so every host reports it on the road it has, and
+  `reportFrame` hands the width and the height to the program. A program
+  that comes after the toolkit laid the element out is told the room that
+  stands (`laidOutRoom`). Nothing is worked out inside the toolkit's layout
+  pass: the room asks for a turn, and the cycle answers.
+- After each cycle the display's frame takes every slot the cycle worked
+  out, finds its element (`MountedTree.mount(ofLayout:)`), and presents its
+  `area` only where the places changed (`takeProgramPlaces`) - a layout at
+  rest costs a frame nothing.
+- `placement` is what the element presents: the places the program answered,
+  standing in the run's direction. A host draws it as a placing run.
+
+A hand over a mirrored layout is turned about the room laid out, not about
+a frame some reader was told.
+
 ## A placed child
 
 A child a run places is drawn moved, turned and scaled by the run over what

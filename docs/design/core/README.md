@@ -17,6 +17,7 @@ The core's sources stand in one folder per topic, one element to a file, and
 | [invalidation.md](invalidation.md) | reads and changes, live readers, writes during a render, `debugInfo()` |
 | [identity-and-diffing.md](identity-and-diffing.md) | keys, state surviving a rebuild, carrying a view, the clean walk, what a patch carries |
 | [state.md](state.md) | storage and box, bindings and their parts, posting, model state, carried state, kept and scene-kept state, the environment |
+| [layout-program.md](layout-program.md) | a layout's program in the patch, its slot, the room the host says and what works the arithmetic out again |
 | [journeys.md](journeys.md) | the journey lanes, the law on the image, moving and waiting, readings, conversions, motion laws |
 | [cycle.md](cycle.md) | the board, where a write lands, host reports, engines, state numbers, the ticker |
 | [acts.md](acts.md) | acts, completion ids, aims, focus, dialogs, host events |

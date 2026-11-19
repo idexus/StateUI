@@ -171,9 +171,9 @@ final class LayoutFollowerTests: XCTestCase {
             return (shaded ? layout.shade { Rectangle() } : layout).node
         }
         let layout = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout))
-        let (worn, area) = (try XCTUnwrap(layout.driven?[.parameters]?.state), try XCTUnwrap(layout.driven?[.area]?.state))
+        let worn = try XCTUnwrap(layout.driven?[.parameters]?.state)
         // Read off the run as the host does, no tree described again: a new description would read the bodies anew.
-        func shown() -> Double { standing(area, as: PlacedRun.self)?.placements.first?.bounds.x ?? -1 }
+        func shown() -> Double { bench.placed.first?.bounds.x ?? -1 }
         moved(worn, to: [1, 1, 0], mask: 0b111)
         bench.cycle()
         XCTAssertEqual(shown(), 100, accuracy: 0.000_1, "no body yet: with its place (shaded \(shaded))")
