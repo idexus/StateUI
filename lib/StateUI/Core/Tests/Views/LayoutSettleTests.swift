@@ -201,7 +201,9 @@ final class LayoutSettleTests: XCTestCase {
         _ = await settle()
         XCTAssertEqual(told.phases, [], "the others closing up")
 
-        for _ in 0..<60 { bench.cycle() }
+        // The host brings the others onto their places, and says once they stand.
+        bench.rest()
+        for _ in 0..<3 { bench.cycle() }
         _ = await settle()
         XCTAssertEqual(told.phases, [0], "at their places, the phase where it stood")
     }

@@ -40,13 +40,6 @@ final class LayoutBodyTests: XCTestCase {
         .node
     }
 
-    /// The run shown one frame after `tree` was described again.
-    private func next(_ renders: Renders, _ tree: () -> Node) -> [Placement] {
-        _ = renders.render(tree())
-        bench.cycle()
-        return bench.shown(renders.renderFromScratch(tree()))
-    }
-
     // MARK: - The value
 
     /// THE THREE BODIES CROSS TO THE HOST AND BACK AS THEY ARE; numbers that are no body are none.
@@ -68,54 +61,44 @@ final class LayoutBodyTests: XCTestCase {
         XCTAssertTrue(LayoutBody.followsLayout().follows)
     }
 
-    // MARK: - A change of the layout
+    // MARK: - What the layout answers
 
-    /// A LAYOUT'S VIEWS ANSWER A CHANGE UNLESS IT SAYS OTHERWISE: with nothing said, a view the others close up on
-    /// travels to its new place.
+    /// A LAYOUT'S VIEWS ANSWER A CHANGE UNLESS IT SAYS OTHERWISE: with nothing said, each view is answered a body
+    /// on the standard spring that follows no moving place.
     func testALayoutsViewsAnswerAChangeUnlessSaidOtherwise() {
-        let (items, phase) = (State(wrappedValue: [0, 1, 2]), State(wrappedValue: 0.0))
-        let renders = Renders()
-        func tree() -> Node {
-            let shown = items.wrappedValue
-            return MotionLayout(shown, parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in
-                shown.indices.map { Placement(Rect(Double($0) * 100, 0, 10, 10)) }
+        let phase = State(wrappedValue: 0.0)
+        _ = bench.laid(Renders(), {
+            MotionLayout([0, 1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in
+                [Placement(Rect(0, 0, 10, 10)), Placement(Rect(100, 0, 10, 10))]
             }
             .node
-        }
-        _ = bench.laid(renders, tree)
+        })
 
-        items.wrappedValue = [1, 2]
-        let first = next(renders, tree)
-
-        XCTAssertEqual(first[0].bounds.x, 100, accuracy: 0.001, "from where it stood")
+        let standard = HostLayoutBody(milliseconds: 300, damping: 1, follows: false)
+        XCTAssertEqual(bench.answer.views.map(\.body), [standard, standard])
     }
 
-    /// A VIEW SAYING NO BODY STANDS AT ITS NEW PLACE AT ONCE, while the layout's other views travel to theirs.
-    func testAViewWithNoBodyLandsWhileTheOthersTravel() {
-        let (items, phase) = (State(wrappedValue: [0, 1, 2]), State(wrappedValue: 0.0))
-        let renders = Renders()
-        func tree() -> Node { row(items, phase: phase, bodies: .onChange(quick), own: LayoutBody.none) }
-        _ = bench.laid(renders, tree)
-
-        // The first view leaves: 1 is first now and says no body, 2 keeps the layout's.
-        items.wrappedValue = [1, 2]
-        let shown = next(renders, tree)
-
-        XCTAssertEqual(shown[0].bounds.x, 0, accuracy: 0.001, "no body: at its place at once")
-        XCTAssertEqual(shown[1].bounds.x, 200, accuracy: 0.001, "a body: from where it stood")
-    }
-
-    /// A VIEW'S OWN BODY WINS OVER ITS LAYOUT'S: in a layout whose views have none, the view that says one travels.
+    /// A VIEW'S OWN BODY WINS OVER ITS LAYOUT'S, either way: one saying none is answered none among views with a
+    /// body, and one saying a body is answered it in a layout whose views have none.
     func testAViewsOwnBodyWinsOverItsLayouts() {
         let (items, phase) = (State(wrappedValue: [0, 1, 2]), State(wrappedValue: 0.0))
-        let renders = Renders()
-        func tree() -> Node { row(items, phase: phase, bodies: .none, own: .onChange(quick)) }
-        _ = bench.laid(renders, tree)
+        let spring = HostLayoutBody(milliseconds: 160, damping: 1, follows: false)
 
-        items.wrappedValue = [1, 2]
-        let shown = next(renders, tree)
+        _ = bench.laid(Renders(), { self.row(items, phase: phase, bodies: .onChange(self.quick), own: LayoutBody.none) })
+        XCTAssertEqual(bench.answer.views.map(\.body), [nil, spring, spring], "its own none among bodies")
 
-        XCTAssertEqual(shown[0].bounds.x, 100, accuracy: 0.001, "its own body: from where it stood")
-        XCTAssertEqual(shown[1].bounds.x, 100, accuracy: 0.001, "the layout's none: at its place at once")
+        _ = bench.laid(Renders(), { self.row(items, phase: phase, bodies: .none, own: .onChange(self.quick)) })
+        XCTAssertEqual(bench.answer.views.map(\.body), [spring, nil, nil], "its own body among none")
+    }
+
+    /// A BODY FOLLOWING ITS PLACE IS ANSWERED AS ONE THAT FOLLOWS, on its own spring.
+    func testAFollowingBodyIsAnsweredAsFollowing() {
+        let (items, phase) = (State(wrappedValue: [0, 1]), State(wrappedValue: 0.0))
+        let own = LayoutBody.followsLayout(Spring(response: .milliseconds(420), damping: 0.6))
+
+        _ = bench.laid(Renders(), { self.row(items, phase: phase, bodies: .onChange(self.quick), own: own) })
+
+        XCTAssertEqual(bench.answer.views[0].body, HostLayoutBody(milliseconds: 420, damping: 0.6, follows: true))
+        XCTAssertEqual(bench.answer.views[1].body?.follows, false)
     }
 }

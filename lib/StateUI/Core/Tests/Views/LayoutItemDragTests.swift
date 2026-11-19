@@ -131,11 +131,13 @@ final class LayoutItemDragTests: XCTestCase {
         let run = shown(renders, tree)
 
         XCTAssertEqual(run[1].bounds.x, 70, accuracy: 0.001, "A under the hand, not at its new place")
-        XCTAssertGreaterThan(run[0].bounds.x, 0, "B on its way to A's old place")
-        XCTAssertLessThan(run[0].bounds.x, 60)
+        XCTAssertEqual(bench.answer.views[1].held?.bounds.x ?? -1, 70, accuracy: 0.001, "answered where it is held")
+        XCTAssertNil(bench.answer.views[0].held)
+        XCTAssertEqual(bench.answer.views[0].discrete?.bounds.x, 0, "B answered its way to A's old place")
     }
 
-    /// LET GO, THE VIEW COMES BACK TO ITS PLACE as a body of the world, from where the hand left it.
+    /// LET GO, THE VIEW IS ANSWERED ITS WAY BACK TO ITS PLACE, setting out at the hand's speed: the host brings it
+    /// from where the hand held it.
     func testLetGoTheViewComesBackToItsPlace() {
         let told = Told()
         let renders = Renders()
@@ -144,16 +146,18 @@ final class LayoutItemDragTests: XCTestCase {
 
         bench.item(renders, tree, .began, at: Point(75, 50))
         bench.item(renders, tree, .changed, at: Point(155, 50))
-        bench.item(renders, tree, .ended, at: Point(155, 50))
-        let first = shown(renders, tree)[1].bounds.x
-        for _ in 0..<5 { bench.cycle() }
-        let going = shown(renders, tree)[1].bounds.x
-        for _ in 0..<40 { bench.cycle() }
+        let held = bench.answer
+        XCTAssertEqual(held.views[1].held?.bounds.x ?? -1, 130, accuracy: 0.001, "where the hand holds it")
 
-        XCTAssertEqual(first, 130, accuracy: 0.001, "from where the hand left it")
-        XCTAssertLessThan(going, 130, "on its way back")
-        XCTAssertGreaterThan(going, 50)
-        XCTAssertEqual(shown(renders, tree)[1].bounds.x, 50, accuracy: 0.001, "at its place")
+        bench.item(renders, tree, .ended, at: Point(155, 50))
+        _ = shown(renders, tree)
+        let released = bench.answer.views[1]
+
+        XCTAssertNil(released.held, "let go")
+        XCTAssertEqual(released.target.bounds.x, 50, accuracy: 0.001, "its place")
+        XCTAssertEqual(released.discrete?.bounds.x ?? -1, 50, accuracy: 0.001, "where its way back is measured to")
+        XCTAssertNotNil(released.velocity, "setting out at the hand's speed")
+        XCTAssertNotEqual(bench.answer.change, held.change, "a change of its own")
     }
 
     /// LET GO FAR ENOUGH, THE VIEW FLIES ON OUT OF THE ROOM, and its item is told once it has left; short of it, it

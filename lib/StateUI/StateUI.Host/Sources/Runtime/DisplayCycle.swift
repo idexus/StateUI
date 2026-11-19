@@ -20,6 +20,13 @@
     /// The element running the layout program `slot` names, by its mount, where its children stand somewhere new;
     /// nil where none runs it or nothing moved.
     func mount(ofLayout slot: UInt64) -> UInt64?
+
+    /// Steps the children still on their way to the places a layout program gave them, and answers the elements
+    /// whose children stand somewhere new, by mount.
+    func stepLayoutBodies() -> [UInt64]
+
+    /// Whether such a child is still on its way: the frames go on for it.
+    var layoutBodiesMove: Bool { get }
 }
 
 /// One frame of the display's clock, in the order every runtime keeps.
@@ -111,6 +118,9 @@
         for slot in cycle.stirred {
             if let mount = presenter?.mount(ofLayout: slot) { properties[mount, default: []].insert(.area) }
         }
+        // And the children still on their way to their places take this frame's step.
+        // Design: docs/design/host/layout.md#bodies
+        for mount in presenter?.stepLayoutBodies() ?? [] { properties[mount, default: []].insert(.area) }
 
         collectStateChannels()
         present()
@@ -164,6 +174,7 @@
             || handPace.isOpen
             || core.cyclesPending
             || presenter?.wantsFrames == true
+            || presenter?.layoutBodiesMove == true
     }
 
     private func follow(_ steps: [AnimationStep], reducedMotion: Bool) {

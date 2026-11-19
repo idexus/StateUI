@@ -931,8 +931,6 @@ struct LayoutShown<Parameters: LayoutParameters>: Equatable {
     var from: Parameters?
     var room = Rect.zero
     var poses: [Int: Placement] = [:]
-    var shown: [Int: Placement] = [:]
-    var bodies = LayoutBodies()
 
     /// Whether the run stood at rest the last frame.
     var resting = true

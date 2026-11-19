@@ -250,6 +250,7 @@ extension MotionLayout {
             // A room not yet measured places nothing: every view stands in the whole of it until it is.
             guard room.width > 0, room.height > 0 else {
                 states.slot.placed = PlacedRun()
+                states.slot.answer = HostLayoutAnswer(change: states.slot.changes)
                 return .wait
             }
 
@@ -257,12 +258,13 @@ extension MotionLayout {
             // out where it stands now.
             let parameters = live()
             let from = setOut(at: parameters)
-            let memory = changed(at: now, from: from, reducesMotion: reducesMotion)
+            let (memory, discrete) = changed(from: from)
             let poses = pose(in: Rect(0, 0, room.width, room.height), at: parameters, from: from)
-            let changing = show(
-                poses, after: memory, at: now, parameters: parameters, from: from, room: room, reducesMotion: reducesMotion)
-            notice(resting: !changing, at: parameters)
-            return changing ? .again : .wait
+            let holding = show(
+                poses, after: memory, discrete: discrete, at: now, parameters: parameters, from: from, room: room)
+            // The views the host still moves onto their places are no rest either: it says when they stand.
+            notice(resting: !holding && !states.slot.bodiesMove, at: parameters)
+            return holding ? .again : .wait
         }
 
         /// The run at `parameters` this frame, its views `still` or not: coming to rest - no hand holding it, the

@@ -103,9 +103,33 @@
         }
     }
 
-    /// Takes where the layout program puts the children now; whether that changed what the element presents.
-    func takeProgramPlaces() -> Bool {
-        let placed = layoutProgram?.placed() ?? []
+    /// What the element shows of its program's answers: the children's bodies on their way.
+    private var programPresentation = ProgramPresentation()
+
+    /// Whether a child is still on its way to the place the program gave it.
+    var programBodiesMove: Bool { programPresentation.moves }
+
+    /// Takes what the layout program answers now, at `now`; whether that changed what the element presents.
+    /// Design: docs/design/host/layout.md#bodies
+    func takeProgramPlaces(at now: Double, reducesMotion: Bool) -> Bool {
+        guard let program = layoutProgram else { return false }
+
+        let placed = programPresentation.take(program.answered(), at: now, reducesMotion: reducesMotion)
+        // The layout is at rest only once the element moves none of its children: it hears either way.
+        program.bodiesMove(programPresentation.moves)
+        return presents(placed)
+    }
+
+    /// Steps the children on their way to `now`; whether that changed what the element presents.
+    func stepProgramPlaces(to now: Double) -> Bool {
+        guard let program = layoutProgram, programPresentation.moves else { return false }
+
+        let placed = programPresentation.step(to: now)
+        if !programPresentation.moves { program.bodiesMove(false) }
+        return presents(placed)
+    }
+
+    private func presents(_ placed: [HostPlacement]) -> Bool {
         guard placed != programPlaces else { return false }
         programPlaces = placed
         return true
@@ -357,6 +381,7 @@
             if let before = layoutProgram { tree.layoutLeft(before.slot) }
             layoutProgram = nil
             programPlaces = []
+            programPresentation = ProgramPresentation()
         case nil:
             break
         }

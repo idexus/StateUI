@@ -5,32 +5,24 @@
 // Design: docs/design/views/motion-layout.md#a-change-where-the-parameters-stand
 
 extension MotionLayout.Run {
-    /// What the run last showed, a new description - or a new place its motion set out from - measured against it:
-    /// worked out where the last frame stood, a view whose pose it changes sets out as a body from where that frame
-    /// showed it, as fast as it went, and one joining from nothing; a change that changes nothing changes no way.
+    /// What the run last answered, a new description - or a new place its motion set out from - measured against
+    /// it: worked out where the last frame stood, a view whose pose it changes is answered that pose as the place
+    /// its way is measured to (`HostLayoutView.discrete`); a change that changes nothing changes no way.
     /// Design: docs/design/views/motion-layout.md#a-change-where-the-parameters-stand
-    func changed(at now: Double, from: Parameters, reducesMotion: Bool) -> LayoutShown<Parameters> {
+    func changed(from: Parameters) -> (memory: LayoutShown<Parameters>, discrete: [Int: Placement]) {
         var memory = states.shown.wrappedValue
-        guard memory.description != description || memory.from != from, let last = memory.parameters, !reducesMotion
-        else { return memory }
+        guard memory.description != description || memory.from != from, let last = memory.parameters
+        else { return (memory, [:]) }
 
         let room = Rect(0, 0, memory.room.width, memory.room.height)
         let before = pose(in: room, at: last, from: from)
+        var discrete: [Int: Placement] = [:]
         for (index, slot) in slots.enumerated() where memory.poses[slot.identity] != before[index] {
-            let going = memory.bodies[slot.identity]
-            let shift = memory.shown[slot.identity].map { LayoutShift(from: $0, to: before[index]) }
-                ?? .joining(before[index])
-            // A view with no body stands at its new place at once.
-            guard shift != .none || going != nil, let spring = bodied(index).spring else { continue }
-
-            memory.bodies.set(
-                slot.identity, lanes: shift.lanes, velocity: going?.velocity ?? LayoutShift.none.lanes,
-                spring: spring, at: now)
+            discrete[slot.identity] = before[index]
         }
-        // The poses as this description stands them where the last frame stood: a body following its place is carried
-        // by the parameters' move alone.
+        // The poses as this description stands them where the last frame stood.
         memory.poses = Dictionary(zip(slots.map(\.identity), before), uniquingKeysWith: { first, _ in first })
-        return memory
+        return (memory, discrete)
     }
 
     /// The body the view at `index` is: its own, else the layout's for every view.
@@ -38,46 +30,46 @@ extension MotionLayout.Run {
         body(index) ?? viewsBody
     }
 
-    /// Shows `poses` - worked out at `parameters` in `room` - each shifted by its body in the world `memory` holds, a
-    /// body following its place carried by its place's move since the last frame and the world worked out to `now`, and
-    /// keeps what it showed for the next description to be measured against. Whether a body is still on its way.
+    /// Answers the host `poses` - worked out at `parameters` in `room` - each with its body, the places a change
+    /// measures its views' ways to, and the view the hand holds where it holds it; and keeps what it answered for
+    /// the next description to be measured against. Whether the hand's own movement goes on.
     /// Design: docs/design/views/motion-layout.md#bodies
     func show(
-        _ poses: [Placement], after memory: LayoutShown<Parameters>, at now: Double, parameters: Parameters, from: Parameters, room: Rect,
-        reducesMotion: Bool
+        _ poses: [Placement], after memory: LayoutShown<Parameters>, discrete: [Int: Placement], at now: Double,
+        parameters: Parameters, from: Parameters, room: Rect
     ) -> Bool {
         let identities = slots.map { $0.identity }
-        var bodies = memory.bodies
-        if reducesMotion {
-            bodies = LayoutBodies()
-        } else {
-            // A view that left, and one whose body is none, is no body any more; one following its place is
-            // carried by its place's move.
-            let bodied = identities.indices.map { self.bodied($0) }
-            bodies.keep(only: Set(zip(identities, bodied).filter { $0.1.spring != nil }.map(\.0)))
-            for (index, identity) in identities.enumerated() where bodied[index].follows {
-                guard let spring = bodied[index].spring, let last = memory.poses[identity], last != poses[index]
-                else { continue }
-                bodies.carry(identity, by: LayoutShift(from: last, to: poses[index]).lanes, spring: spring, at: now)
-            }
-            bodies.step(to: now)
+        var poses = poses
+        let hand = hold(over: &poses, at: now, room: room)
+        var changedTo = discrete
+        var released: [Int: Point] = [:]
+        if let let_go = hand.released {
+            // Let go, the view goes back onto its place from where the hand held it, at the hand's speed.
+            changedTo[identities[let_go.index]] = poses[let_go.index]
+            released[identities[let_go.index]] = let_go.velocity
         }
+        if !changedTo.isEmpty { states.slot.changed(changedTo, released: released) }
 
-        var shown = poses
+        var placed = poses
+        var views: [HostLayoutView] = []
+        views.reserveCapacity(poses.count)
         for (index, identity) in identities.enumerated() {
-            guard let body = bodies[identity] else { continue }
-            shown[index] = LayoutShift(lanes: body.lanes).applied(to: poses[index])
+            var view = HostLayoutView(
+                key: identity, target: HostBoundary.placement(of: poses[index]), body: bodied(index).host)
+            view.discrete = states.slot.discrete[identity].map(HostBoundary.placement(of:))
+            view.velocity = states.slot.released[identity]
+            if let held = hand.held, held.index == index {
+                view.held = HostBoundary.placement(of: held.placement)
+                placed[index] = held.placement
+            }
+            views.append(view)
         }
 
-        let holding = showHeld(&shown, bodies: &bodies, poses: poses, at: now, room: room)
-
-        func byIdentity(_ run: [Placement]) -> [Int: Placement] {
-            Dictionary(zip(identities, run), uniquingKeysWith: { first, _ in first })
-        }
         states.shown.wrappedValue = LayoutShown(
-            description: description, parameters: parameters, from: from, room: room, poses: byIdentity(poses),
-            shown: byIdentity(shown), bodies: bodies, resting: memory.resting)
-        states.slot.placed = PlacedRun(shown)
-        return !bodies.isEmpty || holding
+            description: description, parameters: parameters, from: from, room: room,
+            poses: Dictionary(zip(identities, poses), uniquingKeysWith: { first, _ in first }), resting: memory.resting)
+        states.slot.answer = HostLayoutAnswer(views: views, change: states.slot.changes)
+        states.slot.placed = PlacedRun(placed)
+        return hand.goesOn
     }
 }

@@ -185,10 +185,11 @@ state - a view joining or leaving, a new order, a value read in the body - is
 a new description of the layout, and it travels, as does a new place the
 motion sets out from ([where a motion set out](#where-a-motion-set-out)): each
 view goes from where it was shown to where the new arithmetic puts it, as a
-body of the layout's world ([bodies](#bodies)), while the parameters go on as they
+body ([bodies](#bodies)), while the parameters go on as they
 go. Three layers each own one thing: the motion times the parameters, the
 arithmetic turns parameters into poses, and a body per identity - its shift
-(`LayoutShift`) and how fast it goes - turns a pose into what is shown.
+(`LayoutShift`) and how fast it goes, kept by the host layer - turns a pose
+into what is shown.
 
 A description is told apart by a number each gets as it is made
 (an object's address would not do: one let go is soon another's). On the first frame of
@@ -196,15 +197,16 @@ a new one, the engine works its arithmetic out where the last frame stood -
 those parameters, that room - and compares it identity by identity with the last
 frame's poses: a view whose pose is the same goes on as it was, so a render
 that changes nothing changes no way, and parameters traveling meanwhile is no
-change; a view whose pose differs is shifted from where the last frame
-showed it, a view new to the run from nothing - it fades in. A view leaving
+change; a view whose pose differs is answered that pose as the place its way
+is measured to. The host layer shifts it from where it last showed it, a
+view new to the run from nothing - it fades in. A view leaving
 goes at once, and the others close up. The shift is a body's, going on at
 the speed the body had, so a change changed again does not jump; the poses
 then stand as the new description puts them at the last frame's parameters, so a
-body following its place is carried by the parameters' move alone. The engine
-runs again each frame while a body is on its way. Less motion, or a view
-with no body, shows a change at once, and a new room never travels: the
-layout follows the window.
+body following its place is carried by the parameters' move alone. The
+display's frames step a body on its way; the engine runs for none of them.
+Less motion, or a view with no body, shows a change at once, and a new room
+never travels: the layout follows the window.
 
 A shift is the bounds' place and size, the opacity and the shade apart, and
 the transform's five drawn numbers apart - its move, its turn the short way,
@@ -235,9 +237,12 @@ state the view reads, a switch turning its body on, builds the view without
 the layout or its holder, so the layout forgets that view's body as it
 builds it, shade or none.
 
-Each view the run shows a shift of is a body: a mass on a spring to its
-place, its shift's lanes and how fast each goes (`LayoutBodies`), pulled
-onto nought on its body's spring. The bodies are worked out at
+The layout answers each view's place and its body; the host layer brings
+the view there ([the answer](../core/layout-program.md#the-answer),
+[bodies](../host/layout.md#bodies)). Each view shown a shift of is a body:
+a mass on a spring to its place, its shift's lanes and how fast each goes
+(`LayoutBodies`), pulled onto nought on its body's spring. The bodies are
+worked out at
 a fixed step - 240 a second, each step `HostMotionLaw`'s own closed form for
 one lane (`HostMotionLaw.spring`), so a step of any spring is where the
 spring then is and none runs away - with an accumulator, so other frames,

@@ -29,6 +29,25 @@
 
     /// Opacity of the optional shade drawn over the child.
     public let shade: Double
+
+    /// The shade of a child whose layout draws none: a number no opacity can be.
+    public static let unshaded = Placement.unshaded
+
+    /// A child at `bounds`, drawn moved, turned and scaled, at `opacity`, ranked `zIndex`, under a shade of `shade`.
+    public init(
+        bounds: Rect, translationX: Double, translationY: Double, rotation: Double, scaleX: Double, scaleY: Double,
+        opacity: Double, zIndex: Int, shade: Double
+    ) {
+        self.bounds = bounds
+        self.translationX = translationX
+        self.translationY = translationY
+        self.rotation = rotation
+        self.scaleX = scaleX
+        self.scaleY = scaleY
+        self.opacity = opacity
+        self.zIndex = zIndex
+        self.shade = shade
+    }
 }
 
 /// A complete engine-authored arrangement for one native layout.

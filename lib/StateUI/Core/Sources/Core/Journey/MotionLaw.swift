@@ -213,8 +213,8 @@ import StateUIFoundation
 
     /// One lane of a spring `elapsed` milliseconds on, from `displacement` off its destination going `speed` a
     /// millisecond: how far off it stands and how fast it goes - in closed form for every damping, the one answer
-    /// an animation and a motion layout's body both move by.
-    static func spring(
+    /// an animation and a layout's body both move by.
+    public static func spring(
         response: Double, damping: Double, elapsed: Double, displacement: Double, speed initialSpeed: Double
     ) -> (remaining: Double, derivative: Double) {
         let frequency = 2 * Double.pi / response

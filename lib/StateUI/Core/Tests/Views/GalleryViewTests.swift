@@ -583,24 +583,25 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(shown.wrappedValue, 4, "a card past the last is the last")
     }
 
-    /// EACH CARD FOLLOWS ITS PLACE AS THE BODY ITS GALLERY GIVES ITS ITEMS: carried a card along by the hand, a
-    /// card with a body stands behind where a card with none stands.
-    func testEachCardFollowsItsPlaceAsTheBodyItIsGiven() throws {
-        func carried(_ body: LayoutBody?) throws -> Double {
+    /// EACH CARD IS THE BODY ITS GALLERY GIVES ITS ITEMS: with one given, every card is answered it - following its
+    /// place - and with none, a body that follows no moving place.
+    func testEachCardIsTheBodyItsGalleryGivesItsItems() throws {
+        func bodies(_ body: LayoutBody?) throws -> [HostLayoutBody?] {
             Renderer.shared.clearInvalidation()
             Renderer.shared.clearStates()
             let renders = Renders()
             func tree() -> Node { (body.map { gallery(5).itemBody($0) } ?? gallery(5)).node }
             _ = laid(renders, tree)
-            hand(renders, tree, .began)
-            hand(renders, tree, .changed, moved: Point(-reach, 0))
-            let run = try XCTUnwrap(try XCTUnwrap(program).run?())
-            return try XCTUnwrap(run.placements.dropFirst().first).bounds.x
+            return try XCTUnwrap(program).answered().views.map(\.body)
         }
-        let placed = try carried(nil)
-        let following = try carried(.followsLayout(Spring(response: .milliseconds(300), damping: 0.8)))
+        let plain = try bodies(nil)
+        let following = try bodies(.followsLayout(Spring(response: .milliseconds(300), damping: 0.8)))
 
-        XCTAssertGreaterThan(abs(following - placed), 1, "behind its place as the hand carries it")
+        XCTAssertFalse(plain.isEmpty)
+        XCTAssertTrue(plain.allSatisfy { $0?.follows == false }, "carried by its place with no lag")
+        XCTAssertTrue(
+            following.allSatisfy { $0 == HostLayoutBody(milliseconds: 300, damping: 0.8, follows: true) },
+            "behind its place as the hand carries it")
     }
 
     /// A ROOM THAT GROWS KEEPS THE CARD IN FRONT: the run stands on the

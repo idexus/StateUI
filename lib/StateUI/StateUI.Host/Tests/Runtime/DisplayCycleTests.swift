@@ -302,4 +302,8 @@ private final class CountingPresenter: FramePresenter {
     func renderIfNeeded() {}
 
     func mount(ofLayout slot: UInt64) -> UInt64? { nil }
+
+    func stepLayoutBodies() -> [UInt64] { [] }
+
+    var layoutBodiesMove: Bool { false }
 }

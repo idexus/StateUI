@@ -46,10 +46,10 @@ extension MotionLayout.Run {
         }
     }
 
-    /// The view drawn on top at `point` in the room, by what the run last showed - its place turned as it is drawn,
-    /// a view drawn clear passed over - and that place.
+    /// The view on top at `point` in the room, by where the run last put each - its place turned as it is drawn, a
+    /// view drawn clear passed over - and that place. A view still on its way is found at its place.
     func view(at point: Point) -> (Int, Placement)? {
-        view(at: point, among: states.shown.wrappedValue.shown)
+        view(at: point, among: states.shown.wrappedValue.poses)
     }
 
     /// The view on top at `point` among `placements`, by identity - a view drawn clear and the view of `passing`
@@ -124,36 +124,33 @@ extension MotionLayout.Run {
         })
     }
 
-    /// The held view in `shown`, as the hand holds it - `poses` worked out at `now` in `room` - and the bodies of
-    /// the world in `bodies`: let go, it goes back onto its place as a body, setting out at the hand's speed;
-    /// dismissed, it flies on, and its item is told once it has left the room. Whether it goes on.
-    func showHeld(
-        _ shown: inout [Placement], bodies: inout LayoutBodies, poses: [Placement], at now: Double, room: Rect
-    ) -> Bool {
-        guard var hand = states.item.wrappedValue else { return false }
+    /// What the hand does to the run this frame: the view it holds and where, the view it let go and how fast, and
+    /// whether its own movement goes on - a dismissed view's flight.
+    struct Hold {
+        var held: (index: Int, placement: Placement)?
+        var released: (index: Int, velocity: Point)?
+        var goesOn = false
+    }
+
+    /// The hand over `poses` - worked out at `now` in `room`: the view it holds stands where it holds it; let go,
+    /// it goes back onto its place setting out at the hand's speed; dismissed, it flies on, and its item is told
+    /// once it has left the room. A run standing at the highest rank is ranked anew for the held view to stand over.
+    func hold(over poses: inout [Placement], at now: Double, room: Rect) -> Hold {
+        guard var hand = states.item.wrappedValue else { return Hold() }
         guard let index = slots.firstIndex(where: { $0.identity == hand.identity }) else {
             states.item.wrappedValue = nil
-            return false
+            return Hold()
         }
 
         // A run standing at the highest rank an integer holds is ranked anew, its order kept, so the held view
         // can stand over it.
-        if shown.contains(where: { $0.zIndex == .max }) {
-            for (place, rank) in Placement.drawingOrder(of: shown).enumerated() { shown[place].zIndex = rank }
+        if poses.contains(where: { $0.zIndex == .max }) {
+            for (place, rank) in Placement.drawingOrder(of: poses).enumerated() { poses[place].zIndex = rank }
         }
-        var placement = hand.held(shown[index], over: shown)
+        var placement = hand.held(poses[index], over: poses)
         if let thrown = hand.velocity, !hand.dismissed {
             states.item.wrappedValue = nil
-            // A view with no body is back at its place at once.
-            guard let spring = bodied(index).spring else { return false }
-
-            let lanes = LayoutShift(from: placement, to: poses[index]).lanes
-            var velocity = LayoutShift.none.lanes
-            velocity[LayoutShift.x] = thrown.x
-            velocity[LayoutShift.y] = thrown.y
-            bodies.set(hand.identity, lanes: lanes, velocity: velocity, spring: spring, at: now)
-            shown[index] = LayoutShift(lanes: lanes).applied(to: poses[index])
-            return true
+            return Hold(released: (index, thrown))
         }
         if hand.dismissed {
             let flew = hand.flew ?? now
@@ -167,8 +164,7 @@ extension MotionLayout.Run {
             }
             if hand != states.item.wrappedValue { states.item.wrappedValue = hand }
         }
-        shown[index] = placement
-        return hand.dismissed && !hand.gone
+        return Hold(held: (index, placement), goesOn: hand.dismissed && !hand.gone)
     }
 
     /// How fast a dismissed view flies on, per second: the hand's speed, and its way out no slower than the room's

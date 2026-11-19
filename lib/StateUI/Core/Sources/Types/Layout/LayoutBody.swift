@@ -34,6 +34,11 @@ public struct LayoutBody: Equatable, Sendable {
         if case .followsLayout = kind { true } else { false }
     }
 
+    /// The body as a host runs it; nil for none.
+    var host: HostLayoutBody? {
+        spring.map { HostLayoutBody(milliseconds: $0.response, damping: $0.damping, follows: follows) }
+    }
+
     /// No body: the view stands at its place at once, however the layout changes. The layout's parameters still
     /// travel as their state says.
     public static let none = LayoutBody(kind: .none)

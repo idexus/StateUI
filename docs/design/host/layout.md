@@ -347,8 +347,9 @@ on every host:
   out, finds its element (`MountedTree.mount(ofLayout:)`), and presents its
   `area` only where the places changed (`takeProgramPlaces`) - a layout at
   rest costs a frame nothing.
-- `placement` is what the element presents: the places the program answered,
-  standing in the run's direction. A host draws it as a placing run.
+- `placement` is what the element presents: where the element shows each
+  child of the program's answer ([bodies](#bodies)), standing in the run's
+  direction. A host draws it as a placing run.
 - It tells the program how its children are measured once it runs it: a
   child by its place among the children as written, measured by its native
   half (`NativeElement.measured(width:height:)`), which every host answers
@@ -360,6 +361,52 @@ on every host:
 
 A hand over a mirrored layout is turned about the room laid out, not about
 a frame some reader was told.
+
+## Bodies
+
+A layout program answers where each child goes
+([the answer](../core/layout-program.md#the-answer)); the element running
+it shows the child there, shifted by its body
+(`ProgramPresentation`, a value the element keeps):
+
+```text
+  shown = held                      where the hand holds the child
+        | target + the body's shift  a child on its way
+        | target                     a child at its place
+```
+
+A shift (`LayoutShift`) is how far a child stands from its place, lane by
+lane: the bounds' place and size, the transform's five drawn numbers apart
+- its move, its turn the short way, its two scales - the opacity and the
+shade; the drawing order is the place's at once. A body (`LayoutBodies`)
+is a shift and how fast each lane goes, pulled onto nought on its spring.
+
+- A change the element has not set out yet (`HostLayoutAnswer.change`)
+  sets each child it names out: its shift is where the element showed it
+  against the place the change measures to (`discrete`) - a child never
+  shown joins from nothing, its opacity from nought - at the speed its body
+  had, or the hand's.
+- A child that follows its place is carried: the place having moved under
+  it since the last answer, it keeps where it was shown and its spring
+  pulls it after. A child answering a change alone goes with its place.
+- A child of no body, a child gone from the answer, and every child under
+  less motion is a body no more: it stands at its place.
+- The first answer an element takes sets nothing out: nothing was shown
+  for a change to be measured from.
+
+The bodies are worked out at a fixed step - 240 a second, each step the
+motion law's own closed form for one lane (`HostMotionLaw.spring`) - with
+an accumulator, so other frames or another rate bring a body to the same
+place; a frame works out at most 32 steps, and bodies further behind let
+the rest go. A body as near and as slow as an animation counts arrived is
+one no more, and one still moving the longest a spring animates lands.
+
+While a child is on its way the tree keeps the element among those it
+steps (`MountedTree.stepLayoutBodies`): the display's frame steps them
+after the cycle's stirred slots, presents the `area` of each whose children
+stand somewhere new, and holds its clock (`layoutBodiesMove`). No cycle of
+the core runs for such a frame. Once the last child stands the element
+says so (`bodiesMove(false)`), and the layout tells its rest.
 
 ## A placed child
 

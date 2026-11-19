@@ -1,18 +1,20 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The bodies of a motion layout's world: how far each view stands from where its arithmetic puts it, lane by lane as
-/// a shift's (`LayoutShift`), and how fast each lane goes - each body a mass on a spring to its place, worked out at a
-/// fixed step, so the same frames or other ones bring it to the same place, and landed there by the longest a spring
+@_spi(Host) import StateUI
+
+/// The bodies of one layout: how far each child stands from where its layout puts it, lane by lane as a shift's
+/// (`LayoutShift`), and how fast each lane goes - each body a mass on a spring to its place, worked out at a fixed
+/// step, so the same frames or other ones bring it to the same place, and landed there by the longest a spring
 /// animates.
-/// Design: docs/design/views/motion-layout.md#bodies
+/// Design: docs/design/host/layout.md#bodies
 struct LayoutBodies: Equatable, Sendable {
     /// One body: its shift's lanes, how fast each goes, per second, the spring that pulls it onto its place, and
     /// how long it has moved since it was last set or carried, in milliseconds.
     struct Body: Equatable, Sendable {
         var lanes: [Double]
         var velocity: [Double]
-        var spring: Spring
+        var spring: HostLayoutBody
         var moved = 0.0
     }
 
@@ -36,14 +38,14 @@ struct LayoutBodies: Equatable, Sendable {
 
     /// Puts the view `identity` in the world at `lanes` from its place, going `velocity`, on `spring`, at `now` - the
     /// world's clock starting there where it held no body.
-    mutating func set(_ identity: Int, lanes: [Double], velocity: [Double], spring: Spring, at now: Double) {
+    mutating func set(_ identity: Int, lanes: [Double], velocity: [Double], spring: HostLayoutBody, at now: Double) {
         if bodies.isEmpty { (stepped, owed) = (now, 0) }
         bodies[identity] = Body(lanes: lanes, velocity: velocity, spring: spring)
     }
 
     /// Carries the view `identity` by `moved` - its place having moved the other way under it - a body on `spring`
     /// made for it where it had none.
-    mutating func carry(_ identity: Int, by moved: [Double], spring: Spring, at now: Double) {
+    mutating func carry(_ identity: Int, by moved: [Double], spring: HostLayoutBody, at now: Double) {
         guard moved.contains(where: { $0 != 0 }) else { return }
 
         guard var body = bodies[identity] else {
@@ -86,7 +88,7 @@ extension LayoutBodies.Body {
         moved += milliseconds
         for lane in lanes.indices {
             let (place, speed) = HostMotionLaw.spring(
-                response: max(spring.response, 1), damping: max(spring.damping, 0.01), elapsed: milliseconds,
+                response: max(spring.milliseconds, 1), damping: max(spring.damping, 0.01), elapsed: milliseconds,
                 displacement: lanes[lane], speed: velocity[lane] / 1_000)
             let perSecond = speed * 1_000
             let lands = moved >= HostMotionLaw.longest || !place.isFinite || !perSecond.isFinite

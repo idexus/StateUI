@@ -206,18 +206,21 @@
 
     /// A run's places as a host draws them.
     static func placements(of run: PlacedRun) -> [HostPlacement] {
-        run.placements.map {
-                HostPlacement(
-                    bounds: $0.bounds,
-                    translationX: $0.transform.x,
-                    translationY: $0.transform.y,
-                    rotation: $0.transform.rotation,
-                    scaleX: $0.transform.width,
-                    scaleY: $0.transform.height,
-                    opacity: $0.opacity,
-                    zIndex: $0.zIndex,
-                    shade: $0.shade)
-        }
+        run.placements.map(placement(of:))
+    }
+
+    /// One placement as the host is handed it.
+    static func placement(of placement: Placement) -> HostPlacement {
+        HostPlacement(
+            bounds: placement.bounds,
+            translationX: placement.transform.x,
+            translationY: placement.transform.y,
+            rotation: placement.transform.rotation,
+            scaleX: placement.transform.width,
+            scaleY: placement.transform.height,
+            opacity: placement.opacity,
+            zIndex: placement.zIndex,
+            shade: placement.shade)
     }
 
     /// Builds and returns a typed patch against the generation the host holds.

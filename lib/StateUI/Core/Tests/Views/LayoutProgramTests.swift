@@ -65,12 +65,12 @@ final class LayoutProgramTests: XCTestCase {
         let renders = Renders()
         let program = try XCTUnwrap(renders.render(layout(runs)).first(.motionLayout)?.program)
         bench.cycle()
-        XCTAssertEqual(program.placed().count, 0, "no room, no places")
+        XCTAssertEqual(program.answered().views.count, 0, "no room, no places")
 
         program.layOut(300, 200)
         bench.cycle()
         XCTAssertEqual(runs.rooms.last, Rect(0, 0, 300, 200))
-        XCTAssertEqual(program.placed().count, 2)
+        XCTAssertEqual(program.answered().views.count, 2)
 
         let ran = runs.count
         program.layOut(300, 200)
@@ -99,7 +99,7 @@ final class LayoutProgramTests: XCTestCase {
 
             if measures {
                 XCTAssertEqual(runs.count, ran + 1, "its views may measure otherwise")
-                XCTAssertEqual(program.placed().map(\.bounds.width), [30, 60])
+                XCTAssertEqual(program.answered().views.map(\.target.bounds.width), [30, 60])
             } else {
                 XCTAssertEqual(runs.count, ran, "it reads no view's size")
             }

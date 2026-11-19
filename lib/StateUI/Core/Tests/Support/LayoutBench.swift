@@ -37,8 +37,17 @@ final class LayoutBench {
         return placed
     }
 
-    /// Where the layout last laid or shown puts its views now, no tree described again.
+    /// Where the layout last laid or shown puts its views now - a view the hand holds where it holds it - no tree
+    /// described again. Bringing a view onto its place is the host's: the bench shows where it goes.
     var placed: [Placement] { program?.run?().placements ?? [] }
+
+    /// What the layout last answered its host: each view's place, its body, and where a change measures its way to.
+    var answer: HostLayoutAnswer { program?.answered() ?? HostLayoutAnswer() }
+
+    /// The host's word that every view it moved stands at its place.
+    func rest() {
+        program?.bodiesMove(false)
+    }
 
     /// Says the layout its room, as the host does when its toolkit lays it out anew.
     func room(_ width: Double, _ height: Double) {

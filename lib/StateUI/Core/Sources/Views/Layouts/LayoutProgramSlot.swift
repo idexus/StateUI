@@ -8,8 +8,29 @@
 final class LayoutProgramSlot: FollowedState {
     let number: UInt64
 
-    /// Where the run last put every child, in the children's order.
+    /// Where the run last put every child, in the children's order: its place, or where the hand holds it.
     var placed = PlacedRun()
+
+    /// What the host is answered: the places, and what brings each child onto its own.
+    var answer = HostLayoutAnswer()
+
+    /// The last change of the layout: its number, where it measures each view's way to, by the view's identity, and
+    /// how fast a view the hand let go sets out. Kept until the next, so a host that reads late still hears it.
+    private(set) var changes: UInt64 = 0
+    private(set) var discrete: [Int: Placement] = [:]
+    private(set) var released: [Int: Point] = [:]
+
+    /// Whether a child is still on its way to its place: the layout's own word at a change, the host's from then.
+    private(set) var bodiesMove = false
+
+    /// A change of the layout: `discrete` and `released` are its own, and its views are on their way until the
+    /// host says they rest.
+    func changed(_ discrete: [Int: Placement], released: [Int: Point]) {
+        changes &+= 1
+        self.discrete = discrete
+        self.released = released
+        bodiesMove = true
+    }
 
     /// What measures the layout's views for its arithmetic.
     let measuring = LayoutMeasuring()
@@ -45,7 +66,13 @@ final class LayoutProgramSlot: FollowedState {
                 stamp &+= 1
                 UIThreadExecutor.shared.askForTurn()
             },
-            placed: { [self] in HostBoundary.placements(of: placed) },
+            answered: { [self] in answer },
+            bodiesMove: { [self] moving in
+                guard moving != bodiesMove else { return }
+                bodiesMove = moving
+                stamp &+= 1
+                UIThreadExecutor.shared.askForTurn()
+            },
             measuredBy: { [self] measure in
                 measuring.measure = measure
                 // A layout that measured no view stands as it stood, however its views measure.

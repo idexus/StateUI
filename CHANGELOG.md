@@ -114,7 +114,11 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   layer says the room, reads the places and tells the program how a view is measured. A host's `NativeElement`
   answers `measured(width:height:)` - its view's own size and first baseline in a room offered - and its ZStack
   hands `ZStackArithmetic.size(of:padding:width:motionLayout:program:)` the element's `programSize`. `LayoutSize`
-  is declared in `StateUI`: a source naming it imports `StateUI` beside `StateUIHost`.
+  is declared in `StateUI`: a source naming it imports `StateUI` beside `StateUIHost`. The program answers where the
+  layout puts each child and what brings it there (`answered`, a `HostLayoutAnswer`: a view's key, target, body,
+  the place a change measures its way to, the hand's hold); the host layer keeps each child's way and steps it on
+  the display's frames, so a child coming onto its place costs no cycle of the core. A host built on `StateUIHost`
+  changes nothing for it.
 
 ### New
 

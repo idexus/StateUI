@@ -151,14 +151,41 @@
         guard let mount = layouts[slot], let element = byMount[mount]?.element else { return nil }
         // A layout worked out again may say another size of its own, which its toolkit measures again.
         element.measuredAgainWhereItsSizeMoved()
-        return element.takeProgramPlaces() ? mount : nil
+        let moved = element.takeProgramPlaces(at: now(), reducesMotion: reducesMotion())
+        if element.programBodiesMove { movingLayouts.insert(mount) } else { movingLayouts.remove(mount) }
+        return moved ? mount : nil
+    }
+
+    /// The elements whose children are on their way to the places a layout program gave them, by mount.
+    private var movingLayouts: Set<UInt64> = []
+
+    /// Whether a layout program's child is still on its way to its place: the display's frames go on for it.
+    public var layoutBodiesMove: Bool { !movingLayouts.isEmpty }
+
+    /// Steps every such child to the tree's time, and answers the elements whose children stand somewhere new, by
+    /// mount, in order.
+    /// Design: docs/design/host/layout.md#bodies
+    public func stepLayoutBodies() -> [UInt64] {
+        var moved: [UInt64] = []
+        for mount in movingLayouts.sorted() {
+            guard let element = byMount[mount]?.element else {
+                movingLayouts.remove(mount)
+                continue
+            }
+            if element.stepProgramPlaces(to: now()) { moved.append(mount) }
+            if !element.programBodiesMove { movingLayouts.remove(mount) }
+        }
+        return moved
     }
 
     /// `element` runs the layout program `slot` names.
     func layoutStands(_ slot: UInt64, on element: MountedElement) { layouts[slot] = element.mount }
 
     /// No element runs the layout program `slot` names any more.
-    func layoutLeft(_ slot: UInt64) { layouts[slot] = nil }
+    func layoutLeft(_ slot: UInt64) {
+        if let mount = layouts[slot] { movingLayouts.remove(mount) }
+        layouts[slot] = nil
+    }
 
     /// How many elements frames have visited, an element a visit: what says a frame costs what it touches, however
     /// large the tree.

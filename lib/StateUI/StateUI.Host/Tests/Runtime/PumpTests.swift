@@ -178,10 +178,30 @@ final class PumpTests: XCTestCase {
         XCTAssertEqual(layout.placement?.placements.count, 4, "after a silence")
     }
 
-    /// A TURN LEAVES AN ENGINE GOING ON TO THE DISPLAY'S FRAME: while a layout's change travels, a turn taken for
-    /// a call that wrote nothing - a hand's move gathered for the next frame - runs no cycle; the frame does.
+    /// A TURN LEAVES AN ENGINE GOING ON TO THE DISPLAY'S FRAME: while an engine asks for its next frame, a turn
+    /// taken for a call that wrote nothing - a hand's move gathered for the next frame - runs no cycle; the frame
+    /// does.
     @MainActor
     func testATurnLeavesAnEngineGoingOnToTheFrame() throws {
+        goingRuns = 0
+        let runtime = TurnRuntime(GoingApplication())
+        runtime.pump.turn()
+        runtime.frame()
+        XCTAssertTrue(runtime.core.cyclesPending, "the engine goes on")
+
+        let before = goingRuns
+        for _ in 0..<5 { runtime.pump.turnIfWanted() }
+        XCTAssertEqual(goingRuns, before, "the turns left it to the frame")
+
+        runtime.time += 16
+        runtime.frame()
+        XCTAssertGreaterThan(goingRuns, before, "and the frame ran it")
+    }
+
+    /// A VIEW DEALT TO A LAYOUT TRAVELS IN ON THE DISPLAY'S FRAMES, the layout's arithmetic run no more for it: the
+    /// host moves the view onto its place, holds the clock while it does, and lets it go once the view stands.
+    @MainActor
+    func testADealtViewTravelsInOnTheFramesAlone() throws {
         let runtime = TurnRuntime(DealingApplication())
         runtime.pump.turn()
         let layout = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
@@ -189,16 +209,42 @@ final class PumpTests: XCTestCase {
         runtime.frame()
         runtime.time += 16
         runtime.pump.dispatch(runtime.add)
-        XCTAssertTrue(runtime.core.cyclesPending, "the dealt view travels in")
-
-        let before = dealtRuns
-        for _ in 0..<5 { runtime.pump.turnIfWanted() }
-        XCTAssertEqual(dealtRuns, before, "the turns left it to the frame")
-
-        runtime.time += 16
         runtime.frame()
-        XCTAssertGreaterThan(dealtRuns, before, "and the frame ran it")
+
+        XCTAssertTrue(runtime.tree.layoutBodiesMove, "the dealt view is on its way in")
+        XCTAssertEqual(try XCTUnwrap(layout.placement?.placements.last).opacity, 0, accuracy: 0.2, "from nothing")
+        XCTAssertTrue(runtime.held, "and the clock is held for it")
+
+        let ran = dealtRuns
+        for _ in 0..<200 {
+            guard runtime.tree.layoutBodiesMove else { break }
+            runtime.time += 16
+            runtime.frame()
+        }
+        XCTAssertFalse(runtime.tree.layoutBodiesMove, "at its place")
+        XCTAssertEqual(try XCTUnwrap(layout.placement?.placements.last).opacity, 1, accuracy: 0.001)
+        XCTAssertLessThanOrEqual(dealtRuns - ran, 1, "the arithmetic ran for the rest it came to, not for its frames")
     }
+}
+
+/// How many times the going page's engine ran.
+@MainActor private var goingRuns = 0
+
+/// A page whose engine asks for every next frame.
+private struct GoingPage: View {
+    @State private var turned = 0.0
+
+    var body: some View {
+        Text("going")
+            .engine(tracking: $turned) { _ in
+                goingRuns += 1
+                return .again
+            }
+    }
+}
+
+private struct GoingApplication: Application {
+    var body: some Scene { WindowGroup { GoingPage() } }
 }
 
 /// A page whose handlers add one, the second also calling an act.
@@ -342,6 +388,10 @@ private final class TurnRuntime: TurnPresenter, FramePresenter, FrameClock {
     }
 
     func mount(ofLayout slot: UInt64) -> UInt64? { tree.mount(ofLayout: slot) }
+
+    func stepLayoutBodies() -> [UInt64] { tree.stepLayoutBodies() }
+
+    var layoutBodiesMove: Bool { tree.layoutBodiesMove }
 
     func perform(_ call: HostActCall) {
         performed.append("\(call.act.name) on \(words)")

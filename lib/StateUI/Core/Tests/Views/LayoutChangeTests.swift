@@ -22,8 +22,9 @@ private struct Tile: View {
 }
 
 /// A change of a motion layout's description at the current phase - a view joining or leaving, a new order, a value
-/// read in the body - comes onto its new places as bodies of the layout's world, from where each view was shown: the
-/// phase, the room and a followed state move the views as they always do.
+/// read in the body - answers the host each view's new place and where its way there is measured to: the phase, the
+/// room and a followed state move the views as they always do. Bringing a view onto its place is the host's
+/// (`ProgramBodiesTests` in the host layer).
 @MainActor
 final class LayoutChangeTests: XCTestCase {
     override func setUp() async throws {
@@ -51,49 +52,47 @@ final class LayoutChangeTests: XCTestCase {
         .node
     }
 
-    /// The run shown after `frames` frames.
-    private func after(_ frames: Int, _ renders: Renders, _ tree: () -> Node) -> [Placement] {
-        for _ in 0..<frames { bench.cycle() }
-        return bench.shown(renders.renderFromScratch(tree()))
+    /// What the layout answers its host after `tree` was described again and a cycle ran.
+    private func answer(_ renders: Renders, _ tree: () -> Node) -> HostLayoutAnswer {
+        _ = renders.render(tree())
+        bench.cycle()
+        _ = bench.shown(renders.renderFromScratch(tree()))
+        return bench.answer
     }
 
-    /// A VIEW LEAVING GOES AT ONCE, AND THE OTHERS CLOSE UP from where they stood, on the world's spring.
-    func testTheOthersCloseUpOnTheWorldsSpring() {
+    /// A VIEW LEAVING GOES AT ONCE, AND THE OTHERS ARE ANSWERED THEIR NEW PLACES: each view the change moves is told
+    /// where its way is measured to, on the layout's bodies' spring, under a change of its own number.
+    func testAViewLeavingAnswersTheOthersTheirNewPlaces() {
         let items = State(wrappedValue: [0, 1, 2])
         let renders = Renders()
         func tree() -> Node { row(items) }
         _ = bench.laid(renders, tree)
+        let stood = bench.answer
 
         items.wrappedValue = [1, 2]
-        _ = renders.render(tree())
+        let changed = answer(renders, tree)
 
-        let first = after(1, renders, tree)
-        XCTAssertEqual(first.count, 2, "the view left at once")
-        XCTAssertEqual(first[0].bounds.x, 100, accuracy: 0.001, "where it stood")
-        let going = after(5, renders, tree)[0].bounds.x
-        XCTAssertLessThan(going, 100, "on its way")
-        XCTAssertGreaterThan(going, 0)
-        XCTAssertEqual(after(40, renders, tree)[0].bounds.x, 0, accuracy: 0.001, "where its arithmetic puts it")
+        XCTAssertEqual(changed.views.count, 2, "the view left at once")
+        XCTAssertEqual(changed.views.map(\.key), Array(stood.views.map(\.key).dropFirst()), "the others, as they were")
+        XCTAssertEqual(changed.views.map(\.target.bounds.x), [0, 100])
+        XCTAssertEqual(changed.views.map { $0.discrete?.bounds.x }, [0, 100], "where each one's way is measured to")
+        XCTAssertEqual(changed.views.first?.body, HostLayoutBody(milliseconds: 160, damping: 1, follows: false))
+        XCTAssertNotEqual(changed.change, stood.change, "a change of its own")
     }
 
-    /// A VIEW JOINING FADES IN where its arithmetic puts it.
-    func testAViewJoiningFadesIn() {
+    /// A VIEW JOINING IS ANSWERED ITS PLACE, the others no change at all.
+    func testAViewJoiningIsAnsweredItsPlace() {
         let items = State(wrappedValue: [0, 1])
         let renders = Renders()
         func tree() -> Node { row(items) }
         _ = bench.laid(renders, tree)
 
         items.wrappedValue = [0, 1, 2]
-        _ = renders.render(tree())
+        let changed = answer(renders, tree)
 
-        let first = after(1, renders, tree)
-        XCTAssertEqual(first[2].bounds.x, 200, accuracy: 0.001, "where it goes")
-        XCTAssertEqual(first[2].opacity, 0, accuracy: 0.001, "none of it yet")
-        let fading = after(5, renders, tree)[2].opacity
-        XCTAssertGreaterThan(fading, 0, "fading in")
-        XCTAssertLessThan(fading, 1)
-        XCTAssertEqual(after(40, renders, tree)[2].opacity, 1, accuracy: 0.001)
-        XCTAssertEqual(first[0].opacity, 1, "the others as they were")
+        XCTAssertEqual(changed.views[2].discrete?.bounds.x, 200, "where it goes")
+        XCTAssertNil(changed.views[0].discrete, "the others stand")
+        XCTAssertNil(changed.views[1].discrete)
     }
 
     /// A NEW ORDER BUILDS NO VIEW AGAIN: each item's view of its own, built with the same inputs under the same
@@ -135,38 +134,39 @@ final class LayoutChangeTests: XCTestCase {
         XCTAssertEqual(renders.builds(of: "LayoutItemView").reduce(0, +), holders.reduce(0, +), "carried whole")
     }
 
-    /// A NEW ORDER SLIDES: each view from where it stood to its new place.
-    func testANewOrderSlides() {
+    /// A NEW ORDER ANSWERS EACH VIEW ITS NEW PLACE, the view its item's own whatever its place among the views.
+    func testANewOrderAnswersEachViewItsNewPlace() {
         let items = State(wrappedValue: [0, 1, 2])
         let renders = Renders()
         func tree() -> Node { row(items) }
         _ = bench.laid(renders, tree)
+        let keys = bench.answer.views.map(\.key)
 
         items.wrappedValue = [2, 1, 0]
-        _ = renders.render(tree())
+        let changed = answer(renders, tree)
 
-        let first = after(1, renders, tree)
-        XCTAssertEqual(first.map(\.bounds.x), [200, 100, 0], "each where it stood")
-        XCTAssertEqual(after(40, renders, tree).map { ($0.bounds.x * 1_000).rounded() / 1_000 }, [0, 100, 200])
+        XCTAssertEqual(changed.views.map(\.key), keys.reversed(), "each item's own key, in the new order")
+        XCTAssertEqual(changed.views.map { $0.discrete?.bounds.x }, [0, nil, 200], "the two that changed places")
     }
 
-    /// A VALUE READ IN THE BODY IS A CHANGE OF THE DESCRIPTION, and the new poses travel.
-    func testAValueReadInTheBodyTravels() {
+    /// A VALUE READ IN THE BODY IS A CHANGE OF THE DESCRIPTION: the new places are answered as a change.
+    func testAValueReadInTheBodyIsAChange() {
         let items = State(wrappedValue: [0, 1, 2])
         let gap = State(wrappedValue: 100.0)
         let renders = Renders()
         func tree() -> Node { row(items, gap: gap) }
         _ = bench.laid(renders, tree)
+        let stood = bench.answer.change
 
         gap.wrappedValue = 50
-        _ = renders.render(tree())
+        let changed = answer(renders, tree)
 
-        XCTAssertEqual(after(1, renders, tree)[2].bounds.x, 200, accuracy: 0.001)
-        XCTAssertEqual(after(40, renders, tree)[2].bounds.x, 100, accuracy: 0.001)
+        XCTAssertEqual(changed.views[2].discrete?.bounds.x, 100)
+        XCTAssertNotEqual(changed.change, stood)
     }
 
-    /// A CHANGE WHILE THE PHASE TRAVELS LEAVES THE PHASE ITS OWN MOVE: the change is measured at the phase it was
-    /// shown at, so each frame shows the phase where it is, the change on its way.
+    /// A CHANGE WHILE THE PHASE TRAVELS LEAVES THE PHASE ITS OWN MOVE: the change is measured at the phase the run
+    /// last stood at, and the phase moving on is no change.
     func testAChangeWhileThePhaseTravelsLeavesThePhaseItsMove() throws {
         let items = State(wrappedValue: [0, 1, 2])
         let gap = State(wrappedValue: 100.0)
@@ -179,16 +179,17 @@ final class LayoutChangeTests: XCTestCase {
         moved(worn, to: 0.5)
         bench.cycle()
         gap.wrappedValue = 50
-        _ = renders.render(tree())
+        let changed = answer(renders, tree)
+        XCTAssertEqual(try XCTUnwrap(changed.views[2].discrete).bounds.x, 75, accuracy: 0.001, "(2 - 0.5) × 50")
 
-        let first = after(1, renders, tree)
-        XCTAssertEqual(first[2].bounds.x, 150, accuracy: 0.001, "(2 - 0.5) × 100, where it stood")
         moved(worn, to: 1)
-        XCTAssertEqual(after(40, renders, tree)[2].bounds.x, 50, accuracy: 0.001, "(2 - 1) × 50: the phase's, the change's")
+        bench.cycle()
+        XCTAssertEqual(bench.answer.views[2].target.bounds.x, 50, accuracy: 0.001, "(2 - 1) × 50: the phase's own move")
+        XCTAssertEqual(bench.answer.change, changed.change, "which is no change of the layout")
     }
 
-    /// A CHANGE ON ITS WAY, CHANGED AGAIN, sets out from where each view is shown, at the speed it had.
-    func testAChangeChangedAgainSetsOutFromWhereItIsShown() {
+    /// A CHANGE CHANGED AGAIN IS A CHANGE OF ITS OWN: each has its number, so the host sets its views out anew.
+    func testAChangeChangedAgainIsAChangeOfItsOwn() {
         let items = State(wrappedValue: [0, 1, 2])
         let gap = State(wrappedValue: 100.0)
         let renders = Renders()
@@ -196,37 +197,26 @@ final class LayoutChangeTests: XCTestCase {
         _ = bench.laid(renders, tree)
 
         gap.wrappedValue = 50
-        _ = renders.render(tree())
-        let halfway = after(6, renders, tree)[2].bounds.x
-
+        let first = answer(renders, tree)
         gap.wrappedValue = 100
-        _ = renders.render(tree())
+        let second = answer(renders, tree)
 
-        XCTAssertEqual(after(1, renders, tree)[2].bounds.x, halfway, accuracy: 20, "no jump: a frame of its spring on from there")
-        XCTAssertEqual(after(40, renders, tree)[2].bounds.x, 200, accuracy: 0.001)
+        XCTAssertNotEqual(second.change, first.change)
+        XCTAssertEqual(second.views[2].discrete?.bounds.x, 200)
     }
 
-    /// LESS MOTION SHOWS A CHANGE AT ONCE, and a layout whose world is none.
-    func testLessMotionShowsAChangeAtOnce() {
-        let items = State(wrappedValue: [0, 1, 2])
-        let renders = Renders()
-        func tree() -> Node { row(items) }
-        _ = bench.laid(renders, tree)
-
-        items.wrappedValue = [1, 2]
-        _ = renders.render(tree())
-        bench.cycle(reducesMotion: true)
-
-        XCTAssertEqual(bench.shown(renders.renderFromScratch(tree()))[0].bounds.x, 0)
-
+    /// A LAYOUT WHOSE VIEWS HAVE NO BODY ANSWERS NONE: each view stands at its place at once.
+    func testALayoutOfNoBodiesAnswersNone() {
         let still = State(wrappedValue: [0, 1, 2])
-        let others = Renders()
+        let renders = Renders()
         func plain() -> Node { row(still, bodies: .none) }
-        _ = bench.laid(others, plain)
-        still.wrappedValue = [1, 2]
-        _ = others.render(plain())
+        _ = bench.laid(renders, plain)
 
-        XCTAssertEqual(after(1, others, plain)[0].bounds.x, 0)
+        still.wrappedValue = [1, 2]
+        let changed = answer(renders, plain)
+
+        XCTAssertEqual(changed.views.map(\.body), [nil, nil])
+        XCTAssertEqual(changed.views.map(\.target.bounds.x), [0, 100])
     }
 
     /// A RENDER THAT CHANGES NOTHING MOVES NOTHING: the same arithmetic described again shows the same run.
@@ -235,15 +225,18 @@ final class LayoutChangeTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node { row(items) }
         let before = bench.laid(renders, tree).run
+        let stood = bench.answer.change
 
-        _ = renders.renderFromScratch(tree())
+        let again = answer(renders, tree)
 
-        XCTAssertEqual(after(1, renders, tree), before)
+        XCTAssertEqual(bench.placed, before)
+        XCTAssertEqual(again.change, stood, "no change of the layout")
+        XCTAssertEqual(again.views.map(\.discrete), [nil, nil, nil])
     }
 
-    /// A NEW SET-OUT TRAVELS AS A CHANGE DOES: what an arithmetic draws from where the motion set out goes from where
-    /// it was shown as the hand passes a target and the motion sets out from there.
-    func testANewSetOutTravels() throws {
+    /// A NEW PLACE THE MOTION SET OUT FROM IS A CHANGE: arithmetic that reads it is answered anew where the run
+    /// stood, as a change of the layout.
+    func testANewSetOutIsAChange() throws {
         let phase = State(wrappedValue: 1.0)
         let renders = Renders()
         func tree() -> Node {
@@ -253,12 +246,16 @@ final class LayoutChangeTests: XCTestCase {
                 .node
         }
         _ = bench.laid(renders, tree)
+        let stood = bench.answer
 
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-120, 0))
+        bench.cycle()
 
-        XCTAssertEqual(after(0, renders, tree)[0].bounds.x, 100, accuracy: 0.001, "where it was shown")
-        XCTAssertEqual(after(40, renders, tree)[0].bounds.x, 200, accuracy: 0.001, "where it sets out from now")
+        XCTAssertEqual(stood.views[0].target.bounds.x, 100, accuracy: 0.001, "where it stood")
+        XCTAssertEqual(bench.answer.views[0].target.bounds.x, 200, accuracy: 0.001, "where it sets out from now")
+        XCTAssertEqual(try XCTUnwrap(bench.answer.views[0].discrete).bounds.x, 200, accuracy: 0.001)
+        XCTAssertNotEqual(bench.answer.change, stood.change)
     }
 
     /// A NEW ROOM TRAVELS NOT: the layout follows the window at once.
@@ -273,9 +270,13 @@ final class LayoutChangeTests: XCTestCase {
             .node
         }
         _ = bench.laid(renders, tree)
+        let stood = bench.answer.change
 
         bench.room(500, 200)
+        bench.cycle()
 
-        XCTAssertEqual(after(1, renders, tree)[1].bounds.x, 500)
+        XCTAssertEqual(bench.answer.views[1].target.bounds.x, 500)
+        XCTAssertEqual(bench.answer.change, stood, "a new room is no change of the layout")
+        XCTAssertNil(bench.answer.views[1].discrete, "so no view's way is measured anew")
     }
 }

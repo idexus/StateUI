@@ -17,9 +17,12 @@
     /// in the next cycle.
     public let layOut: @MainActor (_ width: Double, _ height: Double) -> Void
 
-    /// Where each child stands, in the children's order, as the program last worked it out; none while the room is
-    /// not measured.
-    public let placed: @MainActor () -> [HostPlacement]
+    /// What the program last worked out: where the layout puts each child, in the children's order, and what the
+    /// host needs to bring it there; no view while the room is not measured.
+    public let answered: @MainActor () -> HostLayoutAnswer
+
+    /// Says whether the host still moves a child onto its place: a layout is at rest only once none is.
+    public let bodiesMove: @MainActor (Bool) -> Void
 
     /// Says how the host measures a child of the layout, and - said again - that a child may measure otherwise than
     /// it did: a layout whose arithmetic measured a child is worked out again in the next cycle.
@@ -29,29 +32,36 @@
     /// none and takes the room it is given.
     public let measure: (@MainActor (_ width: Double?, _ height: Double?) -> LayoutSize)?
 
-    /// The run the places were made of, as the layout wrote it: what the core's own tests read.
+    /// Where the layout puts its children - a view the hand holds where it holds it - as the layout wrote it: what
+    /// the core's own tests read.
     let run: (@MainActor () -> PlacedRun)?
 
-    /// A program of the layout `slot` names, made by its description numbered `revision`.
+    /// A program of the layout `slot` names, made by its description numbered `revision`, which puts each child
+    /// where `placed` says - the children by their order, none of them a body.
     public convenience init(
         slot: UInt64, revision: UInt64, layOut: @escaping @MainActor (Double, Double) -> Void,
         placed: @escaping @MainActor () -> [HostPlacement]
     ) {
         self.init(
-            slot: slot, revision: revision, layOut: layOut, placed: placed, measuredBy: { _ in }, measure: nil, run: nil)
+            slot: slot, revision: revision, layOut: layOut,
+            answered: {
+                HostLayoutAnswer(views: placed().enumerated().map { HostLayoutView(key: $0.offset, target: $0.element) })
+            },
+            bodiesMove: { _ in }, measuredBy: { _ in }, measure: nil, run: nil)
     }
 
-    /// A program whose places are made of `run`, measuring through what `measuredBy` is told.
+    /// A program whose answer is made of `run`, measuring through what `measuredBy` is told.
     init(
         slot: UInt64, revision: UInt64, layOut: @escaping @MainActor (Double, Double) -> Void,
-        placed: @escaping @MainActor () -> [HostPlacement],
+        answered: @escaping @MainActor () -> HostLayoutAnswer, bodiesMove: @escaping @MainActor (Bool) -> Void,
         measuredBy: @escaping @MainActor (@escaping HostChildMeasure) -> Void,
         measure: (@MainActor (Double?, Double?) -> LayoutSize)?, run: (@MainActor () -> PlacedRun)?
     ) {
         self.slot = slot
         self.revision = revision
         self.layOut = layOut
-        self.placed = placed
+        self.answered = answered
+        self.bodiesMove = bodiesMove
         self.measuredBy = measuredBy
         self.measure = measure
         self.run = run
