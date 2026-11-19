@@ -80,8 +80,8 @@ struct LightTableSample: SampleContent, ExampleContent {
             ZStack { Image(ImageSource(photo)).contentMode(.fill) }
                 .shape(.roundedRectangle(12))
                 .clipsContent(true)
-        } placements: { room, table in
-            Self.photos.indices.map { place($0, table, room) }
+        } placements: { context, table in
+            Self.photos.indices.map { place($0, table, context.bounds) }
         }
         // ONE FINGER OR TWO MOVE THE TABLE every way - one axis scrolled
         // across, one down - resting on a photo, or, not snapping, anywhere...

@@ -201,6 +201,10 @@ STATEUI_WEB(read_size) void stateui_web_read_size(int32_t element, double *into)
 /// and border around them.
 STATEUI_WEB(read_natural) void stateui_web_read_natural(int32_t element, double *into);
 
+/// Writes the element's own size offered `width` - not a number for all its content takes - into `into`: width,
+/// height. The element is laid out so for the read alone.
+STATEUI_WEB(read_fitting) void stateui_web_read_fitting(int32_t element, double width, double *into);
+
 /// Where each child of `count` pairs `(layout, child)` stands in its layout, before any transform: four numbers a
 /// child - from the layout's top left, then its size - and four NaN for one the page lays out nowhere; a pair whose
 /// child is its layout reads the layout's own size.

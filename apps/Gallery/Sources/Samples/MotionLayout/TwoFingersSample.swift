@@ -47,8 +47,8 @@ struct TwoFingersSample: SampleContent, ExampleContent {
                 ZStack { Image(ImageSource(art)).contentMode(.fill) }
                     .shape(.roundedRectangle(14))
                     .clipsContent(true)
-            } placements: { room, ring in
-                Self.cards.indices.map { place($0, ring, room) }
+            } placements: { context, ring in
+                Self.cards.indices.map { place($0, ring, context.bounds) }
             }
             // TWO FINGERS TURNING turn the ring a card every eighth of a
             // turn, round and round; SPREADING, they grow it from small to

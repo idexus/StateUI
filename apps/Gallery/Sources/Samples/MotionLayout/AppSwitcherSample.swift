@@ -55,8 +55,8 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
             Grid {
                 MotionLayout(running, id: \.name, parameters: $turn) { app in
                     AppCard(app: app, index: running.firstIndex(of: app) ?? 0, turn: $turn)
-                } placements: { room, turn in
-                    (0..<count).map { place($0, turn, room) }
+                } placements: { context, turn in
+                    (0..<count).map { place($0, turn, context.bounds) }
                 }
                 // Thrown as the gallery's home turns its cards: a spring that
                 // carries the hand on and settles.

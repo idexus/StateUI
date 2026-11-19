@@ -41,6 +41,9 @@ final class PagePointerTests: XCTestCase {
 /// A native half that keeps nothing.
 @MainActor
 private final class StillView: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     let id: ElementID
     let presentsView = true
     init(id: ElementID) { self.id = id }

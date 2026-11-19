@@ -38,6 +38,13 @@ extension WinUIElement {
         label.setRuns(runs)
     }
 
+    /// The element's own size and first baseline in the room offered, as its layout item measures them: what a
+    /// layout's program asks of a child.
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        guard let item = layoutItem else { return HostChildMeasured(size: .zero, firstBaseline: nil) }
+        return HostChildMeasured(size: item.size(offered: width), firstBaseline: item.firstBaseline(offered: width))
+    }
+
     /// What this element gives the layout it stands in: its view, or the first view of an element drawn by its parent.
     var layoutItem: WinUILayoutItem? {
         guard let view else { return element.arrangedChildren.lazy.compactMap(\.winUI.layoutItem).first }

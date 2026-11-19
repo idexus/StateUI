@@ -3,7 +3,7 @@
 
 /// What moves an axis of a motion layout's parameters under the user's hand. This library's own.
 ///
-///     MotionLayout(cards, id: \.name, parameters: $turn) { … } placements: { room, parameters in … }
+///     MotionLayout(cards, id: \.name, parameters: $turn) { … } placements: { context, parameters in … }
 ///         .axis(\.self, input: .scroll(.horizontal), range: 0...6, snaps: .every(1))
 ///
 /// Design: docs/design/views/motion-layout.md#the-hand

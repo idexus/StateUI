@@ -30,10 +30,11 @@ the parameters both ways (`MotionLayoutContract.parameters`), so the host layer'
 channel walks it under the layout's motion and says every frame where it
 stands; no host draws it, and every host records it realized alike.
 
-It has no size of its own: it takes the room its layout gives it, whatever
-its views need (host/layout.md, a motion layout). The views stand where
-arithmetic of that room puts them, so a size taken from them would feed the
-room the arithmetic is worked out from.
+It takes the room its layout gives it, whatever its views need
+(host/layout.md, a motion layout), unless it says a size
+([a size of its own](#a-size-of-its-own)). The views stand where arithmetic
+of that room puts them, so a size taken from where they stand would feed
+the room the arithmetic is worked out from.
 
 Each view sits in a holder the run places, which keeps two writers apart:
 every placement is written onto the holder, so an author's own opacity or
@@ -67,7 +68,8 @@ host - where the hand holds the run, a throw going on, or a state named in
 `following(_:)` is written, and once in the turn of every render that
 describes the layout, before the views it puts in are drawn (host/runtime.md,
 one turn). It is
-handed the room at the layout's own origin and the parameters as they stand this
+handed a context (`LayoutContext`) - the room at the layout's own origin, as
+`bounds`, and the views - and the parameters as they stand this
 frame, and answers one placement a view. An answer of another length is
 said once and made to fit, a missing view standing at the top left.
 
@@ -85,7 +87,60 @@ A value read in the body is a change of the description, the layout built
 again and its arithmetic with it - and the change travels ([a change where the
 parameters stand](#a-change-where-the-parameters-stand)); a state the arithmetic reads
 that moves on the host's frames - a finger's - is named in `following(_:)`
-instead, or its writes run nothing.
+instead, or its writes run nothing. `following($x)` runs the arithmetic at a
+write of where the state is going; `following($x.journey)` at every frame of
+the way there, the layout a consumer of the state's channel so
+`$x.journey.sample` answers in the arithmetic.
+
+## Measuring a view
+
+The views the arithmetic is handed (`context.subviews`, a `LayoutSubviews`)
+are handles in the items' order, found by place or by an item's identity.
+A handle holds no view: `sizeThatFits(_:)` asks the host how large the view
+is in a room offered (`LayoutProposal`), and `firstBaseline(_:)` where its
+first line of words rests.
+
+```text
+  LayoutProposal()             the size the view takes by itself
+  LayoutProposal(width: 200)   its words wrapped to 200 points, as tall as that makes it
+```
+
+A side left out offers nothing along it; a side below nought is nought, and
+one that is no number offers nothing and is said. The answer has the view's
+stated sizes and bounds in it and leaves its margin out; an answer that is
+no size is nought, said once. Measuring writes nothing: the arithmetic
+reads sizes and answers placements, and a placement's own bounds are what
+the view is drawn at - a size measured is one the arithmetic may hand back
+or not.
+
+A layout that measures is worked out again when a view of it may measure
+otherwise ([measuring the views](../core/layout-program.md#measuring-the-views)).
+The room is no result of the measuring: the arithmetic never reads where
+the layout or a view was last drawn, so no answer feeds itself.
+
+Every host measures a view in the width offered, as its own layouts do: a
+height offered is part of the room asked, and changes no host's answer.
+A test's window with no toolkit measures every view nought.
+
+## A size of its own
+
+`measure(_:)` gives the layout a size: its closure is handed the room
+offered and the views (`LayoutMeasurementContext`) and the parameters as
+they stand, and answers a `LayoutSize` - a row as wide as its views side by
+side, a column as tall as them stacked. Without it the layout takes the
+room it is given, and its size is its padding alone. A stated `width` or
+`height` bounds the answer as it bounds any view's; a side that is no
+number, or below nought, is nought, said once.
+
+The host asks it whenever it measures the layout, in the width its own
+layout offers; the Web asks with no width, the browser telling none before
+it lays the page out. A working-out that makes the layout say another size
+has its host measure it again, and one that says the same size asks
+nothing.
+
+The trap is taking the size from where the views stand. That is the room
+the arithmetic was worked out in, read back: `measure` reads what the views
+measure, never where a run put them.
 
 ## An answer made to fit
 
@@ -222,7 +277,7 @@ builds nothing; a change of room moves no parameters.
 ## Where a motion set out
 
 Beside the parameters, the arithmetic may be handed where the run's motion set
-out (`placements: { room, parameters, segmentStart in }`): the parameters the run stood at
+out (`placements: { context, parameters, segmentStart in }`): the parameters the run stood at
 when the hand took it, a throw or a journey of the parameters carried it away. A
 pose drawn from the parameters alone cannot tell which card set out - parameters at
 1.3 are the first card going on or the second coming back - and the parameters'

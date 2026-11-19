@@ -33,8 +33,11 @@ final class GTKZStackView: GTKTravelingLayout {
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
-    /// Whether the ZStack stands a motion layout, which has no size of its own.
+    /// Whether the ZStack stands a motion layout, whose children's sizes are no size of its own.
     var motionLayout = false
+
+    /// The size a motion layout's program says for it in a width offered; nil where it says none.
+    var programSize: (@MainActor (Double?) -> LayoutSize?)?
 
     /// The children back to front as the run ranks them, or in their order without one: GTK draws a panel's
     /// children in that order and a click reaches the last first.
@@ -43,7 +46,7 @@ final class GTKZStackView: GTKTravelingLayout {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ZStackArithmetic.size(of: items, padding: padding, width: width, motionLayout: motionLayout)
+        ZStackArithmetic.size(of: items, padding: padding, width: width, motionLayout: motionLayout, program: programSize)
     }
 
     override func arrange(in bounds: Rect) {

@@ -460,6 +460,12 @@ enum WebRelay {
         return LayoutSize(width: read[0], height: read[1])
     }
 
+    /// The element's own size offered `width`, nil for all its content takes: what a layout's program asks of a view.
+    static func fitting(_ element: Int32, width: Double?) -> LayoutSize {
+        let read = numbers(2) { stateui_web_read_fitting(element, width ?? .nan, $0) }
+        return LayoutSize(width: read[0], height: read[1])
+    }
+
     /// Where each child stands in its layout, before any transform, by `(layout, child)` pairs; nil for a child laid
     /// out nowhere, and a layout's own size for a pair of it with itself.
     static func places(_ pairs: [(layout: Int32, child: Int32)]) -> [Rect?] {

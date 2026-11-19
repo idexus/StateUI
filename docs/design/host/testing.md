@@ -11,7 +11,8 @@ is what a host's driver does on its toolkit. It links no conformance suite.
 
 A `TestWindow` stands over StateUI's core and the host layer where `swift test`
 runs, with no platform's toolkit: each view's native half keeps nothing, so
-what a view holds is what the tree gave it; the page hears it is shown as a
+what a view holds is what the tree gave it, and measures nought, so a layout
+program reading its views' sizes reads none; the page hears it is shown as a
 host's window tells it (`WindowPresentation`), so what it does on appearing
 is done as the window opens; and a user's act is the report a
 host makes of it - a click the button's `clicked`, words typed the field's

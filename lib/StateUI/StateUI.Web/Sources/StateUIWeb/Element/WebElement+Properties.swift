@@ -67,7 +67,10 @@ extension WebElement {
         }
         if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
         if element.changesAccessibility(changed) { view.setAccessibility(element.accessibilityWords) }
-        if let layers = view as? WebLayoutView, layers.arrangement == .layers { layers.setPlacement(element.placement) }
+        if let layers = view as? WebLayoutView, layers.arrangement == .layers {
+            layers.setPlacement(element.placement)
+            writeProgramSize()
+        }
     }
 
     /// Hears the scroller's movement on the display's frames: where it went, and that it came to rest.

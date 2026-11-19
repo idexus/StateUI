@@ -80,6 +80,71 @@ enum Listings {
             }
         }
         """#,
+        "AdaptiveFieldsSample": #"""
+        // Sources/Samples/MotionLayout/AdaptiveFieldsSample.swift
+        /// Where the fields stand, and how large that makes the layout.
+        struct Plan {
+            var size = LayoutSize.zero
+            var placements: [Placement] = []
+        }
+
+        @State private var name = "Ada"
+        @State private var city = "London"
+
+        /// The most room the fields are given, across.
+        @State private var room = 640.0
+
+        /// The layout has no parameter to move: its arithmetic is of its room
+        /// and its views alone.
+        @State private var still = 0.0
+
+        var body: some View {
+            VStack {
+                MotionLayout([0, 1], id: \.self, parameters: $still) { index in
+                    TextField(index == 0 ? $name : $city)
+                        .minimumWidth(140)
+                } placements: { context, _ in
+                    // THE ROOM'S WIDTH IS WHAT THE VIEWS ARE OFFERED.
+                    Self.plan(LayoutProposal(width: context.bounds.width), context.subviews).placements
+                }
+                // THE LAYOUT'S OWN SIZE, from the same arithmetic: as tall as
+                // one field in a row, as both in a column.
+                .measure { context, _ in
+                    Self.plan(context.proposal, context.subviews).size
+                }
+                .maximumWidth($room)
+
+                Slider($room)
+                    .minimum(160)
+                    .maximum(640)
+            }
+        }
+
+        /// The fields in the width offered: side by side, sharing it, where
+        /// their own widths fit - else each the whole width, one under the other.
+        @MainActor
+        static func plan(_ proposal: LayoutProposal, _ fields: LayoutSubviews<Int>) -> Plan {
+            let gap = 12.0
+            // WHAT EACH FIELD TAKES BY ITSELF: nothing offered.
+            let own = fields.map { $0.sizeThatFits(LayoutProposal()) }
+            let row = own.reduce(0) { $0 + $1.width } + gap * Double(max(own.count - 1, 0))
+            let width = proposal.width ?? row
+            let sideBySide = row <= width
+
+            var plan = Plan()
+            var (across, down) = (0.0, 0.0)
+            for field in fields {
+                let share = sideBySide ? (width - gap * Double(own.count - 1)) / Double(own.count) : width
+                // A FIELD OFFERED A WIDTH says how tall it stands in it.
+                let height = field.sizeThatFits(LayoutProposal(width: share)).height
+                plan.placements.append(Placement(Rect(across, down, share, height)))
+                plan.size.height = max(plan.size.height, down + height)
+                if sideBySide { across += share + gap } else { down += height + gap }
+            }
+            plan.size.width = width
+            return plan
+        }
+        """#,
         "AimSample": #"""
         // Sources/Samples/State/AimSample.swift
         @State private var text = ""
@@ -800,8 +865,8 @@ enum Listings {
                 Grid {
                     MotionLayout(running, id: \.name, parameters: $turn) { app in
                         AppCard(app: app, index: running.firstIndex(of: app) ?? 0, turn: $turn)
-                    } placements: { room, turn in
-                        (0..<count).map { place($0, turn, room) }
+                    } placements: { context, turn in
+                        (0..<count).map { place($0, turn, context.bounds) }
                     }
                     // Thrown as the gallery's home turns its cards: a spring that
                     // carries the hand on and settles.
@@ -2025,8 +2090,8 @@ enum Listings {
 
             return MotionLayout(cards, id: \.name, parameters: $turn) { card in
                 face(card, large: !fanned)
-            } placements: { room, turn, segmentStart in
-                (0..<count).map { fanned ? fan($0, turn, room) : pile($0, turn, segmentStart, room) }
+            } placements: { context, turn, segmentStart in
+                (0..<count).map { fanned ? fan($0, turn, context.bounds) : pile($0, turn, segmentStart, context.bounds) }
             }
             // The pile is swiped a card at a time, the fan scrolled through.
             .axis(
@@ -5155,8 +5220,8 @@ enum Listings {
                         // A VIEW OF ITS OWN: a new order builds no icon again,
                         // only the one lifted or let go.
                         HomeTile(icon: icon, lifted: lifted == icon.name)
-                    } placements: { room, board in
-                        (0..<count).map { Self.place($0, board, room, fit) }
+                    } placements: { context, board in
+                        (0..<count).map { Self.place($0, board, context.bounds, fit) }
                     }
                     .axis(
                         \.self, input: .pages(.horizontal), range: 0...Double(boards - 1), keyframes: .every(1),
@@ -5196,8 +5261,8 @@ enum Listings {
                 MotionLayout(Array(0..<boards), parameters: $board) { _ in
                     Rectangle()
                         .fill(Palette.text)
-                } placements: { room, board in
-                    (0..<boards).map { dot($0, of: boards, board, room) }
+                } placements: { context, board in
+                    (0..<boards).map { dot($0, of: boards, board, context.bounds) }
                 }
                 .parameterMotion(Self.turning)
                 .height(16)
@@ -6167,8 +6232,8 @@ enum Listings {
             return Grid {
                 MotionLayout(Self.parts, parameters: $strips) { part in
                     view(part)
-                } placements: { room, strips in
-                    Self.parts.map { place($0, strips, room) }
+                } placements: { context, strips in
+                    Self.parts.map { place($0, strips, context.bounds) }
                 }
                 // ...MOVES FIVE STRIPS, each resting its own way: anywhere between
                 // its ends, coming back only from past one...
@@ -6326,9 +6391,9 @@ enum Listings {
         private var cards: some View {
             MotionLayout(Self.cards, id: \.name, parameters: $arrangement) { card in
                 face(card)
-            } placements: { room, arrangement in
+            } placements: { context, arrangement in
                 // ASKED AT 0, 1 AND 2 ALONE, each answering a whole layout.
-                [ring(room), grid(room), pile(room)][Int(arrangement)]
+                [ring(context.bounds), grid(context.bounds), pile(context.bounds)][Int(arrangement)]
             }
             // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
             // input, the axis is keyframes alone and the buttons move it.
@@ -6481,8 +6546,8 @@ enum Listings {
         private var cards: some View {
             MotionLayout(Array(Self.cards.indices), parameters: $deal) { index in
                 face(index)
-            } placements: { room, deal in
-                Self.cards.indices.map { place($0, deal, room) }
+            } placements: { context, deal in
+                Self.cards.indices.map { place($0, deal, context.bounds) }
             }
             // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
             // no hand, so it is declared no axis.
@@ -6708,8 +6773,8 @@ enum Listings {
             MotionLayout(Self.photos, parameters: $table) { photo in
                 ZStack { Image(ImageSource(photo)).contentMode(.fill) }
                     .clipsContent(true)
-            } placements: { room, table in
-                Self.photos.indices.map { place($0, table, room) }
+            } placements: { context, table in
+                Self.photos.indices.map { place($0, table, context.bounds) }
             }
             // ONE FINGER OR TWO MOVE THE TABLE every way - one axis scrolled
             // across, one down - resting on a photo, or, not snapping, anywhere...
@@ -8093,13 +8158,13 @@ enum Listings {
                     Rectangle()
                         .fill(Palette.text)
                 }
-            } placements: { room, turn in
+            } placements: { context, turn in
                 // THE WHOLE LAYOUT, run on the display's own frames whenever the
                 // room or the parameters have moved, with no view built.
                 // FLUNG OUTWARD, the ring grows with how fast it turns.
                 let flung = flungOut ? min(abs($turn.journey.sample?.velocity ?? 0) * 0.05, 0.35) : 0
-                return Self.cards.indices.map { place($0, turn, room, flung: flung) }
-                    + Self.cards.indices.map { dot($0, turn, room) }
+                return Self.cards.indices.map { place($0, turn, context.bounds, flung: flung) }
+                    + Self.cards.indices.map { dot($0, turn, context.bounds) }
             }
             // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
             // two fingers and a wheel all turn the ring, carrying the card in
@@ -13250,8 +13315,8 @@ enum Listings {
                 MotionLayout(Self.cards, parameters: $ring) { art in
                     ZStack { Image(ImageSource(art)).contentMode(.fill) }
                         .clipsContent(true)
-                } placements: { room, ring in
-                    Self.cards.indices.map { place($0, ring, room) }
+                } placements: { context, ring in
+                    Self.cards.indices.map { place($0, ring, context.bounds) }
                 }
                 // TWO FINGERS TURNING turn the ring a card every eighth of a
                 // turn, round and round; SPREADING, they grow it from small to

@@ -104,6 +104,9 @@ final class PropertyValuesTests: XCTestCase {
 /// A native half that animates every property and reads none off a control.
 @MainActor
 private final class AnimatingView: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     let presentsView = true
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { true }

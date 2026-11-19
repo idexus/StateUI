@@ -83,7 +83,7 @@
 
     /// A motion layout holding `child` across its whole room, as a ZStack holds a child naming no area.
     public static func motionLayout(holding child: some View) -> some View {
-        MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in child } placements: { room, _ in [Placement(room)] }
+        MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in child } placements: { context, _ in [Placement(context.bounds)] }
     }
 
     /// A page holding `element`'s specimen wearing `worn` where an application puts one, `beside` it on the page. A

@@ -88,8 +88,8 @@ final class MotionLayoutTests: XCTestCase {
         let handed = Handed()
 
         _ = bench.laid(Renders(), {
-            MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { room, phase in
-                handed.rooms.append(room)
+            MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { context, phase in
+                handed.rooms.append(context.bounds)
                 handed.phases.append(phase)
                 return [Placement(Rect(0, 0, 10, 10)), Placement(Rect(20, 0, 10, 10))]
             }
@@ -250,12 +250,12 @@ final class MotionLayoutTests: XCTestCase {
         let handed = Handed()
         let renders = Renders()
         func tree() -> Node {
-            MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { room, at in
+            MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { context, at in
                 handed.phases.append(at)
                 // The view in front moves half the room's width a unit; the one behind it, a tenth as far.
                 return [
-                    Placement(Rect(-at * room.width / 10, 0, 10, 10)),
-                    Placement(Rect(-at * room.width / 2, 0, 10, 10), zIndex: 1),
+                    Placement(Rect(-at * context.bounds.width / 10, 0, 10, 10)),
+                    Placement(Rect(-at * context.bounds.width / 2, 0, 10, 10), zIndex: 1),
                     Placement(Rect(0, 0, 10, 10), zIndex: 2),
                 ]
             }
@@ -276,8 +276,8 @@ final class MotionLayoutTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
         func tree() -> Node {
-            MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { room, at in
-                (0..<3).map { Placement(Rect((Double($0) - at) * room.width / 2, 0, 10, 10)) }
+            MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { context, at in
+                (0..<3).map { Placement(Rect((Double($0) - at) * context.bounds.width / 2, 0, 10, 10)) }
             }
             .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .node

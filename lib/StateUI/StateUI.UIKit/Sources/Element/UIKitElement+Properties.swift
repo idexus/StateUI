@@ -73,7 +73,10 @@ extension UIKitElement {
                 }
             }
             if !own.isDisjoint(with: MountedElement.transformProperties) { drawing?.own = element.drawingTransform }
-            if let layers = view as? UIKitZStackView { layers.placement = element.placement }
+            if let layers = view as? UIKitZStackView {
+                layers.placement = element.placement
+                layers.programSize = element.programSize
+            }
         }
 
         if !changed.subtracting(element.ownPlacementRun).isSubset(of: MountedElement.unmeasuredProperties) {

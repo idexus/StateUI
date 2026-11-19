@@ -356,6 +356,9 @@ private final class TurnRuntime: TurnPresenter, FramePresenter, FrameClock {
 /// A native half with no view, telling its runtime when a patch reaches it.
 @MainActor
 private final class HeldNative: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     unowned let element: MountedElement
     unowned let runtime: TurnRuntime
 

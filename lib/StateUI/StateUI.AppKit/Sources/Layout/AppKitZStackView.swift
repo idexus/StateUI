@@ -20,8 +20,11 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
-    /// Whether the ZStack stands a motion layout, which has no size of its own.
+    /// Whether the ZStack stands a motion layout, whose children's sizes are no size of its own.
     var motionLayout = false
+
+    /// The size a motion layout's program says for it in a width offered; nil where it says none.
+    var programSize: (@MainActor (Double?) -> LayoutSize?)?
 
     /// The hand over the motion layout it stands, where one moves it: whether it took a scroll event.
     var hand: ((NSEvent) -> Bool)?
@@ -57,7 +60,8 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
     }
 
     private func measuredContentSize(width: CGFloat?) -> NSSize {
-        NSSize(ZStackArithmetic.size(of: items, padding: padding, width: width.map(Double.init), motionLayout: motionLayout))
+        NSSize(ZStackArithmetic.size(of: items, padding: padding, width: width.map(Double.init), motionLayout: motionLayout,
+            program: programSize))
     }
 
     override func layout() {

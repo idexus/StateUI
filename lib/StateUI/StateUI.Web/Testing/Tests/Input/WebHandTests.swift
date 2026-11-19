@@ -18,8 +18,8 @@ final class WebHandTests: XCTestCase {
     /// across stays the page's.
     func testATouchTheLayoutTookIsKeptFromThePage() throws {
         let host = WebRenderer.running {
-            MotionLayout([0, 1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { room, phase in
-                (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, room.height)) }
+            MotionLayout([0, 1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { context, phase in
+                (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, context.bounds.height)) }
             }
             .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .width(300)
@@ -38,8 +38,8 @@ final class WebHandTests: XCTestCase {
     /// be.
     func testAHandTheLayoutTookStartsNoDragOfTheBrowsersOwn() throws {
         let host = WebRenderer.running {
-            MotionLayout([0, 1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { room, phase in
-                (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, room.height)) }
+            MotionLayout([0, 1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { context, phase in
+                (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, context.bounds.height)) }
             }
             .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .itemDrag(begins: .longPress)
@@ -75,8 +75,8 @@ final class WebHandTests: XCTestCase {
     func testAnAltDragIsTwoFingers() throws {
         let zoom = State(wrappedValue: 1.0)
         let host = WebRenderer.running {
-            MotionLayout([0, 1, 2], parameters: zoom.projectedValue) { Text("\($0)") } placements: { room, at in
-                (0..<3).map { Placement(Rect(Double($0) * 100, 0, 100 * at, room.height)) }
+            MotionLayout([0, 1, 2], parameters: zoom.projectedValue) { Text("\($0)") } placements: { context, at in
+                (0..<3).map { Placement(Rect(Double($0) * 100, 0, 100 * at, context.bounds.height)) }
             }
             .axis(\.self, input: .magnification, range: 1...3, snaps: [2])
             .width(300)

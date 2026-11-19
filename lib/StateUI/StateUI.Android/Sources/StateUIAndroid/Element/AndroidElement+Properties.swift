@@ -88,7 +88,10 @@ extension AndroidElement {
                     return element.hear(heard, in: host.runtime)
                 }
             }
-            if let layers = view as? AndroidZStackView { layers.placement = element.placement }
+            if let layers = view as? AndroidZStackView {
+                layers.placement = element.placement
+                layers.programSize = element.programSize
+            }
         }
 
         if !changed.subtracting(element.ownPlacementRun).isSubset(of: MountedElement.unmeasuredProperties) {

@@ -4,7 +4,7 @@
 /// The curve a motion layout's views follow between the poses its arithmetic answers at an axis's keyframes, one
 /// number at a time: each view's place, size, turn, opacity and shade.
 ///
-///     MotionLayout(cards, id: \.name, parameters: $arrangement) { … } placements: { room, parameters in … }
+///     MotionLayout(cards, id: \.name, parameters: $arrangement) { … } placements: { context, parameters in … }
 ///         .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1))
 ///         .interpolation(.catmullRom)
 ///

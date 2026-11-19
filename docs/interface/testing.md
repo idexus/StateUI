@@ -205,4 +205,6 @@ to, while its states hold where they are going. Its `id`, a `TestPresentationID`
 kept: `window.presentation(id)` answers how that view stands later, nil
 once it is off the page, and `generation` tells one mounting of a view from
 the next. It reads what StateUI decided, the same on every platform, and
-proves nothing of a platform's pixels.
+proves nothing of a platform's pixels. Nor does a window with no toolkit
+size anything: a view a layout measures (`sizeThatFits(_:)`) answers nought
+in it, so arithmetic of measured sizes is proved on a platform.

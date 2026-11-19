@@ -111,8 +111,8 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                     // A VIEW OF ITS OWN: a new order builds no icon again,
                     // only the one lifted or let go.
                     HomeTile(icon: icon, lifted: lifted == icon.name)
-                } placements: { room, board in
-                    (0..<count).map { Self.place($0, board, room, fit) }
+                } placements: { context, board in
+                    (0..<count).map { Self.place($0, board, context.bounds, fit) }
                 }
                 .axis(
                     \.self, input: .pages(.horizontal), range: 0...Double(boards - 1), keyframes: .every(1),
@@ -153,8 +153,8 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                 Rectangle()
                     .fill(Palette.text)
                     .cornerRadius(4)
-            } placements: { room, board in
-                (0..<boards).map { dot($0, of: boards, board, room) }
+            } placements: { context, board in
+                (0..<boards).map { dot($0, of: boards, board, context.bounds) }
             }
             .parameterMotion(Self.turning)
             .height(16)

@@ -3,24 +3,6 @@
 
 @_spi(Host) import StateUI
 
-/// A width and a height, in points.
-@_spi(Host) public struct LayoutSize: Equatable, Sendable {
-    /// How wide.
-    public var width: Double
-
-    /// How tall.
-    public var height: Double
-
-    /// A size `width` wide and `height` tall.
-    public init(width: Double, height: Double) {
-        self.width = width
-        self.height = height
-    }
-
-    /// No room at all.
-    public static let zero = LayoutSize(width: 0, height: 0)
-}
-
 /// How a child lays out words, which its place travels no narrower than they need.
 /// Design: docs/design/host/motion.md#words-on-the-way
 @_spi(Host) public enum LaidOutWords: Equatable, Sendable {

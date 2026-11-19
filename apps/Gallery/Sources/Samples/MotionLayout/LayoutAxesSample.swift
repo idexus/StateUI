@@ -67,8 +67,8 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
         return Grid {
             MotionLayout(Self.parts, parameters: $strips) { part in
                 view(part)
-            } placements: { room, strips in
-                Self.parts.map { place($0, strips, room) }
+            } placements: { context, strips in
+                Self.parts.map { place($0, strips, context.bounds) }
             }
             // ...MOVES FIVE STRIPS, each resting its own way: anywhere between
             // its ends, coming back only from past one...

@@ -417,8 +417,8 @@ final class MountedTreeTests: XCTestCase {
     func testALayoutsRunMovedArrangesNothingAgain() {
         let (tree, log) = Self.tree(viewless: [])
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
-        var places = [HostPlacement](repeating: Self.place(x: 0), count: 2)
-        layout.layout = .replace(HostLayoutProgram(slot: 900, revision: 1, layOut: { _, _ in }, placed: { places }))
+        let held = HeldPlaces([HostPlacement](repeating: Self.place(x: 0), count: 2))
+        layout.layout = .replace(HostLayoutProgram(slot: 900, revision: 1, layOut: { _, _ in }, placed: { held.places }))
         layout.children = .arranged([HostPatch(id: .manual("a"), type: .text), HostPatch(id: .manual("b"), type: .text)])
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([layout])
@@ -426,7 +426,7 @@ final class MountedTreeTests: XCTestCase {
         let layoutMount = tree.root!.children[0].mount
 
         log.arranged.removeAll()
-        places = [Self.place(x: 10), Self.place(x: 20)]
+        held.places = [Self.place(x: 10), Self.place(x: 20)]
         XCTAssertEqual(tree.mount(ofLayout: 900), layoutMount, "the program put its children somewhere new")
         XCTAssertNil(tree.mount(ofLayout: 900), "and nowhere new since")
         tree.present(states: [:], properties: [layoutMount: [.area]])
@@ -1181,6 +1181,9 @@ private final class NativeLog {
 /// A native half that records what the tree asks of it.
 @MainActor
 private final class RecordingNative: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     unowned let element: MountedElement
     let log: NativeLog
     let presentsView: Bool
@@ -1217,6 +1220,9 @@ private final class RecordingNative: NativeElement {
 
 /// A native half that reads each value it is handed as it is applied, as a host's does.
 private final class ReadingNative: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     unowned let element: MountedElement
 
     let presentsView = true
@@ -1240,4 +1246,11 @@ private struct TwoScenes: Application {
         WindowGroup { Text("first") }
         Window(WindowKind("tree.second")) { Text("second") }
     }
+}
+
+/// The places a layout program written by hand answers, which a test replaces between two reads.
+@MainActor
+private final class HeldPlaces {
+    var places: [HostPlacement]
+    init(_ places: [HostPlacement]) { self.places = places }
 }

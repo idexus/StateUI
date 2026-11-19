@@ -87,6 +87,9 @@ extension MotionLayout {
         /// What is told once the run comes to rest.
         let settled: [ValueHandler<Parameters>]
 
+        /// The layout's own size in a room offered, at given parameters, where it says one.
+        let sized: (@MainActor (Double?, Double?, Parameters) -> LayoutSize)?
+
         /// The law the run moves under: its own, or - `.inherited` - the application's, as a host's channel answers
         /// it, so a change and a program's write of the parameters travel alike.
         /// Design: docs/design/views/motion-layout.md#a-change-where-the-parameters-stand

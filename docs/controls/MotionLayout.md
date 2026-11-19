@@ -9,9 +9,9 @@ Stands each of its views where a motion layout's arithmetic puts it, one over an
 
 MotionLayout(["Mural", "Nebula", "Ridge"], parameters: $turn) { name in
     Text(name)
-} placements: { room, phase in
+} placements: { context, phase in
     (0..<3).map { index in
-        Placement(Rect((Double(index) - phase) * 120 + room.width / 2 - 50, 0, 100, room.height))
+        Placement(Rect((Double(index) - phase) * 120 + context.bounds.width / 2 - 50, 0, 100, context.bounds.height))
     }
 }
 .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))

@@ -114,6 +114,9 @@ final class DisabledBranchTests: XCTestCase {
 /// A native half that notes each later `isEnabled` it is told.
 @MainActor
 private final class TellingView: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     let id: ElementID
     let presentsView = true
     init(id: ElementID) { self.id = id }

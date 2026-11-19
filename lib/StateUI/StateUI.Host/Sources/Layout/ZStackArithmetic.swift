@@ -8,15 +8,21 @@
 /// Design: docs/design/host/layout.md#layers
 @_spi(Host) public enum ZStackArithmetic {
     /// The room the children and the padding take for the width offered: as much as the child that needs the most, at
-    /// its natural size - but the padding alone for a motion layout's (`motionLayout`), which has no size of its own.
+    /// its natural size - but for a motion layout's (`motionLayout`) the padding and the size its program says
+    /// (`program`), nought where it says none: its children's sizes are no size of its own.
     /// Design: docs/design/host/layout.md#a-motion-layout
     @MainActor
     public static func size<Child: LayoutChild>(
-        of items: [Child], padding: Insets, width offered: Double?, motionLayout: Bool = false
+        of items: [Child], padding: Insets, width offered: Double?, motionLayout: Bool = false,
+        program: (@MainActor (_ width: Double?) -> LayoutSize?)? = nil
     ) -> LayoutSize {
-        guard !motionLayout else { return LayoutSize(width: padding.start + padding.end, height: padding.top + padding.bottom) }
-
         let inner = offered.map { max(0, $0 - padding.start - padding.end) }
+        guard !motionLayout else {
+            let own = program?(inner) ?? .zero
+            return LayoutSize(
+                width: padding.start + padding.end + own.width, height: padding.top + padding.bottom + own.height)
+        }
+
         var width = 0.0
         var height = 0.0
 

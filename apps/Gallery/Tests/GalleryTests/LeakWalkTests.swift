@@ -135,6 +135,9 @@ private final class Walk: HostPresenter {
 /// A native half with nothing behind it, counted while it stands.
 @MainActor
 private final class WalkedHalf: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     private unowned let walk: Walk
     let presentsView = true
 

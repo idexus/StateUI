@@ -85,9 +85,9 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
     private var cards: some View {
         MotionLayout(Self.cards, id: \.name, parameters: $arrangement) { card in
             face(card)
-        } placements: { room, arrangement in
+        } placements: { context, arrangement in
             // ASKED AT 0, 1 AND 2 ALONE, each answering a whole layout.
-            [ring(room), grid(room), pile(room)][Int(arrangement)]
+            [ring(context.bounds), grid(context.bounds), pile(context.bounds)][Int(arrangement)]
         }
         // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
         // input, the axis is keyframes alone and the buttons move it.

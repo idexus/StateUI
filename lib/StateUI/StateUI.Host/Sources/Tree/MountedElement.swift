@@ -79,12 +79,56 @@
     /// Where the layout program last put the children, as the element presents them.
     private(set) var programPlaces: [HostPlacement] = []
 
+    /// How the layout program's children are measured: the child the arithmetic names by its place among the views
+    /// as written, measured by its native half - nought for a place no child stands at.
+    private lazy var childMeasure: HostChildMeasure = { [weak self] place, width, height in
+        guard let self, let child = children.first(where: { self.writingOrder[$0.id] == place }) else {
+            return HostChildMeasured(size: .zero, firstBaseline: nil)
+        }
+        return child.native.measured(width: width, height: height)
+    }
+
+    /// Tells the layout program how its children are measured - and, told again, that one may measure otherwise.
+    /// Design: docs/design/host/layout.md#a-layout-program
+    func saysItsMeasure() {
+        layoutProgram?.measuredBy(childMeasure)
+    }
+
+    /// The nearest element from this one up that runs a layout program hears its views may measure otherwise.
+    func measuredAgainForItsLayout() {
+        var each: MountedElement? = self
+        while let element = each {
+            if element.layoutProgram != nil { return element.saysItsMeasure() }
+            each = element.parent
+        }
+    }
+
     /// Takes where the layout program puts the children now; whether that changed what the element presents.
     func takeProgramPlaces() -> Bool {
         let placed = layoutProgram?.placed() ?? []
         guard placed != programPlaces else { return false }
         programPlaces = placed
         return true
+    }
+
+    /// The width the program's own size was last asked in, and what it said; nil before any ask.
+    private var saidSize: (width: Double?, size: LayoutSize?)?
+
+    /// The size the layout program says for the layout itself in the width offered, for the host's view to answer
+    /// when it is measured; nil where the program says none and the layout takes the room it is given.
+    /// Design: docs/design/host/layout.md#a-motion-layout
+    public private(set) lazy var programSize: @MainActor (_ width: Double?) -> LayoutSize? = { [weak self] width in
+        guard let self else { return nil }
+        let said = layoutProgram?.measure?(width, nil)
+        saidSize = (width, said)
+        return said
+    }
+
+    /// Has the toolkit measure the layout again where its program now says another size than it last answered.
+    func measuredAgainWhereItsSizeMoved() {
+        guard let asked = saidSize, layoutProgram?.measure?(asked.width, nil) != asked.size else { return }
+        saidSize = nil
+        native.invalidateMeasurements()
     }
 
     /// Where a split view last said its sidebar stands, and onto which state; nil before it said.
@@ -298,13 +342,17 @@
         if case .replace(let followed) = patch.followed { self.followed = followed }
         switch patch.layout {
         case .replace(let program)?:
-            if layoutProgram?.slot != program.slot {
+            let stood = layoutProgram?.slot == program.slot
+            if !stood {
                 if let before = layoutProgram { tree.layoutLeft(before.slot) }
                 tree.layoutStands(program.slot, on: self)
             }
             layoutProgram = program
-            // The room the toolkit laid it out in stands: a program that came since is told it.
+            // The room the toolkit laid it out in stands: a program that came since is told it; a layout come
+            // since, how its children are measured; and its own size, said otherwise, is measured again.
+            if !stood { saysItsMeasure() }
             if let room = laidOutRoom { program.layOut(room.width, room.height) }
+            measuredAgainWhereItsSizeMoved()
         case .clear?:
             if let before = layoutProgram { tree.layoutLeft(before.slot) }
             layoutProgram = nil
@@ -357,12 +405,16 @@
             writingOrder = Dictionary(childPatches.enumerated().map { ($1.id, $0) }) { first, _ in first }
             arrange(childPatches, tree: tree)
             childrenNeedArranging = true
+            // Other children stand at the places a layout program measures by.
+            measuredAgainForItsLayout()
 
         case .changed(let childPatches):
             for childPatch in childPatches {
                 applied(childPatch, tree: tree)
             }
             childrenNeedArranging = childPatches.contains(where: asksArranging)
+            // A child that may measure otherwise is measured again by the layout program placing it.
+            if childrenNeedArranging { measuredAgainForItsLayout() }
         }
     }
 
@@ -726,6 +778,8 @@
                 }
 
                 let own = changed.isEmpty ? FrameImpact.none : element.presentFrame(changed)
+                // An element sized anew on a frame measures otherwise for the layout program placing it.
+                if own.arrangement { element.parent?.measuredAgainForItsLayout() }
                 // A child's place is its parent's business; an element with no view passes it up.
                 let restacked = entry.restacks && element.restack()
                 if own.arrangesChildren || entry.descendants.arrangement || restacked {

@@ -243,8 +243,8 @@ final class AppKitMeasurementTests: XCTestCase {
         card.properties[.opacity] = .number(1)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.properties[VisualElementContract.height.token] = .number(120)
-        var run = PlacedRun([Placement(Rect(0, 0, 100, 60))])
-        layout.layout = AppKitRenderer.programForTesting(slot: 96) { run }
+        let held = HeldRun(PlacedRun([Placement(Rect(0, 0, 100, 60))]))
+        layout.layout = AppKitRenderer.programForTesting(slot: 96) { held.run }
         layout.children = .arranged([card])
         var caption = HostPatch(id: .manual("caption"), type: .text)
         caption.properties[.text] = .string("The card in front")
@@ -263,7 +263,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let arrangements = nativeOuter.arrangementCountForTesting
         let measurements = nativeCaption.nativeMeasurementCountForTesting
 
-        run = PlacedRun([Placement(Rect(80, 20, 100, 60))])
+        held.run = PlacedRun([Placement(Rect(80, 20, 100, 60))])
         renderer.presentLayoutForTesting(96)
         nativeOuter.layoutSubtreeIfNeeded()
 
@@ -517,5 +517,12 @@ final class AppKitMeasurementTests: XCTestCase {
             ]),
         ])
     }
+}
+
+/// The run a layout program written by hand answers, which a test replaces between two frames.
+@MainActor
+private final class HeldRun {
+    var run: PlacedRun
+    init(_ run: PlacedRun) { self.run = run }
 }
 #endif

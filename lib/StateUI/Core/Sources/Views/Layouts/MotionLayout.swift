@@ -12,7 +12,7 @@
 ///     MotionLayout(planets, id: \.name, parameters: $turn) { planet in
 ///         Ellipse()
 ///             .fill(planet.color)
-///     } placements: { room, parameters in
+///     } placements: { context, parameters in
 ///         planets.indices.map { index in
 ///             let angle = (Double(index) - parameters) / Double(planets.count) * 2 * .pi
 ///             let radius = min(room.width, room.height) / 2 - 40
@@ -160,8 +160,11 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// The curve between the poses at the axes' keyframes, where one was given.
     private var curve: (any LayoutInterpolation)?
 
-    /// States whose writes run the arithmetic again on the host's frames.
+    /// States whose writes - and journeys whose frames - run the arithmetic again on the host's frames.
     private var followed: [any FollowedState] = []
+
+    /// The journeys the layout follows, each a consumer of its channel while the layout stands.
+    private var consumed: [JourneyConsumer] = []
 
     /// What is drawn over each view at its placement's `shade`, if anything.
     private var mask: Node?
@@ -187,6 +190,9 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// What is told once the run comes to rest.
     private var settled: [ValueHandler<Parameters>] = []
 
+    /// The layout's own size, where it says one (`measure(_:)`); nil for a layout taking the room it is given.
+    private var sized: (@MainActor (LayoutMeasurementContext<ID>, Parameters) -> LayoutSize)?
+
     /// Whether the layout turns about its middle where it lays out right to left.
     private var mirrors = false
 
@@ -211,17 +217,18 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         id: KeyPath<Items.Element, ID>,
         parameters: Binding<Parameters>,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
-        placements: @escaping @MainActor (Rect, Parameters) -> [Placement]
+        placements: @escaping @MainActor (LayoutContext<ID>, Parameters) -> [Placement]
     ) {
         self.parameters = parameters
         source = Source(
-            items: items, path: id, view: { content($0).node }, holder: { LayoutItemView(content: content($0)).node }, arithmetic: { room, parameters, _ in placements(room, parameters) },
+            items: items, path: id, view: { content($0).node }, holder: { LayoutItemView(content: content($0)).node },
+            arithmetic: { context, parameters, _ in placements(context, parameters) },
             readsFrom: false)
     }
 
     /// The same, for items that are their own identity.
     ///
-    ///     MotionLayout(["Mural", "Ridge"], parameters: $turn) { Text($0) } placements: { room, _ in … }
+    ///     MotionLayout(["Mural", "Ridge"], parameters: $turn) { Text($0) } placements: { context, _ in … }
     ///
     /// - Parameters:
     ///   - items: what to place, one view each.
@@ -232,7 +239,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         _ items: Items,
         parameters: Binding<Parameters>,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
-        placements: @escaping @MainActor (Rect, Parameters) -> [Placement]
+        placements: @escaping @MainActor (LayoutContext<ID>, Parameters) -> [Placement]
     ) where Items.Element: Hashable, ID == Items.Element {
         self.init(items, id: \.self, parameters: parameters, content: content, placements: placements)
     }
@@ -241,7 +248,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// stood at when the hand, a throw or a journey took it away, then each snap the run passes on an axis the hand
     /// moves.
     ///
-    ///     MotionLayout(cards, id: \.name, parameters: $turn) { card in Face(card) } placements: { room, turn, segmentStart in
+    ///     MotionLayout(cards, id: \.name, parameters: $turn) { card in Face(card) } placements: { context, turn, segmentStart in
     ///         // The card that stood in front leaves the way the run goes - `turn` above `segmentStart` or below.
     ///     }
     ///
@@ -261,7 +268,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         id: KeyPath<Items.Element, ID>,
         parameters: Binding<Parameters>,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
-        placements: @escaping @MainActor (Rect, Parameters, Parameters) -> [Placement]
+        placements: @escaping @MainActor (LayoutContext<ID>, Parameters, Parameters) -> [Placement]
     ) {
         self.parameters = parameters
         source = Source(items: items, path: id, view: { content($0).node }, holder: { LayoutItemView(content: content($0)).node }, arithmetic: placements, readsFrom: true)
@@ -272,7 +279,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         _ items: Items,
         parameters: Binding<Parameters>,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
-        placements: @escaping @MainActor (Rect, Parameters, Parameters) -> [Placement]
+        placements: @escaping @MainActor (LayoutContext<ID>, Parameters, Parameters) -> [Placement]
     ) where Items.Element: Hashable, ID == Items.Element {
         self.init(items, id: \.self, parameters: parameters, content: content, placements: placements)
     }
@@ -360,6 +367,53 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         return copy
     }
 
+    /// Journeys the arithmetic samples beside the room and the parameters: a frame of one runs it again, and the
+    /// views land where it says.
+    ///
+    ///     .following($tilt.journey)
+    ///
+    /// Following `$tilt` runs the arithmetic at a write of where the state is going; following `$tilt.journey`
+    /// runs it at every frame of the way there. While the layout stands it is a consumer of each journey: the host
+    /// carries the state for it though no property shows it, so `$tilt.journey.sample` answers in the arithmetic.
+    ///
+    /// - Parameters:
+    ///   - first: a journey whose sample the arithmetic reads.
+    ///   - more: any others.
+    /// - Returns: the layout, following them.
+    public func following<First: Walked, each More: Walked>(
+        _ first: Journey<First>, _ more: repeat Journey<each More>
+    ) -> Self {
+        var copy = self
+        copy.followed.append(first.storage.presentation)
+        copy.consumed.append(JourneyConsumer(of: first))
+        for journey in repeat each more {
+            copy.followed.append(journey.storage.presentation)
+            copy.consumed.append(JourneyConsumer(of: journey))
+        }
+        return copy
+    }
+
+    /// The layout's own size: what it takes of the room offered, worked out from its views and the parameters as they
+    /// stand - a strip as tall as its tallest card, a board as wide as its columns.
+    ///
+    ///     .measure { context, _ in
+    ///         let tallest = context.subviews.map { $0.sizeThatFits(LayoutProposal()).height }.max() ?? 0
+    ///         return LayoutSize(width: context.proposal.width ?? 0, height: tallest)
+    ///     }
+    ///
+    /// Without it the layout takes the room it is given. A stated `width` or `height` still bounds the answer. The
+    /// closure measures and answers: it writes no state.
+    ///
+    /// - Parameter measure: the size, given the room offered, the views and the parameters.
+    /// - Returns: the layout, with a size of its own.
+    public func measure(
+        _ measure: @escaping @MainActor (LayoutMeasurementContext<ID>, Parameters) -> LayoutSize
+    ) -> Self {
+        var copy = self
+        copy.sized = measure
+        return copy
+    }
+
     /// What to draw over a placed view to darken it, at the opacity its placement answers as `shade`.
     ///
     ///     .shade {
@@ -432,7 +486,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// it turns about its middle - each view's place, its move along and its turn - and the hand over it turns
     /// with it, so the arithmetic stays left to right.
     ///
-    ///     MotionLayout(albums, id: \.title, parameters: $shown) { AlbumFace($0) } placements: { room, shown in … }
+    ///     MotionLayout(albums, id: \.title, parameters: $shown) { AlbumFace($0) } placements: { context, shown in … }
     ///         .mirrorsRightToLeft(true)   // the next album stands on the left in Arabic
     ///
     /// A layout places its views as written unless it says so: a dial, a clock or a table of photos keeps its
@@ -605,6 +659,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             complain("A MotionLayout's parameters name no axes: `axes` lists the numbers the hand and the program move.")
         }
         for complaint in complaints { complain(complaint) }
+        let definition = LayoutProgramDefinition(host: run.program())
 
         return PlacedStack {
             ForEach(run.slots, identify: { $0.identity }) { slot in run.wrapped(slot) }
@@ -638,11 +693,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
                         velocity: velocity.told)
                 }
             }
-            let program = run.states.slot.program(revision: UInt64(run.description)) { width, height in
-                let room = Rect(0, 0, width, height)
-                if run.states.room.wrappedValue != room { run.states.room.wrappedValue = room }
-            }
-            element.setProgram(MotionLayoutContract.layout, definition: LayoutProgramDefinition(host: program))
+            element.setProgram(MotionLayoutContract.layout, definition: definition)
             element.describe(MotionLayoutContract.itemDrag, run.itemStart)
             if run.itemStart != nil {
                 element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still in
@@ -658,7 +709,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         // Design: docs/design/core/layout-program.md#what-runs-it-again
         .engine([slot, run.parameters.followed, run.parameters.storage.presentation, $held.followed, $item.followed]
                     + followed,
-                priority: 0) { [slot] cycle in
+                consuming: consumed, priority: 0) { [slot] cycle in
+            slot.measuring.begin()
             let answer = run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)
             Renderer.shared.board.stirred.append(slot.number)
             return answer
@@ -704,8 +756,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         let view: (Items.Element) -> Node
         let holder: (Items.Element) -> Node
 
-        /// Where every view goes, given the room, the parameters and where its motion set out.
-        let arithmetic: @MainActor (Rect, Parameters, Parameters) -> [Placement]
+        /// Where every view goes, given the room and the views, the parameters and where its motion set out.
+        let arithmetic: @MainActor (LayoutContext<ID>, Parameters, Parameters) -> [Placement]
 
         /// Which description this is: the next number at each, never one again - an object's address is, once it
         /// is let go.
@@ -723,7 +775,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             path: KeyPath<Items.Element, ID>,
             view: @escaping (Items.Element) -> Node,
             holder: @escaping (Items.Element) -> Node,
-            arithmetic: @escaping @MainActor (Rect, Parameters, Parameters) -> [Placement],
+            arithmetic: @escaping @MainActor (LayoutContext<ID>, Parameters, Parameters) -> [Placement],
             readsFrom: Bool
         ) {
             self.items = items
@@ -744,6 +796,15 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         // Closures, not key paths: one written in a generic type is made anew at every call.
         let hands = axes.compactMap { $0.hand }
         let identities = numbers.numbered(items.map { AnyHashable($0[keyPath: path]) })
+        let subviews = LayoutSubviews(items.map { $0[keyPath: path] }, measuring: slot.measuring)
+        var sizing: (@MainActor (Double?, Double?, Parameters) -> LayoutSize)?
+        if let sized {
+            sizing = { width, height, parameters in
+                let context = LayoutMeasurementContext(
+                    proposal: LayoutProposal(width: width, height: height), subviews: subviews)
+                return Self.held(sized(context, parameters))
+            }
+        }
         let bodies = Bodies { [items, view = source.view] index in
             guard items.indices.contains(index) else { return nil }
             return view(items[index]).props[ViewContract.layoutBody.token].flatMap(LayoutBody.init(propValue:))
@@ -756,7 +817,9 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             },
             make: source.view,
             holder: source.holder,
-            arithmetic: source.arithmetic,
+            arithmetic: { [arithmetic = source.arithmetic, subviews] room, parameters, from in
+                arithmetic(LayoutContext(bounds: room, subviews: subviews), parameters, from)
+            },
             curve: curve ?? LayoutCurve.linear,
             readsFrom: source.readsFrom,
             kept: source.kept,
@@ -780,7 +843,20 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             world: world,
             body: { [bodies] index in bodies(index) },
             rebuilt: { [bodies] index in bodies.rebuilt(index) },
-            settled: settled)
+            settled: settled,
+            sized: sizing)
+    }
+
+    /// A size the layout said for itself, held to a size: a side that is no number, or below nought, is nought,
+    /// said once.
+    /// Design: docs/design/views/motion-layout.md#a-size-of-its-own
+    private static func held(_ answered: LayoutSize) -> LayoutSize {
+        let side = { (side: Double) in side.isFinite ? max(0, side) : 0 }
+        if !answered.width.isFinite || !answered.height.isFinite || answered.width < 0 || answered.height < 0 {
+            complain("A MotionLayout's measure answered a size that is none - a side below nought, or no number: "
+                + "that side is nought.")
+        }
+        return LayoutSize(width: side(answered.width), height: side(answered.height))
     }
 
     /// The layout's states, handed on whole: what its engine and handlers read and write.
@@ -827,9 +903,10 @@ extension MotionLayout: WalkedView {
             ("_slot", _slot), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
             ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns), ("_dragRuns", _dragRuns),
             ("source", source), ("parameters", parameters), ("axes", axes), ("curve", curve as Any),
-            ("followed", followed), ("mask", mask as Any), ("activated", activated),
+            ("followed", followed), ("consumed", consumed), ("mask", mask as Any), ("activated", activated),
             ("itemStart", itemStart as Any), ("dragged", dragged), ("dismissals", dismissals),
-            ("law", law), ("world", world), ("throwLaw", throwLaw), ("settled", settled), ("mirrors", mirrors),
+            ("law", law), ("world", world), ("throwLaw", throwLaw), ("settled", settled), ("sized", sized as Any),
+            ("mirrors", mirrors),
             ("named", named as Any), ("written", written),
         ]
     }

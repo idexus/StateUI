@@ -357,8 +357,8 @@ final class ControlTests: XCTestCase {
                 MotionLayout(["one", "two"], parameters: turn.projectedValue) {
                     Text($0)
                         .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.6))
-                } placements: { room, phase in
-                    [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
+                } placements: { context, phase in
+                    [Placement(Rect(phase, 0, context.bounds.width / 2, context.bounds.height)), Placement(Rect(context.bounds.width / 2, 0, 10, 10))]
                 }
                 .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 90), range: 0...1, snaps: .every(1))
                 .following(chosen.projectedValue)
@@ -377,8 +377,8 @@ final class ControlTests: XCTestCase {
 
             // A pan and two fingers over the motion layout: a rotation and a magnification, each driving its axis.
             ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
-                MotionLayout(["one", "two"], parameters: dial.projectedValue) { Text($0) } placements: { room, dial in
-                    [Placement(Rect(dial.turn, 0, room.width / 2 * dial.size, room.height)), Placement(.zero)]
+                MotionLayout(["one", "two"], parameters: dial.projectedValue) { Text($0) } placements: { context, dial in
+                    [Placement(Rect(dial.turn, 0, context.bounds.width / 2 * dial.size, context.bounds.height)), Placement(.zero)]
                 }
                 .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...1, snaps: .endpoints)
                 .axis(\.size, input: .magnification, range: 1...2, snaps: .endpoints)

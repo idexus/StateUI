@@ -60,6 +60,7 @@ extension AppKitElement {
         case .zStack, .motionLayout:
             let layers = AppKitZStackView()
             layers.motionLayout = type == .motionLayout
+            layers.programSize = element.programSize
             return layers
 
 

@@ -1296,6 +1296,9 @@ final class PagesTests: XCTestCase {
 /// A native half that says, as each tabbed view is applied, whether its tabs stand in the window.
 @MainActor
 private final class TabsReading: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     unowned let element: MountedElement
     let read: (String, Bool) -> Void
     let presentsView = true

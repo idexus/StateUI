@@ -138,8 +138,8 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
 
         return MotionLayout(cards, id: \.name, parameters: $turn) { card in
             face(card, large: !fanned)
-        } placements: { room, turn, segmentStart in
-            (0..<count).map { fanned ? fan($0, turn, room) : pile($0, turn, segmentStart, room) }
+        } placements: { context, turn, segmentStart in
+            (0..<count).map { fanned ? fan($0, turn, context.bounds) : pile($0, turn, segmentStart, context.bounds) }
         }
         // The pile is swiped a card at a time, the fan scrolled through.
         .axis(

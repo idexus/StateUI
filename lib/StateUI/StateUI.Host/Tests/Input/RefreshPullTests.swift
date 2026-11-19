@@ -128,6 +128,9 @@ private final class Views {
 /// A native half saying what it was last told changed.
 @MainActor
 private final class ChangedView: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     let presentsView = true
     private(set) var changed: Set<Prop> = []
     func standingValue(_ property: Prop) -> HostValue? { nil }

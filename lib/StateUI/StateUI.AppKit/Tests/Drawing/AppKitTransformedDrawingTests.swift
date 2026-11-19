@@ -33,10 +33,10 @@ final class AppKitTransformedDrawingTests: XCTestCase {
                 MotionLayout(["turned", "straight"], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                     Rectangle()
                         .fill(.red)
-                } placements: { room, _ in
+                } placements: { context, _ in
                     [
-                        Placement(Rect(room.width - 40, 10, 80, 80), transform: .rotate(30)),
-                        Placement(Rect(room.width - 40, 110, 80, 80)),
+                        Placement(Rect(context.bounds.width - 40, 10, 80, 80), transform: .rotate(30)),
+                        Placement(Rect(context.bounds.width - 40, 110, 80, 80)),
                     ]
                 }
             }

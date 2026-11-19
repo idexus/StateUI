@@ -70,15 +70,47 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `Placement.lanes` are gone, and `Placement` is no `LaneValue`: a motion layout hands the host its views' places
   typed, so nothing reads a placement as twelve numbers any more. A `Placement` is what `placements:` answers, as
   before.
+- **A motion layout's arithmetic is handed a context.** `placements:` takes a `LayoutContext` in place of the room's
+  `Rect`: the room is `context.bounds`, and `context.subviews` are the views, which the arithmetic may measure.
+
+  ```swift
+  // before
+  } placements: { room, turn in
+      names.indices.map { Placement(Rect(Double($0) * 80 - turn, 0, 72, room.height)) }
+  }
+
+  // now
+  } placements: { context, turn in
+      names.indices.map { Placement(Rect(Double($0) * 80 - turn, 0, 72, context.bounds.height)) }
+  }
+  ```
 - **For a host: a report says who wrote, and a movement's end says how.** `HostBoundary.report(_:through:origin:)`
   and `report(_:updating:through:at:origin:)` take a `WriteOrigin` - `.user` for a control the user moved,
   `.animation` for a frame, `.measurement` for a size read, `.program` for a halt the application asked for - and
   the frame's time; `complete(_:as:)` takes a `HostMotionOutcome` in place of a `Bool`, and the movements an engine
   ended come in `HostCycle.finished`. A state followed by an engine or a reading with no property showing it reaches
   the host in `HostPatch.followed`. The host layer does all of it; a host built on `StateUIHost` changes nothing.
+- **For a host: a motion layout runs a layout program.** Its room and its views' places cross typed in
+  `HostPatch.layout` (`HostLayoutProgram`), and `HostCycle.stirred` names the layouts a cycle worked out; the host
+  layer says the room, reads the places and tells the program how a view is measured. A host's `NativeElement`
+  answers `measured(width:height:)` - its view's own size and first baseline in a room offered - and its ZStack
+  hands `ZStackArithmetic.size(of:padding:width:motionLayout:program:)` the element's `programSize`. `LayoutSize`
+  is declared in `StateUI`: a source naming it imports `StateUI` beside `StateUIHost`.
 
 ### New
 
+- **A layout measures its views.** Each of `context.subviews` answers how large its view is in a room offered:
+  `view.sizeThatFits(LayoutProposal())` the size it takes by itself, `LayoutProposal(width: 200)` the size its words
+  take wrapped to 200 points, as a `LayoutSize`; `firstBaseline(_:)` where its first line rests. A view is found by
+  its place or by its item's identity (`context.subviews[id: item.id]`). A layout that measures is worked out again
+  when a view of it is sized anew.
+- **A motion layout says its own size.** `.measure { context, parameters in ... }` answers the layout's `LayoutSize`
+  from the room offered (`context.proposal`) and its views; without it the layout takes the room it is given, as
+  before. A row that becomes a column where the room runs out is one layout of the same views, each keeping its
+  state and the keyboard.
+- **A motion layout follows a journey.** `.following($tilt.journey)` runs the arithmetic on every frame the value
+  moves, where it reads `$tilt.journey.sample`; `.following($tilt)` runs it at a write of where the state is going,
+  as before.
 - **A test winds its window's time by hand.** `TestWindow(clock:)` takes a `TestClock`: the page mounts moving no
   time, `element.send(_:)` does an act and waits for nothing, `window.flush()` runs the work that is ready at the
   present time, and `try await clock.advance(by:)` moves the time on a display frame at a time. A movement travels

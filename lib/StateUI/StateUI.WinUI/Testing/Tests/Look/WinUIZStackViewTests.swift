@@ -56,9 +56,9 @@ final class WinUIZStackViewTests: XCTestCase {
                     MotionLayout(["back", "front"], parameters: placed.projectedValue) { name in
                         Rectangle()
                             .fill(name == "back" ? .red : .blue)
-                    } placements: { room, phase in
+                    } placements: { context, phase in
                         phase < 1
-                            ? [Placement(room), Placement(room)]
+                            ? [Placement(context.bounds), Placement(context.bounds)]
                             : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
                     }
                     .parameterMotion(.none)

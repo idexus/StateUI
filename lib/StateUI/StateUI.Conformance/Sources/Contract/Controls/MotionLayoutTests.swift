@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `MotionLayoutContract` on a host: each view stands where the arithmetic puts it, the arithmetic is handed the room
-/// the layout was given and handed it again when it changes, the layout takes no size from its views, the phase the
+/// the layout was given and handed it again when it changes, measures its views as they stand by themselves and again
+/// when one is sized anew, the layout takes no size from its views but the one it measures, the phase the
 /// program sends travels there and is awaited - each axis of it on its own - a scroll comes to rest on a snap
 /// target, a throw going on as the phase's journey, and a layout mirrored right to left stands its views and hears the hand turned about its middle.
 @_spi(Host) public enum MotionLayoutTests: ConformanceFamily {
@@ -55,8 +56,8 @@
                         MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                             Rectangle()
                                 .fill(.red)
-                        } placements: { room, _ in
-                            rooms.values.append(room)
+                        } placements: { context, _ in
+                            rooms.values.append(context.bounds)
                             return [Placement(Rect(0, 0, 10, 10))]
                         }
                         .width(width.projectedValue).height(40)
@@ -86,8 +87,8 @@
                                 .fill(.red)
                                 .width(40)
                                 .height(40)
-                        } placements: { room, _ in
-                            [Placement(room)]
+                        } placements: { context, _ in
+                            [Placement(context.bounds)]
                         }
                         Rectangle()
                             .fill(.green)
@@ -110,6 +111,152 @@
                 }
                 s.settle { apart() == 10 }
                 s.expect(apart(), 10, "the view below right under the one above, whatever the layout's view needs")
+            },
+            ConformanceCase("itsArithmeticMeasuresItsViews", proves: [
+                Covered(MotionLayoutContract.self), Covered(MotionLayoutContract.layout),
+            ]) { s in
+                let (first, second) = (Received<[Double]>(), Received<[Double]>())
+                let width = State(wrappedValue: 40.0)
+                s.start {
+                    VStack {
+                        MotionLayout([0, 1], parameters: State(wrappedValue: 0.0).projectedValue) { index in
+                            if index == 0 {
+                                Rectangle()
+                                    .fill(.red)
+                                    .width(width.projectedValue)
+                                    .height(20)
+                                    .onEvent(ViewContract.frameChanged) { first.values.append($0) }
+                            } else {
+                                Rectangle()
+                                    .fill(.blue)
+                                    .width(24)
+                                    .height(30)
+                                    .onEvent(ViewContract.frameChanged) { second.values.append($0) }
+                            }
+                        } placements: { context, _ in
+                            // Side by side, six points apart, each at the size it measures.
+                            var across = 0.0
+                            return context.subviews.map { view in
+                                let size = view.sizeThatFits(LayoutProposal())
+                                defer { across += size.width + 6 }
+                                return Placement(Rect(across, 0, size.width, size.height))
+                            }
+                        }
+                        .width(200).height(60)
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+
+                let apart = {
+                    guard let one = first.values.last.map(FrameReport.inContent),
+                          let two = second.values.last.map(FrameReport.inContent)
+                    else { return [Double]() }
+                    return [two[0] - one[0], two[1] - one[1]]
+                }
+                s.settle { apart() == [46, 0] && first.values.last.map(FrameReport.size) == [40, 20] }
+                s.expect(first.values.last.map(FrameReport.size), [40, 20], "the first at the size it measures")
+                s.expect(second.values.last.map(FrameReport.size), [24, 30], "the second at its own")
+                s.expect(apart(), [46, 0], "the second after the first's width")
+
+                // A view sized anew is measured again, and the layout worked out by it - on every frame of the
+                // way to its new size, so the case waits for the way's end.
+                width.wrappedValue = 70
+                s.settle { apart() == [76, 0] && first.values.last.map(FrameReport.size) == [70, 20] }
+                s.expect(first.values.last.map(FrameReport.size), [70, 20], "the first at its new size")
+                s.expect(apart(), [76, 0], "and the second after it")
+            },
+            ConformanceCase("aViewMeasuresAsItStandsByItself", proves: [
+                Covered(MotionLayoutContract.self), Covered(MotionLayoutContract.layout),
+            ], needs: [Covered(TextContract.self)]) { s in
+                let (alone, measured) = (Received<[Double]>(), Received<[Double]>())
+                s.start {
+                    VStack {
+                        Text("Measured words")
+                            .horizontalAlignment(.start)
+                            .onEvent(ViewContract.frameChanged) { alone.values.append($0) }
+                        MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
+                            Text("Measured words")
+                                .onEvent(ViewContract.frameChanged) { measured.values.append($0) }
+                        } placements: { context, _ in
+                            context.subviews.map { view in
+                                let size = view.sizeThatFits(LayoutProposal())
+                                return Placement(Rect(0, 0, size.width, size.height))
+                            }
+                        }
+                        .width(300).height(60)
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+
+                // The same words: in the layout at the size they measure, beside it at the size they take.
+                let alike = {
+                    guard let one = alone.values.last.map(FrameReport.size), one.count == 2, one[0] > 0,
+                          let two = measured.values.last.map(FrameReport.size), two.count == 2
+                    else { return false }
+                    return abs(one[0] - two[0]) <= 1 && abs(one[1] - two[1]) <= 1
+                }
+                s.settle { alike() }
+                s.expect(
+                    measured.values.last.map(FrameReport.size).map { $0.map { $0.rounded() } },
+                    alone.values.last.map(FrameReport.size).map { $0.map { $0.rounded() } },
+                    "words measured for a layout are as large as the same words standing alone")
+            },
+            ConformanceCase("itsOwnSizeIsTheOneItMeasures", proves: [
+                Covered(MotionLayoutContract.self), Covered(MotionLayoutContract.layout),
+            ]) { s in
+                let (above, below) = (Received<[Double]>(), Received<[Double]>())
+                let height = State(wrappedValue: 30.0)
+                s.start {
+                    VStack {
+                        Rectangle()
+                            .fill(.blue)
+                            .width(20)
+                            .height(10)
+                            .onEvent(ViewContract.frameChanged) { above.values.append($0) }
+                        MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
+                            Rectangle()
+                                .fill(.red)
+                                .width(40)
+                                .height(height.projectedValue)
+                        } placements: { context, _ in
+                            context.subviews.map { view in
+                                let size = view.sizeThatFits(LayoutProposal())
+                                return Placement(Rect(0, 0, size.width, size.height))
+                            }
+                        }
+                        // As large as its tallest view.
+                        .measure { context, _ in
+                            let sizes = context.subviews.map { $0.sizeThatFits(LayoutProposal()) }
+                            return LayoutSize(
+                                width: sizes.map(\.width).max() ?? 0, height: sizes.map(\.height).max() ?? 0)
+                        }
+                        Rectangle()
+                            .fill(.green)
+                            .width(20)
+                            .height(10)
+                            .onEvent(ViewContract.frameChanged) { below.values.append($0) }
+                    }
+                    .spacing(0)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+
+                // How far below the first view the last stands: the first's height and the layout's own.
+                let apart = {
+                    guard let one = above.values.last.map(FrameReport.inContent),
+                          let two = below.values.last.map(FrameReport.inContent)
+                    else { return -1.0 }
+                    return two[1] - one[1]
+                }
+                s.settle { apart() == 40 }
+                s.expect(apart(), 40, "the view below under a layout as tall as its view measures")
+
+                // Its view grown, the layout says another size and is measured again.
+                height.wrappedValue = 50
+                s.settle { apart() == 60 }
+                s.expect(apart(), 60, "and under the taller layout once its view grew")
             },
             ConformanceCase("mirroredRightToLeftItsViewsStandTurnedAboutItsMiddle", proves: [
                 Covered(MotionLayoutContract.mirrorsRightToLeft),

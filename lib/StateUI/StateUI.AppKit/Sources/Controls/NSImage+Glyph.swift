@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+import StateUI
 @_spi(Host) import StateUIHost
 
 /// A picture as a tab or a menu's entry shows it: a glyph beside words in the system font.

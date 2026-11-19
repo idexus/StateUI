@@ -216,13 +216,13 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                     .fill(Palette.text)
                     .cornerRadius(3)
             }
-        } placements: { room, turn in
+        } placements: { context, turn in
             // THE WHOLE LAYOUT, run on the display's own frames whenever the
             // room or the parameters have moved, with no view built.
             // FLUNG OUTWARD, the ring grows with how fast it turns.
             let flung = flungOut ? min(abs($turn.journey.sample?.velocity ?? 0) * 0.05, 0.35) : 0
-            return Self.cards.indices.map { place($0, turn, room, flung: flung) }
-                + Self.cards.indices.map { dot($0, turn, room) }
+            return Self.cards.indices.map { place($0, turn, context.bounds, flung: flung) }
+                + Self.cards.indices.map { dot($0, turn, context.bounds) }
         }
         // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
         // two fingers and a wheel all turn the ring, carrying the card in

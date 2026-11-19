@@ -10,6 +10,9 @@
 /// Design: docs/design/host/benchmarks.md#a-native-half-with-no-toolkit
 @MainActor
 final class CountedView: NativeElement, FrameReporter {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     let element: MountedElement
     private unowned let bench: Bench
     private(set) var cells: ItemsCells?

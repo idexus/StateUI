@@ -463,6 +463,15 @@ swift.conformance LayoutInput: Swift.Sendable
 swift.conformance LayoutInterpolation: Swift.Sendable
 swift.conformance LayoutParameters: Swift.Equatable
 swift.conformance LayoutParameters: Swift.Sendable
+swift.conformance LayoutProposal: Swift.Equatable
+swift.conformance LayoutProposal: Swift.Hashable
+swift.conformance LayoutProposal: Swift.Sendable
+swift.conformance LayoutSize: Swift.Equatable
+swift.conformance LayoutSize: Swift.Sendable
+swift.conformance LayoutSubviews: Swift.BidirectionalCollection
+swift.conformance LayoutSubviews: Swift.Collection
+swift.conformance LayoutSubviews: Swift.RandomAccessCollection
+swift.conformance LayoutSubviews: Swift.Sequence
 swift.conformance Line: StateUI.Shape
 swift.conformance Line: StateUI.View
 swift.conformance Line: StateUI.Views
@@ -1638,6 +1647,8 @@ swift.init Key.init(_:): init(_ character: Character)
 swift.init Key.init(extendedGraphemeClusterLiteral:): init(extendedGraphemeClusterLiteral value: Character)
 swift.init KeyPress.init(_:modifiers:): init(_ key: Key, modifiers: KeyModifiers = [])
 swift.init LayoutParameters.init(): init()
+swift.init LayoutProposal.init(width:height:): init(width: Double? = nil, height: Double? = nil)
+swift.init LayoutSize.init(width:height:): init(width: Double, height: Double)
 swift.init Line.init(from:to:): @MainActor init(from start: Binding<Point>, to end: Binding<Point>)
 swift.init Line.init(from:to:): @MainActor init(from start: Point, to end: Point)
 swift.init Link.init(_:address:): @MainActor init(_ text: String, address: Binding<String>)
@@ -1658,10 +1669,10 @@ swift.init MenuSeparator.init(): @MainActor init()
 swift.init MenuToggle.init(_:isOn:): @MainActor init(_ text: String, isOn: Binding<Bool>)
 swift.init MenuToggle.init(_:isOn:): @MainActor init(_ text: String, isOn: Bool)
 swift.init Message.init(_:): init(_ say: @escaping @MainActor @Sendable (Arguments, MessageContext) -> String)
-swift.init MotionLayout.init(_:id:parameters:content:placements:): @MainActor init<Content>(_ items: Items, id: KeyPath<Items.Element, ID>, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (Rect, Parameters) -> [Placement]) where Content : View
-swift.init MotionLayout.init(_:id:parameters:content:placements:): @MainActor init<Content>(_ items: Items, id: KeyPath<Items.Element, ID>, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (Rect, Parameters, Parameters) -> [Placement]) where Content : View
-swift.init MotionLayout.init(_:parameters:content:placements:): @MainActor init<Content>(_ items: Items, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (Rect, Parameters) -> [Placement]) where ID == Items.Element, Content : View
-swift.init MotionLayout.init(_:parameters:content:placements:): @MainActor init<Content>(_ items: Items, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (Rect, Parameters, Parameters) -> [Placement]) where ID == Items.Element, Content : View
+swift.init MotionLayout.init(_:id:parameters:content:placements:): @MainActor init<Content>(_ items: Items, id: KeyPath<Items.Element, ID>, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (LayoutContext<ID>, Parameters) -> [Placement]) where Content : View
+swift.init MotionLayout.init(_:id:parameters:content:placements:): @MainActor init<Content>(_ items: Items, id: KeyPath<Items.Element, ID>, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (LayoutContext<ID>, Parameters, Parameters) -> [Placement]) where Content : View
+swift.init MotionLayout.init(_:parameters:content:placements:): @MainActor init<Content>(_ items: Items, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (LayoutContext<ID>, Parameters) -> [Placement]) where ID == Items.Element, Content : View
+swift.init MotionLayout.init(_:parameters:content:placements:): @MainActor init<Content>(_ items: Items, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (LayoutContext<ID>, Parameters, Parameters) -> [Placement]) where ID == Items.Element, Content : View
 swift.init NavigationStack.init(_:root:destination:): @MainActor init<Route, Root, Destination>(_ path: Binding<[Route]>, @ViewBuilder root: () -> Root, @ViewBuilder destination: @escaping (Route) -> Destination) where Route : Hashable, Root : View, Destination : View
 swift.init Path.init(_:): @MainActor init(_ data: String)
 swift.init PersistentKey.init(_:): init(_ name: String)
@@ -5767,6 +5778,12 @@ swift.method LayoutInterpolation.value(at:segment:knots:values:): func value(at 
 swift.method LayoutProperties.clipsContent(_:): @MainActor func clipsContent(_ value: Bool) -> Self.Modified
 swift.method LayoutProperties.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ edges: SafeAreaEdges) -> Self.Modified
 swift.method LayoutProperties.letsInputThrough(_:): @MainActor func letsInputThrough(_ value: Bool) -> Self.Modified
+swift.method LayoutSubview.firstBaseline(_:): @MainActor func firstBaseline(_ proposal: LayoutProposal) -> Double?
+swift.method LayoutSubview.sizeThatFits(_:): @MainActor func sizeThatFits(_ proposal: LayoutProposal) -> LayoutSize
+swift.method LayoutSubviews.distance(from:to:): func distance(from start: Int, to end: Int) -> Int
+swift.method LayoutSubviews.index(_:offsetBy:): func index(_ index: Int, offsetBy distance: Int) -> Int
+swift.method LayoutSubviews.index(after:): func index(after index: Int) -> Int
+swift.method LayoutSubviews.index(before:): func index(before index: Int) -> Int
 swift.method Line.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Line.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6641,6 +6658,7 @@ swift.method MotionLayout.engine(tracking:_:priority:_:): @MainActor func engine
 swift.method MotionLayout.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method MotionLayout.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method MotionLayout.following(_:): @MainActor func following<each Value>(_ states: repeat Binding<each Value>) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.following(_:_:): @MainActor func following<First, each More>(_ first: Journey<First>, _ more: repeat Journey<each More>) -> MotionLayout<Items, ID, Parameters> where First : Walked, repeat each More : Walked
 swift.method MotionLayout.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method MotionLayout.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method MotionLayout.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -6663,6 +6681,7 @@ swift.method MotionLayout.margin(horizontal:vertical:): @MainActor func margin(h
 swift.method MotionLayout.margin(start:top:end:bottom:): @MainActor func margin(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
 swift.method MotionLayout.maximumHeight(_:): @MainActor func maximumHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.maximumWidth(_:): @MainActor func maximumWidth(_ state: Binding<Double>) -> Self.Modified
+swift.method MotionLayout.measure(_:): @MainActor func measure(_ measure: @escaping @MainActor @Sendable (LayoutMeasurementContext<ID>, Parameters) -> LayoutSize) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.menuBar(order:_:): @MainActor func menuBar(order: Int = 0, @MenuBarBuilder _ menus: () -> [Menu]) -> Self.Modified
 swift.method MotionLayout.minimumHeight(_:): @MainActor func minimumHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.minimumWidth(_:): @MainActor func minimumWidth(_ state: Binding<Double>) -> Self.Modified
@@ -12609,8 +12628,19 @@ swift.property JourneySample.value: let value: Value
 swift.property JourneySample.velocity: let velocity: Value
 swift.property KeyPress.key: let key: Key
 swift.property KeyPress.modifiers: let modifiers: KeyModifiers
+swift.property LayoutContext.bounds: let bounds: Rect
+swift.property LayoutContext.subviews: let subviews: LayoutSubviews<ID>
 swift.property LayoutCurve.reach: var reach: Int { get }
 swift.property LayoutInterpolation.reach: var reach: Int { get }
+swift.property LayoutMeasurementContext.proposal: let proposal: LayoutProposal
+swift.property LayoutMeasurementContext.subviews: let subviews: LayoutSubviews<ID>
+swift.property LayoutProposal.height: let height: Double?
+swift.property LayoutProposal.width: let width: Double?
+swift.property LayoutSize.height: var height: Double
+swift.property LayoutSize.width: var width: Double
+swift.property LayoutSubview.id: let id: ID
+swift.property LayoutSubviews.endIndex: var endIndex: Int { get }
+swift.property LayoutSubviews.startIndex: var startIndex: Int { get }
 swift.property Line.body: @MainActor var body: Never { get }
 swift.property Link.body: @MainActor var body: Never { get }
 swift.property LocaleInfo.firstDayOfWeek: @MainActor var firstDayOfWeek: Weekday { get }
@@ -12824,9 +12854,15 @@ swift.struct Key: struct Key
 swift.struct KeyModifiers: struct KeyModifiers
 swift.struct KeyPress: struct KeyPress
 swift.struct LayoutBody: struct LayoutBody
+swift.struct LayoutContext: struct LayoutContext<ID> where ID : Hashable
 swift.struct LayoutCurve: struct LayoutCurve
 swift.struct LayoutDynamics: struct LayoutDynamics
 swift.struct LayoutInput: struct LayoutInput
+swift.struct LayoutMeasurementContext: struct LayoutMeasurementContext<ID> where ID : Hashable
+swift.struct LayoutProposal: struct LayoutProposal
+swift.struct LayoutSize: struct LayoutSize
+swift.struct LayoutSubview: struct LayoutSubview<ID> where ID : Hashable
+swift.struct LayoutSubviews: struct LayoutSubviews<ID> where ID : Hashable
 swift.struct Line: @MainActor struct Line
 swift.struct Link: @MainActor struct Link
 swift.struct LocaleTag: struct LocaleTag
@@ -12912,6 +12948,8 @@ swift.struct ZStack: @MainActor struct ZStack
 swift.subscript Binding.subscript(_:): @MainActor subscript(index: Value.Index) -> StatePart<Value.Element> { get }
 swift.subscript Binding.subscript(dynamicMember:): @MainActor subscript<Subject>(dynamicMember keyPath: any ReferenceWritableKeyPath<Value, Subject> & Sendable) -> StatePart<Subject> { get }
 swift.subscript Binding.subscript(dynamicMember:): @MainActor subscript<Subject>(dynamicMember keyPath: any WritableKeyPath<Value, Subject> & Sendable) -> StatePart<Subject> { get }
+swift.subscript LayoutSubviews.subscript(_:): subscript(index: Int) -> LayoutSubview<ID> { get }
+swift.subscript LayoutSubviews.subscript(id:): subscript(id id: ID) -> LayoutSubview<ID>? { get }
 swift.subscript StatePart.subscript(_:): @MainActor subscript(index: Value.Index) -> StatePart<Value.Element> { get }
 swift.subscript StatePart.subscript(dynamicMember:): @MainActor subscript<Subject>(dynamicMember keyPath: any ReferenceWritableKeyPath<Value, Subject> & Sendable) -> StatePart<Subject> { get }
 swift.subscript StatePart.subscript(dynamicMember:): @MainActor subscript<Subject>(dynamicMember keyPath: any WritableKeyPath<Value, Subject> & Sendable) -> StatePart<Subject> { get }
@@ -13262,6 +13300,7 @@ swift.type.property LayoutInterpolation.catmullRom: static var catmullRom: Layou
 swift.type.property LayoutInterpolation.linear: static var linear: LayoutCurve { get }
 swift.type.property LayoutInterpolation.monotone: static var monotone: LayoutCurve { get }
 swift.type.property LayoutParameters.axes: static var axes: [WritableKeyPath<Self, Double>] { get }
+swift.type.property LayoutSize.zero: static let zero: LayoutSize
 swift.type.property LineBreakElementContract.lineBreak: static let lineBreak: ElementProperty<LineBreakElementContract, LineBreak>
 swift.type.property LineBreakElementContract.name: static let name: String
 swift.type.property LineContract.from: static let from: ElementProperty<LineContract, Point>
@@ -13623,6 +13662,8 @@ swift.typealias Either.Modified: typealias Modified = ModifiedContent<Either<Fir
 swift.typealias EventHandler: typealias EventHandler = @MainActor @Sendable () async throws -> Void
 swift.typealias GalleryView.Modified: typealias Modified = GalleryView<Items, ID>
 swift.typealias ItemsView.Modified: typealias Modified = ItemsView<ID>
+swift.typealias LayoutSubviews.Element: typealias Element = LayoutSubview<ID>
+swift.typealias LayoutSubviews.Index: typealias Index = Int
 swift.typealias MotionLayout.Modified: typealias Modified = MotionLayout<Items, ID, Parameters>
 swift.typealias PositionDots.Modified: typealias Modified = PositionDots
 swift.typealias Style: typealias Style<Target> = Styling<Target, StyleScope.Whole> where Target : StyleTarget

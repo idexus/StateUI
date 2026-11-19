@@ -48,8 +48,8 @@ private struct HomeBoard: View {
         let count = icons.count
         return MotionLayout(icons, id: \.self, parameters: $board) { icon in
             HomeTile(name: icon, lifted: lifted == icon)
-        } placements: { room, board in
-            (0..<count).map { Self.place($0, board, room) }
+        } placements: { context, board in
+            (0..<count).map { Self.place($0, board, context.bounds) }
         }
         .axis(\.self, input: .pages(.horizontal), range: 0...2, keyframes: .every(1), snaps: .every(1))
         .itemDrag(begins: .longPress)

@@ -84,6 +84,13 @@ extension AppKitElement {
         }
     }
 
+    /// The element's own size and first baseline in the room offered, as its layout item measures them: what a
+    /// layout's program asks of a child.
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        guard let item = layoutItem else { return HostChildMeasured(size: .zero, firstBaseline: nil) }
+        return HostChildMeasured(size: item.size(offered: width), firstBaseline: item.firstBaseline(offered: width))
+    }
+
     var layoutItem: AppKitLayoutItem? {
         guard let view = presentableViews.first else { return nil }
         var item = AppKitLayoutItem(view: view)

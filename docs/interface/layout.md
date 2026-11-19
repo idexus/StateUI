@@ -653,12 +653,15 @@ swipe to the right moving the run on.
 
 `MotionLayout` places its views by arithmetic of the application's own,
 worked out from the room and parameters - a state of the application's, lent
-with `parameters:`. The arithmetic answers one `Placement`
+with `parameters:`. The arithmetic is handed a `LayoutContext` - the room as
+`context.bounds`, from the layout's own top left, and the views as
+`context.subviews` - and answers one `Placement`
 per view, in the items' order - its bounds from the layout's top left, and a
 transform, an opacity, a shade and a `zIndex` - and runs on the host's frames
 whenever the room or the parameters move, with no view built again. The layout
-has no size of its own: it takes the room its own layout gives it, whatever
-its views need, so give it one - a `.height`, or a `.fill` row of a `Grid`:
+takes the room its own layout gives it, whatever
+its views need, so give it one - a `.height`, or a `.fill` row of a `Grid` -
+or have it [measure its own size](#a-layout-that-measures):
 
 ```swift
 struct Shelf: View {
@@ -669,11 +672,11 @@ struct Shelf: View {
     var body: some View {
         MotionLayout(names, parameters: $turn) { name in
             Text(name)
-        } placements: { room, _ in
+        } placements: { context, _ in
             names.indices.map { index in
-                let width = room.width / Double(names.count)
+                let width = context.bounds.width / Double(names.count)
 
-                return Placement(Rect(Double(index) * width, 0, width, room.height))
+                return Placement(Rect(Double(index) * width, 0, width, context.bounds.height))
             }
         }
         .height(60)
@@ -698,12 +701,12 @@ struct Carousel: View {
         VStack {
             MotionLayout(names, parameters: $turn) { name in
                 Text(name)
-            } placements: { room, turn in
+            } placements: { context, turn in
                 names.indices.map { index in
                     let step = Double(index) - turn
 
                     return Placement(
-                        Rect(room.width / 2 - 60 + step * 140, 0, 120, room.height),
+                        Rect(context.bounds.width / 2 - 60 + step * 140, 0, 120, context.bounds.height),
                         transform: .scale(1 - min(abs(step), 1) * 0.2),
                         zIndex: -Int(abs(step) * 10))
                 }
@@ -752,8 +755,8 @@ struct Drawer: View {
     var body: some View {
         MotionLayout(["Notes"], parameters: $open) { name in
             Text(name)
-        } placements: { room, open in
-            [Placement(Rect(0, room.height - 60 - open * 200, room.width, 260))]
+        } placements: { context, open in
+            [Placement(Rect(0, context.bounds.height - 60 - open * 200, context.bounds.width, 260))]
         }
         // Pulled up, it opens; let go, it is open or closed.
         .axis(\.self, input: .scroll(.vertical, lengthPerUnit: 200), range: 0...1, snaps: .endpoints)
@@ -808,9 +811,9 @@ struct Hand: View {
         VStack {
             MotionLayout(names, parameters: $turn) { name in
                 Text(name)
-            } placements: { room, _ in
+            } placements: { context, _ in
                 names.indices.map { index in
-                    Placement(Rect(room.width / 2 - 60 + Double(index) * gap, 0, 120, room.height))
+                    Placement(Rect(context.bounds.width / 2 - 60 + Double(index) * gap, 0, 120, context.bounds.height))
                 }
             }
             .dynamics(.spring(response: .milliseconds(300), damping: 0.8))
@@ -849,9 +852,9 @@ struct Swaying: View {
         MotionLayout(["Mural", "Nebula", "Ridge", "Bloom"], parameters: $turn) { name in
             Text(name)
                 .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
-        } placements: { room, turn in
+        } placements: { context, turn in
             (0..<4).map { index in
-                Placement(Rect(room.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, room.height))
+                Placement(Rect(context.bounds.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, context.bounds.height))
             }
         }
         .axis(\.self, input: .scroll(.horizontal), range: 0...3, snaps: .every(1))
@@ -880,7 +883,7 @@ struct Pile: View {
     var body: some View {
         MotionLayout(names, parameters: $turn) { name in
             Text(name)
-        } placements: { room, turn, segmentStart in
+        } placements: { context, turn, segmentStart in
             names.indices.map { index in
                 let step = Double(index) - turn
                 let leaving = Double(index) == segmentStart && abs(step) < 1
@@ -889,7 +892,7 @@ struct Pile: View {
                 let behind = leaving ? 0 : abs(step)
 
                 return Placement(
-                    Rect(room.width / 2 - 70 + out * 160, 10 + behind * 6, 140, 180),
+                    Rect(context.bounds.width / 2 - 70 + out * 160, 10 + behind * 6, 140, 180),
                     transform: .rotate(out * 12).scale(1 - min(behind, 3) * 0.04),
                     zIndex: leaving && abs(step) > 0.5 ? -100 : -Int(behind * 10))
             }
@@ -924,14 +927,14 @@ struct Boards: View {
         VStack {
             MotionLayout(names, parameters: $board) { name in
                 Text(name)
-            } placements: { room, board in
+            } placements: { context, board in
                 names.indices.map { index in
                     // Three a board, the boards a room's width apart.
                     let (page, slot) = index.quotientAndRemainder(dividingBy: 3)
-                    let width = room.width / 3
+                    let width = context.bounds.width / 3
 
                     return Placement(
-                        Rect((Double(page) - board) * room.width + Double(slot) * width, 0, width, room.height))
+                        Rect((Double(page) - board) * context.bounds.width + Double(slot) * width, 0, width, context.bounds.height))
                 }
             }
             .axis(\.self, input: .pages(.horizontal), range: 0...1, snaps: .every(1))
@@ -941,10 +944,10 @@ struct Boards: View {
                 Rectangle()
                     .fill(.gray)
                     .cornerRadius(4)
-            } placements: { room, board in
+            } placements: { context, board in
                 [0, 1].map { page in
                     Placement(
-                        Rect(room.width / 2 - 12 + Double(page) * 16, 4, 8, 8),
+                        Rect(context.bounds.width / 2 - 12 + Double(page) * 16, 4, 8, 8),
                         opacity: 0.3 + 0.7 * max(1 - abs(board - Double(page)), 0))
                 }
             }
@@ -978,9 +981,9 @@ struct Board: View {
     var body: some View {
         MotionLayout(names, parameters: $turn) { name in
             Text(name)
-        } placements: { room, _ in
+        } placements: { context, _ in
             names.indices.map { index in
-                Placement(Rect(Double(index) * room.width / 4, 0, room.width / 4, room.height))
+                Placement(Rect(Double(index) * context.bounds.width / 4, 0, context.bounds.width / 4, context.bounds.height))
             }
         }
         .itemDrag(begins: .longPress)
@@ -1020,12 +1023,12 @@ struct Ring: View {
     var body: some View {
         MotionLayout(names, parameters: $turn) { name in
             Text(name)
-        } placements: { room, turn in
+        } placements: { context, turn in
             names.indices.map { index in
                 let step = (Double(index) - turn).remainder(dividingBy: Double(names.count))
 
                 return Placement(
-                    Rect(room.width / 2 - 60 + step * 140, 0, 120, room.height),
+                    Rect(context.bounds.width / 2 - 60 + step * 140, 0, 120, context.bounds.height),
                     opacity: 1 - min(abs(step) / 3, 1))
             }
         }
@@ -1057,12 +1060,12 @@ struct Planets: View {
         VStack {
             MotionLayout(names, parameters: $orbit) { name in
                 Text(name)
-            } placements: { room, orbit in
+            } placements: { context, orbit in
                 names.indices.map { index in
                     let size = 60 * orbit.zoom
                     let step = Double(index) - orbit.turn
 
-                    return Placement(Rect(room.width / 2 - size / 2 + step * size * 1.5, 0, size, size))
+                    return Placement(Rect(context.bounds.width / 2 - size / 2 + step * size * 1.5, 0, size, size))
                 }
             }
             .axis(\.turn, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
@@ -1111,14 +1114,14 @@ struct Compass: View {
     var body: some View {
         MotionLayout(names, parameters: $dial) { name in
             Text(name)
-        } placements: { room, dial in
+        } placements: { context, dial in
             names.indices.map { index in
                 let angle = (Double(index) + dial.turn) / 4 * 2 * .pi - .pi / 2
                 let radius = 80 * dial.size
 
                 return Placement(Rect(
-                    room.width / 2 + cos(angle) * radius - 30,
-                    room.height / 2 + sin(angle) * radius - 12,
+                    context.bounds.width / 2 + cos(angle) * radius - 30,
+                    context.bounds.height / 2 + sin(angle) * radius - 12,
                     60,
                     24))
             }
@@ -1162,14 +1165,14 @@ struct Contacts: View {
     var body: some View {
         MotionLayout(names, parameters: $sheet) { name in
             Text(name)
-        } placements: { room, sheet in
+        } placements: { context, sheet in
             names.indices.map { index in
                 let (row, column) = index.quotientAndRemainder(dividingBy: 2)
                 let size = 120 * sheet.zoom
 
                 return Placement(Rect(
-                    room.width / 2 + (Double(column) - sheet.x) * size - size / 2,
-                    room.height / 2 + (Double(row) - sheet.y) * size - size / 2,
+                    context.bounds.width / 2 + (Double(column) - sheet.x) * size - size / 2,
+                    context.bounds.height / 2 + (Double(row) - sheet.y) * size - size / 2,
                     size,
                     size))
             }
@@ -1199,9 +1202,9 @@ struct Arrangements: View {
     var body: some View {
         MotionLayout(names, parameters: $arrangement) { name in
             Text(name)
-        } placements: { room, arrangement in
+        } placements: { context, arrangement in
             // Asked at 0, 1 and 2 alone: a row, a column, a pile.
-            [row(in: room), column(in: room), pile(in: room)][Int(arrangement)]
+            [row(in: context.bounds), column(in: context.bounds), pile(in: context.bounds)][Int(arrangement)]
         }
         .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1), snaps: .every(1))
         .interpolation(.catmullRom)
@@ -1242,11 +1245,11 @@ struct Rearranged: View {
         VStack {
             MotionLayout(names, parameters: $arrangement) { name in
                 Text(name)
-            } placements: { room, arrangement in
+            } placements: { context, arrangement in
                 names.indices.map { index in
                     Int(arrangement) == 0
-                        ? Placement(Rect(Double(index) * 64, room.height / 2 - 20, 60, 40))
-                        : Placement(Rect(room.width / 2 - 30, Double(index) * 48, 60, 40))
+                        ? Placement(Rect(Double(index) * 64, context.bounds.height / 2 - 20, 60, 40))
+                        : Placement(Rect(context.bounds.width / 2 - 30, Double(index) * 48, 60, 40))
                 }
             }
             .axis(\.self, range: 0...1, keyframes: .every(1))
@@ -1277,10 +1280,87 @@ sequence: from the row to the pile, the run passes the column.
 
 A value read in the body is a change of the description: the layout is built
 again and its arithmetic with it. A state the arithmetic reads that moves on
-the host's frames - a drag of your own - is named in `.following(_:)` instead.
+the host's frames - a drag of your own - is named in `.following(_:)` instead:
+`.following($drag)` runs the arithmetic at a write of where the state is
+going, and `.following($tilt.journey)` at every frame of its way there, the
+arithmetic reading where it stands with `$tilt.journey.sample`
+([Motion and journeys](../concepts/motion-and-journeys.md)).
 On an axis nothing bounds - inside a scroller - keep the answer bounded:
 placements that grow with the room grow the room, and the layout never
 settles.
+
+#### A layout that measures
+
+Each of `context.subviews`, a `LayoutSubviews`, is a `LayoutSubview`: a
+handle to one view, in the items' order, found by its place or by its
+item's identity (`context.subviews[id: 1]`).
+`sizeThatFits(_:)` asks how large the view is in a room offered, a
+`LayoutProposal`: `LayoutProposal()` offers nothing and answers the size the
+view takes by itself, `LayoutProposal(width: 200)` the size its words take
+wrapped to 200 points. `firstBaseline(_:)` answers where its first line of
+words rests. The answer is a `LayoutSize` with the view's stated sizes and
+bounds in it; measuring writes nothing, and a placement's own bounds stay
+the size the view is drawn at.
+
+`.measure(_:)` gives the layout a size of its own from the same views: its
+closure is handed a `LayoutMeasurementContext` - the room offered as
+`context.proposal`, and `context.subviews` - with the parameters, and
+answers a `LayoutSize`. Here two fields stand side by side while their own
+widths fit, one under the other where they do not, and the layout is as
+tall as that makes it:
+
+```swift
+struct Fields: View {
+    @State private var name = ""
+    @State private var city = ""
+    @State private var still = 0.0
+
+    var body: some View {
+        MotionLayout([0, 1], id: \.self, parameters: $still) { index in
+            TextField(index == 0 ? $name : $city)
+        } placements: { context, _ in
+            Self.plan(LayoutProposal(width: context.bounds.width), context.subviews).placements
+        }
+        .measure { context, _ in
+            Self.plan(context.proposal, context.subviews).size
+        }
+    }
+
+    @MainActor
+    static func plan(
+        _ proposal: LayoutProposal, _ fields: LayoutSubviews<Int>
+    ) -> (size: LayoutSize, placements: [Placement]) {
+        let own = fields.map { $0.sizeThatFits(LayoutProposal()) }
+        let row = own.reduce(0) { $0 + $1.width } + 12 * Double(max(own.count - 1, 0))
+        let width = proposal.width ?? row
+        let sideBySide = row <= width
+
+        var placements: [Placement] = []
+        var (across, down, height) = (0.0, 0.0, 0.0)
+        for (field, own) in zip(fields, own) {
+            let size = sideBySide ? own : field.sizeThatFits(LayoutProposal(width: width))
+            placements.append(Placement(Rect(across, down, size.width, size.height)))
+            height = max(height, down + size.height)
+            if sideBySide { across += size.width + 12 } else { down += size.height + 12 }
+        }
+        return (LayoutSize(width: width, height: height), placements)
+    }
+}
+```
+
+Both arrangements are one layout of the same two views, so a field keeps
+what was typed in it and the keyboard as the row becomes a column. A view
+is asked once for a room in each working-out of the layout, however often
+the arithmetic asks, and a layout that measures is worked out again when a
+view of it is sized anew - its words changed, its stated width moved. Read
+what the views measure, never where they were last drawn: the room is no
+result of the measuring. A stated `width` or `height` on the layout still
+bounds what `.measure` answers.
+
+Every platform measures a view in the width offered, as its own layouts do,
+so a height offered changes no answer; on the Web the layout's own size is
+asked with no width. In a test's window with no toolkit every view measures
+nought ([Testing an application](testing.md)).
 
 `MotionLayout` has its own row in the
 [Platform contract](../platform-contract.md); `GalleryView` behaves as far as

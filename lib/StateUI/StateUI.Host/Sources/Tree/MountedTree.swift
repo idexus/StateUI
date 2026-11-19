@@ -61,6 +61,12 @@
     /// layout and every one around it forget what they measured and lay out again.
     func invalidateMeasurements()
 
+    /// The element's own size in the room offered - a width, a height, either or neither - its margin left out and
+    /// its stated sizes and bounds applied, and how far below its top its first line of words rests: what a layout's
+    /// program asks of a child. An element with no view of its own answers nought.
+    /// Design: docs/design/host/layout.md#a-layout-program
+    func measured(width: Double?, height: Double?) -> HostChildMeasured
+
     /// Hands the element's layout what its children travel under, and tells it a change reached it: its next
     /// arrangement moves them as a patch's does.
     func configureLayoutMotion()
@@ -142,8 +148,10 @@
     /// The element running the layout program `slot` names, by its mount, where the program put its children
     /// somewhere new since the element last presented them; nil where none runs it or nothing moved.
     public func mount(ofLayout slot: UInt64) -> UInt64? {
-        guard let mount = layouts[slot], byMount[mount]?.element?.takeProgramPlaces() == true else { return nil }
-        return mount
+        guard let mount = layouts[slot], let element = byMount[mount]?.element else { return nil }
+        // A layout worked out again may say another size of its own, which its toolkit measures again.
+        element.measuredAgainWhereItsSizeMoved()
+        return element.takeProgramPlaces() ? mount : nil
     }
 
     /// `element` runs the layout program `slot` names.

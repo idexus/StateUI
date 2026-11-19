@@ -72,8 +72,8 @@ final class WinUIFrameReportTests: XCTestCase {
                     MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                         Rectangle()
                             .fill(.red)
-                    } placements: { room, _ in
-                        [Placement(Rect(room.width / 2 - 10, 0, 20, 20))]
+                    } placements: { context, _ in
+                        [Placement(Rect(context.bounds.width / 2 - 10, 0, 20, 20))]
                     }
                 }
                 .showsSidebar(State(wrappedValue: true).projectedValue)

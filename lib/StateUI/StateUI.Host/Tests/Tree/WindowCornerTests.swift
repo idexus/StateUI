@@ -63,6 +63,9 @@ final class WindowCornerTests: XCTestCase {
 /// A view that does nothing of its own.
 @MainActor
 private final class PlainView: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     unowned let element: MountedElement
     let presentsView = true
 

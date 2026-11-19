@@ -77,7 +77,10 @@ extension GTKElement {
         if element.changesAccessibility(changed) {
             view.setAccessibility(element.accessibilityWords)
         }
-        if let layers = view as? GTKZStackView { layers.placement = element.placement }
+        if let layers = view as? GTKZStackView {
+            layers.placement = element.placement
+            layers.programSize = element.programSize
+        }
 
         if !changed.subtracting(element.ownPlacementRun).isSubset(of: MountedElement.unmeasuredProperties) {
             invalidateMeasurements()

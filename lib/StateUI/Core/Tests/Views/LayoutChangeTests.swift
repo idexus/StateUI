@@ -265,8 +265,8 @@ final class LayoutChangeTests: XCTestCase {
         let renders = Renders()
         let items = State(wrappedValue: [0, 1])
         func tree() -> Node {
-            MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Text("\($0)") } placements: { room, _ in
-                [Placement(Rect(0, 0, room.width, 10)), Placement(Rect(room.width, 0, 10, 10))]
+            MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Text("\($0)") } placements: { context, _ in
+                [Placement(Rect(0, 0, context.bounds.width, 10)), Placement(Rect(context.bounds.width, 0, 10, 10))]
             }
             .dynamics(.spring(response: .milliseconds(160)))
             .node

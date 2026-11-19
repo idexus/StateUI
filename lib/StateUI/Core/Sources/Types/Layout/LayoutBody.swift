@@ -5,7 +5,7 @@
 ///
 ///     MotionLayout(cards, id: \.name, parameters: $turn) { card in
 ///         CardFace(card).layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.6))
-///     } placements: { room, turn in … }
+///     } placements: { context, turn in … }
 ///
 /// Design: docs/design/views/motion-layout.md#bodies
 public struct LayoutBody: Equatable, Sendable {

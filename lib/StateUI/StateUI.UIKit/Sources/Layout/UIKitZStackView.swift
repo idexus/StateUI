@@ -39,11 +39,14 @@ final class UIKitZStackView: UIKitLayoutView {
         }
     }
 
-    /// Whether the ZStack stands a motion layout, which has no size of its own.
+    /// Whether the ZStack stands a motion layout, whose children's sizes are no size of its own.
     var motionLayout = false
 
+    /// The size a motion layout's program says for it in a width offered; nil where it says none.
+    var programSize: (@MainActor (Double?) -> LayoutSize?)?
+
     override func contentSize(width: Double?) -> LayoutSize {
-        ZStackArithmetic.size(of: items, padding: padding, width: width, motionLayout: motionLayout)
+        ZStackArithmetic.size(of: items, padding: padding, width: width, motionLayout: motionLayout, program: programSize)
     }
 
     override func arrange(in bounds: Rect) {

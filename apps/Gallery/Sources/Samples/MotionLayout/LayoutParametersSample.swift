@@ -77,8 +77,8 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
     private var cards: some View {
         MotionLayout(Array(Self.cards.indices), parameters: $deal) { index in
             face(index)
-        } placements: { room, deal in
-            Self.cards.indices.map { place($0, deal, room) }
+        } placements: { context, deal in
+            Self.cards.indices.map { place($0, deal, context.bounds) }
         }
         // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
         // no hand, so it is declared no axis.

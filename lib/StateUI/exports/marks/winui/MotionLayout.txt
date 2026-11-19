@@ -1,4 +1,4 @@
-# revision 18.2
+# revision 19.2
 MotionLayout: ✅
 MotionLayout.itemDrag: ✓ pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent
 MotionLayout.itemDragUpdated: ✓ pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent

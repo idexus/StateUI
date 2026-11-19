@@ -303,14 +303,24 @@ its natural size in its share, and anything else its size and margins.
 
 ## A motion layout
 
-A motion layout has no size of its own: it takes the room its layout gives
-it, whatever its views need, as a shape does - its padding and nothing more.
-Its views stand where arithmetic of that room puts them, so a size taken
-from them, as a ZStack takes its children's, would feed the very room the
-arithmetic is worked out from: a scroller's content is the room plus how far
-the run reaches. Each host stands the engine on its ZStack and measures it
-by `ZStackArithmetic.size(of:padding:width:engine:)`; on the Web, CSS's size
-containment says the same.
+A motion layout takes no size from where its children stand: its views
+stand where arithmetic of its room puts them, so a size taken from them, as
+a ZStack takes its children's, would feed the very room the arithmetic is
+worked out from - a scroller's content is the room plus how far the run
+reaches. Its size is its padding and what its program says
+(`MountedElement.programSize`): nothing, where the layout takes the room
+its layout gives it, as a shape does; the size its `measure` answers, in the
+width offered within the padding, where it says one. Each host stands the
+layout on its ZStack and measures it by
+`ZStackArithmetic.size(of:padding:width:motionLayout:program:)`; on the Web
+CSS's size containment says the layout has no size from its content, and
+the program's size is written as the size a contained box has
+(`contain-intrinsic-size`), asked with no width.
+
+A layout worked out again may say another size. The host layer keeps the
+width the program was last asked in and what it answered, and has the
+toolkit measure the layout again only where a working-out, or a program
+come since, answers otherwise (`measuredAgainWhereItsSizeMoved`).
 
 ## A placing run
 
@@ -339,6 +349,14 @@ on every host:
   rest costs a frame nothing.
 - `placement` is what the element presents: the places the program answered,
   standing in the run's direction. A host draws it as a placing run.
+- It tells the program how its children are measured once it runs it: a
+  child by its place among the children as written, measured by its native
+  half (`NativeElement.measured(width:height:)`), which every host answers
+  from the layout item it measures the child by anywhere - its stated
+  sizes and bounds in the answer. It tells it again where the tree changed
+  what a child measures: other children, a child asking to be arranged
+  again, a child sized anew on a frame - from that child up to the nearest
+  element running a program (`measuredAgainForItsLayout`).
 
 A hand over a mirrored layout is turned about the room laid out, not about
 a frame some reader was told.

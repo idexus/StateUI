@@ -395,8 +395,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             .width(width)
             .height(height)
             if let body { card.layoutBody(body) } else { card }
-        } placements: { room, parameters, segmentStart in
-            (0..<count).map { place(Double($0) - parameters, setOut: Double($0) == segmentStart, count, room, shape) }
+        } placements: { context, parameters, segmentStart in
+            (0..<count).map {
+                place(Double($0) - parameters, setOut: Double($0) == segmentStart, count, context.bounds, shape)
+            }
         }
         // The cards stand in reading order, as a stack's views do.
         .mirrorsRightToLeft(true)

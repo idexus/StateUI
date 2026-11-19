@@ -24,6 +24,9 @@ final class StillClock: FrameClock {
 /// A native half with nothing native behind it.
 @MainActor
 final class NoView: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     let presentsView: Bool
 
     init(presentsView: Bool = true) {

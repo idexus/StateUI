@@ -225,6 +225,9 @@ private final class CoreClock: FrameClock {
 /// A view's native half with nothing behind it: the tree holds what it shows.
 @MainActor
 private final class CoreView: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     let presentsView = true
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { false }

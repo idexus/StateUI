@@ -95,6 +95,9 @@ final class ShelfView {
 /// A native half handing its view the children it draws, as every host's does.
 @MainActor
 private final class Drawing: NativeElement {
+    func measured(width: Double?, height: Double?) -> HostChildMeasured {
+        HostChildMeasured(size: .zero, firstBaseline: nil)
+    }
     unowned let element: MountedElement
     let view: ShelfView?
     let runtime: () -> HostRuntime?
