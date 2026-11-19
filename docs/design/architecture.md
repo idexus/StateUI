@@ -94,6 +94,39 @@ The core owns state, keys, diffing, the timing laws and the engines. The host
 owns native objects, their lifetime, input, layout integration and the display
 frame, and never computes again what the core decides.
 
+## A moving value has three owners
+
+```text
+  Core           State.Storage     the destination, the value's own motion,
+                                   what refuses a value, what derives from it
+  StateUIHost    StateChannels     a bound state's value on this frame, its
+                 Animator          speed and its runs; a described property's
+                 DescribedMotion   and a child's place on the way
+                 LayoutMotion
+  a host         NativeElement     the toolkit's property set to the frame's
+                                   result
+```
+
+A state's value is the destination ([journeys](core/journeys.md)): nothing in
+the core walks a bound state toward it, and what the core knows of where it
+stands is what the host layer reported on its last frame. The host layer owns
+that standing value, its speed and the runs carrying it
+([motion in the runtime](host/motion.md)), with one clock and one animator, so
+a hand-wound clock reproduces every frame and every host draws the same one. A
+host only applies.
+
+The trap is a second owner of where a value stands. A control keeping its own
+copy of an animated value, or a native animation left to run beside the
+channel, drifts from the channel within a frame, and two controls tied to one
+state then stand in two places.
+
+Two movements stand on the core's side. A state declared
+`@State(animatedBy: .engine)` is animated by an engine of the application,
+which writes each frame's value and speed, and the host wears them as they
+come ([journeys](core/journeys.md#who-animates-it)). A motion layout's run and
+its bodies are worked out by the layout's own engine on the host's frames
+([motion layout](views/motion-layout.md#the-run)).
+
 ## Threads
 
 ```text

@@ -163,6 +163,45 @@ the previous and current descriptions and runs after the tree walk. `onCreated`
 and `onDestroying` describe StateUI element lifetime, not native allocation
 callbacks.
 
+## Destination, movement, presentation
+
+A value that moves has three owners, and each owns one thing:
+
+```text
+  the state           the destination: where the interface is going
+      |
+      v
+  the host layer      the movement: where the value stands on this frame,
+      |               how fast it goes, the animation carrying it
+      v
+  the native view     the presentation: the property the platform draws
+```
+
+1. **The destination is the state's.** An `@State` holds one value, and while
+   that value animates it is where the animation is going, never the frame it
+   has reached. A body, a conversion and an engine following the state all
+   read the destination. This half needs no host: a state nothing shows is at
+   its value the moment it is written.
+2. **The movement is the host layer's.** Handing a state to a control, a
+   driven modifier or a scroller gives it one channel in the host layer, which
+   owns where the value stands on each frame and how fast it goes. Every
+   control tied to the state draws that one answer, so two of them never stand
+   in two places. A layout says where each child is going in the same way, and
+   the host layer decides where the child stands on the way there.
+3. **The presentation is the platform's.** A host applies each frame's result
+   to its native views through the toolkit's public properties. It decides no
+   value and no timing.
+
+Not every state has a channel, and not every property passes through a
+layout: a color handed to a control goes from its channel straight to that
+control's property, and a state only a body reads is never animated at all.
+
+Two movements are worked out beside the state instead: a state declared
+`@State(animatedBy: .engine)`, whose every frame an engine of the application
+writes ([Custom engines](#custom-engines)), and a
+[motion layout](../interface/layout.md#a-motion-layout), whose run under the
+hand and whose bodies the core works out on the host's frames.
+
 ## Journey
 
 A state remains discrete: reading the state answers its destination

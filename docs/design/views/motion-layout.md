@@ -5,6 +5,9 @@ application's arithmetic that places them on the host's frames, the parameters t
 arithmetic is worked out from, and the hand that moves the parameters. A ring, a
 fan, a wheel of cards, a timeline and a gallery are one layout with different
 arithmetic; `GalleryView` is one with the arithmetic of four shapes written.
+Its run and its bodies are a movement worked out on the core's side, beside
+the three owners every other moving value has
+([architecture](../architecture.md#a-moving-value-has-three-owners)).
 
 ```text
   MotionLayout - the element, a host's ZStack, wearing the parameters   ◀── the host walks it

@@ -8,6 +8,11 @@ a color. Text has no half way, a whole number animated through rounding
 stutters, and a truth value has two places and no distance, so none of them is
 `Walked`; a placement run already carries a law for the whole run.
 
+Of a moving value's three owners
+([architecture](../architecture.md#a-moving-value-has-three-owners)) the core
+is the first: it holds the destination, and of where the value stands only
+what the host layer reported.
+
 ## The journey lanes
 
 A value the host animates lies on its image as `JourneyLanes`, the shape a

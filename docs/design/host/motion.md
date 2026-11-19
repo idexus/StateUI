@@ -4,7 +4,10 @@ How a runtime animates: one animator advances every animation, one channel per
 bound state feeds every control tied to it, and the animations a patch
 describes are keyed by element and property. The timing laws are the core's,
 `HostMotionLaw`; [the runtime](runtime.md) draws where these elements sit in a
-frame.
+frame. Of a moving value's three owners
+([architecture](../architecture.md#a-moving-value-has-three-owners)) this is
+the second: where a value stands on a frame, its speed and its runs are owned
+here and nowhere else.
 
 ## One animator
 
