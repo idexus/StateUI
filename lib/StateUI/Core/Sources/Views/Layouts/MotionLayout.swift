@@ -442,7 +442,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// onto it at a unit a length of this motion, so the short way is short. How a view a change moves comes onto its
     /// new place is the world's (`dynamics(_:)`).
     ///
-    ///     .parameterMotion(.spring(response: .milliseconds(240)))
+    ///     .parameterMotion(.spring(Spring(response: .milliseconds(240))))
     ///
     /// - Parameter motion: the law; the element's, the application's or the library's unless said.
     /// - Returns: the layout, traveling that way.
@@ -455,7 +455,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// How the parameters go on once the hand lets go of them with speed - how far a throw carries and how it slows -
     /// every axis alike, so axes let go together go on by one law whatever order they were declared in.
     ///
-    ///     .throwMotion(.spring(response: .milliseconds(500), damping: 0.8))
+    ///     .throwMotion(.spring(Spring(response: .milliseconds(500), damping: 0.8)))
     ///
     /// - Parameter motion: eased, its length says how far a throw carries - the hand's speed for that long, over how
     ///   steeply the curve sets out - and its curve how it slows; a spring carries the hand's speed for a third of its
@@ -471,7 +471,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// moves - joining, the run arranged anew, let go by the hand - comes onto its new place as a body of this
     /// world, and one with a body of its own (`layoutBody(_:)`) as that body says.
     ///
-    ///     .dynamics(.spring(response: .milliseconds(420), damping: 0.8))
+    ///     .dynamics(.spring(Spring(response: .milliseconds(420), damping: 0.8)))
     ///
     /// - Parameter dynamics: the layout's dynamics; `.standard` unless said, `.none` for views standing at their
     ///   places at once - the parameters still travel under `parameterMotion(_:)`.

@@ -110,7 +110,7 @@ struct NotesApp: Application {
 
     init() {
         application.styles = AppStyles.sheet
-        application.motion = .spring(response: .milliseconds(300))
+        application.motion = .spring(Spring(response: .milliseconds(300)))
     }
 
     var body: some Scene { NotesScene() }

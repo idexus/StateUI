@@ -63,6 +63,20 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   such a state as `.notStarted(.incompatibleAnimator)`, and `move(to:)` hands the destination to the engine.
   `.engine(following:)` and `.engine(tracking:)` take journeys beside states: a state wakes the engine as it is
   written, a journey on every frame its sample moves.
+- **A spring is a `Spring`.** `Motion.spring(response:damping:)` is `Motion.spring(Spring(response:damping:))`,
+  `LayoutBody.followsLayout(response:damping:)` is `LayoutBody.followsLayout(Spring(response:damping:))` and
+  `LayoutDynamics.spring(response:damping:)` is `LayoutDynamics.spring(Spring(response:damping:))`; `.spring()` and
+  `.followsLayout()` name the standard spring, as before. The one type holds a spring's numbers - a response to the
+  millisecond and at least 1, a damping of at least 0.05 - so a layout body's damping below 0.05 is 0.05, as a
+  motion's always was.
+
+  ```swift
+  // before
+  .motion(.spring(response: .milliseconds(260), damping: 0.8))
+
+  // now
+  .motion(.spring(Spring(response: .milliseconds(260), damping: 0.8)))
+  ```
 - **A hand's speed is no longer written into a journey.** `$x.journey.velocity = update.velocity.x` is gone with the
   setter. A throw is a movement of its own: a cubic-out journey sets out three times as fast as it averages, so one
   to `update.total.x + update.velocity.x * seconds / 3` over `seconds` goes on at the hand's speed and slows to rest.

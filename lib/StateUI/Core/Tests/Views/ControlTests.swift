@@ -356,7 +356,7 @@ final class ControlTests: XCTestCase {
             ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
                 MotionLayout(["one", "two"], parameters: turn.projectedValue) {
                     Text($0)
-                        .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.6))
+                        .layoutBody(.followsLayout(Spring(response: .milliseconds(420), damping: 0.6)))
                 } placements: { context, phase in
                     [Placement(Rect(phase, 0, context.bounds.width / 2, context.bounds.height)), Placement(Rect(context.bounds.width / 2, 0, 10, 10))]
                 }
@@ -366,7 +366,7 @@ final class ControlTests: XCTestCase {
                     Rectangle()
                         .fill(.black)
                 }
-                .parameterMotion(.spring(response: .milliseconds(240)))
+                .parameterMotion(.spring(Spring(response: .milliseconds(240))))
                 .dynamics(.standard)
                 .mirrorsRightToLeft(true)
                 .onItemActivated { _ in }

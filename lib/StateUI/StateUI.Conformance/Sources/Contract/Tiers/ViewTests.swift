@@ -238,7 +238,7 @@
             let clock = TestClock()
             let phase = State(wrappedValue: 0.0)
             let laid = Received<Double>()
-            let body = LayoutBody.followsLayout(response: .milliseconds(400), damping: 0.5)
+            let body = LayoutBody.followsLayout(Spring(response: .milliseconds(400), damping: 0.5))
             s.start(clock: clock) {
                 VStack {
                     MotionLayout([0], parameters: phase.projectedValue) { _ in

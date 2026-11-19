@@ -4,25 +4,23 @@
 /// How one view of a motion layout moves as a body of its layout's world (`LayoutDynamics`).
 ///
 ///     MotionLayout(cards, id: \.name, parameters: $turn) { card in
-///         CardFace(card).layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.6))
+///         CardFace(card).layoutBody(.followsLayout(Spring(response: .milliseconds(420), damping: 0.6)))
 ///     } placements: { context, turn in … }
 ///
 /// Design: docs/design/views/motion-layout.md#bodies
 public struct LayoutBody: Equatable, Sendable {
     /// The spring it follows its place on.
-    let spring: LayoutBodies.Spring
+    let spring: Spring
 
-    /// A body following its place on a spring of `response`, damped by `damping`: carried by the layout, it lags
-    /// behind its place while the run moves - a card swaying as the run scrolls, flying a little past where a throw
-    /// stops at the end - and settles back onto it.
+    /// A body following its place on `spring`: carried by the layout, it lags behind its place while the run
+    /// moves - a card swaying as the run scrolls, flying a little past where a throw stops at the end - and settles
+    /// back onto it.
     ///
-    /// - Parameters:
-    ///   - response: how quickly the body answers, to the millisecond. Smaller is snappier.
-    ///   - damping: 1 settles onto the place without passing it; below 1 passes it and comes back. A damping that
-    ///     is no number is 1.
+    /// - Parameter spring: how quickly the body answers and how it is damped; the standard spring where none is
+    ///   named.
     /// - Returns: the body.
-    public static func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutBody {
-        LayoutBody(spring: LayoutBodies.Spring(response: response, damping: damping))
+    public static func followsLayout(_ spring: Spring = .standard) -> LayoutBody {
+        LayoutBody(spring: spring)
     }
 }
 
@@ -35,6 +33,6 @@ extension LayoutBody: HostRepresentable {
     public init?(propValue: PropValue) {
         guard case .numbers(let numbers) = propValue, numbers.count == 2 else { return nil }
 
-        spring = LayoutBodies.Spring(response: numbers[0], damping: numbers[1])
+        spring = Spring(milliseconds: numbers[0], damping: numbers[1])
     }
 }

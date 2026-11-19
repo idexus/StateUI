@@ -25,7 +25,7 @@ final class HostRenderTests: XCTestCase {
         patch.properties[.text] = .string("Save")
         patch.clearedProperties = [.margin]
         patch.motion = HostLayoutMotion(
-            motion: .spring(response: .milliseconds(240), damping: 0.8),
+            motion: .spring(Spring(response: .milliseconds(240), damping: 0.8)),
             lanes: [.x, .height])
         patch.transitions[.opacity] = HostTransition(motion: .eased(.milliseconds(120), curve: .linear))
         patch.driven = .replace([
@@ -189,7 +189,7 @@ final class HostRenderTests: XCTestCase {
             value: [0.25, 0.5, 0.75, 1],
             destination: [1, 0.75, 0.5, 0.25],
             velocity: [4, 3, 2, 1],
-            motion: .spring(response: .milliseconds(260), damping: 0.82),
+            motion: .spring(Spring(response: .milliseconds(260), damping: 0.82)),
             completion: -17,
             stopped: 3)
 

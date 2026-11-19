@@ -72,8 +72,8 @@ struct PanSample: SampleContent, ExampleContent {
                             // Let go, a spring brings it home from where the
                             // hand left it.
                             (panX, panY) = (0, 0)
-                            $liveX.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
-                            $liveY.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
+                            $liveX.journey.move(to: 0, .spring(Spring(response: .milliseconds(600), damping: 0.5)))
+                            $liveY.journey.move(to: 0, .spring(Spring(response: .milliseconds(600), damping: 0.5)))
                         case .ended where letting == "Glides on":
                             // It goes on from the hand's speed. A cubic-out
                             // journey sets out three times as fast as it

@@ -882,7 +882,7 @@ final class CarriedStateTests: XCTestCase {
         let application = Motion.eased(.milliseconds(310), curve: .linear)
 
         renders.render(
-            Text("x").motion(.spring(response: .milliseconds(450), damping: 0.7))
+            Text("x").motion(.spring(Spring(response: .milliseconds(450), damping: 0.7)))
                 .opacity(fade.projectedValue).id("one").node,
             motion: application)
 

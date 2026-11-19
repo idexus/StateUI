@@ -785,6 +785,8 @@ swift.conformance SplitView: StateUI.Views
 swift.conformance SplitView: Swift.Sendable
 swift.conformance SplitViewContract: StateUI.WornContract
 swift.conformance SplitViewContract: Swift.Sendable
+swift.conformance Spring: Swift.Equatable
+swift.conformance Spring: Swift.Sendable
 swift.conformance Stack: StateUI.Layout
 swift.conformance Stack: StateUI.View
 swift.conformance Stack: StateUI.Views
@@ -1705,6 +1707,7 @@ swift.init Space.init(): @MainActor init()
 swift.init Spinner.init(_:): @MainActor init(_ isAnimating: Bool)
 swift.init Spinner.init(_:): @MainActor init(_ state: Binding<Bool>)
 swift.init SplitView.init(sidebar:detail:): @MainActor init<Sidebar, Detail>(@ViewBuilder sidebar: () -> Sidebar, @ViewBuilder detail: () -> Detail) where Sidebar : View, Detail : View
+swift.init Spring.init(response:damping:): init(response: Duration = .milliseconds(300), damping: Double = 1)
 swift.init State.init(_:): @MainActor convenience init(_ initialValue: @autoclosure @escaping () -> Value)
 swift.init State.init(_:): @MainActor convenience init(_ initialValue: Value)
 swift.init State.init(wrappedValue:): @MainActor convenience init(wrappedValue: @autoclosure @escaping () -> Value)
@@ -12911,6 +12914,7 @@ swift.struct Slider: @MainActor struct Slider
 swift.struct Space: @MainActor struct Space
 swift.struct Spinner: @MainActor struct Spinner
 swift.struct SplitView: @MainActor struct SplitView
+swift.struct Spring: struct Spring
 swift.struct StatePart: @MainActor @dynamicMemberLookup struct StatePart<Value>
 swift.struct Statements: @MainActor struct Statements<each Part> where repeat each Part : Views
 swift.struct Stepper: @MainActor struct Stepper
@@ -13009,9 +13013,9 @@ swift.type.method GridTracks.fill(count:): static func fill(count: Int) -> GridT
 swift.type.method GridTracks.fixed(_:count:): static func fixed(_ length: Double, count: Int = 1) -> GridTracks
 swift.type.method GridTracks.proportional(_:count:): static func proportional(_ share: Double, count: Int = 1) -> GridTracks
 swift.type.method ImageSource.icon(_:): static func icon(_ icon: Icon) -> ImageSource
-swift.type.method LayoutBody.followsLayout(response:damping:): static func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutBody
+swift.type.method LayoutBody.followsLayout(_:): static func followsLayout(_ spring: Spring = .standard) -> LayoutBody
 swift.type.method LayoutCurve.catmullRom(tension:): static func catmullRom(tension: Double) -> LayoutCurve
-swift.type.method LayoutDynamics.spring(response:damping:): static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutDynamics
+swift.type.method LayoutDynamics.spring(_:): static func spring(_ spring: Spring = .standard) -> LayoutDynamics
 swift.type.method LayoutInput.pages(_:): static func pages(_ orientation: Orientation) -> LayoutInput
 swift.type.method LayoutInput.rotation(degreesPerUnit:): static func rotation(degreesPerUnit: Double) -> LayoutInput
 swift.type.method LayoutInput.scroll(_:lengthPerUnit:): static func scroll(_ orientation: Orientation, lengthPerUnit: Double? = nil) -> LayoutInput
@@ -13046,7 +13050,7 @@ swift.type.method MenuBuilder.buildExpression(_:): @MainActor static func buildE
 swift.type.method MenuBuilder.buildOptional(_:): @MainActor static func buildOptional(_ component: MenuEntries?) -> MenuEntries
 swift.type.method Motion.eased(_:curve:): static func eased(_ length: Duration, curve: Easing = .cubicOut) -> Motion
 swift.type.method Motion.glide(longest:): static func glide(longest: Duration) -> Motion
-swift.type.method Motion.spring(response:damping:): static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> Motion
+swift.type.method Motion.spring(_:): static func spring(_ spring: Spring = .standard) -> Motion
 swift.type.method SceneBuilder.buildEither(first:): @MainActor static func buildEither(first: SceneBuilder.Declared) -> SceneBuilder.Declared
 swift.type.method SceneBuilder.buildEither(second:): @MainActor static func buildEither(second: SceneBuilder.Declared) -> SceneBuilder.Declared
 swift.type.method SceneBuilder.buildExpression(_:): @MainActor static func buildExpression(_ group: WindowGroup) -> SceneBuilder.Declared
@@ -13465,6 +13469,7 @@ swift.type.property SplitViewContract.showsSidebarToggle: static let showsSideba
 swift.type.property SplitViewContract.sidebarBackground: static let sidebarBackground: ElementProperty<SplitViewContract, Material>
 swift.type.property SplitViewContract.sidebarOverlayBackground: static let sidebarOverlayBackground: ElementProperty<SplitViewContract, Material>
 swift.type.property SplitViewContract.sidebarOverlays: static let sidebarOverlays: ElementProperty<SplitViewContract, Bool>
+swift.type.property Spring.standard: static let standard: Spring
 swift.type.property StackContract.name: static let name: String
 swift.type.property StackContract.spacing: static let spacing: ElementProperty<StackContract, Double>
 swift.type.property StepperContract.name: static var name: String { get }

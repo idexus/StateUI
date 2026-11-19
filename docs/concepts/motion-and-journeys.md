@@ -17,8 +17,9 @@ still apply the final destination, normally by snapping. Only checked rows in
 
 - `.eased(length, curve: curve)` takes the stated `Duration` - `.milliseconds(300)` -
   and lands on the destination exactly;
-- `.spring(response:damping:)` keeps standing velocity when retargeted and
-  settles on the destination rather than at an unrelated resting point;
+- `.spring(_:)` takes a `Spring` - `Spring(response: .milliseconds(260), damping: 0.8)`,
+  the standard one where none is named - keeps standing velocity when retargeted
+  and settles on the destination rather than at an unrelated resting point;
 - `.glide(longest:)` sets out at the speed the value has and slows onto the
   destination, as long as that speed takes to get there and no longer than
   `longest` - what a value thrown by the hand goes on with.
@@ -52,7 +53,7 @@ struct MovingPanel: View {
                 .fill(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
-                .motion(.spring(response: .milliseconds(280)))
+                .motion(.spring(Spring(response: .milliseconds(280))))
 
             Button("Resize").onClicked { expanded.toggle() }
         }
@@ -102,7 +103,7 @@ This lets size snap while placement travels:
 let content = Text("Content")
 
 VStack { content }
-    .motion(.spring(response: .milliseconds(240)))
+    .motion(.spring(Spring(response: .milliseconds(240))))
     .motion(.none, .size)
 ```
 

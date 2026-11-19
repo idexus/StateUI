@@ -72,7 +72,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
             switch self {
             case .easeOut: .eased(.milliseconds(400), curve: .cubicOut)
             case .glide: .eased(.milliseconds(300), curve: .sineOut)
-            case .spring: .spring(response: .milliseconds(400), damping: 0.8)
+            case .spring: .spring(Spring(response: .milliseconds(400), damping: 0.8))
             case .bounce: .eased(.milliseconds(600), curve: .backOut)
             case .short: .eased(.milliseconds(200), curve: .cubicOut)
             }
@@ -207,7 +207,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 // settles back onto its place.
                 if swaying {
                     face(Self.cards[index])
-                        .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
+                        .layoutBody(.followsLayout(Spring(response: .milliseconds(420), damping: 0.55)))
                 } else {
                     face(Self.cards[index])
                 }

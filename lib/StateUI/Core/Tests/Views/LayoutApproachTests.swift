@@ -171,7 +171,7 @@ final class LayoutApproachTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()
-        func built() -> Node { tree(phase, handed, .spring(response: .milliseconds(800))) }
+        func built() -> Node { tree(phase, handed, .spring(Spring(response: .milliseconds(800)))) }
         _ = bench.laid(renders, built)
 
         bench.hand(renders, built, .began)

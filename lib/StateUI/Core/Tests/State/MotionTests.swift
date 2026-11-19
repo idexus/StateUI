@@ -27,7 +27,7 @@ final class MotionTests: XCTestCase {
     /// law there is, never a trap.
     func testALawReadFromLanesThatAreNoneStopsNothing() {
         XCTAssertEqual(StateLaw.motion(of: [2, .nan, .nan]), .eased(.milliseconds(0), curve: .cubicOut))
-        XCTAssertEqual(StateLaw.motion(of: [3, .infinity, 0.5]), .spring(response: .milliseconds(0), damping: 0.5))
+        XCTAssertEqual(StateLaw.motion(of: [3, .infinity, 0.5]), .spring(Spring(response: .milliseconds(0), damping: 0.5)))
         XCTAssertEqual(StateLaw.motion(of: [2]), Motion.none)
         XCTAssertEqual(StateLaw.motion(of: [2, 300, 4]), .eased(.milliseconds(300), curve: Easing(rawValue: 4) ?? .cubicOut))
     }
@@ -53,7 +53,7 @@ final class MotionTests: XCTestCase {
 
     func testTheApplicationSaysHowEverythingTravels() {
         let renders = Renders()
-        let own = Motion.spring(response: .milliseconds(260), damping: 0.8)
+        let own = Motion.spring(Spring(response: .milliseconds(260), damping: 0.8))
 
         renders.render(panel(1), motion: own)
         let patch = renders.render(panel(0.25), motion: own)
@@ -387,7 +387,7 @@ final class MotionTests: XCTestCase {
     /// And a rule may say a motion rather than none.
     func testARuleMaySayADifferentMotionRatherThanNone() {
         let renders = Renders()
-        let own = Motion.spring(response: .milliseconds(240))
+        let own = Motion.spring(Spring(response: .milliseconds(240)))
 
         func panel(_ fade: Double, _ width: Double) -> Node {
             ZStack { Text("x") }
@@ -775,7 +775,7 @@ final class MotionTests: XCTestCase {
     func testEachKindCarriesOnlyItsOwnNumbers() {
         XCTAssertEqual(Motion.eased(.milliseconds(400), curve: .cubicIn).kind, .eased(milliseconds: 400, curve: .cubicIn))
         XCTAssertEqual(
-            Motion.spring(response: .milliseconds(260), damping: 0.7).kind, .spring(milliseconds: 260, damping: 0.7))
+            Motion.spring(Spring(response: .milliseconds(260), damping: 0.7)).kind, .spring(milliseconds: 260, damping: 0.7))
         XCTAssertEqual([Motion.none, .inherited, .custom].map(\.kind), [.none, .inherited, .custom])
         XCTAssertEqual([Motion.none, .inherited, .custom].map(\.milliseconds), [0, 0, 0])
         XCTAssertEqual([Motion.none, .inherited, .custom, .standard, .spring()].map(\.animates),
@@ -784,7 +784,7 @@ final class MotionTests: XCTestCase {
 
     func testALengthIsKeptToTheMillisecond() {
         XCTAssertEqual(Motion.eased(.seconds(1.25)).milliseconds, 1250)
-        XCTAssertEqual(Motion.spring(response: .milliseconds(260)).milliseconds, 260)
+        XCTAssertEqual(Motion.spring(Spring(response: .milliseconds(260))).milliseconds, 260)
         XCTAssertEqual(Motion.eased(.microseconds(1500)).milliseconds, 2, "to the nearest")
         XCTAssertEqual(Cadence.every(.seconds(2)).window, 2000)
     }
@@ -815,7 +815,7 @@ final class MotionTests: XCTestCase {
         var wrong: [String] = []
         for damping in dampings {
             for response in responses {
-                let motion = Motion.spring(response: response, damping: damping)
+                let motion = Motion.spring(Spring(response: response, damping: damping))
                 for span in spans {
                     for speed in speeds {
                         for elapsed in [0, 16, 250, 1_000, 9_999, HostMotionLaw.longest] {
@@ -840,7 +840,7 @@ final class MotionTests: XCTestCase {
     func testAnOverdampedSpringCreepsMoreSlowlyTheMoreItIsDamped() {
         let reached = [2.0, 10, 1e3, 1e8].map { damping in
             HostMotionLaw.sample(
-                .spring(response: .milliseconds(300), damping: damping), elapsed: 300, from: [0], destination: [100],
+                .spring(Spring(response: .milliseconds(300), damping: damping)), elapsed: 300, from: [0], destination: [100],
                 velocity: [0]).value[0]
         }
         XCTAssertEqual(reached, reached.sorted(by: >), "\(reached)")
@@ -855,8 +855,8 @@ final class MotionTests: XCTestCase {
         // ASKED TO: damping under one is what overshoot IS, and the floor is
         // 0.05 rather than nought - a spring with no damping at all never
         // arrives; a damping that is no number is 1.
-        XCTAssertEqual(Motion.spring(damping: 0.4).kind, .spring(milliseconds: 300, damping: 0.4))
-        XCTAssertEqual(Motion.spring(damping: 0).kind, .spring(milliseconds: 300, damping: 0.05))
-        XCTAssertEqual(Motion.spring(damping: .nan).kind, .spring(milliseconds: 300, damping: 1))
+        XCTAssertEqual(Motion.spring(Spring(damping: 0.4)).kind, .spring(milliseconds: 300, damping: 0.4))
+        XCTAssertEqual(Motion.spring(Spring(damping: 0)).kind, .spring(milliseconds: 300, damping: 0.05))
+        XCTAssertEqual(Motion.spring(Spring(damping: .nan)).kind, .spring(milliseconds: 300, damping: 1))
     }
 }

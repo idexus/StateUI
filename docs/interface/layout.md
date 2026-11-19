@@ -640,8 +640,8 @@ the middle; a swipe carries the card in front with it, however big the room
 draws the cards, and `.throwMotion(_:)` says how one let go with speed goes on, as a
 [motion layout's](#a-motion-layout) does. `.itemBody(_:)` makes every card a
 body of the gallery's world, as `.layoutBody(_:)` makes one view of a motion
-layout - `.itemBody(.followsLayout(response: .milliseconds(300),
-damping: 0.8))` and each card lags a breath behind the turn and settles back
+layout - `.itemBody(.followsLayout(Spring(response: .milliseconds(300),
+damping: 0.8)))` and each card lags a breath behind the turn and settles back
 onto its place - and `.itemSize(width:height:)`, `.isSwipeEnabled`,
 `.emptyView`, `.shade` and `.fade` say the rest. Give it a
 bounded size - a `.height`, or a `.fill` row of a `Grid`.
@@ -712,7 +712,7 @@ struct Carousel: View {
                 }
             }
             .axis(\.self, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
-            .parameterMotion(.spring(response: .milliseconds(240)))
+            .parameterMotion(.spring(Spring(response: .milliseconds(240))))
             .height(200)
 
             Button("Next").onClicked { turn = min(turn + 1, Double(names.count - 1)) }
@@ -816,7 +816,7 @@ struct Hand: View {
                     Placement(Rect(context.bounds.width / 2 - 60 + Double(index) * gap, 0, 120, context.bounds.height))
                 }
             }
-            .dynamics(.spring(response: .milliseconds(300), damping: 0.8))
+            .dynamics(.spring(Spring(response: .milliseconds(300), damping: 0.8)))
             .height(160)
 
             Button("Add").onClicked {
@@ -834,7 +834,7 @@ others close up. Where the front card was the last, the parameters themselves ha
 go: `$turn.journey.move(to:)` in the same handler sends the run to the card
 before it, under `.parameterMotion(_:)`.
 
-A view can be a body of its own: `.layoutBody(.followsLayout(response:damping:))` on
+A view can be a body of its own: `.layoutBody(.followsLayout(Spring(response:damping:)))` on
 it makes it follow its place on a spring of its own - carried by the run, it
 lags behind its place while the run turns, swings past where a throw stops
 and settles back onto it. The world is worked out at a fixed step, so every
@@ -851,7 +851,7 @@ struct Swaying: View {
     var body: some View {
         MotionLayout(["Mural", "Nebula", "Ridge", "Bloom"], parameters: $turn) { name in
             Text(name)
-                .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
+                .layoutBody(.followsLayout(Spring(response: .milliseconds(420), damping: 0.55)))
         } placements: { context, turn in
             (0..<4).map { index in
                 Placement(Rect(context.bounds.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, context.bounds.height))
@@ -1033,7 +1033,7 @@ struct Ring: View {
             }
         }
         .axis(\.self, input: .scroll(.horizontal), range: 0...Double(names.count), snaps: .every(1), periodic: true)
-        .throwMotion(.spring(response: .milliseconds(400), damping: 0.8))
+        .throwMotion(.spring(Spring(response: .milliseconds(400), damping: 0.8)))
         .height(200)
     }
 }
@@ -1069,7 +1069,7 @@ struct Planets: View {
                 }
             }
             .axis(\.turn, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
-            .parameterMotion(.spring(response: .milliseconds(240)))
+            .parameterMotion(.spring(Spring(response: .milliseconds(240))))
             .height(160)
 
             Button("Nearer").onClicked { orbit.zoom = orbit.zoom == 1 ? 2 : 1 }

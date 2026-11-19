@@ -598,7 +598,7 @@ final class GalleryViewTests: XCTestCase {
             return try XCTUnwrap(run.placements.dropFirst().first).bounds.x
         }
         let placed = try carried(nil)
-        let following = try carried(.followsLayout(response: .milliseconds(300), damping: 0.8))
+        let following = try carried(.followsLayout(Spring(response: .milliseconds(300), damping: 0.8)))
 
         XCTAssertGreaterThan(abs(following - placed), 1, "behind its place as the hand carries it")
     }

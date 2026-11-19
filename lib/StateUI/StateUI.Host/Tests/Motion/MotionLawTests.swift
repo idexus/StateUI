@@ -91,10 +91,10 @@ final class MotionLawTests: XCTestCase {
 
     func testASpringAnswersTheSameValueForTheSameInstant() {
         let first = HostMotionLaw.sample(
-            .spring(response: .milliseconds(260), damping: 0.8),
+            .spring(Spring(response: .milliseconds(260), damping: 0.8)),
             elapsed: 147, from: [20, -4], destination: [80, 10], velocity: [30, -10])
         let second = HostMotionLaw.sample(
-            .spring(response: .milliseconds(260), damping: 0.8),
+            .spring(Spring(response: .milliseconds(260), damping: 0.8)),
             elapsed: 147, from: [20, -4], destination: [80, 10], velocity: [30, -10])
 
         XCTAssertEqual(first, second)
@@ -103,10 +103,10 @@ final class MotionLawTests: XCTestCase {
 
     func testASpringRestsWhenStillAndNeverOutlivesItsLongestWalk() {
         let settled = HostMotionLaw.sample(
-            .spring(response: .milliseconds(260), damping: 0.8),
+            .spring(Spring(response: .milliseconds(260), damping: 0.8)),
             elapsed: 3_000, from: [0], destination: [1], velocity: [0])
         let loose = HostMotionLaw.sample(
-            .spring(response: .seconds(100), damping: 0.01),
+            .spring(Spring(response: .seconds(100), damping: 0.01)),
             elapsed: HostMotionLaw.longest, from: [0], destination: [1], velocity: [0])
 
         XCTAssertEqual(settled, HostMotionSample(value: [1], velocity: [0], rested: true))
@@ -242,21 +242,21 @@ final class MotionLawTests: XCTestCase {
         // Springs: critically damped from rest and moving, ringing, crawling.
         let spring: [Double] = [0, 16, 50, 100, 200, 400, 800, 1_600, 3_200]
         animations.append(Animation(
-            motion: .spring(response: .milliseconds(260)),
+            motion: .spring(Spring(response: .milliseconds(260))),
             from: [0], destination: [100], velocity: [0], instants: spring))
         animations.append(Animation(
-            motion: .spring(response: .milliseconds(260)),
+            motion: .spring(Spring(response: .milliseconds(260))),
             from: [0, 50], destination: [100, 50], velocity: [500, -200], instants: spring))
         animations.append(Animation(
-            motion: .spring(response: .milliseconds(400), damping: 0.5),
+            motion: .spring(Spring(response: .milliseconds(400), damping: 0.5)),
             from: [0], destination: [1], velocity: [0], instants: spring + [6_400]))
         animations.append(Animation(
-            motion: .spring(response: .milliseconds(200), damping: 1.8),
+            motion: .spring(Spring(response: .milliseconds(200), damping: 1.8)),
             from: [10, 0], destination: [0, 5], velocity: [0, 10], instants: spring))
 
         // A spring too loose to settle is over at the longest walk anyway.
         animations.append(Animation(
-            motion: .spring(response: .seconds(100), damping: 0.05),
+            motion: .spring(Spring(response: .seconds(100), damping: 0.05)),
             from: [0], destination: [1], velocity: [0],
             instants: [0, 5_000, 9_999, 10_000]))
 

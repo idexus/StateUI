@@ -11,10 +11,10 @@ import XCTest
 /// it was shown.
 @MainActor
 final class LayoutBodiesTests: XCTestCase {
-    private let critical = LayoutBodies.Spring(response: 300, damping: 1)
+    private let critical = Spring(response: .milliseconds(300), damping: 1)
 
     /// The world with one body 100 from its place, going nowhere, from 0.
-    private func world(_ spring: LayoutBodies.Spring) -> LayoutBodies {
+    private func world(_ spring: Spring) -> LayoutBodies {
         var world = LayoutBodies()
         world.set(1, lanes: [100], velocity: [0], spring: spring, at: 0)
         return world
@@ -53,7 +53,7 @@ final class LayoutBodiesTests: XCTestCase {
                 for far in [100, 1e300, 1e307, Double.greatestFiniteMagnitude] {
                     for fast in [0, 500, 1e300, Double.greatestFiniteMagnitude] {
                         var world = LayoutBodies()
-                        let spring = LayoutBodies.Spring(response: .milliseconds(Int64(response)), damping: damping)
+                        let spring = Spring(response: .milliseconds(Int64(response)), damping: damping)
                         world.set(1, lanes: [far, -far / 2], velocity: [fast, 0], spring: spring, at: 0)
                         var frame = 0.0
                         while !world.isEmpty, frame <= HostMotionLaw.longest + 16 {
@@ -74,7 +74,7 @@ final class LayoutBodiesTests: XCTestCase {
 
     /// A LIGHTER DAMPED BODY PASSES ITS PLACE AND COMES BACK.
     func testALighterDampedBodyPassesItsPlaceAndComesBack() {
-        var world = world(LayoutBodies.Spring(response: 300, damping: 0.5))
+        var world = world(Spring(response: .milliseconds(300), damping: 0.5))
         var passed = false
         for frame in 1...300 {
             world.step(to: Double(frame) * 16)
@@ -125,7 +125,7 @@ final class LayoutFollowerTests: XCTestCase {
     private func tree(_ phase: State<Double>) -> Node {
         MotionLayout([0, 1], parameters: phase.projectedValue) { index in
             if index == 0 {
-                Text("\(index)").layoutBody(.followsLayout(response: .milliseconds(400), damping: 0.5))
+                Text("\(index)").layoutBody(.followsLayout(Spring(response: .milliseconds(400), damping: 0.5)))
             } else {
                 Text("\(index)")
             }
@@ -139,9 +139,9 @@ final class LayoutFollowerTests: XCTestCase {
     /// A BODY FOLLOWING ITS LAYOUT MOVES ON THE SPRING the world's dynamics of the same words would be.
     func testABodyFollowingItsLayoutMovesOnTheWorldsSpring() {
         XCTAssertEqual(
-            LayoutBody.followsLayout(response: .milliseconds(420), damping: 0.55).spring,
-            LayoutDynamics.spring(response: .milliseconds(420), damping: 0.55).spring)
-        XCTAssertEqual(LayoutBody.followsLayout(damping: .nan).spring, LayoutDynamics.standard.spring)
+            LayoutBody.followsLayout(Spring(response: .milliseconds(420), damping: 0.55)).spring,
+            LayoutDynamics.spring(Spring(response: .milliseconds(420), damping: 0.55)).spring)
+        XCTAssertEqual(LayoutBody.followsLayout(Spring(damping: .nan)).spring, LayoutDynamics.standard.spring)
     }
 
     /// A VIEW'S BODY FOLLOWS THE STATE ITS VIEW READS: a switch the views' own closure reads turns their bodies on,
@@ -160,7 +160,7 @@ final class LayoutFollowerTests: XCTestCase {
         func built() -> Node {
             let layout = MotionLayout([0], parameters: phase.projectedValue) { index in
                 if sways.wrappedValue {
-                    Text("\(index)").layoutBody(.followsLayout(response: .milliseconds(400), damping: 0.5))
+                    Text("\(index)").layoutBody(.followsLayout(Spring(response: .milliseconds(400), damping: 0.5)))
                 } else {
                     Text("\(index)")
                 }

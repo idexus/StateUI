@@ -109,10 +109,19 @@ says otherwise.
 
 ## Spring numbers
 
-A spring's response is at least 1 millisecond and its damping at least 0.05.
+A spring is one type, `Spring`, whatever runs it - a motion
+(`Motion.spring(_:)`), a layout body (`LayoutBody.followsLayout(_:)`) - and
+its numbers are held in its initializer alone: a response to the
+millisecond and at least 1, a damping of at least 0.05, a damping that is
+no number 1. Nothing that takes a spring holds them again, so two springs
+written alike move alike wherever they are used.
 A damping of 1 comes to rest without overshooting. Below 1 a spring
 overshoots and oscillates, which is a deliberate choice and never a default:
 half a card's worth of wobble is what a user reads as a mistake.
+
+The trap is a law's own pair of numbers beside the type: a second
+`(response:damping:)` is a second place to hold them, and two places drift
+apart.
 
 ## Easing curves
 

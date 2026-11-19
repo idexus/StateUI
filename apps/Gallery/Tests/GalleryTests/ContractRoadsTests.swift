@@ -309,8 +309,8 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Button("Save").tooltip(State(wrappedValue: "Saves").projectedValue)"#),
         Road(
             name: "a layout body by a shortcut",
-            closed: #"_ = Text("a").followsLayout(response: .milliseconds(420))"#,
-            open: #"_ = Text("a").layoutBody(.followsLayout(response: .milliseconds(420)))"#),
+            closed: #"_ = Text("a").followsLayout(Spring(response: .milliseconds(420)))"#,
+            open: #"_ = Text("a").layoutBody(.followsLayout(Spring(response: .milliseconds(420))))"#),
         Road(
             name: "a color written as a brush",
             closed: #"_ = Rectangle().fill(.solidColor(.red))"#,

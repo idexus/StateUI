@@ -39,7 +39,7 @@ final class LayoutChangeTests: XCTestCase {
     /// A row of views, `gap` apart from the left - each one's place its index in the items - in `world`.
     private func row(
         _ items: State<[Int]>, gap: State<Double>? = nil, phase: State<Double>? = nil,
-        world: LayoutDynamics = .spring(response: .milliseconds(160))
+        world: LayoutDynamics = .spring(Spring(response: .milliseconds(160)))
     ) -> Node {
         let apart = gap?.wrappedValue ?? 100
         let count = items.wrappedValue.count
@@ -248,7 +248,7 @@ final class LayoutChangeTests: XCTestCase {
         func tree() -> Node {
             MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
                 .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
-                .dynamics(.spring(response: .milliseconds(160)))
+                .dynamics(.spring(Spring(response: .milliseconds(160))))
                 .node
         }
         _ = bench.laid(renders, tree)
@@ -268,7 +268,7 @@ final class LayoutChangeTests: XCTestCase {
             MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Text("\($0)") } placements: { context, _ in
                 [Placement(Rect(0, 0, context.bounds.width, 10)), Placement(Rect(context.bounds.width, 0, 10, 10))]
             }
-            .dynamics(.spring(response: .milliseconds(160)))
+            .dynamics(.spring(Spring(response: .milliseconds(160))))
             .node
         }
         _ = bench.laid(renders, tree)

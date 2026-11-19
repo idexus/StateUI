@@ -871,7 +871,7 @@ enum Listings {
                     // Thrown as the gallery's home turns its cards: a spring that
                     // carries the hand on and settles.
                     .axis(\.self, input: .scroll(.horizontal), range: 0...Double(max(count - 1, 0)), snaps: .every(1))
-                    .throwMotion(.spring(response: .milliseconds(500), damping: 0.8))
+                    .throwMotion(.spring(Spring(response: .milliseconds(500), damping: 0.8)))
                     // A FIRST MOVE UP is the card's: it follows the hand; let go
                     // high or fast, it flies off and the app closes - the others
                     // close up, the card in front staying in front.
@@ -1167,7 +1167,7 @@ enum Listings {
 
         @State private var wide = false
 
-        static let laws: [Motion] = [.standard, .spring(response: .milliseconds(320), damping: 0.6), .none]
+        static let laws: [Motion] = [.standard, .spring(Spring(response: .milliseconds(320), damping: 0.6)), .none]
 
         /// What the picker calls a law.
         static func name(_ law: Motion) -> String {
@@ -2105,7 +2105,7 @@ enum Listings {
             // where the parameters stand; `.dynamics` THE CARDS reaching their new
             // places after a card joins, leaves or the order changes.
             .parameterMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
-            .dynamics(.spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1))
+            .dynamics(.spring(Spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1)))
         }
 
         /// Where one card stands in the fan: along an arc and turned with it, the
@@ -5189,7 +5189,7 @@ enum Listings {
         }
 
         /// How the boards turn - and the dots with them: one state, one motion.
-        static let turning = Motion.spring(response: .milliseconds(380), damping: 0.86)
+        static let turning = Motion.spring(Spring(response: .milliseconds(380), damping: 0.86))
 
         /// The icons, in order.
         @State private var icons = Self.all
@@ -5370,7 +5370,7 @@ enum Listings {
                 // Lifted while the hand holds it, on a spring of its own that goes
                 // a little past and back.
                 .scale(lifted ? 1.18 : 1)
-                .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
+                .motion(.spring(Spring(response: .milliseconds(260), damping: 0.55)), .transform)
             }
         }
         """#,
@@ -6246,7 +6246,7 @@ enum Listings {
                 .axis(\.round, input: hand, range: 0...4, periodic: true)
                 // ...and round and round, a card at a time.
                 .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), periodic: true)
-                .parameterMotion(.spring(response: .milliseconds(360), damping: 0.8))
+                .parameterMotion(.spring(Spring(response: .milliseconds(360), damping: 0.8)))
             }
             .clipsContent(true)
         }
@@ -6788,7 +6788,7 @@ enum Listings {
             .axis(
                 \.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: snaps ? .every(0.25) : nil,
                 periodic: true)
-            .parameterMotion(.spring(response: .milliseconds(420), damping: 0.82))
+            .parameterMotion(.spring(Spring(response: .milliseconds(420), damping: 0.82)))
         }
 
         /// Where the photo at `index` lies: its square of the table, a photo's
@@ -8035,7 +8035,7 @@ enum Listings {
                 switch self {
                 case .easeOut: .eased(.milliseconds(400), curve: .cubicOut)
                 case .glide: .eased(.milliseconds(300), curve: .sineOut)
-                case .spring: .spring(response: .milliseconds(400), damping: 0.8)
+                case .spring: .spring(Spring(response: .milliseconds(400), damping: 0.8))
                 case .bounce: .eased(.milliseconds(600), curve: .backOut)
                 case .short: .eased(.milliseconds(200), curve: .cubicOut)
                 }
@@ -8150,7 +8150,7 @@ enum Listings {
                     // settles back onto its place.
                     if swaying {
                         face(Self.cards[index])
-                            .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
+                            .layoutBody(.followsLayout(Spring(response: .milliseconds(420), damping: 0.55)))
                     } else {
                         face(Self.cards[index])
                     }
@@ -8330,7 +8330,7 @@ enum Listings {
 
         static func law(_ index: Int) -> Motion {
             switch index {
-            case 1: .spring(response: .milliseconds(320))
+            case 1: .spring(Spring(response: .milliseconds(320)))
             case 2: .eased(.milliseconds(900), curve: .sineInOut)
             case 3: .none
             default: .standard
@@ -8340,7 +8340,7 @@ enum Listings {
         @State private var law = 2
         @State private var wide = false
         @State private var warm = false
-        @State(motion: .spring(response: .milliseconds(320))) private var reach = 120.0
+        @State(motion: .spring(Spring(response: .milliseconds(320)))) private var reach = 120.0
 
         var body: some View {
             // NOTHING HERE SAYS "ANIMATE". A value that changes is a setpoint: the
@@ -9200,8 +9200,8 @@ enum Listings {
                                 // Let go, a spring brings it home from where the
                                 // hand left it.
                                 (panX, panY) = (0, 0)
-                                $liveX.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
-                                $liveY.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
+                                $liveX.journey.move(to: 0, .spring(Spring(response: .milliseconds(600), damping: 0.5)))
+                                $liveY.journey.move(to: 0, .spring(Spring(response: .milliseconds(600), damping: 0.5)))
                             case .ended where letting == "Glides on":
                                 // It goes on from the hand's speed. A cubic-out
                                 // journey sets out three times as fast as it
@@ -13325,7 +13325,7 @@ enum Listings {
                     \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
                     periodic: true)
                 .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
-                .parameterMotion(.spring(response: .milliseconds(420), damping: 0.8))
+                .parameterMotion(.spring(Spring(response: .milliseconds(420), damping: 0.8)))
             }
             .clipsContent(true)
         }

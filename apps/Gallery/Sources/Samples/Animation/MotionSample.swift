@@ -12,7 +12,7 @@ struct MotionSample: SampleContent, ExampleContent {
 
     static func law(_ index: Int) -> Motion {
         switch index {
-        case 1: .spring(response: .milliseconds(320))
+        case 1: .spring(Spring(response: .milliseconds(320)))
         case 2: .eased(.milliseconds(900), curve: .sineInOut)
         case 3: .none
         default: .standard
@@ -22,7 +22,7 @@ struct MotionSample: SampleContent, ExampleContent {
     @State private var law = 2
     @State private var wide = false
     @State private var warm = false
-    @State(motion: .spring(response: .milliseconds(320))) private var reach = 120.0
+    @State(motion: .spring(Spring(response: .milliseconds(320)))) private var reach = 120.0
 
     var body: some View {
         // NOTHING HERE SAYS "ANIMATE". A value that changes is a setpoint: the

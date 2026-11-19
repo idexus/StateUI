@@ -10,7 +10,7 @@
 /// A change animates by default - assign a state and the control animates to
 /// the new value - and a motion says how:
 ///
-///     VStack { … }.motion(.spring(response: .milliseconds(260)))
+///     VStack { … }.motion(.spring(Spring(response: .milliseconds(260))))
 ///
 ///     $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut))
 ///
@@ -120,24 +120,17 @@ public struct Motion: Equatable, Sendable {
 
     /// A mass on a spring, which answers a change rather than timing it.
     ///
-    ///     .motion(.spring(response: .milliseconds(260)))
+    ///     .motion(.spring(Spring(response: .milliseconds(260))))
     ///
     /// It has no duration: a spring settles when it is done, and one whose
     /// destination changes mid-animation carries on from the speed it had.
     /// That makes it right for anything the user can interrupt - a card being
     /// dragged, a value still being chosen.
     ///
-    /// - Parameters:
-    ///   - response: how quickly it answers, to the millisecond. Smaller is
-    ///     snappier.
-    ///   - damping: 1 comes to rest without overshooting; below 1 overshoots
-    ///     and oscillates, which is rarely what a user expects. A damping that
-    ///     is no number is 1.
+    /// - Parameter spring: how quickly it answers and how it is damped; the standard spring where none is named.
     /// - Returns: the motion.
-    public static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> Motion {
-        Motion(kind: .spring(
-            milliseconds: max(Motion.milliseconds(of: response), 1),
-            damping: damping.isFinite ? max(damping, 0.05) : 1))
+    public static func spring(_ spring: Spring = .standard) -> Motion {
+        Motion(kind: .spring(milliseconds: spring.milliseconds, damping: spring.damping))
     }
 
     /// This motion, or `fallback` where this is the inherited one.

@@ -34,8 +34,8 @@ extension MotionLayout.Run {
     }
 
     /// The spring the view at `index` comes onto its place on: its own body's, else the world's.
-    func spring(of index: Int) -> LayoutBodies.Spring {
-        body(index)?.spring ?? world.spring ?? LayoutBodies.Spring(response: 300, damping: 1)
+    func spring(of index: Int) -> Spring {
+        body(index)?.spring ?? world.spring ?? .standard
     }
 
     /// Shows `poses` - worked out at `parameters` in `room` - each shifted by its body in the world `memory` holds, a

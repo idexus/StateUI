@@ -40,7 +40,7 @@ final class LayoutItemDragTests: XCTestCase {
         }
         .itemDrag(begins: .longPress)
         .onItemDragged { told.drags.append($0) }
-        .dynamics(.spring(response: .milliseconds(160)))
+        .dynamics(.spring(Spring(response: .milliseconds(160))))
         if awaiting {
             // A dismissal that awaits, past any test's end: another while it runs is ignored.
             return layout.onItemDismissed(directions: .up, threshold: 50, policy: .ignoreWhileRunning) { name in
@@ -436,7 +436,7 @@ final class LayoutItemDragTests: XCTestCase {
                 order.wrappedValue.remove(at: from)
                 order.wrappedValue.insert(drag.id, at: to)
             }
-            .dynamics(.spring(response: .milliseconds(400)))
+            .dynamics(.spring(Spring(response: .milliseconds(400))))
             .node
         }
         _ = bench.laid(renders, tree)

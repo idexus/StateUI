@@ -60,7 +60,7 @@ private struct HomeBoard: View {
             default: move(drag.id, to: Self.slot(at: drag.at, in: drag.room, board: board))
             }
         }
-        .parameterMotion(.spring(response: .milliseconds(380), damping: 0.86))
+        .parameterMotion(.spring(Spring(response: .milliseconds(380), damping: 0.86)))
     }
 
     private func move(_ icon: String, to slot: Int) {
@@ -115,6 +115,6 @@ private struct HomeTile: View {
         }
         .spacing(6)
         .scale(lifted ? 1.18 : 1)
-        .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
+        .motion(.spring(Spring(response: .milliseconds(260), damping: 0.55)), .transform)
     }
 }

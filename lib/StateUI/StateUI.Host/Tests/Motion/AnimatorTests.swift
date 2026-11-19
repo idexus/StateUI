@@ -55,7 +55,7 @@ final class AnimatorTests: XCTestCase {
     func testLessMovementLandsEveryAnimationAtOnce() {
         let animator = Animator()
         animator.start(
-            Animation(from: [0], destination: [1], velocity: [0], motion: .spring(response: .milliseconds(300)), began: 0),
+            Animation(from: [0], destination: [1], velocity: [0], motion: .spring(Spring(response: .milliseconds(300))), began: 0),
             for: .state(1, run: 0))
         animator.start(
             Animation(from: [5, 5], destination: [9, 1], velocity: [0, 0], motion: .eased(.milliseconds(400)), began: 0),
