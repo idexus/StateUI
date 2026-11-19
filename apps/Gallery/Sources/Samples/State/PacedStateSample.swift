@@ -28,6 +28,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             // described again - this count stands still for the whole walk.
             VStack {
                 DebugInfoLabel()
+                    .accessibilityIdentifier("paced.converted.builds")
 
                 Text($fade.convert { "going to \(Int($0 * 100))%" })
                     .fontSize(17)
@@ -66,9 +67,13 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 .samples($fade.journey, into: $shown, .every(.milliseconds(100)))
             }
 
-            Text("\(taken) samples taken")
-                .accessibilityIdentifier("paced.taken")
-                .onChanged(shown) { taken += 1 }
+            // The count reads the samples in a closure of its own, so a sample
+            // builds these words and nothing beside them.
+            VStack {
+                Text("\(taken) samples taken")
+                    .accessibilityIdentifier("paced.taken")
+                    .onChanged(shown) { taken += 1 }
+            }
 
             Switch("Sample", isOn: $sampling)
                 .accessibilityIdentifier("paced.sampling")
@@ -121,7 +126,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A read of the journey is a build per frame. The host writes where the "
+            Text("A read of the journey's sample is a build per frame. The host says where the "
                 + "value is on every frame it moves, and a closure that prints it asks to "
                 + "see every one of them. A closure that prints `fade` alone is built once "
                 + "per write, the destination never moving in between. That is the honest "

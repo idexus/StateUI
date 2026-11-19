@@ -9008,8 +9008,12 @@ enum Listings {
                     .samples($fade.journey, into: $shown, .every(.milliseconds(100)))
                 }
 
-                Text("\(taken) samples taken")
-                    .onChanged(shown) { taken += 1 }
+                // The count reads the samples in a closure of its own, so a sample
+                // builds these words and nothing beside them.
+                VStack {
+                    Text("\(taken) samples taken")
+                        .onChanged(shown) { taken += 1 }
+                }
 
                 Switch("Sample", isOn: $sampling)
 
