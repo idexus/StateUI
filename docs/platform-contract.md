@@ -484,7 +484,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Line](controls/Line.md) | 84 | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 66 ✅ · 5 ☑️ · 10 ✓ · 2 – | 46 ✅ · 1 ☑️ · 30 ✓ · 7 – | 51 ✅ · 4 ☑️ · 22 ✓ · 7 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Link](controls/Link.md) | 85 | 43 ✅ · 3 ☑️ · 37 ✓ · 2 – | 38 ✅ · 3 ☑️ · 39 ✓ · 5 – | 61 ✅ · 6 ☑️ · 13 ✓ · 4 – | 48 ✅ · 2 ☑️ · 29 ✓ · 6 – | 49 ✅ · 4 ☑️ · 25 ✓ · 7 – | 59 ✅ · 1 ☑️ · 22 ✓ · 3 – |
 | [Map](controls/Map.md) | 83 | 41 ✅ · 3 ☑️ · 37 ✓ · 2 – | 41 ✅ · 3 ☑️ · 37 ✓ · 2 – | 83 🧩 | 83 🧩 | 83 🧩 | 83 🧩 |
-| [MotionLayout](controls/MotionLayout.md) | 95 | 42 ✅ · 2 ☑️ · 45 ✓ · 2 – | 41 ✅ · 3 ☑️ · 47 ✓ · 2 – | 68 ✅ · 5 ☑️ · 16 ✓ · 3 – | 47 ✅ · 2 ☑️ · 36 ✓ · 9 – | 48 ✅ · 3 ☑️ · 31 ✓ · 9 – | 64 ✅ · 2 ☑️ · 25 ✓ · 4 – |
+| [MotionLayout](controls/MotionLayout.md) | 96 | 43 ✅ · 2 ☑️ · 45 ✓ · 2 – | 42 ✅ · 3 ☑️ · 47 ✓ · 2 – | 69 ✅ · 5 ☑️ · 16 ✓ · 3 – | 48 ✅ · 2 ☑️ · 36 ✓ · 9 – | 49 ✅ · 3 ☑️ · 31 ✓ · 9 – | 65 ✅ · 2 ☑️ · 25 ✓ · 4 – |
 | [Path](controls/Path.md) | 86 | 46 ✅ · 3 ☑️ · 36 ✓ · 1 – | 45 ✅ · 4 ☑️ · 36 ✓ · 1 – | 67 ✅ · 6 ☑️ · 10 ✓ · 2 – | 47 ✅ · 2 ☑️ · 30 ✓ · 7 – | 52 ✅ · 5 ☑️ · 22 ✓ · 7 – | 60 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Picker](controls/Picker.md) | 97 | 51 ✅ · 3 ☑️ · 37 ✓ · 3 – | 44 ✅ · 4 ☑️ · 41 ✓ · 5 – | 68 ✅ · 6 ☑️ · 13 ✓ · 5 – | 61 ✅ · 2 ☑️ · 28 ✓ · 6 – | 56 ✅ · 4 ☑️ · 24 ✓ · 13 – | 52 ✅ · 1 ☑️ · 20 ✓ · 17 – |
 | [Polygon](controls/Polygon.md) | 87 | 47 ✅ · 3 ☑️ · 36 ✓ · 1 – | 46 ✅ · 4 ☑️ · 36 ✓ · 1 – | 68 ✅ · 6 ☑️ · 10 ✓ · 2 – | 48 ✅ · 2 ☑️ · 30 ✓ · 7 – | 53 ✅ · 5 ☑️ · 22 ✓ · 7 – | 61 ✅ · 2 ☑️ · 21 ✓ · 3 – |
@@ -506,10 +506,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 85 | 45 ✅ · 2 ☑️ · 36 ✓ · 1 – | 43 ✅ · 3 ☑️ · 37 ✓ · 1 – | 67 ✅ · 5 ☑️ · 11 ✓ · 2 – | 49 ✅ · 2 ☑️ · 28 ✓ · 5 – | 51 ✅ · 3 ☑️ · 23 ✓ · 8 – | 60 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 91 | 49 ✅ · 3 ☑️ · 37 ✓ · 2 – | 47 ✅ · 3 ☑️ · 39 ✓ · 2 – | 68 ✅ · 5 ☑️ · 12 ✓ · 5 – | 50 ✅ · 13 ✓ · 27 – | 56 ✅ · 4 ☑️ · 24 ✓ · 7 – | 60 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 84 | 44 ✅ · 2 ☑️ · 36 ✓ · 1 – | 41 ✅ · 3 ☑️ · 38 ✓ · 1 – | 65 ✅ · 5 ☑️ · 12 ✓ · 2 – | 48 ✅ · 2 ☑️ · 28 ✓ · 5 – | 49 ✅ · 3 ☑️ · 24 ✓ · 8 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| ✅ |  | 1668 | 1610 | 2333 | 1791 | 1874 | 2204 |
+| ✅ |  | 1669 | 1611 | 2334 | 1792 | 1875 | 2205 |
 | ✓ |  | 1352 | 1395 | 402 | 1027 | 860 | 759 |
 | – |  | 93 | 106 | 187 | 250 | 273 | 145 |
-| **Met** | 3247 | **3113** | **3111** | **2922** | **3068** | **3007** | **3108** |
+| **Met** | 3248 | **3114** | **3112** | **2923** | **3069** | **3008** | **3109** |
 | 🧩 |  | 0 | 0 | 83 | 83 | 83 | 83 |
 
 ### Application structure
@@ -632,7 +632,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onLocationTapped` (`locationTapped`), `region`, `showsUserLocation`, `kind` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 | 7 🧩 |
 | [Marker](controls/Marker.md) | `onDetailsClicked` (`detailsClicked`), `kind`, `location`, `onSelected` (`selected`), `subtitle`, `title` | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [MotionLayout](controls/MotionLayout.md) | `itemDrag`, `itemDragUpdated`, `magnifies`, `mirrorsRightToLeft`, `pans`, `parameters`, `pinchRotationUpdated`, `rotates`, `translationOrientation`, `translationUpdated`, `wheelStepped` | 11 | 2 ✅ · 9 ✓ | 2 ✅ · 9 ✓ | 7 ✅ · 4 ✓ | 2 ✅ · 8 ✓ · 1 – | 4 ✅ · 7 ✓ | 6 ✅ · 1 ☑️ · 4 ✓ |
+| [MotionLayout](controls/MotionLayout.md) | `itemDrag`, `itemDragUpdated`, `layout`, `magnifies`, `mirrorsRightToLeft`, `pans`, `parameters`, `pinchRotationUpdated`, `rotates`, `translationOrientation`, `translationUpdated`, `wheelStepped` | 12 | 3 ✅ · 9 ✓ | 3 ✅ · 9 ✓ | 8 ✅ · 4 ✓ | 3 ✅ · 8 ✓ · 1 – | 5 ✅ · 7 ✓ | 7 ✅ · 1 ☑️ · 4 ✓ |
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✓ | 1 ✅ | 1 ✅ |
 | [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 10 | 8 ✅ | 10 ✅ | 9 ✅ · 1 – | 9 ✅ · 1 – | 9 ✅ · 1 – | 9 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |

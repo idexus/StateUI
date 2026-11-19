@@ -1,7 +1,8 @@
-# revision 17.2
+# revision 18.2
 MotionLayout: ✅
 MotionLayout.itemDrag: ✅
 MotionLayout.itemDragUpdated: ✅
+MotionLayout.layout: ✅
 MotionLayout.magnifies: ✓ pinch on MotionLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 MotionLayout.mirrorsRightToLeft: ✅
 MotionLayout.pans: ✓ sweep on MotionLayout: the hand handed to the host's entry with its speed, no event

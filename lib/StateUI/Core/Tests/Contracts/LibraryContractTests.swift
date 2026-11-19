@@ -79,7 +79,8 @@ final class LibraryContractTests: XCTestCase {
 
     /// A library member whose name is its own has a token the library declares
     /// in Tokens.swift; one whose name another contract shares has none, and
-    /// each place reading it names its member (`HostContractTests`).
+    /// each place reading it names its member (`HostContractTests`). A program
+    /// has none either: it crosses under no token, typed, by its member alone.
     func testEveryMemberIsATokenTheLibraryDeclares() throws {
         let tokens: [MemberFacts.Kind: Set<String>] = [
             .property: try SourceTree.tokenNames(of: "Prop"),
@@ -88,7 +89,9 @@ final class LibraryContractTests: XCTestCase {
         ]
 
         let shared = Set(Dictionary(grouping: declared.map(\.name)) { $0 }.filter { $1.count > 1 }.keys)
-        let stranded = declared.filter { !shared.contains($0.name) && tokens[$0.facts.kind]?.contains($0.name) != true }
+        let stranded = declared.filter {
+            $0.facts.kind != .program && !shared.contains($0.name) && tokens[$0.facts.kind]?.contains($0.name) != true
+        }
 
         XCTAssertEqual(stranded.map { "\($0.contract).\($0.name)" }, [])
     }
@@ -245,7 +248,7 @@ final class LibraryContractTests: XCTestCase {
     /// Each member a file declares, with the name written in its initializer:
     /// `static let NAME = Element…<…>(` and then the first string literal.
     private static func declarations(in text: String) -> [(member: String, spelling: String)] {
-        let pattern = #"static let (\w+) = Element(?:Property|Event|Act)<[^>]*>\(\s*"(\w+(?:\.\w+)*)""#
+        let pattern = #"static let (\w+) = Element(?:Property|Event|Act|Program)<[^>]*>\(\s*"(\w+(?:\.\w+)*)""#
         let regex = try! NSRegularExpression(pattern: pattern)
         let range = NSRange(text.startIndex..., in: text)
 

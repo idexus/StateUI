@@ -39,13 +39,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (95)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>42 ✅ · 2 ☑️ · 45 ✓ · 2 –</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>41 ✅ · 3 ☑️ · 47 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>68 ✅ · 5 ☑️ · 16 ✓ · 3 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>47 ✅ · 2 ☑️ · 36 ✓ · 9 –</td><td>custom <code>Panel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>48 ✅ · 3 ☑️ · 31 ✓ · 9 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 25 ✓ · 4 –</td><td>CSS grid, one shared cell</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (96)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>43 ✅ · 2 ☑️ · 45 ✓ · 2 –</td><td>custom <code>NSView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>42 ✅ · 3 ☑️ · 47 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>69 ✅ · 5 ☑️ · 16 ✓ · 3 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>48 ✅ · 2 ☑️ · 36 ✓ · 9 –</td><td>custom <code>Panel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>49 ✅ · 3 ☑️ · 31 ✓ · 9 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>65 ✅ · 2 ☑️ · 25 ✓ · 4 –</td><td>CSS grid, one shared cell</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/MotionLayoutContract.swift`.
@@ -58,6 +58,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/MotionLayoutCon
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>itemDragUpdated</code></td><td>event</td><td><code>(GesturePhase, Point, Point, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>layout</code></td><td>program</td><td></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>magnifies</code></td><td>property</td><td><code>Bool</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pinch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pinch on MotionLayout: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pinch on MotionLayout: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: pinch on MotionLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>mirrorsRightToLeft</code></td><td>property</td><td><code>Bool</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

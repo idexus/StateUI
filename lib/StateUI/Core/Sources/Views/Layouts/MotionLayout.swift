@@ -638,10 +638,11 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
                         velocity: velocity.told)
                 }
             }
-            element.layout = run.states.slot.program(revision: UInt64(run.description)) { width, height in
+            let program = run.states.slot.program(revision: UInt64(run.description)) { width, height in
                 let room = Rect(0, 0, width, height)
                 if run.states.room.wrappedValue != room { run.states.room.wrappedValue = room }
             }
+            element.setProgram(MotionLayoutContract.layout, definition: LayoutProgramDefinition(host: program))
             element.describe(MotionLayoutContract.itemDrag, run.itemStart)
             if run.itemStart != nil {
                 element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still in

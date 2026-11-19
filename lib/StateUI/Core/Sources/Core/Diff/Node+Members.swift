@@ -50,3 +50,20 @@ extension Node {
         props.describe(property, value)
     }
 }
+
+extension Node {
+    /// Writes the definition of a program the element runs, or - nil - takes it away: the one road a program has
+    /// onto an element. A member the element's contract does not take is said once and written nowhere.
+    /// Design: docs/design/core/contracts.md#a-program
+    mutating func setProgram<Owner: WornContract, Definition>(
+        _ member: ElementProgram<Owner, Definition>, definition: Definition?
+    ) {
+        guard Wearing.takes(declaration, member) else { return }
+        programs[member.key] = definition
+    }
+
+    /// The definition of `member` the element was given; nil where it runs none.
+    func program<Owner: WornContract, Definition>(_ member: ElementProgram<Owner, Definition>) -> Definition? {
+        programs[member.key] as? Definition
+    }
+}

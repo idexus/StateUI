@@ -13299,6 +13299,7 @@ swift.type.property Motion.none: static let none: Motion
 swift.type.property Motion.standard: static let standard: Motion
 swift.type.property MotionLayoutContract.itemDrag: static let itemDrag: ElementProperty<MotionLayoutContract, ItemDragStart>
 swift.type.property MotionLayoutContract.itemDragUpdated: static let itemDragUpdated: ElementEvent<MotionLayoutContract, (GesturePhase, Point, Point, Double)>
+swift.type.property MotionLayoutContract.layout: static let layout: ElementProgram<MotionLayoutContract, LayoutProgramDefinition>
 swift.type.property MotionLayoutContract.magnifies: static let magnifies: ElementProperty<MotionLayoutContract, Bool>
 swift.type.property MotionLayoutContract.mirrorsRightToLeft: static let mirrorsRightToLeft: ElementProperty<MotionLayoutContract, Bool>
 swift.type.property MotionLayoutContract.name: static var name: String { get }

@@ -1,7 +1,8 @@
-# revision 17.1
+# revision 18.1
 MotionLayout: ✅
 MotionLayout.itemDrag: ✅
 MotionLayout.itemDragUpdated: ✅
+MotionLayout.layout: ✅
 MotionLayout.magnifies: ✅
 MotionLayout.mirrorsRightToLeft: ✅
 MotionLayout.pans: ✓ sweep on MotionLayout: the listener's report of the hand handed to the host, no touch sent

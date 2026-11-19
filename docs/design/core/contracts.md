@@ -62,6 +62,37 @@ A node made by type - a style's, the library's structure - judges nothing.
 A test reads the same judgment: `TestElement.value` fails for a member of a
 contract its view does not wear.
 
+## A program
+
+A fourth kind of member stands beside a property, an event and an act: a
+program, `ElementProgram<Owner, Definition>` - a definition holding code the
+host runs for the element, as a motion layout's arithmetic is
+(`MotionLayoutContract.layout`, [a layout's program](layout-program.md)). A
+contract lists it among its members, so the dictionary shows it, a host
+records whether it realizes it and a conformance case proves it, like any
+member.
+
+```text
+  a property   a value: written, animated, carried by a state, read back
+  an event     a handler the host raises
+  an act       a call the application makes, answered by the host
+  a program    code of the application's the host runs: no value, no token
+```
+
+It is no `PropertyMember`: it has no value type, travels nowhere, and
+crosses under no token - a host is handed it typed, in the patch's own
+field. `Node.setProgram(_:definition:)` is the one road onto an element,
+judged by `Wearing.takes` as every member is, and nil takes the program
+away; a style and a text span take none. Only the library declares a
+program and makes its definition - the member's initializer is the
+library's, and a definition (`LayoutProgramDefinition`) is opaque, made by
+the view it belongs to.
+
+The trap is a program written as a property - a number or a name standing
+for a closure kept somewhere beside the tree. A property is a value a host
+may compare, animate and report; a closure is none of those, and the two
+would then leave the tree at different times.
+
 ## Member facts
 
 A property says three things about itself beside its value's type and its

@@ -10,6 +10,7 @@ extension HostRecord {
     /// Design: docs/design/views/motion-layout.md#the-element
     public static let motionLayout: [HostRecord] = [
         .complete(MotionLayoutContract.parameters),
+        .complete(MotionLayoutContract.layout),
         .complete(MotionLayoutContract.mirrorsRightToLeft),
         .notPlanned(PaddingElementContract.padding, on: MotionLayoutContract.self,
             reason: "A motion layout stands its views where its arithmetic says, from its own top left: it takes no "

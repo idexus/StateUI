@@ -9,8 +9,12 @@ host does with the answer [the host layer's](../host/layout.md#a-layout-program)
 
 ## The program
 
-A `HostLayoutProgram` crosses in the patch as it is, in one process, with
-nothing serialized:
+The layout's contract declares the program as a member,
+`MotionLayoutContract.layout` ([a program](contracts.md#a-program)), and a
+`MotionLayout` writes its definition onto its element
+(`LayoutProgramDefinition`). The differ takes the `HostLayoutProgram` out of
+it, which crosses in the patch as it is, in one process, with nothing
+serialized:
 
 ```text
   slot       which layout's program this is - one number while the layout stands

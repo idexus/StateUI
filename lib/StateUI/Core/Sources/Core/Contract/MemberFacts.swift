@@ -9,9 +9,10 @@ struct MemberFacts: Equatable {
         case property
         case event
         case act
+        case program
     }
 
-    /// Which of the three it is: a property, an event or an act.
+    /// Which of the four it is: a property, an event, an act or a program.
     let kind: Kind
 
     /// Which layer realizes it; nil for a member no contract declares.

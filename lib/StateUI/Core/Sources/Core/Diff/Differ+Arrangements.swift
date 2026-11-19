@@ -89,7 +89,7 @@ extension Node {
                 switch member.facts.kind {
                 case .property: props.insert(Prop(key: member.memberKey))
                 case .event: events.insert(Event(key: member.memberKey))
-                case .act: break
+                case .act, .program: break
                 }
             }
             declared[contract.nodeType] = (props, events)

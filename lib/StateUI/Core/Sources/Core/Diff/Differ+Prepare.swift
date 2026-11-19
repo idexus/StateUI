@@ -406,7 +406,7 @@ extension Differ {
             patch.followed = .replace(followed.map(HostStateBinding.init))
         }
         // A program is told again where its description made another; one no longer written is cleared.
-        if let program = node.layout {
+        if let program = node.program(MotionLayoutContract.layout)?.host {
             let told = previous?.layout
             if describeAll || told?.slot != program.slot || told?.revision != program.revision {
                 patch.layout = .replace(program)

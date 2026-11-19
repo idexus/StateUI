@@ -42,6 +42,10 @@ public enum MotionLayoutContract: ElementContract {
     public static let itemDragUpdated = ElementEvent<Self, (GesturePhase, Point, Point, Double)>(
         "itemDragUpdated", layer: .native)
 
+    /// The layout's arithmetic: the host says the room the element stands in, and reads where each child stands
+    /// whenever the arithmetic was worked out again.
+    public static let layout = ElementProgram<Self, LayoutProgramDefinition>("layout", layer: .stateUI)
+
     /// Whether the hand moves the run every way, a pan: the host hears it across and down alike, and claims every
     /// first move.
     public static let pans = ElementProperty<Self, Bool>("pans", layer: .structure, travels: false)
@@ -67,7 +71,7 @@ public enum MotionLayoutContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        itemDrag, itemDragUpdated, magnifies, mirrorsRightToLeft, pans, parameters, pinchRotationUpdated,
+        itemDrag, itemDragUpdated, layout, magnifies, mirrorsRightToLeft, pans, parameters, pinchRotationUpdated,
         rotates, translationOrientation, translationUpdated, wheelStepped,
     ]
 }

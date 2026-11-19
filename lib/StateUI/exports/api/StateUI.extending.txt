@@ -273,6 +273,8 @@ swift.conformance ElementEvent: Swift.Sendable
 swift.conformance ElementLayer: Swift.Equatable
 swift.conformance ElementLayer: Swift.Hashable
 swift.conformance ElementLayer: Swift.Sendable
+swift.conformance ElementProgram: StateUI.ContractMember
+swift.conformance ElementProgram: Swift.Sendable
 swift.conformance ElementProperty: StateUI.ContractMember
 swift.conformance ElementProperty: Swift.Sendable
 swift.conformance ElementView: StateUI.AutomationElement
@@ -2350,6 +2352,7 @@ swift.property Either.nodes: @MainActor var nodes: [Node] { get }
 swift.property Element.node: @MainActor var node: Node { get }
 swift.property ElementAct.name: let name: String
 swift.property ElementEvent.name: let name: String
+swift.property ElementProgram.name: let name: String
 swift.property ElementProperty.name: let name: String
 swift.property Ellipse.node: @MainActor var node: Node
 swift.property Ellipse.nodes: @MainActor var nodes: [Node] { get }
@@ -2647,10 +2650,12 @@ swift.struct ControlReports: @MainActor struct ControlReports<Realized> where Re
 swift.struct ControlValues: struct ControlValues<Realized> where Realized : ElementContract
 swift.struct ElementAct: struct ElementAct<Owner, Arguments, Answer> where Owner : Contract
 swift.struct ElementEvent: struct ElementEvent<Owner, Payload> where Owner : Contract
+swift.struct ElementProgram: struct ElementProgram<Owner, Definition> where Owner : Contract
 swift.struct ElementProperty: struct ElementProperty<Owner, Value> where Owner : Contract, Value : HostRepresentable
 swift.struct ItemsEntries.Section: struct Section
 swift.struct ItemsEntries: struct ItemsEntries
 swift.struct KeyboardShortcut: struct KeyboardShortcut
+swift.struct LayoutProgramDefinition: struct LayoutProgramDefinition
 swift.struct Name: struct Name
 swift.struct Node: @MainActor struct Node
 swift.struct NodeType: struct NodeType

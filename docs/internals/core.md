@@ -460,9 +460,17 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
   its own; `Contract.worn` is the host's.
   ([Tiers](../design/core/contracts.md#tiers))
 - **`ElementProperty`**, **`ElementEvent`** and **`ElementAct`** are the three
-  kinds of `ContractMember`, each carrying its value's types. *Application*;
-  each member's `token` is the host's.
+  kinds of `ContractMember` an application declares, each carrying its
+  value's types. *Application*; each member's `token` is the host's.
   ([Members are written with their contract](../design/core/contracts.md#members-are-written-with-their-contract))
+- **`ElementProgram`** is the fourth kind, the library's own: code the host
+  runs for an element, handed over typed and never a value.
+  `MotionLayoutContract.layout` is one, its definition a
+  **`LayoutProgramDefinition`** a `MotionLayout` makes from its arithmetic;
+  `HostLayoutProgram` is what the host is handed. *Internal* to declare;
+  `HostLayoutProgram` is the host's.
+  ([A program](../design/core/contracts.md#a-program),
+  [a layout's program](../design/core/layout-program.md))
 - **`ElementLayer`** says who realizes an element or a member. *Application.*
   ([Layers](../design/contracts/layers.md))
 - **`HostRepresentable`** is a member's value and how it crosses and comes

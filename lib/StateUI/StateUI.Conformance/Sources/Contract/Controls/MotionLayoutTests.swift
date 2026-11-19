@@ -14,7 +14,9 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("MotionLayout"),
-            ConformanceCase("eachViewStandsWhereItsArithmeticPutsIt", proves: [Covered(MotionLayoutContract.self)]) { s in
+            ConformanceCase("eachViewStandsWhereItsArithmeticPutsIt", proves: [
+                Covered(MotionLayoutContract.self), Covered(MotionLayoutContract.layout),
+            ]) { s in
                 let (first, second) = (Received<[Double]>(), Received<[Double]>())
                 s.start {
                     VStack {
@@ -43,7 +45,9 @@
                 s.expect(second.values.last.map(FrameReport.size), [20, 20], "the second at its own")
                 s.expect(apart(), [30, 10], "and where the second's placement stands it from the first")
             },
-            ConformanceCase("itsArithmeticIsHandedItsRoomAgainWhenItChanges", proves: [Covered(MotionLayoutContract.self)]) { s in
+            ConformanceCase("itsArithmeticIsHandedItsRoomAgainWhenItChanges", proves: [
+                Covered(MotionLayoutContract.self), Covered(MotionLayoutContract.layout),
+            ]) { s in
                 let rooms = Received<Rect>()
                 let width = State(wrappedValue: 60.0)
                 s.start {

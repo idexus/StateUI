@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// One member of a contract - a property, an event or an act - as a list of
-/// members holds it.
+/// One member of a contract - a property, an event, an act or a program - as a
+/// list of members holds it.
 public protocol ContractMember: Sendable {
     /// The contract declaring it.
     associatedtype Owner: Contract

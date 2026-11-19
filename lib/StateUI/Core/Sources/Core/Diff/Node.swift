@@ -364,8 +364,8 @@ public struct Node {
     /// under numbers the element keeps (Engine.swift).
     var engines: [EngineDeclaration] = []
 
-    /// The layout program the element runs; nil for none.
-    var layout: HostLayoutProgram?
+    /// The programs the element runs, by their members' keys (`setProgram`).
+    var programs: [KeyName: Any] = [:]
 
     /// Set on a placeholder for a composed view whose body is not built yet
     /// (Stateful.swift).
