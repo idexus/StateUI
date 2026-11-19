@@ -14,11 +14,15 @@
 ///         }
 ///
 /// One of these arrives per movement, each carrying `phase`, how far the
-/// press has come since the pan began, how fast it goes - what a journey goes
-/// on at once the finger lifts - and where it is now:
+/// press has come since the pan began, how fast it goes and where it is now.
+/// The speed at the end is how fast the finger lifted - what a throw goes on
+/// from:
 ///
 ///     .onPanUpdated { pan in
-///         if pan.phase == .ended { $offsetX.journey.velocity = pan.velocity.x }
+///         guard pan.phase == .ended else { return }
+///         // A third of the speed's way on, setting out at the hand's speed.
+///         let rest = offsetX + pan.velocity.x * 0.9 / 3
+///         $offsetX.journey.move(to: rest, .eased(.milliseconds(900), curve: .cubicOut))
 ///     }
 public struct PanUpdate: Equatable, Sendable {
     /// How far along the pan is.

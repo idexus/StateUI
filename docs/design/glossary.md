@@ -39,11 +39,13 @@ and this table maps the two.
 | reader (of a state) | dependent, subscriber | the body or content that read a state and is rebuilt when it changes |
 | binding twin | binding overload | the `Binding` form of a value modifier |
 | driven property | bound property | a control property that reads a state the host carries |
-| follow (`following:`) | depend on, subscribe to | what wakes an engine: a write to a state it follows |
+| follow (`following:`) | depend on, subscribe to | what wakes an engine: a write to a state it follows, or a frame of a journey it follows |
 | track (`tracking:`) | follow continuously | an engine that follows and keeps running on the next cycles while it answers `.again` |
-| conversion (`convert`) | derived binding | a binding that reads and writes another state through a mapping |
+| conversion (`convert`) | derived binding | a binding whose destination is worked out from other states' destinations, with a way back where one is given |
+| way back (`back:`) | inverse mapping | what a write into a conversion's result writes to its sources |
+| origin (`WriteOrigin`) | change source | who wrote a state: the user, the program, an animation's frame, a measurement, a conversion |
 | lender, lent | source storage | what a `StatePart` reads and writes through: the state's storage and which part of it |
-| reading, sample (`.samples`) | throttled copy | an animated value copied into ordinary state at a pace |
+| reading (`.samples`) | throttled copy | a journey's sample copied into ordinary state at a pace |
 | host-carried state, reactive path 2 | bound control value | a state a native control shows and changes with no rebuild |
 | attachment, wear (a state), wearer | binding, bound control | a control property tied to a state |
 | report | input event | the user's change on its way from a control to the core |
@@ -96,7 +98,11 @@ and this table maps the two.
 | --- | --- | --- |
 | motion (`Motion`) | animation timing | how a change animates: an eased curve over a duration, a spring, a glide, or none |
 | law, motion law | timing function | the curve, spring or glide that gives a value at a time (`HostMotionLaw`) |
-| journey (`$x.journey`) | animated value | a state's value with its destination, speed and timing |
+| journey (`$x.journey`) | animated value's handle | a state's handle to how it is shown: its sample, its motion, move, stop and snap |
+| sample (`journey.sample`, `JourneySample`) | presentation value | where the host shows a state on its last frame: the value, the destination it is taken to and its speed |
+| movement, run (`MotionRun`) | animation handle | one `move(to:)`, awaited for its result |
+| result (`MotionResult`) | completion status | the one way a movement ended: reached, superseded, stopped, detached, not started |
+| consumer (of a state channel) | subscriber | what keeps a state's channel alive: a property showing the state, an engine following its journey, a reading |
 | animation (`Animation`) | animation | one running animation of one value |
 | animator (`Animator`), advance | animator, advance a frame | the one place a runtime advances every animation |
 | lane | component | one number of an animated value: x of a point, red of a color |

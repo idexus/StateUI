@@ -60,8 +60,8 @@ body a reader: a write renders only a body that reads the state somewhere
 else, and a value moving many times a second rebuilds nothing.
 
 After the registration no message mentions the property. The host reads it
-off the image on its own frames: the state's value says where it is going, a
-written `$x.journey.value` is a jump and a `velocity` a kick. A value moving
+off the image on its own frames: the state's value says where it is going,
+and `$x.journey.snap(to:)` puts it there at once. A value moving
 under a finger costs the arithmetic and nothing else.
 
 A part of a state (`$room.width`) has no image of its own for the host to write
@@ -205,7 +205,7 @@ setting it, so a second drag carries on where the first left off.
 A state is at its value the moment it is written: `fade = 0.1` puts the
 destination on the state at once and the host animates the control there, so
 reading `fade` answers where it is going from the first frame to the last.
-Where it has got to is the journey, `$fade.journey.value`, and reading that in
+Where it has got to is the journey's sample, `$fade.journey.sample`, and reading that in
 a body builds the body on every frame the value moves. `.samples(_:into:_:)`
 is the road between: some of those frames, copied into an ordinary state that
 renders under the ordinary rules while the source goes on costing nothing.

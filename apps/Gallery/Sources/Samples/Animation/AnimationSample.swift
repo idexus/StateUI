@@ -55,14 +55,16 @@ struct AnimationSample: SampleContent, ExampleContent {
                 .placeholder("Easing")
 
             HStack {
-                // A movement answers whether it ran to the END. Stop says
-                // false - and a second press cancels this run, the buttons
-                // passing through `.cancelPrevious` - so the way back is not taken over
-                // whatever happened instead, which is what lets Stop leave the
-                // card where it stood.
+                // A movement answers HOW IT ENDED. Stop makes it `.stopped` -
+                // and a second press cancels this run, the buttons passing
+                // through `.cancelPrevious` - so the way back is taken only
+                // where the way out was `.reached`, which is what lets Stop
+                // leave the card where it stood.
                 button("Fade") {
-                    let landed = try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: curve)).arrived()
-                    if landed { try await $fade.journey.move(to: 1, .eased(.milliseconds(400), curve: curve)).arrived() }
+                    let out = try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: curve)).result()
+                    if case .reached = out {
+                        try await $fade.journey.move(to: 1, .eased(.milliseconds(400), curve: curve)).result()
+                    }
                 }
 
                 // ONE movement, because the card only ever moves sideways. A
@@ -70,13 +72,17 @@ struct AnimationSample: SampleContent, ExampleContent {
                 // beside this one before either is awaited, so the two land
                 // together.
                 button("Move") {
-                    let landed = try await $shift.journey.move(to: 60, .eased(.milliseconds(400), curve: curve)).arrived()
-                    if landed { try await $shift.journey.move(to: 0, .eased(.milliseconds(400), curve: curve)).arrived() }
+                    let out = try await $shift.journey.move(to: 60, .eased(.milliseconds(400), curve: curve)).result()
+                    if case .reached = out {
+                        try await $shift.journey.move(to: 0, .eased(.milliseconds(400), curve: curve)).result()
+                    }
                 }
 
                 button("Scale") {
-                    let landed = try await $scale.journey.move(to: 1.4, .eased(.milliseconds(400), curve: curve)).arrived()
-                    if landed { try await $scale.journey.move(to: 1, .eased(.milliseconds(400), curve: curve)).arrived() }
+                    let out = try await $scale.journey.move(to: 1.4, .eased(.milliseconds(400), curve: curve)).result()
+                    if case .reached = out {
+                        try await $scale.journey.move(to: 1, .eased(.milliseconds(400), curve: curve)).result()
+                    }
                 }
 
                 // A movement goes TO a value, never BY one, so a full turn is
@@ -84,7 +90,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                 // headed, which is what makes the next press carry on from
                 // there rather than start over.
                 button("Spin") {
-                    try await $angle.journey.move(to: angle + 360, .eased(.milliseconds(700), curve: curve)).arrived()
+                    try await $angle.journey.move(to: angle + 360, .eased(.milliseconds(700), curve: curve)).result()
                 }
             }
             .spacing(8)
@@ -109,15 +115,15 @@ struct AnimationSample: SampleContent, ExampleContent {
         VStack {
             Text("Each button moves STATE. `.opacity($fade)` DRIVES the property "
                 + "from the state behind it, and `$fade.journey.move(to: 0.1, …)` sends "
-                + "everything driven by `fade` to 0.1 at once. `arrived()` waits until "
-                + "the movement is over and answers whether it reached the end, which "
-                + "is what lets one follow another without a callback.")
+                + "everything driven by `fade` to 0.1 at once. `result()` waits until "
+                + "the movement is over and answers how it ended - reached, stopped, "
+                + "superseded - which is what lets one follow another without a callback.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The state holds BOTH readings: `fade` is 0.1 from the moment "
-                + "the movement is sent, while `$fade.journey.value` is wherever the "
-                + "host has got the card to. Nothing is described in between, so the "
+            Text("Where it is going and where it has got to are two readings: `fade` is "
+                + "0.1 from the moment the movement is sent, while `$fade.journey.sample` "
+                + "says where the host has got the card to. Nothing is described in between, so the "
                 + "whole 400ms costs no renders - and `$fade.journey.snap(to: 0.5)` "
                 + "puts the card there at once, with no movement.")
                 .fontSize(12)

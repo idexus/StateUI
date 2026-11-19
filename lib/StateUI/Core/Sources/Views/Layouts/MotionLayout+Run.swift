@@ -162,7 +162,7 @@ extension MotionLayout {
         /// The parameters as it stands this frame: where the host walks it, each hand's axis where that hand holds it.
         /// Design: docs/design/views/motion-layout.md#the-parameters
         func live() -> Parameters {
-            holding(parameters.journey.walked) ?? parameters.journey.value
+            holding(parameters.journey.walked) ?? parameters.journey.standing
         }
 
         /// `parameters` with each hand's axis where that hand holds it; nil where no hand holds the run.
@@ -210,9 +210,9 @@ extension MotionLayout {
         func name(_ target: Double) {
             let journey = parameters.journey
 
-            named?(placing(target, in: journey.destination))
+            named?(placing(target, in: journey.going))
 
-            guard let axis, onAxis(journey.value) != target || onAxis(journey.destination) != target else { return }
+            guard let axis, onAxis(journey.standing) != target || onAxis(journey.going) != target else { return }
 
             journey.snap(axis, to: target)
         }
@@ -224,12 +224,12 @@ extension MotionLayout {
             let journey = parameters.journey
 
             guard abs(onAxis(start) - along) * (unit(at: along) ?? 1) > Self.settled
-                || target != placing(along, in: journey.destination)
+                || target != placing(along, in: journey.going)
             else { return name(along) }
 
             named?(target)
-            journey.value = start
-            if velocity != 0 { journey.velocity = placing(velocity, in: journey.velocity) }
+            journey.lay(standing: start)
+            if velocity != 0 { journey.lay(speed: placing(velocity, in: journey.speed)) }
             _ = journey.move(to: target)
         }
 
@@ -268,7 +268,7 @@ extension MotionLayout {
         func notice(resting still: Bool, at parameters: Parameters) {
             let journey = self.parameters.journey
             let rests = still && states.held.wrappedValue.isEmpty && states.item.wrappedValue == nil
-                && journey.value == journey.destination
+                && journey.standing == journey.going
             guard rests != states.shown.wrappedValue.resting else { return }
 
             states.shown.wrappedValue.resting = rests
@@ -284,7 +284,7 @@ extension MotionLayout {
         /// Design: docs/design/views/motion-layout.md#where-a-motion-set-out
         func setOut(at parameters: Parameters) -> Parameters {
             let journey = self.parameters.journey
-            let resting = states.held.wrappedValue.isEmpty && journey.value == journey.destination
+            let resting = states.held.wrappedValue.isEmpty && journey.standing == journey.going
             var from = states.from.wrappedValue ?? parameters
             if resting {
                 from = parameters
@@ -407,7 +407,7 @@ extension MotionLayout {
                 take(at: onAxis(live()))
             case .changed:
                 // A move with no beginning heard is one: the run is taken where it is shown.
-                let held = self.held ?? take(at: onAxis(parameters.journey.value))
+                let held = self.held ?? take(at: onAxis(parameters.journey.standing))
                 // A room not yet measured draws no view, so a hand over it moves none.
                 guard let per = unit(at: held) else { return }
 
@@ -421,7 +421,7 @@ extension MotionLayout {
         /// from where the hand holds it: less and less past an end of an axis that does not come round, no farther
         /// than a swipe reaches, each snap it passes named.
         func move(by step: Double) {
-            let point = toHand(held ?? take(at: onAxis(parameters.journey.value)))
+            let point = toHand(held ?? take(at: onAxis(parameters.journey.standing)))
             let (low, high) = (toHand(self.low), toHand(self.high))
             let free = fromHand(period != nil ? point + step
                 : Self.given(Self.pulled(point, low: low, high: high) + step, low: low, high: high))
@@ -482,11 +482,11 @@ extension MotionLayout {
             guard let law = (thrown ?? longest)?.going.law else { return }
 
             let journey = parameters.journey
-            var velocity = journey.velocity
+            var velocity = journey.speed
             for (run, going) in goings { velocity = run.placing(going.velocity, in: velocity) }
-            journey.value = start
-            journey.velocity = velocity
-            _ = journey.move(to: journey.destination, law)
+            journey.lay(standing: start)
+            journey.lay(speed: velocity)
+            _ = journey.move(to: journey.going, law)
         }
 
         /// How the axis in focus goes on to `value`, named there already, let go as `letting` says: thrown on to a
@@ -658,14 +658,14 @@ extension MotionLayout {
 
             let journey = parameters.journey
             if swipes {
-                guard journey.value == journey.destination else { return }
+                guard journey.standing == journey.going else { return }
             }
             let start = live()
-            let from = onAxis(journey.destination)
+            let from = onAxis(journey.going)
             let along = stops.isEmpty ? notched(from, by: count) : stepped(from, by: swipes ? count.signum() : count)
 
             held = nil
-            send(to: placing(along, in: journey.destination), from: start, velocity: 0)
+            send(to: placing(along, in: journey.going), from: start, velocity: 0)
         }
 
         /// The snap `count` on from the one nearest `value` - back for fewer than nought - held to the ends of a run
@@ -707,7 +707,7 @@ extension MotionLayout {
             held = value
             if swipes {
                 let target = nearest(value)
-                let resting = placing(target, in: parameters.journey.value)
+                let resting = placing(target, in: parameters.journey.standing)
                 let unit = travel == .front ? measured(at: target, from: resting) : unit(at: target)
                 grip = LayoutGrip(target: target, unit: unit)
             }

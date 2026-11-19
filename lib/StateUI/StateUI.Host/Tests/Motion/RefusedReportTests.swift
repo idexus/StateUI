@@ -41,13 +41,14 @@ final class RefusedReportTests: XCTestCase {
         // A tenth of the way, the host reports where the value stands.
         channels.follow(animator.advance(to: 100))
         for output in channels.takeOutputs() {
-            if let report = output.report { _ = Renderer.shared.hostReported(output.journey, updating: report, through: binding) }
+            if let report = output.report { _ = Renderer.shared.hostReported(output.journey, updating: report, through: binding, at: 100, origin: output.origin) }
         }
         board.cycle(now: 100, reducesMotion: false)
         _ = board.dirty()
 
-        sum.storage.settle(6, asking: false)
-        XCTAssertEqual(back.back?(), false, "the report refused: two windows of a kind asked for one value")
+        guard case .refused = back.writeBack(6.0, origin: .user) else {
+            return XCTFail("the report refused: two windows of a kind asked for one value")
+        }
         board.cycle(now: 100, reducesMotion: false)
         for change in board.dirty() where change.number == binding.state {
             let carried = StateImage.carried(of: change.bytes, lanes: StateValueLanes.own)
@@ -57,7 +58,7 @@ final class RefusedReportTests: XCTestCase {
 
         channels.follow(animator.advance(to: 1_000))
         XCTAssertEqual(try XCTUnwrap(channels.takeOutputs().last?.journey.value.first), 1, accuracy: 1e-9, "at its own deadline")
-        XCTAssertEqual(channels.takeCompletions().map(\.succeeded), [true], "its waiter answered as it arrived")
+        XCTAssertEqual(channels.takeCompletions().map(\.outcome), [.animated], "its waiter answered as it arrived")
         withExtendedLifetime((record, mounted, differ, back, arrival)) {}
     }
 }

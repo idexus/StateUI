@@ -59,15 +59,12 @@ final class Differ {
     /// Design: docs/design/core/render.md#handlers-in-the-message
     var fired: [Fired] = []
 
-    /// The driven values this walk heard an element answer `.inherited` for, with the property, to check once the
-    /// walk let go of what left.
-    var answered: [(state: HostStorage, key: Prop)] = []
-
     /// The `.onDestroying` handlers of what this walk let go, innermost first.
     private var leaving: [EventHandler] = []
 
-    /// The states whose last wearer left in the walk under way (`landUnworn`).
-    private var unworn: [HostStorage] = []
+    /// The states whose consumers this walk changed, for their channels to be settled once it is done.
+    /// Design: docs/design/core/journeys.md#a-channels-life
+    private var touched: [HostStorage] = []
 
     /// The environments in scope where the walk stands, nearest last.
     var scope: [(key: ObjectIdentifier, object: AnyObject)] = []
@@ -130,8 +127,7 @@ final class Differ {
         }
 
         let walked = element(id: id, rendered: previous, node: tree)
-        sayAnsweredTwice()
-        landUnworn()
+        settleChannels()
         return walked
     }
 
@@ -151,32 +147,40 @@ final class Differ {
         seedScope()
 
         let walked = revisit(rendered)
-        sayAnsweredTwice()
-        landUnworn()
+        settleChannels()
         return walked
     }
 
-    /// A state this element no longer shows: a tie fewer, and its answer for `.inherited` gone with it.
+    /// A state this element shows: a consumer more, settled once the walk is done.
+    func tie(_ state: HostStorage) {
+        state.consumers += 1
+        touched.append(state)
+    }
+
+    /// A state this element no longer shows: a consumer fewer, and its answer for `.inherited` gone with it.
     func untie(_ number: Int32, from id: ElementID) {
         guard let state = Renderer.shared.storage(of: number) else { return }
 
-        state.ties -= 1
-        state.answers[id] = nil
-        if state.ties == 0 { unworn.append(state) }
+        state.consumers -= 1
+        touched.append(state)
     }
 
-    /// The moves no wearer is left to walk, landed once the walk is done: a state whose last wearer left, and that
-    /// nothing wore again elsewhere in the walk, stands at its destination, still, and its waiter hears it arrived -
-    /// the host's channel went with the wearer and answers nobody.
-    /// Design: docs/design/core/state.md#a-state-nobody-wears
-    private func landUnworn() {
-        let left = unworn
-        unworn = []
+    /// Settles the channels of the states whose consumers the walk changed, once it is done - never while one
+    /// element lets a state go and another takes it in the same walk. A first consumer opens a channel of a new
+    /// generation; the last one gone closes it: the value stands at its destination, still, its sample goes, and
+    /// whoever waits on a movement of it hears `.detached` - the host's channel went with the consumer and
+    /// answers nobody.
+    /// Design: docs/design/core/journeys.md#a-channels-life
+    private func settleChannels() {
+        let changed = touched
+        touched = []
         let board = Renderer.shared.board
+        var settled = Set<ObjectIdentifier>()
 
-        for state in left where state.ties == 0 && state.door == .property {
-            guard case .lanes(var lanes) = board.read(state, lanes: StateValueLanes.own),
-                  let law = StateLaw.within(.property, lanes: lanes.count), lanes[law + StateLaw.lanes] != 0
+        for state in changed where settled.insert(ObjectIdentifier(state)).inserted {
+            guard state.settleChannel(), state.door == .property,
+                  case .lanes(var lanes) = board.read(state, lanes: StateValueLanes.own),
+                  let law = StateLaw.within(.property, lanes: lanes.count)
             else { continue }
 
             let (width, completion) = (law / 3, lanes[law + StateLaw.lanes])
@@ -185,27 +189,8 @@ final class Differ {
                 lanes[width * 2 + lane] = 0
             }
             lanes[law + StateLaw.lanes] = 0
-            board.write(StateImage.bytes(of: .lanes(lanes)), to: state)
-            if state.readAtBuild { Renderer.shared.stateChanged(state) }
-            if let id = Int(exactly: completion) { HostBoundary.complete(id, succeeded: true) }
-        }
-    }
-
-    /// Says each driven value two live elements answer `.inherited` for differently - after the walk let go of
-    /// what left, so an element replaced in the same render answers nothing.
-    /// Design: docs/design/core/identity-and-diffing.md#driven-properties
-    private func sayAnsweredTwice() {
-        defer { answered = [] }
-
-        for (state, key) in answered {
-            let answers = Array(state.answers.values)
-            guard let first = answers.first, answers.contains(where: { $0 != first }) else { continue }
-
-            complain("""
-                \(key.name) is driven by a value two elements answer \
-                differently for. The one described LAST says how it \
-                travels.
-                """)
+            board.write(StateImage.bytes(of: .lanes(lanes)), to: state, stamping: false)
+            if let id = Int(exactly: completion), id != 0 { HostBoundary.complete(id, as: .detached) }
         }
     }
 
@@ -340,10 +325,16 @@ final class Differ {
             Renderer.shared.disarm(id)
         }
 
-        // Its ties: the states it showed are worn by one element fewer.
+        // Its ties: the states it showed, and those whose journey it followed, have a consumer fewer.
         for entry in node.driven.values {
             untie(entry.number, from: node.id)
         }
+        for entry in node.followed {
+            untie(entry.number, from: node.id)
+        }
+
+        // Its conversions: the graph works them out for one wearer fewer.
+        node.conversions.forEach(Renderer.shared.board.conversions.unwear)
 
         for child in node.children {
             forget(child)

@@ -200,10 +200,10 @@ final class DocumentationTests: XCTestCase {
         XCTAssertEqual(needless, [], "import StateUIFoundation for the C library; Foundation only for its types")
     }
 
-    /// AN AWAITED MOVEMENT AWAITS ITS ARRIVAL. `move(to:)` starts the movement and answers at once, so an example
-    /// awaiting the call alone waits for nothing; its `.arrived()` is what waits. Code hears that as a warning, so
+    /// AN AWAITED MOVEMENT AWAITS ITS RESULT. `move(to:)` starts the movement and answers at once, so an example
+    /// awaiting the call alone waits for nothing; its `.result()` is what waits. Code hears that as a warning, so
     /// what is read here is what no compiler reads: comments in every source and the handbook's text.
-    func testAnExampleAwaitingAMovementAwaitsItsArrival() throws {
+    func testAnExampleAwaitingAMovementAwaitsItsResult() throws {
         var unawaited: [String] = []
         var read = 0
         let roots = ["lib", "editors", "docs", "apps"].map { SourceTree.repository.appendingPathComponent($0) }
@@ -223,7 +223,7 @@ final class DocumentationTests: XCTestCase {
                     read += 1
                     let rest = passage[afterParentheses(in: passage, from: match.upperBound)...]
 
-                    if !rest.hasPrefix(".arrived()") {
+                    if !rest.hasPrefix(".result()") {
                         unawaited.append("\(file.lastPathComponent): \(passage[match.lowerBound...].prefix(70))")
                     }
                 }
@@ -232,7 +232,7 @@ final class DocumentationTests: XCTestCase {
 
         XCTAssertGreaterThan(files.count, 1000, "the walk read almost nothing")
         XCTAssertGreaterThan(read, 3, "the scan found almost no awaited movement")
-        XCTAssertEqual(unawaited, [], "an awaited movement waits for nothing - await its .arrived()")
+        XCTAssertEqual(unawaited, [], "an awaited movement waits for nothing - await its .result()")
     }
 
     /// The text a reader reads in a file: a handbook page whole, a source's runs of comment lines each as one line.

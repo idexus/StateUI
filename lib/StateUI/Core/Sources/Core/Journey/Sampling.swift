@@ -1,20 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Readings: where a value the host animates has got to, copied into an ordinary
-// state at a rate an author chooses.
+// Readings: where the host shows a value, copied into an ordinary state at a rate an author chooses - on the
+// display's frames, by the display's time.
 // Design: docs/design/core/journeys.md#readings
 
-
-/// One reading of one source into one target, at one rate - held by the element
-/// that asked for it, known weakly by the source.
+/// One reading of one journey into one target, at one rate - held by the element
+/// that asked for it, known weakly by the source and by the board.
 @MainActor
 final class Sampling {
-    /// The earliest moment this reading may be taken again.
-    private var next: ContinuousClock.Instant?
+    /// The earliest frame this reading may be taken again, in the display clock's milliseconds.
+    private var next: Double?
 
-    /// Whether a reading is already booked for the end of this window.
-    private var waiting = false
+    /// The frame a reading is booked for - the end of the window a sample came inside - or nil for none.
+    private(set) var booked: Double?
 
     /// The shortest time between readings, in milliseconds; nought is every frame.
     let window: Int
@@ -29,46 +28,36 @@ final class Sampling {
         self.take = take
     }
 
-    /// What this frame should do about the reading, with the bookkeeping. `now` is
-    /// stated so a test can hold the clock.
-    func due(at now: ContinuousClock.Instant = .now) -> Due {
-        if waiting { return .waiting }
+    /// What the frame at `now` should do about a sample that changed, with the bookkeeping.
+    func due(at now: Double) -> Due {
+        if booked != nil { return .waiting }
 
         guard let next, now < next else {
-            self.next = now + .milliseconds(max(0, window))
+            self.next = now + Double(max(0, window))
             return .now
         }
 
-        waiting = true
+        booked = next
         return .waitUntil(next)
     }
 
-    /// Takes the reading booked for `deadline` when it comes - by `Task.sleep`, not a run-loop timer
-    /// (Ticker.swift), in a task of the library's own, which knows the reading weakly: one whose element left
-    /// goes with it, untaken.
-    func takeLate(at deadline: ContinuousClock.Instant) {
-        libraryTask { [weak self] in
-            try? await Task.sleep(until: deadline)
-            guard let self else { return }
+    /// Takes the booked reading on the first frame at or past its time; answers whether it was taken.
+    func takeBooked(at now: Double) -> Bool {
+        guard let booked, now >= booked else { return false }
 
-            took()
-            take()
-        }
-    }
-
-    /// Records that the booked reading was taken, starting the next window.
-    func took(at now: ContinuousClock.Instant = .now) {
-        waiting = false
-        next = now + .milliseconds(max(0, window))
+        self.booked = nil
+        next = now + Double(max(0, window))
+        take()
+        return true
     }
 
     /// What a frame should do about a reading.
     enum Due: Equatable {
-        /// Take it now. The window starts again from this moment.
+        /// Take it now. The window starts again from this frame.
         case now
 
-        /// Take it when this moment comes - nobody is waiting for it yet.
-        case waitUntil(ContinuousClock.Instant)
+        /// Take it on the first frame at or past this time - nobody is waiting for it yet.
+        case waitUntil(Double)
 
         /// Do nothing: a reading is already booked and will cover this frame
         /// too.
@@ -111,24 +100,24 @@ extension HostStorage {
         return made
     }
 
-    /// Runs every reading asked for of this value, after the host wrote its lanes; a
-    /// reading inside its window books one for the window's end.
-    func sampleTaken() {
+    /// Runs every reading asked for of this value as its sample changes, on the frame at `now`; a
+    /// reading inside its window is booked with the board for the window's end.
+    func sampleTaken(at now: Double) {
         // A reading whose element has gone is swept.
         samplings.removeAll { $0.held.sampling == nil }
 
         for entry in samplings {
             guard let sampling = entry.held.sampling else { continue }
 
-            switch sampling.due() {
+            switch sampling.due(at: now) {
             case .now:
                 sampling.take()
 
             case .waiting:
                 break
 
-            case .waitUntil(let deadline):
-                sampling.takeLate(at: deadline)
+            case .waitUntil:
+                Renderer.shared.board.book(sampling)
             }
         }
     }

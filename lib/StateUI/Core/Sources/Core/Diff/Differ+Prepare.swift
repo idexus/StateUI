@@ -7,14 +7,24 @@ extension Differ {
     /// Design: docs/design/core/identity-and-diffing.md#engines-on-an-element
     private func arm(
         _ declared: [EngineDeclaration],
-        previous: [Int]?
+        previous: [Int]?,
+        at place: String
     ) -> [Int] {
+        // An animator a state refuses - it has one already, or the host animates it - stands inert, said once.
+        // Design: docs/design/core/journeys.md#an-engine-that-animates
+        func admitted(_ engine: EngineDeclaration, as id: Int) -> @MainActor (EngineCycle) -> EngineAnswer {
+            guard let refused = engine.animates?.claim(id, place) else { return engine.run }
+
+            complain(refused)
+            return { _ in .wait }
+        }
+
         if let previous = previous, previous.count == declared.count {
             var kept = true
 
             for (id, engine) in zip(previous, declared) {
                 kept = Renderer.shared.board.rearm(
-                    id, priority: engine.priority, following: engine.follows, with: engine.run) && kept
+                    id, priority: engine.priority, following: engine.follows, with: admitted(engine, as: id)) && kept
             }
 
             // Unless the board forgot them, as after a session claimed afresh: then they
@@ -28,12 +38,15 @@ extension Differ {
 
         return declared.map { engine in
             let id = allocateHandlerId()
-
-            Renderer.shared.board.arm(EngineEntry(
+            var entry = EngineEntry(
                 id: id,
                 priority: engine.priority,
                 follows: engine.follows,
-                run: engine.run))
+                run: admitted(engine, as: id))
+
+            entry.animates = engine.animates != nil
+            entry.released = engine.animates.map { claim in { claim.release(id) } }
+            Renderer.shared.board.arm(entry)
 
             return id
         }
@@ -60,8 +73,11 @@ extension Differ {
         }
 
         // The same for a reading written on that root.
-        for (image, into, cadence, take) in node.samples {
-            pass.readings.append(image.sample(into: into, every: cadence.window, take: take))
+        for reading in node.samples {
+            guard let image = reading.source.image() else { continue }
+
+            pass.readings.append(image.sample(into: reading.into, every: reading.cadence.window, take: reading.take))
+            pass.consumers.append(reading.source)
         }
 
         // What the element reads of a state it was handed - a picker's place, a tab, a stack's pages - read here, so
@@ -112,15 +128,14 @@ extension Differ {
             }
         }
 
-        // The engines this element runs, under numbers it keeps; a conversion's engines
-        // come first, in property order, each chain from its first sources, each conversion once.
-        // Design: docs/design/core/identity-and-diffing.md#engines-on-an-element
+        // The conversions whose derived states this element wears, each chain from its first sources, each
+        // conversion once, in property order: the graph keeps them up to date while it stands.
+        // Design: docs/design/core/journeys.md#the-graph-of-destinations
         var convertedOnce = Set<ObjectIdentifier>()
         let converting = node.driven.keys.sorted()
             .compactMap { node.driven[$0]!.conversion }
             .flatMap(\.chain)
             .filter { convertedOnce.insert(ObjectIdentifier($0)).inserted }
-            .flatMap { $0.declarations() }
 
         // Properties described last render and not now are named for the host to clear.
         // Design: docs/design/core/identity-and-diffing.md#properties-no-longer-described
@@ -163,7 +178,36 @@ extension Differ {
         }
 
         // Armed once the old element is let go: a replaced one starts its engines over under fresh numbers.
-        pass.engines = arm(converting + node.engines, previous: previous?.engines)
+        pass.engines = arm(node.engines, previous: previous?.engines, at: "the \(node.type) `\(id)`")
+
+        // Worn before the ones it wore are let go, so a conversion it keeps never leaves the graph between.
+        let graph = Renderer.shared.board.conversions
+        converting.forEach(graph.wear)
+        previous?.conversions.forEach(graph.unwear)
+        pass.conversions = converting
+
+        // The journeys its engines and readings follow with no property: each a consumer of its state's channel,
+        // carried as a journey from here on, one entry a state.
+        // Design: docs/design/core/journeys.md#a-channels-life
+        var followedStates: [Int32: (state: HostStorage, entry: StateEntry)] = [:]
+        for consumer in node.engines.flatMap(\.consumes) + pass.consumers {
+            guard let state = consumer.image() else { continue }
+
+            if state.door == nil { state.door = .property }
+            if state.laneKind == nil { state.laneKind = consumer.laneKind }
+            state.inherited = motion
+            let number = Renderer.shared.number(for: state)
+            followedStates[number] = (state, StateEntry(number: number, mode: .inOut, kind: .property, laneKind: consumer.laneKind))
+        }
+        let followed = followedStates.keys.sorted().map { followedStates[$0]!.entry }
+        let followedBefore = Set(previous?.followed.map(\.number) ?? [])
+        for number in followedStates.keys.sorted() where !followedBefore.contains(number) {
+            tie(followedStates[number]!.state)
+        }
+        for old in previous?.followed ?? [] where followedStates[old.number] == nil {
+            untie(old.number, from: id)
+        }
+        pass.followed = followed
 
         var patch = HostPatch(id: id, type: node.type)
         patch.replace = replace
@@ -330,13 +374,10 @@ extension Differ {
             let registration = node.driven[key]!
             let state = registration.state
 
-            // What `.inherited` means on this value can be answered only here; the answer
-            // stays on the state and is read at the crossing.
-            let mine = travel(key.facts.moves.union(registration.values))
-
-            state.inherited = mine
-            state.answers[id] = mine
-            answered.append((state, key))
+            // `.inherited` on a state is the application's motion, whoever shows it: a channel is every receiver's,
+            // and no receiver's own `.motion(_:)` decides it.
+            // Design: docs/design/core/journeys.md#which-motion
+            state.inherited = standing
             state.door = registration.kind
             state.laneKind = registration.laneKind
 
@@ -346,7 +387,7 @@ extension Differ {
                 kind: registration.kind,
                 laneKind: registration.laneKind)
 
-            if previous?.driven[key]?.number != driven[key]!.number { state.ties += 1 }
+            if previous?.driven[key]?.number != driven[key]!.number { tie(state) }
         }
 
         // A tie this element no longer has is a channel fewer for its state, and an answer fewer.
@@ -360,6 +401,9 @@ extension Differ {
 
         if tiesChanged {
             patch.driven = .replace(driven.mapValues(HostStateBinding.init))
+        }
+        if describeAll || previous == nil ? !followed.isEmpty : followed != previous!.followed {
+            patch.followed = .replace(followed.map(HostStateBinding.init))
         }
         pass.driven = driven
         pass.patch = patch

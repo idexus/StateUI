@@ -8,6 +8,19 @@
 
     /// Whether an engine has a reason to run next cycle.
     public let continues: Bool
+
+    /// The movements an engine of the application finished in this cycle: the host answers each once it has
+    /// shown the frame (`HostBoundary.complete(_:as:)`).
+    public let finished: [HostFinishedMotion]
+}
+
+/// A movement an engine of the application ended, for the host to answer after it presents.
+@_spi(Host) public struct HostFinishedMotion: Equatable, Sendable {
+    /// The waiter to answer.
+    public let completion: Int
+
+    /// How the movement ended.
+    public let outcome: HostMotionOutcome
 }
 
 /// One state value published by a completed host cycle.

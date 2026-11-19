@@ -140,10 +140,13 @@
         pump.performUserTransaction(body)
     }
 
-    /// Reports a value the user set through a bound state, and draws what it moves; whether the state took it.
+    /// Reports a value set through a bound state - the user's, unless `origin` says the platform measured it - and
+    /// draws what it moves; whether the state took it.
     @discardableResult
-    public func report(_ value: HostStateValue, through binding: HostStateBinding) -> Bool {
-        guard core.report(value, through: binding) else { return false }
+    public func report(
+        _ value: HostStateValue, through binding: HostStateBinding, origin: WriteOrigin = .user
+    ) -> Bool {
+        guard core.report(value, through: binding, origin: origin) else { return false }
         displayCycle.drain(now: clock.now(), reported: [binding.state: value])
         return true
     }

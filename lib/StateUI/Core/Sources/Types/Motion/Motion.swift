@@ -68,7 +68,7 @@ public struct Motion: Equatable, Sendable {
     ///
     /// What a write means when it names no motion, so a plain assignment and
     /// `move(to:)` agree about the motion and differ only in `move(to:)`
-    /// answering an `Arrival` whose `arrived()` waits.
+    /// answering a `MotionRun` whose `result()` waits.
     public static let inherited = Motion(kind: .inherited)
 
     /// No animation: the change is applied at once.
@@ -100,9 +100,8 @@ public struct Motion: Equatable, Sendable {
 
     /// A glide: the value sets out at the speed it has and slows onto its
     /// destination, as long as that speed takes to get there - what a value
-    /// thrown by the hand goes on with.
+    /// already moving goes on with.
     ///
-    ///     $offset.journey.velocity = pan.velocity.x
     ///     $offset.journey.move(to: 0, .glide(longest: .milliseconds(800)))
     ///
     /// It always lands where it is sent, never sooner than 80 milliseconds nor

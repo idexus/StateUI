@@ -276,18 +276,21 @@ the journey's readers are asked (journeys.md).
 
 ## A state nobody wears
 
-While no live element shows a state - before the first one registers it, and
-again after the last one leaves - nothing animates it. A state's number stays
-once issued, so what counts is its ties: the differ counts every property of a
-live element driven by it (`HostStorage.ties`), one more as a tie is described,
-one fewer as it goes or its element leaves. With none, a write puts the value
-at the destination as well, standing still, so a view described later shows it
-from its first frame, and a move arrives at once. `.custom` is the exception:
-its animator is an engine on this side. A move sent while the state was worn,
-whose last wearer leaves before a host walks it, lands as the walk that took
-the wearer away ends - at its destination, standing still, its waiter told it
-arrived: the host's channel went with the wearer and would answer nobody. A
-wearer leaving one place for another in the same walk keeps the move walking.
+While a state has no consumer - before the first element shows it, and again
+after the last one leaves - nothing animates it: it has a value and a motion,
+no sample and no speed. A state's number stays once issued, so what counts is
+its consumers: the differ counts every property of a live element driven by
+it, every engine following its journey and every reading of it
+(`HostStorage.consumers`), one more as each is described, one fewer as it goes
+or its element leaves. With none, a write puts the value at the destination as
+well, standing still, so a view described later shows it from its first frame,
+and a move answers `.notStarted(.noReceiver)`. A state an engine animates
+lands the same way while no engine is registered for it. A move sent while
+the state was shown, whose last consumer leaves before a host walks it, ends
+as the walk that took the consumer away ends - the value at its destination,
+standing still, its waiter told `.detached`: the host's channel went with the
+consumer and would answer nobody. A consumer leaving one place for another in
+the same walk keeps the move walking (journeys.md, a channel's life).
 
 ## Themed colors on a carried state
 

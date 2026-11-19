@@ -28,6 +28,8 @@ extension Differ {
             derived: pass.derived,
             children: children
         )
+        result.followed = pass.followed
+        result.conversions = pass.conversions
         result.contentAim = node.aim
         result.identity = pass.identity
         result.menuKey = pass.menuKey

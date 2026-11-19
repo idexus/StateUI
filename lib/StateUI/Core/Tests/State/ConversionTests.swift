@@ -454,18 +454,12 @@ final class ConversionTests: XCTestCase {
     /// derived state, and nothing the derived state keeps holds the source.
     func testAConversionNobodyReadLetsItsSourceGo() {
         weak var held: AnyObject?
-        weak var heldByJourney: AnyObject?
         do {
             let source = State(wrappedValue: 0.2)
             held = source.storage
             _ = source.projectedValue.convert { $0 * 100 }
-
-            let moving = State(wrappedValue: 0.2)
-            heldByJourney = moving.storage
-            _ = moving.projectedValue.journey.convert { $0.value * 100 }
         }
         XCTAssertNil(held, "a conversion nobody read kept its source")
-        XCTAssertNil(heldByJourney, "a journey's conversion nobody read kept its source")
     }
 
     /// `.multi` reads several states as one, in the order they are named -
@@ -781,8 +775,9 @@ final class ConversionTests: XCTestCase {
 
             _ = a.projectedValue.journey.move(to: 1, .eased(.seconds(1), curve: .linear))
             if refused {
-                sum.storage.settle(6, asking: false)
-                XCTAssertEqual(conversion.back?(), false, "two windows of a kind asked for one value")
+                guard case .refused = conversion.writeBack(6.0, origin: .user) else {
+                    return XCTFail("two windows of a kind asked for one value")
+                }
             }
             board.cycle(now: 16, reducesMotion: false)
             published.append(board.dirty().first { $0.number == number }?.mask)

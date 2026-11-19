@@ -627,88 +627,12 @@ extension StateTests {
         return done()
     }
 
-    /// Two frames inside one window take ONE reading: the first at once, the
-    /// second finding the window closed and booking one for its end, and a
-    /// third covered by the booking already standing.
-    ///
-    /// The moment is STATED rather than slept for, so the arithmetic is read
-    /// exactly and the test costs nothing.
-    func testTwoFramesInsideOneWindowTakeOneReading() {
-        let sampling = Sampling(window: 100, take: {})
-        let now = ContinuousClock.now
-
-        XCTAssertEqual(sampling.due(at: now), .now, "the first frame is read at once")
-
-        XCTAssertEqual(
-            sampling.due(at: now + .milliseconds(10)),
-            .waitUntil(now + .milliseconds(100)),
-            "the second books a reading for the end of the window")
-
-        XCTAssertEqual(
-            sampling.due(at: now + .milliseconds(20)), .waiting,
-            "and the third is covered by the booking already standing")
-    }
-
-    /// A frame after the window has passed is read at once again, and starts
-    /// the next window from itself rather than from the one before.
-    func testAFrameAfterTheWindowIsReadAtOnce() {
-        let sampling = Sampling(window: 100, take: {})
-        let now = ContinuousClock.now
-
-        XCTAssertEqual(sampling.due(at: now), .now)
-
-        XCTAssertEqual(
-            sampling.due(at: now + .milliseconds(101)), .now,
-            "the window had passed")
-
-        XCTAssertEqual(
-            sampling.due(at: now + .milliseconds(150)),
-            .waitUntil(now + .milliseconds(201)),
-            "and the next window runs from the reading that was taken")
-    }
-
-    /// A reading booked for its window's end is not taken once its element let it go: the booking holds nothing of
-    /// the reading, which goes with its element.
-    func testALateReadingIsNotTakenOnceItsElementLeft() {
-        let storage = HostStorage(StateImage.bytes(of: JourneyLanes(0.0).carried))
-        let target = State(0.0)
-        var taken = 0
-        weak var gone: Sampling?
-        do {
-            let reading = storage.sample(into: ObjectIdentifier(target.storage), every: 50) { taken += 1 }
-            gone = reading
-            storage.sampleTaken()
-            storage.sampleTaken()
-            XCTAssertEqual(taken, 1, "one reading at once, one booked for the window's end")
-        }
-
-        XCTAssertNil(gone, "the booking held the reading its element let go")
-        drain(until: { false }, within: 0.2)
-        XCTAssertEqual(taken, 1, "the reading booked was taken after its element left")
-    }
-
-    /// One value's readings are taken in the order they were asked for, every time - never by the hash of the
-    /// states they are read into.
-    func testAValuesReadingsAreTakenInTheOrderAsked() {
-        let storage = HostStorage(StateImage.bytes(of: JourneyLanes(0.0).carried))
-        let targets = (0..<8).map { _ in State(0.0) }
-        var taken: [Int] = []
-
-        let readings = targets.enumerated().map { index, target in
-            storage.sample(into: ObjectIdentifier(target.storage), every: 0) { taken.append(index) }
-        }
-        storage.sampleTaken()
-
-        withExtendedLifetime(readings) { XCTAssertEqual(taken, Array(0..<8)) }
-    }
-
-    /// A READ OF THE JOURNEY IS A BUILD PER FRAME, AND A READ OF THE STATE IS
+    /// A READ OF THE SAMPLE IS A BUILD PER FRAME, AND A READ OF THE STATE IS
     /// NOT. Two readers over one value the host is walking: a body that prints
     /// `fade` reads the destination, which no frame of the walk moves; a body
-    /// that prints `$fade.journey.value` asked to see every frame, and is
+    /// that prints `$fade.journey.sample` asked to see every frame, and is
     /// built on every one of them. Two reader sets, one keyed by the state and
-    /// one by the image the host walks it on - see
-    /// `State.Storage.askJourneyReaders()`.
+    /// one by its presentation - see `State.Storage.presentationMoved()`.
     func testAJourneyReadIsABuildPerFrameAndADestinationReadIsNot() {
         let fade = State(1.0)
         let destination = Builds()
@@ -718,7 +642,7 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { destination.count += 1; _ = fade.wrappedValue }.node,
-            Shown { journey.count += 1; _ = fade.projectedValue.journey.value }.node,
+            Shown { journey.count += 1; _ = fade.projectedValue.journey.sample }.node,
         ], id: "root"))
         _ = Renderer.shared.renderHost(baseline: 0)
         XCTAssertEqual(destination.count, 1)
@@ -739,7 +663,7 @@ extension StateTests {
             A body that printed the JOURNEY was not built for a frame of the \
             walk - the number it shows is stale, and nothing says so.
             """)
-        XCTAssertEqual(fade.projectedValue.journey.value, 0.7)
+        XCTAssertEqual(fade.projectedValue.journey.sample?.value, 0.7)
         XCTAssertEqual(fade.wrappedValue, 1, "and the state itself stood at its destination throughout")
     }
 
@@ -766,7 +690,7 @@ extension StateTests {
         XCTAssertEqual(fade.wrappedValue, 0.2, "and it reads where the value is going")
         XCTAssertEqual(fade.storage.journeyLanes?.motion, .eased(.milliseconds(400), curve: .linear), "on the move's own law")
         XCTAssertEqual(fade.projectedValue.journey.motion, .inherited, "the value's own standing")
-        XCTAssertEqual(fade.projectedValue.journey.value, 1, "the value waits for the host to walk it")
+        XCTAssertEqual(fade.projectedValue.journey.standing, 1, "the value waits for the host to walk it")
     }
 
     /// A READING IS OF WHERE THE VALUE HAS GOT TO, never of where it is going.
@@ -784,7 +708,7 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = shown.wrappedValue }
-                .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(0)))
+                .samples(fade.projectedValue.journey, into: shown.projectedValue, .every(.milliseconds(0)))
                 .node,
         ], id: "root"))
 
@@ -809,7 +733,7 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = shown.wrappedValue }
-                .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(0)))
+                .samples(fade.projectedValue.journey, into: shown.projectedValue, .every(.milliseconds(0)))
                 .node,
         ], id: "root"))
         _ = Renderer.shared.renderHost(baseline: 0)
@@ -836,7 +760,7 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = shown.wrappedValue }
-                .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(30)))
+                .samples(fade.projectedValue.journey, into: shown.projectedValue, .every(.milliseconds(30)))
                 .node,
         ], id: "root"))
 
@@ -844,10 +768,11 @@ extension StateTests {
         XCTAssertEqual(shown.wrappedValue, 0.5, "the first frame is read at once")
 
         moved(fade.number, to: [0.25, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
+        XCTAssertEqual(shown.wrappedValue, 0.5, "inside the window, it waits for the window's end")
 
-        XCTAssertTrue(
-            drain(until: { shown.wrappedValue == 0.25 }),
-            "the frame inside the window was dropped, so the sample ends short")
+        // The window's end, by the display's time, wherever this board's clock stands.
+        Renderer.shared.board.cycle(now: Renderer.shared.board.frameTime + 30, reducesMotion: false)
+        XCTAssertEqual(shown.wrappedValue, 0.25, "the frame inside the window was dropped, so the sample ends short")
     }
 
     /// A READING ENDS WITH THE VIEW THAT ASKED FOR IT, and holds nothing alive
@@ -869,7 +794,7 @@ extension StateTests {
 
             renders.render(stack([
                 Shown { _ = shown.wrappedValue }
-                    .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(100)))
+                    .samples(fade.projectedValue.journey, into: shown.projectedValue, .every(.milliseconds(100)))
                     .node,
             ], id: "root"))
 
@@ -901,7 +826,7 @@ extension StateTests {
             stack([
                 Text("walked").opacity(fade.projectedValue).node,
                 Shown { _ = shown.wrappedValue }
-                    .samples(fade.projectedValue, into: shown.projectedValue, .every(.seconds(100)))
+                    .samples(fade.projectedValue.journey, into: shown.projectedValue, .every(.seconds(100)))
                     .node,
             ], id: "root")
         }
@@ -935,10 +860,10 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = quick.wrappedValue }
-                .samples(fade.projectedValue, into: quick.projectedValue, .every(.milliseconds(0)))
+                .samples(fade.projectedValue.journey, into: quick.projectedValue, .every(.milliseconds(0)))
                 .node,
             Shown { _ = slow.wrappedValue }
-                .samples(fade.projectedValue, into: slow.projectedValue, .every(.seconds(100)))
+                .samples(fade.projectedValue.journey, into: slow.projectedValue, .every(.seconds(100)))
                 .node,
         ], id: "root"))
 

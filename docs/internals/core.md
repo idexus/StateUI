@@ -304,16 +304,29 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 
 ### Journeys
 
-- **`Journey`** is `$x.journey`: the value shown this frame, the destination,
-  the velocity and the law, with `move(to:_:)`, `stop()` and `snap(to:)`.
-  *Application.* ([The journey lanes](../design/core/journeys.md#the-journey-lanes);
-  [journey is part of state](../concepts/motion-and-journeys.md#journey-is-part-of-state))
+- **`Journey`** is `$x.journey`, a handle that holds no value: its `sample`
+  (a **`JourneySample`**: where the host shows the value, the destination it
+  is taken to, its speed and the frame's time), its `motion` and
+  `setMotion(_:)`, with `move(to:_:)`, `stop()`, `snap(to:)` and `reach(_:)`.
+  *Application.* ([The journey lanes](../design/core/journeys.md#the-journey-lanes),
+  [the sample](../design/core/journeys.md#the-sample);
+  [a state and its journey](../concepts/motion-and-journeys.md#a-state-and-its-journey))
+- **`MotionRun`** is what `move(to:)` answers, and **`MotionResult`** the one
+  way it ended - reached (`MotionArrival`, at once for a
+  `MotionImmediateReason`), superseded, stopped, detached, or not started for
+  a `MotionRefusal`. *Application.* `HostMotionOutcome` is the host's word
+  for it. *Host.*
+  ([A movement's result](../design/core/journeys.md#a-movements-result);
+  [a movement and its result](../concepts/motion-and-journeys.md#a-movement-and-its-result))
 - **Conversions and readings** - `convert`, `.multi` (`MultiBinding`) and
-  `.samples(_:into:_:)` at the pace its `Cadence` gives. A conversion runs as engines
-  the differ writes (`Conversion`, internal); a reading (`Sampling`,
-  internal) is no engine, but held by the element that asked for it.
+  `.samples(_:into:_:)` at the pace its `Cadence` gives. A conversion is a
+  node of the graph of destinations the board settles (`Conversion`,
+  `ConversionGraph`, internal), and a write into its result carries a
+  **`WriteOrigin`** (*Host*); a reading (`Sampling`, internal) is no engine,
+  but held by the element that asked for it.
   *Application.*
   ([Conversions](../design/core/journeys.md#conversions),
+  [the graph of destinations](../design/core/journeys.md#the-graph-of-destinations),
   [readings](../design/core/journeys.md#readings))
 - **`HostMotionLaw`** and **`HostMotionSample`** evaluate the two timing laws
   from the time since an animation began; the host layer's animator alone
@@ -329,10 +342,12 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
   *Internal*; the host runs it through `HostBoundary.cycle`.
   ([The board](../design/core/cycle.md#the-board),
   [where a write lands](../design/core/cycle.md#where-a-write-lands))
-- **`.engine(following:)`**, **`.engine(tracking:)`**, **`EngineCycle`**
+- **`.engine(following:)`**, **`.engine(tracking:)`**,
+  **`.engine(animating:)`** with **`EngineMotion`**, **`EngineCycle`**
   and **`EngineAnswer`** make an engine: application frame code that
   runs while it has a reason - armed by a render, stirred by a write to a
-  state it follows, awake after `.again`. Its own write never wakes it.
+  state it follows or a frame of a journey it follows, awake after `.again`.
+  Its own write never wakes it.
   *Application.* ([What wakes an engine](../design/core/cycle.md#what-wakes-an-engine);
   [custom engines](../concepts/state-and-reactivity.md#custom-engines))
 - **`Ticker`** is a repeating timer on `Task.sleep`, sleeping to a deadline.
@@ -553,9 +568,10 @@ the layer, and `placements(from:)` in AppKit's element too
   `cyclesPending` says whether anything waits for one.
   ([State cycles](host-contract.md#state-cycles))
 - **Carried states and journeys.** `value(for:)` reads the image a
-  `HostStateBinding` carries out; `report(_:through:)` and
-  `report(_:updating:through:)` bring a value or a journey's parts back;
-  `complete(_:succeeded:)` answers an awaited journey; `gestureValue(state:)`
+  `HostStateBinding` carries out; `report(_:through:origin:)` and
+  `report(_:updating:through:at:origin:)` bring a value or a channel's sample
+  back, saying who wrote; `complete(_:as:)` answers an awaited movement with
+  its `HostMotionOutcome`; `gestureValue(state:)`
   and `moveGestureValue(_:state:)` follow a pan. The codecs `journey(from:)`,
   `value(of:)` and `placements(from:)` turn an image into a `HostJourney` or
   a `HostPlacementRun` and back, so no host knows a lane.

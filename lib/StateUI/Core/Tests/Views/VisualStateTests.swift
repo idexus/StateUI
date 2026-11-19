@@ -153,7 +153,7 @@ final class VisualStateTests: XCTestCase {
         let binding = try XCTUnwrap(first.driven?.bindings["isOn"], "isOn is carried")
 
         Renderer.shared.clearInvalidation()
-        XCTAssertTrue(Renderer.shared.hostReported(.lanes([1]), through: binding))
+        XCTAssertTrue(Renderer.shared.hostReported(.lanes([1]), through: binding, origin: .user))
         let turned = renders.revisit(changed: Renderer.shared.pendingChanges).child("c")
         XCTAssertEqual(turned?.props["background"], green)
     }

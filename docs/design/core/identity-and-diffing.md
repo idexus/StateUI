@@ -575,10 +575,12 @@ An element's engines are registered under numbers it keeps, so a render hands
 the newest closure - this render's captures - and its priority to the engine
 that already has a number, which moves in the board's order where the priority
 changed, ties still by number. A different count is a different set of engines and starts over, as
-with watches. The engines a conversion needs are armed beside the author's
-own, ahead of them, in property order: every conversion of its chain, the one
-nearest the sources first, each once however many properties share it ([a
-chain of conversions](journeys.md#a-chain-of-conversions)). A board that has
+with watches. An engine that animates a state claims the state's seat as it is
+armed and lets it go as it is forgotten; one a state refuses stands inert
+([an engine that animates](journeys.md#an-engine-that-animates)). The
+conversions whose results the element wears are worn in the conversions'
+graph, every conversion of each chain once, and let go as the element leaves
+([the graph of destinations](journeys.md#the-graph-of-destinations)). A board that has
 forgotten an element's engines, as after a session claimed afresh, gets them
 again under fresh numbers, which the element keeps from then on. A replaced
 element arms its engines only after the old one is let go, under fresh
@@ -594,17 +596,15 @@ the walk and two runs of one tree number alike. The registration set is sent
 whenever it changed, an emptied set included: an element that stops tying a
 property has to say so. A registration names the state rather than its number,
 which is issued later; it carries the conversion the state is the derived side
-of, if it is one, which the differ arms engines for on the element wearing it,
-and which of the view's values it is - the property's group, plus a color's.
+of, if it is one, which the element wearing it wears in the graph, and which
+of the view's values it is - the property's group, plus a color's.
 
-What `.inherited` means for a driven value can be answered only here: the host
-knows what the application says, while an element's motion plan answers per
-kind of value. The differ resolves it and leaves the answer on the state's
-storage, which applies it at every crossing. Two live elements resolving the
-same state differently is a complaint; the one described last wins. The state
-keeps each live element's answer (`answers`), dropped with its tie or with the
-element, and the walk says a difference once it is done - after it let go of
-what left, so an element replaced in the same render answers nothing.
+`.inherited` on a driven state is the application's motion: the differ leaves
+it on the state's storage, which applies it at every crossing. No element
+showing the state answers it - a channel is every receiver's
+([which motion](journeys.md#which-motion)). The journeys an element follows
+with no property - its engines', its readings' - are tied the same way and
+told to the host apart (`HostPatch.followed`).
 
 ## Aims and readings on an element
 

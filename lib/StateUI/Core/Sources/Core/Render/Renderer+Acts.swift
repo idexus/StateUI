@@ -42,6 +42,13 @@ extension Renderer {
     @discardableResult
     private func enqueue(_ make: (Int?) -> ActCall, _ completion: ((Reply) -> Void)?) -> Int? {
         guard HandlerRun.admits("an act") else { return nil }
+        // A conversion's arithmetic asks the host for nothing: it may be worked out again at any time.
+        guard !ConversionEvaluation.running else {
+            let reason = "a conversion's arithmetic sends no act"
+            if let completion { completion(.failed(reason)) }
+            else { complain("\(make(nil).name) was not performed: \(reason)") }
+            return nil
+        }
         guard HostTeardown.current == nil else {
             let reason = "the application's host is closing"
             if let completion { completion(.failed(reason)) }

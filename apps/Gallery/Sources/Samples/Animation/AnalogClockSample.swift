@@ -135,15 +135,17 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     let s = $sAngle.journey.move(to: toSecond, .eased(.milliseconds(260), curve: .backOut))
                     let m = $mAngle.journey.move(to: toMinute, .eased(.milliseconds(300), curve: .cubicOut))
                     let h = $hAngle.journey.move(to: toHour, .eased(.milliseconds(300), curve: .cubicOut))
-                    try await s.arrived()
-                    try await m.arrived()
-                    try await h.arrived()
+                    try await s.result()
+                    try await m.result()
+                    try await h.result()
                 } else {
-                    // The first reading SETS the hands: `value` is written, and
-                    // the state to match, so nothing travels and nothing is awaited.
+                    // The first reading SETS the hands: a snap puts each where
+                    // it is and going nowhere, so nothing travels and nothing
+                    // is awaited.
                     started = true
-                    ($sAngle.journey.value, $mAngle.journey.value, $hAngle.journey.value) = (second, minute, hour)
-                    (sAngle, mAngle, hAngle) = (second, minute, hour)
+                    $sAngle.journey.snap(to: second)
+                    $mAngle.journey.snap(to: minute)
+                    $hAngle.journey.snap(to: hour)
                 }
 
                 // Sleep to the NEXT whole second, not for a fixed while: the

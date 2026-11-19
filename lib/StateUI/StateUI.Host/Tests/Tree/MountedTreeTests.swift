@@ -1029,7 +1029,8 @@ final class MountedTreeTests: XCTestCase {
         let images = try states.map { try XCTUnwrap($0.projectedValue.journeyImage) }
         for image in images {
             // What the differ sets as an element registers the state.
-            image.ties = 1
+            image.consumers = 1
+            image.settleChannel()
             image.door = .property
             image.laneKind = .number
         }

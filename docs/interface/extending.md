@@ -198,10 +198,10 @@ a journey does not compile:
 // Sources/Samples/Interop/RatingBar.swift
 /// How many stars are filled, walked by the host from a state.
 ///
-///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).arrived()
+///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).result()
 ///
 /// A `.journey`: the host walks it and reports where the walk has got to,
-/// which is what `$stars.journey.value` reads. A tap does not arrive this
+/// which is what `$stars.journey.sample` reads. A tap does not arrive this
 /// way; `.onRatingChanged(_:)` hears it.
 ///
 /// On the control and not on `RatingBarProperties`: a style wears that

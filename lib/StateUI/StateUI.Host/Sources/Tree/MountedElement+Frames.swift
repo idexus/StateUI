@@ -33,7 +33,7 @@ extension MountedElement {
         reportedFrame = numbers
         frameReportDue = false
         if let binding = readers.state {
-            runtime.report(.lanes(Array(numbers.prefix(4))), through: binding)
+            runtime.report(.lanes(Array(numbers.prefix(4))), through: binding, origin: .measurement)
         }
         if let handler = readers.handler {
             runtime.dispatch(handler, payload: [.numbers(numbers)])

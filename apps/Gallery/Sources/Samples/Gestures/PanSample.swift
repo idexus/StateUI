@@ -12,7 +12,7 @@ struct PanSample: SampleContent, ExampleContent {
     @State private var snaps = true
 
     /// What the box does as it is let go: stays, springs home, or glides on
-    /// - the last two at the hand's speed.
+    /// from the hand's speed.
     @State private var letting = "Stays"
     static let lettings = ["Stays", "Springs home", "Glides on"]
 
@@ -24,6 +24,10 @@ struct PanSample: SampleContent, ExampleContent {
     /// Where the hand holds the box, in the box's own points - driven words, so
     /// a report writes them without a render.
     @State private var held = "Hold the box"
+
+    /// How far the box has got, in words an engine following both journeys
+    /// writes on the host's frames.
+    @State private var moved = "Moved 0, 0"
     // listing: end
 
     static let id = "pan"
@@ -39,8 +43,8 @@ struct PanSample: SampleContent, ExampleContent {
     var body: some View {
         VStack {
             // The box is moved by DRIVEN states, so a drag builds nothing: the
-            // reading below is a CONVERSION of the same two, and the switch is
-            // handed its state - this stands at one build.
+            // reading below is written by an engine following the same two,
+            // and the switch is handed its state - this stands at one build.
             DebugInfoLabel()
 
             // A fixed box for it to move inside, so the layout does not follow
@@ -65,26 +69,25 @@ struct PanSample: SampleContent, ExampleContent {
                         case .changed:
                             follow(panX + update.total.x, panY + update.total.y)
                         case .ended where letting == "Springs home":
-                            // The hand's speed is the box's as it lets go: it
-                            // goes on that way, and the spring brings it home.
+                            // Let go, a spring brings it home from where the
+                            // hand left it.
                             (panX, panY) = (0, 0)
-                            $liveX.journey.velocity = update.velocity.x
-                            $liveY.journey.velocity = update.velocity.y
                             $liveX.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                             $liveY.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                         case .ended where letting == "Glides on":
-                            // It glides on from the hand's speed to where that
-                            // throw carries it, kept inside the box.
-                            let glide = Motion.glide(longest: .milliseconds(900))
-                            $liveX.journey.velocity = update.velocity.x
-                            $liveY.journey.velocity = update.velocity.y
-                            panX = min(max($liveX.journey.reach(glide), -140), 140)
-                            panY = min(max($liveY.journey.reach(glide), -60), 60)
-                            $liveX.journey.move(to: panX, glide)
-                            $liveY.journey.move(to: panY, glide)
+                            // It goes on from the hand's speed. A cubic-out
+                            // journey sets out three times as fast as it
+                            // averages, so one a third of the speed's way long
+                            // leaves at the hand's speed and slows to rest -
+                            // kept inside the box.
+                            let seconds = 0.9
+                            panX = min(max(panX + update.total.x + update.velocity.x * seconds / 3, -140), 140)
+                            panY = min(max(panY + update.total.y + update.velocity.y * seconds / 3, -60), 60)
+                            $liveX.journey.move(to: panX, .eased(.seconds(seconds), curve: .cubicOut))
+                            $liveY.journey.move(to: panY, .eased(.seconds(seconds), curve: .cubicOut))
                         case .ended:
-                            panX = $liveX.journey.value
-                            panY = $liveY.journey.value
+                            panX += update.total.x
+                            panY += update.total.y
                         case .cancelled:
                             follow(panX, panY)
                         case .began:
@@ -98,13 +101,16 @@ struct PanSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(10))
             .height(200)
 
-            // Two states into one conversion: the host works the words out
-            // from where the box HAS GOT TO, on its own frames.
-            Text(.multi($liveX.journey, $liveY.journey).convert { x, y in
-                    "Moved \(Int(x.value)), \(Int(y.value))"
-                })
+            // Two journeys followed by one engine: on the host's frames it
+            // reads where the box HAS GOT TO - both samples of one frame - and
+            // writes the words.
+            Text($moved)
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
+                .engine(following: $liveX.journey, $liveY.journey) { _ in
+                    guard let x = $liveX.journey.sample, let y = $liveY.journey.sample else { return }
+                    moved = "Moved \(Int(x.value)), \(Int(y.value))"
+                }
 
             Text($held)
                 .fontSize(13)
@@ -136,12 +142,10 @@ struct PanSample: SampleContent, ExampleContent {
     /// The box under the finger.
     ///
     /// A READING WRITTEN ON EVERY REPORT IS A SNAP, and the snap is
-    /// `$liveX.journey.snap(to:)` - here, going nowhere, standing still.
-    /// Writing `$liveX.journey.value` alone would move the box and leave the
-    /// destination where it was, so `Put it back` would have nothing to
-    /// change. The state itself is where it is GOING, so writing THAT on every
-    /// report starts a fresh little journey the next report interrupts, which
-    /// is the lag the switch is here to show.
+    /// `$liveX.journey.snap(to:)` - here, going nowhere, standing still. The
+    /// state itself is where it is GOING, so writing THAT on every report
+    /// starts a fresh little journey the next report interrupts, which is the
+    /// lag the switch is here to show.
     private func follow(_ x: Double, _ y: Double) {
         if snaps {
             // HERE, GOING NOWHERE, STANDING STILL - all three, so that
@@ -165,10 +169,10 @@ struct PanSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Each report says how fast the hand goes, `velocity`, "
-                + "a second - at the end, as fast as it lifted. `Springs home` and `Glides "
-                + "on` hand that to the box's journey as it lets go: a spring brings it "
-                + "back, or a glide carries it to where `journey.reach(_:)` says the throw "
-                + "would land.")
+                + "a second - at the end, as fast as it lifted. `Springs home` sends the "
+                + "box back on a spring. `Glides on` sends it a third of that speed's way "
+                + "on, on a cubic-out journey, which sets out at the hand's speed and "
+                + "slows to rest.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

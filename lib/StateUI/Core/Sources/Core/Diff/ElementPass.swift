@@ -48,6 +48,9 @@ final class ElementPass {
     var ownReads: Set<ObjectIdentifier> = []
 
     var readings: [Sampling] = []
+
+    /// The journeys its readings read: each a consumer of its state's channel.
+    var consumers: [JourneyConsumer] = []
     var reads: Set<ObjectIdentifier> = []
     var derived: [AnyObject] = []
 
@@ -64,6 +67,8 @@ final class ElementPass {
     var kept = RunSlots()
     var events: [Event: Int] = [:]
     var driven: [Prop: StateEntry] = [:]
+    var followed: [StateEntry] = []
+    var conversions: [Conversion] = []
     var patch: HostPatch
     var menuKey: MenuKeys.Key?
 

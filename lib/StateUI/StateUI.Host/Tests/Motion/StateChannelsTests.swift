@@ -15,6 +15,7 @@ final class StateChannelsTests: XCTestCase {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 7, mode: .inOut, kind: .property, laneKind: .number)
+        channels.attach(7)
         let journey = HostJourney(
             value: [0],
             destination: [1],
@@ -43,6 +44,7 @@ final class StateChannelsTests: XCTestCase {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 9, mode: .inOut, kind: .property, laneKind: .number)
+        channels.attach(9)
         let first = HostJourney(
             value: [0],
             destination: [1],
@@ -86,6 +88,7 @@ final class StateChannelsTests: XCTestCase {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 11, mode: .inOut, kind: .property, laneKind: .number)
+        channels.attach(11)
         let journey = HostJourney(
             value: [0],
             destination: [1],
@@ -108,7 +111,7 @@ final class StateChannelsTests: XCTestCase {
         XCTAssertEqual(landed.report, .position)
         XCTAssertEqual(
             channels.takeCompletions(),
-            [JourneyCompletion(id: -23, succeeded: true)])
+            [JourneyCompletion(id: -23, outcome: .animated)])
 
         channels.follow(animator.advance(to: 200))
         XCTAssertTrue(channels.takeOutputs().isEmpty)
@@ -120,6 +123,7 @@ final class StateChannelsTests: XCTestCase {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 12, mode: .inOut, kind: .property, laneKind: .number)
+        channels.attach(12)
         let journey = HostJourney(
             value: [0],
             destination: [1],
@@ -134,7 +138,7 @@ final class StateChannelsTests: XCTestCase {
             reducesMotion: false)
         _ = channels.takeOutputs()
 
-        channels.follow(animator.advance(to: 50, reducesMotion: true))
+        channels.follow(animator.advance(to: 50, reducesMotion: true), reducedMotion: true)
         let landed = try XCTUnwrap(channels.takeOutputs().last)
 
         XCTAssertEqual(landed.journey.value, [1])
@@ -143,7 +147,7 @@ final class StateChannelsTests: XCTestCase {
         XCTAssertEqual(landed.report, .position)
         XCTAssertEqual(
             channels.takeCompletions(),
-            [JourneyCompletion(id: -29, succeeded: true)])
+            [JourneyCompletion(id: -29, outcome: .immediate(.reducedMotion))])
         XCTAssertFalse(channels.isActive)
     }
 
@@ -152,6 +156,7 @@ final class StateChannelsTests: XCTestCase {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 13, mode: .inOut, kind: .property, laneKind: .number)
+        channels.attach(13)
         let journey = HostJourney(
             value: [0],
             destination: [1],
@@ -176,7 +181,7 @@ final class StateChannelsTests: XCTestCase {
         XCTAssertFalse(channels.isActive)
         XCTAssertEqual(
             channels.takeCompletions(),
-            [JourneyCompletion(id: -31, succeeded: false)])
+            [JourneyCompletion(id: -31, outcome: .superseded)])
     }
 
     @MainActor
@@ -184,6 +189,7 @@ final class StateChannelsTests: XCTestCase {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 15, mode: .out, kind: .property, laneKind: .number)
+        channels.attach(15)
         let journey = HostJourney(
             value: [0],
             destination: [1],
@@ -208,6 +214,7 @@ final class StateChannelsTests: XCTestCase {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 17, mode: .inOut, kind: .property, laneKind: .number)
+        channels.attach(17)
         let moving = HostJourney(
             value: [0],
             destination: [1],
@@ -245,7 +252,7 @@ final class StateChannelsTests: XCTestCase {
         XCTAssertFalse(channels.isActive)
         XCTAssertEqual(
             channels.takeCompletions(),
-            [JourneyCompletion(id: -41, succeeded: false)])
+            [JourneyCompletion(id: -41, outcome: .superseded)])
 
         channels.follow(animator.advance(to: 200))
         XCTAssertTrue(channels.takeOutputs().isEmpty)
@@ -257,6 +264,7 @@ final class StateChannelsTests: XCTestCase {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 19, mode: .inOut, kind: .property, laneKind: .number)
+        channels.attach(19)
         let first = HostJourney(
             value: [0],
             destination: [1],
@@ -288,12 +296,12 @@ final class StateChannelsTests: XCTestCase {
 
         XCTAssertEqual(
             channels.takeCompletions(),
-            [JourneyCompletion(id: -41, succeeded: false)])
+            [JourneyCompletion(id: -41, outcome: .superseded)])
 
         channels.follow(animator.advance(to: 150))
         XCTAssertEqual(
             channels.takeCompletions(),
-            [JourneyCompletion(id: -42, succeeded: true)])
+            [JourneyCompletion(id: -42, outcome: .animated)])
     }
 
     /// One state is one channel however many controls wear it: it stays while any of them does, and goes when
@@ -312,23 +320,109 @@ final class StateChannelsTests: XCTestCase {
         XCTAssertEqual(runtime.stateChannels.count, 0, "the last one took it with it")
     }
 
-    /// A channel still moving when its last control leaves runs to where it was sent, and only then goes - what
-    /// awaited its arrival answered as it lands, never left waiting for a control that is gone.
+    /// A channel still moving when its last consumer leaves goes at once, its run with it, and says nothing: the
+    /// core counted the same consumers and answers whoever awaited the movement.
     @MainActor
-    func testAMovingChannelWhoseLastControlLeftLandsAndThenGoes() {
+    func testAMovingChannelWhoseLastConsumerLeftGoesAtOnce() {
         let runtime = HostRuntime.still()
         runtime.tree.apply(Self.labels(["a"]), complete: true)
-        Self.open(Self.worn, in: runtime, from: 0, to: 1, completion: 7)
+        Self.open(Self.worn, in: runtime, from: 0, to: 1, completion: -7)
         XCTAssertTrue(runtime.stateChannels.isActive)
 
         runtime.tree.apply(Self.labels([]), complete: false)
-        runtime.stateChannels.follow(runtime.animator.advance(to: 100))
-        XCTAssertEqual(runtime.stateChannels.count, 1, "it goes on to where it was sent")
-        XCTAssertEqual(runtime.stateChannels.takeCompletions().map(\.id), [], "not there yet")
 
+        XCTAssertEqual(runtime.stateChannels.count, 0, "no consumer, no channel")
+        XCTAssertFalse(runtime.animator.isMoving, "and nothing left moving for it")
+        XCTAssertEqual(runtime.stateChannels.takeCompletions(), [], "the waiter is the core's to answer")
+    }
+
+    /// A consumer that leaves one element for another in the same patch keeps the channel: it goes on from where it
+    /// stands, and its waiter still waits.
+    @MainActor
+    func testAConsumerSwappedInOnePatchKeepsTheChannel() throws {
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(Self.labels(["a"]), complete: true)
+        Self.open(Self.worn, in: runtime, from: 0, to: 1, completion: -8)
+        runtime.stateChannels.follow(runtime.animator.advance(to: 100))
+        _ = runtime.stateChannels.takeOutputs()
+
+        runtime.tree.apply(Self.labels(["b"]), complete: false)
+
+        XCTAssertEqual(runtime.stateChannels.count, 1, "the same channel")
+        XCTAssertTrue(runtime.stateChannels.isActive, "still on its way")
         runtime.stateChannels.follow(runtime.animator.advance(to: 200))
-        XCTAssertEqual(runtime.stateChannels.count, 0, "and goes once it has landed")
-        XCTAssertEqual(runtime.stateChannels.takeCompletions().map(\.succeeded), [true], "its arrival answered")
+        XCTAssertEqual(runtime.stateChannels.takeCompletions(), [JourneyCompletion(id: -8, outcome: .animated)])
+    }
+
+    /// A value read for a state no consumer holds opens no channel: it is the state's own.
+    @MainActor
+    func testAStateWithNoConsumerHasNoChannel() {
+        let channels = StateChannels(animator: Animator())
+        let binding = HostStateBinding(state: 41, mode: .inOut, kind: .property, laneKind: .number)
+        let journey = HostJourney(
+            value: [0], destination: [1], velocity: [0], motion: .eased(.milliseconds(200), curve: .linear),
+            completion: nil, stopped: 0)
+
+        let shown = channels.presentedValue(for: binding, from: HostBoundary.value(of: journey), now: 0, reducesMotion: false)
+
+        XCTAssertEqual(shown, HostBoundary.value(of: journey))
+        XCTAssertEqual(channels.count, 0)
+        XCTAssertFalse(channels.isActive)
+    }
+
+    /// WHY A MOVEMENT WAS PUT AT ITS DESTINATION AT ONCE is said to its waiter: there already, a motion that does not
+    /// animate, less motion asked for.
+    @MainActor
+    func testAnImmediateArrivalSaysWhy() {
+        let channels = StateChannels(animator: Animator())
+        let binding = HostStateBinding(state: 43, mode: .inOut, kind: .property, laneKind: .number)
+        channels.attach(43)
+        let standing = HostJourney(
+            value: [0], destination: [0], velocity: [0], motion: .eased(.milliseconds(200), curve: .linear),
+            completion: nil, stopped: 0)
+        _ = channels.presentedValue(for: binding, from: HostBoundary.value(of: standing), now: 0, reducesMotion: false)
+
+        func send(to destination: Double, _ motion: Motion, waiter: Int, reducesMotion: Bool = false) -> [JourneyCompletion] {
+            let journey = HostJourney(
+                value: [0], destination: [destination], velocity: [0], motion: motion, completion: waiter, stopped: 0)
+            channels.receive(
+                HostStateChange(state: 43, changed: (1 << 1) | (1 << 6), value: HostBoundary.value(of: journey)),
+                now: 10, reducesMotion: reducesMotion)
+            return channels.takeCompletions()
+        }
+        let eased = Motion.eased(.milliseconds(200), curve: .linear)
+
+        XCTAssertEqual(send(to: 0, eased, waiter: -1), [JourneyCompletion(id: -1, outcome: .immediate(.alreadyAtDestination))])
+        XCTAssertEqual(send(to: 1, .none, waiter: -2), [JourneyCompletion(id: -2, outcome: .immediate(.motionDisabled))])
+        XCTAssertEqual(
+            send(to: 2, eased, waiter: -3, reducesMotion: true),
+            [JourneyCompletion(id: -3, outcome: .immediate(.reducedMotion))])
+    }
+
+    /// A STOP ANSWERS ITS WAITER STOPPED, and the value stands where the stop found it.
+    @MainActor
+    func testAStopAnswersItsWaiterStopped() throws {
+        let animator = Animator()
+        let channels = StateChannels(animator: animator)
+        let binding = HostStateBinding(state: 45, mode: .inOut, kind: .property, laneKind: .number)
+        channels.attach(45)
+        let moving = HostJourney(
+            value: [0], destination: [1], velocity: [0], motion: .eased(.milliseconds(200), curve: .linear),
+            completion: -9, stopped: 0)
+        _ = channels.presentedValue(for: binding, from: HostBoundary.value(of: moving), now: 0, reducesMotion: false)
+        _ = channels.takeOutputs()
+
+        let stopped = HostJourney(
+            value: [0], destination: [1], velocity: [0], motion: moving.motion, completion: -9, stopped: 1)
+        channels.receive(
+            HostStateChange(state: 45, changed: 1 << 7, value: HostBoundary.value(of: stopped)),
+            now: 100, reducesMotion: false)
+
+        XCTAssertEqual(channels.takeCompletions(), [JourneyCompletion(id: -9, outcome: .stopped)])
+        let stood = try XCTUnwrap(channels.takeOutputs().last)
+        XCTAssertEqual(stood.journey.value[0], 0.5, accuracy: 0.000_001)
+        XCTAssertEqual(stood.journey.destination, stood.journey.value, "it goes nowhere from there")
+        XCTAssertFalse(channels.isActive)
     }
 
     /// A control whose patch binds none of its properties any more lets go of every state it wore.

@@ -16,6 +16,9 @@
 
     /// What the core hears of it; nil where it hears nothing.
     public let report: HostJourneyUpdate?
+
+    /// Who moved it: the channel's animation, the user taking the value, the program stopping it.
+    public let origin: WriteOrigin
 }
 
 /// How one awaited animation of a state ended.
@@ -23,13 +26,13 @@
     /// The waiter the core is to answer.
     public let id: Int
 
-    /// Whether it arrived, rather than being cut short.
-    public let succeeded: Bool
+    /// How its run ended.
+    public let outcome: HostMotionOutcome
 
-    /// The answer `succeeded` for the waiter `id`.
-    public init(id: Int, succeeded: Bool) {
+    /// The answer `outcome` for the waiter `id`.
+    public init(id: Int, outcome: HostMotionOutcome) {
         self.id = id
-        self.succeeded = succeeded
+        self.outcome = outcome
     }
 }
 
@@ -39,8 +42,11 @@
     private let animator: Animator
     private var channels: [Int32: StateChannel] = [:]
 
-    /// How many controls wear each state: a channel lives while any does.
+    /// How many consumers each state has: a channel lives while any does.
     private var wearers: [Int32: Int] = [:]
+
+    /// The states a consumer let go since the last settling, whose channels go if none took them again.
+    private var letGo: Set<Int32> = []
     private var outputs: [StateChannelOutput] = []
     private var completions: [JourneyCompletion] = []
 
@@ -55,7 +61,7 @@
     /// How many states have a channel.
     public var count: Int { channels.count }
 
-    /// The value a bound property draws, opening the state's channel for its first control.
+    /// The value a bound property draws, opening the state's channel for its first consumer.
     public func presentedValue(
         for binding: HostStateBinding,
         from carried: HostStateValue,
@@ -71,6 +77,9 @@
         if let existing = channels[binding.state] {
             existing.binding = binding
             channel = existing
+        } else if wearers[binding.state] == nil {
+            // No consumer, no channel: a value read for an element that wears nothing is the state's own.
+            return carried
         } else {
             channel = StateChannel(
                 binding: binding,
@@ -103,9 +112,9 @@
             emit: emit)
     }
 
-    /// Takes the values an animator advance gave, said once a channel; a channel no control wears goes once it
-    /// lands.
-    public func follow(_ steps: [AnimationStep]) {
+    /// Takes the values an animator advance gave, said once a channel. `reducedMotion` says the advance landed
+    /// every animation for the user's asking, which is what a run it landed answers its waiter.
+    public func follow(_ steps: [AnimationStep], reducedMotion: Bool = false) {
         var moved: [Int32: [(run: Int, step: AnimationStep)]] = [:]
 
         for step in steps {
@@ -116,27 +125,37 @@
         for number in moved.keys.sorted() {
             guard let channel = channels[number], let runs = moved[number] else { continue }
 
-            channel.follow(runs, emit: emit)
-            if !channel.isActive, wearers[number] == nil { channels[number] = nil }
+            channel.follow(runs, landing: reducedMotion ? .immediate(.reducedMotion) : .animated, emit: emit)
         }
     }
 
-    /// A control ties one of its properties to `state`.
+    /// A consumer takes `state`: a control tying one of its properties to it.
     public func attach(_ state: Int32) {
         wearers[state, default: 0] += 1
     }
 
-    /// A control lets go of `state`; the channel goes with the last one, once it lands.
+    /// A consumer lets go of `state`. Its channel goes with the last one as the change that took it is settled
+    /// (`settle()`), so a consumer that leaves one element for another in one patch never ends it.
+    /// Design: docs/design/host/motion.md#state-channels
     public func detach(_ state: Int32) {
         guard let count = wearers[state] else { return }
 
         if count > 1 {
             wearers[state] = count - 1
-            return
+        } else {
+            wearers[state] = nil
+            letGo.insert(state)
         }
+    }
 
-        wearers[state] = nil
-        if channels[state]?.isActive != true { channels[state] = nil }
+    /// Settles the consumers a patch, or an element leaving, changed: a channel nobody took again goes at once,
+    /// its runs with it and nothing said - the core, which counted the same consumers, answers their waiters.
+    /// Design: docs/design/host/motion.md#state-channels
+    public func settle() {
+        for state in letGo.sorted() where wearers[state] == nil {
+            channels.removeValue(forKey: state)?.end()
+        }
+        letGo.removeAll(keepingCapacity: true)
     }
 
     /// The user takes the state at `value` on a two-way control; its animation stops there.
@@ -163,19 +182,22 @@
         return completions
     }
 
-    private func emit(_ channel: StateChannel, report: HostJourneyUpdate?, answered: [JourneyCompletion]) {
+    private func emit(
+        _ channel: StateChannel, report: HostJourneyUpdate?, answered: [JourneyCompletion], origin: WriteOrigin
+    ) {
         outputs.append(StateChannelOutput(
             state: channel.binding.state,
             binding: channel.binding,
             journey: channel.presented,
-            report: report))
+            report: report,
+            origin: origin))
 
         completions.append(contentsOf: answered)
     }
 }
 
-/// What a channel says after a change: itself, what the core hears, and the waiters answered.
-private typealias StateChannelEmit = (StateChannel, HostJourneyUpdate?, [JourneyCompletion]) -> Void
+/// What a channel says after a change: itself, what the core hears, the waiters answered, and who moved it.
+private typealias StateChannelEmit = (StateChannel, HostJourneyUpdate?, [JourneyCompletion], WriteOrigin) -> Void
 
 /// One state's channel: its animated value, traveling in runs - the lanes one write sent on together, each an
 /// animation of its own - so a write of some lanes leaves the other lanes' travel and their waiter as they were.
@@ -263,17 +285,17 @@ private final class StateChannel {
 
         if changedStop {
             sample(now: now, emit: emit)
-            halt(all, emit: emit)
+            halt(all, as: .stopped, emit: emit)
             destination = value
             velocity = Array(repeating: 0, count: width)
             motion = incoming.motion
             stopped = incoming.stopped
-            emit(self, .position, [])
+            emit(self, .position, [], .program)
         }
 
         if !values.isEmpty {
             sample(now: now, emit: emit)
-            halt(values, emit: emit)
+            halt(values, as: .superseded, emit: emit)
             for lane in values {
                 value[lane] = incoming.value[lane]
                 destination[lane] = incoming.destination[lane]
@@ -304,12 +326,21 @@ private final class StateChannel {
         } else {
             motion = incoming.motion
             stopped = incoming.stopped
-            emit(self, nil, [])
+            emit(self, nil, [], .animation)
         }
     }
 
-    /// Takes where the animator put each run - a frame on the way, or the landing - and says it once.
-    func follow(_ steps: [(run: Int, step: AnimationStep)], emit: StateChannelEmit) {
+    /// Ends the channel as its last consumer leaves: every run stops, unanswered.
+    func end() {
+        for number in runs.keys.sorted() { animator.halt(.state(binding.state, run: number)) }
+        runs.removeAll()
+    }
+
+    /// Takes where the animator put each run - a frame on the way, or the landing, answered as `landing` - and says
+    /// it once.
+    func follow(
+        _ steps: [(run: Int, step: AnimationStep)], landing: HostMotionOutcome = .animated, emit: StateChannelEmit
+    ) {
         var landed = false
         var answered: [JourneyCompletion] = []
 
@@ -324,7 +355,7 @@ private final class StateChannel {
                     velocity[lane] = 0
                 }
                 landed = true
-                if let completion = run.completion { answered.append(JourneyCompletion(id: completion, succeeded: true)) }
+                if let completion = run.completion { answered.append(JourneyCompletion(id: completion, outcome: landing)) }
                 continue
             }
 
@@ -334,7 +365,7 @@ private final class StateChannel {
             }
         }
 
-        emit(self, landed ? .position : .frame, answered)
+        emit(self, landed ? .position : .frame, answered, .animation)
     }
 
     /// Stops every lane where the user holds the value.
@@ -342,11 +373,11 @@ private final class StateChannel {
     func take(_ taken: [Double], emit: StateChannelEmit) -> Bool {
         guard taken.count == value.count else { return false }
 
-        halt(Array(value.indices), emit: emit)
+        halt(Array(value.indices), as: .superseded, emit: emit)
         value = taken
         destination = taken
         velocity = Array(repeating: 0, count: taken.count)
-        emit(self, .position, [])
+        emit(self, .position, [], .user)
         return true
     }
 
@@ -362,7 +393,7 @@ private final class StateChannel {
         emit: StateChannelEmit
     ) {
         sample(now: now, emit: emit)
-        halt(lanes, emit: emit)
+        halt(lanes, as: .superseded, emit: emit)
 
         motion = incoming.motion
         stopped = incoming.stopped
@@ -377,33 +408,39 @@ private final class StateChannel {
             began: now)
         for (index, lane) in lanes.enumerated() { velocity[lane] = animation.velocity[index] }
 
-        let instant = !motion.animates
+        // There already, under a motion that does not animate, or with less motion asked for: put there at once.
+        let immediate: MotionImmediateReason? = animation.arrives ? .alreadyAtDestination
+            : !motion.animates ? .motionDisabled
+            : reducesMotion ? .reducedMotion : nil
 
-        if instant || reducesMotion || animation.arrives {
+        if let immediate {
             for lane in lanes {
                 value[lane] = destination[lane]
                 velocity[lane] = 0
             }
-            emit(self, .position, completion.map { [JourneyCompletion(id: $0, succeeded: true)] } ?? [])
+            let answered = completion.map { [JourneyCompletion(id: $0, outcome: .immediate(immediate))] } ?? []
+            emit(self, .position, answered, .animation)
             return
         }
 
         numbered += 1
         runs[numbered] = Run(lanes: lanes, completion: completion)
         animator.start(animation, for: .state(binding.state, run: numbered))
-        emit(self, .position, [])
+        emit(self, .position, [], .animation)
     }
 
-    /// Takes `lanes` out of the runs they travel in, where they stand: a run cut short fails its waiter and travels
-    /// on with the lanes it keeps, its own animation narrowed to them.
-    private func halt(_ lanes: [Int], emit: StateChannelEmit) {
+    /// Takes `lanes` out of the runs they travel in, where they stand: a run cut short answers its waiter `outcome`
+    /// once and travels on with the lanes it keeps, its own animation narrowed to them.
+    private func halt(_ lanes: [Int], as outcome: HostMotionOutcome, emit: StateChannelEmit) {
         for number in runs.keys.sorted() {
             guard let run = runs[number] else { continue }
 
             let kept = run.lanes.indices.filter { !lanes.contains(run.lanes[$0]) }
             guard kept.count < run.lanes.count else { continue }
 
-            if let completion = run.completion { emit(self, nil, [JourneyCompletion(id: completion, succeeded: false)]) }
+            if let completion = run.completion {
+                emit(self, nil, [JourneyCompletion(id: completion, outcome: outcome)], .animation)
+            }
 
             let target = AnimationTarget.state(binding.state, run: number)
             guard !kept.isEmpty, let animation = animator.animation(for: target) else {

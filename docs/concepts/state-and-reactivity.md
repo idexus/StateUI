@@ -392,8 +392,8 @@ Use the consequence you need as the selection rule:
 | Give a child access to the same value | pass `$value` to `@Binding` | determined by what the child does with it |
 | Give a child one field of a record | the field's own state, `record.$field`, to `@Binding`; or its value | as for a whole state; or rebuild the child, which reads it |
 | Keep a native property synchronized continuously | hand the whole state to a binding-taking control or modifier | host-cycle update, no body read |
-| Wake arithmetic on a display frame | name the state in `engine(following:)` or `engine(tracking:)` | wake that engine |
-| Turn one or more carried states into another carried value | `convert`, or `multi` for several | conversion engine, no body read |
+| Wake arithmetic on a display frame | name the state in `engine(following:)` or `engine(tracking:)`; its journey, to wake on every frame it moves | wake that engine |
+| Turn where one or more states are going into another value | `convert`, or `multi` for several | worked out once a write, no body read |
 | Let a continuous value make an occasional structural decision | `samples` into ordinary state, or an engine that writes only when a threshold changes | rebuild only for sampled or changed decisions |
 
 A state may use both paths. For example, a slider can carry `$volume` while a
@@ -497,10 +497,11 @@ Use a `PersistentKey` for one setting shared by the whole application and a
 `SceneKey` for state that belongs to a particular restored workspace or
 window group.
 
-## Host-cycle conversions
+## Conversions
 
-A conversion derives another carried state without rebuilding a body. The
-forward closure runs on host cycles when its source changes:
+A conversion derives another state without rebuilding a body. Its result is
+worked out from where its sources are GOING - their destinations - once a
+write, before anything is shown:
 
 ```swift
 @State var volume = 0.2
@@ -519,14 +520,39 @@ VStack {
 }
 ```
 
-`back` is needed when a reporting control edits the derived value. It maps
-that report back into the source's units, and in the source's own type: a way
-back that answers anything else does not compile. Without it, reports into
-the derived binding have no source-side destination. Only the user's change comes
-back: a value the application writes goes forward as written, however the
-conversion rounds it on the way.
+The result is a state of its own. Shown by a host it has its own motion
+channel, and travels under `motion:` - the application's unless said -
+whatever its sources travel under:
 
-Use `.multi` for a forward conversion of two through ten states:
+```swift
+@State var columns = 2.0
+@State var cellWidth = 80.0
+
+Rectangle()
+    .fill(.cornflowerBlue)
+    .height(40)
+    .width(Binding<Double>.multi($columns, $cellWidth)
+        .convert({ $0 * $1 }, motion: .spring()))
+```
+
+Writing both sources in one handler works the result out once, from both, and
+the rectangle makes one journey to it. The sources stay plain data: showing
+the result opens no channel for them. What a conversion does not promise is
+`result(t) == f(source(t))` frame by frame - it never reads where a source
+stands on a frame. A value that must follow the presentation is an
+[engine following a journey](#journey-and-sampled-readings).
+
+`back` says how a write into the result lands on the source, in the source's
+own type: a way back that answers anything else does not compile. It runs for
+a write into the result alone - the user's on a control, or the program's
+through the derived binding - and never for a frame of animation or a result
+published from its sources. The sources take what a value goes back to whole
+or not at all, and the control then stands at what its sources make of it.
+The program's write must be exactly that - `forward(back(value)) == value` -
+or it is refused. Without `back` the result is read-only.
+
+Use `.multi` for a conversion of two through ten states; two states take a
+way back as one does:
 
 ```swift
 @State var name = "Panel"
@@ -538,58 +564,62 @@ Text(.multi($name, $width, $height).convert { name, width, height in
 })
 ```
 
-Each view writing a conversion keeps its own derived state, even where two
-views convert one source on one line, and lets it go when it leaves.
+A conversion's arithmetic reads its arguments and nothing else, and writes
+nothing: a state written or an act sent inside it is refused. Each view
+writing a conversion keeps its own derived state, even where two views convert
+one source on one line, and lets it go when it leaves.
 
-Conversions take whole StateUI states as sources, which keeps them on the
-host-cycle path: `convert` and `multi` are offered on `Binding` alone, so a
-`StatePart` cannot be converted.
-
-### Destination conversion and journey conversion
-
-For a walked state, an ordinary binding conversion reads the destination. A
-journey conversion receives the live `Journey` lanes and is evaluated as the
-value travels:
-
-```swift
-@State var width = 80.0
-
-VStack {
-    Rectangle()
-        .fill(.cornflowerBlue)
-        .width($width)
-        .height(24)
-
-    Text($width.convert { "Target: \(Int($0))" })
-    Text($width.journey.convert { journey in
-        "Now: \(Int(journey.value))"
-    })
-}
-```
-
-Use `.multi($a.journey, $b.journey).convert { … }` when the live presentation
-depends on two moving states - `.multi` is the one road for a conversion of
-several sources, states or journeys. One host-carried state is one shared motion channel; use separate
-states when the values need independent animations.
+Conversions take whole StateUI states as sources: `convert` and `multi` are
+offered on `Binding` alone, so a `StatePart` cannot be converted.
 
 ## Journey and sampled readings
 
-Every state whose value conforms to `Walked` exposes `$value.journey`. The
-state itself remains discrete and immediately holds the destination:
+Every state whose value conforms to `Walked` exposes `$value.journey`, a
+handle to how a host shows the value. The state itself remains discrete and
+immediately holds the destination:
 
 | Member | Meaning |
 | --- | --- |
-| `journey.value` | presentation value on the current host frame |
-| `journey.destination` | target; the same value as a plain state read |
-| `journey.velocity` | per-second velocity in the value's lanes |
-| `journey.motion` | law used wherever this state is carried |
-| `move(to:_:)` | set a destination; `arrived()` awaits whether it was reached |
+| `journey.sample` | where the host shows the value on this frame, the destination it is taken to and its speed; `nil` while nothing shows the state |
+| `journey.motion`, `setMotion(_:)` | the motion used wherever this state is shown |
+| `move(to:_:)` | set a destination; `result()` awaits how the movement ended |
 | `stop()` | settle an active animation at its current presentation |
 | `snap(to:)` | set presentation, destination, and zero velocity together |
 
-Reading `journey.value` in a body explicitly requests a rebuild for every
-reported frame. Prefer a journey conversion when only a native property or
-caption needs the live value.
+Reading `journey.sample` in a body explicitly requests a rebuild for every
+reported frame. Where only a native property or a caption needs the live
+value, follow the journey with an engine instead, which writes a state the
+host shows:
+
+```swift
+struct LiveWidth: View {
+    @State private var width = 80.0
+    @State private var now = "Now: 80"
+
+    var body: some View {
+        VStack {
+            Rectangle()
+                .fill(.cornflowerBlue)
+                .width($width)
+                .height(24)
+
+            Text($width.convert { "Target: \(Int($0))" })
+            Text($now)
+                .engine(following: $width.journey) { _ in
+                    guard let sample = $width.journey.sample else { return }
+                    now = "Now: \(Int(sample.value))"
+                }
+
+            Button("Grow").onClicked { width = width < 200 ? 280 : 80 }
+        }
+    }
+}
+```
+
+The engine is a consumer of the state's channel while its view stands, and
+every sample it reads in one run is of one frame. For a number that must
+match the sample, write `output.journey.snap(to:)`, which moves no second
+animation.
 
 When a continuous value must occasionally feed description logic, sample its
 journey into another state:
@@ -607,7 +637,7 @@ struct SampledProgress: View {
                 $progress.journey.move(to: 1, .eased(.seconds(1), curve: .cubicOut))
             }
         }
-        .samples($progress, into: $shown, .every(.milliseconds(100)))
+        .samples($progress.journey, into: $shown, .every(.milliseconds(100)))
     }
 }
 ```
@@ -619,12 +649,13 @@ differs, and delivers the final value. `.always` takes every changed frame.
 ## Custom engines
 
 Write a custom engine for frame arithmetic that needs memory or sequencing and
-cannot be expressed as a pure conversion. An engine is attached to an element
-and runs inside the host's display cycle. It comes two ways:
-`.engine(following:)` runs on the display cycle after a state it follows is
-written - once, however many writes came - and once after each render that
-describes its view; `.engine(tracking:)` keeps tracking, answering on each
-cycle whether it has more to do - a spring, a stopwatch:
+cannot be expressed as a conversion. An engine is attached to an element
+and runs inside the host's display cycle. It comes three ways:
+`.engine(following:)` runs on the display cycle after what it follows changed
+- once, however many changes came - and once after each render that describes
+its view; `.engine(tracking:)` keeps tracking, answering on each cycle whether
+it has more to do - a stopwatch; `.engine(animating:)` is the animator of a
+state declared `@State(animatedBy: .engine)` - a spring of your own:
 
 ```swift
 struct SpringDot: View {
@@ -637,26 +668,18 @@ struct SpringDot: View {
                 .width(28)
                 .height(28)
                 .translationY($y)
-                .engine(tracking: $y) { cycle in
-                    let journey = $y.journey
-
-                    if cycle.reducesMotion {
-                        journey.snap(to: journey.destination)
-                        return .wait
-                    }
-
+                .engine(animating: $y) { cycle, motion in
                     let seconds = cycle.elapsedSeconds
-                    let displacement = journey.destination - journey.value
-                    journey.velocity += (
-                        displacement * 40 - journey.velocity * 10
-                    ) * seconds
-                    journey.value += journey.velocity * seconds
+                    let displacement = motion.destination - motion.value
+                    let velocity = motion.velocity + (displacement * 40 - motion.velocity * 10) * seconds
+                    let value = motion.value + velocity * seconds
 
-                    if abs(displacement) < 0.01 && abs(journey.velocity) < 0.01 {
-                        journey.snap(to: journey.destination)
+                    if abs(displacement) < 0.01 && abs(velocity) < 0.01 {
+                        motion.finish()
                         return .wait
                     }
 
+                    motion.update(value: value, velocity: velocity)
                     return .again
                 }
 
@@ -668,8 +691,9 @@ struct SpringDot: View {
 
 The engine contract is deliberately narrow:
 
-- `following:` and `tracking:` name the writes that wake it; they do not limit
-  which values the closure may read;
+- `following:` and `tracking:` name what wakes it - a state, for a write of its
+  destination; a state's journey, for a frame of where the host shows it - and
+  do not limit which values the closure may read;
 - a time-driven engine may omit `tracking:`: its answer controls whether it
   receives another cycle;
 - an engine runs once after every render that describes its view;
@@ -691,11 +715,15 @@ Like every attachment owned by an element, an engine is removed when that
 element leaves the tree.
 
 An engine that always returns `.again` keeps the display clock active. Return
-`.wait` as soon as no visible work remains. Every engine that draws movement
-must make an explicit reduced-motion decision.
+`.wait` as soon as no visible work remains. An engine that animates a state
+needs no reduced-motion branch: with less motion asked for, the value is put
+at its destination for it. Any other engine that draws movement makes that
+decision itself, from `cycle.reducesMotion`.
 
-Use `@State(animatedBy: .engine)` only when the engine owns the journey. Ordinary
-motion laws remain the host's responsibility and need no custom engine.
+Use `@State(animatedBy: .engine)` only when the engine owns the movement: the
+state has one animator, takes no motion, and a `move(to:)` of it ends when the
+engine calls `finish()`. Ordinary motion laws remain the host's responsibility
+and need no custom engine.
 
 ## Related contracts
 

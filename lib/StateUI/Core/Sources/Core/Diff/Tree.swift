@@ -155,6 +155,15 @@ final class RenderedNode {
     /// The properties driven to a state, as the host was told them.
     var driven: [Prop: StateEntry] = [:]
 
+    /// The states whose journey it follows with no property - its engines' and its readings' - as the host was
+    /// told them, in the states' order.
+    /// Design: docs/design/core/journeys.md#a-channels-life
+    var followed: [StateEntry] = []
+
+    /// The conversions whose derived states it wears, held: the graph keeps each up to date while it stands.
+    /// Design: docs/design/core/journeys.md#the-graph-of-destinations
+    var conversions: [Conversion] = []
+
     /// The readings `.samples` asked for here, held - which is how long one lives.
     /// Design: docs/design/core/journeys.md#readings
     let readings: [Sampling]
@@ -287,6 +296,7 @@ extension HostPatch {
         merged.motion = later.motion ?? motion
         merged.menuKey = later.menuKey ?? menuKey
         merged.driven = later.driven ?? driven
+        merged.followed = later.followed ?? followed
         merged.events = later.events ?? events
         merged.children = HostChildrenUpdate.merging(children, with: later.children)
 

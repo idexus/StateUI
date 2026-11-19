@@ -233,16 +233,15 @@ final class HostRenderTests: XCTestCase {
             completion: journey.completion,
             stopped: journey.stopped)
 
-        XCTAssertTrue(HostBoundary.report(frame, updating: .frame, through: binding))
-        XCTAssertEqual(fade.projectedValue.journey.value, 0.4)
-        XCTAssertEqual(fade.projectedValue.journey.velocity, 2.5)
+        XCTAssertTrue(HostBoundary.report(frame, updating: .frame, through: binding, at: 16))
         XCTAssertEqual(
-            fade.projectedValue.journey.destination,
-            0,
-            "a frame report does not replace the destination")
+            fade.projectedValue.journey.sample,
+            JourneySample(value: 0.4, destination: 0.9, velocity: 2.5, time: .milliseconds(16)),
+            "the sample is the channel's own word of the frame, whole")
+        XCTAssertEqual(fade.wrappedValue, 0, "a frame report does not replace the destination")
 
         XCTAssertTrue(HostBoundary.report(frame, updating: .position, through: binding))
-        XCTAssertEqual(fade.projectedValue.journey.destination, 0.9)
+        XCTAssertEqual(fade.wrappedValue, 0.9, "the user's take is the state's destination")
     }
 
     /// A landing the host reports in the frame after the program wrote a new
@@ -269,7 +268,7 @@ final class HostRenderTests: XCTestCase {
 
         XCTAssertTrue(HostBoundary.report(landing, updating: .position, through: binding))
         XCTAssertEqual(fade.wrappedValue, 0.9, "the destination the program wrote")
-        XCTAssertEqual(fade.projectedValue.journey.value, 0.4, "where the host landed")
+        XCTAssertEqual(fade.projectedValue.journey.sample?.value, 0.4, "where the host landed")
 
         let crossed = HostBoundary.cycle(now: 16, reducesMotion: false).changes.first { $0.state == binding.state }
         let journey = try XCTUnwrap(crossed.flatMap { HostBoundary.journey(from: $0.value) })
@@ -281,17 +280,32 @@ final class HostRenderTests: XCTestCase {
             motion: standing.motion, completion: standing.completion, stopped: standing.stopped)
 
         XCTAssertTrue(HostBoundary.report(frame, updating: .frame, through: binding))
-        XCTAssertEqual(fade.projectedValue.journey.value, 0.2, "the value the program snapped to")
+        XCTAssertEqual(fade.projectedValue.journey.standing, 0.2, "the value the program snapped to")
         XCTAssertEqual(fade.wrappedValue, 0.2)
     }
 
+    /// A host answers a movement's waiter with how its run ended, once: the run hears that very outcome, and a
+    /// second word finds nobody waiting.
     func testANativeHostCompletesAnAwaitedJourneyThroughTheTypedBoundary() {
-        var received: Reply?
-        let completion = Renderer.shared.book { received = $0 }
+        let run = MotionRun()
+        let completion = Renderer.shared.book { run.land($0) }
 
-        XCTAssertTrue(HostBoundary.complete(completion, succeeded: false))
-        XCTAssertEqual(received, .finished([.bool(false)]))
-        XCTAssertFalse(HostBoundary.complete(completion, succeeded: true))
+        XCTAssertTrue(HostBoundary.complete(completion, as: .superseded))
+        XCTAssertEqual(run.outcome, .superseded)
+        XCTAssertFalse(HostBoundary.complete(completion, as: .animated))
+        XCTAssertEqual(run.outcome, .superseded, "one result, the first")
+
+        for (outcome, result) in [
+            (HostMotionOutcome.animated, MotionResult.reached(.animated)),
+            (.immediate(.alreadyAtDestination), .reached(.immediate(.alreadyAtDestination))),
+            (.immediate(.motionDisabled), .reached(.immediate(.motionDisabled))),
+            (.immediate(.reducedMotion), .reached(.immediate(.reducedMotion))),
+            (.stopped, .stopped), (.detached, .detached),
+        ] {
+            let run = MotionRun()
+            XCTAssertTrue(HostBoundary.complete(Renderer.shared.book { run.land($0) }, as: outcome))
+            XCTAssertEqual(run.outcome, result)
+        }
     }
 
     /// The tally a host prints to count leaks is the renderer's own count: a

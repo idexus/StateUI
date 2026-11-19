@@ -257,7 +257,7 @@ final class ModelStateTests: XCTestCase {
         let renders = Renders()
 
         XCTAssertNotNil(cart.$fade.journeyImage, "a walked state in a model has an image the host walks")
-        XCTAssertEqual(cart.$fade.journey.value, 1, "and a journey to read")
+        XCTAssertEqual(cart.$fade.journey.standing, 1, "and a journey to read")
 
         renders.render(stack([
             Reader { _ in holder.builds += 1; _ = Rectangle().opacity(cart.$fade) }.node,

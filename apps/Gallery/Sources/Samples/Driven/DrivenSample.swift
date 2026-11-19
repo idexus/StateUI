@@ -14,6 +14,10 @@ struct DrivenSample: SampleContent, ExampleContent {
 
     /// The rail's color, which the HOST carries with no engine at all.
     @State private var tint = Palette.outline
+
+    /// How far the marker has got, in words the engine below writes and the
+    /// host shows: no body reads them.
+    @State private var percent = "0%"
     // listing: end
 
     static let id = "driven"
@@ -61,13 +65,17 @@ struct DrivenSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(12))
             .horizontalAlignment(.center)
 
-            // A CONVERSION of the same driven value: the host works the words
-            // out on its own frames, from where the marker HAS GOT TO, and
-            // nothing here reads anything.
-            Text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
+            // WORDS AN ENGINE WRITES, following the same value's journey: on the
+            // host's frames it reads where the marker HAS GOT TO and writes
+            // the percentage, and nothing here reads anything.
+            Text($percent)
                 .fontSize(28)
                 .fontWeight(.bold)
                 .horizontalAlignment(.center)
+                .engine(following: $offset.journey) { _ in
+                    guard let sample = $offset.journey.sample else { return }
+                    percent = "\(Int((sample.value / Self.run * 100).rounded()))%"
+                }
 
             // Off ordinary state: described again each time the switch is
             // thrown.
@@ -77,9 +85,9 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
 
             HStack {
-                button("Empty") { go(to: 0) }
-                button("Half") { go(to: 0.5) }
-                button("Full") { go(to: 1) }
+                button("Empty") { try go(to: 0) }
+                button("Half") { try go(to: 0.5) }
+                button("Full") { try go(to: 1) }
             }
             .spacing(8)
             .horizontalAlignment(.center)
@@ -96,15 +104,16 @@ struct DrivenSample: SampleContent, ExampleContent {
                 + "described and which value for. Press the buttons and watch the marker "
                 + "cross, the color change and the percentage count up: the count does "
                 + "not move. Throw the switch, which changes one caption, and it goes up "
-                + "by one and says `for slowly`. The percentage is written off a driven "
-                + "value by a conversion; the caption under it is described from "
-                + "`slowly`, which is ordinary `@State`.")
+                + "by one and says `for slowly`. The percentage is written by an engine "
+                + "following a driven value's journey; the caption under it is described "
+                + "from `slowly`, which is ordinary `@State`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("A value the host holds is worn by a property the way a plain value is: "
                 + "`.translationX($offset)`, `.fill($tint)`. Send it somewhere from a "
-                + "handler - `offset = 240`, under `$offset.journey.motion` - and the host "
+                + "handler - `offset = 240`, under the motion `$offset.journey.setMotion(_:)` "
+                + "gave it - and the host "
                 + "walks the property there on the display's own frames, which the tree "
                 + "does not have. A journey is part of every `@State` the host can walk, "
                 + "so both values here are ordinary `@State`; nothing reads either in a "
@@ -112,20 +121,20 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`$offset.journey` holds where the value is going, where it is and how "
-                + "fast: `offset` itself is the destination, `$offset.journey.value` where "
-                + "it is, and `$offset.journey.velocity` how fast. Writing the state asks the "
-                + "host for a journey; `$offset.journey.snap(to:)` puts the value there at "
-                + "once, while a write to `$offset.journey.value` moves only what is shown "
-                + "and the host goes straight back to the destination. `$offset.journey.convert "
-                + "{ … }` writes the percentage from where the marker has got to, and a "
-                + "converted text is written only when its letters change, so a reading "
-                + "that rounds to the same number costs nothing.")
+            Text("`offset` itself is where the value is going. Where the host shows it is "
+                + "`$offset.journey.sample`: where it stands on this frame, where the host "
+                + "is taking it and how fast - or nothing, while no view shows the state. "
+                + "Writing the state asks the host for a journey; `$offset.journey.snap(to:)` "
+                + "puts the value there at once. `.engine(following: $offset.journey)` runs "
+                + "on every frame the marker moves and writes the percentage from the "
+                + "sample; words that come out the same are no write, so a reading that "
+                + "rounds to the same number costs nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A conversion rewrites one value as another; an engine is for arithmetic "
-                + "that keeps state of its own between frames, which Engine shows. The "
+            Text("A conversion rewrites where one value is going as another; an engine "
+                + "following a journey reads where it has got to, and one may keep state "
+                + "of its own between frames, which Engine shows. The "
                 + "marker moves rather than resizing: a translation is a drawing field and "
                 + "costs no layout, while a width written per frame measures the layout again "
                 + "every time. Wherever a value moves quickly, reach for the transform.")
@@ -137,13 +146,14 @@ struct DrivenSample: SampleContent, ExampleContent {
 
     // listing: DrivenSample
     /// One place to be sent to, under whichever law the switch asks for.
-    private func go(to place: Double) {
+    private func go(to place: Double) throws {
         let law: Motion = slowly ? .eased(.milliseconds(1600), curve: .cubicInOut) : .eased(.milliseconds(350), curve: .cubicOut)
 
-        $offset.journey.motion = law
+        // The motion is the value's own: the next destination travels under it.
+        try $offset.journey.setMotion(law)
         offset = Self.run * place
 
-        $tint.journey.motion = law
+        try $tint.journey.setMotion(law)
         tint = place > 0 ? Palette.accent : Palette.outline
     }
 

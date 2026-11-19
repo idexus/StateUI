@@ -31,7 +31,7 @@ Two values name no timing:
 
 A state an engine of the application's animates says so where it is
 declared, `@State(animatedBy: .engine)`, not by a motion
-([Custom engines](#custom-engines)).
+([An engine that animates](#an-engine-that-animates)).
 
 `Motion.standard` is a 200-millisecond cubic-out movement. Reduced-motion input
 may shorten or remove an animation, but never changes its destination.
@@ -111,60 +111,96 @@ range, region, or layout rule are discrete even when encoded as numbers. They
 do not acquire an in-between meaning merely because an interpolator could
 process their bytes.
 
-## Journey is part of state
+## A state and its journey
 
-Every `@State` whose value conforms to `Walked` has a journey. The state itself
-remains discrete: reading it returns the destination immediately. Its journey
-exposes what the host is showing between writes:
+Every `@State` whose value conforms to `Walked` has a journey, `$value.journey`.
+The state itself remains discrete: reading it returns the destination
+immediately. The journey is a handle to how a host shows the value between
+two destinations. It owns nothing and starts nothing:
 
 | Member | Meaning |
 | --- | --- |
-| `value` | visible value on the current host frame |
-| `destination` | the state's ordinary value |
-| `velocity` | per-second velocity, lane by lane |
-| `motion` | law owned by this value wherever it is attached |
-| `move(to:_:)` | set a destination; `arrived()` awaits its outcome |
-| `reach(_:)` | where a law would carry the value on alone, at the speed it has |
+| `sample` | where the host shows the value on this frame - its place, the destination it is taken to, its speed - or `nil` while nothing shows the state |
+| `motion` | the motion this value travels under wherever it is shown; `nil` for a state an engine animates |
+| `setMotion(_:)` | give the value the motion its next destination travels under |
+| `move(to:_:)` | set a destination; the `MotionRun` it returns awaits how the movement ends |
+| `reach(_:)` | where a motion would carry the value on alone, at the speed it has; `nil` while nothing shows the state |
 | `stop()` | stop at the standing value |
-| `snap(to:)` | set standing value, destination, and zero velocity together |
-| `convert` | derive another host-driven value from live journey lanes |
+| `snap(to:)` | put the value there at once: standing there, going nowhere, still |
 
 The built-in `Walked` values are `Double`, `Point`, `Rect`, `Insets`, and
-`Color`. Each has a fixed set of numeric lanes. A part binding and a binding
-made from get/set closures do not own the complete storage image a host needs
-to walk; move the complete state instead.
+`Color`. Each has a fixed set of numeric lanes. A part binding does not own the
+complete storage image a host needs to walk; move the complete state instead.
 
-A move is a write of the destination, under a law of its choosing: the state
-reads the new value at once and every body that read it is built again, as
-after an assignment, while the host walks the value there on the move's law.
-It returns at once, answering an `Arrival`, whose `arrived()` awaits the
-outcome:
+A state is shown once a control, a driven modifier or a scroller is handed
+it; an engine following its journey and a reading of it count too. Only then
+does the host carry it, and only then is there a sample:
+
+```swift
+struct Fader: View {
+    @State private var fade = 1.0
+    @State private var words = "100%"
+
+    var body: some View {
+        VStack {
+            Rectangle().fill(.cornflowerBlue).height(40).opacity($fade)
+            Text($words)
+                .engine(following: $fade.journey) { _ in
+                    guard let sample = $fade.journey.sample else { return }
+                    words = "\(Int(sample.value * 100))%"
+                }
+            Button("Fade").onClicked { fade = 0.2 }
+        }
+    }
+}
+```
+
+Every field of a sample is of one frame, and `sample.destination` is the
+destination the host had taken by that frame: a state written since already
+holds a newer one.
+
+## A movement and its result
+
+A move is a write of the destination, under a motion of its choosing: the
+state reads the new value at once and every body that read it is built again,
+as after an assignment, while the host walks the value there. It returns at
+once, answering a `MotionRun`, whose `result()` awaits how the movement ends:
 
 ```swift
 @State private var opacity = 1.0
 
-let arrived = try await $opacity.journey.move(
+let result = try await $opacity.journey.move(
     to: 0.2,
-    .eased(.milliseconds(400), curve: .cubicOut)).arrived()
+    .eased(.milliseconds(400), curve: .cubicOut)).result()
 
-if !arrived {
-    // A newer destination, another write, or stop() ended this animation.
+if case .reached = result {
+    // The value stands at 0.2.
 }
 ```
 
-`true` means the value reached that move's destination. `false` means a newer
-destination, another write to the state, or `stop()` superseded it. A move
-already at its destination, or made while the user asks for less motion,
-completes with `true` on the host's next frame; a state nothing wears yet
-completes with `true` at once. A custom-engine state also answers at once
-because the engine, rather than the host's animator, owns its completion.
+Every movement ends exactly once:
+
+| Result | Meaning |
+| --- | --- |
+| `.reached(.animated)` | it traveled to its destination |
+| `.reached(.immediate(reason))` | it was put there at once: it stood there already, its motion does not animate, or the user asks for less motion |
+| `.superseded` | a newer destination, a snap or the user's hand took the value |
+| `.stopped` | `stop()` ended it |
+| `.detached` | nothing shows the state any more |
+| `.notStarted(reason)` | no movement was made |
+
+`.notStarted(.noReceiver)` is the answer where nothing shows the state: the
+destination is written, and nothing moved. The other reasons say a refusal:
+the state refuses the destination, an engine's state was given a motion, a
+derived state has no way back.
 
 The destination is written as `move` is called, so moves sent one after
-another are in the air together, each awaited apart. An unrelated
-body rebuild does not restart or cancel a journey: the motion channel belongs
-to the state storage and continues from its standing value and velocity. A
-motion passed to `move` is that move's alone: the next plain write, or a move
-that names no motion, travels under the value's own law again.
+another are in the air together, each awaited apart. A task cancelled while it
+waits stops waiting; the movement goes on. An unrelated body rebuild does not
+restart or cancel a movement: the motion channel belongs to the state and
+continues from its standing value and velocity. A motion passed to `move` is
+that move's alone: the next plain write, or a move that names no motion,
+travels under the value's own again.
 
 ```swift
 struct Drawer: View {
@@ -181,36 +217,32 @@ struct Drawer: View {
 }
 ```
 
-For a host-carried state, motion selection is:
+For a state a host shows, the motion is chosen in this order:
 
-1. an explicit law supplied to `move(to:_:)`;
-2. the state's law from `@State(motion:)` or `journey.motion`;
-3. the attached element's resolved law when the state says `.inherited`;
-4. the application law, then `Motion.standard`.
+1. an explicit motion supplied to `move(to:_:)`;
+2. the state's own, from `@State(motion:)` or `journey.setMotion(_:)`;
+3. the application's motion, then `Motion.standard`.
 
-One state is one host motion channel. Every control and driven property attached
-to it observes the same standing value, destination, velocity, and completion.
-Use separate states for independent animations.
+One state is one host motion channel, and the channel is every receiver's:
+each control and driven property attached to it shows the same standing value,
+destination and velocity, and none of them decides the motion - an element's
+`.motion(_:)` says how its own described properties travel. Use separate
+states for independent animations.
 
-## Stop, snap, and direct lane writes
+## Stop and snap
 
-`stop()` keeps the standing value and makes an active waiter return `false`.
+`stop()` keeps the standing value and ends the movement `.stopped`.
 `snap(to:)` synchronously makes the standing value and destination equal and
 zeros velocity. It is the right operation for a measurement or report that was
-observed rather than chosen as a destination.
-
-Writing `journey.value` alone changes only the standing value. Writing
-`journey.velocity` kicks the existing journey. These operations are primarily
-for custom engines; an ordinary application decision writes the state or calls
-`move(to:_:)`.
+observed rather than chosen as a destination. On a state nothing shows, a snap
+is a plain write and a stop changes nothing.
 
 ## A throw
 
 A gesture's report says how fast the hand goes, and its end how fast it
-lifted. Handing that speed to the value's journey, then moving it on a glide,
-lets the value go on from the hand and slow onto where it is sent; `reach(_:)`
-says where the glide alone would carry it, so the value can be sent to the
-nearest place it may rest at instead:
+lifted. A cubic-out journey sets out three times as fast as it averages, so a
+journey a third of that speed's way long leaves at the hand's speed and slows
+to rest:
 
 ```swift
 struct Strip: View {
@@ -226,16 +258,16 @@ struct Strip: View {
             .onPanUpdated { pan in
                 switch pan.phase {
                 case .began:
-                    // Where the strip stands as the hand takes it - a throw's glide still under way included.
-                    start = $offset.journey.value
+                    // Where the strip stands as the hand takes it - a throw still under way included.
+                    start = $offset.journey.sample?.value ?? offset
                 case .changed:
                     $offset.journey.snap(to: start + pan.total.x)
                 case .ended:
-                    let glide = Motion.glide(longest: .milliseconds(800))
-                    $offset.journey.velocity = pan.velocity.x
+                    let seconds = 0.8
+                    let thrown = start + pan.total.x + pan.velocity.x * seconds / 3
                     // The nearest stop of every hundred points to where the throw would land.
-                    let stop = ($offset.journey.reach(glide) / 100).rounded() * 100
-                    $offset.journey.move(to: stop, glide)
+                    let stop = (thrown / 100).rounded() * 100
+                    $offset.journey.move(to: stop, .eased(.seconds(seconds), curve: .cubicOut))
                 default:
                     break
                 }
@@ -244,10 +276,8 @@ struct Strip: View {
 }
 ```
 
-A glide always lands where it is sent, never sooner than 80 milliseconds nor
-later than `longest`: a fast throw to a near stop slows over a short glide, a
-slow one over a longer, and a value standing still - or thrown away from the
-stop - takes half of `longest`.
+`reach(_:)` answers the same question for a value already moving: where a
+motion alone would carry it on from where it stands, at the speed it has.
 
 ## Visibility and layout motion
 
@@ -283,17 +313,51 @@ Visibility motion and layout motion are part of the cross-platform contract,
 but an application relies on them only where [Platform contract](../platform-contract.md)
 shows verified host support.
 
-## Custom engines
+## An engine that animates
 
 `@State(animatedBy: .engine)` - the one `AnimationOwner` - fixes who animates
-the state when it is first registered: an engine of the application's, and no law can be given to it
-later. An engine reads destination, standing value, velocity, and frame
-timing, and writes the next standing lanes. One declared with
-`.engine(tracking:)` returns `.again` while it needs another frame or `.wait`
-until a tracked state is written; one declared with `.engine(following:)` runs
-on the display cycle after a state it follows is written - once, however many
-writes came - and once after each render that describes its view. An engine's
-own write does not wake it.
+the state where it is declared: an engine of the application, registered with
+`.engine(animating:)`, and no motion can be given to it later. On each frame
+the engine is handed an `EngineMotion`: it reads the destination, where it
+last put the value and at what speed, and says where the value stands now
+with `update(value:velocity:)`, or `finish()` once it is there.
+
+```swift
+struct Ball: View {
+    @State(animatedBy: .engine) private var y = 0.0
+
+    var body: some View {
+        VStack {
+            Button("Drop").onClicked { y = y == 0 ? 160 : 0 }
+
+            Rectangle()
+                .fill(.cornflowerBlue)
+                .width(40)
+                .height(40)
+                .translationY($y)
+                .engine(animating: $y) { cycle, motion in
+                    let seconds = cycle.elapsedSeconds
+                    let pull = (motion.destination - motion.value) * 180 - motion.velocity * 24
+                    let velocity = motion.velocity + pull * seconds
+                    let value = motion.value + velocity * seconds
+
+                    guard abs(motion.destination - value) > 0.5 || abs(velocity) > 1 else {
+                        motion.finish()
+                        return .wait
+                    }
+                    motion.update(value: value, velocity: velocity)
+                    return .again
+                }
+        }
+    }
+}
+```
+
+A state has one animator. The engine runs when the destination is written
+and again each frame it answers `.again`; `.wait` waits for the next
+destination and is no arrival - `finish()` is what ends a movement awaited
+with `move(to:)`. Where the user asks for less motion the value is put at its
+destination for the engine, whose arithmetic is not run.
 
 See [State and reactivity](state-and-reactivity.md) for conversions, sampling,
 and engine composition, and [Host contract](../internals/host-contract.md) for the native

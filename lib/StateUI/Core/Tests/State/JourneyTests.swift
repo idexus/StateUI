@@ -1,18 +1,15 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The journey every walked state is on, and what `$x.journey` offers.
+// The journey of a walked state, and what `$x.journey` offers.
 //
-// A state is DISCRETE - reading it answers the destination, writing it sends
-// the value there - and its journey is a part of it: where the value is this
-// frame, how fast, under what law, and the road to send it somewhere and wait.
-// What these pin is that surface, the law's two homes (the declaration and the
-// lanes), the landing rule for a state nothing wears, and `.custom`, which
-// hands the walk to an engine on this side.
+// A state is DISCRETE - reading it answers the destination, writing it sends the value there - and its journey is a
+// HANDLE to how the host shows it between two destinations: the sample of a frame, the motion the value travels
+// under, and the road to send it somewhere and wait. What these pin is that surface, the motion's two homes (the
+// declaration and the lanes) and what a state an engine animates leaves to the engine.
 //
-// Whose the value is, the number the host quotes it by and what a body that
-// reads the journey pays are CarriedStateTests' and StateTests' business; this
-// file is about the journey itself.
+// A channel's life is ChannelLifetimeTests', the engine that animates EngineMotionTests', what follows a journey
+// PresentationEngineTests'.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -24,145 +21,83 @@ final class JourneyTests: XCTestCase {
         Renderer.shared.clearStates()
     }
 
-    /// The journey's lanes read as VALUES - where it is, where it is going, how
-    /// fast - off a state that was declared as a plain number and had nothing
-    /// said about a journey at all.
+    /// A HANDLE AND NOTHING MORE: a state declared as a plain number has a journey, which says its motion and has
+    /// no sample while nothing shows the state.
     func testEveryWalkedStateHasAJourney() {
         let rotation = State(wrappedValue: 2.0)
         let journey = rotation.projectedValue.journey
 
-        XCTAssertEqual(journey.value, 2)
-        XCTAssertEqual(journey.destination, 2, "a value standing still is going where it is")
-        XCTAssertEqual(journey.velocity, 0)
-        XCTAssertEqual(journey.motion, .inherited, "the element's, until said")
+        XCTAssertNil(journey.sample, "nothing shows it")
+        XCTAssertEqual(journey.motion, .inherited, "the application's, until said")
+        XCTAssertFalse(rotation.storage.carried, "reading the handle carried nothing")
     }
 
-    /// The state IS the destination: `rotation` and
-    /// `$rotation.journey.destination` are one number, read and written.
-    func testTheStateIsTheDestination() {
-        let rotation = State(wrappedValue: 0.0)
-        let journey = rotation.projectedValue.journey
-
-        rotation.wrappedValue = 10
-        XCTAssertEqual(journey.destination, 10, "a write to the state is a write to the destination")
-
-        journey.destination = 4
-        XCTAssertEqual(rotation.wrappedValue, 4, "and the other way round")
-    }
-
-    /// Writing where the value IS is a SNAP: whatever was carrying the property
-    /// lets go, and the destination is left alone - which is what a value
-    /// worked out per frame wants, and what makes it different from sending it.
-    func testWritingTheValueOnTheJourneySnapsIt() {
-        let rotation = State(wrappedValue: 0.0)
-        let journey = rotation.projectedValue.journey
-
-        rotation.wrappedValue = 10
-        journey.value = 4
-
-        XCTAssertEqual(journey.value, 4, "the screen moved")
-        XCTAssertEqual(journey.destination, 10, "and the destination did not")
-    }
-
-    /// `snap(to:)` says all three at once - here, going nowhere, standing
-    /// still - where writing the screen value alone leaves a destination
-    /// behind that would send the host straight back.
-    func testSnappingSaysHereGoingNowhereAndStandingStill() {
+    /// `snap(to:)` says all three at once - here, going nowhere, standing still: the host is handed the value at
+    /// the place it was put, with no way left to travel and no speed.
+    func testSnappingSaysHereGoingNowhereAndStandingStill() throws {
         let box = State(wrappedValue: 0.0)
         let journey = box.projectedValue.journey
+        Renders().render(Rectangle().translationX(box.projectedValue).node)
 
         box.wrappedValue = 400
-        journey.velocity = 9
-
         journey.snap(to: 240)
+        Renderer.shared.board.cycle(now: 16, reducesMotion: false)
 
-        XCTAssertEqual(journey.value, 240, "on the screen")
-        XCTAssertEqual(journey.destination, 240, "and going nowhere else")
-        XCTAssertEqual(journey.velocity, 0, "and not moving")
+        let (_, handed) = try XCTUnwrap(HostAnimatorReport.standing(box.number))
+        XCTAssertEqual(handed.value, [240], "on the screen")
+        XCTAssertEqual(handed.destination, [240], "and going nowhere else")
+        XCTAssertEqual(handed.velocity, [0], "and not moving")
+        XCTAssertEqual(box.wrappedValue, 240)
     }
 
     /// WHERE A THROW REACHES: as far as the value's speed for the motion's length over how steeply the motion sets
     /// out - a glide as `cubicOut` does, an eased motion on its curve; standing still, or under no motion, where it is.
-    func testWhereAThrowReaches() {
+    func testWhereAThrowReaches() throws {
         let offset = State(wrappedValue: Point(0, 0))
         let journey = offset.projectedValue.journey
-        journey.snap(to: Point(100, 20))
-        journey.velocity = Point(600, -300)
+        XCTAssertNil(journey.reach(.glide(longest: .milliseconds(900))), "nothing shows it: nothing carries it")
 
-        let glided = journey.reach(.glide(longest: .milliseconds(900)))
+        Renders().render(ScrollView { Text("a") }.scrollOffset(offset.projectedValue).node)
+        let (binding, standing) = try XCTUnwrap(HostAnimatorReport.standing(offset.number))
+        let frame = { (velocity: [Double]) in
+            HostBoundary.report(
+                HostJourney(
+                    value: [100, 20], destination: [100, 20], velocity: velocity, motion: standing.motion,
+                    completion: nil, stopped: 0),
+                updating: .frame, through: binding, at: 16)
+        }
+        XCTAssertTrue(frame([600, -300]))
+
+        let glided = try XCTUnwrap(journey.reach(.glide(longest: .milliseconds(900))))
         XCTAssertEqual(glided.x, 100 + 600 * 0.9 / 3, accuracy: 0.1, "a glide sets out as cubicOut does")
         XCTAssertEqual(glided.y, 20 - 300 * 0.9 / 3, accuracy: 0.1)
-        XCTAssertEqual(journey.reach(.eased(.milliseconds(400), curve: .linear)).x, 100 + 600 * 0.4, accuracy: 0.1)
+        let eased = try XCTUnwrap(journey.reach(.eased(.milliseconds(400), curve: .linear)))
+        XCTAssertEqual(eased.x, 100 + 600 * 0.4, accuracy: 0.1)
         XCTAssertEqual(journey.reach(.none), Point(100, 20), "no motion carries it")
 
-        journey.velocity = Point(0, 0)
+        XCTAssertTrue(frame([0, 0]))
         XCTAssertEqual(journey.reach(.glide(longest: .milliseconds(900))), Point(100, 20), "still, where it is")
     }
 
-    /// A STATE NOBODY WEARS LANDS WHERE IT IS WRITTEN. Until an element
-    /// registers the state the host has no number for it and nothing walks it,
-    /// so a write puts the value at the destination as well - and once an
-    /// element has the number, a write moves the destination alone and the
-    /// host walks the value there.
-    func testAStateNobodyWearsLandsWhereItIsWritten() {
+    /// A STATE NOTHING SHOWS IS WHERE IT IS WRITTEN; SHOWN, A WRITE MOVES THE DESTINATION ALONE. With no element
+    /// showing the state nothing walks it, so a write is the whole of it - and once an element shows it, a write
+    /// moves the destination and the host walks the value there.
+    func testAStateNothingShowsIsWhereItIsWritten() throws {
         let fade = State(wrappedValue: 1.0)
-        let journey = fade.projectedValue.journey
         let renders = Renders()
 
         fade.wrappedValue = 0.2
-
-        XCTAssertEqual(journey.value, 0.2, "nobody walks it, so it is there")
-        XCTAssertEqual(journey.destination, 0.2)
+        XCTAssertEqual(fade.wrappedValue, 0.2)
+        XCTAssertNil(fade.projectedValue.journey.sample, "nobody walks it")
 
         renders.render(Rectangle().opacity(fade.projectedValue).node)
-
         fade.wrappedValue = 0.9
+        Renderer.shared.board.cycle(now: 16, reducesMotion: false)
 
-        XCTAssertEqual(journey.destination, 0.9, "the destination moved")
-        XCTAssertEqual(journey.value, 0.2, "and the value waits for the host to walk it")
-    }
-
-    /// A state whose last wearer LEFT is worn by nobody again, though it keeps its number: a move lands at
-    /// once and its arrival is answered, rather than waiting for a host that has no channel for it.
-    func testAStateWhoseWearerLeftLandsAgainWhereItIsSent() {
-        let fade = State(wrappedValue: 1.0)
-        let journey = fade.projectedValue.journey
-        let renders = Renders()
-
-        renders.render(stack([Rectangle().opacity(fade.projectedValue).node], id: "root"))
-        renders.render(stack([], id: "root"))
-
-        let arrival = journey.move(to: 0)
-
-        XCTAssertEqual(arrival.ended, true, "nothing walks it, so it is there")
-        XCTAssertEqual(journey.value, 0)
-    }
-
-    /// A move sent while the state is worn, whose last wearer leaves before a host walks it, arrives as the wearer
-    /// leaves: the host's channel goes with the wearer and would never answer it, so the value lands where it was
-    /// sent and the waiter hears it is there. A wearer that leaves one place for another in the same render keeps
-    /// the move walking.
-    func testAMoveWhoseWearerLeavesBeforeItIsWalkedArrives() {
-        let fade = State(wrappedValue: 1.0)
-        let journey = fade.projectedValue.journey
-        let renders = Renders()
-        renders.render(stack([Rectangle().opacity(fade.projectedValue).node], id: "root"))
-
-        let arrival = journey.move(to: 0, .eased(.seconds(1)))
-        XCTAssertNil(arrival.ended, "worn, it waits for the host to walk it")
-        renders.render(stack([], id: "root"))
-
-        XCTAssertEqual(arrival.ended, true, "nobody walks it any more: it is there")
-        XCTAssertEqual(journey.value, 0)
-        XCTAssertEqual(journey.velocity, 0)
-
-        let moving = State(wrappedValue: 1.0)
-        let shown = Renders()
-        let worn = { Rectangle().opacity(moving.projectedValue).node }
-        shown.render(stack([stack([worn()], id: "a"), stack([], id: "b")], id: "root"))
-        let walked = moving.projectedValue.journey.move(to: 0, .eased(.seconds(1)))
-        shown.render(stack([stack([], id: "a"), stack([worn()], id: "b")], id: "root"))
-        XCTAssertNil(walked.ended, "worn again in the same render, it is still walked")
+        let (_, handed) = try XCTUnwrap(HostAnimatorReport.standing(fade.number))
+        XCTAssertEqual(handed.destination, [0.9], "the destination moved")
+        XCTAssertEqual(handed.value, [0.2], "and the value waits for the host to walk it")
+        _ = renders
     }
 
     /// A WRITE LAYS ONLY ITS PART. A color read back through its type is eight
@@ -253,19 +188,19 @@ final class JourneyTests: XCTestCase {
         stated.wrappedValue = 10
         XCTAssertEqual(stated.projectedValue.journey.motion, .spring(), "and sending it kept the law")
 
-        plain.projectedValue.journey.motion = .eased(.milliseconds(90), curve: .linear)
+        XCTAssertNoThrow(try plain.projectedValue.journey.setMotion(.eased(.milliseconds(90), curve: .linear)))
         XCTAssertEqual(plain.projectedValue.journey.motion, .eased(.milliseconds(90), curve: .linear), "written later, it is the value's too")
     }
 
-    /// A law given to a move of a state nobody wears goes with the move, which arrives at once: the value's own law
-    /// stands.
-    func testALawGivenToAMoveOfAStateNobodyWearsGoesWithIt() {
+    /// A motion given to a move of a state nothing shows goes with the move, which made no movement: the value's
+    /// own motion stands.
+    func testAMotionGivenToAMoveOfAStateNothingShowsGoesWithIt() {
         let fade = State(wrappedValue: 1.0)
 
-        let arrival = fade.projectedValue.journey.move(to: 0, .eased(.milliseconds(400), curve: .cubicIn))
+        let run = fade.projectedValue.journey.move(to: 0, .eased(.milliseconds(400), curve: .cubicIn))
 
-        XCTAssertEqual(arrival.ended, true)
-        XCTAssertEqual(fade.projectedValue.journey.motion, .inherited, "the value's own law")
+        XCTAssertEqual(run.outcome, .notStarted(.noReceiver))
+        XCTAssertEqual(fade.projectedValue.journey.motion, .inherited, "the value's own motion")
     }
 
     /// `.none` given to a move is the law that does not move, never "no law given": the value travels under it, not
@@ -325,67 +260,9 @@ final class JourneyTests: XCTestCase {
                        "and a stated law is read before any cycle has run")
     }
 
-    /// A STATE AN ENGINE ANIMATES IS WALKED ON THIS SIDE. A write moves the
-    /// destination alone - whoever wears the state or not - and the value
-    /// stays where the engine left it; the engine's own write to the value is
-    /// what moves the screen. In the patch the host is handed `.none` and a
-    /// destination that is wherever the engine wrote the value, so it wears
-    /// every frame as it comes and walks nothing.
-    func testAStateAnEngineAnimatesLeavesTheValueToTheEngine() throws {
-        let ball = State(wrappedValue: 0.0, animatedBy: .engine)
-        let journey = ball.projectedValue.journey
-        let renders = Renders()
-
-        renders.render(Rectangle().translationY(ball.projectedValue).node)
-
-        ball.wrappedValue = 100
-
-        XCTAssertEqual(journey.destination, 100)
-        XCTAssertEqual(journey.value, 0, "the host walks nothing, and neither does a write")
-
-        // The engine's frame.
-        journey.value = 40
-        journey.velocity = 8
-
-        XCTAssertEqual(journey.value, 40)
-        XCTAssertEqual(journey.destination, 100, "which the engine reads back")
-
-        let image = try XCTUnwrap(ball.projectedValue.journeyImage)
-        let board = Renderer.shared.board
-
-        board.cycle(now: 0, reducesMotion: false)
-
-        let crossed = image.crossing()
-
-        XCTAssertEqual(law(crossing: image), Motion.none, "the host is told not to walk")
-        XCTAssertEqual(StateImage.lane(0, of: crossed), 40, "and where the engine put the value")
-        XCTAssertEqual(StateImage.lane(1, of: crossed), 40, "is where it is told the value is going")
-        XCTAssertEqual(journey.motion, Motion.none, "the law the host walks it under")
-        XCTAssertEqual(law(publishedBy: image), .custom, "while the image itself goes on saying whose the walk is")
-    }
-
-    /// A VIEW'S OWN STATE AN ENGINE ANIMATES MOVES ITS VIEW: written, the engine it tracks wakes and walks it there,
-    /// frame by frame, and the host is handed each step - the Gallery's Engine animation, written as a view.
-    func testAViewsStateAnEngineAnimatesMovesItsView() throws {
-        let handle = EngineHandle()
-        let renders = Renders()
-        renders.render(EngineDot(handle: handle).node)
-        let board = Renderer.shared.board
-        board.cycle(now: 0, reducesMotion: false)
-
-        let offset = try XCTUnwrap(handle.offset)
-        offset.wrappedValue = 120
-        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
-        for frame in 1...150 { board.cycle(now: Double(frame) * 16, reducesMotion: false) }
-
-        XCTAssertEqual(offset.journey.value, 120, accuracy: 0.5, "the engine walked the value there")
-        XCTAssertEqual(offset.journey.destination, 120)
-    }
-
-    /// A HOST'S REPORT IS NO WORD ON A STATE AN ENGINE ANIMATES: the host is
-    /// handed the engine's frame as its destination, lands there and says so
-    /// every frame; the destination the author wrote, which the host never
-    /// saw, stands, and so does the speed the engine gave it.
+    /// A HOST'S REPORT IS NO WORD ON A STATE AN ENGINE ANIMATES: the host is handed the engine's frame as its
+    /// destination, lands there and says so every frame; the destination the author wrote, which the host never
+    /// saw, stands, and so does what the engine says of the value.
     func testAHostsReportLeavesAStateAnEngineAnimatesAlone() throws {
         let handle = EngineHandle()
         let renders = Renders()
@@ -408,8 +285,8 @@ final class JourneyTests: XCTestCase {
                 "the engine's journey is not the host's to report")
         }
 
-        XCTAssertEqual(offset.journey.destination, 120, "the author's destination stands")
-        XCTAssertEqual(offset.journey.value, 120, accuracy: 0.5, "the engine walked the value there")
+        XCTAssertEqual(offset.wrappedValue, 120, "the author's destination stands")
+        XCTAssertEqual(try XCTUnwrap(offset.journey.sample).value, 120, accuracy: 0.5, "the engine walked the value there")
     }
 
     /// WHO WALKS THE VALUE IS SETTLED AT THE DECLARATION: a state an engine
@@ -422,30 +299,14 @@ final class JourneyTests: XCTestCase {
         renders.render(Rectangle().translationY(own.projectedValue).node)
         let image = try XCTUnwrap(own.projectedValue.journeyImage)
 
-        own.projectedValue.journey.motion = .spring()
-        XCTAssertEqual(own.projectedValue.journey.motion, Motion.none, "refused, and said")
+        XCTAssertThrowsError(try own.projectedValue.journey.setMotion(.spring()), "refused, and said")
+        XCTAssertNil(own.projectedValue.journey.motion, "an engine's state has no motion")
         XCTAssertEqual(law(publishedBy: image), .custom, "the engine still animates it")
     }
 
-    /// A `move` awaited on a state an engine animates writes the destination
-    /// and answers at once: the walk is the engine's, and the engine is the
-    /// only one that knows when it is done.
-    func testAMoveOfAStateAnEngineAnimatesAnswersAtOnce() throws {
-        let ball = State(wrappedValue: 0.0, animatedBy: .engine)
-        let binding = ball.projectedValue
-        let renders = Renders()
-
-        renders.render(Rectangle().translationY(binding).node)
-
-        XCTAssertEqual(binding.journey.move(to: 50).ended, true, "it arrived as it was sent")
-        XCTAssertEqual(ball.wrappedValue, 50, "the destination was written")
-        XCTAssertEqual(binding.journey.value, 0, "and the value was left to the engine")
-    }
-
-    /// The journey of a state the host carries AS THE VALUE - a feed, a plain
-    /// number - stands at that value and says nothing else: there are no lanes
-    /// to read, and no journey to send anywhere.
-    func testTheJourneyOfAFedStateStandsAtTheValue() {
+    /// The journey of a state the host carries AS THE VALUE - a feed, a plain number - has no sample: there are
+    /// no lanes to walk. A move writes the value and says why nothing moved.
+    func testTheJourneyOfAFedStateHasNoSample() {
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
         _ = room.number
@@ -453,54 +314,10 @@ final class JourneyTests: XCTestCase {
 
         let journey = room.projectedValue.journey
 
-        XCTAssertEqual(journey.value, Rect(1, 2, 3, 4))
-        XCTAssertEqual(journey.destination, Rect(1, 2, 3, 4))
-        XCTAssertEqual(journey.velocity, Rect(0, 0, 0, 0))
+        XCTAssertNil(journey.sample)
+        XCTAssertEqual(journey.move(to: Rect(5, 6, 7, 8)).outcome, .notStarted(.unsupportedValue))
+        XCTAssertEqual(room.wrappedValue, Rect(5, 6, 7, 8), "the value is written all the same")
         XCTAssertNil(room.projectedValue.journeyImage, "and it stays carried as the value")
-    }
-
-    /// A CONVERSION OF THE JOURNEY FOLLOWS THE WALK, where a conversion of the
-    /// state shows the destination: the words are settled from where the value
-    /// IS on every frame the host writes, and a destination write moves them
-    /// not at all.
-    func testAJourneyConverterFollowsTheWalk() {
-        let fade = State(wrappedValue: 1.0)
-        let renders = Renders()
-
-        let walking = fade.projectedValue.journey.convert { "at \(Int($0.value * 100))" }
-        let going = fade.projectedValue.convert { "going to \(Int($0 * 100))" }
-
-        renders.render(Rectangle().opacity(fade.projectedValue).node)
-
-        moved(fade.number, to: [0.5, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
-
-        XCTAssertEqual(walking.wrappedValue, "at 50", "the frame reached the words")
-        XCTAssertEqual(going.wrappedValue, "going to 100", "and not the destination's")
-
-        fade.wrappedValue = 0
-
-        XCTAssertEqual(walking.wrappedValue, "at 50", "a destination written moves the walk's words not at all")
-        XCTAssertEqual(going.wrappedValue, "going to 0", "and moves the state's at once")
-    }
-
-    /// TWO JOURNEYS READ AS ONE follow both walks: the words are settled from where each value IS, on every frame
-    /// either moves.
-    func testTwoJourneysReadAsOneFollowBothWalks() {
-        let x = State(wrappedValue: 1.0)
-        let y = State(wrappedValue: 1.0)
-        let renders = Renders()
-
-        let words = Binding<String>.multi(x.projectedValue.journey, y.projectedValue.journey).convert { x, y in
-            "at \(Int(x.value * 100)), \(Int(y.value * 100))"
-        }
-
-        renders.render(VStack { Rectangle().opacity(x.projectedValue); Rectangle().opacity(y.projectedValue) }.node)
-
-        moved(x.number, to: [0.5, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
-        XCTAssertEqual(words.wrappedValue, "at 50, 100", "the first walk's frame reached the words")
-
-        moved(y.number, to: [0.25, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
-        XCTAssertEqual(words.wrappedValue, "at 50, 25", "and the second's")
     }
 
     /// The law the image itself holds, before its crossing resolves it.
@@ -538,15 +355,17 @@ private struct EngineDot: View {
         handle.offset = $offset
         return Rectangle()
             .translationX($offset)
-            .engine(tracking: $offset) { cycle in
-                let journey = $offset.journey
+            .engine(animating: $offset) { cycle, motion in
                 let seconds = cycle.elapsedSeconds
-                let pull = (journey.destination - journey.value) * 180 - journey.velocity * 12
-                journey.velocity += pull * seconds
-                journey.value += journey.velocity * seconds
-                guard abs(journey.destination - journey.value) < 0.5, abs(journey.velocity) < 1 else { return .again }
-                journey.snap(to: journey.destination)
-                return .wait
+                let pull = (motion.destination - motion.value) * 180 - motion.velocity * 12
+                let velocity = motion.velocity + pull * seconds
+                let value = motion.value + velocity * seconds
+                guard abs(motion.destination - value) > 0.5 || abs(velocity) > 1 else {
+                    motion.finish()
+                    return .wait
+                }
+                motion.update(value: value, velocity: velocity)
+                return .again
             }
     }
 }

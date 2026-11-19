@@ -214,6 +214,7 @@
             patchReducesMotion = previousPatchReducesMotion
             tally = previousTally
             appliesCompleteMessage = previousComplete
+            consumersChanged()
         }
 
         if let root, holdsRoot(of: patch), !patch.replace {
@@ -342,6 +343,13 @@
     func presentedValue(for binding: HostStateBinding, from carried: HostStateValue) -> HostStateValue {
         stateChannels.presentedValue(
             for: binding, from: carried, now: patchTime ?? now(), reducesMotion: patchReducesMotion ?? reducesMotion())
+    }
+
+    /// Consumers of state channels came or went: settled once the message being applied is whole, at once outside
+    /// one, so a consumer that leaves one element for another in one message keeps its channel.
+    /// Design: docs/design/host/motion.md#state-channels
+    func consumersChanged() {
+        if patchTime == nil { stateChannels.settle() }
     }
 
     func allocateMount() -> UInt64 {

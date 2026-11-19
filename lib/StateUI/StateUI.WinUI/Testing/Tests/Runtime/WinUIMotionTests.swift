@@ -121,7 +121,7 @@ final class WinUIMotionTests: XCTestCase {
                 VStack {
                     Slider(level.projectedValue)
                     Button("Go").onClicked(policy: .ignoreWhileRunning) {
-                        try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(100), curve: .linear)).arrived()
+                        try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(100), curve: .linear)).result()
                         arrived.wrappedValue = true
                     }
                 }
@@ -151,7 +151,7 @@ final class WinUIMotionTests: XCTestCase {
                 VStack {
                     Slider(level.projectedValue)
                     Button("Go").onClicked(policy: .ignoreWhileRunning) {
-                        try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), curve: .linear)).arrived()
+                        try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), curve: .linear)).result()
                         arrived.wrappedValue = true
                     }
                 }
@@ -178,7 +178,7 @@ final class WinUIMotionTests: XCTestCase {
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
                     Button("Go").onClicked(policy: .ignoreWhileRunning) {
-                        try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), curve: .linear)).arrived()
+                        try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), curve: .linear)).result()
                         arrived.wrappedValue = true
                     }
                 }
@@ -236,7 +236,7 @@ final class WinUIMotionTests: XCTestCase {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
                     Button("Go").onClicked(policy: .ignoreWhileRunning) {
-                        try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), curve: .linear)).arrived()
+                        try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), curve: .linear)).result()
                     }
                 }
             }

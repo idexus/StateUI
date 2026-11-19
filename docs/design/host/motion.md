@@ -29,12 +29,24 @@ control stands at the same value and turns toward a new destination with the
 same speed on the same frame. A control that joins mid-animation joins at the
 value where the channel stands.
 
-The channel is not a control's to end. It counts the controls wearing it; when
-the last one lets go it goes too, but only once its animation has landed where
-it was sent, so a control described again a moment later joins it where it
-is. When the user takes the value on a control that reports it, the
-animation stops where the user holds it and its waiter hears that it was cut
-short.
+The channel is its consumers' together: every control showing the state, and
+every element following its journey with no property (`HostPatch.followed`).
+A state with no consumer has no channel - a value read for it is the state's
+own. When the last consumer lets go the channel goes at once, its runs with
+it, and says nothing: the core counted the same consumers and answers whoever
+awaited a movement `.detached`. The count is settled as a message is applied
+whole (`StateChannels.settle`, at the outermost `MountedTree.apply`), so a
+consumer that leaves one element for another in one message keeps the channel
+where it stands.
+
+A run's waiter is answered once, with how the run ended
+(`HostMotionOutcome`): it traveled there; it was put there at once - there
+already, under a motion that does not animate, with less motion asked for; a
+newer destination, a written value or the user's hand took its lanes; a stop
+ended it. When the user takes the value on a control that reports it, the
+animation stops where the user holds it and its waiter hears `.superseded`.
+Every report the channel makes says who moved it: the user's take, the
+program's stop, the animation otherwise.
 
 ## A channel lane by lane
 
@@ -45,7 +57,7 @@ so a write of some lanes - a new destination, a value written, a speed -
 takes those lanes out of the runs they travel in, where they stand, and
 leaves the rest of each run going on its own clock: a phase of two axes
 turned by the hand while the program moves its zoom keeps both journeys
-whole. A run cut short answers its waiter false once and travels on with the
+whole. A run cut short answers its waiter once and travels on with the
 lanes it keeps, its animation narrowed to them; the laws work lane by lane,
 so narrowing changes no frame. A stop and a user's take end every run. A
 write of every lane is one run, as a whole value's write is, and the channel

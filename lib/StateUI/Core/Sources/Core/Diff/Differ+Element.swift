@@ -83,8 +83,11 @@ extension Differ {
 
         // The readings asked for here, keyed by their target and held by this element
         // (Sampling.swift).
-        for (image, into, cadence, take) in node.samples {
-            pass.readings.append(image.sample(into: into, every: cadence.window, take: take))
+        for reading in node.samples {
+            guard let image = reading.source.image() else { continue }
+
+            pass.readings.append(image.sample(into: reading.into, every: reading.cadence.window, take: reading.take))
+            pass.consumers.append(reading.source)
         }
 
         // What `.environment()` provided here joins the scope before anything below

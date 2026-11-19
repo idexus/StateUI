@@ -111,10 +111,9 @@ private struct EngineClock: ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("An engine is for arithmetic that remembers. Rewriting one value as "
-                + "another - a number into words, two numbers into one - is a conversion: "
-                + "`$x.convert { … }`, or `$x.journey.convert { … }` where the words must "
-                + "follow the walk, is an engine the differ writes for you. This clock "
+            Text("An engine is for arithmetic that remembers. Rewriting where one value "
+                + "is going as another - a number into words, two numbers into one - is a "
+                + "conversion, `$x.convert { … }`, which needs no engine. This clock "
                 + "cannot be one: what it shows is worked out from how long it has been "
                 + "running, which is not a function of any state on the page. A state of "
                 + "the engine's own holds that, which makes this an engine written by hand.")

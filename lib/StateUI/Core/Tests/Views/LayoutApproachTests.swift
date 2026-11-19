@@ -152,17 +152,17 @@ final class LayoutApproachTests: XCTestCase {
         bench.hand(renders, built, .changed, moved: Point(-60, 0))
         bench.hand(renders, built, .ended, velocity: Point(-1_200, 0))
         let journey = phase.projectedValue.journey
-        XCTAssertEqual(journey.velocity, 12, accuracy: 0.000_1, "setting out at the hand's speed")
-        XCTAssertEqual(journey.value, 0.6, accuracy: 0.000_1, "from where it left it")
+        XCTAssertEqual(journey.speed, 12, accuracy: 0.000_1, "setting out at the hand's speed")
+        XCTAssertEqual(journey.standing, 0.6, accuracy: 0.000_1, "from where it left it")
 
         bench.cycle()
-        XCTAssertGreaterThan(journey.velocity, 0, "going on")
-        XCTAssertLessThan(journey.velocity, 12, "slowing")
-        XCTAssertEqual(journey.value, handed.phases.last ?? 0, accuracy: 0.000_1, "where the run is shown")
+        XCTAssertGreaterThan(journey.speed, 0, "going on")
+        XCTAssertLessThan(journey.speed, 12, "slowing")
+        XCTAssertEqual(journey.standing, handed.phases.last ?? 0, accuracy: 0.000_1, "where the run is shown")
 
         for _ in 0..<60 { bench.cycle() }
-        XCTAssertEqual(journey.velocity, 0, "at rest")
-        XCTAssertEqual(journey.value, 2, "on its target")
+        XCTAssertEqual(journey.speed, 0, "at rest")
+        XCTAssertEqual(journey.standing, 2, "on its target")
     }
 
     /// A SPRING'S APPROACH settles as the spring does, its response cut to the way left: there long before the

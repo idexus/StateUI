@@ -92,7 +92,9 @@
 
         let reducesMotion = reducesMotion()
         sidebarSlide.pace(now: now)
-        HostProbe.timed(.animations) { follow(animator.advance(to: now, reducesMotion: reducesMotion)) }
+        HostProbe.timed(.animations) {
+            follow(animator.advance(to: now, reducesMotion: reducesMotion), reducedMotion: reducesMotion)
+        }
 
         let cycle = HostProbe.timed(.cycle) { core.cycle(now: now, reducesMotion: reducesMotion) }
 
@@ -104,6 +106,11 @@
         collectStateChannels()
         present()
 
+        // What an engine of the application finished is answered once its last frame is shown.
+        for finished in cycle.finished {
+            _ = core.complete(finished.completion, as: finished.outcome)
+        }
+
         continues = cycle.continues
         hold()
     }
@@ -112,7 +119,7 @@
     public func advanceAnimations(now: Double, reducesMotion: Bool) {
         let now = onward(now)
         sidebarSlide.pace(now: now)
-        follow(animator.advance(to: now, reducesMotion: reducesMotion))
+        follow(animator.advance(to: now, reducesMotion: reducesMotion), reducedMotion: reducesMotion)
         present()
         hold()
     }
@@ -150,8 +157,8 @@
             || presenter?.wantsFrames == true
     }
 
-    private func follow(_ steps: [AnimationStep]) {
-        stateChannels.follow(steps)
+    private func follow(_ steps: [AnimationStep], reducedMotion: Bool) {
+        stateChannels.follow(steps, reducedMotion: reducedMotion)
         describedMotion.follow(steps)
         layoutMotion.follow(steps)
         sidebarSlide.follow(steps)
@@ -167,8 +174,10 @@
         for output in stateChannels.takeOutputs() {
             states[output.state] = HostBoundary.value(of: output.journey)
 
+            // Every report of one frame names its time: the samples the core keeps are of one frame.
             if let report = output.report {
-                _ = core.report(output.journey, updating: report, through: output.binding)
+                _ = core.report(
+                    output.journey, updating: report, through: output.binding, at: time, origin: output.origin)
             }
         }
     }
@@ -183,7 +192,7 @@
         properties.removeAll(keepingCapacity: true)
 
         for completion in stateChannels.takeCompletions() {
-            _ = core.complete(completion.id, succeeded: completion.succeeded)
+            _ = core.complete(completion.id, as: completion.outcome)
         }
     }
 }

@@ -93,7 +93,7 @@ public struct Binding<Value> {
                     source.readAtBuild = true
                 }
 
-                link.forward(false)
+                link.refresh(asking: false)
             }
 
             if Renderer.shared.stateRead(storage) { storage.readAtBuild = true }
@@ -101,9 +101,8 @@ public struct Binding<Value> {
             return storage.value
         }
         write = {
-            guard storage.admitsWrite($0) else { return }
+            guard storage.admitsWrite($0), storage.writtenBack($0, by: conversion) else { return }
 
-            storage.write($0)
             storage.askForRender()
         }
         lending = .storage(storage)
@@ -209,8 +208,9 @@ extension Binding where Value: Walked {
     /// property takes from `$x`.
     var journeyImage: HostStorage? { storage.carryAsJourney() }
 
-    /// The journey the borrowed state is on: where the value is this frame, where it
-    /// is going, how fast, under what law - and `move(to:)` to send it and wait.
+    /// The borrowed state's journey: a handle to how the host shows it - its
+    /// `sample`, its motion, and `move(to:)` to send it and wait. Taking it
+    /// starts nothing.
     public var journey: Journey<Value> { Journey(of: self) }
 }
 
@@ -222,7 +222,7 @@ extension Binding {
     /// and kept as any write is.
     /// Design: docs/design/core/state.md#a-write-that-lands
     func land(_ value: Value) {
-        guard storage.admits(value) else { return }
+        guard storage.admits(value), storage.writtenBack(value, by: storage.conversion) else { return }
 
         storage.snap(value)
         storage.askForRender()

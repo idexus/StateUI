@@ -17,23 +17,29 @@ extension State {
         /// Design: docs/design/core/cycle.md#what-wakes-an-engine
         @usableFromInline var written = 0
 
-        /// How many times the state was written, by this side or the host, or a run moved
-        /// where it shows it - what an engine following it compares.
-        @usableFromInline var stamp: Int { written &+ shownMoves &+ (image?.stamp ?? 0) }
+        /// How many times the state was written, by this side or the host, equal values
+        /// included - what an engine following it compares. A frame of where a journey
+        /// stands is no write: it moves `presentation`.
+        /// Design: docs/design/core/cycle.md#what-wakes-an-engine
+        @usableFromInline var stamp: Int { written &+ (image?.stamp ?? 0) }
 
         /// How many times the host reported the state.
         var reports: Int { image?.reports ?? 0 }
+
+        /// How many times the destination changed - a write this side cannot compare counted too - which is what
+        /// a conversion of this state compares.
+        /// Design: docs/design/core/journeys.md#conversions
+        var targetRevision: Int { written &+ (image?.targetRevision ?? 0) }
 
         /// Where a run the hand or the core moves shows the value while it does, and
         /// which run: what the journey's value answers then, the state's own still the
         /// target named. Nothing carries it to the host, which walks the target.
         /// Design: docs/design/core/journeys.md#where-a-run-shows-it
         private(set) var shown: (value: Value, by: ObjectIdentifier)?
-        private(set) var shownMoves = 0
 
         /// The run `owner` shows the value at `value`, or - nil - shows it no longer:
-        /// the journey's readers and the engines following the state hear of it, the
-        /// state's own readers do not.
+        /// whoever follows where the state is shown hears of it, the state's own
+        /// readers do not.
         func show(_ value: Value?, by owner: ObjectIdentifier) {
             if let value {
                 shown = (value, owner)
@@ -41,8 +47,30 @@ extension State {
                 guard shown?.by == owner else { return }
                 shown = nil
             }
-            shownMoves &+= 1
-            askJourneyReaders()
+            presentationMoved()
+        }
+
+        /// What follows where the state is shown - a body that read its sample, an engine
+        /// following its journey - made at the first such read; it is no image and opens
+        /// no channel.
+        /// Design: docs/design/core/journeys.md#two-reader-sets
+        var presentation: PresentationWatch {
+            if let made = madePresentation { return made }
+
+            let made = PresentationWatch(of: self)
+            madePresentation = made
+            return made
+        }
+
+        private var madePresentation: PresentationWatch?
+
+        /// The sample changed, came or went, or a run shows the value elsewhere: the bodies
+        /// that read it are asked and the engines following the journey have a reason to run.
+        func presentationMoved() {
+            guard let watch = madePresentation else { return }
+
+            watch.revision &+= 1
+            if watch.readAtBuild { Renderer.shared.stateChanged(watch) }
         }
 
         /// The value, once anybody has wanted it; one optional deeper than `Value`, so a
@@ -151,9 +179,16 @@ extension State {
         /// Whether the host carries this state.
         var carried: Bool { image != nil }
 
-        /// The value's own law - `@State(motion:)`, else `.inherited`, as `journey.motion`
-        /// writes it - which a write that names no law travels under.
+        /// The value's own motion - `@State(motion:)`, else `.inherited`, or what `journey.setMotion(_:)`
+        /// gave it - which a write that names none travels under.
         var law: Motion = .inherited
+
+        /// Whether that motion is one a motion layout gave its parameters, which the layout may change.
+        var lawIsTheLayouts = false
+
+        /// The seat of the engine that animates this state, where it is declared `@State(animatedBy: .engine)`.
+        /// Design: docs/design/core/journeys.md#an-engine-that-animates
+        var animatorSeat: AnimatorSeat?
 
         /// Whether any build ever read this state - sticky, and what a write consults
         /// before asking for a render.
@@ -207,20 +242,7 @@ extension State {
             if readAtBuild {
                 Renderer.shared.stateChanged(self)
             }
-
-            // A moved destination is a moved journey too.
-            askJourneyReaders()
         }
-
-        /// Asks the bodies that read the journey - where the value is, how fast - and
-        /// nobody else.
-        /// Design: docs/design/core/journeys.md#two-reader-sets
-        func askJourneyReaders() {
-            guard let image, image.readAtBuild else { return }
-
-            Renderer.shared.stateChanged(image)
-        }
-
 
         init(_ make: @escaping () -> Value) {
             self.make = make
@@ -263,6 +285,13 @@ extension State {
         /// Design: docs/design/core/runs.md#a-superseded-run
         @usableFromInline
         func admitsWrite(_ value: Value) -> Bool {
+            // A conversion's arithmetic writes nothing: it is worked out, and may be worked out again.
+            // Design: docs/design/core/journeys.md#conversions
+            guard !ConversionEvaluation.running else {
+                complain("`\(origin ?? "a state")` was written inside a conversion's arithmetic, which reads its "
+                    + "sources and writes nothing; the write is refused.")
+                return false
+            }
             #if DEBUG
             HandlerRun.noteWrite(of: self, named: "`\(origin ?? "a state")`")
             #endif
@@ -280,29 +309,41 @@ extension State {
             return false
         }
 
-        /// Puts the state back, when called, to what it holds now - what the host carries whole, a journey's law and
-        /// way included, and what waited to be published of it - where anything wrote it since; one nothing wrote
-        /// stands as it is.
-        /// Design: docs/design/core/journeys.md#a-refusal-up-the-chain
-        func restorer() -> () -> Void {
-            let (held, themedHeld, stampHeld, carried) = (value, themed, stamp, hostHeld?())
+        /// Takes the state as it stands and answers what puts it back so - the value, what the host carries of it
+        /// whole and what waited to be published, every count - silently: nobody is asked, nothing is kept.
+        /// Design: docs/design/core/journeys.md#the-way-back
+        func stager() -> () -> Void {
+            let (standing, themedStanding, writtenStanding, carried) = (value, themed, written, hostHeld?())
             return { [weak self] in
-                guard let self, self.stamp != stampHeld else { return }
+                guard let self else { return }
                 if let carried {
                     carried()
-                    self.themed = themedHeld
-                    self.keep?(held)
                 } else {
-                    self.write(held)
+                    self.held = standing
+                    self.make = nil
                 }
-                self.askForRender()
+                self.themed = themedStanding
+                self.written = writtenStanding
             }
         }
 
-        /// Why the state refuses `value` - its own word, else what a state up its chain refuses - or nil.
-        /// Design: docs/design/core/journeys.md#a-refusal-up-the-chain
-        func refusal(of value: Value) -> String? {
-            refuses?(value) ?? conversion?.refusesBack?(value)
+        /// The program writes `value` into this state: where it is derived, by `conversion`'s way back, its sources
+        /// taking what it goes back to whole or not at all - refused, and said, with no way back or where the value
+        /// is not what the sources make of it. Answers whether the write may go on; a plain state's always may.
+        /// Design: docs/design/core/journeys.md#the-way-back
+        func writtenBack(_ value: Value, by conversion: Conversion?) -> Bool {
+            guard let conversion else { return true }
+
+            switch conversion.writeBack(value, origin: .program) {
+            case .landed:
+                return true
+            case .refused(let why):
+                complain(why)
+            case .readOnly:
+                complain("`\(origin ?? "a converted state")` is derived with no way back and was written: it is "
+                    + "read-only. Write its source, or give the conversion `back:`.")
+            }
+            return false
         }
 
         /// Why a state refuses a value it is handed - said once, nothing lands - or nil; set once, as `keep` is.
@@ -367,6 +408,9 @@ extension State.Storage where Value: Walked {
                 Renderer.shared.board.hold(made)
             }
 
+            made.journeyWidth = Value.lanes
+            made.presented = { [weak self] in self?.presentationMoved() }
+            made.closed = { [weak self] in self?.animatorSeat?.end(.detached, afterPresentation: false) }
             image = made
             journeyed = true
             held = nil
@@ -387,9 +431,14 @@ extension State.Storage where Value: Walked {
                 let lawful: [JourneyPart] = journey.motion == own ? [] : [.motion]
                 journey.motion = own
 
-                // Nobody animates it yet: the value lands where it is sent.
+                // An engine's state: a newer destination ends the movements handed to the engine before it.
+                let engineAnimates = journey.motion.kind == .custom
+                if engineAnimates { self?.animatorSeat?.end(.superseded, afterPresentation: false) }
+
+                // Nobody animates it - no consumer, or an engine's state with no engine registered: the value
+                // lands where it is sent.
                 // Design: docs/design/core/state.md#a-state-nobody-wears
-                if made.ties == 0, journey.motion.kind != .custom {
+                if engineAnimates ? self?.animatorSeat?.isTaken != true : made.consumers == 0 {
                     journey.value = target
                     journey.velocity = JourneyLanes<Value>.still
                     known.destination = target
@@ -400,8 +449,10 @@ extension State.Storage where Value: Walked {
                 known.destination = target
                 Self.lay([.destination] + lawful, of: journey, on: made)
             }
-            hostSnap = { landed in
+            hostSnap = { [weak self] landed in
                 var journey = Self.journey(on: made)
+
+                self?.animatorSeat?.end(.superseded, afterPresentation: false)
 
                 journey.value = landed
                 journey.destination = landed
@@ -418,7 +469,7 @@ extension State.Storage where Value: Walked {
                     Renderer.shared.board.restore(held, to: made)
                 }
             }
-            made.told = { [weak self, unowned made] mask in
+            made.told = { [weak self, unowned made] mask, origin in
                 let now = Self.journey(on: made)
 
                 if mask & JourneyLanes<Value>.mask(of: .destination) != 0, !known.stands(at: now.destination) {
@@ -431,11 +482,9 @@ extension State.Storage where Value: Walked {
                     }
                     known.destination = now.destination
                     self?.themed = nil
+                    if self?.reportedToConversion(now.destination, by: origin) == true { return }
                     self?.askForRender()
                     self?.keep?(now.destination)
-                } else if mask & (JourneyLanes<Value>.mask(of: .value) | JourneyLanes<Value>.mask(of: .velocity)) != 0 {
-                    // A frame of the animation: only the journey's readers are asked.
-                    self?.askJourneyReaders()
                 }
             }
 
@@ -530,10 +579,12 @@ extension State.Storage where Value: Walked {
     ) {
         let board = Renderer.shared.board
         guard case .lanes(let written) = journey.carried(in: .current) else { return }
+        // A write of the destination is a write of the state; any other part moves no stamp.
+        let stamping = parts.contains(.destination)
         guard case .lanes(var lanes) = board.read(image, lanes: JourneyLanes<Value>.lanes),
               lanes.count == written.count
         else {
-            board.write(StateImage.bytes(of: .lanes(written)), to: image, forcing: forcing)
+            board.write(StateImage.bytes(of: .lanes(written)), to: image, forcing: forcing, stamping: stamping)
             return
         }
 
@@ -541,19 +592,41 @@ extension State.Storage where Value: Walked {
             for lane in JourneyLanes<Value>.range(of: part) { lanes[lane] = written[lane] }
         }
 
-        board.write(StateImage.bytes(of: .lanes(lanes)), to: image, forcing: forcing)
+        board.write(StateImage.bytes(of: .lanes(lanes)), to: image, forcing: forcing, stamping: stamping)
     }
 }
 
 extension State.Storage where Value: StateValue {
-    /// Writes the value where it differs, lane for lane, asking the readers where
-    /// `asking` says - what a conversion's engines do.
-    func settle(_ newValue: Value, asking: Bool) {
-        guard StateImage.bytes(of: newValue.carried(in: .current)) != StateImage.bytes(of: value.carried(in: .current)) else { return }
+    /// Publishes a destination worked out for a derived state: written where it differs, lane for lane - a
+    /// destination alone, so a host showing the state takes it there under the state's own motion - and the
+    /// readers asked where `asking` says. An equal one is nothing: no revision, no movement begun again.
+    /// Design: docs/design/core/journeys.md#conversions
+    func publish(_ destination: Value, asking: Bool) {
+        guard StateImage.bytes(of: destination.carried(in: .current)) != StateImage.bytes(of: value.carried(in: .current))
+        else { return }
 
-        write(newValue)
+        write(destination)
 
         if asking { askForRender() }
+    }
+
+    /// The host wrote `value` into this state. A derived state hands the user's to its way back - the sources take
+    /// it whole or not at all - and stands again at what its sources make; no other report goes back. Answers
+    /// whether the state is a derived one.
+    /// Design: docs/design/core/journeys.md#the-way-back
+    func reportedToConversion(_ value: Value, by origin: WriteOrigin) -> Bool {
+        guard let conversion else { return false }
+
+        if origin == .user {
+            switch conversion.writeBack(value, origin: .user) {
+            case .landed: keep?(value)
+            case .refused(let why): complain(why)
+            case .readOnly: break
+            }
+        }
+        // What the sources make of it, the round trip's value where the way back is no exact inverse.
+        conversion.land()
+        return true
     }
 
     /// The image the host carries this state on as its own lanes, made once from the
@@ -596,7 +669,7 @@ extension State.Storage where Value: StateValue {
 
             // A host write ends where this side's do, the storage deciding by its readers; a
             // value it refuses is put back, which the host hears as any write.
-            made.told = { [weak self, unowned made] _ in
+            made.told = { [weak self, unowned made] _, origin in
                 let value = Self.lifted(from: made)
                 let now = StateImage.bytes(of: value.carried(in: .current))
 
@@ -607,6 +680,7 @@ extension State.Storage where Value: StateValue {
 
                 known.bytes = now
                 self?.themed = nil
+                if self?.reportedToConversion(value, by: origin) == true { return }
                 self?.askForRender()
                 self?.keep?(value)
             }

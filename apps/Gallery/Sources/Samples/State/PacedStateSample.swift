@@ -36,13 +36,14 @@ struct PacedStateSample: SampleContent, ExampleContent {
             .padding(14)
             .background(Palette.well)
 
-            // THE JOURNEY. This closure reads where the value IS, and the host
-            // writes that lane every frame - so it is built again on every one
-            // of them, printing a number that moves because the value does.
+            // THE JOURNEY. This closure reads the sample - where the host shows
+            // the value - and the host says that every frame it moves, so it is
+            // built again on every one of them, printing a number that moves
+            // because the value does.
             VStack {
                 DebugInfoLabel()
 
-                Text("at \(Int($fade.journey.value * 100))%")
+                Text("at \(Int(($fade.journey.sample?.value ?? fade) * 100))%")
                     .fontSize(17)
             }
             .spacing(4)
@@ -62,7 +63,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 .spacing(4)
                 .padding(14)
                 .background(Palette.well)
-                .samples($fade, into: $shown, .every(.milliseconds(100)))
+                .samples($fade.journey, into: $shown, .every(.milliseconds(100)))
             }
 
             Text("\(taken) samples taken")
@@ -115,7 +116,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             Text("A state is at its value the moment it is written. `move(to:)` puts "
                 + "the destination on the state at once and the host walks the control "
                 + "there - which is what lets the box travel without a single render. "
-                + "`fade` is that destination; `$fade.journey.value` is where the box "
+                + "`fade` is that destination; `$fade.journey.sample` says where the box "
                 + "has got to.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

@@ -33,6 +33,18 @@ private struct Watched: View {
     }
 }
 
+/// A view showing a state and reading where the host shows it: its journey's sample.
+private struct Walked: View {
+    let said: Said
+    @State var fade = 1.0
+
+    var body: some View {
+        said.last = debugInfo()
+        _ = $fade.journey.sample
+        return Text("walked").opacity($fade)
+    }
+}
+
 /// A parent that reads a state of its own and holds a child that reads none.
 private struct Holder: View {
     let mine: Said
@@ -152,6 +164,22 @@ final class BuildsTests: XCTestCase {
         renders.revisit(changed: changed)
 
         XCTAssertEqual(said.last, "Watched: 2 builds, for count")
+    }
+
+    /// A view rebuilt because the host moved what it shows names the state and what of it the body read: its
+    /// journey's sample, never a type of the library's.
+    func testAViewBuiltForASampleNamesTheStatesJourney() throws {
+        let said = Said()
+        let view = Walked(said: said)
+        let renders = Renders()
+
+        renders.render(stack([view.node], id: "root"))
+        _ = Renderer.shared.renderHost(baseline: 0)
+
+        moved(try XCTUnwrap(view.$fade.journeyImage?.number), to: [0.5, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
+        renders.revisit(changed: changed)
+
+        XCTAssertEqual(said.last, "Walked: 2 builds, for fade.journey.sample")
     }
 
     /// A view along for the ride says so rather than naming a state it never

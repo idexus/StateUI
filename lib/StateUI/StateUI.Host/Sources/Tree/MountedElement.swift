@@ -39,6 +39,10 @@
     /// The properties bound to states, by property.
     public private(set) var driven: [Prop: HostStateBinding] = [:]
 
+    /// The states whose journey this element follows with no property showing them: each a consumer of its channel.
+    /// Design: docs/design/host/motion.md#state-channels
+    public private(set) var followed: [HostStateBinding] = []
+
     /// The handlers of the events the tree listens to, by event.
     public private(set) var events: [Event: Int32] = [:]
 
@@ -191,6 +195,7 @@
             .union(properties.keys.filter { patch.properties[$0] == nil }).sorted()
         if patch.events == nil, !events.isEmpty { whole.events = .replace([:]) }
         if patch.driven == nil, !driven.isEmpty { whole.driven = .replace([:]) }
+        if patch.followed == nil, !followed.isEmpty { whole.followed = .replace([]) }
         return whole
     }
 
@@ -271,7 +276,14 @@
                 presentedStates = presented
             }
         }
+        if case .replace(let followed) = patch.followed { self.followed = followed }
         wear(driven)
+        // A journey followed with no property has no view to read it: its channel opens here.
+        if patch.followed != nil {
+            for binding in followed {
+                if let carried = tree.core.value(for: binding) { _ = tree.presentedValue(for: binding, from: carried) }
+            }
+        }
         // A reader of where the element stands come since hears the standing report (MountedElement+Frames.swift).
         if frameReaders != readFrameBefore { frameReportDue = frameReaders != nil }
 
@@ -503,9 +515,9 @@
         }
     }
 
-    /// Ties this element to the channels of the states its properties wear.
+    /// Ties this element to the channels of the states its properties wear and of those whose journey it follows.
     private func wear(_ driven: [Prop: HostStateBinding]) {
-        let worn = driven.values.filter { $0.kind == .property }.map(\.state).sorted()
+        let worn = (driven.values.filter { $0.kind == .property } + followed).map(\.state).sorted()
         guard worn != wornStates, let tree else { return }
 
         for state in wornStates { tree.stateChannels.detach(state) }
@@ -527,6 +539,7 @@
         isLeaving = false
         native.leave()
         for child in held { child.leave() }
+        tree?.consumersChanged()
     }
 
     /// The first element of `type` in this subtree, this one first.

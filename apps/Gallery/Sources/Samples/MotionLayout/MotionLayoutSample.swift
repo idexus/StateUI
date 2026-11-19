@@ -220,7 +220,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
             // THE WHOLE LAYOUT, run on the display's own frames whenever the
             // room or the parameters have moved, with no view built.
             // FLUNG OUTWARD, the ring grows with how fast it turns.
-            let flung = flungOut ? min(abs($turn.journey.velocity) * 0.05, 0.35) : 0
+            let flung = flungOut ? min(abs($turn.journey.sample?.velocity ?? 0) * 0.05, 0.35) : 0
             return Self.cards.indices.map { place($0, turn, room, flung: flung) }
                 + Self.cards.indices.map { dot($0, turn, room) }
         }
@@ -424,7 +424,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 + "the display's own frames whenever the room or the parameters have moved, and the "
                 + "host wears the placements straight onto the cards, so the ring turns with "
                 + "no view built. Flung outward, that arithmetic reads how fast the parameters "
-                + "travel - `$turn.journey.velocity` - and the ring grows the faster it turns.")
+                + "travel - `$turn.journey.sample?.velocity` - and the ring grows the faster it turns.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

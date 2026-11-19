@@ -1,13 +1,18 @@
 import StateUI
 
-/// Where a value is GOING and where it HAS GOT TO are two readings, and a
-/// walked state holds both: the state itself is the destination from the first
-/// millisecond, and its journey's `value` is what is on the screen this frame.
+/// Where a value is GOING and where it HAS GOT TO are two readings: the state
+/// itself is the destination from the first millisecond, and its journey's
+/// sample is what the host shows on this frame.
 struct DrivenReadingSample: SampleContent, ExampleContent {
     // listing: DrivenReadingSample
-    /// The bar's width, driven - so both readings live here and neither costs
-    /// a render.
+    /// The bar's width, driven - so neither reading costs a render.
     @State private var width = 60.0
+
+    /// What the engine following the bar's journey writes: the caption's
+    /// words, and how far apart the two readings are. The host shows both;
+    /// no body reads them.
+    @State private var readings = "going to 60 — showing 60"
+    @State private var apart = 0.0
     // listing: end
 
     static let id = "driven-reading"
@@ -17,10 +22,10 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
     // listing: DrivenReadingSample
     var body: some View {
         VStack {
-            // NOTHING in this closure reads: the bar is a channel and both
-            // readings are CONVERSIONS of it, worked out by the host on its own
-            // frames. So this stays at one build while the numbers move on
-            // every frame.
+            // NOTHING in this closure reads: the bar is a channel, and both
+            // readings are written by an engine following its journey on the
+            // host's own frames. So this stays at one build while the numbers
+            // move on every frame.
             DebugInfoLabel()
 
             // The bar: one driven property, and the host moves it.
@@ -35,12 +40,17 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             .lineWidth(0)
             .horizontalAlignment(.start)
 
-            // The two readings, off ONE journey: `destination` is where the
-            // value is going and `value` where it has got to.
-            Text($width.journey.convert {
-                    "going to \(Int($0.destination)) — showing \(Int($0.value))"
-                })
+            // The two readings, off ONE sample of the journey: `destination`
+            // is where the host is taking the value and `value` where it has
+            // got to, both of the same frame. The distance between them is a
+            // number worked out, not chosen: it is snapped, never animated.
+            Text($readings)
                 .fontSize(17)
+                .engine(following: $width.journey) { _ in
+                    guard let sample = $width.journey.sample else { return }
+                    readings = "going to \(Int(sample.destination)) — showing \(Int(sample.value))"
+                    $apart.journey.snap(to: abs(sample.destination - sample.value))
+                }
 
             Text("how far apart the two readings are")
                 .fontSize(12)
@@ -53,7 +63,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
                 Text("")
             }
             .style(.card)
-            .width($width.journey.convert { abs($0.destination - $0.value) })
+            .width($apart)
             .height(10)
             .background(Palette.subtle)
             .shape(.roundedRectangle(5))
@@ -85,18 +95,19 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("One state, two readings. `width` is 300 the instant Grow is "
-                + "pressed; `$width.journey.value` is what the bar is actually showing this "
+                + "pressed; `$width.journey.sample` is what the bar is actually showing this "
                 + "frame. The gray bar under the caption is the distance between them, "
                 + "widest at the start and nought on arrival.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Both numbers, and the gray bar's width, are CONVERSIONS of the one "
-                + "state: `$width.journey.convert { … }` reads `destination` and `value` off it "
-                + "and the host works the answer out on its own frames. Nothing on this "
-                + "page reads `width` in a body, so a 1600ms journey costs no renders at "
-                + "all: a body printing `width` would be built once per press, and one "
-                + "printing `$width.journey.value` once per frame.")
+            Text("Both numbers, and the gray bar's width, are written by one ENGINE "
+                + "FOLLOWING THE JOURNEY: `.engine(following: $width.journey) { … }` runs "
+                + "whenever the sample changes and reads `destination` and `value` off "
+                + "it, both of one frame. Nothing on this page reads `width` in a body, "
+                + "so a 1600ms journey costs no renders at all: a body printing `width` "
+                + "would be built once per press, and one printing "
+                + "`$width.journey.sample` once per frame.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -107,9 +118,11 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("There is no cadence to choose. A conversion is worked out on every "
-                + "frame the value moves, and what it answers is another driven state - "
-                + "so however often the reading changes, it costs no render.")
+            Text("There is no cadence to choose. The engine runs on every frame the "
+                + "value moves, and what it writes are driven states - so however often "
+                + "the readings change, they cost no render. A conversion, "
+                + "`$width.convert { … }`, is another thing: it is worked out from where "
+                + "the value is GOING, once a write.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

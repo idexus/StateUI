@@ -87,7 +87,7 @@ public struct Cube3D: ElementView {
     /// built again for it.
     ///
     /// A `.journey`: the host walks it and reports where the walk has got to,
-    /// which is what `$size.journey.value` reads - so `$size.journey.move(to: 1)`
+    /// which is what `$size.journey.sample` reads - so `$size.journey.move(to: 1)`
     /// grows the cube the way it moves any other walked value.
     public func size(_ state: Binding<Double>) -> Modified {
         setValue(Cube3DContract.size, on: state, as: .journey)

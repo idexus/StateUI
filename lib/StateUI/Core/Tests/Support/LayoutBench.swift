@@ -52,7 +52,13 @@ final class LayoutBench {
             let still = standing.value == standing.destination && standing.velocity.allSatisfy { $0 == 0 }
             walk = still ? nil : (standing, setOut)
         }
-        guard let (from, began) = walk else { return reported = (standing.value, standing.velocity) }
+        guard let (from, began) = walk else {
+            // A channel says where it stands as it opens: its first sample.
+            if reported == nil {
+                XCTAssertTrue(HostBoundary.report(standing, updating: .frame, through: binding, at: turned), "refused")
+            }
+            return reported = (standing.value, standing.velocity)
+        }
 
         let law = from.motion.resolved(against: StandardEnvironment.application.motion)
         let sample = HostMotionLaw.sample(
@@ -60,7 +66,8 @@ final class LayoutBench {
         let journey = HostJourney(
             value: sample.value, destination: from.destination, velocity: sample.velocity, motion: from.motion,
             completion: standing.completion, stopped: standing.stopped)
-        XCTAssertTrue(HostBoundary.report(journey, updating: [.value, .velocity], through: binding), "the walk refused")
+        XCTAssertTrue(
+            HostBoundary.report(journey, updating: [.value, .velocity], through: binding, at: turned), "the walk refused")
         reported = (sample.value, sample.velocity)
         if sample.rested { walk = nil }
     }

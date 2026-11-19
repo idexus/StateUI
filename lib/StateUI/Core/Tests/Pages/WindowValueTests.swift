@@ -154,15 +154,15 @@ final class WindowValueTests: XCTestCase {
     }
 
     /// A movement of the first gauge's value to 2 is refused before it starts: nothing travels, the windows stand,
-    /// and the movement answers that it did not arrive.
+    /// and the movement answers that its destination was refused.
     func testAMovementToAValueAnotherWindowIsOpenForIsRefused() async throws {
         let (first, _) = try await gauges()
         let movement = first.journey.move(to: 2, .none)
 
         XCTAssertEqual(first.wrappedValue, 1)
         XCTAssertEqual(about(.gauge).values, [AnyHashable(1.0), AnyHashable(2.0)])
-        let arrived = try await movement.arrived()
-        XCTAssertFalse(arrived)
+        let result = try await movement.result()
+        XCTAssertEqual(result, .notStarted(.invalidDestination))
     }
 
     /// A landing - `snap(to:)` - is a value coming in like any other: at 2 it is refused, at 3 it retargets the

@@ -63,6 +63,13 @@
     /// forget every attachment.
     public var driven: HostDrivenUpdate?
 
+    /// The states whose journey this element follows with no property showing them - an engine following a
+    /// journey, a reading - sent whole whenever the set changed. Each is a consumer of its state's channel, which
+    /// the host carries and reports as for a property.
+    ///
+    /// Nil means unchanged - none, in a complete message; `.replace([])` lets every one go.
+    public var followed: HostFollowedUpdate?
+
     /// The complete event map, sent only when the set of handled events changed.
     /// Nil means unchanged - none, in a complete message; `.replace([:])` removes
     /// every handler.
@@ -122,6 +129,12 @@ extension HostChildrenUpdate: RandomAccessCollection {
 @_spi(Host) public enum HostDrivenUpdate: Sendable {
     /// Replaces the complete attachment map; an empty map removes every attachment.
     case replace([Prop: HostStateBinding])
+}
+
+/// How a sparse patch changes the journeys an element follows with no property.
+@_spi(Host) public enum HostFollowedUpdate: Equatable, Sendable {
+    /// Replaces the complete set, in the states' order; an empty one lets every journey go.
+    case replace([HostStateBinding])
 }
 
 /// How a sparse patch changes native event handlers.

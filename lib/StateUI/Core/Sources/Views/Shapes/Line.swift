@@ -26,7 +26,7 @@ public struct Line: Shape {
     }
 
     /// A line between two states' points, carried by the host as journeys: a write sends an end there under the
-    /// element's motion, and no view is rebuilt for it.
+    /// state's motion, and no view is rebuilt for it.
     public init(from start: Binding<Point>, to end: Binding<Point>) {
         self = Line().from(start).to(end)
     }

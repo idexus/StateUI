@@ -25,7 +25,7 @@ final class UIKitScrollViewTests: XCTestCase {
                 }
                     .scrollOffset(offset.projectedValue)
                     .height(400)
-                Text("\(Int(offset.projectedValue.journey.value.y)) down")
+                Text("\(Int(offset.projectedValue.journey.sample?.value.y ?? 0)) down")
             }
         }
         defer { host.finish() }

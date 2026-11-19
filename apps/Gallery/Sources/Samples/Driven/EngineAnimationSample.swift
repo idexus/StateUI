@@ -4,7 +4,7 @@ import StateUI
 /// dot goes, and a spring the engine works out frame by frame takes it there.
 struct EngineAnimationSample: SampleContent, ExampleContent {
     // listing: EngineAnimationSample
-    /// Where the dot is going - and, frame by frame, where the engine has it.
+    /// Where the dot is going; where it stands frame by frame is the engine's to say.
     @State(animatedBy: .engine) private var offset = 0.0
     // listing: end
 
@@ -31,31 +31,30 @@ struct EngineAnimationSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
         }
         .spacing(16)
-        .engine(tracking: $offset) { cycle in
-            let journey = $offset.journey
+        .engine(animating: $offset) { cycle, motion in
+            // A spring towards the destination, damped by the speed.
+            let seconds = cycle.elapsedSeconds
+            let pull = (motion.destination - motion.value) * 180 - motion.velocity * 12
+            let velocity = motion.velocity + pull * seconds
+            let value = motion.value + velocity * seconds
 
-            // With less motion the dot lands where it is sent.
-            guard !cycle.reducesMotion else {
-                journey.snap(to: journey.destination)
+            // Near enough and slow enough, it is there: the engine says so.
+            guard abs(motion.destination - value) > 0.5 || abs(velocity) > 1 else {
+                motion.finish()
                 return .wait
             }
 
-            // A spring towards the destination, damped by the speed.
-            let seconds = cycle.elapsedSeconds
-            let pull = (journey.destination - journey.value) * 180 - journey.velocity * 12
-            journey.velocity += pull * seconds
-            journey.value += journey.velocity * seconds
-
-            guard abs(journey.destination - journey.value) < 0.5, abs(journey.velocity) < 1 else { return .again }
-            journey.snap(to: journey.destination)
-            return .wait
+            // This frame's place and speed; the host shows it as it comes.
+            motion.update(value: value, velocity: velocity)
+            return .again
         }
     }
     // listing: end
 
     var notes: (any View)? {
         Text("A button writes where the dot goes; the engine walks it there with a spring of its own, "
-            + "and the host draws each value it writes.")
+            + "and the host draws each frame it says. Where less motion is asked for the dot is "
+            + "landed for it, and its arithmetic is not run.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

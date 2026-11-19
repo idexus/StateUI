@@ -217,6 +217,12 @@ public final class Renderer {
     func stateRead(_ state: AnyObject) -> Bool {
         #if DEBUG
         HandlerRun.noteRead(of: state)
+        // A conversion is handed its sources' values: a state it reads besides is one it will not follow.
+        // Design: docs/design/core/journeys.md#conversions
+        if ConversionEvaluation.running {
+            complain("A conversion's arithmetic read `\(BuildScope.name(of: state))`, which is not one of its "
+                + "sources: the result will not follow it. Name it in `.multi(...)`.")
+        }
         #endif
         return ReadScope.note(ObjectIdentifier(state))
     }
@@ -301,6 +307,11 @@ public final class Renderer {
     func renderHost(baseline: Int32) -> HostRender {
         // The first render is complete although both sides agree at zero.
         let describeAll = baseline != generation || rendered == nil
+
+        // The destinations written since reach what is derived from them before the patch is prepared, so the
+        // walk reads every derived state where its sources put it.
+        // Design: docs/design/core/journeys.md#the-graph-of-destinations
+        board.conversions.settle()
 
         let (writtenNow, untrackedNow, everyViewNow) = takeWritten()
 

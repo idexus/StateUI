@@ -35,8 +35,8 @@ public struct Slider: ElementView, TintElement, FocusElement, PressElement, Rang
     ///     Slider($volume)
     ///
     /// An assignment (`volume = 1`) animates the thumb there under the
-    /// element's motion; `$volume.journey` reads where the thumb is, and
-    /// `try await $volume.journey.move(to: 1).arrived()` waits for the arrival.
+    /// state's motion; `$volume.journey.sample` reads where the thumb is, and
+    /// `try await $volume.journey.move(to: 1).result()` waits for the arrival.
     public init(_ state: Binding<Double>) {
         self = Slider().value(state)
     }

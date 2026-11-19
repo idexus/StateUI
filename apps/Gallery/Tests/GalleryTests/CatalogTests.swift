@@ -281,7 +281,7 @@ private func settle(
 
         for act in taken {
             guard let id = act.completion else { continue }
-            _ = HostBoundary.complete(id, succeeded: true)
+            _ = HostBoundary.reply(id, with: [.bool(true)])
         }
 
         // The job a resume produces DOES NOT EXIST YET when the completion is
@@ -1844,7 +1844,7 @@ final class CatalogTests: XCTestCase {
             _ = HostBoundary.cycle(now: now, reducesMotion: false)
         }
         frame()
-        XCTAssertTrue(HostBoundary.report(.lanes([0, 0, 360, 600]), through: room))
+        XCTAssertTrue(HostBoundary.report(.lanes([0, 0, 360, 600]), through: room, origin: .measurement))
         frame()
         frame()
 

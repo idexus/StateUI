@@ -61,15 +61,17 @@ How far a value going at a speed carries on under a law alone
 the law sets out (`HostMotionLaw.setsOut`): an eased law on its curve's first
 slope, never under a tenth; a glide and a spring as `cubicOut` does - a
 spring's length its response. A law that does not animate carries it
-nowhere. `journey.reach(_:)` is that, lane by lane, from where the value
-stands at the speed it has; a motion layout's throw finds the snap it goes on
+nowhere. `journey.reach(_:)` is that, lane by lane, from where the sample
+says the value stands at the speed it has - nil where nothing shows the
+state; a motion layout's throw finds the snap it goes on
 to by the same rule, so a value an application throws and a run the hand
 throws reach alike.
 
 ## An engine animates a state of its own
 
 An engine is not a third law but a third animator. The host animates
-nothing, and an engine of the application writes where the value is and how
+nothing, and an engine of the application - the one registered for the state
+with `.engine(animating:)` - says where the value is and how
 fast it is going, frame by frame, toward a destination the state still
 holds. It is said where the value is declared, `@State(animatedBy: .engine)`,
 because which side animates a state is fixed when the state is first
@@ -78,7 +80,8 @@ law can be handed one that means nothing there. The state's image carries
 it as a law of its own, `custom`, which only the host's side names; the host
 never sees it: what crosses is `.none` over the value the engine wrote, so
 the host wears each frame as it comes, and `$x.journey.motion` answers
-`.none`.
+nil: the state takes no motion
+([an engine that animates](../core/journeys.md#an-engine-that-animates)).
 
 ## Inherited and none
 

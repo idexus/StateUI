@@ -96,7 +96,7 @@ final class AndroidMotionTests: XCTestCase {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
                     Button("Go").onClicked(policy: .ignoreWhileRunning) {
-                        try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), curve: .linear)).arrived()
+                        try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), curve: .linear)).result()
                     }
                 }
             }

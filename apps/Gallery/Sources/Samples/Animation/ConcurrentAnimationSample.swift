@@ -82,7 +82,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                         if !finished { playing = false }
                     }
 
-                    try await $breath.journey.move(to: 1, .eased(.milliseconds(200))).arrived()
+                    try await $breath.journey.move(to: 1, .eased(.milliseconds(200))).result()
                 }
                 .isEnabled(!playing)
 
@@ -97,7 +97,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
 
                     for bar in bars {
                         bar.journey.stop()
-                        try await bar.journey.move(to: 0, .eased(.milliseconds(120))).arrived()
+                        try await bar.journey.move(to: 0, .eased(.milliseconds(120))).result()
                     }
                 }
                 .isEnabled(playing)
@@ -120,7 +120,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 + "state: the host reads the value off the state on its own frames, so "
                 + "a whole beat costs no renders at all however many things are "
                 + "moving inside it. A movement starts the moment it is sent - "
-                + "`move(to:)` answers it, and its `arrived()` waits - which is why the "
+                + "`move(to:)` answers it, and its `result()` waits - which is why the "
                 + "wash, the breath and the hop of the moment are three in the air "
                 + "together.")
                 .fontSize(12)
@@ -133,9 +133,9 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A state holds both readings at once: `breath` is 0.25 from the "
-                + "moment the movement is sent, while `$breath.journey.value` is whatever is "
-                + "on the screen. That is what lets one movement follow another with "
+            Text("Where it is going and where it has got to are two readings: `breath` is "
+                + "0.25 from the moment the movement is sent, while `$breath.journey.sample` "
+                + "says what is on the screen. That is what lets one movement follow another with "
                 + "nothing to put back afterwards.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -173,22 +173,24 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         // movement over the one being stopped.
         var hopped = true
 
-        for bar in bars where hopped {
-            hopped = try await bar.journey.move(to: -26, .eased(.milliseconds(150), curve: .cubicOut)).arrived()
+        for bar in bars {
+            let up = try await bar.journey.move(to: -26, .eased(.milliseconds(150), curve: .cubicOut)).result()
+            guard case .reached = up else { hopped = false; break }
 
-            if hopped {
-                hopped = try await bar.journey.move(to: 0, .eased(.milliseconds(150), curve: .cubicIn)).arrived()
-            }
+            let down = try await bar.journey.move(to: 0, .eased(.milliseconds(150), curve: .cubicIn)).result()
+            guard case .reached = down else { hopped = false; break }
         }
 
         // Awaited at the BOTTOM: the beat is over when the longest thing in it
-        // is over, not when the last one started is.
-        let washed = try await washing.arrived()
-        let breathed = try await breathing.arrived()
+        // is over, not when the last one started is. Each movement has its
+        // own result: one stopped says nothing of the others.
+        let washed = try await washing.result()
+        let breathed = try await breathing.result()
 
-        try await $breath.journey.move(to: 1, .eased(.milliseconds(300), curve: .cubicInOut)).arrived()
+        try await $breath.journey.move(to: 1, .eased(.milliseconds(300), curve: .cubicInOut)).result()
 
-        return hopped && washed && breathed
+        guard hopped, case .reached = washed, case .reached = breathed else { return false }
+        return true
     }
 
     /// One of the buttons, both of which look the same: a press while its run

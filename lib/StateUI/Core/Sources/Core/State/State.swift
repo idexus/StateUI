@@ -130,9 +130,8 @@ extension State where Value: Walked {
     ///     @State(motion: .spring()) private var lift = 1.0    // a spring, wherever it is shown
     ///     @State(motion: .none) private var box = Rect.zero    // lands at once, wherever it is written
     ///
-    /// The value's own law comes ahead of the element's `.motion(_:)`, the
-    /// application's and the library's. It can be changed later through
-    /// `$x.journey.motion`.
+    /// The value's own law comes ahead of the application's and the
+    /// library's, and `$x.journey.setMotion(_:)` changes it later.
     ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds, and where the journey starts.
@@ -144,24 +143,26 @@ extension State where Value: Walked {
     }
 
     /// State an engine of the application's animates: a write moves only where
-    /// the value is going, the host animates nothing, and the engine writes
-    /// where the value is and how fast it goes, frame by frame.
+    /// the value is going, the host animates nothing, and the engine registered
+    /// with `.engine(animating:)` says where the value is and how fast it goes,
+    /// frame by frame.
     ///
     ///     @State(animatedBy: .engine) private var ball = 0.0
     ///
     ///     Rectangle()
     ///         .translationY($ball)
-    ///         .engine(tracking: $ball) { cycle in
-    ///             let journey = $ball.journey
+    ///         .engine(animating: $ball) { cycle, motion in
     ///             let seconds = cycle.elapsedSeconds
     ///             // A spring towards the destination, damped by the speed.
-    ///             let pull = (journey.destination - journey.value) * 180 - journey.velocity * 24
-    ///             journey.velocity += pull * seconds
-    ///             journey.value += journey.velocity * seconds
-    ///             let resting = abs(journey.destination - journey.value) < 0.5 && abs(journey.velocity) < 1
-    ///             guard resting else { return .again }
-    ///             journey.snap(to: journey.destination)
-    ///             return .wait
+    ///             let pull = (motion.destination - motion.value) * 180 - motion.velocity * 24
+    ///             let velocity = motion.velocity + pull * seconds
+    ///             let value = motion.value + velocity * seconds
+    ///             guard abs(motion.destination - value) > 0.5 || abs(velocity) > 1 else {
+    ///                 motion.finish()
+    ///                 return .wait
+    ///             }
+    ///             motion.update(value: value, velocity: velocity)
+    ///             return .again
     ///         }
     ///
     /// Who animates a state is settled here: the host is told at its first

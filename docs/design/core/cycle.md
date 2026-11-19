@@ -102,6 +102,13 @@ the state refuses (state.md, kept state) it puts back, and the next cycle
 hands the host the put-back as any write - a frame of value and velocity is
 no new destination and is never refused.
 
+Every report says who made it, a `WriteOrigin`: the user on a control, the
+platform measuring, the host's animation, the program's stop. It is said by
+whoever reports and never worked out from which lanes moved: the user's alone
+runs a conversion's way back (journeys.md, the way back). A journey's report
+names the frame's time too, and the whole of it - value, destination, speed -
+is kept as the channel's sample (journeys.md, the sample).
+
 A journey's report leaves every lane written since the host last read it. The
 host speaks of the journey it was handed: a travel landing in the frame after a
 handler sent the state elsewhere reports the old destination, and a frame
@@ -151,8 +158,8 @@ every engine standing still until it caught up.
 ## Engines
 
 An engine is the application's arithmetic run on the host's frames, written
-with `.engine(following:)` or `.engine(tracking:)`: the only code the display
-cycle runs. What it may
+with `.engine(following:)`, `.engine(tracking:)` or `.engine(animating:)`: the
+only code of the application the display cycle runs. What it may
 do is narrow on purpose - read states, write states, and say whether it has
 more to do. It may not await, ask the host for anything or touch a control,
 because it runs inside the frame the platform is drawing. The closure captures
@@ -174,11 +181,19 @@ changing spends battery on nothing.
 ## What wakes an engine
 
 A write to a state named in `following:` or `tracking:` is the only reason to run, whoever
-made it: a handler, a control reporting, the host's frames, another engine. A
+made it: a handler, a control reporting, another engine. A
 state read inside the run and named nowhere wakes nothing - the engine runs
 outside every render, so such a read is recorded nowhere, and writing that
 state rebuilds nothing and arms nothing. A value the arithmetic needs is
 followed, or read in the body and handed over as a local.
+
+What is named says which change wakes it. `$x` names the state: a write of its
+destination, an equal one included, and never a frame of where the host shows
+it. `$x.journey` names where it is shown: a sample that changed, came or went
+(the state's `PresentationWatch`), and never a destination written. An engine
+following a journey is a consumer of the state's channel while its element
+stands (journeys.md, a channel's life), and every sample it reads in one run
+is of one frame.
 
 An engine's own write to a state it follows is no reason either: where
 everything it follows stands is noted after the run (`ran(at:answering:)`), so
@@ -186,7 +201,9 @@ what it changed itself is what it has already seen. A render that describes the
 view again arms the engine once with the new closure (`rearm`).
 
 ```text
-  stamp      every write counts, this side's and the host's, equal bytes included
+  stamp      every write of the state counts, this side's and the host's, equal
+             bytes included; on a journey's image a write of the destination -
+             a frame of value and speed moves the sample's revision instead
   seen       each followed state's stamp as the engine last ran
   stirred    any followed stamp differs from what was seen -> run
   armed      a render described the view since the last run -> run
@@ -212,12 +229,20 @@ render would be a reason to run.
 
 ## Engine order
 
-Engines run in ascending priority, ties in the order they were first
-registered, so one that reads what another wrote in the same cycle says a
-higher number. A conversion's engines run first (journeys.md). Each engine of
-an element is paired with its predecessor by the order the modifiers appear
-in, so an `.engine` under an `if` changes the count, and every engine of that
-element starts over (identity-and-diffing.md).
+A cycle runs in this order: the writes are latched and the conversions'
+graph carries them to what is derived (journeys.md, the graph of
+destinations); the readings whose window ended are taken; the animators run -
+the engines of `.engine(animating:)` - each on what the frame before left, and
+the samples they offer are published together; then every other engine; then
+the graph again, for what the engines wrote, and the cycle's picture is
+published.
+
+Within each group engines run in ascending priority, ties in the order they
+were first registered, so one that reads what another wrote in the same cycle
+says a higher number. Each engine of an element is paired with its
+predecessor by the order the modifiers appear in, so an `.engine` under an
+`if` changes the count, and every engine of that element starts over
+(identity-and-diffing.md).
 
 An engine comes in two forms told apart by their label: `.engine(following:)`,
 which answers nothing and runs on the cycle after a followed state is written,

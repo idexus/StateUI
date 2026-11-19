@@ -15,13 +15,14 @@ final class JourneyStopTests: XCTestCase {
 
         Stage.held.$fade.journey.move(to: 0, .eased(.milliseconds(1000), curve: .linear))
         turn(runtime, clock, to: 500)
-        let stood = Stage.held.$fade.journey.value
+        let stood = try XCTUnwrap(Stage.held.$fade.journey.sample?.value)
         XCTAssertEqual(stood, 0.5, accuracy: 0.05, "half-way at half the time")
 
         stop(runtime, clock) { Stage.held.$fade.journey.stop() }
 
-        XCTAssertEqual(Stage.held.$fade.journey.value, stood, accuracy: 0.02, "where it stood")
-        XCTAssertEqual(Stage.held.fade, Stage.held.$fade.journey.value, accuracy: 0.001, "and the state answers it")
+        let shown = try XCTUnwrap(Stage.held.$fade.journey.sample?.value)
+        XCTAssertEqual(shown, stood, accuracy: 0.02, "where it stood")
+        XCTAssertEqual(Stage.held.fade, shown, accuracy: 0.001, "and the state answers it")
     }
 
     /// A themed color stopped half-way stands at the color it showed, across the render the stop's own handler
@@ -32,10 +33,10 @@ final class JourneyStopTests: XCTestCase {
         Stage.held.$wash.journey.move(to: Stage.brand, .eased(.milliseconds(1000), curve: .linear))
         turn(runtime, clock, to: 500)
         stop(runtime, clock, after: 16) { Stage.held.$wash.journey.stop() }
-        let stood = Stage.held.$wash.journey.value
+        let stood = try XCTUnwrap(Stage.held.$wash.journey.sample?.value)
         turn(runtime, clock, to: clock.time + 1500)
 
-        XCTAssertEqual(Stage.held.$wash.journey.value, stood, "where it stood")
+        XCTAssertEqual(Stage.held.$wash.journey.sample?.value, stood, "where it stood")
         XCTAssertEqual(Stage.held.wash, stood, "and the state answers it")
     }
 
@@ -47,7 +48,8 @@ final class JourneyStopTests: XCTestCase {
 
         XCTAssertEqual(Stage.held.wash, Stage.brand, "the state answers where it is going")
         turn(runtime, clock, to: 1500)
-        XCTAssertEqual(lanes(Stage.held.$wash.journey.value), lanes(Stage.brand), "and arrives there")
+        let arrived = try XCTUnwrap(Stage.held.$wash.journey.sample?.value)
+        XCTAssertEqual(lanes(arrived), lanes(Stage.brand), "and arrives there")
     }
 
     /// A color as the host draws it in the theme in force.

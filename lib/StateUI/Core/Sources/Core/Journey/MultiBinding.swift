@@ -21,23 +21,14 @@ public struct MultiBinding<Out: StateValue, Sources> {
     let reaches: [() -> (any AnyStateStorage)?]
 
     /// The derived state: one object per line that wrote a conversion, kept on the
-    /// first source, with the engine that keeps it up to date.
-    func made(at key: PathNumber, _ read: @escaping () -> Out) -> Binding<Out> {
+    /// first source, its destination worked out by the conversions' graph.
+    func made(at key: PathNumber, motion: Motion, _ read: @escaping () -> Out) -> Binding<Out> {
         // Every source stands while the bindings `values` reads hold it.
         let parts = reaches.compactMap { $0() }
-        let derived = parts[0].derived(Out.self, at: key, make: read)
+        let derived = parts[0].derived(Out.self, at: key) { ConversionEvaluation.run(read) }
         let conversion = derived.conversion ?? Conversion()
 
-        conversion.declareAgain()
-        conversion.reach(reaches)
-        conversion.upstream = parts.compactMap(\.conversion)
-        conversion.forward = { [weak derived] asking in
-            guard let derived else { return }
-
-            derived.settle(read(), asking: asking)
-        }
-        conversion.derived = { [weak derived] in derived }
-        derived.conversion = conversion
+        conversion.declare(derived, from: reaches, upstream: parts.compactMap(\.conversion), motion: motion) { read() }
 
         return Binding<Out>(over: derived)
     }
@@ -59,26 +50,6 @@ extension Binding where Value: StateValue {
         MultiBinding(
             values: { (a.standing, b.standing) },
             reaches: [a.anyReach, b.anyReach])
-    }
-
-    /// 2 journeys read as one on their way to a control - the words for a
-    /// point, the distance between two animated values - settled on every
-    /// frame either moves. This library's own.
-    ///
-    ///     Text(.multi($liveX.journey, $liveY.journey).convert { x, y in
-    ///         "at \(Int(x.value)), \(Int(y.value))"
-    ///     })
-    ///
-    /// - Parameters:
-    ///   - a: journey 1.
-    ///   - b: journey 2.
-    /// - Returns: the journeys, waiting for the arithmetic that makes them one.
-    public static func multi<A: Walked, B: Walked>(
-        _ a: Journey<A>, _ b: Journey<B>
-    ) -> MultiBinding<Value, (Journey<A>, Journey<B>)> {
-        _ = a.storage.walkedImage()
-        _ = b.storage.walkedImage()
-        return MultiBinding(values: { (a, b) }, reaches: [a.anyReach, b.anyReach])
     }
 
     /// 3 states read as one on their way to a control, in the order they
@@ -260,6 +231,7 @@ extension MultiBinding {
     ///
     /// - Parameters:
     ///   - transform: the derived value, from each source in turn.
+    ///   - motion: how the result travels where a host shows it; the application's unless said.
     ///   - file: where the conversion is written - which, with the line, is
     ///     what keeps the derived state one object across renders.
     ///   - line: the same.
@@ -267,13 +239,14 @@ extension MultiBinding {
     /// - Returns: the derived state, to hand on.
     public func convert<A, B>(
         _ transform: @escaping (A, B) -> Out,
+        motion: Motion = .inherited,
         file: StaticString = #fileID,
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> where Sources == (A, B) {
         let values = values
 
-        return made(at: PathNumber(file: file, line: line, column: column)) {
+        return made(at: PathNumber(file: file, line: line, column: column), motion: motion) {
             let read = values()
 
             return transform(read.0, read.1)
@@ -290,6 +263,7 @@ extension MultiBinding {
     /// - Parameters:
     ///   - transform: the derived value, from each source in turn.
     ///   - back: both sources' values, from a reported derived one.
+    ///   - motion: how the result travels where a host shows it; the application's unless said.
     ///   - file: where the conversion is written - which, with the line, is
     ///     what keeps the derived state one object across renders.
     ///   - line: the same.
@@ -298,58 +272,22 @@ extension MultiBinding {
     public func convert<A: StateValue, B: StateValue>(
         _ transform: @escaping (A, B) -> Out,
         back: @escaping (Out) -> (A, B),
+        motion: Motion = .inherited,
         file: StaticString = #fileID,
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> where Sources == (A, B) {
-        let converted = convert(transform, file: file, line: line, column: column)
-        // The two states `multi` was handed, in their own types.
-        guard let conversion = converted.conversion else { return converted }
+        let converted = convert(transform, motion: motion, file: file, line: line, column: column)
+        let reaches = reaches
 
-        let (derived, reaches) = (converted.storage, reaches)
-        let sources = { () -> (State<A>.Storage, State<B>.Storage)? in
-            guard let first = reaches[0]() as? State<A>.Storage, let second = reaches[1]() as? State<B>.Storage
+        // A write into the result goes back to both states `multi` was handed, each in its own type.
+        converted.conversion?.declareBack { value in
+            guard let value = value as? Out,
+                  let first = reaches[0]() as? State<A>.Storage, let second = reaches[1]() as? State<B>.Storage
             else { return nil }
-            return (first, second)
-        }
-        let refusal = { (value: Out) -> String? in
-            guard let (first, second) = sources() else { return nil }
-            let (one, two) = back(value)
-            return first.refusal(of: one) ?? second.refusal(of: two)
-        }
-        conversion.declareBack(refusing: refusal) { [weak derived] in
-            guard let (first, second) = sources(), let derived else { return false }
 
-            // A report lands on both sources or on neither: asked up each one's chain before either is written, then
-            // the second asked again once the first stands - a refusal may read the other - and every state written
-            // put back where it stood if it does not land whole.
-            // Design: docs/design/core/journeys.md#a-refusal-up-the-chain
-            if let why = refusal(derived.value) {
-                complain(why)
-                derived.settle(transform(first.value, second.value), asking: true)
-                return false
-            }
-            let (one, two) = back(derived.value)
-            // Each source taken as it stands just before it is written, and put back last taken first: one a
-            // refusal stopped short of stands as it is, its journey on its way.
-            var restore = first.writtenBack.map { $0.restorer() }
-            first.settle(one, asking: true)
-            var landed = first.conversion?.back?() ?? true
-            if landed, let why = second.refusal(of: two) {
-                complain(why)
-                landed = false
-            }
-            if landed {
-                restore += second.writtenBack.map { $0.restorer() }
-                second.settle(two, asking: true)
-                landed = second.conversion?.back?() ?? true
-            }
-            guard landed else {
-                restore.reversed().forEach { $0() }
-                derived.settle(transform(first.value, second.value), asking: true)
-                return false
-            }
-            return true
+            let (one, two) = back(value)
+            return [BackCandidate(first, one), BackCandidate(second, two)]
         }
         return converted
     }
@@ -359,6 +297,7 @@ extension MultiBinding {
     ///
     /// - Parameters:
     ///   - transform: the derived value, from each source in turn.
+    ///   - motion: how the result travels where a host shows it; the application's unless said.
     ///   - file: where the conversion is written - which, with the line, is
     ///     what keeps the derived state one object across renders.
     ///   - line: the same.
@@ -366,13 +305,14 @@ extension MultiBinding {
     /// - Returns: the derived state, to hand on.
     public func convert<A, B, C>(
         _ transform: @escaping (A, B, C) -> Out,
+        motion: Motion = .inherited,
         file: StaticString = #fileID,
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> where Sources == (A, B, C) {
         let values = values
 
-        return made(at: PathNumber(file: file, line: line, column: column)) {
+        return made(at: PathNumber(file: file, line: line, column: column), motion: motion) {
             let read = values()
 
             return transform(read.0, read.1, read.2)
@@ -384,6 +324,7 @@ extension MultiBinding {
     ///
     /// - Parameters:
     ///   - transform: the derived value, from each source in turn.
+    ///   - motion: how the result travels where a host shows it; the application's unless said.
     ///   - file: where the conversion is written - which, with the line, is
     ///     what keeps the derived state one object across renders.
     ///   - line: the same.
@@ -391,13 +332,14 @@ extension MultiBinding {
     /// - Returns: the derived state, to hand on.
     public func convert<A, B, C, D>(
         _ transform: @escaping (A, B, C, D) -> Out,
+        motion: Motion = .inherited,
         file: StaticString = #fileID,
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> where Sources == (A, B, C, D) {
         let values = values
 
-        return made(at: PathNumber(file: file, line: line, column: column)) {
+        return made(at: PathNumber(file: file, line: line, column: column), motion: motion) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3)
@@ -409,6 +351,7 @@ extension MultiBinding {
     ///
     /// - Parameters:
     ///   - transform: the derived value, from each source in turn.
+    ///   - motion: how the result travels where a host shows it; the application's unless said.
     ///   - file: where the conversion is written - which, with the line, is
     ///     what keeps the derived state one object across renders.
     ///   - line: the same.
@@ -416,13 +359,14 @@ extension MultiBinding {
     /// - Returns: the derived state, to hand on.
     public func convert<A, B, C, D, E>(
         _ transform: @escaping (A, B, C, D, E) -> Out,
+        motion: Motion = .inherited,
         file: StaticString = #fileID,
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> where Sources == (A, B, C, D, E) {
         let values = values
 
-        return made(at: PathNumber(file: file, line: line, column: column)) {
+        return made(at: PathNumber(file: file, line: line, column: column), motion: motion) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4)
@@ -434,6 +378,7 @@ extension MultiBinding {
     ///
     /// - Parameters:
     ///   - transform: the derived value, from each source in turn.
+    ///   - motion: how the result travels where a host shows it; the application's unless said.
     ///   - file: where the conversion is written - which, with the line, is
     ///     what keeps the derived state one object across renders.
     ///   - line: the same.
@@ -441,13 +386,14 @@ extension MultiBinding {
     /// - Returns: the derived state, to hand on.
     public func convert<A, B, C, D, E, F>(
         _ transform: @escaping (A, B, C, D, E, F) -> Out,
+        motion: Motion = .inherited,
         file: StaticString = #fileID,
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> where Sources == (A, B, C, D, E, F) {
         let values = values
 
-        return made(at: PathNumber(file: file, line: line, column: column)) {
+        return made(at: PathNumber(file: file, line: line, column: column), motion: motion) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4, read.5)
@@ -459,6 +405,7 @@ extension MultiBinding {
     ///
     /// - Parameters:
     ///   - transform: the derived value, from each source in turn.
+    ///   - motion: how the result travels where a host shows it; the application's unless said.
     ///   - file: where the conversion is written - which, with the line, is
     ///     what keeps the derived state one object across renders.
     ///   - line: the same.
@@ -466,13 +413,14 @@ extension MultiBinding {
     /// - Returns: the derived state, to hand on.
     public func convert<A, B, C, D, E, F, G>(
         _ transform: @escaping (A, B, C, D, E, F, G) -> Out,
+        motion: Motion = .inherited,
         file: StaticString = #fileID,
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> where Sources == (A, B, C, D, E, F, G) {
         let values = values
 
-        return made(at: PathNumber(file: file, line: line, column: column)) {
+        return made(at: PathNumber(file: file, line: line, column: column), motion: motion) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4, read.5, read.6)
@@ -484,6 +432,7 @@ extension MultiBinding {
     ///
     /// - Parameters:
     ///   - transform: the derived value, from each source in turn.
+    ///   - motion: how the result travels where a host shows it; the application's unless said.
     ///   - file: where the conversion is written - which, with the line, is
     ///     what keeps the derived state one object across renders.
     ///   - line: the same.
@@ -491,13 +440,14 @@ extension MultiBinding {
     /// - Returns: the derived state, to hand on.
     public func convert<A, B, C, D, E, F, G, H>(
         _ transform: @escaping (A, B, C, D, E, F, G, H) -> Out,
+        motion: Motion = .inherited,
         file: StaticString = #fileID,
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H) {
         let values = values
 
-        return made(at: PathNumber(file: file, line: line, column: column)) {
+        return made(at: PathNumber(file: file, line: line, column: column), motion: motion) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4, read.5, read.6, read.7)
@@ -509,6 +459,7 @@ extension MultiBinding {
     ///
     /// - Parameters:
     ///   - transform: the derived value, from each source in turn.
+    ///   - motion: how the result travels where a host shows it; the application's unless said.
     ///   - file: where the conversion is written - which, with the line, is
     ///     what keeps the derived state one object across renders.
     ///   - line: the same.
@@ -516,13 +467,14 @@ extension MultiBinding {
     /// - Returns: the derived state, to hand on.
     public func convert<A, B, C, D, E, F, G, H, I>(
         _ transform: @escaping (A, B, C, D, E, F, G, H, I) -> Out,
+        motion: Motion = .inherited,
         file: StaticString = #fileID,
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H, I) {
         let values = values
 
-        return made(at: PathNumber(file: file, line: line, column: column)) {
+        return made(at: PathNumber(file: file, line: line, column: column), motion: motion) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4, read.5, read.6, read.7, read.8)
@@ -534,6 +486,7 @@ extension MultiBinding {
     ///
     /// - Parameters:
     ///   - transform: the derived value, from each source in turn.
+    ///   - motion: how the result travels where a host shows it; the application's unless said.
     ///   - file: where the conversion is written - which, with the line, is
     ///     what keeps the derived state one object across renders.
     ///   - line: the same.
@@ -541,13 +494,14 @@ extension MultiBinding {
     /// - Returns: the derived state, to hand on.
     public func convert<A, B, C, D, E, F, G, H, I, J>(
         _ transform: @escaping (A, B, C, D, E, F, G, H, I, J) -> Out,
+        motion: Motion = .inherited,
         file: StaticString = #fileID,
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H, I, J) {
         let values = values
 
-        return made(at: PathNumber(file: file, line: line, column: column)) {
+        return made(at: PathNumber(file: file, line: line, column: column), motion: motion) {
             let read = values()
 
             return transform(read.0, read.1, read.2, read.3, read.4, read.5, read.6, read.7, read.8, read.9)

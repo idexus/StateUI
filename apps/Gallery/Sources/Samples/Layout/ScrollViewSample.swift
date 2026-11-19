@@ -89,9 +89,10 @@ private struct DescribedOffset: View {
                 .scrollOffset($offset)
                 .gridRow(1)
 
-            // THE GET. Reading the offset here is what makes this Grid its
-            // reader, and a render is what every single report then costs.
-            Text("\(Int($offset.journey.value.y)) down")
+            // THE GET. Reading where the scroller stands here is what makes
+            // this Grid its reader, and a render is what every single report
+            // then costs.
+            Text("\(Int(($offset.journey.sample?.value ?? offset).y)) down")
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
@@ -145,7 +146,7 @@ private struct PacedOffset: View {
                 .horizontalTextAlignment(.center)
                 .gridRow(3)
 
-            spelling(".samples($offset, into: $shown, .every(.milliseconds(100)))")
+            spelling(".samples($offset.journey, into: $shown, .every(.milliseconds(100)))")
                 .gridRow(4)
         }
         .rows(.automatic, .fill, .automatic, .automatic, .automatic)
@@ -155,12 +156,15 @@ private struct PacedOffset: View {
 // listing: end
 
 // listing: OffsetStrips
-/// THE OFFSET THROUGH A CHANNEL: nothing here reads it. The words are a
-/// conversion the host works out on its own frames, so the number keeps up
-/// with the finger and this view is never built again.
+/// THE OFFSET THROUGH A CHANNEL: nothing here reads it. The words are written
+/// by an engine following the offset's journey on the host's own frames, so the
+/// number keeps up with the finger and this view is never built again.
 private struct DrivenOffset: View {
-    /// Handed to the scroller and to the conversion, and read by nobody.
+    /// Handed to the scroller and, as its journey, to the engine; read by nobody.
     @Binding var offset: Point
+
+    /// The words the engine writes and the host shows.
+    @State private var down = "0 down"
 
     var body: some View {
         Grid {
@@ -170,21 +174,25 @@ private struct DrivenOffset: View {
                 .scrollOffset($offset)
                 .gridRow(1)
 
-            // NO GET. The conversion is a second state the host writes from
-            // the first, so the reading moves without a view being built -
-            // and it reads `value`, where the offset IS, so it follows a
-            // glide frame by frame rather than jumping to where it is going.
-            Text($offset.journey.convert { "\(Int($0.value.y)) down" })
+            // NO GET. The engine writes a state the host shows, so the reading
+            // moves without a view being built - and it reads the sample's
+            // `value`, where the offset IS, so it follows a glide frame by
+            // frame rather than jumping to where it is going.
+            Text($down)
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
+                .engine(following: $offset.journey) { _ in
+                    guard let sample = $offset.journey.sample else { return }
+                    down = "\(Int(sample.value.y)) down"
+                }
 
             DebugInfoLabel()
                 .horizontalAlignment(.center)
                 .horizontalTextAlignment(.center)
                 .gridRow(3)
 
-            spelling("$offset.journey.convert { … }")
+            spelling(".engine(following: $offset.journey) { … }")
                 .gridRow(4)
         }
         .rows(.automatic, .fill, .automatic, .automatic, .automatic)
@@ -223,7 +231,7 @@ private struct OffsetStrips: ExampleContent {
                 // reading of where the value HAS GOT TO - which the state
                 // itself never says, standing at its destination.
                 PacedOffset(offset: $paced, shown: pacedShown)
-                    .samples($paced, into: $pacedShown, .every(.milliseconds(100)))
+                    .samples($paced.journey, into: $pacedShown, .every(.milliseconds(100)))
                     .gridColumn(1)
 
                 DrivenOffset(offset: $driven)
@@ -257,7 +265,7 @@ private struct OffsetStrips: ExampleContent {
     /// - Parameter y: how far down each strip is sent.
     private func move(to y: Double) async throws {
         for strip in [$described, $paced, $driven] {
-            try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300), curve: .cubicOut)).arrived()
+            try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300), curve: .cubicOut)).result()
         }
     }
     // listing: end
@@ -272,10 +280,10 @@ private struct OffsetStrips: ExampleContent {
 
             Text("Described reads the offset in its own braces, so the column is built "
                 + "again on every report. On a cadence reads a sample of it - "
-                + "`.samples($offset, into: $shown, .every(.milliseconds(100)))` - at most ten times a "
-                + "second, so its count climbs no faster. A channel reads nothing: "
-                + "`$offset.journey.convert { … }` is a second state the host works out "
-                + "on its own frames, and the count stays at one.")
+                + "`.samples($offset.journey, into: $shown, .every(.milliseconds(100)))` - at most "
+                + "ten times a second, so its count climbs no faster. A channel reads nothing: "
+                + "`.engine(following: $offset.journey) { … }` writes the words on the host's "
+                + "own frames, and the count stays at one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -287,7 +295,7 @@ private struct OffsetStrips: ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("`.scrollOffset($offset)` goes both ways: scrolling writes the state, and a "
-                + "write moves the scroller. `try await $offset.journey.move(to:).arrived()` returns "
+                + "write moves the scroller. `try await $offset.journey.move(to:).result()` returns "
                 + "when the glide finishes, which is why Top moves the strips one after "
                 + "another; `$offset.journey.snap(to:)` puts one there at once.")
                 .fontSize(12)
@@ -317,7 +325,9 @@ private struct RestStrips: ExampleContent {
                 // ran out - a write carries the strip on to the tile it is
                 // nearest.
                 .onScrollStopped {
-                    let tile = max(($offset.journey.value.x / 160).rounded(), 0)
+                    // Where the scroller stands as it stops: its journey's sample.
+                    let stands = $offset.journey.sample?.value ?? offset
+                    let tile = max((stands.x / 160).rounded(), 0)
                     rested = Int(tile) + 1
                     offset = Point(tile * 160, 0)
                 }

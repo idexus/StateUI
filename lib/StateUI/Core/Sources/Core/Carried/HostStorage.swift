@@ -26,20 +26,48 @@ final class HostStorage: NamedState {
     /// Design: docs/design/core/journeys.md#readings
     var samplings: [(target: ObjectIdentifier, held: WeakSampling)] = []
 
-    /// How many times the value was written, equal bytes included - what an engine compares.
+    /// How many times the value was written, equal bytes included - what an engine following the state compares.
+    /// On a journey's image a write is one of its destination: a frame of where it stands moves the sample instead.
+    /// Design: docs/design/core/cycle.md#what-wakes-an-engine
     var stamp: Int = 0
 
-    /// How many host reports laid anything on it: what a conversion's way back follows (journeys.md#conversions).
+    /// How many host reports laid anything on it.
     var reports: Int = 0
+
+    /// How many times the value's bytes changed - a journey's destination lanes - which a conversion compares.
+    /// Design: docs/design/core/journeys.md#conversions
+    var targetRevision: Int = 0
+
+    /// The lanes whose change is a change of the state's value: a journey's destination, else every lane.
+    var targetMask: UInt64 { journeyWidth == nil ? ~0 : destinationMask }
 
     /// The number the host quotes it back by, once anything has asked.
     var number: Int32?
 
-    /// How many properties of live elements the host shows it on, each a channel; nought is a state nobody
-    /// wears, whatever its number.
+    /// How many consumers the host carries it for - a property of a live element showing it, an engine following
+    /// its journey, a reading of it; nought is a state with no channel, whatever its number.
     /// Design: docs/design/core/state.md#a-state-nobody-wears
-    var ties = 0
+    var consumers = 0
 
+    /// Whether the host has a channel for it, as the last walk settled: a consumer stood when the walk ended.
+    /// Design: docs/design/core/journeys.md#a-channels-life
+    private(set) var hasChannel = false
+
+    /// How many channels were opened for it: a first consumer after none is a channel of a new generation.
+    private(set) var generation = 0
+
+    /// How wide the value of a journey's image is, in lanes; nil for an image that is the value itself.
+    var journeyWidth: Int?
+
+    /// The host's last report of where the value stands, whole and of one frame; nil with no channel.
+    /// Design: docs/design/core/journeys.md#the-sample
+    private(set) var sample: HostSample?
+
+    /// What hears that the sample changed, came or went.
+    var presented: (() -> Void)?
+
+    /// What hears that the channel closed with its last consumer.
+    var closed: (() -> Void)?
 
     /// What the author calls it - the reflection walk's, as a state's is.
     var origin: String?
@@ -50,15 +78,12 @@ final class HostStorage: NamedState {
     /// What the host is told the lanes are read as; nil for text.
     var laneKind: LaneKind?
 
-    /// The element's own law - what `.inherited` means here - resolved by the differ.
-    /// Design: docs/design/core/identity-and-diffing.md#driven-properties
+    /// What `.inherited` means on this state: the application's motion, as the differ last read it.
+    /// Design: docs/design/core/journeys.md#which-motion
     var inherited: Motion = .inherited
 
-    /// What each live element showing it answers `.inherited` with, so two answering differently are heard.
-    var answers: [ElementID: Motion] = [:]
-
     /// What runs after the host wrote this value, handed the lanes it wrote.
-    var told: ((UInt64) -> Void)?
+    var told: ((UInt64, WriteOrigin) -> Void)?
 
     /// Whether any build read the journey off this image.
     /// Design: docs/design/core/journeys.md#two-reader-sets
@@ -74,6 +99,44 @@ final class HostStorage: NamedState {
         if let number {
             Renderer.shared.states[number] = nil
         }
+    }
+
+    /// The lanes of a journey's destination; nought for an image that is the value itself.
+    var destinationMask: UInt64 {
+        guard let journeyWidth else { return 0 }
+
+        return (journeyWidth..<(journeyWidth * 2)).reduce(into: UInt64(0)) { $0 |= Self.bit(of: $1) }
+    }
+
+    /// Takes the host's report of where the value stands; the same report again is no change.
+    func took(_ sample: HostSample) {
+        guard hasChannel, self.sample != sample else { return }
+
+        self.sample = sample
+        presented?()
+        if !samplings.isEmpty { sampleTaken(at: Renderer.shared.board.frameTime) }
+    }
+
+    /// Settles the channel after a walk: opened with a first consumer, a new generation; closed with the last one
+    /// gone, its sample with it. Answers whether the channel closed.
+    /// Design: docs/design/core/journeys.md#a-channels-life
+    @discardableResult
+    func settleChannel() -> Bool {
+        if consumers > 0, !hasChannel {
+            hasChannel = true
+            generation &+= 1
+            return false
+        }
+
+        guard consumers == 0, hasChannel else { return false }
+
+        hasChannel = false
+        if sample != nil {
+            sample = nil
+            presented?()
+        }
+        closed?()
+        return true
     }
 
     /// Whether an engine of the application's animates this journey, which the host

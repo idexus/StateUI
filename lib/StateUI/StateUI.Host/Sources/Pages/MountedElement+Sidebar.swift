@@ -26,7 +26,7 @@ extension MountedElement {
               reportedOverlays.map({ $0.binding != binding || $0.over != over }) ?? true
         else { return }
         reportedOverlays = (binding, over)
-        if !runtime.report(.lanes([over ? 1 : 0]), through: binding) { reportedOverlays = nil }
+        if !runtime.report(.lanes([over ? 1 : 0]), through: binding, origin: .measurement) { reportedOverlays = nil }
     }
 
     /// Whether this split view gives its sidebar a material of its own, beside the detail or over it - the

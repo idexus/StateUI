@@ -250,18 +250,28 @@
         Renderer.shared.hostMovedGesture(value, state: state)
     }
 
+    // What a report carries besides its value is who made it - the user, the platform's measurement, the host's
+    // animation: never worked out from what moved.
+    // Design: docs/design/core/cycle.md#what-the-host-reports
+
     /// Reports a complete text, plain value, or feed through an inward state
     /// attachment.
     ///
     /// A moving property reports through its host motion channel instead; its
     /// image contains the value, destination, velocity, law and completion,
     /// rather than only the value a user moved.
+    ///
+    /// - Parameters:
+    ///   - value: The whole value.
+    ///   - binding: The inward-capable attachment it is reported through.
+    ///   - origin: Who made it: the user on a control, or the platform measuring.
     @discardableResult
     public static func report(
         _ value: HostStateValue,
-        through binding: HostStateBinding
+        through binding: HostStateBinding,
+        origin: WriteOrigin
     ) -> Bool {
-        Renderer.shared.hostReported(value, through: binding)
+        Renderer.shared.hostReported(value, through: binding, origin: origin)
     }
 
     /// Reports the host-owned position of a moving property state.
@@ -274,26 +284,31 @@
     ///   - journey: The complete journey after the host-side change.
     ///   - update: The numerical groups the host changed.
     ///   - binding: Any inward-capable property attachment on this state.
+    ///   - time: The frame's time on the display's clock, in milliseconds: the journey is the channel's sample
+    ///     of that frame, which every report of one frame names alike.
+    ///   - origin: Who moved it: the host's animation, the user taking the value, or the program stopping it.
     /// - Returns: Whether the current attachment accepted the report.
     @discardableResult
     public static func report(
         _ journey: HostJourney,
         updating update: HostJourneyUpdate,
-        through binding: HostStateBinding
+        through binding: HostStateBinding,
+        at time: Double,
+        origin: WriteOrigin
     ) -> Bool {
-        Renderer.shared.hostReported(journey, updating: update, through: binding)
+        Renderer.shared.hostReported(journey, updating: update, through: binding, at: time, origin: origin)
     }
 
-    /// Completes an awaited journey after its host motion ends or is replaced.
+    /// Answers the waiter of a movement after its host run ends, once.
     ///
     /// - Parameters:
     ///   - completion: The negative continuation id carried by the journey.
-    ///   - succeeded: Whether the journey reached its destination.
+    ///   - outcome: How the run ended.
     /// - Returns: Whether a continuation still waited under that id.
     @discardableResult
-    public static func complete(_ completion: Int, succeeded: Bool) -> Bool {
+    public static func complete(_ completion: Int, as outcome: HostMotionOutcome) -> Bool {
         guard completion < 0 else { return false }
-        ReplyBuffer.current = .finished([.bool(succeeded)])
+        ReplyBuffer.current = .finished([.number(MotionRun.code(of: outcome))])
         return Renderer.shared.dispatch(completion)
     }
 

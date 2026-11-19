@@ -494,7 +494,7 @@ private struct BoundStrip: View {
             .scrollOffset($offset)
             .height(300)
 
-            Text("\(Int($offset.journey.value.y)) down")
+            Text("\(Int($offset.journey.sample?.value.y ?? 0)) down")
         }
     }
 }

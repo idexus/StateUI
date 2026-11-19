@@ -167,7 +167,7 @@ final class GTKMotionTests: XCTestCase {
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
                     Button("Go").onClicked(policy: .ignoreWhileRunning) {
-                        try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), curve: .linear)).arrived()
+                        try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), curve: .linear)).result()
                         arrived.wrappedValue = true
                     }
                 }
@@ -201,7 +201,7 @@ final class GTKMotionTests: XCTestCase {
                     Slider(count.projectedValue).minimum(0).maximum(10)
                     Button("Far").onClicked(policy: .ignoreWhileRunning) {
                         try await count.projectedValue.journey.move(to: 9.2, .eased(.milliseconds(400), curve: .linear))
-                            .arrived()
+                            .result()
                     }
                 }
             }
@@ -262,7 +262,7 @@ final class GTKMotionTests: XCTestCase {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
                     Button("Go").onClicked(policy: .ignoreWhileRunning) {
-                        try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), curve: .linear)).arrived()
+                        try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), curve: .linear)).result()
                     }
                 }
             }

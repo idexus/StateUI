@@ -114,9 +114,18 @@ final class SceneRecord {
     /// window of a kind per value, whoever writes, as opening one is refused; nil where it may.
     /// Design: docs/design/core/scenes.md#a-window-for-a-value
     func refusal<Value: Codable & Hashable>(of serial: Int, retargetingTo value: Value) -> String? {
-        guard let window = windows.first(where: { $0.serial == serial }),
-            windows.contains(where: { $0.serial != serial && $0.type == window.type && $0.value == AnyHashable(value) })
-        else { return nil }
+        guard let window = windows.first(where: { $0.serial == serial }) else { return nil }
+
+        // What a window of the kind is proposed in the same write is what it holds, for this asking.
+        // Design: docs/design/core/journeys.md#the-way-back
+        let taken = windows.contains { other in
+            guard other.serial != serial, other.type == window.type else { return false }
+
+            let proposed = (windowSessions[other.key]?.value as? State<Value>)
+                .flatMap { BackProposal.value(for: $0.storage) as? Value }
+            return (proposed.map { AnyHashable($0) } ?? other.value) == AnyHashable(value)
+        }
+        guard taken else { return nil }
 
         return "The window `\(window.key)` was not made about \(value): a window of its kind is open for the "
             + "value \(value) already, and a kind has one window per value, whoever writes - as `openWindow` "

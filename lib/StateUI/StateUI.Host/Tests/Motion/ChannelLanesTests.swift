@@ -35,15 +35,15 @@ final class ChannelLanesTests: XCTestCase {
         XCTAssertEqual(channels.takeCompletions(), [], "the second lane's waiter is not the first lane's")
 
         channels.follow(animator.advance(to: 250))
-        XCTAssertEqual(channels.takeCompletions(), [JourneyCompletion(id: -51, succeeded: true)])
+        XCTAssertEqual(channels.takeCompletions(), [JourneyCompletion(id: -51, outcome: .animated)])
     }
 
-    /// A RUN CUT SHORT FAILS ITS WAITER ONCE, and the lanes it keeps travel on to where they were going.
-    func testARunCutShortFailsItsWaiterOnceAndItsOtherLanesTravelOn() throws {
+    /// A RUN CUT SHORT ANSWERS ITS WAITER SUPERSEDED, ONCE, and the lanes it keeps travel on to where they were going.
+    func testARunCutShortAnswersItsWaiterOnceAndItsOtherLanesTravelOn() throws {
         let (animator, channels) = opened(completion: -52)
 
         aim(channels, destination: [0, 1], changed: Self.destination(0), at: 100)
-        XCTAssertEqual(channels.takeCompletions(), [JourneyCompletion(id: -52, succeeded: false)])
+        XCTAssertEqual(channels.takeCompletions(), [JourneyCompletion(id: -52, outcome: .superseded)])
 
         channels.follow(animator.advance(to: 200))
         XCTAssertEqual(try XCTUnwrap(channels.takeOutputs().last).journey.value[1], 1, "the lane it kept, landed")
@@ -73,10 +73,10 @@ final class ChannelLanesTests: XCTestCase {
 
         aim(channels, destination: [2, 2], changed: Self.destination(0) | Self.destination(1) | Self.completion,
             completion: -54, at: 100)
-        XCTAssertEqual(channels.takeCompletions(), [JourneyCompletion(id: -53, succeeded: false)])
+        XCTAssertEqual(channels.takeCompletions(), [JourneyCompletion(id: -53, outcome: .superseded)])
 
         channels.follow(animator.advance(to: 400))
-        XCTAssertEqual(channels.takeCompletions(), [JourneyCompletion(id: -54, succeeded: true)])
+        XCTAssertEqual(channels.takeCompletions(), [JourneyCompletion(id: -54, outcome: .animated)])
         XCTAssertFalse(channels.isActive)
     }
 
@@ -97,6 +97,7 @@ final class ChannelLanesTests: XCTestCase {
         let journey = HostJourney(
             value: [0, 0], destination: [1, 1], velocity: [0, 0], motion: Self.law, completion: completion, stopped: 0)
 
+        channels.attach(binding.state)
         _ = channels.presentedValue(for: binding, from: HostBoundary.value(of: journey), now: 0, reducesMotion: false)
         _ = channels.takeOutputs()
 

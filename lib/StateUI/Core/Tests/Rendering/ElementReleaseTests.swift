@@ -225,7 +225,7 @@ final class ElementReleaseTests: XCTestCase {
 
             renders.render(stack([
                 Held { _ = shown.wrappedValue }
-                    .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(100)))
+                    .samples(fade.projectedValue.journey, into: shown.projectedValue, .every(.milliseconds(100)))
                     .node,
             ], id: "root"))
             return fade.storage

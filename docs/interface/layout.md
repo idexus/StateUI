@@ -348,7 +348,7 @@ ScrollView {
 
 The `Point` binding is two-way. A program write moves the viewport; native
 scrolling reports the standing offset into the same state. The state walks a
-journey: `offset` is its destination and `$offset.journey.value` where the
+journey: `offset` is its destination and `$offset.journey.sample` says where the
 viewport stands this frame.
 
 Where a scroller comes to rest is the platform's, with the platform's own
@@ -364,7 +364,8 @@ ScrollView { cards }
     .axes(.horizontal)
     .scrollOffset($offset)
     .onScrollStopped {
-        let card = ($offset.journey.value.x / 320).rounded()
+        let stands = $offset.journey.sample?.value ?? offset
+        let card = (stands.x / 320).rounded()
         offset = Point(card * 320, 0)
     }
 ```
@@ -722,7 +723,7 @@ placement lands as written: what moves smoothly are the parameters, so every vie
 keeps to the path the arithmetic draws - an arc, a fan opening - rather than
 cutting across it. `turn` is the snap the run rests on: written by the
 program, the run travels there under `.parameterMotion(_:)` - with a hand or none -
-and `try await $turn.journey.move(to: 2).arrived()` waits until it has; under
+and `try await $turn.journey.move(to: 2).result()` waits until it has; under
 the hand it is the snap the run passes and the one it comes to rest on, and
 a hand taking the run on its way stops the journey. A tap activates the view
 drawn on top, and `.onItemActivated` is handed its item's identity, as a

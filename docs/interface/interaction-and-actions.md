@@ -164,8 +164,9 @@ and follows its click by the frame it was laid out in.
 Each report also says how fast the gesture goes, a second - `velocity`, a
 `Point`, for a pan, and for a pinch's scale and a rotation's angle a number -
 nought as it begins and, at its end, as fast as it lifted, beside where it
-reached. Handing that to a state's journey lets the value go on at the hand's
-speed:
+reached. A cubic-out journey sets out three times as fast as it averages, so
+one a third of that speed's way long goes on at the hand's speed and slows to
+rest:
 
 ```swift
 @State private var x = 0.0
@@ -178,8 +179,8 @@ Rectangle()
         case .changed:
             $x.journey.snap(to: update.total.x)
         case .ended:
-            $x.journey.velocity = update.velocity.x
-            $x.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
+            let rest = update.total.x + update.velocity.x * 0.9 / 3
+            $x.journey.move(to: rest, .eased(.milliseconds(900), curve: .cubicOut))
         default:
             break
         }

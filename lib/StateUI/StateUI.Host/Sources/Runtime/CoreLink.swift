@@ -66,26 +66,28 @@
         HostBoundary.value(for: binding)
     }
 
-    /// Reports a complete text, plain value or feed a user changed.
+    /// Reports a complete text, plain value or feed, and who made it: the user, or the platform measuring.
     @discardableResult
-    public func report(_ value: HostStateValue, through binding: HostStateBinding) -> Bool {
-        HostBoundary.report(value, through: binding)
+    public func report(_ value: HostStateValue, through binding: HostStateBinding, origin: WriteOrigin) -> Bool {
+        HostBoundary.report(value, through: binding, origin: origin)
     }
 
-    /// Reports where a host-walked journey stands.
+    /// Reports where a host-walked journey stands on the frame at `time`, and who moved it.
     @discardableResult
     public func report(
         _ journey: HostJourney,
         updating update: HostJourneyUpdate,
-        through binding: HostStateBinding
+        through binding: HostStateBinding,
+        at time: Double,
+        origin: WriteOrigin
     ) -> Bool {
-        HostBoundary.report(journey, updating: update, through: binding)
+        HostBoundary.report(journey, updating: update, through: binding, at: time, origin: origin)
     }
 
-    /// Answers the caller awaiting a journey's end.
+    /// Answers the caller awaiting a journey's end with how its run ended.
     @discardableResult
-    public func complete(_ completion: Int, succeeded: Bool) -> Bool {
-        HostBoundary.complete(completion, succeeded: succeeded)
+    public func complete(_ completion: Int, as outcome: HostMotionOutcome) -> Bool {
+        HostBoundary.complete(completion, as: outcome)
     }
 
     /// Where a one-lane state named by a native gesture stands.

@@ -67,11 +67,36 @@ struct EngineDeclaration {
     /// The states whose being written is a reason to run it.
     let follows: [any FollowedState]
 
+    /// The journeys it follows: each state's channel has it for a consumer while its element stands.
+    var consumes: [JourneyConsumer] = []
+
+    /// The state it animates, where it is a state's animator: what claims the seat as it is armed.
+    var animates: AnimatorClaim? = nil
+
     /// Where it comes in the order, ascending.
     let priority: Double
 
     /// The arithmetic.
     let run: @MainActor (EngineCycle) -> EngineAnswer
+}
+
+/// A journey something mounted consumes with no property showing its state: an engine following it, a reading.
+/// Design: docs/design/core/journeys.md#a-channels-life
+@MainActor
+struct JourneyConsumer {
+    /// The image the host carries the state on as a journey, made as the consumer mounts; nil where the host
+    /// carries the state as the value itself.
+    let image: () -> HostStorage?
+
+    /// What the host reads the value's lanes as.
+    let laneKind: LaneKind
+
+    /// The consumer of `journey`'s channel.
+    init<Value: Walked>(of journey: Journey<Value>) {
+        let storage = journey.storage
+        image = { storage.carryAsJourney() }
+        laneKind = Value.laneKind
+    }
 }
 
 /// One registered engine and everything the board remembers about it: a value in
@@ -100,6 +125,13 @@ struct EngineEntry {
 
     /// Whether its own last answer was `.again`.
     var awake = false
+
+    /// Whether it is a state's animator: animators run first, on the frame before, and are published together.
+    /// Design: docs/design/core/cycle.md#engine-order
+    var animates = false
+
+    /// What lets go of what it claimed as it is forgotten.
+    var released: (() -> Void)?
 
     /// When it last ran, on the board's own clock.
     var lastRan: Double = 0
@@ -204,16 +236,12 @@ extension ModifiableElement {
     /// An engine that keeps tracking: it answers on each cycle whether it has more to
     /// do.
     ///
-    ///     .engine(tracking: $y) { cycle in
-    ///         let journey = $y.journey
-    ///         let seconds = cycle.elapsedSeconds
-    ///         let displacement = journey.destination - journey.value
-    ///         journey.velocity += (displacement * 40 - journey.velocity * 10) * seconds
-    ///         journey.value += journey.velocity * seconds
+    ///     .engine(tracking: $running) { cycle in
+    ///         guard running else { return .wait }
     ///
-    ///         let arrived = abs(displacement) < 0.01 && abs(journey.velocity) < 0.01
-    ///         if arrived { journey.snap(to: journey.destination) }
-    ///         return arrived ? .wait : .again
+    ///         elapsed += cycle.elapsedSeconds
+    ///         reading = "\(Int(elapsed)) s"
+    ///         return .again
     ///     }
     ///
     /// `.again` holds the frame clock and runs next cycle; `.wait` lets it go until a
@@ -240,13 +268,74 @@ extension ModifiableElement {
         return engine(follows, priority: priority, run)
     }
 
-    /// Registers an engine woken by the writes of the states it `follows`.
+    /// Registers an engine woken by the writes of the states it `follows`, a consumer of the journeys it `consumes`.
     func engine(
-        _ follows: [any FollowedState], priority: Double,
+        _ follows: [any FollowedState], consuming consumes: [JourneyConsumer] = [], priority: Double,
         _ run: @escaping @MainActor (EngineCycle) -> EngineAnswer
     ) -> Modified {
         modified {
-            $0.engines.append(EngineDeclaration(follows: follows, priority: priority, run: run))
+            $0.engines.append(EngineDeclaration(follows: follows, consumes: consumes, priority: priority, run: run))
         }
+    }
+}
+
+// MARK: - Following where a state is shown
+
+extension ModifiableElement {
+    /// Arithmetic the host runs on its own frames, whenever where it shows a
+    /// state has changed: a frame of the value's movement, or the state coming
+    /// to be shown or ceasing to be.
+    ///
+    ///     Text($caption)
+    ///         .engine(following: $x.journey, $y.journey) { _ in
+    ///             guard let x = $x.journey.sample, let y = $y.journey.sample else { return }
+    ///             caption = "\(Int(x.value)), \(Int(y.value))"
+    ///         }
+    ///
+    /// Following `$x` wakes it on a write of the destination; following
+    /// `$x.journey` wakes it on a frame. While its view stands the engine is a
+    /// consumer of each journey: the host carries the state for it though no
+    /// property shows it. Every sample it reads in one run is of one frame. For
+    /// a number that must match the sample, write `output.journey.snap(to:)`.
+    ///
+    /// - Parameters:
+    ///   - first: a journey whose sample changing is a reason to run.
+    ///   - more: any others.
+    ///   - priority: where it comes in the order, ascending. 0 unless said.
+    ///   - run: the arithmetic, handed the instant and how long it has been.
+    public func engine<First: Walked, each More: Walked>(
+        following first: Journey<First>,
+        _ more: repeat Journey<each More>,
+        priority: Double = 0,
+        _ run: @escaping @MainActor (EngineCycle) -> Void
+    ) -> Modified {
+        engine(tracking: first, repeat each more, priority: priority) { cycle in
+            run(cycle)
+            return .wait
+        }
+    }
+
+    /// An engine following where states are shown that keeps tracking: it
+    /// answers on each cycle whether it has more to do.
+    ///
+    /// - Parameters:
+    ///   - first: a journey whose sample changing is a reason to run.
+    ///   - more: any others.
+    ///   - priority: where it comes in the order, ascending. 0 unless said.
+    ///   - run: the arithmetic, answering whether to run again next cycle.
+    public func engine<First: Walked, each More: Walked>(
+        tracking first: Journey<First>,
+        _ more: repeat Journey<each More>,
+        priority: Double = 0,
+        _ run: @escaping @MainActor (EngineCycle) -> EngineAnswer
+    ) -> Modified {
+        var follows: [any FollowedState] = [first.storage.presentation]
+        var consumes = [JourneyConsumer(of: first)]
+        for journey in repeat each more {
+            follows.append(journey.storage.presentation)
+            consumes.append(JourneyConsumer(of: journey))
+        }
+
+        return engine(follows, consuming: consumes, priority: priority, run)
     }
 }

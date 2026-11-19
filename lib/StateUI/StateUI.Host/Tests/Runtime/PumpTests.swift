@@ -154,7 +154,7 @@ final class PumpTests: XCTestCase {
         let runtime = TurnRuntime(DealingApplication())
         runtime.pump.turn()
         let layout = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
-        _ = runtime.core.report(.lanes([0, 0, 300, 200]), through: try XCTUnwrap(layout.driven[.frame]))
+        _ = runtime.core.report(.lanes([0, 0, 300, 200]), through: try XCTUnwrap(layout.driven[.frame]), origin: .measurement)
         runtime.frame()
         XCTAssertEqual(layout.placement?.placements.count, 2)
 
@@ -185,7 +185,7 @@ final class PumpTests: XCTestCase {
         let runtime = TurnRuntime(DealingApplication())
         runtime.pump.turn()
         let layout = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
-        _ = runtime.core.report(.lanes([0, 0, 300, 200]), through: try XCTUnwrap(layout.driven[.frame]))
+        _ = runtime.core.report(.lanes([0, 0, 300, 200]), through: try XCTUnwrap(layout.driven[.frame]), origin: .measurement)
         runtime.frame()
         runtime.time += 16
         runtime.pump.dispatch(runtime.add)

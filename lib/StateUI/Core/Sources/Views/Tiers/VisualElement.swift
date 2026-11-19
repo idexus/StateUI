@@ -96,8 +96,8 @@ extension VisualElement {
         modified { $0.aim = aim.box }
     }
 
-    /// Reads where a value the host is animating has got to, at most so many
-    /// times a second, into a state of your own.
+    /// Copies where the host shows a state into a state of your own, at most
+    /// so many times a second.
     ///
     ///     @State private var fade = 1.0
     ///     @State private var shown = 1.0
@@ -106,39 +106,43 @@ extension VisualElement {
     ///         Text("\(Int(shown * 100))%")
     ///     }
     ///     .opacity($fade)
-    ///     .samples($fade, into: $shown, .every(.milliseconds(100)))
+    ///     .samples($fade.journey, into: $shown, .every(.milliseconds(100)))
     ///
-    /// Reading `fade` answers where it is going, and `$fade.journey.value` in a
-    /// body rebuilds that body on every frame; this copies some of those frames
-    /// into an ordinary state instead. It stops when the value lands, the last
-    /// sample being where the value ended. A value that is only shown wants a
-    /// driven text (`Text($fade.journey.convert { … })`), which costs no render.
+    /// Reading `fade` answers where it is going, and `$fade.journey.sample` in
+    /// a body rebuilds that body on every frame; this copies some of those
+    /// frames into an ordinary state instead. It stops when the value lands,
+    /// the last one copied being where it ended. While its view stands the
+    /// reading is a consumer of the journey. The target may not be the source,
+    /// nor a state the source is derived from.
     ///
     /// - Parameters:
-    ///   - source: the value the host is animating, `$x` of a `@State`.
+    ///   - source: the journey to read, `$x.journey` of a `@State`.
     ///   - target: the state to read it into, `$y`.
     ///   - cadence: how often, at most.
     /// - Returns: the element, with that reading asked for.
     public func samples<Value: Walked>(
-        _ source: Binding<Value>,
+        _ source: Journey<Value>,
         into target: Binding<Value>,
         _ cadence: Cadence
     ) -> Modified {
         modified {
             let from = source.storage, into = target.storage
-            guard let image = from.walkedImage() else {
-                complain("`.samples` was given a state the host carries as the value itself, so there is no "
-                    + "journey to read. Hand it a state the host walks.")
+
+            // A reading into its own source, or a state its source goes back to, would feed itself.
+            guard into !== from, from.conversion?.chain.flatMap(\.sources).contains(where: { $0 === into }) != true
+            else {
+                complain("`.samples` was asked to read `\(from.origin ?? "a state")` into itself or into a state "
+                    + "it is derived from, which would feed the reading its own writes. Read it into another "
+                    + "state, or follow the journey with an engine.")
                 return
             }
 
-            $0.samples.append((image: image, into: ObjectIdentifier(into), cadence: cadence, take: {
-                // Off the lanes, not the journey's own read, so the element being
-                // built does not become a reader of the value.
-                guard let now = from.journeyLanes?.value else { return }
-
-                guard StateImage.bytes(of: now.carried(in: .current))
-                    != StateImage.bytes(of: into.value.carried(in: .current)) else { return }
+            $0.samples.append((source: JourneyConsumer(of: source), into: ObjectIdentifier(into), cadence: cadence, take: {
+                // Off the image, not the journey's own read: the element being built is no reader of it.
+                guard let now = from.image?.sample?.typed(Value.self, at: 0, showing: from.shown?.value)?.value,
+                      StateImage.bytes(of: now.carried(in: .current))
+                        != StateImage.bytes(of: into.value.carried(in: .current))
+                else { return }
 
                 target.wrappedValue = now
             }))

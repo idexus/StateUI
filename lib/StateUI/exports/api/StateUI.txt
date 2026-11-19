@@ -8,7 +8,6 @@ swift.class AccessibilitySettings: @MainActor final class AccessibilitySettings
 swift.class Aim: @MainActor @propertyWrapper final class Aim<Target>
 swift.class ApplicationInfo: @MainActor final class ApplicationInfo
 swift.class ApplicationSession: @MainActor final class ApplicationSession
-swift.class Arrival: @MainActor final class Arrival
 swift.class Battery: @MainActor final class Battery
 swift.class Connectivity: @MainActor final class Connectivity
 swift.class Device: @MainActor final class Device
@@ -18,6 +17,7 @@ swift.class Environment: @MainActor @propertyWrapper final class Environment<Val
 swift.class Gate: @MainActor final class Gate
 swift.class LocaleInfo: @MainActor final class LocaleInfo
 swift.class Localization: @MainActor final class Localization<Catalog> where Catalog : LocalizationCatalog
+swift.class MotionRun: @MainActor final class MotionRun
 swift.class SceneSession: @MainActor final class SceneSession
 swift.class State: @MainActor @propertyWrapper final class State<Value>
 swift.class Ticker: @MainActor final class Ticker
@@ -80,7 +80,6 @@ swift.conformance ApplicationInfo: Swift.Sendable
 swift.conformance ApplicationSession: Swift.Sendable
 swift.conformance Area: Swift.Equatable
 swift.conformance Area: Swift.Sendable
-swift.conformance Arrival: Swift.Sendable
 swift.conformance AutomationElementContract: StateUI.Tier
 swift.conformance AutomationElementContract: StateUI.WornContract
 swift.conformance AutomationElementContract: Swift.Sendable
@@ -272,6 +271,7 @@ swift.conformance EngineAnswer: Swift.Equatable
 swift.conformance EngineAnswer: Swift.Hashable
 swift.conformance EngineAnswer: Swift.Sendable
 swift.conformance EngineCycle: Swift.Sendable
+swift.conformance EngineMotion: Swift.Sendable
 swift.conformance Environment: Swift.Sendable
 swift.conformance EnvironmentValues: Swift.Sendable
 swift.conformance FileType: Swift.Equatable
@@ -417,6 +417,8 @@ swift.conformance ItemsView: Swift.Sendable
 swift.conformance ItemsViewContract: StateUI.WornContract
 swift.conformance ItemsViewContract: Swift.Sendable
 swift.conformance Journey: Swift.Sendable
+swift.conformance JourneySample: Swift.Equatable
+swift.conformance JourneySample: Swift.Sendable
 swift.conformance Key: Swift.Equatable
 swift.conformance Key: Swift.ExpressibleByExtendedGraphemeClusterLiteral
 swift.conformance Key: Swift.ExpressibleByUnicodeScalarLiteral
@@ -543,11 +545,22 @@ swift.conformance ModifiedContent: StateUI.Views
 swift.conformance ModifiedContent: Swift.Sendable
 swift.conformance Motion: Swift.Equatable
 swift.conformance Motion: Swift.Sendable
+swift.conformance MotionArrival: Swift.Equatable
+swift.conformance MotionArrival: Swift.Sendable
+swift.conformance MotionImmediateReason: Swift.Equatable
+swift.conformance MotionImmediateReason: Swift.Hashable
+swift.conformance MotionImmediateReason: Swift.Sendable
 swift.conformance MotionLayout: StateUI.View
 swift.conformance MotionLayout: StateUI.Views
 swift.conformance MotionLayout: Swift.Sendable
 swift.conformance MotionLayoutContract: StateUI.WornContract
 swift.conformance MotionLayoutContract: Swift.Sendable
+swift.conformance MotionRefusal: Swift.Equatable
+swift.conformance MotionRefusal: Swift.Hashable
+swift.conformance MotionRefusal: Swift.Sendable
+swift.conformance MotionResult: Swift.Equatable
+swift.conformance MotionResult: Swift.Sendable
+swift.conformance MotionRun: Swift.Sendable
 swift.conformance MotionValues: Swift.Equatable
 swift.conformance MotionValues: Swift.ExpressibleByArrayLiteral
 swift.conformance MotionValues: Swift.OptionSet
@@ -1118,7 +1131,11 @@ swift.enum MenuContract: enum MenuContract
 swift.enum MenuItemContract: enum MenuItemContract
 swift.enum MenuSeparatorContract: enum MenuSeparatorContract
 swift.enum MenuToggleContract: enum MenuToggleContract
+swift.enum MotionArrival: enum MotionArrival
+swift.enum MotionImmediateReason: enum MotionImmediateReason
 swift.enum MotionLayoutContract: enum MotionLayoutContract
+swift.enum MotionRefusal: enum MotionRefusal
+swift.enum MotionResult: enum MotionResult
 swift.enum NavigationStackContract: enum NavigationStackContract
 swift.enum NetworkAccess: enum NetworkAccess
 swift.enum OpenedLinkElementContract: enum OpenedLinkElementContract
@@ -1423,6 +1440,23 @@ swift.enum.case MarkerKind.generic: case generic
 swift.enum.case MarkerKind.place: case place
 swift.enum.case MarkerKind.saved: case saved
 swift.enum.case MarkerKind.searchResult: case searchResult
+swift.enum.case MotionArrival.animated: case animated
+swift.enum.case MotionArrival.immediate(_:): case immediate(MotionImmediateReason)
+swift.enum.case MotionImmediateReason.alreadyAtDestination: case alreadyAtDestination
+swift.enum.case MotionImmediateReason.motionDisabled: case motionDisabled
+swift.enum.case MotionImmediateReason.reducedMotion: case reducedMotion
+swift.enum.case MotionRefusal.inactiveOwner: case inactiveOwner
+swift.enum.case MotionRefusal.incompatibleAnimator: case incompatibleAnimator
+swift.enum.case MotionRefusal.invalidDestination: case invalidDestination
+swift.enum.case MotionRefusal.noAnimator: case noAnimator
+swift.enum.case MotionRefusal.noReceiver: case noReceiver
+swift.enum.case MotionRefusal.readOnlyDerived: case readOnlyDerived
+swift.enum.case MotionRefusal.unsupportedValue: case unsupportedValue
+swift.enum.case MotionResult.detached: case detached
+swift.enum.case MotionResult.notStarted(_:): case notStarted(MotionRefusal)
+swift.enum.case MotionResult.reached(_:): case reached(MotionArrival)
+swift.enum.case MotionResult.stopped: case stopped
+swift.enum.case MotionResult.superseded: case superseded
 swift.enum.case NetworkAccess.constrainedInternet: case constrainedInternet
 swift.enum.case NetworkAccess.internet: case internet
 swift.enum.case NetworkAccess.local: case local
@@ -1742,7 +1776,10 @@ swift.method @SwiftNever.contextMenu(_:): @MainActor func contextMenu(@MenuBuild
 swift.method @SwiftNever.debugInfo(): @MainActor func debugInfo() -> String
 swift.method @SwiftNever.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method @SwiftNever.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method @SwiftNever.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method @SwiftNever.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method @SwiftNever.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method @SwiftNever.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method @SwiftNever.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method @SwiftNever.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method @SwiftNever.environment(_:): @MainActor func environment<Value>(_ object: Value) -> some Scene where Value : AnyObject
@@ -1873,7 +1910,7 @@ swift.method @SwiftNever.popover(item:content:): @MainActor func popover<Item, C
 swift.method @SwiftNever.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method @SwiftNever.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method @SwiftNever.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method @SwiftNever.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -1929,7 +1966,10 @@ swift.method AnyView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _
 swift.method AnyView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method AnyView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method AnyView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method AnyView.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method AnyView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method AnyView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method AnyView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method AnyView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method AnyView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method AnyView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -2059,7 +2099,7 @@ swift.method AnyView.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method AnyView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method AnyView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method AnyView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method AnyView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -2090,7 +2130,6 @@ swift.method ApplicationSession.openWindow(): @MainActor func openWindow() async
 swift.method ApplicationSession.openWindow(_:): @MainActor func openWindow(_ kind: WindowKind<Void>) async throws
 swift.method ApplicationSession.openWindow(_:value:): @MainActor func openWindow<Value>(_ kind: WindowKind<Value>, value: Value) async throws where Value : Decodable, Value : Encodable, Value : Hashable
 swift.method ApplicationSession.send(_:): @MainActor func send(_ request: HTTPRequest) async throws -> HTTPResponse
-swift.method Arrival.arrived(): @discardableResult @MainActor func arrived() async throws -> Bool
 swift.method AutomationElement.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ value: String) -> Self.Modified
 swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ state: Binding<Material>) -> Self.Modified
@@ -2108,7 +2147,7 @@ swift.method BarElement.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: 
 swift.method BarItemElement.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method BarItemElement.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method BarItemElement.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Binding.convert(_:back:file:line:column:): @MainActor func convert<Out>(_ transform: @escaping (Value) -> Out, back: ((Out) -> Value)? = nil, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Out : StateValue
+swift.method Binding.convert(_:back:motion:file:line:column:): @MainActor func convert<Out>(_ transform: @escaping (Value) -> Out, back: ((Out) -> Value)? = nil, motion: Motion = .inherited, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Out : StateValue
 swift.method Binding.post(_:): nonisolated func post(_ transform: @escaping @Sendable (Value) -> Value)
 swift.method Binding.post(_:): nonisolated func post(_ value: Value)
 swift.method Blur.tint(_:): func tint(_ color: Color) -> Blur
@@ -2143,7 +2182,10 @@ swift.method Button.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ 
 swift.method Button.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Button.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Button.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Button.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Button.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Button.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Button.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Button.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Button.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Button.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
@@ -2305,7 +2347,7 @@ swift.method Button.role(_:): @MainActor func role(_ role: ButtonRole) -> Button
 swift.method Button.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Button.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Button.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Button.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -2368,7 +2410,10 @@ swift.method Canvas.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ 
 swift.method Canvas.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Canvas.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Canvas.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Canvas.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Canvas.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Canvas.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Canvas.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Canvas.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Canvas.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Canvas.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -2501,7 +2546,7 @@ swift.method Canvas.popover(item:content:): @MainActor func popover<Item, Conten
 swift.method Canvas.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Canvas.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Canvas.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Canvas.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -2554,7 +2599,10 @@ swift.method Capsule.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<D
 swift.method Capsule.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Capsule.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Capsule.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Capsule.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Capsule.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Capsule.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Capsule.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Capsule.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Capsule.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Capsule.fill(_:): @MainActor func fill(_ state: Binding<Color>) -> Self.Modified
@@ -2695,7 +2743,7 @@ swift.method Capsule.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method Capsule.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Capsule.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Capsule.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Capsule.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -2746,7 +2794,10 @@ swift.method CheckBox.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder 
 swift.method CheckBox.debugInfo(): @MainActor func debugInfo() -> String
 swift.method CheckBox.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method CheckBox.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method CheckBox.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method CheckBox.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method CheckBox.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method CheckBox.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method CheckBox.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method CheckBox.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method CheckBox.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -2886,7 +2937,7 @@ swift.method CheckBox.popover(item:content:): @MainActor func popover<Item, Cont
 swift.method CheckBox.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method CheckBox.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method CheckBox.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method CheckBox.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -2949,7 +3000,10 @@ swift.method ColorPicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuild
 swift.method ColorPicker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ColorPicker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method ColorPicker.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method ColorPicker.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method ColorPicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method ColorPicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method ColorPicker.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ColorPicker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ColorPicker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ColorPicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -3089,7 +3143,7 @@ swift.method ColorPicker.popover(item:content:): @MainActor func popover<Item, C
 swift.method ColorPicker.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ColorPicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method ColorPicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ColorPicker.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -3146,7 +3200,10 @@ swift.method DatePicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilde
 swift.method DatePicker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method DatePicker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method DatePicker.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method DatePicker.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method DatePicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method DatePicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method DatePicker.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method DatePicker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method DatePicker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method DatePicker.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
@@ -3302,7 +3359,7 @@ swift.method DatePicker.popover(item:content:): @MainActor func popover<Item, Co
 swift.method DatePicker.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method DatePicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method DatePicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method DatePicker.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -3357,7 +3414,10 @@ swift.method DebugInspector.contextMenu(_:): @MainActor func contextMenu(@MenuBu
 swift.method DebugInspector.debugInfo(): @MainActor func debugInfo() -> String
 swift.method DebugInspector.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspector.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method DebugInspector.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method DebugInspector.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method DebugInspector.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method DebugInspector.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method DebugInspector.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method DebugInspector.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method DebugInspector.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -3487,7 +3547,7 @@ swift.method DebugInspector.popover(item:content:): @MainActor func popover<Item
 swift.method DebugInspector.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method DebugInspector.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method DebugInspector.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method DebugInspector.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -3534,7 +3594,10 @@ swift.method DebugInspectorButton.contextMenu(_:): @MainActor func contextMenu(@
 swift.method DebugInspectorButton.debugInfo(): @MainActor func debugInfo() -> String
 swift.method DebugInspectorButton.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspectorButton.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method DebugInspectorButton.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method DebugInspectorButton.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method DebugInspectorButton.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method DebugInspectorButton.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method DebugInspectorButton.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method DebugInspectorButton.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method DebugInspectorButton.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -3664,7 +3727,7 @@ swift.method DebugInspectorButton.popover(item:content:): @MainActor func popove
 swift.method DebugInspectorButton.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method DebugInspectorButton.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method DebugInspectorButton.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method DebugInspectorButton.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -3725,7 +3788,10 @@ swift.method Either.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ 
 swift.method Either.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Either.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Either.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Either.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Either.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Either.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Either.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Either.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Either.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Either.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -3876,7 +3942,7 @@ swift.method Either.rotationX(_:): @MainActor func rotationX(_ state: Binding<Do
 swift.method Either.rotationX(_:): @MainActor func rotationX(_ value: Double) -> Self.Modified
 swift.method Either.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.rotationY(_:): @MainActor func rotationY(_ value: Double) -> Self.Modified
-swift.method Either.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Either.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Either.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.scale(_:): @MainActor func scale(_ value: Double) -> Self.Modified
 swift.method Either.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
@@ -3936,7 +4002,10 @@ swift.method Ellipse.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<D
 swift.method Ellipse.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Ellipse.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Ellipse.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Ellipse.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Ellipse.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Ellipse.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Ellipse.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Ellipse.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Ellipse.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Ellipse.fill(_:): @MainActor func fill(_ state: Binding<Color>) -> Self.Modified
@@ -4077,7 +4146,7 @@ swift.method Ellipse.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method Ellipse.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Ellipse.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Ellipse.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Ellipse.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -4104,6 +4173,8 @@ swift.method Ellipse.visualState(_:): @MainActor func visualState(_ state: Visua
 swift.method Ellipse.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Ellipse.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
+swift.method EngineMotion.finish(): @MainActor func finish()
+swift.method EngineMotion.update(value:velocity:): @MainActor func update(value: Value, velocity: Value)
 swift.method Fill.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Fill.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4128,7 +4199,10 @@ swift.method Fill.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ it
 swift.method Fill.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Fill.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Fill.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Fill.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Fill.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Fill.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Fill.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Fill.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Fill.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Fill.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -4262,7 +4336,7 @@ swift.method Fill.popover(item:content:): @MainActor func popover<Item, Content>
 swift.method Fill.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Fill.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Fill.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Fill.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -4333,7 +4407,10 @@ swift.method GalleryView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method GalleryView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method GalleryView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method GalleryView.emptyView(_:): @MainActor func emptyView<Content>(@ViewBuilder _ content: () -> Content) -> GalleryView<Items, ID> where Content : View
+swift.method GalleryView.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method GalleryView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method GalleryView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method GalleryView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method GalleryView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method GalleryView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method GalleryView.fade(_:): @MainActor func fade(_ amount: Double) -> GalleryView<Items, ID>
@@ -4474,7 +4551,7 @@ swift.method GalleryView.position(_:): @MainActor func position(_ state: Binding
 swift.method GalleryView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method GalleryView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method GalleryView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method GalleryView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -4523,7 +4600,10 @@ swift.method GeometryReader.contextMenu(_:): @MainActor func contextMenu(@MenuBu
 swift.method GeometryReader.debugInfo(): @MainActor func debugInfo() -> String
 swift.method GeometryReader.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method GeometryReader.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method GeometryReader.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method GeometryReader.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method GeometryReader.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method GeometryReader.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method GeometryReader.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method GeometryReader.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method GeometryReader.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -4653,7 +4733,7 @@ swift.method GeometryReader.popover(item:content:): @MainActor func popover<Item
 swift.method GeometryReader.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method GeometryReader.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method GeometryReader.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method GeometryReader.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -4705,7 +4785,10 @@ swift.method Grid.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ it
 swift.method Grid.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Grid.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Grid.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Grid.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Grid.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Grid.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Grid.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Grid.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Grid.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Grid.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -4849,7 +4932,7 @@ swift.method Grid.rotationX(_:): @MainActor func rotationX(_ state: Binding<Doub
 swift.method Grid.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.rowSpacing(_:): @MainActor func rowSpacing(_ state: Binding<Double>) -> Grid.Modified
 swift.method Grid.rows(_:): @MainActor func rows(_ runs: GridTracks...) -> Self.Modified
-swift.method Grid.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Grid.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Grid.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -4905,7 +4988,10 @@ swift.method Group.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ i
 swift.method Group.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Group.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Group.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Group.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Group.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Group.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Group.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Group.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Group.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Group.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -5035,7 +5121,7 @@ swift.method Group.popover(item:content:): @MainActor func popover<Item, Content
 swift.method Group.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Group.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Group.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Group.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -5083,7 +5169,10 @@ swift.method HStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ 
 swift.method HStack.debugInfo(): @MainActor func debugInfo() -> String
 swift.method HStack.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method HStack.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method HStack.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method HStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method HStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method HStack.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method HStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method HStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method HStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -5227,7 +5316,7 @@ swift.method HStack.rotation(_:): @MainActor func rotation(_ state: Binding<Doub
 swift.method HStack.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.rowSpacing(_:): @MainActor func rowSpacing(_ state: Binding<Double>) -> HStack.Modified
-swift.method HStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method HStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method HStack.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -5286,7 +5375,10 @@ swift.method Image.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ i
 swift.method Image.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Image.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Image.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Image.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Image.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Image.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Image.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Image.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Image.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Image.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -5420,7 +5512,7 @@ swift.method Image.popover(item:content:): @MainActor func popover<Item, Content
 swift.method Image.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Image.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Image.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Image.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -5472,7 +5564,10 @@ swift.method ItemsView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ItemsView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method ItemsView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method ItemsView.emptyView(_:): @MainActor func emptyView<Content>(@ViewBuilder _ content: () -> Content) -> ItemsView<ID> where Content : View
+swift.method ItemsView.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method ItemsView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method ItemsView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method ItemsView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ItemsView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ItemsView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ItemsView.footer(_:): @MainActor func footer<Content>(@ViewBuilder _ content: () -> Content) -> ItemsView<ID> where Content : View
@@ -5627,7 +5722,7 @@ swift.method ItemsView.popover(item:content:): @MainActor func popover<Item, Con
 swift.method ItemsView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ItemsView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method ItemsView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ItemsView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -5655,10 +5750,10 @@ swift.method ItemsView.visualState(_:): @MainActor func visualState(_ state: Vis
 swift.method ItemsView.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method ItemsView.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method Journey.convert(_:file:line:column:): @MainActor func convert<Out>(_ transform: @escaping (Journey<Value>) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Out : StateValue
-swift.method Journey.move(to:): @discardableResult @MainActor func move(to target: Value) -> Arrival
-swift.method Journey.move(to:_:): @discardableResult @MainActor func move(to target: Value, _ motion: Motion) -> Arrival
-swift.method Journey.reach(_:): @MainActor func reach(_ motion: Motion) -> Value
+swift.method Journey.move(to:): @discardableResult @MainActor func move(to target: Value) -> MotionRun
+swift.method Journey.move(to:_:): @discardableResult @MainActor func move(to target: Value, _ motion: Motion) -> MotionRun
+swift.method Journey.reach(_:): @MainActor func reach(_ motion: Motion) -> Value?
+swift.method Journey.setMotion(_:): @MainActor func setMotion(_ motion: Motion) throws
 swift.method Journey.snap(to:): @MainActor func snap(to value: Value)
 swift.method Journey.stop(): @MainActor func stop()
 swift.method KeyboardElement.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
@@ -5699,7 +5794,10 @@ swift.method Line.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Doub
 swift.method Line.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Line.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Line.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Line.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Line.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Line.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Line.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Line.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Line.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Line.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -5835,7 +5933,7 @@ swift.method Line.popover(item:content:): @MainActor func popover<Item, Content>
 swift.method Line.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Line.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Line.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Line.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -5890,7 +5988,10 @@ swift.method Link.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ it
 swift.method Link.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Link.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Link.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Link.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Link.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Link.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Link.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Link.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Link.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Link.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -6030,7 +6131,7 @@ swift.method Link.popover(item:content:): @MainActor func popover<Item, Content>
 swift.method Link.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Link.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Link.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Link.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -6092,7 +6193,10 @@ swift.method Map.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ ite
 swift.method Map.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Map.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Map.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Map.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Map.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Map.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Map.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Map.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Map.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Map.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -6232,7 +6336,7 @@ swift.method Map.popover(item:content:): @MainActor func popover<Item, Content>(
 swift.method Map.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Map.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Map.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Map.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -6311,7 +6415,10 @@ swift.method MessageContext.number(_:fractionDigits:): func number(_ value: Doub
 swift.method MessageContext.percent(_:fractionDigits:): func percent(_ value: Double, fractionDigits: Int = 0) -> String
 swift.method MessageContext.plural(_:zero:one:two:few:many:other:): func plural(_ count: Int, zero: String? = nil, one: String? = nil, two: String? = nil, few: String? = nil, many: String? = nil, other: String) -> String
 swift.method MessageContext.time(_:format:): func time(_ time: ClockTime, format: TimeFormat = .short) -> String
+swift.method ModifiableElement.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method ModifiableElement.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method ModifiableElement.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method ModifiableElement.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ModifiableElement.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ModifiableElement.onChanged(_:_:): @MainActor func onChanged<Value>(_ value: Value, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified where Value : Equatable
 swift.method ModifiableElement.onChanged(_:_:): @MainActor func onChanged<Value>(_ value: Value, _ handler: @escaping @MainActor @Sendable (Value, Value) throws -> Void) -> Self.Modified where Value : Equatable
@@ -6345,7 +6452,10 @@ swift.method ModifiedContent.contextMenu(_:): @MainActor func contextMenu(@MenuB
 swift.method ModifiedContent.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ModifiedContent.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method ModifiedContent.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method ModifiedContent.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method ModifiedContent.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method ModifiedContent.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method ModifiedContent.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ModifiedContent.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ModifiedContent.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ModifiedContent.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -6475,7 +6585,7 @@ swift.method ModifiedContent.popover(item:content:): @MainActor func popover<Ite
 swift.method ModifiedContent.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ModifiedContent.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method ModifiedContent.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ModifiedContent.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -6524,7 +6634,10 @@ swift.method MotionLayout.debugInfo(): @MainActor func debugInfo() -> String
 swift.method MotionLayout.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method MotionLayout.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method MotionLayout.dynamics(_:): @MainActor func dynamics(_ dynamics: LayoutDynamics) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method MotionLayout.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method MotionLayout.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method MotionLayout.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method MotionLayout.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method MotionLayout.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method MotionLayout.following(_:): @MainActor func following<each Value>(_ states: repeat Binding<each Value>) -> MotionLayout<Items, ID, Parameters>
@@ -6674,7 +6787,7 @@ swift.method MotionLayout.popover(item:content:): @MainActor func popover<Item, 
 swift.method MotionLayout.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method MotionLayout.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method MotionLayout.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method MotionLayout.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -6702,16 +6815,17 @@ swift.method MotionLayout.visualState(_:): @MainActor func visualState(_ state: 
 swift.method MotionLayout.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method MotionLayout.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method MultiBinding.convert(_:back:file:line:column:): @MainActor func convert<A, B>(_ transform: @escaping (A, B) -> Out, back: @escaping (Out) -> (A, B), file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B), A : StateValue, B : StateValue
-swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B, C, D, E, F, G, H, I, J>(_ transform: @escaping (A, B, C, D, E, F, G, H, I, J) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H, I, J)
-swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B, C, D, E, F, G, H, I>(_ transform: @escaping (A, B, C, D, E, F, G, H, I) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H, I)
-swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B, C, D, E, F, G, H>(_ transform: @escaping (A, B, C, D, E, F, G, H) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H)
-swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B, C, D, E, F, G>(_ transform: @escaping (A, B, C, D, E, F, G) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F, G)
-swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B, C, D, E, F>(_ transform: @escaping (A, B, C, D, E, F) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F)
-swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B, C, D, E>(_ transform: @escaping (A, B, C, D, E) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E)
-swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B, C, D>(_ transform: @escaping (A, B, C, D) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D)
-swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B, C>(_ transform: @escaping (A, B, C) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C)
-swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B>(_ transform: @escaping (A, B) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B)
+swift.method MotionRun.result(): @discardableResult @MainActor func result() async throws -> MotionResult
+swift.method MultiBinding.convert(_:back:motion:file:line:column:): @MainActor func convert<A, B>(_ transform: @escaping (A, B) -> Out, back: @escaping (Out) -> (A, B), motion: Motion = .inherited, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B), A : StateValue, B : StateValue
+swift.method MultiBinding.convert(_:motion:file:line:column:): @MainActor func convert<A, B, C, D, E, F, G, H, I, J>(_ transform: @escaping (A, B, C, D, E, F, G, H, I, J) -> Out, motion: Motion = .inherited, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H, I, J)
+swift.method MultiBinding.convert(_:motion:file:line:column:): @MainActor func convert<A, B, C, D, E, F, G, H, I>(_ transform: @escaping (A, B, C, D, E, F, G, H, I) -> Out, motion: Motion = .inherited, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H, I)
+swift.method MultiBinding.convert(_:motion:file:line:column:): @MainActor func convert<A, B, C, D, E, F, G, H>(_ transform: @escaping (A, B, C, D, E, F, G, H) -> Out, motion: Motion = .inherited, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H)
+swift.method MultiBinding.convert(_:motion:file:line:column:): @MainActor func convert<A, B, C, D, E, F, G>(_ transform: @escaping (A, B, C, D, E, F, G) -> Out, motion: Motion = .inherited, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F, G)
+swift.method MultiBinding.convert(_:motion:file:line:column:): @MainActor func convert<A, B, C, D, E, F>(_ transform: @escaping (A, B, C, D, E, F) -> Out, motion: Motion = .inherited, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F)
+swift.method MultiBinding.convert(_:motion:file:line:column:): @MainActor func convert<A, B, C, D, E>(_ transform: @escaping (A, B, C, D, E) -> Out, motion: Motion = .inherited, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E)
+swift.method MultiBinding.convert(_:motion:file:line:column:): @MainActor func convert<A, B, C, D>(_ transform: @escaping (A, B, C, D) -> Out, motion: Motion = .inherited, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D)
+swift.method MultiBinding.convert(_:motion:file:line:column:): @MainActor func convert<A, B, C>(_ transform: @escaping (A, B, C) -> Out, motion: Motion = .inherited, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C)
+swift.method MultiBinding.convert(_:motion:file:line:column:): @MainActor func convert<A, B>(_ transform: @escaping (A, B) -> Out, motion: Motion = .inherited, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B)
 swift.method NavigationStack.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method NavigationStack.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method NavigationStack.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6745,7 +6859,10 @@ swift.method NavigationStack.contextMenu(_:): @MainActor func contextMenu(@MenuB
 swift.method NavigationStack.debugInfo(): @MainActor func debugInfo() -> String
 swift.method NavigationStack.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method NavigationStack.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method NavigationStack.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method NavigationStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method NavigationStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method NavigationStack.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method NavigationStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method NavigationStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method NavigationStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -6875,7 +6992,7 @@ swift.method NavigationStack.popover(item:content:): @MainActor func popover<Ite
 swift.method NavigationStack.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method NavigationStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method NavigationStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method NavigationStack.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -6933,7 +7050,10 @@ swift.method Path.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Doub
 swift.method Path.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Path.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Path.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Path.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Path.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Path.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Path.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Path.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Path.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Path.fill(_:): @MainActor func fill(_ state: Binding<Color>) -> Self.Modified
@@ -7076,7 +7196,7 @@ swift.method Path.popover(item:content:): @MainActor func popover<Item, Content>
 swift.method Path.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Path.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Path.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Path.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -7127,7 +7247,10 @@ swift.method Picker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ 
 swift.method Picker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Picker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Picker.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Picker.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Picker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Picker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Picker.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Picker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Picker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Picker.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
@@ -7283,7 +7406,7 @@ swift.method Picker.presentation(_:): @MainActor func presentation(_ value: Pick
 swift.method Picker.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Picker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Picker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Picker.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -7343,7 +7466,10 @@ swift.method Polygon.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<D
 swift.method Polygon.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Polygon.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Polygon.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Polygon.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Polygon.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Polygon.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Polygon.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Polygon.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Polygon.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Polygon.fill(_:): @MainActor func fill(_ state: Binding<Color>) -> Self.Modified
@@ -7487,7 +7613,7 @@ swift.method Polygon.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method Polygon.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Polygon.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Polygon.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Polygon.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -7541,7 +7667,10 @@ swift.method Polyline.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<
 swift.method Polyline.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Polyline.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Polyline.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Polyline.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Polyline.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Polyline.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Polyline.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Polyline.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Polyline.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Polyline.fill(_:): @MainActor func fill(_ state: Binding<Color>) -> Self.Modified
@@ -7685,7 +7814,7 @@ swift.method Polyline.popover(item:content:): @MainActor func popover<Item, Cont
 swift.method Polyline.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Polyline.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Polyline.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Polyline.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -7754,7 +7883,10 @@ swift.method PositionDots.dotSize(_:): @MainActor func dotSize(_ state: Binding<
 swift.method PositionDots.dotSize(_:): @MainActor func dotSize(_ value: Double) -> PositionDots
 swift.method PositionDots.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method PositionDots.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method PositionDots.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method PositionDots.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method PositionDots.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method PositionDots.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method PositionDots.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method PositionDots.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method PositionDots.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -7890,7 +8022,7 @@ swift.method PositionDots.position(_:): @MainActor func position(_ value: Int) -
 swift.method PositionDots.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method PositionDots.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method PositionDots.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method PositionDots.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -7943,7 +8075,10 @@ swift.method ProgressBar.contextMenu(_:): @MainActor func contextMenu(@MenuBuild
 swift.method ProgressBar.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ProgressBar.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method ProgressBar.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method ProgressBar.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method ProgressBar.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method ProgressBar.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method ProgressBar.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ProgressBar.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ProgressBar.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ProgressBar.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -8076,7 +8211,7 @@ swift.method ProgressBar.popover(item:content:): @MainActor func popover<Item, C
 swift.method ProgressBar.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ProgressBar.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method ProgressBar.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ProgressBar.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -8139,7 +8274,10 @@ swift.method Rectangle.dashPhase(_:): @MainActor func dashPhase(_ state: Binding
 swift.method Rectangle.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Rectangle.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Rectangle.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Rectangle.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Rectangle.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Rectangle.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Rectangle.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Rectangle.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Rectangle.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Rectangle.fill(_:): @MainActor func fill(_ state: Binding<Color>) -> Self.Modified
@@ -8282,7 +8420,7 @@ swift.method Rectangle.popover(item:content:): @MainActor func popover<Item, Con
 swift.method Rectangle.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Rectangle.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Rectangle.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Rectangle.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -8345,7 +8483,10 @@ swift.method ScrollView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilde
 swift.method ScrollView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ScrollView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method ScrollView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method ScrollView.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method ScrollView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method ScrollView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method ScrollView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ScrollView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ScrollView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ScrollView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -8496,7 +8637,7 @@ swift.method ScrollView.popover(item:content:): @MainActor func popover<Item, Co
 swift.method ScrollView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ScrollView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method ScrollView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ScrollView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -8555,7 +8696,10 @@ swift.method SearchField.cursorPosition(_:): @MainActor func cursorPosition(_ va
 swift.method SearchField.debugInfo(): @MainActor func debugInfo() -> String
 swift.method SearchField.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method SearchField.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method SearchField.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method SearchField.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method SearchField.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method SearchField.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method SearchField.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method SearchField.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method SearchField.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
@@ -8712,7 +8856,7 @@ swift.method SearchField.popover(item:content:): @MainActor func popover<Item, C
 swift.method SearchField.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method SearchField.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method SearchField.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method SearchField.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -8773,7 +8917,10 @@ swift.method Separator.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder
 swift.method Separator.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Separator.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Separator.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Separator.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Separator.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Separator.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Separator.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Separator.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Separator.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Separator.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -8906,7 +9053,7 @@ swift.method Separator.popover(item:content:): @MainActor func popover<Item, Con
 swift.method Separator.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Separator.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Separator.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Separator.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -8968,7 +9115,10 @@ swift.method Slider.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ 
 swift.method Slider.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Slider.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Slider.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Slider.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Slider.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Slider.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Slider.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Slider.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Slider.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Slider.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -9116,7 +9266,7 @@ swift.method Slider.popover(item:content:): @MainActor func popover<Item, Conten
 swift.method Slider.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Slider.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Slider.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Slider.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -9167,7 +9317,10 @@ swift.method Space.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ i
 swift.method Space.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Space.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Space.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Space.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Space.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Space.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Space.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Space.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Space.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Space.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -9301,7 +9454,7 @@ swift.method Space.popover(item:content:): @MainActor func popover<Item, Content
 swift.method Space.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Space.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Space.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Space.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -9353,7 +9506,10 @@ swift.method Spinner.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _
 swift.method Spinner.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Spinner.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Spinner.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Spinner.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Spinner.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Spinner.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Spinner.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Spinner.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Spinner.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Spinner.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -9486,7 +9642,7 @@ swift.method Spinner.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method Spinner.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Spinner.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Spinner.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Spinner.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -9546,7 +9702,10 @@ swift.method SplitView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder
 swift.method SplitView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method SplitView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method SplitView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method SplitView.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method SplitView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method SplitView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method SplitView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method SplitView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method SplitView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method SplitView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -9676,7 +9835,7 @@ swift.method SplitView.popover(item:content:): @MainActor func popover<Item, Con
 swift.method SplitView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method SplitView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method SplitView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method SplitView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -9745,7 +9904,10 @@ swift.method Stepper.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _
 swift.method Stepper.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Stepper.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Stepper.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Stepper.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Stepper.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Stepper.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Stepper.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Stepper.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Stepper.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Stepper.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -9887,7 +10049,7 @@ swift.method Stepper.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method Stepper.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Stepper.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Stepper.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Stepper.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -10079,7 +10241,10 @@ swift.method Switch.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ 
 swift.method Switch.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Switch.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Switch.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Switch.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Switch.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Switch.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Switch.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Switch.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Switch.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Switch.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -10219,7 +10384,7 @@ swift.method Switch.popover(item:content:): @MainActor func popover<Item, Conten
 swift.method Switch.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Switch.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Switch.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Switch.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -10281,7 +10446,10 @@ swift.method TabView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _
 swift.method TabView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method TabView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method TabView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method TabView.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method TabView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method TabView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method TabView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method TabView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TabView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method TabView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -10411,7 +10579,7 @@ swift.method TabView.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method TabView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method TabView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method TabView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method TabView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -10463,7 +10631,10 @@ swift.method Text.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ it
 swift.method Text.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Text.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Text.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method Text.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method Text.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method Text.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method Text.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Text.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Text.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Text.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
@@ -10609,7 +10780,7 @@ swift.method Text.popover(item:content:): @MainActor func popover<Item, Content>
 swift.method Text.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Text.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method Text.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Text.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -10674,7 +10845,10 @@ swift.method TextEditor.cursorPosition(_:): @MainActor func cursorPosition(_ val
 swift.method TextEditor.debugInfo(): @MainActor func debugInfo() -> String
 swift.method TextEditor.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method TextEditor.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method TextEditor.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method TextEditor.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method TextEditor.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method TextEditor.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method TextEditor.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TextEditor.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method TextEditor.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
@@ -10829,7 +11003,7 @@ swift.method TextEditor.popover(item:content:): @MainActor func popover<Item, Co
 swift.method TextEditor.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method TextEditor.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method TextEditor.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method TextEditor.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -10889,7 +11063,10 @@ swift.method TextField.cursorPosition(_:): @MainActor func cursorPosition(_ valu
 swift.method TextField.debugInfo(): @MainActor func debugInfo() -> String
 swift.method TextField.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method TextField.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method TextField.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method TextField.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method TextField.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method TextField.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method TextField.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TextField.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method TextField.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
@@ -11047,7 +11224,7 @@ swift.method TextField.popover(item:content:): @MainActor func popover<Item, Con
 swift.method TextField.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method TextField.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method TextField.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method TextField.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -11109,7 +11286,10 @@ swift.method TextProperties.verticalTextAlignment(_:): @MainActor func verticalT
 swift.method TextSpan.background(_:): @MainActor func background(_ value: Color) -> TextSpan.Modified
 swift.method TextSpan.background(_:): @MainActor func background(_ value: Material) -> TextSpan
 swift.method TextSpan.debugInfo(): @MainActor func debugInfo() -> String
+swift.method TextSpan.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method TextSpan.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method TextSpan.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method TextSpan.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method TextSpan.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TextSpan.fontAttributes(_:): @MainActor func fontAttributes(_ value: FontAttributes) -> Self.Modified
 swift.method TextSpan.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
@@ -11158,7 +11338,10 @@ swift.method TimePicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilde
 swift.method TimePicker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method TimePicker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method TimePicker.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method TimePicker.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method TimePicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method TimePicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method TimePicker.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method TimePicker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TimePicker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method TimePicker.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
@@ -11312,7 +11495,7 @@ swift.method TimePicker.popover(item:content:): @MainActor func popover<Item, Co
 swift.method TimePicker.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method TimePicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method TimePicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method TimePicker.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -11474,7 +11657,10 @@ swift.method VStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ 
 swift.method VStack.debugInfo(): @MainActor func debugInfo() -> String
 swift.method VStack.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method VStack.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method VStack.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method VStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method VStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method VStack.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method VStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method VStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method VStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -11616,7 +11802,7 @@ swift.method VStack.popover(item:content:): @MainActor func popover<Item, Conten
 swift.method VStack.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method VStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method VStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method VStack.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -11813,7 +11999,7 @@ swift.method VisualElement.pivotY(_:): @MainActor func pivotY(_ state: Binding<D
 swift.method VisualElement.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method VisualElement.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method VisualElement.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method VisualElement.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -11884,7 +12070,10 @@ swift.method WebView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _
 swift.method WebView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method WebView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method WebView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method WebView.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method WebView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method WebView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method WebView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method WebView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method WebView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method WebView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -12030,7 +12219,7 @@ swift.method WebView.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method WebView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method WebView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method WebView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method WebView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -12104,7 +12293,10 @@ swift.method ZStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ 
 swift.method ZStack.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ZStack.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method ZStack.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method ZStack.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method ZStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method ZStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
+swift.method ZStack.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ZStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ZStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ZStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
@@ -12246,7 +12438,7 @@ swift.method ZStack.popover(item:content:): @MainActor func popover<Item, Conten
 swift.method ZStack.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ZStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method ZStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Journey<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ZStack.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -12358,6 +12550,9 @@ swift.property EngineCycle.count: let count: UInt64
 swift.property EngineCycle.elapsedSeconds: var elapsedSeconds: Double { get }
 swift.property EngineCycle.nowSeconds: var nowSeconds: Double { get }
 swift.property EngineCycle.reducesMotion: let reducesMotion: Bool
+swift.property EngineMotion.destination: @MainActor var destination: Value { get }
+swift.property EngineMotion.value: @MainActor var value: Value { get }
+swift.property EngineMotion.velocity: @MainActor var velocity: Value { get }
 swift.property Environment.wrappedValue: @MainActor var wrappedValue: Value { get }
 swift.property EnvironmentValues.application: @MainActor var application: ApplicationSession { get }
 swift.property EnvironmentValues.device: @MainActor var device: Device { get }
@@ -12406,10 +12601,12 @@ swift.property ItemDrag.room: let room: Rect
 swift.property ItemDrag.still: let still: Duration
 swift.property ItemDrag.velocity: let velocity: Point
 swift.property ItemsView.body: @MainActor var body: some View { get }
-swift.property Journey.destination: @MainActor var destination: Value { get nonmutating set }
-swift.property Journey.motion: @MainActor var motion: Motion { get nonmutating set }
-swift.property Journey.value: @MainActor var value: Value { get nonmutating set }
-swift.property Journey.velocity: @MainActor var velocity: Value { get nonmutating set }
+swift.property Journey.motion: @MainActor var motion: Motion? { get }
+swift.property Journey.sample: @MainActor var sample: JourneySample<Value>? { get }
+swift.property JourneySample.destination: let destination: Value
+swift.property JourneySample.time: let time: Duration
+swift.property JourneySample.value: let value: Value
+swift.property JourneySample.velocity: let velocity: Value
 swift.property KeyPress.key: let key: Key
 swift.property KeyPress.modifiers: let modifiers: KeyModifiers
 swift.property LayoutCurve.reach: var reach: Int { get }
@@ -12446,6 +12643,7 @@ swift.property MapRegion.center: var center: Location
 swift.property MapRegion.radiusMeters: var radiusMeters: Double
 swift.property ModifiedContent.body: @MainActor var body: Never { get }
 swift.property MotionLayout.body: @MainActor var body: some View { get }
+swift.property MotionRun.outcome: @MainActor var outcome: MotionResult? { get }
 swift.property NavigationStack.body: @MainActor var body: Never { get }
 swift.property PanUpdate.at: var at: Point
 swift.property PanUpdate.phase: var phase: GesturePhase
@@ -12597,6 +12795,7 @@ swift.struct DebugInspectorButton: @MainActor struct DebugInspectorButton
 swift.struct DrawCommand: struct DrawCommand
 swift.struct Ellipse: @MainActor struct Ellipse
 swift.struct EngineCycle: struct EngineCycle
+swift.struct EngineMotion: @MainActor struct EngineMotion<Value> where Value : Walked
 swift.struct EnvironmentValues: @MainActor struct EnvironmentValues
 swift.struct FileType: struct FileType
 swift.struct Fill: @MainActor struct Fill
@@ -12620,6 +12819,7 @@ swift.struct Insets: struct Insets
 swift.struct ItemDrag: struct ItemDrag<ID> where ID : Hashable
 swift.struct ItemsView: @MainActor struct ItemsView<ID> where ID : Hashable
 swift.struct Journey: @MainActor struct Journey<Value> where Value : Walked
+swift.struct JourneySample: struct JourneySample<Value> where Value : Walked
 swift.struct Key: struct Key
 swift.struct KeyModifiers: struct KeyModifiers
 swift.struct KeyPress: struct KeyPress
@@ -12723,7 +12923,6 @@ swift.type.method ApplicationBuilder.buildPartialBlock(first:): @MainActor stati
 swift.type.method AxisValues.at(_:): static func at(_ values: some Sequence<Double>) -> AxisValues
 swift.type.method AxisValues.every(_:): static func every(_ step: Double) -> AxisValues
 swift.type.method Binding.multi(_:_:): @MainActor static func multi<A, B>(_ a: Binding<A>, _ b: Binding<B>) -> MultiBinding<Value, (A, B)> where A : StateValue, B : StateValue
-swift.type.method Binding.multi(_:_:): @MainActor static func multi<A, B>(_ a: Journey<A>, _ b: Journey<B>) -> MultiBinding<Value, (Journey<A>, Journey<B>)> where A : Walked, B : Walked
 swift.type.method Binding.multi(_:_:_:): @MainActor static func multi<A, B, C>(_ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>) -> MultiBinding<Value, (A, B, C)> where A : StateValue, B : StateValue, C : StateValue
 swift.type.method Binding.multi(_:_:_:_:): @MainActor static func multi<A, B, C, D>(_ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>) -> MultiBinding<Value, (A, B, C, D)> where A : StateValue, B : StateValue, C : StateValue, D : StateValue
 swift.type.method Binding.multi(_:_:_:_:_:): @MainActor static func multi<A, B, C, D, E>(_ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>) -> MultiBinding<Value, (A, B, C, D, E)> where A : StateValue, B : StateValue, C : StateValue, D : StateValue, E : StateValue

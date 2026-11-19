@@ -7,6 +7,71 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### Breaking changes
 
+- **A state's value is where it is going; where the host shows it is its journey's sample.** `$x.journey` is a
+  handle: it holds no value and reading it starts nothing. `Journey.value`, `Journey.velocity` and
+  `Journey.destination` are gone, and every setter with them. The destination is the state itself, and where the
+  value stands is `journey.sample` - a `JourneySample` with its `value`, the `destination` the host is taking it to,
+  its `velocity` and the frame's `time`, all of one frame - nil where nothing shows the state. A body that reads the
+  sample is rebuilt on every frame the value moves; an engine following the journey reads it with no build:
+
+  ```swift
+  // before
+  Text("\(Int($fade.journey.value * 100))%")
+
+  // now
+  Text($caption)
+      .engine(following: $fade.journey) { _ in
+          guard let sample = $fade.journey.sample else { return }
+          caption = "\(Int(sample.value * 100))%"
+      }
+  ```
+
+  `journey.snap(to:)` puts a value there at once and `journey.stop()` halts it where it stands, as before;
+  `journey.reach(_:)` answers nil where nothing shows the state.
+- **A movement answers a `MotionRun`, which ends one way.** `Arrival` and `arrived() -> Bool` are gone.
+  `journey.move(to:)` answers a `MotionRun`, and `try await run.result()` a `MotionResult`: `.reached(.animated)`,
+  `.reached(.immediate(reason))` - already there, motion off, the user asking for less motion - `.superseded` by a
+  newer destination, a snap or the user's hand, `.stopped`, `.detached` as the last control showing the state went,
+  or `.notStarted(reason)` where no movement was made: the state shown nowhere (`.noReceiver` - the value is written
+  all the same), a destination its validator refused, a conversion with no way back. `run.outcome` reads the same
+  without waiting. `try await $x.journey.move(to: 1).arrived()` becomes `.result()`; code that tested the `Bool`
+  compares with `.reached(.animated)` or switches over the result.
+- **A state's motion is the state's, whichever control shows it.** A write that names no motion animates under the
+  state's own - `@State(motion:)`, changed later with `try $x.journey.setMotion(_:)` - else the application's, else
+  the library's standard one. The `.motion(_:)` of a control showing the state no longer decides it: two controls
+  showing one state travel alike whichever was built first. An element's `.motion(_:)` animates its own described
+  properties as before. `journey.motion = ...` becomes `try journey.setMotion(...)`, and `journey.motion` is
+  optional: nil for a state an engine animates.
+- **A conversion works out a destination from destinations.** `$x.convert { ... }` and
+  `.multi($a, $b).convert { ... }` give the result's destination from their sources' destinations and nothing else;
+  a control showing the result animates it under the result's own motion - `motion:` on `convert`, the state's
+  default where none is given - and never under a source's. `Journey.convert` and `Binding.multi` over journeys are
+  gone: what must follow a value frame by frame as it moves is an engine following the journeys and writing a state,
+  as above. The way back runs when the result itself is written - by the user through a control, or by the program -
+  and never on a frame of the result's animation, so a rounded result no longer rounds its source while it travels.
+  A conversion with no `back:` is read-only: a write to it is refused and said, and `move(to:)` answers
+  `.notStarted(.readOnlyDerived)`. A program's write to a result is one the conversion gives back unchanged, or it is
+  refused. A conversion's closures read only the states they are handed and write none.
+- **A reading samples a journey.** `.samples($fade, into: $shown, cadence)` becomes
+  `.samples($fade.journey, into: $shown, cadence)`. It is taken on the display's frames, so its pace is counted in
+  the time the host animates by, and the last sample of a movement always arrives.
+- **An engine that animates a state is registered for it.** A state declared `@State(animatedBy: .engine)` is
+  animated by `.engine(animating: $x) { cycle, motion in ... }`: `motion.value`, `motion.destination` and
+  `motion.velocity` are where it stands, `motion.update(value:velocity:)` shows a frame and `motion.finish()` lands it
+  and ends the movements waiting on it. An engine that wrote `journey.value` and `journey.velocity` under
+  `.engine(tracking:)` moves there. One state has one animator; `move(to:_:)` with a motion of its own is refused on
+  such a state as `.notStarted(.incompatibleAnimator)`, and `move(to:)` hands the destination to the engine.
+  `.engine(following:)` and `.engine(tracking:)` take journeys beside states: a state wakes the engine as it is
+  written, a journey on every frame its sample moves.
+- **A hand's speed is no longer written into a journey.** `$x.journey.velocity = update.velocity.x` is gone with the
+  setter. A throw is a movement of its own: a cubic-out journey sets out three times as fast as it averages, so one
+  to `update.total.x + update.velocity.x * seconds / 3` over `seconds` goes on at the hand's speed and slows to rest.
+- **For a host: a report says who wrote, and a movement's end says how.** `HostBoundary.report(_:through:origin:)`
+  and `report(_:updating:through:at:origin:)` take a `WriteOrigin` - `.user` for a control the user moved,
+  `.animation` for a frame, `.measurement` for a size read, `.program` for a halt the application asked for - and
+  the frame's time; `complete(_:as:)` takes a `HostMotionOutcome` in place of a `Bool`, and the movements an engine
+  ended come in `HostCycle.finished`. A state followed by an engine or a reading with no property showing it reaches
+  the host in `HostPatch.followed`. The host layer does all of it; a host built on `StateUIHost` changes nothing.
 - **A build names its host by a package trait, and each head is a package of its own.** `STATEUI_HOST` is gone: a
   head, `Platforms/<Host>`, has a `Package.swift` of its own that builds the application with its host's trait and
   depends on `lib/StateUI.Head` with the same trait, which brings the host. The application's own package is its

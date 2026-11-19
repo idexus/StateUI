@@ -318,7 +318,7 @@ final class CarriedStateTests: XCTestCase {
         // which is where a resumed handler runs when a completion is answered
         // mid-render.
         let (_, reads) = ReadScope.collect {
-            dip.projectedValue.journey.destination = 0.96
+            dip.wrappedValue = 0.96
             dip.projectedValue.journey.snap(to: 0.96)
             dip.projectedValue.journey.stop()
         }
@@ -480,8 +480,7 @@ final class CarriedStateTests: XCTestCase {
         _ = offset.number
 
         XCTAssertNil(offset.projectedValue.journeyImage, "carried as the value, so no journey")
-        XCTAssertEqual(offset.projectedValue.journey.value, 0,
-                       "and its journey stands at the value, saying nothing")
+        XCTAssertNil(offset.projectedValue.journey.sample, "and its journey has no sample: nothing walks it")
 
         let volume = State(wrappedValue: 0.0)
 
@@ -604,7 +603,7 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(fresh.owner, 0.2, "the state adopted")
         XCTAssertEqual(carried, original, "the binding carries the adopted state, on its number")
-        XCTAssertEqual(fresh.borrowed.journey.destination, 0.2)
+        XCTAssertEqual(fresh.borrowed.journey.going, 0.2)
 
         dragged(carried, to: 0.4)
         XCTAssertEqual(fresh.owner, 0.4, "the control's report reached the owner")
@@ -807,18 +806,16 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(child?.driven?.isEmpty, true, "and what it says is: no states tied")
     }
 
-    /// A JOURNEY ON A STATE NOTHING WEARS ANSWERS AT ONCE. A number is issued
-    /// when an element registers the state, so a state without one has nobody
-    /// to walk it - and a waiter booked on it would wait for good. It answers
-    /// that it arrived, and the value is at the target for whichever view is
-    /// described next.
-    func testAJourneyOnAStateNothingWearsAnswersAtOnce() throws {
+    /// A MOVE OF A STATE NOTHING SHOWS ANSWERS AT ONCE, AND SAYS NOTHING MOVED. No element shows the state, so
+    /// nobody walks it - and a waiter booked on it would wait for good. The destination is written, for whichever
+    /// view is described next, and the movement says it had no receiver.
+    func testAMoveOfAStateNothingShowsAnswersAtOnce() throws {
         let fade = State(wrappedValue: 1.0)
-        let arrival = fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut))
+        let run = fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut))
 
-        XCTAssertEqual(arrival.ended, true, "it arrived as it was sent")
-        XCTAssertEqual(fade.projectedValue.journey.value, 0.1, "the value is at the target")
-        XCTAssertEqual(fade.wrappedValue, 0.1, "and going nowhere else")
+        XCTAssertEqual(run.outcome, .notStarted(.noReceiver))
+        XCTAssertEqual(fade.wrappedValue, 0.1, "the destination is written")
+        XCTAssertNil(fade.projectedValue.journey.sample, "and nothing shows it")
     }
 
     /// A DRIVEN STATE WRITTEN ON A COMPOSED VIEW IS ABOUT THAT VIEW, and reaches
@@ -876,67 +873,67 @@ final class CarriedStateTests: XCTestCase {
 
     // MARK: - The law a driven value travels under
 
-    /// `.inherited` on a driven value means THE ELEMENT'S own law, and this
-    /// side is the only one that can say what that is.
-    ///
-    /// The host knows what the application answers and no more: an element's
-    /// `.motion(_:_:)` is a plan read per KIND of value, which never crosses.
-    /// So an element told `.motion(.spring())` carries its driven opacity on
-    /// the spring, exactly as it carries the opacity beside it that the tree
-    /// describes.
-    func testADrivenValueTravelsUnderItsElementsOwnLaw() {
+    /// A STATE'S CHANNEL TRAVELS UNDER THE STATE'S MOTION, OR THE APPLICATION'S - NEVER A RECEIVER'S. The channel is
+    /// every receiver's, so no element showing the state decides it with its own `.motion(_:)`, which goes on
+    /// saying how that element's described properties travel.
+    func testAReceiversMotionNeverDecidesASharedChannel() {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
+        let application = Motion.eased(.milliseconds(310), curve: .linear)
 
-        renders.render(Text("x").motion(.spring(response: .milliseconds(450), damping: 0.7))
-            .opacity(fade.projectedValue).id("one").node)
+        renders.render(
+            Text("x").motion(.spring(response: .milliseconds(450), damping: 0.7))
+                .opacity(fade.projectedValue).id("one").node,
+            motion: application)
 
         XCTAssertEqual(
-            standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
-            .spring(response: .milliseconds(450), damping: 0.7))
+            standing(fade.number, as: JourneyLanes<Double>.self)?.motion, application,
+            "a state that says no motion travels under the application's")
     }
 
-    /// And the IMAGE goes on saying what the author wrote. `.inherited` is a
-    /// request answered afresh on every crossing, which is what lets an
-    /// element described later change the answer for a value already standing.
+    /// And the STATE goes on saying what the author wrote: `.inherited` is answered afresh on every crossing, so a
+    /// later change of the application's motion reaches a value already standing.
     func testTheValueItselfStillSaysInherited() {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
+        let shown = { Text("x").motion(.spring()).opacity(fade.projectedValue).id("one").node }
 
-        renders.render(Text("x").motion(.spring()).opacity(fade.projectedValue).id("one").node)
-
+        renders.render(shown(), motion: .eased(.milliseconds(90), curve: .linear))
         XCTAssertEqual(fade.projectedValue.journey.motion, .inherited)
-    }
 
-    /// An element given a NEW law answers for a value it was already driving:
-    /// the resolution is the crossing's, not the write's.
-    func testANewLawOnTheElementReachesAValueAlreadyStanding() {
-        let fade = State(wrappedValue: 1.0)
-        let renders = Renders()
-
-        renders.render(Text("x").motion(.eased(.milliseconds(90), curve: .linear))
-            .opacity(fade.projectedValue).id("one").node)
-        renders.render(Text("x").motion(.eased(.milliseconds(700), curve: .cubicIn))
-            .opacity(fade.projectedValue).id("one").node)
-
+        renders.render(shown(), motion: .eased(.milliseconds(700), curve: .cubicIn))
         XCTAssertEqual(
             standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
             .eased(.milliseconds(700), curve: .cubicIn))
     }
 
-    /// A rule naming COLORS answers a driven color, which the property alone
-    /// cannot say - `background` is in no group, and what puts it in one
-    /// is the value it carries.
-    func testARuleNamingColorsAnswersADrivenColor() {
-        let tint = State(wrappedValue: Color(hex: 0x102030))
+    /// The state's own motion comes first, whatever shows it - a color too, under an element whose rule names
+    /// colors.
+    func testAStatesOwnMotionComesBeforeEverythingShowingIt() {
+        let own = Motion.eased(.milliseconds(640), curve: .cubicIn)
+        let tint = State(wrappedValue: Color(hex: 0x102030), motion: own)
         let renders = Renders()
 
-        renders.render(Text("x").motion(.none).motion(.eased(.milliseconds(640), curve: .cubicIn), .color)
+        renders.render(Text("x").motion(.none).motion(.spring(), .color)
             .background(tint.projectedValue).id("one").node)
 
+        XCTAssertEqual(standing(tint.number, as: JourneyLanes<Color>.self)?.motion, own)
+    }
+
+    /// TWO RECEIVERS OF ONE STATE, each with a motion of its own, show it under one: the state's.
+    func testTwoReceiversShowOneStateUnderOneMotion() {
+        let fade = State(wrappedValue: 1.0, motion: .eased(.milliseconds(250), curve: .linear))
+        let renders = Renders()
+
+        renders.render(stack([
+            Rectangle().opacity(fade.projectedValue).motion(.spring()).id("a").node,
+            Rectangle().opacity(fade.projectedValue).motion(.eased(.milliseconds(900), curve: .cubicIn)).id("b").node,
+        ], id: "root"))
+
         XCTAssertEqual(
-            standing(tint.number, as: JourneyLanes<Color>.self)?.motion,
-            .eased(.milliseconds(640), curve: .cubicIn))
+            standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
+            .eased(.milliseconds(250), curve: .linear))
+        XCTAssertFalse(Said.shared.said("two elements answer differently"), "nothing to disagree about")
     }
 
     /// A value NO element drives holds `.inherited` as its law - there being

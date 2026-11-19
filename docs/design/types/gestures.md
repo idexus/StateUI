@@ -71,9 +71,8 @@ it goes: a pan its totals and its velocity across and down, in device units a
 second; a pinch its scale and how fast the scale changes, a second; two
 fingers turning their angle, in degrees clockwise, and how fast it changes, in
 degrees a second. The speed is nought as a gesture begins and, at its end, as
-fast as it lifted, beside the totals it reached - so a handler hands a
-journey both on one line, `$offset.journey.velocity = pan.velocity.x`, and the
-state goes on from where the hand left it at the hand's speed. The host layer
+fast as it lifted, beside the totals it reached - so a handler has both to
+work out where a throw would rest and send the state there. The host layer
 reads every speed by one rule, the speed a hand over a layout lifts at
 ([its reading](../host/runtime.md#a-gestures-speed)); a platform's own
 velocity is never mixed in, so the same gesture tells the same speed on every

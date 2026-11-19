@@ -647,8 +647,11 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         .setValue(ViewContract.area.token, on: $placements, mode: .out, kind: .placement)
         .setValue(MotionLayoutContract.parameters.token, on: run.parameters, mode: .inOut, kind: .property)
         .motion(law)
+        .parameters(run.parameters, travelUnder: law)
         .frame(into: $room)
-        .engine([$room.followed, run.parameters.followed, $held.followed, $item.followed] + followed,
+        // The parameters' frames too: the run places the views where the host walks them.
+        .engine([$room.followed, run.parameters.followed, run.parameters.storage.presentation, $held.followed,
+                 $item.followed] + followed,
                 priority: 0) { cycle in
             run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)
         }
@@ -853,4 +856,19 @@ struct LayoutShown<Parameters: LayoutParameters>: Equatable {
 private extension Point {
     /// The point a host told, each coordinate that is no finite number nought.
     var told: Point { Point(x.isFinite ? x : 0, y.isFinite ? y : 0) }
+}
+
+extension ModifiableElement {
+    /// Gives a layout's parameters the layout's motion where their state says none of its own: a channel travels
+    /// under its state's motion, which no element showing it decides.
+    /// Design: docs/design/views/motion-layout.md#the-parameters
+    func parameters<Parameters: Walked>(_ parameters: Binding<Parameters>, travelUnder law: Motion) -> Modified {
+        modified { _ in
+            let storage = parameters.storage
+            guard storage.law.kind == .inherited || storage.lawIsTheLayouts else { return }
+
+            storage.law = law
+            storage.lawIsTheLayouts = law.kind != .inherited
+        }
+    }
 }

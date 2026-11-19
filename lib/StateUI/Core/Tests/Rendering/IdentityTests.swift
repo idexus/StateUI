@@ -43,7 +43,7 @@ private struct Converting: View {
     @State private var level = 0.5
 
     var body: some View {
-        Slider($level.journey.convert { $0.value * 2 })
+        Slider($level.convert { $0 * 2 })
     }
 }
 

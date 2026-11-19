@@ -105,11 +105,11 @@ final class GTKScrollViewTests: XCTestCase {
 
             scroll.scroller.move(to: Point(0, 200))
             host.settle { scroll.offset == Point(0, 200) }
-            XCTAssertEqual(offset.projectedValue.journey.value, Point(0, 0), "said on the display's frame")
+            XCTAssertEqual(offset.wrappedValue, Point(0, 0), "said on the display's frame")
 
             clock.now = 16
             host.frame()
-            XCTAssertEqual(offset.projectedValue.journey.value, Point(0, 200))
+            XCTAssertEqual(offset.projectedValue.journey.sample?.value, Point(0, 200))
 
             clock.now = 100
             host.frame()

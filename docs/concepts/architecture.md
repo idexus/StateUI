@@ -205,19 +205,18 @@ hand and whose bodies the core works out on the host's frames.
 ## Journey
 
 A state remains discrete: reading the state answers its destination
-immediately. For every `Walked` value, `$value.journey` exposes the continuous
-animation between destinations.
+immediately. For every `Walked` value, `$value.journey` is a handle to how a
+host shows the value between destinations. It owns nothing and starts
+nothing.
 
 | Journey member | Meaning |
 | --- | --- |
-| `value` | value currently shown on this host frame |
-| `destination` | target; the same value a plain state read returns |
-| `velocity` | per-second velocity, lane by lane |
-| `motion` | law used wherever this state is shown |
-| `move(to:_:)` | set a destination; `arrived()` awaits whether it was reached |
+| `sample` | where the host shows the value on this frame, where it is taking it and how fast; `nil` while nothing shows the state |
+| `motion`, `setMotion(_:)` | the motion this state travels under wherever it is shown |
+| `move(to:_:)` | set a destination; the `MotionRun` it answers awaits how the movement ends |
+| `reach(_:)` | where a motion alone would carry the value on from where it stands |
 | `stop()` | end the active animation where it currently stands |
 | `snap(to:)` | set current value, destination, and zero velocity together |
-| `convert` | derive a host-driven value from the live journey |
 
 ```swift
 struct Fader: View {
@@ -235,11 +234,11 @@ struct Fader: View {
 ```
 
 Reading `fade` in a body subscribes to destination writes. Reading
-`$fade.journey.value` in a body subscribes to journey frames and therefore
+`$fade.journey.sample` in a body subscribes to the host's frames and therefore
 rebuilds while the value moves. When a body does not need every frame, use
-`.samples($fade, into: $shown, .every(.milliseconds(100)))`. When only a native property or
-caption needs the live value, use a journey conversion and keep the work on the
-host-cycle path.
+`.samples($fade.journey, into: $shown, .every(.milliseconds(100)))`. When only a native property or
+caption needs the live value, follow the journey with an engine -
+`.engine(following: $fade.journey)` - and keep the work on the host-cycle path.
 
 One host-carried state is one motion channel shared by all controls attached to
 it. Independent motion requires independent state.
@@ -286,10 +285,11 @@ There are three movement laws:
 - `Motion.glide` goes on from the speed it was handed and slows onto where it
   is sent, within its longest - a throw.
 
-`Motion.none` snaps. `Motion.inherited` resolves through the element, then the
-application, then `Motion.standard`. A law on `@State(motion:)` or
-`journey.motion` belongs to that value and takes precedence wherever it is
-attached. `.motion(_:_:)` can override semantic groups such as opacity, size,
+`Motion.none` snaps. `Motion.inherited` on a described property resolves
+through the element, then the application, then `Motion.standard`. A motion on
+`@State(motion:)`, or given by `journey.setMotion(_:)`, belongs to that value:
+it is what the state's channel travels under whatever shows it, and no
+element showing the state decides it. `.motion(_:_:)` can override semantic groups such as opacity, size,
 place, transform, spacing, and text. Layout placement uses `HostLayoutMotion`
 and `MotionLanes` because a child's native rectangle is a layout result rather
 than a described property.
@@ -299,13 +299,16 @@ same; only the animation is shortened or removed.
 
 ## Custom engines
 
-A state declared `@State(animatedBy: .engine)` gives the walk to StateUI
-code. An engine runs inside the host
-display cycle and reads and writes state. An engine declared with
-`.engine(tracking:)` answers `.again` while it needs another frame, or `.wait`
-until a tracked state is written; one declared with `.engine(following:)` runs
-on the display cycle after a state it follows is written - once, however many
-writes came - and once after each render that describes its view.
+An engine runs inside the host display cycle and reads and writes state. One
+declared with `.engine(following:)` runs on the display cycle after what it
+follows changed - once, however many changes came - and once after each
+render that describes its view; one declared with `.engine(tracking:)` answers
+`.again` while it needs another frame, or `.wait` until then. Following `$x`
+wakes it on a write of the destination; following `$x.journey` wakes it on a
+frame of where the host shows the value.
+
+A state declared `@State(animatedBy: .engine)` gives the walk itself to an
+engine, registered with `.engine(animating:)`:
 
 ```swift
 struct FallingDot: View {
@@ -316,17 +319,16 @@ struct FallingDot: View {
             Rectangle()
                 .fill(.cornflowerBlue)
                 .translationY($y)
-                .engine(tracking: $y) { cycle in
-                    let journey = $y.journey
+                .engine(animating: $y) { cycle, motion in
                     let elapsed = cycle.elapsedSeconds
-                    let pull = (journey.destination - journey.value) * 180
-                    journey.velocity += (pull - journey.velocity * 24) * elapsed
-                    journey.value += journey.velocity * elapsed
-                    if abs(journey.destination - journey.value) < 0.5,
-                       abs(journey.velocity) < 0.5 {
-                        journey.snap(to: journey.destination)
+                    let pull = (motion.destination - motion.value) * 180
+                    let velocity = motion.velocity + (pull - motion.velocity * 24) * elapsed
+                    let value = motion.value + velocity * elapsed
+                    if abs(motion.destination - value) < 0.5, abs(velocity) < 0.5 {
+                        motion.finish()
                         return .wait
                     }
+                    motion.update(value: value, velocity: velocity)
                     return .again
                 }
 

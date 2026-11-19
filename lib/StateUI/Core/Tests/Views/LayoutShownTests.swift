@@ -34,7 +34,9 @@ final class LayoutShownTests: XCTestCase {
 
             Rectangle()
                 .fill(.red)
-                .engine(following: phase.projectedValue) { _ in read.values.append(phase.projectedValue.journey.value) }
+                .engine(following: phase.projectedValue.journey) { _ in
+                    if let sample = phase.projectedValue.journey.sample { read.values.append(sample.value) }
+                }
         }
         .node
     }
@@ -49,7 +51,7 @@ final class LayoutShownTests: XCTestCase {
         bench.hand(renders, built, .changed, moved: Point(-60, 0))
 
         XCTAssertEqual(phase.wrappedValue, 1, "the target named")
-        XCTAssertEqual(phase.projectedValue.journey.value, 0.6, accuracy: 0.001, "where the hand holds the run")
+        XCTAssertEqual(phase.projectedValue.journey.standing, 0.6, accuracy: 0.001, "where the hand holds the run")
     }
 
     /// AN ENGINE FOLLOWING THE PHASE GOES WITH THE HAND, move by move, and with the run as it comes onto its target.
@@ -72,6 +74,6 @@ final class LayoutShownTests: XCTestCase {
         XCTAssertLessThan(read.values.last ?? 0, 0.4, "on its way back")
         for _ in 0..<20 { bench.cycle() }
         XCTAssertEqual(read.values.last ?? 1, 0, accuracy: 0.000_1, "and on its target")
-        XCTAssertEqual(phase.projectedValue.journey.value, 0, accuracy: 0.000_1, "the value the target at rest")
+        XCTAssertEqual(phase.projectedValue.journey.standing, 0, accuracy: 0.000_1, "the value the target at rest")
     }
 }

@@ -200,7 +200,7 @@ to rest after it moved, it tells `.onSettled` once, with the parameters it rests
 at, after the frame (as a dismissal is told), its runs owned by the layout
 and orphaned as it leaves. Laid out at rest, it tells nothing. One event of
 rest stands for every way the run moves: there is no rest of the parameters apart
-from the bodies' (the journey's own `Arrival` waits for the parameters alone).
+from the bodies' (the journey's own `MotionRun` waits for the parameters alone).
 
 ## The parameters
 
@@ -513,8 +513,8 @@ longest twice the motion's length, so it sets out at the hand's speed exactly
 and slows onto the target - a motion of fixed length would cover a long throw
 faster than the hand let go of it, and the run would speed up after the lift.
 So `$parameters.journey` says where the run is and how fast it goes while it goes
-on, a control wearing the parameters walks them alike, and the move answers an
-`Arrival`. A throw too slow to carry the run past the target it stands nearest
+on, a control wearing the parameters walks them alike, and the move answers a
+`MotionRun`. A throw too slow to carry the run past the target it stands nearest
 - that target at or behind where the hand let go - comes onto it as a run let
 go still does: a throw never goes back against the hand. A destination the
 program writes meanwhile ends the throw, as it ends any journey. The axes

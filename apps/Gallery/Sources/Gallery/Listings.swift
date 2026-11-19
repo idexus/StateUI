@@ -293,15 +293,17 @@ enum Listings {
                         let s = $sAngle.journey.move(to: toSecond, .eased(.milliseconds(260), curve: .backOut))
                         let m = $mAngle.journey.move(to: toMinute, .eased(.milliseconds(300), curve: .cubicOut))
                         let h = $hAngle.journey.move(to: toHour, .eased(.milliseconds(300), curve: .cubicOut))
-                        try await s.arrived()
-                        try await m.arrived()
-                        try await h.arrived()
+                        try await s.result()
+                        try await m.result()
+                        try await h.result()
                     } else {
-                        // The first reading SETS the hands: `value` is written, and
-                        // the state to match, so nothing travels and nothing is awaited.
+                        // The first reading SETS the hands: a snap puts each where
+                        // it is and going nowhere, so nothing travels and nothing
+                        // is awaited.
                         started = true
-                        ($sAngle.journey.value, $mAngle.journey.value, $hAngle.journey.value) = (second, minute, hour)
-                        (sAngle, mAngle, hAngle) = (second, minute, hour)
+                        $sAngle.journey.snap(to: second)
+                        $mAngle.journey.snap(to: minute)
+                        $hAngle.journey.snap(to: hour)
                     }
 
                     // Sleep to the NEXT whole second, not for a fixed while: the
@@ -361,15 +363,20 @@ enum Listings {
         @State private var volume = 0.2   // printed by this body: a reader
 
         /// The BOTTOM slider's value. Nothing here reads it: it is handed on as
-        /// `$level` - to the slider, and to the caption's own conversion - and a
-        /// binding makes no reader.
+        /// `$level` - to the slider, and to the caption's engine as its journey -
+        /// and a binding makes no reader.
         ///
         /// Its JOURNEY is the second half of what this page shows: `level` is
-        /// where the value is GOING and `$level.journey.value` where it HAS GOT
-        /// TO, so a caption converted off the journey counts its way along it
+        /// where the value is GOING and `$level.journey.sample` where it HAS GOT
+        /// TO, so a caption written from the sample counts its way along it
         /// where one converted from the state would jump to the destination at
         /// once.
         @State private var level = 0.2   // handed on: no reader
+
+        /// What the two captions say, written by their engines and shown by the
+        /// host: no body reads them.
+        @State private var levelWords = "level · 20%"
+        @State private var countWords = "count · 3"
 
         /// The stepper's value, declared the same way. Its caption matters more
         /// than the slider's: on some platforms a Stepper draws two buttons and
@@ -406,10 +413,15 @@ enum Listings {
 
                     DebugInfoLabel()
 
-                    // A CONVERTED TEXT: an engine works it out from the same image
-                    // the thumb is walking, on the display's frames, so the words
-                    // keep up with the movement and cost no render.
-                    Text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
+                    // WORDS AN ENGINE WRITES: it follows the journey, so it runs on
+                    // the display's frames as the thumb moves - under the hand or
+                    // sent - reads where the value has got to, and the words keep
+                    // up with the movement and cost no render.
+                    Text($levelWords)
+                        .engine(following: $level.journey) { _ in
+                            guard let sample = $level.journey.sample else { return }
+                            levelWords = "level · \(Int((sample.value * 100).rounded()))%"
+                        }
 
                     // THE SAME DECLARATION as above, and the same spelling: what
                     // differs is that nothing here reads `level` at build.
@@ -419,14 +431,18 @@ enum Listings {
 
                     button("Send the bottom one") {
                         try await $level.journey.move(to: level < 0.5 ? 1 : 0,
-                                                   .eased(.milliseconds(900), curve: .cubicInOut)).arrived()
+                                                   .eased(.milliseconds(900), curve: .cubicInOut)).result()
                     }
                 }
 
                 VStack {
                     DebugInfoLabel()
 
-                    Text($count.journey.convert { "count · \(Int($0.value.rounded()))" })
+                    Text($countWords)
+                        .engine(following: $count.journey) { _ in
+                            guard let sample = $count.journey.sample else { return }
+                            countWords = "count · \(Int(sample.value.rounded()))"
+                        }
 
                     Stepper($count)
                         .minimum(0)
@@ -435,7 +451,7 @@ enum Listings {
                         .horizontalAlignment(.start)
 
                     button("Send the stepper to 12") {
-                        try await $count.journey.move(to: 12, .eased(.milliseconds(800), curve: .cubicOut)).arrived()
+                        try await $count.journey.move(to: 12, .eased(.milliseconds(800), curve: .cubicOut)).result()
                     }
                 }
             }
@@ -482,31 +498,31 @@ enum Listings {
 
                 HStack {
                     button("Color") {
-                        try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(.milliseconds(500))).arrived()
+                        try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(.milliseconds(500))).result()
 
                         // The caption sits on the violet field inside the panel
                         // rather than on the panel itself, so what it goes to is
                         // white, the color that reads on that field.
-                        try await $captionColor.journey.move(to: AppColors.white, .eased(.milliseconds(500))).arrived()
+                        try await $captionColor.journey.move(to: AppColors.white, .eased(.milliseconds(500))).result()
                     }
 
                     button("Size") {
                         wide.toggle()
                         try await $panelHeight.journey.move(to: wide ? 160 : 90,
-                                                         .eased(.milliseconds(400), curve: .cubicInOut)).arrived()
+                                                         .eased(.milliseconds(400), curve: .cubicInOut)).result()
                     }
 
                     button("Padding") {
-                        try await $panelPadding.journey.move(to: Insets(48), .eased(.milliseconds(400))).arrived()
-                        try await $panelPadding.journey.move(to: Insets(16), .eased(.milliseconds(400))).arrived()
+                        try await $panelPadding.journey.move(to: Insets(48), .eased(.milliseconds(400))).result()
+                        try await $panelPadding.journey.move(to: Insets(16), .eased(.milliseconds(400))).result()
                     }
                 }
                 .horizontalAlignment(.center)
 
                 HStack {
                     button("Text size") {
-                        try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400), curve: .cubicOut)).arrived()
-                        try await $captionSize.journey.move(to: 17, .eased(.milliseconds(400), curve: .cubicIn)).arrived()
+                        try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400), curve: .cubicOut)).result()
+                        try await $captionSize.journey.move(to: 17, .eased(.milliseconds(400), curve: .cubicIn)).result()
                     }
 
                     button("Back") {
@@ -517,9 +533,9 @@ enum Listings {
                         // of Size would ask for the value it already has.
                         wide = false
 
-                        try await $panelHeight.journey.move(to: 90, .eased(.milliseconds(400), curve: .cubicInOut)).arrived()
-                        try await $panelColor.journey.move(to: AppColors.lineDark, .eased(.milliseconds(400))).arrived()
-                        try await $captionColor.journey.move(to: AppColors.ink, .eased(.milliseconds(400))).arrived()
+                        try await $panelHeight.journey.move(to: 90, .eased(.milliseconds(400), curve: .cubicInOut)).result()
+                        try await $panelColor.journey.move(to: AppColors.lineDark, .eased(.milliseconds(400))).result()
+                        try await $captionColor.journey.move(to: AppColors.ink, .eased(.milliseconds(400))).result()
                     }
                 }
                 .horizontalAlignment(.center)
@@ -572,14 +588,16 @@ enum Listings {
                     .placeholder("Easing")
 
                 HStack {
-                    // A movement answers whether it ran to the END. Stop says
-                    // false - and a second press cancels this run, the buttons
-                    // passing through `.cancelPrevious` - so the way back is not taken over
-                    // whatever happened instead, which is what lets Stop leave the
-                    // card where it stood.
+                    // A movement answers HOW IT ENDED. Stop makes it `.stopped` -
+                    // and a second press cancels this run, the buttons passing
+                    // through `.cancelPrevious` - so the way back is taken only
+                    // where the way out was `.reached`, which is what lets Stop
+                    // leave the card where it stood.
                     button("Fade") {
-                        let landed = try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: curve)).arrived()
-                        if landed { try await $fade.journey.move(to: 1, .eased(.milliseconds(400), curve: curve)).arrived() }
+                        let out = try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: curve)).result()
+                        if case .reached = out {
+                            try await $fade.journey.move(to: 1, .eased(.milliseconds(400), curve: curve)).result()
+                        }
                     }
 
                     // ONE movement, because the card only ever moves sideways. A
@@ -587,13 +605,17 @@ enum Listings {
                     // beside this one before either is awaited, so the two land
                     // together.
                     button("Move") {
-                        let landed = try await $shift.journey.move(to: 60, .eased(.milliseconds(400), curve: curve)).arrived()
-                        if landed { try await $shift.journey.move(to: 0, .eased(.milliseconds(400), curve: curve)).arrived() }
+                        let out = try await $shift.journey.move(to: 60, .eased(.milliseconds(400), curve: curve)).result()
+                        if case .reached = out {
+                            try await $shift.journey.move(to: 0, .eased(.milliseconds(400), curve: curve)).result()
+                        }
                     }
 
                     button("Scale") {
-                        let landed = try await $scale.journey.move(to: 1.4, .eased(.milliseconds(400), curve: curve)).arrived()
-                        if landed { try await $scale.journey.move(to: 1, .eased(.milliseconds(400), curve: curve)).arrived() }
+                        let out = try await $scale.journey.move(to: 1.4, .eased(.milliseconds(400), curve: curve)).result()
+                        if case .reached = out {
+                            try await $scale.journey.move(to: 1, .eased(.milliseconds(400), curve: curve)).result()
+                        }
                     }
 
                     // A movement goes TO a value, never BY one, so a full turn is
@@ -601,7 +623,7 @@ enum Listings {
                     // headed, which is what makes the next press carry on from
                     // there rather than start over.
                     button("Spin") {
-                        try await $angle.journey.move(to: angle + 360, .eased(.milliseconds(700), curve: curve)).arrived()
+                        try await $angle.journey.move(to: angle + 360, .eased(.milliseconds(700), curve: curve)).result()
                     }
                 }
                 .horizontalAlignment(.center)
@@ -852,8 +874,8 @@ enum Listings {
         /// One card: its icon and name over its window - its picture, cut to the
         /// card's corners; the icon is the same picture, small. Its name fades
         /// as the card goes under the one in front: a state of the card's own,
-        /// which an engine following the parameters writes where the run is shown -
-        /// the hand's place too - and the name's opacity wears.
+        /// which an engine following the parameters' journey lands where the run
+        /// is shown - the hand's place too - and the name's opacity wears.
         struct AppCard: View {
             let app: RunningApp
             let index: Int
@@ -880,8 +902,12 @@ enum Listings {
                         .gridRow(1)
                 }
                 .rows(.automatic, .fill)
-                .engine(following: turn) { _ in
-                    named = min(max(1 + (Double(index) - turn.journey.value) / 0.6, 0), 1)
+                // Worked out from where the run is shown, not chosen: landed, so
+                // the name keeps up in the hand and in a throw with no journey of
+                // its own behind it.
+                .engine(following: turn.journey) { _ in
+                    guard let shown = turn.journey.sample?.value else { return }
+                    $named.journey.snap(to: min(max(1 + (Double(index) - shown) / 0.6, 0), 1))
                 }
             }
         }
@@ -2291,7 +2317,7 @@ enum Listings {
                             if !finished { playing = false }
                         }
 
-                        try await $breath.journey.move(to: 1, .eased(.milliseconds(200))).arrived()
+                        try await $breath.journey.move(to: 1, .eased(.milliseconds(200))).result()
                     }
                     .isEnabled(!playing)
 
@@ -2306,7 +2332,7 @@ enum Listings {
 
                         for bar in bars {
                             bar.journey.stop()
-                            try await bar.journey.move(to: 0, .eased(.milliseconds(120))).arrived()
+                            try await bar.journey.move(to: 0, .eased(.milliseconds(120))).result()
                         }
                     }
                     .isEnabled(playing)
@@ -2339,22 +2365,24 @@ enum Listings {
             // movement over the one being stopped.
             var hopped = true
 
-            for bar in bars where hopped {
-                hopped = try await bar.journey.move(to: -26, .eased(.milliseconds(150), curve: .cubicOut)).arrived()
+            for bar in bars {
+                let up = try await bar.journey.move(to: -26, .eased(.milliseconds(150), curve: .cubicOut)).result()
+                guard case .reached = up else { hopped = false; break }
 
-                if hopped {
-                    hopped = try await bar.journey.move(to: 0, .eased(.milliseconds(150), curve: .cubicIn)).arrived()
-                }
+                let down = try await bar.journey.move(to: 0, .eased(.milliseconds(150), curve: .cubicIn)).result()
+                guard case .reached = down else { hopped = false; break }
             }
 
             // Awaited at the BOTTOM: the beat is over when the longest thing in it
-            // is over, not when the last one started is.
-            let washed = try await washing.arrived()
-            let breathed = try await breathing.arrived()
+            // is over, not when the last one started is. Each movement has its
+            // own result: one stopped says nothing of the others.
+            let washed = try await washing.result()
+            let breathed = try await breathing.result()
 
-            try await $breath.journey.move(to: 1, .eased(.milliseconds(300), curve: .cubicInOut)).arrived()
+            try await $breath.journey.move(to: 1, .eased(.milliseconds(300), curve: .cubicInOut)).result()
 
-            return hopped && washed && breathed
+            guard hopped, case .reached = washed, case .reached = breathed else { return false }
+            return true
         }
 
         /// One of the buttons, both of which look the same: a press while its run
@@ -2715,7 +2743,7 @@ enum Listings {
             /// built again for it.
             ///
             /// A `.journey`: the host walks it and reports where the walk has got to,
-            /// which is what `$size.journey.value` reads - so `$size.journey.move(to: 1)`
+            /// which is what `$size.journey.sample` reads - so `$size.journey.move(to: 1)`
             /// grows the cube the way it moves any other walked value.
             public func size(_ state: Binding<Double>) -> Modified {
                 setValue(Cube3DContract.size, on: state, as: .journey)
@@ -2754,7 +2782,7 @@ enum Listings {
                     .isSpinning($spinning)
                     .horizontalAlignment(.center)
 
-                Text($size.journey.convert { "Edge: \(Int($0.value * 100))% of the view" })
+                Text($size.convert { "Edge: \(Int($0 * 100))% of the view" })
 
                 Slider($size)
                     .minimum(0.2)
@@ -3069,16 +3097,21 @@ enum Listings {
         """#,
         "DrivenReadingSample": #"""
         // Sources/Samples/Driven/DrivenReadingSample.swift
-        /// The bar's width, driven - so both readings live here and neither costs
-        /// a render.
+        /// The bar's width, driven - so neither reading costs a render.
         @State private var width = 60.0
+
+        /// What the engine following the bar's journey writes: the caption's
+        /// words, and how far apart the two readings are. The host shows both;
+        /// no body reads them.
+        @State private var readings = "going to 60 — showing 60"
+        @State private var apart = 0.0
 
         var body: some View {
             VStack {
-                // NOTHING in this closure reads: the bar is a channel and both
-                // readings are CONVERSIONS of it, worked out by the host on its own
-                // frames. So this stays at one build while the numbers move on
-                // every frame.
+                // NOTHING in this closure reads: the bar is a channel, and both
+                // readings are written by an engine following its journey on the
+                // host's own frames. So this stays at one build while the numbers
+                // move on every frame.
                 DebugInfoLabel()
 
                 // The bar: one driven property, and the host moves it.
@@ -3091,11 +3124,16 @@ enum Listings {
                 .lineWidth(0)
                 .horizontalAlignment(.start)
 
-                // The two readings, off ONE journey: `destination` is where the
-                // value is going and `value` where it has got to.
-                Text($width.journey.convert {
-                        "going to \(Int($0.destination)) — showing \(Int($0.value))"
-                    })
+                // The two readings, off ONE sample of the journey: `destination`
+                // is where the host is taking the value and `value` where it has
+                // got to, both of the same frame. The distance between them is a
+                // number worked out, not chosen: it is snapped, never animated.
+                Text($readings)
+                    .engine(following: $width.journey) { _ in
+                        guard let sample = $width.journey.sample else { return }
+                        readings = "going to \(Int(sample.destination)) — showing \(Int(sample.value))"
+                        $apart.journey.snap(to: abs(sample.destination - sample.value))
+                    }
 
                 Text("how far apart the two readings are")
 
@@ -3106,7 +3144,7 @@ enum Listings {
                     Text("")
                 }
                 .style(.card)
-                .width($width.journey.convert { abs($0.destination - $0.value) })
+                .width($apart)
                 .height(10)
                 .lineWidth(0)
                 .horizontalAlignment(.start)
@@ -3143,6 +3181,10 @@ enum Listings {
         /// The rail's color, which the HOST carries with no engine at all.
         @State private var tint = Palette.outline
 
+        /// How far the marker has got, in words the engine below writes and the
+        /// host shows: no body reads them.
+        @State private var percent = "0%"
+
         /// How far the marker may travel - the rail's width less its own.
         private static let run = 240.0
 
@@ -3178,12 +3220,16 @@ enum Listings {
                 .stroke(.transparent)
                 .horizontalAlignment(.center)
 
-                // A CONVERSION of the same driven value: the host works the words
-                // out on its own frames, from where the marker HAS GOT TO, and
-                // nothing here reads anything.
-                Text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
+                // WORDS AN ENGINE WRITES, following the same value's journey: on the
+                // host's frames it reads where the marker HAS GOT TO and writes
+                // the percentage, and nothing here reads anything.
+                Text($percent)
                     .fontWeight(.bold)
                     .horizontalAlignment(.center)
+                    .engine(following: $offset.journey) { _ in
+                        guard let sample = $offset.journey.sample else { return }
+                        percent = "\(Int((sample.value / Self.run * 100).rounded()))%"
+                    }
 
                 // Off ordinary state: described again each time the switch is
                 // thrown.
@@ -3191,9 +3237,9 @@ enum Listings {
                     .horizontalAlignment(.center)
 
                 HStack {
-                    button("Empty") { go(to: 0) }
-                    button("Half") { go(to: 0.5) }
-                    button("Full") { go(to: 1) }
+                    button("Empty") { try go(to: 0) }
+                    button("Half") { try go(to: 0.5) }
+                    button("Full") { try go(to: 1) }
                 }
                 .horizontalAlignment(.center)
 
@@ -3202,13 +3248,14 @@ enum Listings {
         }
 
         /// One place to be sent to, under whichever law the switch asks for.
-        private func go(to place: Double) {
+        private func go(to place: Double) throws {
             let law: Motion = slowly ? .eased(.milliseconds(1600), curve: .cubicInOut) : .eased(.milliseconds(350), curve: .cubicOut)
 
-            $offset.journey.motion = law
+            // The motion is the value's own: the next destination travels under it.
+            try $offset.journey.setMotion(law)
             offset = Self.run * place
 
-            $tint.journey.motion = law
+            try $tint.journey.setMotion(law)
             tint = place > 0 ? Palette.accent : Palette.outline
         }
 
@@ -3220,7 +3267,7 @@ enum Listings {
         """#,
         "EngineAnimationSample": #"""
         // Sources/Samples/Driven/EngineAnimationSample.swift
-        /// Where the dot is going - and, frame by frame, where the engine has it.
+        /// Where the dot is going; where it stands frame by frame is the engine's to say.
         @State(animatedBy: .engine) private var offset = 0.0
 
         var body: some View {
@@ -3239,24 +3286,22 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
             }
-            .engine(tracking: $offset) { cycle in
-                let journey = $offset.journey
+            .engine(animating: $offset) { cycle, motion in
+                // A spring towards the destination, damped by the speed.
+                let seconds = cycle.elapsedSeconds
+                let pull = (motion.destination - motion.value) * 180 - motion.velocity * 12
+                let velocity = motion.velocity + pull * seconds
+                let value = motion.value + velocity * seconds
 
-                // With less motion the dot lands where it is sent.
-                guard !cycle.reducesMotion else {
-                    journey.snap(to: journey.destination)
+                // Near enough and slow enough, it is there: the engine says so.
+                guard abs(motion.destination - value) > 0.5 || abs(velocity) > 1 else {
+                    motion.finish()
                     return .wait
                 }
 
-                // A spring towards the destination, damped by the speed.
-                let seconds = cycle.elapsedSeconds
-                let pull = (journey.destination - journey.value) * 180 - journey.velocity * 12
-                journey.velocity += pull * seconds
-                journey.value += journey.velocity * seconds
-
-                guard abs(journey.destination - journey.value) < 0.5, abs(journey.velocity) < 1 else { return .again }
-                journey.snap(to: journey.destination)
-                return .wait
+                // This frame's place and speed; the host shows it as it comes.
+                motion.update(value: value, velocity: velocity)
+                return .again
             }
         }
         """#,
@@ -4767,7 +4812,7 @@ enum Listings {
                         // The width describes nothing: the host carries the width and
                         // the slider's thumb off the same state, and the frame reports
                         // say where the panel actually got to.
-                        $width.journey.move(to: $width.journey.value < 240 ? 340 : 140)
+                        $width.journey.move(to: width < 240 ? 340 : 140)
                     }
             }
         }
@@ -8026,7 +8071,7 @@ enum Listings {
                 // THE WHOLE LAYOUT, run on the display's own frames whenever the
                 // room or the parameters have moved, with no view built.
                 // FLUNG OUTWARD, the ring grows with how fast it turns.
-                let flung = flungOut ? min(abs($turn.journey.velocity) * 0.05, 0.35) : 0
+                let flung = flungOut ? min(abs($turn.journey.sample?.velocity ?? 0) * 0.05, 0.35) : 0
                 return Self.cards.indices.map { place($0, turn, room, flung: flung) }
                     + Self.cards.indices.map { dot($0, turn, room) }
             }
@@ -8587,9 +8632,10 @@ enum Listings {
                         .scrollOffset($offset)
                         .gridRow(1)
 
-                    // THE GET. Reading the offset here is what makes this Grid its
-                    // reader, and a render is what every single report then costs.
-                    Text("\(Int($offset.journey.value.y)) down")
+                    // THE GET. Reading where the scroller stands here is what makes
+                    // this Grid its reader, and a render is what every single report
+                    // then costs.
+                    Text("\(Int(($offset.journey.sample?.value ?? offset).y)) down")
                         .gridRow(2)
 
                     DebugInfoLabel()
@@ -8634,19 +8680,22 @@ enum Listings {
                         .horizontalAlignment(.center)
                         .gridRow(3)
 
-                    spelling(".samples($offset, into: $shown, .every(.milliseconds(100)))")
+                    spelling(".samples($offset.journey, into: $shown, .every(.milliseconds(100)))")
                         .gridRow(4)
                 }
                 .rows(.automatic, .fill, .automatic, .automatic, .automatic)
             }
         }
 
-        /// THE OFFSET THROUGH A CHANNEL: nothing here reads it. The words are a
-        /// conversion the host works out on its own frames, so the number keeps up
-        /// with the finger and this view is never built again.
+        /// THE OFFSET THROUGH A CHANNEL: nothing here reads it. The words are written
+        /// by an engine following the offset's journey on the host's own frames, so the
+        /// number keeps up with the finger and this view is never built again.
         private struct DrivenOffset: View {
-            /// Handed to the scroller and to the conversion, and read by nobody.
+            /// Handed to the scroller and, as its journey, to the engine; read by nobody.
             @Binding var offset: Point
+
+            /// The words the engine writes and the host shows.
+            @State private var down = "0 down"
 
             var body: some View {
                 Grid {
@@ -8656,18 +8705,22 @@ enum Listings {
                         .scrollOffset($offset)
                         .gridRow(1)
 
-                    // NO GET. The conversion is a second state the host writes from
-                    // the first, so the reading moves without a view being built -
-                    // and it reads `value`, where the offset IS, so it follows a
-                    // glide frame by frame rather than jumping to where it is going.
-                    Text($offset.journey.convert { "\(Int($0.value.y)) down" })
+                    // NO GET. The engine writes a state the host shows, so the reading
+                    // moves without a view being built - and it reads the sample's
+                    // `value`, where the offset IS, so it follows a glide frame by
+                    // frame rather than jumping to where it is going.
+                    Text($down)
                         .gridRow(2)
+                        .engine(following: $offset.journey) { _ in
+                            guard let sample = $offset.journey.sample else { return }
+                            down = "\(Int(sample.value.y)) down"
+                        }
 
                     DebugInfoLabel()
                         .horizontalAlignment(.center)
                         .gridRow(3)
 
-                    spelling("$offset.journey.convert { … }")
+                    spelling(".engine(following: $offset.journey) { … }")
                         .gridRow(4)
                 }
                 .rows(.automatic, .fill, .automatic, .automatic, .automatic)
@@ -8700,7 +8753,7 @@ enum Listings {
                     // reading of where the value HAS GOT TO - which the state
                     // itself never says, standing at its destination.
                     PacedOffset(offset: $paced, shown: pacedShown)
-                        .samples($paced, into: $pacedShown, .every(.milliseconds(100)))
+                        .samples($paced.journey, into: $pacedShown, .every(.milliseconds(100)))
                         .gridColumn(1)
 
                     DrivenOffset(offset: $driven)
@@ -8731,7 +8784,7 @@ enum Listings {
         /// - Parameter y: how far down each strip is sent.
         private func move(to y: Double) async throws {
             for strip in [$described, $paced, $driven] {
-                try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300), curve: .cubicOut)).arrived()
+                try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300), curve: .cubicOut)).result()
             }
         }
         """#,
@@ -8933,13 +8986,14 @@ enum Listings {
                     Text($fade.convert { "going to \(Int($0 * 100))%" })
                 }
 
-                // THE JOURNEY. This closure reads where the value IS, and the host
-                // writes that lane every frame - so it is built again on every one
-                // of them, printing a number that moves because the value does.
+                // THE JOURNEY. This closure reads the sample - where the host shows
+                // the value - and the host says that every frame it moves, so it is
+                // built again on every one of them, printing a number that moves
+                // because the value does.
                 VStack {
                     DebugInfoLabel()
 
-                    Text("at \(Int($fade.journey.value * 100))%")
+                    Text("at \(Int(($fade.journey.sample?.value ?? fade) * 100))%")
                 }
 
                 // A READING, ten times a second, into an ordinary state. Same
@@ -8951,7 +9005,7 @@ enum Listings {
 
                         Text("at \(Int(shown * 100))%")
                     }
-                    .samples($fade, into: $shown, .every(.milliseconds(100)))
+                    .samples($fade.journey, into: $shown, .every(.milliseconds(100)))
                 }
 
                 Text("\(taken) samples taken")
@@ -9003,7 +9057,7 @@ enum Listings {
         @State private var snaps = true
 
         /// What the box does as it is let go: stays, springs home, or glides on
-        /// - the last two at the hand's speed.
+        /// from the hand's speed.
         @State private var letting = "Stays"
         static let lettings = ["Stays", "Springs home", "Glides on"]
 
@@ -9016,11 +9070,15 @@ enum Listings {
         /// a report writes them without a render.
         @State private var held = "Hold the box"
 
+        /// How far the box has got, in words an engine following both journeys
+        /// writes on the host's frames.
+        @State private var moved = "Moved 0, 0"
+
         var body: some View {
             VStack {
                 // The box is moved by DRIVEN states, so a drag builds nothing: the
-                // reading below is a CONVERSION of the same two, and the switch is
-                // handed its state - this stands at one build.
+                // reading below is written by an engine following the same two,
+                // and the switch is handed its state - this stands at one build.
                 DebugInfoLabel()
 
                 // A fixed box for it to move inside, so the layout does not follow
@@ -9044,26 +9102,25 @@ enum Listings {
                             case .changed:
                                 follow(panX + update.total.x, panY + update.total.y)
                             case .ended where letting == "Springs home":
-                                // The hand's speed is the box's as it lets go: it
-                                // goes on that way, and the spring brings it home.
+                                // Let go, a spring brings it home from where the
+                                // hand left it.
                                 (panX, panY) = (0, 0)
-                                $liveX.journey.velocity = update.velocity.x
-                                $liveY.journey.velocity = update.velocity.y
                                 $liveX.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                                 $liveY.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                             case .ended where letting == "Glides on":
-                                // It glides on from the hand's speed to where that
-                                // throw carries it, kept inside the box.
-                                let glide = Motion.glide(longest: .milliseconds(900))
-                                $liveX.journey.velocity = update.velocity.x
-                                $liveY.journey.velocity = update.velocity.y
-                                panX = min(max($liveX.journey.reach(glide), -140), 140)
-                                panY = min(max($liveY.journey.reach(glide), -60), 60)
-                                $liveX.journey.move(to: panX, glide)
-                                $liveY.journey.move(to: panY, glide)
+                                // It goes on from the hand's speed. A cubic-out
+                                // journey sets out three times as fast as it
+                                // averages, so one a third of the speed's way long
+                                // leaves at the hand's speed and slows to rest -
+                                // kept inside the box.
+                                let seconds = 0.9
+                                panX = min(max(panX + update.total.x + update.velocity.x * seconds / 3, -140), 140)
+                                panY = min(max(panY + update.total.y + update.velocity.y * seconds / 3, -60), 60)
+                                $liveX.journey.move(to: panX, .eased(.seconds(seconds), curve: .cubicOut))
+                                $liveY.journey.move(to: panY, .eased(.seconds(seconds), curve: .cubicOut))
                             case .ended:
-                                panX = $liveX.journey.value
-                                panY = $liveY.journey.value
+                                panX += update.total.x
+                                panY += update.total.y
                             case .cancelled:
                                 follow(panX, panY)
                             case .began:
@@ -9076,11 +9133,14 @@ enum Listings {
                 .lineWidth(1)
                 .height(200)
 
-                // Two states into one conversion: the host works the words out
-                // from where the box HAS GOT TO, on its own frames.
-                Text(.multi($liveX.journey, $liveY.journey).convert { x, y in
-                        "Moved \(Int(x.value)), \(Int(y.value))"
-                    })
+                // Two journeys followed by one engine: on the host's frames it
+                // reads where the box HAS GOT TO - both samples of one frame - and
+                // writes the words.
+                Text($moved)
+                    .engine(following: $liveX.journey, $liveY.journey) { _ in
+                        guard let x = $liveX.journey.sample, let y = $liveY.journey.sample else { return }
+                        moved = "Moved \(Int(x.value)), \(Int(y.value))"
+                    }
 
                 Text($held)
 
@@ -9106,12 +9166,10 @@ enum Listings {
         /// The box under the finger.
         ///
         /// A READING WRITTEN ON EVERY REPORT IS A SNAP, and the snap is
-        /// `$liveX.journey.snap(to:)` - here, going nowhere, standing still.
-        /// Writing `$liveX.journey.value` alone would move the box and leave the
-        /// destination where it was, so `Put it back` would have nothing to
-        /// change. The state itself is where it is GOING, so writing THAT on every
-        /// report starts a fresh little journey the next report interrupts, which
-        /// is the lag the switch is here to show.
+        /// `$liveX.journey.snap(to:)` - here, going nowhere, standing still. The
+        /// state itself is where it is GOING, so writing THAT on every report
+        /// starts a fresh little journey the next report interrupts, which is the
+        /// lag the switch is here to show.
         private func follow(_ x: Double, _ y: Double) {
             if snaps {
                 // HERE, GOING NOWHERE, STANDING STILL - all three, so that
@@ -10188,7 +10246,9 @@ enum Listings {
                     // ran out - a write carries the strip on to the tile it is
                     // nearest.
                     .onScrollStopped {
-                        let tile = max(($offset.journey.value.x / 160).rounded(), 0)
+                        // Where the scroller stands as it stops: its journey's sample.
+                        let stands = $offset.journey.sample?.value ?? offset
+                        let tile = max((stands.x / 160).rounded(), 0)
                         rested = Int(tile) + 1
                         offset = Point(tile * 160, 0)
                     }
@@ -13707,10 +13767,10 @@ enum Listings {
         // Sources/Samples/Interop/RatingBar.swift
         /// How many stars are filled, walked by the host from a state.
         ///
-        ///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).arrived()
+        ///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).result()
         ///
         /// A `.journey`: the host walks it and reports where the walk has got to,
-        /// which is what `$stars.journey.value` reads. A tap does not arrive this
+        /// which is what `$stars.journey.sample` reads. A tap does not arrive this
         /// way; `.onRatingChanged(_:)` hears it.
         ///
         /// On the control and not on `RatingBarProperties`: a style wears that

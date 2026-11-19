@@ -61,8 +61,7 @@ extension Renderer {
             StateImage.bytes(of: .lanes([value])),
             mask: mask,
             to: storage)
-        storage.told?(mask)
-        storage.sampleTaken()
+        storage.told?(mask, .user)
         return true
     }
 
@@ -71,7 +70,8 @@ extension Renderer {
     /// property reports through its journey instead.
     func hostReported(
         _ value: HostStateValue,
-        through binding: HostStateBinding
+        through binding: HostStateBinding,
+        origin: WriteOrigin
     ) -> Bool {
         guard binding.mode != .out,
               binding.kind == .text || binding.kind == .plain || binding.kind == .feed,
@@ -100,9 +100,8 @@ extension Renderer {
 
         board.told(StateImage.bytes(of: value), mask: mask, to: storage)
 
-        // After the board holds the reported value, which both callbacks read.
-        storage.told?(mask)
-        storage.sampleTaken()
+        // After the board holds the reported value, which the callback reads.
+        storage.told?(mask, origin)
         return true
     }
 
@@ -113,7 +112,9 @@ extension Renderer {
     func hostReported(
         _ journey: HostJourney,
         updating update: HostJourneyUpdate,
-        through binding: HostStateBinding
+        through binding: HostStateBinding,
+        at time: Double,
+        origin: WriteOrigin
     ) -> Bool {
         guard binding.mode != .out,
               binding.kind == .property,
@@ -155,8 +156,12 @@ extension Renderer {
 
         // The report speaks of the journey the host last read: a lane written since stands.
         let laid = board.told(StateImage.bytes(of: .lanes(lanes)), mask: mask, to: storage, keepsUnread: true)
-        storage.told?(laid)
-        storage.sampleTaken()
+
+        // The channel's own word of this frame, whole - what a sample is, whatever this side wrote since.
+        // Design: docs/design/core/journeys.md#the-sample
+        board.frame(at: time)
+        storage.took(HostSample(value: journey.value, destination: journey.destination, velocity: journey.velocity))
+        storage.told?(laid, origin)
         return true
     }
 
@@ -176,7 +181,9 @@ extension Renderer {
                     lanes: kind == .text ? 0 : StateValueLanes.own))
         }
 
-        return HostCycle(changes: changes, continues: report.awake)
+        let finished = board.finished
+        board.finished = []
+        return HostCycle(changes: changes, continues: report.awake, finished: finished)
     }
 
     /// A mask naming `count` lanes, including values wider than one word.

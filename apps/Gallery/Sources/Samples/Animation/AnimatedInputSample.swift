@@ -3,7 +3,7 @@ import StateUI
 /// A slider's value and a stepper's - the two properties a USER can move,
 /// both carried by the host. Two sliders and a stepper, and what differs is who
 /// reads the value: the top caption PRINTS it in this body, the two below are
-/// CONVERSIONS worked out on the display's frames.
+/// written by ENGINES following the value's journey on the display's frames.
 struct AnimatedInputSample: SampleContent, ExampleContent {
     // listing: AnimatedInputSample
     /// The TOP slider's value. The caption above the slider PRINTS it, which
@@ -12,15 +12,20 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
     @State private var volume = 0.2   // printed by this body: a reader
 
     /// The BOTTOM slider's value. Nothing here reads it: it is handed on as
-    /// `$level` - to the slider, and to the caption's own conversion - and a
-    /// binding makes no reader.
+    /// `$level` - to the slider, and to the caption's engine as its journey -
+    /// and a binding makes no reader.
     ///
     /// Its JOURNEY is the second half of what this page shows: `level` is
-    /// where the value is GOING and `$level.journey.value` where it HAS GOT
-    /// TO, so a caption converted off the journey counts its way along it
+    /// where the value is GOING and `$level.journey.sample` where it HAS GOT
+    /// TO, so a caption written from the sample counts its way along it
     /// where one converted from the state would jump to the destination at
     /// once.
     @State private var level = 0.2   // handed on: no reader
+
+    /// What the two captions say, written by their engines and shown by the
+    /// host: no body reads them.
+    @State private var levelWords = "level · 20%"
+    @State private var countWords = "count · 3"
 
     /// The stepper's value, declared the same way. Its caption matters more
     /// than the slider's: on some platforms a Stepper draws two buttons and
@@ -72,12 +77,17 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
 
                 DebugInfoLabel()
 
-                // A CONVERTED TEXT: an engine works it out from the same image
-                // the thumb is walking, on the display's frames, so the words
-                // keep up with the movement and cost no render.
-                Text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
+                // WORDS AN ENGINE WRITES: it follows the journey, so it runs on
+                // the display's frames as the thumb moves - under the hand or
+                // sent - reads where the value has got to, and the words keep
+                // up with the movement and cost no render.
+                Text($levelWords)
                     .fontSize(15)
                     .textColor(Palette.accent)
+                    .engine(following: $level.journey) { _ in
+                        guard let sample = $level.journey.sample else { return }
+                        levelWords = "level · \(Int((sample.value * 100).rounded()))%"
+                    }
 
                 // THE SAME DECLARATION as above, and the same spelling: what
                 // differs is that nothing here reads `level` at build.
@@ -90,7 +100,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
 
                 button("Send the bottom one") {
                     try await $level.journey.move(to: level < 0.5 ? 1 : 0,
-                                               .eased(.milliseconds(900), curve: .cubicInOut)).arrived()
+                                               .eased(.milliseconds(900), curve: .cubicInOut)).result()
                 }
             }
             .spacing(10)
@@ -98,9 +108,13 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Text($count.journey.convert { "count · \(Int($0.value.rounded()))" })
+                Text($countWords)
                     .fontSize(15)
                     .textColor(Palette.accent)
+                    .engine(following: $count.journey) { _ in
+                        guard let sample = $count.journey.sample else { return }
+                        countWords = "count · \(Int(sample.value.rounded()))"
+                    }
 
                 Stepper($count)
                     .accessibilityIdentifier("animatedInput.count")
@@ -111,7 +125,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.start)
 
                 button("Send the stepper to 12") {
-                    try await $count.journey.move(to: 12, .eased(.milliseconds(800), curve: .cubicOut)).arrived()
+                    try await $count.journey.move(to: 12, .eased(.milliseconds(800), curve: .cubicOut)).result()
                 }
             }
             .spacing(10)
@@ -126,8 +140,8 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                 + "caption PRINTS `volume`, which makes the closure it sits in a "
                 + "reader, so every report the thumb makes builds that closure again, "
                 + "and nothing around it. `level` is handed on as `$level` - to the "
-                + "slider and to the caption's conversion - and a binding makes no "
-                + "reader: a drag and a journey leave the count where it was.")
+                + "slider, and as `$level.journey` to the caption's engine - and a binding "
+                + "makes no reader: a drag and a journey leave the count where it was.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -136,27 +150,27 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                 + "on as `$x` - to a control, a modifier, a child or an engine - makes "
                 + "no reader, and the host carries it with nothing rebuilt. Where a "
                 + "body must show a value that moves, it reads it and pays a render "
-                + "per report, or `.samples($x, into:, .every(.milliseconds(100)))` holds a reading "
-                + "to ten a second; where it need not, a converted text shows it for "
-                + "nothing.")
+                + "per report, or `.samples($x.journey, into:, .every(.milliseconds(100)))` holds a "
+                + "reading to ten a second; where it need not, words an engine writes show it "
+                + "for nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("AND A READING THAT MUST KEEP UP READS THE JOURNEY. Every walked "
                 + "state has one: `level` is where it is GOING, from the first "
-                + "millisecond; `$level.journey.value` where it HAS GOT TO this frame - "
-                + "so a caption converted off `$level.journey` counts its way along it "
+                + "millisecond; `$level.journey.sample` where it HAS GOT TO this frame - "
+                + "so a caption written from the sample counts its way along it "
                 + "where one converted from the state itself would jump to the "
                 + "destination at once. The journey is also what steers the value: "
                 + "`move(to:)`, `stop()`, `snap(to:)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Both readings are CONVERSIONS of the journey - "
-                + "`$level.journey.convert { … }` - which is an engine the differ "
-                + "writes for you: it runs on the display's own frames, from the same "
-                + "image the control is walking, so a drag and a journey both cost the "
-                + "arithmetic and no renders. The stepper needs its caption more than "
+            Text("Both captions are written by an ENGINE FOLLOWING THE JOURNEY - "
+                + "`.engine(following: $level.journey) { … }` - which runs on the "
+                + "display's own frames whenever where the host shows the value has "
+                + "changed, so a drag and a journey both cost the arithmetic and no "
+                + "renders. The stepper needs its caption more than "
                 + "the slider does: on some platforms a Stepper draws two buttons and "
                 + "no number, and there the caption is what shows the value.")
                 .fontSize(12)

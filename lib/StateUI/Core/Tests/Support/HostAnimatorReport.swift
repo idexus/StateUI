@@ -34,3 +34,25 @@ enum HostAnimatorReport {
             file: file, line: line)
     }
 }
+
+/// A host's reports as a test playing the host says them, naming who made each as a host would.
+@MainActor
+extension HostBoundary {
+    /// A whole value the user set on a control.
+    @discardableResult
+    static func report(_ value: HostStateValue, through binding: HostStateBinding) -> Bool {
+        report(value, through: binding, origin: .user)
+    }
+
+    /// Where a journey stands on the frame at `time`: the user's where the report moves the destination - a thumb
+    /// dragged - the animation's otherwise.
+    @discardableResult
+    static func report(
+        _ journey: HostJourney, updating update: HostJourneyUpdate, through binding: HostStateBinding,
+        at time: Double = 0
+    ) -> Bool {
+        report(
+            journey, updating: update, through: binding, at: time,
+            origin: update.contains(.destination) ? .user : .animation)
+    }
+}

@@ -1,12 +1,12 @@
 # Journeys
 
-A state is discrete, and its journey is part of it. Reading `fade` answers the
-destination at once; `$fade.journey` is what happens between two destinations:
-where the value is this frame, how fast it goes, and under what law. A value
-that can have one conforms to `Walked`: a number, a point, a rectangle, insets,
-a color. Text has no half way, a whole number animated through rounding
-stutters, and a truth value has two places and no distance, so none of them is
-`Walked`; a placement run already carries a law for the whole run.
+A state is discrete: reading `fade` answers the destination at once, and
+writing it sends the value there. Its journey, `$fade.journey`, is a handle to
+how a host shows the value between two destinations. The handle owns nothing
+and starts nothing. A value that can have one conforms to `Walked`: a number,
+a point, a rectangle, insets, a color. Text has no half way, a whole number
+animated through rounding stutters, and a truth value has two places and no
+distance, so none of them is `Walked`.
 
 Of a moving value's three owners
 ([architecture](../architecture.md#a-moving-value-has-three-owners)) the core
@@ -19,11 +19,9 @@ A value the host animates lies on its image as `JourneyLanes`, the shape a
 host's animation is fed from, read through `HostBoundary.journey(from:)`:
 
 ```text
-  value        w lanes   where it IS; the host writes it every frame it moves,
-                         so value == destination means "arrived"
-  destination  w lanes   where it is GOING: the state's own value
-  velocity     w lanes   per second, lane by lane; a finger's report sets it to
-                         nought, a write from this side is a kick
+  value        w lanes   where it stands, as the host last said
+  destination  w lanes   where it is going: the state's own value
+  velocity     w lanes   per second, lane by lane
   law          3 lanes   StateLaw: [kind, millis, curve or damping]
   completion   1 lane    the negative id a waiter is registered under, or 0
   stopped      1 lane    how many times an animation stopped - a counter, so two
@@ -34,120 +32,184 @@ host's animation is fed from, read through `HostBoundary.journey(from:)`:
 One of these is one state channel on the host however many controls are handed
 `$fade`: each control holds a handle on the one value, written from the same
 lanes on the same frame, so two controls on one state can never stand in two
-places, and a control handed the state mid-animation joins it where it is.
+places.
+
+## A channel's life
+
+A channel exists while the state has a consumer: a property of a live element
+showing it, an engine following its journey, or a reading of it. The core
+counts them on the image (`HostStorage.consumers`); the host layer counts the
+same ones ([motion in the runtime](../host/motion.md#state-channels)).
+
+```text
+  no consumer          a value and a motion; no sample, no speed, nothing to wait for
+  the first consumer   a channel of a new generation, at the destination, still
+  another consumer     joins the channel where it stands
+  one of several goes  the rest go on
+  the last one goes    a movement under way ends `.detached`; the sample goes
+  attached again       a new generation; nothing of the last one comes back
+```
+
+The count changes element by element as a tree is walked, and is settled once
+the walk is done (`Differ.settleChannels`): a consumer that leaves one element
+for another in the same walk never closes the channel. As a channel closes the
+image is laid at its destination, still, so the next channel starts there and
+replays nothing it did not see.
+
+An element's driven properties tie it to their states; the journeys its
+engines and readings follow with no property are told to the host apart, in
+`HostPatch.followed`, so the host carries a channel for a state nothing draws.
+
+The trap is a getter that makes a channel. Reading `sample`, `motion` or
+`reach(_:)` makes no image and asks for no cycle, so a thousand handles cost
+nothing (`ChannelLifetimeTests`).
+
+## The sample
+
+`journey.sample` is the host's last report of the channel, whole: where the
+value stands, the destination the channel is taking it to, and its speed, with
+the time of the display's frame it is read on. It is nil where the state has no
+channel.
+
+```text
+  sample.value         where the host shows it
+  sample.destination   the destination the channel had taken; the state's own
+                       value may be a newer one waiting for its frame
+  sample.velocity      per second, lane by lane
+  sample.time          the frame's time, shared by every sample read on it
+```
+
+The core keeps the report as `HostStorage.sample`, set by
+`Renderer.hostReported` from the channel's own word and never pieced together
+from lanes this side wrote since. It carries no time of its own: a channel
+standing still is the same sample on every frame and wakes nobody; the time
+handed out is the board's `frameTime`, the latest frame the core heard of.
+
+## Two reader sets
+
+A body that reads `fade` is a reader of the state's storage and is asked when
+the destination moves. A body that reads `$fade.journey.sample` is a reader of
+the state's `PresentationWatch` and is asked when the sample changes, comes or
+goes. So an animation costs a build per frame exactly where somebody asked to
+see it move. The watch is made at the first such read; it is no image and
+keeps no channel.
+
+The same watch is what an engine following the journey compares
+([what wakes an engine](cycle.md#what-wakes-an-engine)).
+
+## Which motion
+
+A channel with the host's animator travels under, in order:
+
+```text
+  the motion given to `move(to:_:)`     that move's alone
+  the state's own                       `@State(motion:)`, `journey.setMotion(_:)`
+  the application's                     `ApplicationSession.motion`
+  `Motion.standard`
+```
+
+No receiver decides it: a channel is every receiver's, so an element's
+`.motion(_:)` says how that element's described properties travel and nothing
+about a state it shows. `.inherited` on the image is a request the crossing
+answers with the application's motion on every read (`HostStorage.crossing()`,
+`inherited`), so a change of the application's reaches a value already
+standing.
+
+`setMotion(_:)` changes what the next destination travels under. It lays
+nothing on the image: a movement begun keeps the motion it set out under.
 
 ## The law on the image
 
 ```text
   kind 0  none (an eased law of no length)
-  kind 1  inherited - the element's own, resolved at each crossing
+  kind 1  inherited - the application's, resolved at each crossing
   kind 2  eased:  millis, curve (Easing's number)
   kind 3  spring: response millis, damping
   kind 4  custom  - an engine on this side animates the value
   kind 5  glide:  longest millis - on from the speed it was handed
 ```
 
-`.none` and `.inherited` cross as themselves rather than as an eased law of no
-length. `.inherited` is a request, not a reading: the image goes on saying what
-the author wrote, and `HostStorage.crossing()` replaces it with the element's
-resolved law on every read the host makes. Resolving it once at the write would
-freeze whatever the application said at declaration onto a value an element
-claims later. The element's law is resolved by the differ, which alone can read
-an element's per-kind motion plan (identity-and-diffing.md).
-
 Under `.custom` the host animates nothing: the crossing hands it `.none` and a
-destination equal to wherever this side's engine last wrote the value, so the
-host wears each frame as it comes, and a destination the author wrote - which
-the engine reads, and the host never sees - sends the host nowhere.
-
-`@State(motion:)` puts the law on the value from the first frame; it is the
-first answer the crossing asks for, ahead of the element's `.motion(_:)`, the
-application's and the library's. `$x.journey.motion` changes it later, except
-`.custom`, which says who animates the value and is settled at the declaration:
-the host is told at the first crossing and cannot be told again.
+destination equal to wherever this side's engine last put the value, so the
+host shows each frame as it comes, and the destination the author wrote -
+which the engine reads, and the host never sees - sends the host nowhere.
 
 ## Who animates it
 
 ```text
-  handed to a driven modifier, a two-way control or a scroller
-      -> the HOST animates it and writes value and velocity back every frame
+  shown by a driven modifier, a two-way control or a scroller
+      -> the HOST animates it and reports where it stands every frame
   @State(animatedBy: .engine)
-      -> an engine of the application's writes value and velocity
-  worn by no live element (no tie, number or not)
-      -> nothing animates it: a write lands at the destination at once
+      -> an engine of the application says where it stands
+  no consumer
+      -> nothing animates it: a write is the whole of it
 ```
 
 ## Moving and waiting
 
-`$x.journey.move(to:_:)` sends the value and returns its `Arrival` at once;
-`arrived()` suspends until the value arrives. It has two spellings, one with a
-law and one without (`move(to:)`, under the value's own), and no optional
-law: `.none` written there is always the law that does not move, which a law
-that defaults to nil would read as "none given". A move is a write of the
-destination: admitted as one (`Storage.admits`, state.md - a destination the
-state refuses is no journey, and the arrival answers false), the state reads
-the target at once, its readers are built again
-and a kept state keeps it, as after an assignment (`Storage.moved(to:)`) - and
-the journey the host walks is the move's, on its law, never a second one on the
-value's own. A stop, in turn, comes back as a write of where the value stood:
-the host makes that its destination and reports it. The answer is true when it got
-there and false when something else ended the journey: a newer destination, a
-value written over it, or a stop. Where there is nothing to animate - already
-there, or the user asked for less motion - it arrives on the host's next frame
-and answers true.
+`$x.journey.move(to:_:)` sends the value and returns its `MotionRun` at once.
+It has two spellings, one with a motion and one without, and no optional
+motion: `.none` written there is always the motion that does not move. A move
+is a write of the destination: admitted as one (`Storage.admits`, state.md),
+the state reads the target at once, its readers are built again and a kept
+state keeps it (`Storage.moved(to:)`).
 
 The waiter is booked with the renderer under a negative id from the counter
 every awaited act draws from, and the id is written into the completion lane;
-nothing is queued, and the host answers by that id when the animation finishes
-or is interrupted. The completion lane is forced dirty, and the destination
-lanes are forced too where none of them changes, so sending a value where it
-is already going is still a fresh journey with a fresh waiter. Where some
-lanes change, only they are laid: the host sends those lanes on as one run
-under the waiter, and a lane the move leaves alone travels on as it was
-(host/motion.md, a channel lane by lane). The write and the booking land before `move` returns, so moves sent one after
-another and awaited after are in the air together, booked in the order
-written. A given law is that move's alone: the value keeps its own
-(`@State(motion:)`, `journey.motion`) in its storage, the move lays the law it
-was given on the lanes for its travel, and the next write that names none - an
-assignment, or a move without a law - lays the value's own back with its
-destination, so a plain assignment after `move(to: 0,
-.eased(.milliseconds(2000)))` travels on the value's own law.
+the host answers by that id when its run ends. The completion lane is forced
+dirty, and the destination lanes are forced too where none of them changes, so
+sending a value where it is already going is still a fresh movement with a
+fresh waiter. Where some lanes change, only they are laid: the host sends those
+lanes on as one run, and a lane the move leaves alone travels on as it was
+(host/motion.md, a channel lane by lane). A given motion is that move's alone:
+the next write that names none lays the value's own back with its destination.
+
+## A movement's result
+
+Every movement ends once, and `MotionRun.result()` answers how:
+
+```text
+  .reached(.animated)                     it traveled there
+  .reached(.immediate(reason))            put there at once: there already, a
+                                          motion that does not animate, less
+                                          motion asked for
+  .superseded                             a newer destination, a snap, the
+                                          user's hand
+  .stopped                                `stop()`
+  .detached                               the last consumer left
+  .notStarted(.noReceiver)                written; nothing shows the state
+  .notStarted(.invalidDestination)        the state refuses it; nothing written
+  .notStarted(.unsupportedValue)          written; the host carries the state as
+                                          the value itself
+  .notStarted(.noAnimator)                written and shown at once; an engine's
+                                          state with no engine registered
+  .notStarted(.incompatibleAnimator)      an engine's state takes no motion
+  .notStarted(.inactiveOwner)             the handler asking was superseded
+  .notStarted(.readOnlyDerived)           a derived state with no way back
+```
+
+The host says how a run ended as a `HostMotionOutcome` through
+`HostBoundary.complete(_:as:)`, after it applied the run's last frame; the
+core answers `.detached` itself as a channel closes, and every `.notStarted`
+before anything is booked. `.reached` is the boundary's word that the last
+sample was applied, not a frame seen on the glass.
 
 Each waiter waits under a number of its own. A task cancelled while it waits
-stops waiting with `CancellationError` - its run may be superseded, its element
-gone - and leaves alone: the movement goes on for every other waiter, and
-`stop()` is what ends it. Every resume - the end, a failure, a cancellation -
-is counted as it is made and taken back as the waiter runs again, so a host
-waiting for the queue to go quiet never waits on a failure answered.
-
-A state nothing wears lands at once and answers true: nobody would ever answer a
-waiter booked on it. Under `.custom` the destination is written and the answer
-is true at once, because the engine alone knows when it is done.
+stops waiting with `CancellationError` and leaves alone: the movement goes on
+for every other waiter, and `stop()` is what ends it. Every resume is counted
+as it is made and taken back as the waiter runs again
+(`Renderer.resumesPending`), so a host waiting for the queue to go quiet never
+waits on one already answered. A waiter the application's end takes hears
+`.detached`.
 
 ## Stopping
 
 `stop()` raises the stop counter, leaving the value where the animation stood;
-the host ends the animation and answers the waiter false. The waiter's id stays on
-the image, because the host needs it to answer. The color pair the state kept
-is let go: the value stands at a color between two, which no pair names, and
-a render laying the pair again would send the host on to it.
+the host ends the run, makes that its destination and answers the waiter
+`.stopped`. The color pair the state kept is let go: the value stands at a
+color between two, which no pair names. A state with no channel is unaffected.
 
 ## Writing the parts
-
-```text
-  journey.value = v        a snap of what is shown: the destination stays, so a
-                           destination left behind sends the host straight back;
-                           under .custom it is the engine's frame
-  journey.velocity = v     a kick: it bends an animation under way, and takes a
-                           still value out and lets the law bring it back
-  journey.snap(to: v)      value, destination and a still speed together, at
-                           once - for a value worked out rather than chosen
-  state = v                the destination: a journey to somewhere new
-```
-
-A value worked out from a measurement or a report is not a destination, and
-animated as one it crawls after the thing that decided it; `snap(to:)` is its
-write. It is synchronous: nothing is booked and nobody waits.
 
 Each write lays the lanes of its own parts and leaves every other lane as it
 lies, bit for bit. A value read back through its type is not always the lanes
@@ -156,205 +218,235 @@ frames between them - so a stop or a move laying the whole journey again would
 say the value and its speed moved, and the host would start over from them
 (`JourneyTests.testAJourneyWriteLaysOnlyItsPart`).
 
+Only a write of the destination is a write of the state: it alone moves the
+image's stamp, which an engine following the state compares, and the
+destination's revision, which a conversion compares.
+
+## An engine that animates
+
+A state declared `@State(animatedBy: .engine)` is animated by the one engine
+registered for it with `engine(animating:)`. The state keeps an
+`AnimatorSeat`: who the animator is, the call under way, and the movements
+handed to it.
+
+```text
+  one animator         a second `engine(animating:)` is refused, naming both
+                       places, and stands inert
+  a token a call       `EngineMotion` is good for the call it is handed to;
+                       kept, it writes nothing
+  update               lays where the value stands and its speed, and offers
+                       them as the frame's sample; no destination
+  finish               lays the value on its destination, still, and ends the
+                       movements handed over `.reached(.animated)`
+  .wait                waits for the next destination; it is no arrival
+  less motion          the value is landed for the engine and the author's
+                       arithmetic is not run: `.reached(.immediate(.reducedMotion))`
+  no animator          the destination is shown at once: `.notStarted(.noAnimator)`
+```
+
+`move(to:)` on such a state writes the destination and books the movement
+with the seat. A newer destination ends it `.superseded`, a stop `.stopped`,
+the animator or the last consumer leaving `.detached`. A finished movement is
+answered by the host once it has shown the frame: the cycle hands the ids over
+in `HostCycle.finished`.
+
+Animators run before every other engine of a cycle, each on what the frame
+before left, and the samples they offer are published together once they have
+all run ([engine order](cycle.md#engine-order)): no animator reads another's
+half-made frame.
+
 ## One part at once
 
 A motion layout names the target its hand passes on one axis of its parameters,
 which another hand or the program may be moving: `Journey.snap(_:to:)`, the
 library's own, puts one part of the value - a key path to one of its numbers -
-where it is at once, as `snap(to:)` does the whole. Its lanes of value,
-destination and speed are laid and no other, so the host takes that lane out
-of the run it traveled in and leaves the rest going.
-
-## Two reader sets
-
-A body that reads `fade` is a reader of the state's storage and is asked when
-the destination moves. A body that reads `$fade.journey.value` is a reader of
-the image and is asked on every frame the host writes. So an animation costs a
-build per frame exactly where somebody asked to see it move, and nothing where
-a body reads the destination alone. `HostStorage.readAtBuild` is the image's
-flag, set by the journey's reads, as `State.Storage.readAtBuild` is the
-state's.
+where it is at once. Its lanes of value, destination and speed are laid and no
+other, so the host takes that lane out of the run it traveled in and leaves the
+rest going.
 
 ## Where a run shows it
 
-A layout's run moves its parameters under the hand, a throw or an approach in the
-core, not as a walk of the host's: the hand names each target it passes, and
-the state's own value stays that target, so a body reading it rebuilds only
-as a target passes. Where the run is shown meanwhile is the journey's value:
-the run tells the storage (`show(_:by:)`) each frame it moves, and once it
-rests lets go of it. That moves the state's stamp and asks the journey's
-readers - an engine following the parameters, another layout wearing them, a body
-reading `journey.value` - and not the state's own readers. Nothing of it
-reaches the host, which walks the target; what the run shows is the core's,
-told under the run's own name, so only the run that showed it lets go of it.
+A motion layout's run moves its parameters under the hand, a throw or an
+approach in the core: the hand names each target it passes, and the state's
+own value stays that target. Where the run is shown meanwhile is told to the
+storage (`show(_:by:)`) each frame it moves, and let go once it rests; a
+sample read then answers that place for its value. Telling it moves the
+state's `PresentationWatch`, so an engine following the journey and a body
+reading the sample go with the hand, and the state's own readers are not
+asked. The run reads and lays the lanes through `Journey+Run.swift`, which
+nothing outside the library reaches.
 
 ## Readings
 
-A state has no cadence: it is at its value the moment it is written, so there
-is no sweep on this side to hold back. What sweeps is where the value has got
-to, which the host sends every cycle it moves. `.samples($fade, into: $shown,
-.every(.milliseconds(100)))` copies it into an ordinary state at most ten times a second; the
-body reads that state under the ordinary rules, and the source goes on costing
-nothing. The window belongs to the reading, not the state: one source may be
-read by two views into two states at two rates, taken in the order asked.
+`.samples($fade.journey, into: $shown, .every(.milliseconds(100)))` copies the
+sample's value into an ordinary state at most ten times a second; the body
+reads that state under the ordinary rules. The window belongs to the reading,
+not the state: one journey may be read by two views into two states at two
+rates, taken in the order asked. A reading is a consumer of the channel while
+its element stands.
 
 ```text
-  a frame lands   due():  now        -> take it, the window starts here
-                          waitUntil  -> book one reading for the window's end
-                          waiting    -> one is booked already and covers this
+  the sample changes   due(at: frame):  now        -> take it, the window starts here
+                                        waitUntil  -> book it with the board for the
+                                                      window's end
+                                        waiting    -> one is booked and covers this
 ```
 
-A reading whose window has not passed books one for the end of it, so the last
-frame of an animation arrives. It stops by itself: a take copies only what
-changed, and the host stops sending when the channel stops moving. The booked
-reading sleeps with `Task.sleep`; nothing here uses a run-loop timer. The sleep
-knows the reading weakly: one whose element left while it slept is gone when it
-wakes, and nothing is taken.
+Time is the display's: a reading asks the board's `frameTime`, and one booked
+is taken by the first cycle at or past its time (`CycleBoard.book`), the board
+awake until then, so the last frame of an animation arrives. With no sample to
+deliver nothing is booked and no clock is held. Nothing here sleeps.
 
 The window has to survive the render the reading's own write asks for. That
 render walks the very view that asked for the reading; made afresh there, the
-window would start over, the next frame would count as a first, and a reading
-at any rate would be taken every frame. So a standing reading at the same rate
-is handed the new render's closure and kept; a changed rate is a new reading.
+window would start over. So a standing reading at the same rate is handed the
+new render's closure and kept; a changed rate is a new reading.
 
-A reading belongs to the element that asked for it. The image knows it weakly
-and the element (`RenderedNode.readings`) holds it: kept strongly by the image,
-state, image, reading and closure would form a ring, no state of that view
-would be freed, and the board would walk every leftover reading every frame.
+A reading belongs to the element that asked for it. The image and the board
+know it weakly and the element (`RenderedNode.readings`) holds it: one whose
+element left is never taken. A reading into its own source, or into a state
+its source goes back to, is refused: it would feed itself.
 
 ## Conversions
 
-`$volume.convert { $0 * 100 }` is a second state the host carries, worked out
-from the first by an engine the differ writes: whenever the source moves, the
-engine runs on the display's frames and settles the derived value where the
-control reads it, and nothing is built. `back: { $0 / 100 }` beside it is the
-engine the other way, for a control that reports, so the user's change lands
-on the source in the source's terms. It is woken by the host's reports alone
-(`HostStorage.reports`), never by the forward engine settling the derived
-value: what the application writes goes forward and stays as written - `v =
-0.123` through a slider converting by hundredths stays 0.123, the control
-showing 12 - as the application's writes never come back as the user's.
-The way back is meant as the inverse; where it is not exactly - a rounding, a
-clamp - a report lands on the source as the round trip makes it, and one the
-source refuses lands nowhere (state.md#kept-state). It is written
-in the same call, `convert(_:back:)`, typed `(Out) -> Value`: a way back
-answering another type does not compile, and one call declares the conversion
-whole - a way back that comes and goes stays one call, `back: editing ? { … } :
-nil`, so the derived state stays the same object.
+`$volume.convert { $0 * 100 }` is a second state whose destination is worked
+out from the first's destination. It is a state of its own identity: shown by a
+host it has its own channel and travels under its own motion (`motion:`,
+the application's unless said), whatever its sources travel under, and showing
+it opens no channel for a source. It never reads where a source stands on a
+frame, a source's speed or a source's motion.
+
+What it does not promise is `result.value(t) == f(source.value(t))`. A value
+that must follow the presentation frame by frame is an engine following the
+journeys, or a layout's own arithmetic.
 
 ```text
   derived state   known to the first source's storage under a key spelled
                   nowhere (DerivationKey): where the element being built
-                  stands - the keys from the root down to it, as a name is
-                  distinct among siblings alone - and the call's file, line
-                  and column (PathNumber), the identities of
-                  the ForEach rows it stands in - values, compared as values -
-                  and which time that line ran in the build; held by that
-                  element as it holds its readings: one state per use across
-                  renders - the host's tie keeps its number - so two views
-                  converting one source on one line keep two, each row of a
-                  ForEach its own, kept with its row as the rows move, and a
-                  helper called twice two, told apart by its place in the
-                  build as a view without an id is; an element that leaves
-                  takes its own; made with no element being built, the source
-                  holds it, worked out at once - its arithmetic reads the
-                  source, which would otherwise hold what holds it
+                  stands - the keys from the root down to it - and the call's
+                  file, line and column (PathNumber), the identities of the
+                  ForEach rows it stands in, and which time that line ran in
+                  the build; held by that element as it holds its readings: one
+                  state per use across renders, each row of a ForEach its own,
+                  a helper called twice two; an element that leaves takes its
+                  own; made with no element being built, the source holds it,
+                  worked out at once
   sources         each the storage its binding was made from, held, asked for
                   the one it stands for - itself, or the one it was given up for
                   at an adoption while that stands (state.md, storage and box)
-  engines         back (priority -2) first, then forward (-1), both ahead of
-                  every author's engine, on the element wearing the result
 ```
 
 Handing a conversion on reads nothing. A body that reads one reads its sources:
-the value is worked out afresh on the read and the body becomes every source's
-reader.
+the value is brought up to the writes made so far on the read
+(`Conversion.refresh`), with no render forced and no channel opened, and the
+body becomes every source's reader.
 
-The back engine runs first because a report is the newer word; the forward one
-then derives again from what it landed. Otherwise a report arriving in the very
-cycle the engines first run would be derived over by sources it has not
-reached.
+The arithmetic is synchronous and has no effect. While one runs
+(`ConversionEvaluation`), a state written and an act sent are refused and
+said; a state read that is not a source is said, since the result will not
+follow it.
 
-No ring closes. The derived state is kept on the first source, strongly where
-no element was being built, and its conversion's arithmetic holds the sources;
-were the derived state to hold its conversion too, the source would keep the
-derived state, the derived state its conversion, and the conversion the source,
-and no state of that view would ever be freed - every visit to a page with a
-converted text leaving them behind, walked every frame. So the derived state
-knows its conversion weakly, and the value a source holds is worked out at
-once, its making closure let go. What owns a conversion is the engine the
-differ arms for it, which hands its number back when the element goes, and the
-binding it was made for.
+No ring of references closes. The derived state is kept on the first source,
+strongly where no element was being built, and its conversion's arithmetic
+holds the sources; so the derived state knows its conversion weakly. What owns
+a conversion is the element wearing its result and the binding made for it.
+
+## The graph of destinations
+
+The conversions whose results live elements wear form a graph
+(`ConversionGraph`, the board's). A conversion is stale when a source's
+destination revision moved since it was worked out
+(`AnyStateStorage.targetRevision`: the image's count of changed destination
+lanes, or every write where the value cannot be compared).
+
+```text
+  settled      before a patch is prepared, and twice in a cycle: after the
+               writes are latched and after the engines ran
+  order        a conversion after every one it is worked out from; the rest in
+               the order declared
+  one pass     each stale conversion once: an upstream result published makes
+               the next stale within the pass, so two branches of one source
+               meet at their common result once, both moved
+  equal        a result equal to the last is nothing: no revision, no movement
+               begun again
+  published    a destination alone (`Storage.publish`): the result's standing
+               value and speed are its channel's
+```
+
+A declaration that would close a ring - a source worked out from the very
+result - is refused, said once, and the declaration before stands. No fixed
+point is sought.
 
 ## A chain of conversions
 
 A conversion of a conversion - `$volume.convert { $0 * 100 }.convert { "\(Int($0))%" }`
 - is worked out from the first sources. Each conversion holds the ones its
-sources are the derived side of (`upstream`), since the middle of a chain has
-no binding of its own once the expression writing it ends; the element wearing
-the last writes the engines of every link, the first sources' first, each
-conversion once, so a write to the first source goes through the chain in one
-cycle. A body reading the last reads every link's sources, and works each link
-out over the one before it. A report goes back the same way: each link's
-way back lands it on its sources and hands it to the link before.
+sources are the results of (`upstream`), since the middle of a chain has no
+binding of its own once the expression writing it ends; the element wearing
+the last wears every link, so a write to the first source goes through the
+chain in one pass. A body reading the last reads every link's sources.
 
-## A refusal up the chain
+## The way back
 
-A report is asked whole before anything lands. A state that is a conversion's
-derived side refuses what its way back refuses: what a source refuses of the
-value the report goes back to it as, and that source, if it is itself a
-derived state, what its own way back refuses - `Storage.refusal(of:)`, the
-state's own word first, then `Conversion.refusesBack`, which the declaration
-writing the way back writes beside it. So a report into `.multi(a, b)` whose
-first part a state two links up `a` refuses lands on neither `a` nor `b`, and
-a report into a chain lands on no link; the derived state goes back to what
-its sources hold, and the refusal is said once. The refusal sits on the
-conversion, which the derived state knows weakly, since the derived state
-holding its sources would close the ring the section above opens.
+`back:` says what a derived value goes back to, in each source's own type. It
+runs for a write into the result and for nothing else: the user's report on a
+control, or the program's write to the derived binding. A frame of animation,
+a measured frame, a result published from its sources and a patch applied
+again never run it. Who made a report is said, not worked out:
+`HostBoundary.report` carries a `WriteOrigin`.
 
-Asking each source before either is written does not settle sources whose
-refusals read each other - two windows of one kind asked for one value, free
-while neither holds it. So the second source is asked again once the first
-stands, each way back says whether its report landed, and a report that does
-not land whole puts back every state it wrote - each source and its chain's
-(`writtenBack`, `restorer`), each taken as it stood just before it was written
-and put back last taken first - before the derived state goes back to what they
-hold: a report lands whole or not at all. Putting back touches only what was
-written: a source the refusal stopped short of, and a state whose write stamp
-did not move, stand as they are - a journey on its way keeps its law. One that
-was written gets back whole what the host carries of it - its value, a
-journey's destination, speed, law, completion and stop - and what of it waited
-to be published then, no more (`hostHeld`, `CycleBoard.held`, `restore`): the
-writes taken back publish nothing, so the host's run of it travels on to its
-own deadline and its waiter is answered as it arrives, while a write made
-before the report - a move to the destination it holds - is published as it
-would have been. What this side knows of the image goes back with it, so the
-host's next frame asks nothing.
+`Conversion.writeBack(_:origin:)` is one transaction, whole or not at all:
+
+```text
+  gathered     a destination for every source, up the whole chain; a link with
+               no way back makes the result read-only
+  merged       one state met twice takes one value: equal proposals are one,
+               others a conflict
+  asked        each state's own refusal, as things stand; then every source
+               staged silently and each asked again with all the others
+               standing
+  canonical    the chain worked out over the staged sources; a program's value
+               must be exactly that - `forward(back(value)) == value`
+  taken back   everything staged, whatever the answer
+  committed    every source written together: where the user put it, at once
+               and still; where the program did, a destination under its own
+               motion; then the chain worked out for good
+```
+
+A refusal leaves nothing written and wakes nobody: staging restores each
+state's value, what the host carries of it and what waited to be published,
+and every count (`Storage.stager`). A refusal that reads the other states
+anywhere but their storages reads what the same write proposes for them
+(`BackProposal`): a window's value does.
+
+After the user's report the control stands at what its sources make of it
+(`Conversion.land`): the round trip's value where the way back is no exact
+inverse, the value before where the report was refused or the result is
+read-only. A program's write to a read-only result is refused and said, and
+`move` answers `.notStarted(.readOnlyDerived)`. A `move` of a result with a way
+back is the transaction first, then one movement of the result's own channel
+under the motion given.
 
 ## A conversion declared again
 
 A conversion is one object across renders, and each render declares it again:
-its sources, its arithmetic and its way back are the new declaration's alone.
-A body that wrote `back:` before and does not now leaves no way back -
-the control's reports go back to nobody - and one writing it again takes only
-the reports made from then on, so a report made while there was none never
-lands later (`Conversion.declareAgain`, `declareBack`).
+its sources, its arithmetic, its motion and its way back are the new
+declaration's alone. A body that wrote `back:` before and does not now leaves
+no way back, and a report made while there was none goes back to nobody,
+then or later (`Conversion.declareAgain`, `declareBack`).
 
 ## Many sources
 
 `.multi($a, $b).convert { a, b in … }` is the same machinery over two to ten
 states. `.multi` is a static member of `Binding`, so the leading dot resolves
-against the type the control takes, and the call reads as the states and then
-the arithmetic. The arities are written out one overload each, because no
-parameter pack says "two or more" (measured on Swift 6.4): a pack alone reads
-every spelling, `$0` included, but takes `.multi()` - no source, a stop at run
-time - and `.multi($a)`, a second road to `$a.convert`, and nothing refuses
-either; a pack after two named sources leaves its empty tail uninferred, so
-the commonest call, two sources, does not compile. The overloads refuse both
-at compile time. The sources are read off their storage, not through their bindings, so the line
-that wrote the conversion does not become a reader of every source. Two
-states take a way back as one does, `.multi($a, $b).convert(_:back:)`, the way
-back answering both, each in its own type.
+against the type the control takes. The arities are written out one overload
+each, because no parameter pack says "two or more" (measured on Swift 6.4): a
+pack alone takes `.multi()` and `.multi($a)`, and a pack after two named
+sources leaves its empty tail uninferred, so the commonest call does not
+compile. The sources are read off their storage, not through their bindings,
+so the line that wrote the conversion does not become a reader of every
+source. Two states take a way back as one does, the way back answering both,
+each in its own type.
 
 ## Motion laws
 
@@ -394,7 +486,7 @@ every animation of its table to where it starts and where it lands.
 
 Time is in milliseconds, the unit a `Motion` keeps its length in, and a speed
 is per second everywhere - told to the law, answered by it, carried by an
-animation and reported by a journey - the law alone working in milliseconds
-inside, so no animator converts. The slope of an eased curve is a central difference on the
-curve, a function of progress alone, so it answers the same number in every
-run.
+animation and reported by a sample - the law alone working in milliseconds
+inside, so no animator converts. The slope of an eased curve is a central
+difference on the curve, a function of progress alone, so it answers the same
+number in every run.

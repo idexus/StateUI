@@ -4,7 +4,7 @@
 // Design: docs/design/core/journeys.md#readings
 
 /// How often a reading is taken - the cadence of
-/// `.samples($fade, into: $shown, .every(.milliseconds(100)))`. A state itself has no cadence;
+/// `.samples($fade.journey, into: $shown, .every(.milliseconds(100)))`. A state itself has no cadence;
 /// two views may read one value at two rates.
 public enum Cadence: Equatable, Sendable {
     /// A reading on every frame the host writes.

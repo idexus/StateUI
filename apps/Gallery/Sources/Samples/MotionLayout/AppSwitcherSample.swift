@@ -130,8 +130,8 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
     /// One card: its icon and name over its window - its picture, cut to the
     /// card's corners; the icon is the same picture, small. Its name fades
     /// as the card goes under the one in front: a state of the card's own,
-    /// which an engine following the parameters writes where the run is shown -
-    /// the hand's place too - and the name's opacity wears.
+    /// which an engine following the parameters' journey lands where the run
+    /// is shown - the hand's place too - and the name's opacity wears.
     struct AppCard: View {
         let app: RunningApp
         let index: Int
@@ -164,8 +164,12 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
             }
             .rows(.automatic, .fill)
             .rowSpacing(8)
-            .engine(following: turn) { _ in
-                named = min(max(1 + (Double(index) - turn.journey.value) / 0.6, 0), 1)
+            // Worked out from where the run is shown, not chosen: landed, so
+            // the name keeps up in the hand and in a throw with no journey of
+            // its own behind it.
+            .engine(following: turn.journey) { _ in
+                guard let shown = turn.journey.sample?.value else { return }
+                $named.journey.snap(to: min(max(1 + (Double(index) - shown) / 0.6, 0), 1))
             }
         }
     }

@@ -108,11 +108,11 @@ final class AndroidScrollViewTests: XCTestCase {
             let scroll = try XCTUnwrap(host.views(AndroidScrollView.self).first)
 
             Java.call(scroll.scrollers[0].reference, JavaAPI.scrollTo, .int(0), .int(200))
-            XCTAssertEqual(offset.projectedValue.journey.value, Point(0, 0), "said on the display's frame")
+            XCTAssertEqual(offset.wrappedValue, Point(0, 0), "said on the display's frame")
 
             clock.now = 16
             host.frame()
-            XCTAssertEqual(offset.projectedValue.journey.value, Point(0, 100))
+            XCTAssertEqual(offset.projectedValue.journey.sample?.value, Point(0, 100))
 
             clock.now = 100
             host.frame()

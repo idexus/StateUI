@@ -144,7 +144,7 @@
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let clock = TestClock()
                 let phase = State(wrappedValue: 0.0)
-                let (handed, arrived) = (Received<Double>(), Received<Bool>())
+                let (handed, arrived) = (Received<Double>(), Received<MotionResult>())
                 s.start(clock: clock) {
                     VStack {
                         MotionLayout([0], parameters: phase.projectedValue) { _ in
@@ -157,7 +157,7 @@
                         .parameterMotion(.eased(.milliseconds(400), curve: .linear))
                         .width(100).height(40)
                         Button("Go").onClicked(policy: .ignoreWhileRunning) {
-                            arrived.values.append(try await phase.projectedValue.journey.move(to: 4).arrived())
+                            arrived.values.append(try await phase.projectedValue.journey.move(to: 4).result())
                         }
                         .id("go")
                     }
@@ -174,16 +174,16 @@
                 s.expect(between > 0 && between < 4, true, "on its way half its time in, never at the destination at once")
 
                 s.frames(of: clock, until: 1_000)
-                s.settle { arrived.values == [true] }
+                s.settle { arrived.values == [.reached(.animated)] }
                 s.expect(handed.values.last, 4, "where the program sent it")
-                s.expect(arrived.values, [true], "and a move of it awaited until it arrived")
+                s.expect(arrived.values, [.reached(.animated)], "and a move of it awaited until it arrived")
             },
             ConformanceCase("eachAxisOfThePhaseTravelsOnItsOwn", proves: [
                 Covered(MotionLayoutContract.parameters),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let clock = TestClock()
                 let phase = State(wrappedValue: Orbit())
-                let (handed, arrived) = (Received<Orbit>(), Received<Bool>())
+                let (handed, arrived) = (Received<Orbit>(), Received<MotionResult>())
                 s.start(clock: clock) {
                     VStack {
                         MotionLayout([0], parameters: phase.projectedValue) { _ in
@@ -196,7 +196,7 @@
                         .parameterMotion(.eased(.milliseconds(400), curve: .linear))
                         .width(100).height(40)
                         Button("Turn").onClicked(policy: .ignoreWhileRunning) {
-                            arrived.values.append(try await phase.projectedValue.journey.move(to: Orbit(turn: 4)).arrived())
+                            arrived.values.append(try await phase.projectedValue.journey.move(to: Orbit(turn: 4)).result())
                         }
                         .id("turn")
                         Button("Zoom").onClicked { phase.wrappedValue.zoom = 2 }
@@ -215,10 +215,10 @@
 
                 // The turn's 400 ms end, the zoom sent halfway through it still on its way.
                 s.frames(of: clock, until: 432)
-                s.settle { arrived.values == [true] }
+                s.settle { arrived.values == [.reached(.animated)] }
                 s.expect(handed.values.last?.turn, 4, "the turn arrived when it was due, the zoom sent meanwhile")
                 s.expect(handed.values.last.map { $0.zoom > 1 && $0.zoom < 2 }, true, "the zoom on its own way")
-                s.expect(arrived.values, [true], "and the turn's move awaited to its end")
+                s.expect(arrived.values, [.reached(.animated)], "and the turn's move awaited to its end")
 
                 s.frames(of: clock, until: 1_000)
                 s.expect(handed.values.last, Orbit(turn: 4, zoom: 2), "both where they were sent")
@@ -258,13 +258,15 @@
                 while clock.now < 1_600 {
                     clock.now += 16
                     s.frame()
-                    fastest = max(fastest, journey.velocity)
-                    if phase.wrappedValue == 3, journey.value > 0.1, journey.value < 3 { onItsWay = true }
+                    guard let sample = journey.sample else { continue }
+
+                    fastest = max(fastest, sample.velocity)
+                    if phase.wrappedValue == 3, sample.value > 0.1, sample.value < 3 { onItsWay = true }
                 }
                 s.expect(fastest > 0, true, "going on, as the host walks the phase")
                 s.expect(onItsWay, true, "on its way to the target it named")
-                s.expect(journey.value, 3, "on its target")
-                s.expect(journey.velocity, 0, "at rest")
+                s.expect(journey.sample?.value, 3, "on its target")
+                s.expect(journey.sample?.velocity, 0, "at rest")
             },
             ConformanceCase("aWheelsNotchStepsTheRunToTheNextTarget", proves: [
                 Covered(MotionLayoutContract.wheelStepped),

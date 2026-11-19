@@ -354,8 +354,7 @@ struct HomePage: View {
             // ever put it still.
             guard settled || waited >= Self.patience else { return .again }
 
-            $shown.journey.motion = .eased(Self.entrance, curve: .cubicOut)
-            shown = 1
+            $shown.journey.move(to: 1, .eased(Self.entrance, curve: .cubicOut))
             // `phase` is named in no `tracking:`, so writing it wakes
             // nothing and the entrance is over for good - the engine goes on
             // waking for `room`, sizing the run, and answering `.wait` at the
