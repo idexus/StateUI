@@ -1996,7 +1996,7 @@ enum Listings {
         @State private var cards = Array(Self.all.prefix(4))
 
         /// Which card is at the front - handed on with `$`, never read in the body.
-        @State private var turn = 1.0
+        @State(motion: .eased(.milliseconds(400), curve: .cubicOut)) private var turn = 1.0
 
         /// Whether the cards fan out or stand in a pile: read in the body, so a
         /// change is a new description of the layout, and so is the hand's unit.
@@ -2049,6 +2049,11 @@ enum Listings {
                 // cards reaching new places - the other stays as it was.
                 HStack {
                     SwitchRow("Slow turn", $slowTurn)
+                        // THE TURN'S LAW IS ITS STATE'S: set on the state, it moves the
+                        // next turn that way.
+                        .onChanged(slowTurn) {
+                            try $turn.journey.setMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
+                        }
                     SwitchRow("Bouncy cards", $bouncy)
                 }
                 .horizontalAlignment(.center)
@@ -2101,10 +2106,9 @@ enum Listings {
             // out of the deck and leaves it; short of that, it goes back.
             .itemDrag(begins: .perpendicular)
             .onItemDismissed(directions: .up, threshold: 120) { name in remove(name) }
-            // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
-            // where the parameters stand; `.layoutBodies` THE CARDS reaching their
-            // new places after a card joins, leaves or the order changes.
-            .parameterMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
+            // THE TURN'S OWN MOTION, `@State(motion:)`, DRIVES MOVING BETWEEN CARDS;
+            // `.layoutBodies` THE CARDS reaching their new places after a card
+            // joins, leaves or the order changes.
             .layoutBodies(.onChange(Spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1)))
         }
 
@@ -5195,7 +5199,7 @@ enum Listings {
         @State private var icons = Self.all
 
         /// Which board is in front - handed on with `$`, never read in the body.
-        @State private var board = 0.0
+        @State(motion: Self.turning) private var board = 0.0
 
         /// The icon the hand holds, lifted: larger, so the hand knows it has it.
         @State private var lifted: String?
@@ -5247,7 +5251,6 @@ enum Listings {
                             }
                         }
                     }
-                    .parameterMotion(Self.turning)
                 }
                 .gridRow(0)
                 .clipsContent(true)
@@ -5264,7 +5267,6 @@ enum Listings {
                 } placements: { context, board in
                     (0..<boards).map { dot($0, of: boards, board, context.bounds) }
                 }
-                .parameterMotion(Self.turning)
                 .height(16)
                 .gridRow(1)
             }
@@ -6223,7 +6225,7 @@ enum Listings {
         }
 
         /// Where the strips stand - handed on with `$`, never read in the body.
-        @State private var strips = Strips()
+        @State(motion: .spring(Spring(response: .milliseconds(360), damping: 0.8))) private var strips = Strips()
 
         var body: some View {
             // ONE INPUT: the hand dragged across, carrying the cards with it...
@@ -6246,7 +6248,6 @@ enum Listings {
                 .axis(\.round, input: hand, range: 0...4, periodic: true)
                 // ...and round and round, a card at a time.
                 .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), periodic: true)
-                .parameterMotion(.spring(Spring(response: .milliseconds(360), damping: 0.8)))
             }
             .clipsContent(true)
         }
@@ -6350,7 +6351,7 @@ enum Listings {
 
         /// Which layout stands: 0 the ring, 1 the grid - the one it opens on, in
         /// the middle - 2 the pile; handed on with `$`, never read in the body.
-        @State private var arrangement = 1.0
+        @State(motion: .eased(.milliseconds(700), curve: .cubicInOut)) private var arrangement = 1.0
 
         /// Whether the cards go between the layouts by a smooth curve rather than
         /// straight: read in the body.
@@ -6403,7 +6404,6 @@ enum Listings {
             // BETWEEN THEM each card goes straight, or by a curve its neighbors
             // shape.
             .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
-            .parameterMotion(.eased(.milliseconds(700), curve: .cubicInOut))
         }
 
         /// How large a card is in every layout - the size the grid's cells allow -
@@ -6517,7 +6517,7 @@ enum Listings {
 
         /// Where the run stands on both axes - handed on with `$`, never read in
         /// the body.
-        @State private var deal = Deal()
+        @State(motion: .eased(.milliseconds(600), curve: .cubicOut)) private var deal = Deal()
 
         /// The switch's own value: what the body reads.
         @State private var fanned = false
@@ -6554,7 +6554,6 @@ enum Listings {
             .axis(
                 \.turn, input: .scroll(.horizontal, lengthPerUnit: 90),
                 range: 0...Double(Self.cards.count - 1), snaps: .every(1))
-            .parameterMotion(.eased(.milliseconds(600), curve: .cubicOut))
         }
 
         /// Where one card stands: between a pile and an arc by the spread, the
@@ -6732,7 +6731,7 @@ enum Listings {
 
         /// Where the table stands on every axis - handed on with `$`, never read
         /// in the body.
-        @State private var table = Table()
+        @State(motion: .spring(Spring(response: .milliseconds(420), damping: 0.82))) private var table = Table()
 
         /// Whether the table rests on a photo and the photos on a quarter turn:
         /// read in the body, so the switch declares the axes again.
@@ -6788,7 +6787,6 @@ enum Listings {
             .axis(
                 \.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: snaps ? .every(0.25) : nil,
                 periodic: true)
-            .parameterMotion(.spring(Spring(response: .milliseconds(420), damping: 0.82)))
         }
 
         /// Where the photo at `index` lies: its square of the table, a photo's
@@ -8081,10 +8079,12 @@ enum Listings {
         @State private var rested = MotionLayoutSample.cards.count / 2
 
         /// WHICH CARD IS AT THE FRONT - the parameters, two-way: `Back` and `Next`
-        /// write it and the ring travels there; the hand names the card it passes
-        /// and the one it comes to rest on. It starts on the middle card, and it
-        /// has no end: a turn on, it is the same card again.
-        @State private var turn = Double(MotionLayoutSample.cards.count / 2)
+        /// write it and the ring travels there, under the motion said here; the
+        /// hand names the card it passes and the one it comes to rest on. It
+        /// starts on the middle card, and it has no end: a turn on, it is the same
+        /// card again.
+        @State(motion: .eased(.milliseconds(300), curve: .cubicOut)) private var turn =
+            Double(MotionLayoutSample.cards.count / 2)
 
         /// The device - a phone's cards carry their names alone, smaller.
         @Environment(\.device) private var device
@@ -8189,7 +8189,6 @@ enum Listings {
                 Rectangle()
                     .fill(Color(hex: 0x000000))
             }
-            .parameterMotion(.eased(.milliseconds(300), curve: .cubicOut))
             // AT REST - the ring and every card still - it says where, once.
             .onSettled { turned in
                 let count = Self.cards.count
@@ -13314,7 +13313,7 @@ enum Listings {
 
         /// Where the ring stands on both axes - handed on with `$`, never read in
         /// the body.
-        @State private var ring = Ring()
+        @State(motion: .spring(Spring(response: .milliseconds(420), damping: 0.8))) private var ring = Ring()
 
         var body: some View {
             let count = Double(Self.cards.count)
@@ -13333,7 +13332,6 @@ enum Listings {
                     \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
                     periodic: true)
                 .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
-                .parameterMotion(.spring(Spring(response: .milliseconds(420), damping: 0.8)))
             }
             .clipsContent(true)
         }

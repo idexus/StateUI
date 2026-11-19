@@ -22,7 +22,7 @@ ButtonMenuSample.swift cee5bf33f56e8bb7
 ButtonRoleSample.swift 3e904d0aa8e02d9c
 ButtonSample.swift 4bf410b3eb5f6336
 CanvasSample.swift b31634f0ee2057b2
-ChangingDeckSample.swift 7bb30c0d8da72712
+ChangingDeckSample.swift 5de8238e10795151
 CheckBoxSample.swift 59e11010b2651d72
 ChoosingItemsSample.swift 85105c1d71a4884c
 ClipboardSample.swift a210a3c26540a05e
@@ -54,7 +54,7 @@ GeometryReaderSample.swift 435d057e3c9a0098
 GridSample.swift 9c95bd0181e0d392
 HTTPRequestSample.swift bf26141a6d52f7d9
 HoldSample.swift 3179a83bed36f2d7
-HomeScreenSample.swift ebf0bd9e12223b7b
+HomeScreenSample.swift 517f7a21a5249c47
 HostTimeSample.swift 4b22843b9326dbb5
 IconButtonSample.swift a4ebe7201bac278c
 IconSample.swift b1a186070a9f38de
@@ -67,13 +67,13 @@ ItemActionsSample.swift ff6d9a09bec16391
 ItemsViewSample.swift 10810771ff409676
 KeyPressSample.swift ad88b26f05db34d4
 KeyboardSample.swift d5346970f434eb08
-LayoutAxesSample.swift f703bc38a4e838be
+LayoutAxesSample.swift 47d30019bdb73b4f
 LayoutDirectionSample.swift 39109bcddac88519
-LayoutKeyframesSample.swift eb7a6b0f48525e24
-LayoutParametersSample.swift 5a130204a08bb1f9
+LayoutKeyframesSample.swift deffa11be0fe11d7
+LayoutParametersSample.swift d908ced98f1a3146
 LifecycleSample.swift 200bd806c526531f
 LifetimeSample.swift 388647e356facd79
-LightTableSample.swift fa40f31512dcf8a4
+LightTableSample.swift 140d11fb685c2eaf
 LinkSample.swift cc33621097f3922b
 LinksSample.swift b2d6ace242ac6f8c
 LivingLayoutSample.swift e72b58abf0f5c106
@@ -85,7 +85,7 @@ MapSample.swift 9a6aed334665c0de
 MaterialsSample.swift 9bec51fd1229db7f
 MenuBarSample.swift d88594b78fedd72a
 ModalSample.swift da3fe595d009b093
-MotionLayoutSample.swift 35c2586408d8ff7b
+MotionLayoutSample.swift 67769d342f0639f8
 MotionSample.swift e3070d7eeeca03ad
 MultiWindowSample.swift 4e527c3fa84658e1
 NavigationSample.swift 8a1e25122e6b3073
@@ -147,7 +147,7 @@ ToolbarSample.swift 491da26dc6c36d8f
 TooltipSample.swift 75b87b84ff2d3bb2
 TouchThroughSample.swift 2f49a42898ac5f63
 TransformSample.swift 42f89ce8b8c4c513
-TwoFingersSample.swift 6e7213d5a85fde88
+TwoFingersSample.swift 7794e82642853465
 TwoLayersSample.swift a2bb95e67741119e
 VisualStateSample.swift de176ef7da4dcd00
 WebViewSample.swift ad79d847e2fd200d

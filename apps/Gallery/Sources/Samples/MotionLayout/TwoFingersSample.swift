@@ -28,7 +28,7 @@ struct TwoFingersSample: SampleContent, ExampleContent {
 
     /// Where the ring stands on both axes - handed on with `$`, never read in
     /// the body.
-    @State private var ring = Ring()
+    @State(motion: .spring(Spring(response: .milliseconds(420), damping: 0.8))) private var ring = Ring()
     // listing: end
 
     // The ring is moved by two fingers of its own, so the example is not put
@@ -57,7 +57,6 @@ struct TwoFingersSample: SampleContent, ExampleContent {
                 \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
                 periodic: true)
             .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
-            .parameterMotion(.spring(Spring(response: .milliseconds(420), damping: 0.8)))
         }
         .clipsContent(true)
     }

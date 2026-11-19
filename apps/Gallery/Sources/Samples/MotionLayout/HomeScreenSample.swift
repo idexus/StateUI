@@ -77,7 +77,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     @State private var icons = Self.all
 
     /// Which board is in front - handed on with `$`, never read in the body.
-    @State private var board = 0.0
+    @State(motion: Self.turning) private var board = 0.0
 
     /// The icon the hand holds, lifted: larger, so the hand knows it has it.
     @State private var lifted: String?
@@ -138,7 +138,6 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                         }
                     }
                 }
-                .parameterMotion(Self.turning)
             }
             .gridRow(0)
             .clipsContent(true)
@@ -156,7 +155,6 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             } placements: { context, board in
                 (0..<boards).map { dot($0, of: boards, board, context.bounds) }
             }
-            .parameterMotion(Self.turning)
             .height(16)
             .gridRow(1)
         }

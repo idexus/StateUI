@@ -49,7 +49,7 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
     }
 
     /// Where the strips stand - handed on with `$`, never read in the body.
-    @State private var strips = Strips()
+    @State(motion: .spring(Spring(response: .milliseconds(360), damping: 0.8))) private var strips = Strips()
     // listing: end
 
     // The strips are moved by the hand of their own, so the example is not put
@@ -81,7 +81,6 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
             .axis(\.round, input: hand, range: 0...4, periodic: true)
             // ...and round and round, a card at a time.
             .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), periodic: true)
-            .parameterMotion(.spring(Spring(response: .milliseconds(360), damping: 0.8)))
         }
         .clipsContent(true)
     }

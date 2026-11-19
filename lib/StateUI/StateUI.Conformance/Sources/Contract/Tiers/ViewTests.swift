@@ -236,7 +236,7 @@
             Covered(ViewContract.layoutBody, on: element),
         ], needs: [Covered(MotionLayoutContract.self), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let clock = TestClock()
-            let phase = State(wrappedValue: 0.0)
+            let phase = State(wrappedValue: 0.0, motion: .none)
             let laid = Received<Double>()
             let body = LayoutBody.followsLayout(Spring(response: .milliseconds(400), damping: 0.5))
             s.start(clock: clock) {
@@ -250,7 +250,6 @@
                         laid.values.append(at)
                         return [Placement(Rect(at * 100, 0, 40, 40))]
                     }
-                    .parameterMotion(.none)
                     .width(200).height(40)
                     // The place leaps a hundred on.
                     Button("Leap").onClicked { phase.wrappedValue = 1 }.id("leap")

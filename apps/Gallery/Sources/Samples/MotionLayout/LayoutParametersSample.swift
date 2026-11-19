@@ -38,7 +38,7 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
 
     /// Where the run stands on both axes - handed on with `$`, never read in
     /// the body.
-    @State private var deal = Deal()
+    @State(motion: .eased(.milliseconds(600), curve: .cubicOut)) private var deal = Deal()
 
     /// The switch's own value: what the body reads.
     @State private var fanned = false
@@ -85,7 +85,6 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
         .axis(
             \.turn, input: .scroll(.horizontal, lengthPerUnit: 90),
             range: 0...Double(Self.cards.count - 1), snaps: .every(1))
-        .parameterMotion(.eased(.milliseconds(600), curve: .cubicOut))
     }
 
     /// Where one card stands: between a pile and an arc by the spread, the
@@ -149,8 +148,8 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
         VStack {
             Text("The parameters are a `LayoutParameters` of two axes: `turn`, the card at the front, and "
                 + "`spread`, how far the pile is fanned out. Swipe to turn the cards, and switch "
-                + "`Fan out` while they still move: each axis travels on its own under the layout's "
-                + "`.parameterMotion`, so neither cuts the other short.")
+                + "`Fan out` while they still move: each axis travels on its own under the parameters' "
+                + "motion, `@State(motion:)`, so neither cuts the other short.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

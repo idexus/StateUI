@@ -110,10 +110,12 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
     @State private var rested = MotionLayoutSample.cards.count / 2
 
     /// WHICH CARD IS AT THE FRONT - the parameters, two-way: `Back` and `Next`
-    /// write it and the ring travels there; the hand names the card it passes
-    /// and the one it comes to rest on. It starts on the middle card, and it
-    /// has no end: a turn on, it is the same card again.
-    @State private var turn = Double(MotionLayoutSample.cards.count / 2)
+    /// write it and the ring travels there, under the motion said here; the
+    /// hand names the card it passes and the one it comes to rest on. It
+    /// starts on the middle card, and it has no end: a turn on, it is the same
+    /// card again.
+    @State(motion: .eased(.milliseconds(300), curve: .cubicOut)) private var turn =
+        Double(MotionLayoutSample.cards.count / 2)
 
     /// The device - a phone's cards carry their names alone, smaller.
     @Environment(\.device) private var device
@@ -240,7 +242,6 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 .fill(Color(hex: 0x000000))
                 .cornerRadius(16)
         }
-        .parameterMotion(.eased(.milliseconds(300), curve: .cubicOut))
         // AT REST - the ring and every card still - it says where, once.
         .onSettled { turned in
             let count = Self.cards.count
@@ -411,8 +412,8 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 + "still, it rests on the card it is nearest; let go with speed, it goes on to "
                 + "the card nearest where the throw would end, in one movement. It has no "
                 + "end: past the last card is the first again. `Back` and `Next` send it "
-                + "there without the hand - the parameters themselves travel, under the layout's "
-                + "`.parameterMotion`. The parameters, `parameters: $turn`, are the card at the front; "
+                + "there without the hand - the parameters themselves travel, under their state's own "
+                + "motion, `@State(motion:)`. The parameters, `parameters: $turn`, are the card at the front; "
                 + "`.axis(\\.self, input: .scroll(…), range:, snaps: .every(1), periodic: true)` gives "
                 + "it to the hand, resting on a card and coming round. The picker changes how a throw goes "
                 + "on - `.throwMotion(_:)` takes any motion: eased, its length says how far a "

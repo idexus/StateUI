@@ -25,11 +25,10 @@ final class LayoutSettleTests: XCTestCase {
     /// Views a hundred apart a unit of the phase, snapping to each unit, telling `told` each rest.
     private func tree(_ phase: State<Double>, _ items: State<[Int]>, _ told: Told) -> Node {
         let count = items.wrappedValue.count
-        return MotionLayout(items.wrappedValue, parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+        return MotionLayout(items.wrappedValue, parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
             (0..<count).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
-        .parameterMotion(.eased(.milliseconds(160)))
         .layoutBodies(.onChange(Spring(response: .milliseconds(160))))
         .onSettled { told.phases.append($0) }
         .node
@@ -41,11 +40,10 @@ final class LayoutSettleTests: XCTestCase {
         let (phase, renders) = (State(wrappedValue: 0.0), Renders())
         var heard: [Int] = []
         func built() -> Node {
-            MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+            MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
             .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
-            .parameterMotion(.eased(.milliseconds(160)))
             .onSettled(policy: .ignoreWhileRunning) { _ in
                 heard.append(1)
                 try await Task.sleep(for: .seconds(60))
@@ -71,11 +69,10 @@ final class LayoutSettleTests: XCTestCase {
         let (phase, hears, renders) = (State(wrappedValue: 0.0), State(true), Renders())
         let gate = Gate(.ignoreWhileRunning)
         func built() -> Node {
-            let layout = MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+            let layout = MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
             .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
-            .parameterMotion(.eased(.milliseconds(160)))
             return (hears.wrappedValue
                 ? layout.onSettled(gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
                 : layout).node
@@ -105,11 +102,10 @@ final class LayoutSettleTests: XCTestCase {
         let gate = Gate(.ignoreWhileRunning)
         var heard = 0
         func built() -> Node {
-            let layout = MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+            let layout = MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
             .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
-            .parameterMotion(.eased(.milliseconds(160)))
             return (hears.wrappedValue
                 ? layout.onSettled(gate: gate) { _ in
                     heard += 1
@@ -138,11 +134,10 @@ final class LayoutSettleTests: XCTestCase {
     func testEveryHandlerOfTheRestRunsInWritingOrder() async {
         let (phase, told, renders) = (State(wrappedValue: 0.0), Told(), Renders())
         func built() -> Node {
-            MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+            MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
             .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
-            .parameterMotion(.eased(.milliseconds(160)))
             .onSettled { told.phases.append($0) }
             .onSettled { told.phases.append($0 + 10) }
             .node

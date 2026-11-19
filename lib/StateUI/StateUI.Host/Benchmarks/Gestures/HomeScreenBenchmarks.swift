@@ -41,7 +41,7 @@ private struct HomeApplication: Application {
 /// The icons, a board of twenty in four columns a board, the held one lifted.
 private struct HomeBoard: View {
     @State private var icons = (0..<48).map { "Icon \($0)" }
-    @State private var board = 0.0
+    @State(motion: .spring(Spring(response: .milliseconds(380), damping: 0.86))) private var board = 0.0
     @State private var lifted: String?
 
     var body: some View {
@@ -60,7 +60,6 @@ private struct HomeBoard: View {
             default: move(drag.id, to: Self.slot(at: drag.at, in: drag.room, board: board))
             }
         }
-        .parameterMotion(.spring(Spring(response: .milliseconds(380), damping: 0.86)))
     }
 
     private func move(_ icon: String, to slot: Int) {

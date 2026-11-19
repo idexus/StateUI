@@ -36,7 +36,7 @@ final class MotionLayoutTests: XCTestCase {
     }
 
     /// `.motion` ON THE LAYOUT IS EVERY VIEW'S OWN, before a common modifier or after it: the parameters' law is
-    /// `parameterMotion`'s alone.
+    /// their state's alone.
     func testMotionOnTheLayoutIsEveryViewsOwnInAnyOrder() {
         let layout = MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
 

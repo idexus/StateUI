@@ -354,7 +354,7 @@ final class ControlTests: XCTestCase {
             // The motion layout as its view writes it: the views, the arithmetic, the
             // phase and the hand over them. A composed view, so the case is its body built.
             ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
-                MotionLayout(["one", "two"], parameters: turn.projectedValue) {
+                MotionLayout(["one", "two"], parameters: turn.traveling(.spring(Spring(response: .milliseconds(240))))) {
                     Text($0)
                         .layoutBody(.followsLayout(Spring(response: .milliseconds(420), damping: 0.6)))
                 } placements: { context, phase in
@@ -366,7 +366,6 @@ final class ControlTests: XCTestCase {
                     Rectangle()
                         .fill(.black)
                 }
-                .parameterMotion(.spring(Spring(response: .milliseconds(240))))
                 .layoutBodies(.onChange())
                 .mirrorsRightToLeft(true)
                 .onItemActivated { _ in }
@@ -829,7 +828,7 @@ final class ControlTests: XCTestCase {
             "style", "fontFamily", "source", "userAgent", "data", "content",
             // A value the host cannot be handed whole - a gradient among them.
             "icon", "pageIcon", "dash", "points", "options", "columns", "rows",
-            "shape", "geometryTransform", "transform", "motion", "parameterMotion", "throwMotion", "layoutBody",
+            "shape", "geometryTransform", "transform", "motion", "throwMotion", "layoutBody",
             "layoutBodies",
             "id", "assign", "area",
             // Tiers no view wears: a bar's item, a run of text, a map's marker - and an entry's automation name,

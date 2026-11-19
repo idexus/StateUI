@@ -37,7 +37,6 @@ final class ProgramBodiesTests: XCTestCase {
             } placements: { _, at in
                 shown.indices.map { Placement(Rect((Double($0) - at) * apart, 0, 10, 10)) }
             }
-            .parameterMotion(.none)
             .layoutBodies(bodies)
             .onSettled { _ in settled?.count += 1 }
         }
@@ -53,7 +52,7 @@ final class ProgramBodiesTests: XCTestCase {
     private struct Scene {
         let items = State(wrappedValue: [0, 1, 2])
         let gap = State(wrappedValue: 100.0)
-        let phase = State(wrappedValue: 0.0)
+        let phase = State(wrappedValue: 0.0, motion: .none)
 
         func bench(
             bodies: LayoutBody, own: LayoutBody? = nil, settled: Settles? = nil, reducesMotion: Bool = false

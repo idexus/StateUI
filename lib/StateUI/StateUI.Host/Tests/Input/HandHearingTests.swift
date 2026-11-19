@@ -205,7 +205,7 @@ private final class HandClock: FrameClock {
 }
 
 private struct HandPage: View {
-    @State private var turn = 0.0
+    @State(motion: .eased(.milliseconds(200), curve: .linear)) private var turn = 0.0
 
     var body: some View {
         MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)") } placements: { _, phase in
@@ -213,7 +213,6 @@ private struct HandPage: View {
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
-        .parameterMotion(.eased(.milliseconds(200), curve: .linear))
     }
 }
 
@@ -241,7 +240,7 @@ private struct TappedHandApplication: Application {
 /// A run of cards laid out right to left, mirrored or placed as written, the hand taking one card by moving across.
 private struct RightToLeftPage: View {
     let mirrors: Bool
-    @State private var turn = 0.0
+    @State(motion: .eased(.milliseconds(200), curve: .linear)) private var turn = 0.0
 
     var body: some View {
         MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)") } placements: { _, phase in
@@ -249,7 +248,6 @@ private struct RightToLeftPage: View {
             return (0..<5).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
-        .parameterMotion(.eased(.milliseconds(200), curve: .linear))
         .mirrorsRightToLeft(mirrors)
         .itemDrag(begins: .perpendicular)
         .onItemDragged { drag in dragged.append((drag.id, drag.at)) }

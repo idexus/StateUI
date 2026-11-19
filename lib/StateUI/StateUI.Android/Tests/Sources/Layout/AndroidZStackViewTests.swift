@@ -77,7 +77,7 @@ final class AndroidZStackViewTests: XCTestCase {
     func testAPlacementRunStandsAndDrawsEachChildAsItSays() throws {
         try onMainActor {
             let clock = TestClock()
-            let placed = State(wrappedValue: 0.0)
+            let placed = State(wrappedValue: 0.0, motion: .none)
             let host = AndroidRenderer.running(clock: clock) {
                 VStack {
                     MotionLayout(["back", "front"], parameters: placed.projectedValue) { name in
@@ -88,7 +88,6 @@ final class AndroidZStackViewTests: XCTestCase {
                             ? [Placement(context.bounds), Placement(context.bounds)]
                             : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
                     }
-                    .parameterMotion(.none)
                     .height(200)
 
                     Button("Place").onClicked { placed.wrappedValue = 1 }

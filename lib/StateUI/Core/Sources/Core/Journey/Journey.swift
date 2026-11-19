@@ -91,7 +91,6 @@ public struct Journey<Value: Walked> {
         }
 
         storage.law = motion
-        storage.lawIsTheLayouts = false
     }
 
     /// Puts the value there at once: shown there, going nowhere, standing still.

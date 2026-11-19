@@ -729,7 +729,7 @@ coming to rest on the nearest of its snaps:
 
 ```swift
 struct Carousel: View {
-    @State private var turn = 0.0
+    @State(motion: .spring(Spring(response: .milliseconds(240)))) private var turn = 0.0
 
     let names = ["Mural", "Nebula", "Ridge", "Bloom"]
 
@@ -748,7 +748,6 @@ struct Carousel: View {
                 }
             }
             .axis(\.self, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
-            .parameterMotion(.spring(Spring(response: .milliseconds(240))))
             .height(200)
 
             Button("Next").onClicked { turn = min(turn + 1, Double(names.count - 1)) }
@@ -761,8 +760,8 @@ The arithmetic is handed the parameters as they stand each frame, and each
 placement lands as written: what moves smoothly are the parameters, so every view
 keeps to the path the arithmetic draws - an arc, a fan opening - rather than
 cutting across it. `turn` is the snap the run rests on: written by the
-program, the run travels there under `.parameterMotion(_:)` - with a hand or none -
-and `try await $turn.journey.move(to: 2).result()` waits until it has; under
+program, the run travels there under the state's own motion, `@State(motion:)` -
+with a hand or none - and `try await $turn.journey.move(to: 2).result()` waits until it has; under
 the hand it is the snap the run passes and the one it comes to rest on, and
 a hand taking the run on its way stops the journey. A tap activates the view
 drawn on top, and `.onItemActivated` is handed its item's identity, as a
@@ -816,11 +815,11 @@ the hand's speed; a spring carries it as far as its response and settles as
 springs do. A throw sets out at the hand's speed, and goes on as the parameters'
 journey does: `$turn.journey` says where the run is and how fast it goes while
 it does, as for any journey. The landing on the next snap is never slower
-than `.parameterMotion(_:)` moves a unit: a hand let go still, thrown back, or too slow
+than the parameters' motion moves a unit: a hand let go still, thrown back, or too slow
 to get there sooner, brings the run onto it under that motion over as much of
 its length as the way left is of a unit - the last tenth of a card takes a
 tenth of the motion. A mouse's wheel turned notch by notch steps
-the run a snap a notch, under `.parameterMotion(_:)`, however far apart the snaps
+the run a snap a notch, under the parameters' motion, however far apart the snaps
 stand - an axis with none, a hundred points' worth of the hand.
 
 A change of the layout where its parameters stand travels too. A view
@@ -831,8 +830,8 @@ new place as a body, while the parameters go on as they
 go. `.layoutBodies(_:)` says how, a `LayoutBody` for every view: `.onChange(_:)`
 brings each view onto its place on a `Spring` - the standard one, 300
 milliseconds and never past the place, unless said - and `.none` stands the
-views at their places at once - the parameters still travel; `.parameterMotion(_:)`
-is the parameters' law alone, moving between the views' rests, and `.layoutBodies`
+views at their places at once - the parameters still travel; their state's
+motion is the parameters' law alone, moving between the views' rests, and `.layoutBodies`
 the views reaching their new places:
 
 ```swift
@@ -869,7 +868,7 @@ struct Hand: View {
 Removing the card at the front brings the one behind it there, as the
 others close up. Where the front card was the last, the parameters themselves have to
 go: `$turn.journey.move(to:)` in the same handler sends the run to the card
-before it, under `.parameterMotion(_:)`.
+before it, under the state's motion.
 
 A view can say its own body, which wins over its layout's: `.layoutBody(.none)`
 stands it at its place at once, `.layoutBody(.onChange(_:))` gives it a spring of
@@ -1079,7 +1078,8 @@ struct Ring: View {
 
 Parameters of several axes are a `LayoutParameters` of your own: a struct of numbers
 listing its axes. Each axis moves on its own - one under the hand, another
-written by the program - and travels under the same `.parameterMotion(_:)`:
+written by the program - and travels under the one motion of the state that
+holds them:
 
 ```swift
 struct Orbit: LayoutParameters {
@@ -1090,7 +1090,7 @@ struct Orbit: LayoutParameters {
 }
 
 struct Planets: View {
-    @State private var orbit = Orbit()
+    @State(motion: .spring(Spring(response: .milliseconds(240)))) private var orbit = Orbit()
 
     let names = ["Mercury", "Venus", "Earth", "Mars"]
 
@@ -1107,7 +1107,6 @@ struct Planets: View {
                 }
             }
             .axis(\.turn, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
-            .parameterMotion(.spring(Spring(response: .milliseconds(240))))
             .height(160)
 
             Button("Nearer").onClicked { orbit.zoom = orbit.zoom == 1 ? 2 : 1 }
@@ -1275,7 +1274,7 @@ is all it takes for the hand to move it too:
 
 ```swift
 struct Rearranged: View {
-    @State private var arrangement = 0.0
+    @State(motion: .eased(.milliseconds(700), curve: .cubicInOut)) private var arrangement = 0.0
 
     let names = ["Ada", "Ben", "Cy", "Di", "Eve"]
 
@@ -1291,7 +1290,6 @@ struct Rearranged: View {
                 }
             }
             .axis(\.self, range: 0...1, keyframes: .every(1))
-            .parameterMotion(.eased(.milliseconds(700), curve: .cubicInOut))
             .height(300)
 
             HStack {

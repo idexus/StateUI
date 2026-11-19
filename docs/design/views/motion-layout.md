@@ -265,7 +265,7 @@ under it since the last frame, it keeps where it was shown and its spring
 pulls it after - a card lagging while the run scrolls and settling back,
 flying past where a throw stops at the end and coming back. The view the hand
 lets go goes back onto its place as a body setting out at the hand's speed.
-`.parameterMotion` is the parameters' law alone: how a change, a join or a hand's let go
+The parameters' law is their state's alone: how a change, a join or a hand's let go
 comes onto a place is the body's. A view whose body becomes none on its way
 stands at its place at the next frame. Under less motion no body stands:
 every view at its place.
@@ -291,7 +291,8 @@ from the bodies' (the journey's own `MotionRun` waits for the parameters alone).
 
 The parameters are where the run rests or is going, two-way: the program writes them,
 the hand names it. It is the one thing that travels: a write is its
-destination, which the host walks under the layout's motion and reports frame
+destination, which the host walks under the state's own motion
+(`@State(motion:)`, else the application's) and reports frame
 by frame, so `$parameters.journey.move(to:)` is awaited until the run arrives and
 the arithmetic is handed each frame where the parameters stand - never the
 destination at once, which would make a ring jump. Under the hand, the hand's
@@ -299,7 +300,10 @@ axis is where the hand holds it.
 
 The parameters lent are a state, `$turn`, or a conversion of one - a second
 state the host carries (core/journeys.md#conversions), its destination walked as
-any state's. The engine follows the parameters themselves, so a new one wakes the arithmetic and
+any state's. The layout gives them no motion of its own: a shared channel
+travels under its state's motion, whichever control shows it, and a layout
+is one such control. A hand let go short of a rest comes onto it under the
+same motion (`Run.resolvedLaw`). The engine follows the parameters themselves, so a new one wakes the arithmetic and
 builds nothing; a change of room moves no parameters.
 
 ## Where a motion set out

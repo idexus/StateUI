@@ -183,9 +183,6 @@ extension State {
         /// gave it - which a write that names none travels under.
         var law: Motion = .inherited
 
-        /// Whether that motion is one a motion layout gave its parameters, which the layout may change.
-        var lawIsTheLayouts = false
-
         /// The seat of the engine that animates this state, where it is declared `@State(animatedBy: .engine)`.
         /// Design: docs/design/core/journeys.md#an-engine-that-animates
         var animatorSeat: AnimatorSeat?

@@ -31,7 +31,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
     @State private var cards = Array(Self.all.prefix(4))
 
     /// Which card is at the front - handed on with `$`, never read in the body.
-    @State private var turn = 1.0
+    @State(motion: .eased(.milliseconds(400), curve: .cubicOut)) private var turn = 1.0
 
     /// Whether the cards fan out or stand in a pile: read in the body, so a
     /// change is a new description of the layout, and so is the hand's unit.
@@ -95,6 +95,11 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
             // cards reaching new places - the other stays as it was.
             HStack {
                 SwitchRow("Slow turn", $slowTurn)
+                    // THE TURN'S LAW IS ITS STATE'S: set on the state, it moves the
+                    // next turn that way.
+                    .onChanged(slowTurn) {
+                        try $turn.journey.setMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
+                    }
                 SwitchRow("Bouncy cards", $bouncy)
             }
             .spacing(16)
@@ -149,10 +154,9 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         // out of the deck and leaves it; short of that, it goes back.
         .itemDrag(begins: .perpendicular)
         .onItemDismissed(directions: .up, threshold: 120) { name in remove(name) }
-        // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
-        // where the parameters stand; `.layoutBodies` THE CARDS reaching their
-        // new places after a card joins, leaves or the order changes.
-        .parameterMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
+        // THE TURN'S OWN MOTION, `@State(motion:)`, DRIVES MOVING BETWEEN CARDS;
+        // `.layoutBodies` THE CARDS reaching their new places after a card
+        // joins, leaves or the order changes.
         .layoutBodies(.onChange(Spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1)))
     }
 
@@ -240,12 +244,12 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
             Text("Add, insert, remove, reverse or spread the cards while the deck stands - or while it "
                 + "still turns. Nothing here animates a card: after a change of the layout's description "
                 + "each card goes from where it was shown to where the new arithmetic puts it on the "
-                + "spring `.layoutBodies` names, while `.parameterMotion` moves the parameters - the turn between "
-                + "cards.")
+                + "spring `.layoutBodies` names, while the turn's own motion - its `@State(motion:)` - moves the "
+                + "parameters, the turn between cards.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Slow turn changes `.parameterMotion` alone: swipe or remove the front card and the turn "
+            Text("Slow turn changes the turn's motion alone: swipe or remove the front card and the turn "
                 + "takes longer, while a card added or the order reversed moves as before. Bouncy cards "
                 + "changes `.layoutBodies` alone: the cards overshoot their new places, and the turn is as it was.")
                 .fontSize(12)

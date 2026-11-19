@@ -6802,7 +6802,6 @@ swift.method MotionLayout.pageTitle(_:): @MainActor func pageTitle(_ state: Bind
 swift.method MotionLayout.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
 swift.method MotionLayout.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
-swift.method MotionLayout.parameterMotion(_:): @MainActor func parameterMotion(_ motion: Motion) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View

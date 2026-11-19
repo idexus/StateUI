@@ -18,7 +18,7 @@ final class LayoutFollowerTests: XCTestCase {
 
     /// Two views a hundred apart a unit of the phase: the first following its place, the second the world's own.
     private func tree(_ phase: State<Double>) -> Node {
-        MotionLayout([0, 1], parameters: phase.projectedValue) { index in
+        MotionLayout([0, 1], parameters: phase.traveling(.none)) { index in
             if index == 0 {
                 Text("\(index)").layoutBody(.followsLayout(Spring(response: .milliseconds(400), damping: 0.5)))
             } else {
@@ -27,7 +27,6 @@ final class LayoutFollowerTests: XCTestCase {
         } placements: { _, at in
             [Placement(Rect(at * 100, 0, 10, 10)), Placement(Rect(at * 100, 20, 10, 10))]
         }
-        .parameterMotion(.none)
         .node
     }
 
@@ -55,7 +54,7 @@ final class LayoutFollowerTests: XCTestCase {
         let (phase, sways) = (State(wrappedValue: 0.0), State(wrappedValue: false))
         let renders = Renders()
         func built() -> Node {
-            let layout = MotionLayout([0], parameters: phase.projectedValue) { index in
+            let layout = MotionLayout([0], parameters: phase.traveling(.none)) { index in
                 if sways.wrappedValue {
                     Text("\(index)").layoutBody(.followsLayout(Spring(response: .milliseconds(400), damping: 0.5)))
                 } else {
@@ -64,7 +63,6 @@ final class LayoutFollowerTests: XCTestCase {
             } placements: { _, at in
                 [Placement(Rect(at * 100, 0, 10, 10))]
             }
-            .parameterMotion(.none)
             return (shaded ? layout.shade { Rectangle() } : layout).node
         }
         let layout = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout))

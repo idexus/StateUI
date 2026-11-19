@@ -34,7 +34,7 @@ final class LayoutPanTests: XCTestCase {
     /// A board of three by three a hand pans a hundred points a unit, resting on each square, and two fingers spread
     /// as large as twice.
     private func tree(_ board: State<Board>, _ handed: Handed, downFirst: Bool = false) -> Node {
-        let layout = MotionLayout([0, 1], parameters: board.projectedValue) { Text("\($0)") } placements: { _, board in
+        let layout = MotionLayout([0, 1], parameters: board.traveling(.eased(.milliseconds(160), curve: .linear))) { Text("\($0)") } placements: { _, board in
             handed.boards.append(board)
             return [Placement(Rect(-board.x * 100, -board.y * 100, 40, 40)), Placement(.zero)]
         }
@@ -46,7 +46,6 @@ final class LayoutPanTests: XCTestCase {
         }
         return (downFirst ? across(down(layout)) : down(across(layout)))
         .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
-        .parameterMotion(.eased(.milliseconds(160), curve: .linear))
         .node
     }
 

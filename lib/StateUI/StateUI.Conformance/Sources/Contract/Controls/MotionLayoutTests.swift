@@ -341,7 +341,7 @@
                 Covered(MotionLayoutContract.parameters),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let clock = TestClock()
-                let phase = State(wrappedValue: 0.0)
+                let phase = State(wrappedValue: 0.0, motion: .eased(.milliseconds(400), curve: .linear))
                 let (handed, arrived) = (Received<Double>(), Received<MotionResult>())
                 s.start(clock: clock) {
                     VStack {
@@ -352,7 +352,6 @@
                             handed.values.append(phase)
                             return [Placement(Rect(phase * 10, 0, 20, 20))]
                         }
-                        .parameterMotion(.eased(.milliseconds(400), curve: .linear))
                         .width(100).height(40)
                         Button("Go").onClicked(policy: .ignoreWhileRunning) {
                             arrived.values.append(try await phase.projectedValue.journey.move(to: 4).result())
@@ -380,7 +379,7 @@
                 Covered(MotionLayoutContract.parameters),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let clock = TestClock()
-                let phase = State(wrappedValue: Orbit())
+                let phase = State(wrappedValue: Orbit(), motion: .eased(.milliseconds(400), curve: .linear))
                 let (handed, arrived) = (Received<Orbit>(), Received<MotionResult>())
                 s.start(clock: clock) {
                     VStack {
@@ -391,7 +390,6 @@
                             handed.values.append(phase)
                             return [Placement(Rect(phase.turn * 10, 0, 20 * phase.zoom, 20))]
                         }
-                        .parameterMotion(.eased(.milliseconds(400), curve: .linear))
                         .width(100).height(40)
                         Button("Turn").onClicked(policy: .ignoreWhileRunning) {
                             arrived.values.append(try await phase.projectedValue.journey.move(to: Orbit(turn: 4)).result())
@@ -496,7 +494,8 @@
             ConformanceCase("anAxisOfKeyframesAloneLeavesTheHandAlone", proves: [
                 Covered(MotionLayoutContract.self),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
-                let (clock, arrangement, handed) = (TestClock(), State(wrappedValue: 0.0), Received<Double>())
+                let arrangement = State(wrappedValue: 0.0, motion: .eased(.milliseconds(200), curve: .linear))
+                let (clock, handed) = (TestClock(), Received<Double>())
                 s.start(clock: clock) {
                     VStack {
                         MotionLayout([0], parameters: arrangement.projectedValue) { _ in
@@ -507,7 +506,6 @@
                             return [Placement(Rect(at * 60, 0, 20, 20))]
                         }
                         .axis(\.self, range: 0...1, keyframes: .every(1))
-                        .parameterMotion(.eased(.milliseconds(200), curve: .linear))
                         .width(100).height(40)
                         Button("Go").onClicked { arrangement.wrappedValue = 1 }
                             .id("go")
@@ -636,6 +634,8 @@ private func itemLayout(
     _ s: Session, clock: TestClock, phase: State<Double>, begins: ItemDragStart, told: Received<String>,
     dismissing: Bool = false
 ) throws -> MountedElement {
+    // The parameters travel under their state's own motion.
+    try? phase.projectedValue.journey.setMotion(.eased(.milliseconds(200), curve: .linear))
     s.start(clock: clock) {
         VStack {
             let layout = MotionLayout([0, 1, 2], parameters: phase.projectedValue) { _ in
@@ -647,7 +647,6 @@ private func itemLayout(
             .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
             .itemDrag(begins: begins)
             .onItemDragged { told.values.append("\($0.id) at \(Int($0.at.x)),\(Int($0.at.y))") }
-            .parameterMotion(.eased(.milliseconds(200), curve: .linear))
             if dismissing {
                 layout.onItemDismissed(directions: .down, threshold: 10) { told.values.append("\($0) dismissed") }
                     .width(100).height(40)
@@ -676,6 +675,8 @@ private struct Orbit: LayoutParameters {
 private func handLayout(
     _ s: Session, clock: TestClock, phase: State<Double>, mirrored: Bool = false
 ) throws -> MountedElement {
+    // The parameters travel under their state's own motion.
+    try? phase.projectedValue.journey.setMotion(.eased(.milliseconds(300), curve: .linear))
     s.start(clock: clock) {
         VStack {
             MotionLayout([0, 1, 2], parameters: phase.projectedValue) { _ in
@@ -685,7 +686,6 @@ private func handLayout(
                 (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
             }
             .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...5, snaps: .every(1))
-            .parameterMotion(.eased(.milliseconds(300), curve: .linear))
             .mirrorsRightToLeft(mirrored)
             .width(100).height(40)
         }
@@ -709,6 +709,8 @@ private struct Square: LayoutParameters {
 /// element, once the room is told.
 @MainActor
 private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) throws -> MountedElement {
+    // The parameters travel under their state's own motion.
+    try? square.projectedValue.journey.setMotion(.eased(.milliseconds(300), curve: .linear))
     s.start(clock: clock) {
         VStack {
             MotionLayout([0, 1, 2], parameters: square.projectedValue) { _ in
@@ -719,7 +721,6 @@ private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) th
             }
             .axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
             .axis(\.y, input: .scroll(.vertical, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
-            .parameterMotion(.eased(.milliseconds(300), curve: .linear))
             .width(200).height(160)
         }
         .horizontalAlignment(.start)
@@ -735,6 +736,8 @@ private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) th
 private func fingersLayout(
     _ s: Session, clock: TestClock, phase: State<Double>, input: LayoutInput
 ) throws -> MountedElement {
+    // The parameters travel under their state's own motion.
+    try? phase.projectedValue.journey.setMotion(.eased(.milliseconds(200), curve: .linear))
     s.start(clock: clock) {
         VStack {
             MotionLayout([0, 1, 2], parameters: phase.projectedValue) { _ in
@@ -744,7 +747,6 @@ private func fingersLayout(
                 (0..<3).map { Placement(Rect(Double($0) * 80 + 20, 60, 40 * at, 40)) }
             }
             .axis(\.self, input: input, range: 0.5...2, snaps: [1])
-            .parameterMotion(.eased(.milliseconds(200), curve: .linear))
             .width(300).height(240)
         }
         .horizontalAlignment(.start)

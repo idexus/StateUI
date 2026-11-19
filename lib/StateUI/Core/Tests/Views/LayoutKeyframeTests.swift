@@ -44,11 +44,10 @@ final class LayoutKeyframeTests: XCTestCase {
         _ declared: @escaping (MotionLayout<[Int], Int, Double>) -> MotionLayout<[Int], Int, Double>
     ) -> () -> Node {
         {
-            let layout = MotionLayout([0, 1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+            let layout = MotionLayout([0, 1], parameters: phase.traveling(.eased(.milliseconds(160), curve: .linear))) { Text("\($0)") } placements: { _, at in
                 asked.phases.append(at)
                 return Self.poses(at, gap: gap?.wrappedValue ?? 10)
             }
-            .parameterMotion(.eased(.milliseconds(160), curve: .linear))
             return declared(gap.map { layout.following($0.projectedValue) } ?? layout).node
         }
     }

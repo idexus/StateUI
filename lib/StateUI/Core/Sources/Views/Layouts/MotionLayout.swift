@@ -178,9 +178,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     private var dragged: [ValueHandler<ItemDrag<ID>>] = []
     private var dismissals: [LayoutDismissal<ID>] = []
 
-    /// How the run travels to where the program or the hand's throw sends it.
-    private var law = Motion.inherited
-
     /// How a throw goes on once the hand lets go, every axis alike.
     private var throwLaw = Motion.eased(.milliseconds(400), curve: .cubicOut)
 
@@ -435,20 +432,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         return copy
     }
 
-    /// How the parameters travel where the program or a settle sends them; let go short of the next snap, the run comes
-    /// onto it at a unit a length of this motion, so the short way is short. How a view a change moves comes onto its
-    /// new place is its body's (`layoutBodies(_:)`).
-    ///
-    ///     .parameterMotion(.spring(Spring(response: .milliseconds(240))))
-    ///
-    /// - Parameter motion: the law; the element's, the application's or the library's unless said.
-    /// - Returns: the layout, traveling that way.
-    public func parameterMotion(_ motion: Motion) -> Self {
-        var copy = self
-        copy.law = motion
-        return copy
-    }
-
     /// How the parameters go on once the hand lets go of them with speed - how far a throw carries and how it slows -
     /// every axis alike, so axes let go together go on by one law whatever order they were declared in.
     ///
@@ -471,7 +454,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     ///     .layoutBodies(.onChange(Spring(response: .milliseconds(420), damping: 0.8)))
     ///
     /// - Parameter body: the views' body; `.onChange()` unless said, `.none` for views standing at their places at
-    ///   once - the parameters still travel under `parameterMotion(_:)`.
+    ///   once - the parameters still travel under their state's motion.
     /// - Returns: the layout, its views moving as that body.
     public func layoutBodies(_ body: LayoutBody) -> Self {
         setValue(LayoutContract.layoutBodies, body)
@@ -697,8 +680,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             }
         }
         .setValue(MotionLayoutContract.parameters.token, on: run.parameters, mode: .inOut, kind: .property)
-        .motion(law)
-        .parameters(run.parameters, travelUnder: law)
         // The program is worked out on the cycle whenever what it works from was written - the room the host said,
         // the parameters and their frames, the hand - and the host reads the slots worked out.
         // Design: docs/design/core/layout-program.md#what-runs-it-again
@@ -833,7 +814,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
                 grip: _grip, item: _item, dismissals: dismissalRuns, settles: settledRuns, drags: dragRuns),
             hands: hands,
             focus: hands.first { $0.way != nil },
-            law: law,
             throwing: throwLaw,
             viewsBody: written.value(LayoutContract.layoutBodies.token).flatMap(LayoutBody.init(propValue:)) ?? .onChange(),
             body: { [bodies] index in bodies(index) },
@@ -900,7 +880,7 @@ extension MotionLayout: WalkedView {
             ("source", source), ("parameters", parameters), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("consumed", consumed), ("mask", mask as Any), ("activated", activated),
             ("itemStart", itemStart as Any), ("dragged", dragged), ("dismissals", dismissals),
-            ("law", law), ("throwLaw", throwLaw), ("settled", settled), ("sized", sized as Any),
+            ("throwLaw", throwLaw), ("settled", settled), ("sized", sized as Any),
             ("mirrors", mirrors),
             ("named", named as Any), ("written", written),
         ]
@@ -934,19 +914,4 @@ struct LayoutShown<Parameters: LayoutParameters>: Equatable {
 private extension Point {
     /// The point a host told, each coordinate that is no finite number nought.
     var told: Point { Point(x.isFinite ? x : 0, y.isFinite ? y : 0) }
-}
-
-extension ModifiableElement {
-    /// Gives a layout's parameters the layout's motion where their state says none of its own: a channel travels
-    /// under its state's motion, which no element showing it decides.
-    /// Design: docs/design/views/motion-layout.md#the-parameters
-    func parameters<Parameters: Walked>(_ parameters: Binding<Parameters>, travelUnder law: Motion) -> Modified {
-        modified { _ in
-            let storage = parameters.storage
-            guard storage.law.kind == .inherited || storage.lawIsTheLayouts else { return }
-
-            storage.law = law
-            storage.lawIsTheLayouts = law.kind != .inherited
-        }
-    }
 }

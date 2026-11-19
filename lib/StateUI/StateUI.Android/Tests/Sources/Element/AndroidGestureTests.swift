@@ -196,7 +196,7 @@ final class AndroidGestureTests: XCTestCase {
     /// finger put down on the card and dragged along the run is the layout's - and no tap of the card.
     func testAHandOnACardThatAnswersATapMovesTheRun() throws {
         try onMainActor {
-            let turn = State(wrappedValue: 0.0)
+            let turn = State(wrappedValue: 0.0, motion: .none)
             let tapped = Received<Int>()
             let host = AndroidRenderer.running {
                 MotionLayout([0, 1, 2, 3], parameters: turn.projectedValue) { card in
@@ -207,7 +207,6 @@ final class AndroidGestureTests: XCTestCase {
                     (0..<4).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, 100)) }
                 }
                 .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
-                .parameterMotion(.none)
                 .height(100)
             }
             host.layOut()

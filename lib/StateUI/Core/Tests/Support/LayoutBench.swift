@@ -178,6 +178,16 @@ final class LayoutBench {
     }
 }
 
+extension State where Value: Walked {
+    /// The state's binding, the state moving under `motion` from now on: how a test gives a layout's parameters
+    /// their law, which is their state's own.
+    @MainActor
+    func traveling(_ motion: Motion) -> Binding<Value> {
+        try? projectedValue.journey.setMotion(motion)
+        return projectedValue
+    }
+}
+
 extension HostPatch {
     /// The layout program this patch says its element runs from now on; nil where it says none.
     var program: HostLayoutProgram? {

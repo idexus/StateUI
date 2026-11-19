@@ -142,7 +142,7 @@ private final class FingersClock: FrameClock {
 }
 
 private struct FingersPage: View {
-    @State private var dial = Dial()
+    @State(motion: .eased(.milliseconds(200), curve: .linear)) private var dial = Dial()
 
     var body: some View {
         MotionLayout([0, 1, 2, 3, 4], parameters: $dial) { Text("\($0)") } placements: { _, dial in
@@ -151,7 +151,6 @@ private struct FingersPage: View {
         }
         .axis(\.turn, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
         .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
-        .parameterMotion(.eased(.milliseconds(200), curve: .linear))
     }
 }
 

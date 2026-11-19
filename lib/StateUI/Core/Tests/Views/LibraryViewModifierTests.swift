@@ -26,10 +26,9 @@ final class LibraryViewModifierTests: XCTestCase {
             GalleryView([1, 2], id: \.self) { Text("\($0)") }.position(shown.projectedValue).margin(8).node,
         ]
         let layouts = [
-            MotionLayout([1], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in [] }
-                .height(200).parameterMotion(.none).node,
-            MotionLayout([1], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in [] }
-                .parameterMotion(.none).height(200).node,
+            MotionLayout([1], parameters: turn.traveling(.none)) { Text("\($0)") } placements: { _, _ in [] }
+                .height(200).node,
+            MotionLayout([1], parameters: turn.traveling(.none)) { Text("\($0)") } placements: { _, _ in [] }.height(200).node,
         ]
         let dots = [
             PositionDots().opacity(0.5).dotColor(.red).node,

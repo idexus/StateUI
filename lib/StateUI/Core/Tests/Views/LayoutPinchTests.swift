@@ -33,13 +33,12 @@ final class LayoutPinchTests: XCTestCase {
     /// Four views a dial turns - a unit every 90 degrees, round and round - and spreads, resting at half, whole and
     /// twice its size.
     private func tree(_ dial: State<Dial>, _ handed: Handed, itemDrag: Bool = false) -> Node {
-        var layout = MotionLayout([0, 1, 2, 3], parameters: dial.projectedValue) { Text("\($0)") } placements: { _, dial in
+        var layout = MotionLayout([0, 1, 2, 3], parameters: dial.traveling(.eased(.milliseconds(160), curve: .linear))) { Text("\($0)") } placements: { _, dial in
             handed.dials.append(dial)
             return (0..<4).map { _ in Placement(Rect(0, 0, 40, 40)) }
         }
         .axis(\.zoom, input: .magnification, range: 0.5...2, snaps: [1])
         .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), periodic: true)
-        .parameterMotion(.eased(.milliseconds(160), curve: .linear))
         if itemDrag { layout = layout.itemDrag(begins: .longPress) }
         return layout.node
     }

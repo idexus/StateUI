@@ -26,7 +26,7 @@ final class LayoutBodyTests: XCTestCase {
     ) -> Node {
         let shown = items.wrappedValue
         let first = shown.first
-        return MotionLayout(shown, parameters: phase.projectedValue) { item in
+        return MotionLayout(shown, parameters: phase.traveling(.none)) { item in
             if let own, item == first {
                 Text("\(item)").layoutBody(own)
             } else {
@@ -35,7 +35,6 @@ final class LayoutBodyTests: XCTestCase {
         } placements: { _, at in
             shown.indices.map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
-        .parameterMotion(.none)
         .layoutBodies(bodies)
         .node
     }

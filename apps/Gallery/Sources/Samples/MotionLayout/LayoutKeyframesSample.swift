@@ -33,7 +33,7 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
 
     /// Which layout stands: 0 the ring, 1 the grid - the one it opens on, in
     /// the middle - 2 the pile; handed on with `$`, never read in the body.
-    @State private var arrangement = 1.0
+    @State(motion: .eased(.milliseconds(700), curve: .cubicInOut)) private var arrangement = 1.0
 
     /// Whether the cards go between the layouts by a smooth curve rather than
     /// straight: read in the body.
@@ -97,7 +97,6 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
         // BETWEEN THEM each card goes straight, or by a curve its neighbors
         // shape.
         .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
-        .parameterMotion(.eased(.milliseconds(700), curve: .cubicInOut))
     }
 
     /// How large a card is in every layout - the size the grid's cells allow -

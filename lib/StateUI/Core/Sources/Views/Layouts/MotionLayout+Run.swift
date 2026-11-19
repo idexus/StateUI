@@ -71,7 +71,6 @@ extension MotionLayout {
         /// `on(_:)` says another.
         let hands: [Hand]
         var focus: Hand?
-        let law: Motion
 
         /// How a throw goes on once the hands let go, every axis alike (`throwMotion(_:)`).
         let throwing: Motion
@@ -91,10 +90,13 @@ extension MotionLayout {
         /// The layout's own size in a room offered, at given parameters, where it says one.
         let sized: (@MainActor (Double?, Double?, Parameters) -> LayoutSize)?
 
-        /// The law the run moves under: its own, or - `.inherited` - the application's, as a host's channel answers
-        /// it, so a change and a program's write of the parameters travel alike.
-        /// Design: docs/design/views/motion-layout.md#a-change-where-the-parameters-stand
-        var resolvedLaw: Motion { law.resolved(against: StandardEnvironment.application.motion) }
+        /// The law the run moves under: the parameters' state's own (`@State(motion:)`), or - `.inherited` - the
+        /// application's, as a host's channel answers it, so the hand letting go and a program's write of the
+        /// parameters travel alike.
+        /// Design: docs/design/views/motion-layout.md#the-parameters
+        var resolvedLaw: Motion {
+            parameters.storage.law.resolved(against: StandardEnvironment.application.motion)
+        }
 
         /// The run working on `hand`'s axis.
         func on(_ hand: Hand) -> Run {

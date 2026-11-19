@@ -82,6 +82,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   once; `.onChange(_:)`, a spring answering a change of the layout, which every view is unless said; and
   `.followsLayout(_:)`, which lags behind a moving place too - and a view's own `.layoutBody(_:)` wins over its
   layout's: a view saying `.followsLayout` in a layout of `.none` now moves, where it stood still before.
+- **A motion layout's parameters travel under their state's motion.** `.parameterMotion(_:)` is gone: say the
+  motion where the parameters are declared, `@State(motion: .spring(Spring(response: .milliseconds(240)))) private
+  var turn = 0.0`, and change it later with `try $turn.journey.setMotion(_:)`. A hand let go short of a rest comes
+  onto it under the same motion.
 - **A hand's speed is no longer written into a journey.** `$x.journey.velocity = update.velocity.x` is gone with the
   setter. A throw is a movement of its own: a cubic-out journey sets out three times as fast as it averages, so one
   to `update.total.x + update.velocity.x * seconds / 3` over `seconds` goes on at the hand's speed and slows to rest.

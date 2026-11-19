@@ -41,11 +41,10 @@ final class LayoutAxisTests: XCTestCase {
     ) -> () -> Node {
         {
             declared(
-                MotionLayout([0], parameters: table.projectedValue) { Text("\($0)") } placements: { _, table in
+                MotionLayout([0], parameters: table.traveling(motion)) { Text("\($0)") } placements: { _, table in
                     handed.tables.append(table)
                     return [Placement(Rect(0, 0, 40, 40))]
                 }
-                .parameterMotion(motion)
             )
             .node
         }
