@@ -18,7 +18,9 @@ plain Swift; an editor shows what it found and runs what is picked through it.
   application runs as plain Swift, its own head running only on its platform;
 - for Android and UIKit, last, the host's suite that runs on a device -
   `lib/StateUI/StateUI.Android/Tests` on the device chosen,
-  `lib/StateUI/StateUI.UIKit/Tests` on the simulator chosen.
+  `lib/StateUI/StateUI.UIKit/Tests` on the simulator chosen;
+- on a Mac, GTK's and WinUI's own suite runs on a device too: the guest
+  chosen ([Guests](guests.md#a-hosts-suite-in-a-guest)).
 
 A suite is named by its package's path from the folder, the folder's own name
 for its root, and says whether it runs on a device (`onDevice`), so a client
@@ -28,8 +30,8 @@ asks for one only when such a suite runs.
 
 `TestRunner` runs a package's tests with `swift test`, every `STATEUI_`
 switch that records something taken away; an application built as an AppKit
-head with `STATEUI_HOST=appkit` and its own scratch folder, `.build/appkit`,
-so its plain build stays. A host's suite runs as `stateui repo test --suite
+head with the trait `AppKit` and its own scratch folder, `.build/appkit`, so
+its plain build stays. A host's suite runs as `stateui repo test --suite
 host:<host>` does, in the checkout the folder belongs to. The result is the
 suite's phases, each passed or not, and the run's output its events.
 

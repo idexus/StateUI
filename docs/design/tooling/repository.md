@@ -24,10 +24,10 @@ row.
 
 ## The UIKit host's suite
 
-A view stands in a window scene only in an application's process, so
-UIKit's tests are an application of their own,
-`lib/StateUI/StateUI.UIKit/Tests`, its identifier in its own
-`Platforms/UIKit/Info.plist`. `--suite host:uikit` runs it on the simulator
+A view stands in a window scene only in an application's process, so UIKit's
+tests are an application of their own, `lib/StateUI/StateUI.UIKit/Tests`,
+the suite's own identity `com.stateui.uikit.tests` at StateUI's release
+(`UIKitSuite.identity`). `--suite host:uikit` runs it on the simulator
 `--device` names - the booted one, else an iPhone; a device is refused. The
 simulator is booted first and the application built for its triple and SDK
 against the simulator platform's own XCTest, read where it stands, bundled
@@ -36,11 +36,11 @@ accessibility is turned on then, before the application starts, so UIKit's
 accessibility answers for its controls as for a VoiceOver user, whatever ran
 before - after the build, as a simulator booted for the first time answers
 slowly at first: on a runner the write took more than two minutes just after
-the boot. The application is started as a run starts one
-(runs.md) - `--filter` handed to it as `STATEUI_FILTER` - its output followed
-until it ends with `Executed N tests, with M failures`, which decides the
-tests' phase. Then `StateUIUIKit` and `StateUITesting`, as that build made
-them, are held to their API records for the simulator's triple and SDK.
+the boot. The application is started as a run starts one (runs.md) -
+`--filter` handed to it as `STATEUI_FILTER` - its output followed until it
+ends with `Executed N tests, with M failures`, which decides the tests'
+phase. Then `StateUIUIKit` and `StateUITesting`, as that build made them,
+are held to their API records for the simulator's triple and SDK.
 
 ## The Android host's suite
 
@@ -109,7 +109,10 @@ host's own tests run in Node over a page with just enough of a DOM, through
 the host's relay; the conformance families and the host's tests that run a
 host - their classes listed in `WebSuite`, each needing a browser's layout,
 focus, dialogs and input - run headless in Google Chrome or Chromium (or the
-browser `STATEUI_BROWSER` names), each in a program of its own. `--filter`
+browser `STATEUI_BROWSER` names), each in a program of its own on a tab of
+its own, so nothing a class emulated - a touch screen among them - reaches the
+next. Every tab's pointer is a desktop's mouse that hovers, whatever the
+machine has: a machine with no mouse makes Chromium say none. `--filter`
 names a class, a class's test, or a conformance family, which then runs
 where it belongs.
 
@@ -158,6 +161,16 @@ helper gives its family. On UIKit and Android a family's name selects the
 tests whose names hold it, so `Button` takes `ButtonMenu` along: a family
 more, whole, never one less.
 
+A host this machine works on another - GTK and WinUI on a Mac, a host a
+machine paired runs - makes its run there ([Work on another
+machine](service.md#work-on-another-machine)): `--device` names the guest or
+the machine, the checkout is copied there and that machine's stateui runs the
+families in its copy (`repository/conformance` with the copy's `folderUri`),
+holding them to the marks copied with it. Recorded, the host's
+`lib/StateUI/exports/marks/<host>` is fetched home - what the copy lacks
+removed - and the documents rendered here from it, a phase after that
+machine's; nothing else of its copy returns.
+
 An editor asks for the same run as an operation, `repository/conformance`:
 the host, the selection - `{"changed": true}`, `{"families": [...]}` or
 `{"all": true}` - whether it records, and the device; its result is the run's
@@ -196,11 +209,24 @@ machine runs, in their order - the library, the host layer, the conformance
 runner, application testing, the Gallery, HelloWorld, the tool
 (`RepositoryPlan`); `--plan native` this machine's host suites - AppKit,
 UIKit, Android and the Web on a Mac, GTK and the Web on Linux, WinUI on
-Windows - a UIKit or Android suite on the `--device` named. Each suite is a
+Windows - the `--device` named going to the suite whose host it is a device
+of, by its UDID, serial or name: an iPhone to UIKit's, an Android serial to
+Android's, the other taking its own; a device neither has is refused before
+any suite runs. Each suite is a
 phase of its own, a host suite's phases under its id; one failing never stops
 those after it, and a suite this machine cannot run - an Android one with no
 device running - stands as not run, never as passed. `--suite <id>` runs one
-of the plan's. Full WinUI conformance is never part of a plan.
+of the plan's. A suite's own options - `--filter`, `--build-only`,
+`--architecture`, `--artifact` - are refused with a plan, as it runs its
+suites whole; they go with `--suite` alone. Full WinUI conformance is never
+part of a plan.
+
+`--device` naming a guest of this Mac or a machine paired runs the plan on
+that machine ([Work on another machine](service.md#work-on-another-machine)):
+the checkout copied there and its stateui asked for the plan in its copy
+(`repository/plan`, `folderUri`), every phase as that machine says it - the
+portable plan on Linux and Windows from the Mac, a machine's native suites on
+it.
 
 ## An editor's extension
 

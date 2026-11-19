@@ -1,0 +1,25 @@
+{
+  "request" : {
+    "id" : "33",
+    "jsonrpc" : "2.0",
+    "method" : "file/read",
+    "params" : {
+      "length" : 4194304,
+      "offset" : 0,
+      "path" : "NotesGTK",
+      "root" : "/home/example/stateui-guest/artifacts/Notes/GTK"
+    }
+  },
+  "response" : {
+    "id" : "33",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "data" : "f0VMRg==",
+      "executable" : true,
+      "modified" : 1763380900,
+      "offset" : 0,
+      "path" : "NotesGTK",
+      "size" : 4
+    }
+  }
+}

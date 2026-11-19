@@ -12,6 +12,16 @@ public enum FileURI {
         return uri.hasSuffix("/") && url.pathComponents.count > 1 ? String(uri.dropLast()) : uri
     }
 
+    /// The path `uri` names as the machine whose file it is writes it: `C:\\Users\\…` for a Windows drive's - a guest's
+    /// file told on a Mac - else the path itself.
+    public static func shown(_ uri: String) -> String {
+        if uri.hasPrefix("file:///"), let rest = String(uri.dropFirst(8)).removingPercentEncoding,
+           let drive = rest.first, drive.isLetter, rest.dropFirst().first == ":" {
+            return rest.replacingOccurrences(of: "/", with: "\\")
+        }
+        return (try? url(uri).path) ?? uri
+    }
+
     /// The file `uri` names.
     ///
     /// - Throws: ``ToolingError`` when `uri` is no file URI.

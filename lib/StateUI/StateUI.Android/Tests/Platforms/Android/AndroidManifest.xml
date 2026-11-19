@@ -7,7 +7,7 @@
     <!-- A request the application sends reaches its server, the conformance run's on this device's loopback. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="StateUI Android host tests"
+        android:label="${stateuiName}"
         android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">

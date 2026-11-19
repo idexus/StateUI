@@ -34,6 +34,16 @@ final class ToolStepTests: XCTestCase {
         #endif
     }
 
+    /// A step that succeeds hands back what it printed to its standard output, a line each, and nothing of its errors.
+    func testAStepHandsBackItsStandardOutput() async throws {
+        #if os(Windows)
+        throw XCTSkip("the printing program is a shell's")
+        #else
+        let said = try await ToolStep.run(.path("/bin/sh"), ["-c", "echo one; echo noise >&2; echo two"])
+        XCTAssertEqual(said, "one\ntwo")
+        #endif
+    }
+
     /// A step xcrun runs is named by the program it ran and what that was asked.
     func testAStepOfXcrunIsNamedByItsProgram() async throws {
         #if os(macOS)

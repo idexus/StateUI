@@ -4,8 +4,8 @@
 import Foundation
 import StateUIToolingProtocol
 
-/// A new workspace: a folder with its `stateui.json`, the library it names - a checkout, or a release cloned into
-/// it - and a `.gitignore` for what builds write.
+/// A new workspace: a folder with its `stateui-workspace.json`, the library it names - a checkout, or a release
+/// cloned into it - and a `.gitignore` for what builds write.
 /// Design: docs/design/tooling/projects.md#a-new-workspace
 public struct WorkspaceMaker: Sendable {
     /// The StateUI a workspace's applications build with.
@@ -88,6 +88,6 @@ public struct WorkspaceMaker: Sendable {
         *.pdb
         .DS_Store
 
-        """ + (cloned ? "# The StateUI release cloned here: stateui workspace library --release <release>\n/StateUI/\n" : "")
+        """ + (cloned ? "# The StateUI release cloned here: stateui project library --release <release>\n/StateUI/\n" : "")
     }
 }

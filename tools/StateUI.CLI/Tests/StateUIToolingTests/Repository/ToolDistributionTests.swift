@@ -7,6 +7,20 @@ import StateUIToolingProtocol
 import XCTest
 
 final class ToolDistributionTests: XCTestCase {
+    /// HMAC-SHA256 gives RFC 4231's examples: a short key, a key shorter than its block, and one longer, hashed first.
+    func testHMACGivesTheStandardsExamples() {
+        XCTAssertEqual(
+            SHA256.hex(SHA256.hmac(key: [UInt8](repeating: 0x0b, count: 20), message: Array("Hi There".utf8))),
+            "b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7")
+        XCTAssertEqual(
+            SHA256.hex(SHA256.hmac(key: Array("Jefe".utf8), message: Array("what do ya want for nothing?".utf8))),
+            "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843")
+        XCTAssertEqual(
+            SHA256.hex(SHA256.hmac(
+                key: [UInt8](repeating: 0xaa, count: 131), message: Array("Test Using Larger Than Block-Size Key - Hash Key First".utf8))),
+            "60e431591ee0b67f0d8a26aacbf5b77f8e0bc6213728c5140546040f0ee37f54")
+    }
+
     /// SHA-256 gives FIPS 180-4's own examples, across a block's edge too.
     func testSHA256GivesTheStandardsExamples() {
         XCTAssertEqual(SHA256.hex(Data()), "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")

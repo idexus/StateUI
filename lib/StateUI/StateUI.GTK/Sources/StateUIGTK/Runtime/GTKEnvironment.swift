@@ -11,7 +11,7 @@ import CStateUIGTK
 @MainActor
 enum GTKEnvironment {
     /// Tells `core` what the host stands on: what never changes, then what may.
-    static func report(to core: CoreLink, applicationID: String) {
+    static func report(to core: CoreLink, application: HostApplicationInfo) {
         let model = system("/sys/devices/virtual/dmi/id/product_name")
         let maker = system("/sys/devices/virtual/dmi/id/sys_vendor")
         let virtual = ["Virtual", "VMware", "QEMU", "KVM", "Parallels", "VirtualBox"].contains {
@@ -21,9 +21,7 @@ enum GTKEnvironment {
             formFactor: .desktop, platform: "Linux", model: model, manufacturer: maker,
             name: g_get_host_name().map { String(cString: $0) } ?? "",
             platformVersion: osInfo("VERSION_ID"), isVirtual: virtual))
-        core.setApplicationInfo(HostApplicationInfo(
-            name: g_get_application_name().map { String(cString: $0) } ?? "", packageName: applicationID,
-            version: "", build: ""))
+        core.setApplicationInfo(application)
         reportChanging(to: core)
     }
 

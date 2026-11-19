@@ -108,10 +108,15 @@ WebViewWinUI.register()
 WinUIHost.run(linkSchemes: ["stateui-gallery"])
 ```
 
-`STATEUI_HOST=winui` is what makes a build a WinUI one: the application's
-manifest reads it, declares its `Platforms/WinUI` head, the executable it
-makes, and defines the `WINUI` compilation condition for every module of the
-application; `lib/StateUI.Head` brings the `StateUIWinUI` host to the head.
+The application's `stateui.json` - which the tool lays beside the program,
+and the host reads as it starts - gives its identifier, name, version and
+build, which `app.info` tells.
+
+The trait `WinUI` is what makes a build a WinUI one: the head's own package,
+`Platforms/WinUI`, makes the executable and enables the trait on the
+application, which defines the `WINUI` compilation condition for every module
+of the application, and on `lib/StateUI.Head`, which brings the `StateUIWinUI`
+host to the head.
 The executable links as a windowed application - `/SUBSYSTEM:WINDOWS` with `/ENTRY:mainCRTStartup` -
 so started by itself it opens no console; started from a terminal it writes
 there. Swift written for this host
@@ -136,7 +141,10 @@ A control of the application's own is an object holding the WinUI element it
 shows, a `WinUIControl`. Swift never calls WinRT itself: the element is made
 by a relay of the application's own - C++/WinRT beside its head, behind C
 functions, a C++ target of the head's package that includes the projection
-the host generated - and handed over as the host's own handles are, a
+the host generated and defines `_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH`, as
+the host's relay does, since Visual Studio's C++ library refuses the Swift
+toolchain's older Clang without it - and handed over as the host's own
+handles are, a
 `UIElement`'s default interface, `AddRef`'d. `StateUIControls.add` says which
 contract it realizes:
 

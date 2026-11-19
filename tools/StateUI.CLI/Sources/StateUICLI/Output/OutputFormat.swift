@@ -12,7 +12,7 @@ enum OutputFormat: String, CaseIterable, ExpressibleByArgument {
     case text
     /// One JSON document, the result in its envelope.
     case json
-    /// JSON lines: the events of an operation, then its result in its envelope, one document a line.
+    /// The result in its envelope on one line - a document a line, to be appended to a log of them.
     case jsonl
 
     /// Writes `result` - in JSON its envelope alone, so standard output holds nothing else.

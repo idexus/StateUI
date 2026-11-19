@@ -9,11 +9,14 @@ public struct InitializeParameters: Codable, Equatable, Sendable {
     public var client: ToolIdentity
     /// The workspace the client opens, as a file URI.
     public var workspaceUri: String
+    /// What proves a client paired with a service: none over a program's standard streams.
+    public var credential: Credential?
 
-    /// A client speaking `apiVersions`, opening `workspaceUri`.
-    public init(apiVersions: [APIVersionRange], client: ToolIdentity, workspaceUri: String) {
+    /// A client speaking `apiVersions`, opening `workspaceUri`, proving itself with `credential` to a service.
+    public init(apiVersions: [APIVersionRange], client: ToolIdentity, workspaceUri: String, credential: Credential? = nil) {
         self.apiVersions = apiVersions
         self.client = client
         self.workspaceUri = workspaceUri
+        self.credential = credential
     }
 }

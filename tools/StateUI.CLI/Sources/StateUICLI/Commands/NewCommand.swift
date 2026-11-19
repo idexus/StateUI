@@ -16,6 +16,12 @@ struct NewCommand: AsyncParsableCommand {
     @Argument(help: "The application's name: letters and digits, starting with a letter.")
     var name: String
 
+    @Option(help: "What names it to every platform, such as pl.example.notes; com.example.<name> when left out.")
+    var identifier: String?
+
+    @Option(help: "The hosts it has a head for, a comma apart - appkit,web,winui; every host when left out.")
+    var platforms: String?
+
     @Option(help: "The folder it is made in; the working directory when left out.")
     var directory: String?
 
@@ -28,10 +34,22 @@ struct NewCommand: AsyncParsableCommand {
         let here = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         let parent = directory.map { URL(fileURLWithPath: $0) } ?? here
         let library = checkout.map { URL(fileURLWithPath: $0) }
-        try await output.answer({ try await ToolingService().createApplication(name, in: parent, from: library) }) {
+        let hosts = try platforms.map { try Self.hosts($0) }
+        try await output.answer({ try await ToolingService().createApplication(name, identifier: identifier, platforms: hosts, in: parent, from: library) }) {
             creation in
             let made = (try? FileURI.url(creation.createdUris.first ?? "").path) ?? ""
             return "Created \(made)\n" + ProjectCommand.Describe.words(creation.project)
+        }
+    }
+
+    /// The hosts `list` names, a comma apart.
+    static func hosts(_ list: String) throws -> [HostFamily] {
+        try list.split(separator: ",").map { word in
+            let named = word.trimmingCharacters(in: .whitespaces)
+            guard let host = HostFamily(rawValue: named) else {
+                throw ValidationError("No host is \(named): appkit, uikit, android, winui, gtk or web.")
+            }
+            return host
         }
     }
 }

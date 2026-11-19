@@ -1,0 +1,143 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import Foundation
+import StateUIToolingProtocol
+
+/// The virtual machines Parallels Desktop keeps on this Mac, as `prlctl list --all --info --json` describes them: a
+/// Linux one is where a GTK head is built and run from here, a Windows one a WinUI head.
+/// Design: docs/design/tooling/guests.md
+public struct ParallelsGuests: Sendable {
+    /// One guest as Parallels describes it.
+    public struct Guest: Equatable, Sendable {
+        /// The system a guest runs, as far as a host cares.
+        public enum System: Equatable, Sendable {
+            case linux
+            case windows
+            case other
+        }
+
+        /// Its identifier, which no rename changes.
+        public var id: String
+        public var name: String
+        /// Parallels' word for its system: `ubuntu`, `win-11`.
+        public var os: String
+        public var system: System
+        /// Parallels' word for its state: `running`, `suspended`, `stopped`.
+        public var state: String
+        public var architecture: Architecture?
+        /// The Mac's folders it shares by name, enabled ones alone: a name and the Mac's path.
+        public var shares: [String: String]
+        /// Whether it shares every disk of the Mac.
+        public var sharesAllDisks: Bool
+        /// Whether Parallels Tools stand in it, which `prlctl exec` and the shared folders need.
+        public var hasTools: Bool
+        /// Its addresses on its networks, IPv4 first, as Parallels Tools report them.
+        public var addresses: [String] = []
+
+        /// What the Mac's folder `folder` is reached through in the guest: the name of a folder it shares holding it,
+        /// `every disk` where it shares them all; nil where it reaches it not. `home` is the Mac's, which `~` names.
+        public func share(of folder: URL, home: String = NSHomeDirectory()) -> String? {
+            let wanted = folder.standardizedFileURL.path
+            let holding = shares.filter { _, path in
+                let shared = path == "~" || path.hasPrefix("~/") ? home + path.dropFirst() : path
+                return wanted == shared || wanted.hasPrefix(shared.hasSuffix("/") ? shared : shared + "/")
+            }
+            if let name = holding.max(by: { $0.value.count < $1.value.count })?.key { return name }
+            return sharesAllDisks ? "every disk" : nil
+        }
+
+        /// The path the guest reaches the Mac's folder `folder` by: a shared folder's - `/media/psf/<name>/…` on
+        /// Linux, `\\Mac\<name>\…` on Windows - else every disk's, `AllFiles`; nil where it reaches it not.
+        public func path(of folder: URL, home: String = NSHomeDirectory()) -> String? {
+            guard let share = share(of: folder, home: home) else { return nil }
+            let wanted = folder.standardizedFileURL.path
+            let rest: String
+            let root: String
+            if share == "every disk" {
+                (root, rest) = ("AllFiles", String(wanted.drop { $0 == "/" }))
+            } else {
+                let shared = shares[share]!.hasPrefix("~") ? home + shares[share]!.dropFirst() : shares[share]!
+                (root, rest) = (share, String(wanted.dropFirst(shared.count).drop { $0 == "/" }))
+            }
+            let parts = [root] + rest.split(separator: "/").map(String.init)
+            return system == .windows ? "\\\\Mac\\" + parts.joined(separator: "\\") : "/media/psf/" + parts.joined(separator: "/")
+        }
+    }
+
+    private let path: SearchPath
+
+    /// The guests `prlctl` on the search path of `environment` lists.
+    public init(environment: [String: String] = ProcessInfo.processInfo.environment) {
+        path = SearchPath(environment: environment)
+    }
+
+    /// Parallels' command-line tool, where it stands: the Pro and Business editions have it.
+    public var prlctl: URL? { path.find("prlctl") }
+
+    /// Every guest, none where Parallels is not here.
+    public func list() async -> [Guest] {
+        guard let prlctl else { return [] }
+        let text = await ToolOutput.standardOutput(.path(prlctl.path), ["list", "--all", "--info", "--json"]) ?? ""
+        return Self.guests(fromJSON: Data(text.utf8))
+    }
+
+    /// The guests `json` - `prlctl list --all --info --json` - describes, in its order; none for what is no list.
+    public static func guests(fromJSON json: Data) -> [Guest] {
+        guard let list = try? JSONSerialization.jsonObject(with: json) as? [[String: Any]] else { return [] }
+        return list.compactMap { entry in
+            guard let id = entry["ID"] as? String, let name = entry["Name"] as? String else { return nil }
+            let os = entry["OS"] as? String ?? ""
+            let folders = entry["Host Shared Folders"] as? [String: Any] ?? [:]
+            let sharing = folders["enabled"] as? Bool ?? false
+            var shares: [String: String] = [:]
+            for (share, value) in folders {
+                guard sharing, let folder = value as? [String: Any], folder["enabled"] as? Bool == true,
+                      let path = folder["path"] as? String else { continue }
+                shares[share] = path
+            }
+            let cpu = (entry["Hardware"] as? [String: Any])?["cpu"] as? [String: Any]
+            return Guest(
+                id: id, name: name, os: os, system: Self.system(of: os), state: entry["State"] as? String ?? "",
+                architecture: (cpu?["type"] as? String).map { $0 == "arm" ? .arm64 : .x86_64 }, shares: shares,
+                sharesAllDisks: entry["Host defined sharing"] as? String == "All host disks",
+                hasTools: (entry["GuestTools"] as? [String: Any])?["state"] as? String == "installed",
+                addresses: Self.addresses(of: entry))
+        }
+    }
+
+    /// The system of Parallels' word `os`.
+    static func system(of os: String) -> Guest.System {
+        if os.hasPrefix("win") { return .windows }
+        let linux = ["ubuntu", "debian", "fedora", "linux", "opensuse", "redhat", "centos", "kali", "arch", "mint"]
+        return linux.contains { os.hasPrefix($0) } ? .linux : .other
+    }
+
+    /// The system a head of `host` is built and run in, where a guest serves it.
+    public static func system(for host: HostFamily) -> Guest.System? {
+        switch host {
+        case .gtk: .linux
+        case .winui: .windows
+        default: nil
+        }
+    }
+
+    /// The addresses `entry` - one guest of `prlctl list --info --json` - reports, IPv4 first, each once.
+    static func addresses(of entry: [String: Any]) -> [String] {
+        let listed = ((entry["Network"] as? [String: Any])?["ipAddresses"] as? [[String: Any]]) ?? []
+        let pairs = listed.compactMap { item -> (String, String)? in
+            guard let ip = item["ip"] as? String, let type = item["type"] as? String else { return nil }
+            return (type, ip)
+        }
+        var seen = Set<String>()
+        return (pairs.filter { $0.0 == "ipv4" } + pairs.filter { $0.0 != "ipv4" }).map(\.1).filter { seen.insert($0).inserted }
+    }
+
+    /// `guest` as a device a head is built for: named as Parallels names it, its system and state said.
+    public static func destination(of guest: Guest) -> Destination {
+        Destination(
+            id: guest.name, udid: guest.id, name: guest.name, kind: .guest, version: guest.os,
+            booted: guest.state == "running", connection: guest.state, architecture: guest.architecture,
+            emulated: guest.system == .windows && guest.architecture == .arm64 ? [.x86_64] : [], debugger: false)
+    }
+}

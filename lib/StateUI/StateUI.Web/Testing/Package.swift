@@ -4,8 +4,8 @@ import PackageDescription
 // The Web host's own suite and its conformance run: XCTest compiled to WebAssembly, which `stateui repo test --suite
 // host:web` runs in Node over a page with just enough of a DOM (JavaScript/page.mjs) - and, for the conformance suite, in a
 // browser (JavaScript/run-in-browser.mjs) - the host's own relay beneath it, and the driver's functions reading what
-// the page holds, which CWebTesting declares. It builds under STATEUI_HOST=web, which links every library into the
-// one module.
+// the page holds, which CWebTesting declares. It builds with the Swift SDK for WebAssembly, every library linked into
+// the one module.
 let package = Package(
     name: "StateUIWebTesting",
     dependencies: [
@@ -22,7 +22,7 @@ let package = Package(
             name: "StateUIWebTests",
             dependencies: [
                 "CWebTesting", .product(name: "StateUIWeb", package: "StateUIWeb"),
-                .product(name: "StateUIHost", package: "StateUIHost"), .product(name: "StateUI", package: "StateUIRoot"),
+                .product(name: "StateUIHostStatic", package: "StateUIHost"), .product(name: "StateUIStatic", package: "StateUIRoot"),
                 .product(name: "StateUIConformance", package: "StateUIConformance"),
                 .product(name: "StateUITesting", package: "StateUITesting"),
             ],

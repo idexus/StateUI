@@ -26,7 +26,9 @@ the iOS simulator, [Android Views host](hosts/android.md#requirements) what the
 Android Views host needs as well, [WinUI host](hosts/winui.md#requirements) what the
 WinUI host needs on Windows, [GTK host](hosts/gtk.md#requirements) what
 the GTK host needs on Linux, and [Web host](hosts/web.md#requirements) what the
-Web host needs on macOS and Linux.
+Web host needs on macOS and Linux. A Mac builds and runs the GTK and WinUI
+heads too, in Linux and Windows guests of Parallels Desktop:
+[Every host from one Mac](every-host-from-a-mac.md).
 
 With the extension installed ([Installing](editors/VSCode/README.md#installing)),
 **StateUI: Check Toolchain** in the Command Palette looks on this machine for
@@ -51,10 +53,10 @@ AppKit head from the repository root:
 stateui run --project apps/HelloWorld --host appkit
 ```
 
-The `stateui` tool builds it with `STATEUI_HOST=appkit`, the variable that makes it an
-AppKit build: the manifest then declares the
-AppKit head and defines `APPKIT`, and without it `swift test` compiles no part
-of one host's half; see
+The `stateui` tool builds its head's own package, `Platforms/AppKit`, which
+builds the application with the trait `AppKit`: the trait defines `APPKIT`
+and brings the AppKit host, and the application's own package, which enables
+none, has `swift test` compile no part of one host's half; see
 [Project structure and development](development.md). Each host builds an
 application in a directory of its own inside the application's `.build` -
 `.build/appkit`, `.build/uikit`, `.build/android`, `.build/winui`,
@@ -100,6 +102,15 @@ Test it, then build and start its AppKit head from the same repository root:
 ```bash
 swift test --package-path apps/Notes
 stateui run --project apps/Notes --host appkit
+```
+
+A host chosen once - and a device for it - is what a build or a run takes
+when it names none; it is this machine's choice, kept out of git in the
+application's `.stateui/`, and the editor shows and changes the same:
+
+```bash
+stateui settings --project apps/Notes --host uikit --device "iPhone 18 Pro"
+stateui run --project apps/Notes
 ```
 
 ## Application shape
@@ -269,7 +280,7 @@ GalleryEventSources.start()
 // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
 WebViewGTK.register()
 // Then GTK holds this thread until the last window closes.
-GTKHost.run(applicationID: "com.stateui.gallery")
+GTKHost.run()
 ```
 
 `GalleryControls`, `GalleryActs` and `GalleryEventSources` are the Gallery's
@@ -290,6 +301,7 @@ A new application has this directory shape (`stateui new Notes --directory apps`
 
 ```text
 apps/Notes/
+  stateui.json
   Package.swift
   Sources/
     NotesApp.swift
@@ -298,20 +310,26 @@ apps/Notes/
       AppStyles.swift
   Platforms/
     AppKit/
+      Package.swift
       main.swift
     UIKit/
+      Package.swift
       main.swift
     Android/
+      Package.swift
       build.gradle.kts
       settings.gradle.kts
       AndroidManifest.xml
       Swift/
         NotesAndroid.swift
     WinUI/
+      Package.swift
       main.swift
     GTK/
+      Package.swift
       main.swift
     Web/
+      Package.swift
       main.swift
   Resources/
     AppIcon/
@@ -319,6 +337,32 @@ apps/Notes/
   Tests/
     MainPageTests.swift
 ```
+
+The application's `Package.swift` is its module and its tests; each head is a
+package of its own, `Platforms/<Host>/Package.swift`, which builds the
+application for its host.
+
+`stateui.json` says what the application is on every platform - the
+identifier that names it, the version shown to its user and its build, and
+the name it is shown by where it is not its folder's (`"name" : "My Notes"`) -
+and makes the folder an application to the `stateui` tool:
+
+```json
+{
+  "build" : 1,
+  "identifier" : "com.example.notes",
+  "schemaVersion" : 1,
+  "version" : "1.0.0"
+}
+```
+
+`stateui new --platforms android,web` makes the heads of those hosts alone - an
+application's hosts are its heads. It writes `com.example.<name>` where
+`--identifier` names none;
+an application gives its own before it is published (`pl.example.notes`):
+two or more parts joined by dots, each a letter, then letters and digits.
+The version is one to three numbers joined by dots, the build a whole number
+that grows with every release.
 
 The application target depends only on the `StateUI` product, its tests on
 `StateUITesting` too. The executable target depends on the application
@@ -364,7 +408,7 @@ declaration explains its focused semantics.
 
 SwiftPM discovers every `.swift` file below a target's `path`; a source list is
 unnecessary. Add application files below `Sources/` and keep native entry
-points below `Platforms/<Host>/`.
+points below `Platforms/<Host>/`, in the head's own package.
 
 Image names are application data. Put image files under the resource directory
 passed to the host and refer to them through `ImageSource` or a string-literal

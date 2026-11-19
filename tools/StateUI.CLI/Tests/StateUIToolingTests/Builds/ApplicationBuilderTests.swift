@@ -3,7 +3,7 @@
 
 #if os(macOS)
 import Foundation
-import StateUITooling
+@testable import StateUITooling
 import StateUIToolingProtocol
 import XCTest
 
@@ -31,12 +31,19 @@ final class ApplicationBuilderTests: XCTestCase {
             try Data().write(to: checkout.appendingPathComponent(mark).appendingPathComponent("Package.swift"))
         }
         try Data().write(to: checkout.appendingPathComponent("Package.swift"))
+        let relay = checkout.appendingPathComponent("lib/StateUI/StateUI.Web/JavaScript")
+        try files.createDirectory(at: relay, withIntermediateDirectories: true)
+        for file in ["index.html", "stateui-web.js", "stateui-web.css"] {
+            try Data().write(to: relay.appendingPathComponent(file))
+        }
         let application = root.appendingPathComponent("Notes")
-        for host in ["AppKit", "UIKit"] {
+        for host in ["AppKit", "UIKit", "Web"] {
             try files.createDirectory(at: application.appendingPathComponent("Platforms/\(host)"), withIntermediateDirectories: true)
-            try Data().write(to: application.appendingPathComponent("Platforms/\(host)/main.swift"))
+            try Data().write(to: application.appendingPathComponent("Platforms/\(host)/Package.swift"))
         }
         try Data().write(to: application.appendingPathComponent("Package.swift"))
+        try ApplicationFile(identifier: "com.example.notes", version: "1.0.0", build: 1)
+            .write(to: application.appendingPathComponent("stateui.json"))
         let bin = root.appendingPathComponent("bin")
         let failing = root.appendingPathComponent("FAIL")
         let arguments = root.appendingPathComponent("arguments")
@@ -48,13 +55,14 @@ final class ApplicationBuilderTests: XCTestCase {
             case "$1 $2" in
               "package describe") echo '\(describe)' ;;
               "--version ") echo 'Swift version 6.4.2 (swift-6.4.2-RELEASE)' ;;
+              "sdk list") echo 'swift-6.4.2-RELEASE_wasm' ;;
               "build --show-bin-path") echo '\(bin.path)' ;;
               "build --product")
                 if [ -e '\(failing.path)' ]; then echo 'error: the compiler stopped'; exit 1; fi
-                [ "Notes$STATEUI_HOST" = "$(echo "$3" | tr '[:upper:]' '[:lower:]' | sed 's/^notes/Notes/')" ] || { echo 'no host'; exit 1; }
+                all="$*"; rest="${all#*--package-path }"; head="${rest%% *}"; [ "Notes${head##*/}" = "$3" ] || { echo 'no head'; exit 1; }
                 echo "$@" > '\(arguments.path)'
                 if [ -e '\(during.path)' ]; then sh '\(during.path)'; fi
-                mkdir -p '\(bin.path)' && cp /usr/bin/true "\(bin.path)/$3" && echo 'Build complete!' ;;
+                mkdir -p '\(bin.path)' && cp /usr/bin/true "\(bin.path)/$3" && : > "\(bin.path)/$3.wasm" && echo 'Build complete!' ;;
             esac
             """
         try script.write(to: swift, atomically: true, encoding: .utf8)
@@ -93,6 +101,19 @@ final class ApplicationBuilderTests: XCTestCase {
         XCTAssertNil(bench.permit.holder)
     }
 
+    /// A Web head built for debugging keeps its DWARF, which the browser's debugger reads; a release module is linked
+    /// without it, as it is the page's first download.
+    func testOnlyAReleaseWebHeadIsLinkedWithoutItsDebuggingInformation() async throws {
+        let bench = try bench()
+        let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
+        for (configuration, stripped) in [(BuildConfiguration.debug, false), (.release, true)] {
+            _ = try await builder.build(
+                BuildRequest(host: .web, configuration: configuration), in: bench.application, operation: "op-\(configuration)")
+            let told = try String(contentsOf: bench.arguments, encoding: .utf8)
+            XCTAssertEqual(told.contains("-Xlinker --strip-debug"), stripped, "\(configuration): \(told)")
+        }
+    }
+
     /// A host the tool does not build yet, an application without its head, and an application not named among
     /// several are refused before anything runs.
     func testWhatCannotBeBuiltIsRefusedFirst() async throws {
@@ -102,7 +123,7 @@ final class ApplicationBuilderTests: XCTestCase {
                                 (BuildRequest(host: .android), "has no android head")] {
             do {
                 _ = try await builder.build(request, in: bench.application, operation: "op")
-                XCTFail("\(request.host) was built")
+                XCTFail("\(request.host?.rawValue ?? "no host") was built")
             } catch let error as ToolingError {
                 XCTAssertTrue(error.message.contains(said), error.message)
             }
@@ -148,15 +169,54 @@ final class ApplicationBuilderTests: XCTestCase {
         let files = FileManager.default
         let other = bench.root.appendingPathComponent("Other")
         try files.createDirectory(at: other.appendingPathComponent("Platforms/AppKit"), withIntermediateDirectories: true)
-        try Data().write(to: other.appendingPathComponent("Platforms/AppKit/main.swift"))
+        try Data().write(to: other.appendingPathComponent("Platforms/AppKit/Package.swift"))
         try Data().write(to: other.appendingPathComponent("Package.swift"))
-        try WorkspaceFile(library: .init(path: "StateUI"), projects: ["Notes", "Other"], startup: "Notes")
-            .write(to: bench.root.appendingPathComponent("stateui.json"))
+        try ApplicationFile(identifier: "com.example.other", version: "1.0.0", build: 1)
+            .write(to: other.appendingPathComponent("stateui.json"))
+        try WorkspaceFile(library: .init(path: "StateUI"), projects: ["Notes", "Other"])
+            .write(to: bench.root.appendingPathComponent("stateui-workspace.json"))
+        try WorkspaceSettings(startup: "Notes").write(to: WorkspaceSettings.file(in: bench.root))
         let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
 
         let built = try await builder.build(BuildRequest(host: .appkit), in: bench.root, operation: "op-startup")
 
         XCTAssertEqual(built.application, "Notes")
+    }
+
+    /// A build naming no host builds for the one chosen for its application; with none chosen it is refused, saying
+    /// how to choose.
+    func testABuildNamingNoHostBuildsForTheOneChosen() async throws {
+        let bench = try bench()
+        let builder = ApplicationBuilder(environment: bench.environment, permit: bench.permit)
+        do {
+            _ = try await builder.build(BuildRequest(), in: bench.application, operation: "op-no-host")
+            XCTFail("a build with no host ran")
+        } catch let error as ToolingError {
+            XCTAssertEqual(error.code, .invalidConfiguration)
+            XCTAssertTrue(error.message.contains("stateui settings --host"), error.message)
+        }
+
+        try ApplicationSettings(host: .appkit).write(to: ApplicationSettings.file(in: bench.application))
+        let built = try await builder.build(BuildRequest(), in: bench.application, operation: "op-chosen")
+
+        XCTAssertEqual(built.host, .appkit)
+    }
+
+    /// A head whose platform keeps no record of the application - WinUI's, GTK's, a page - carries its `stateui.json`,
+    /// the name shown in it; a bundle and an APK, whose platform keeps one, carry none.
+    func testAHeadOfNoRecordCarriesTheApplicationsFile() throws {
+        let identity = ApplicationFile(identifier: "pl.example.notes", version: "2.1", build: 9, name: "Notes")
+        for host in HostFamily.allCases {
+            let staging = FileManager.default.temporaryDirectory.appendingPathComponent("head-\(UUID().uuidString)")
+            try FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true)
+            defer { try? FileManager.default.removeItem(at: staging) }
+            try ApplicationBuilder.lay(identity, for: host, in: staging)
+            let file = staging.appendingPathComponent("stateui.json")
+            XCTAssertEqual(FileManager.default.fileExists(atPath: file.path), [.web, .winui, .gtk].contains(host), host.rawValue)
+            if [.web, .winui, .gtk].contains(host) {
+                XCTAssertEqual(try ApplicationFile.read(file), identity)
+            }
+        }
     }
 
     /// A package replaces only a folder a package was laid in: one holding anything else is refused before any build,

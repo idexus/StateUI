@@ -29,8 +29,8 @@ public struct UIKitBundle: Sendable {
     public var product: String
     /// The folder SwiftPM laid the product and the libraries in (`--show-bin-path`).
     public var binaries: URL
-    /// StateUI's release, the bundle's version.
-    public var release: String
+    /// What the application's `stateui.json` says: the bundle's identifier, version and build.
+    public var identity: ApplicationFile
     /// The oldest iOS the bundle runs on.
     public var minimumSystem: String
     /// A simulator's or a device's.
@@ -41,14 +41,14 @@ public struct UIKitBundle: Sendable {
 
     /// The bundle of `application`'s `product` as SwiftPM laid it in `binaries` for `platform`.
     public init(
-        application: URL, name: String, product: String, binaries: URL, release: String, minimumSystem: String,
+        application: URL, name: String, product: String, binaries: URL, identity: ApplicationFile, minimumSystem: String,
         platform: AppleSDK.Platform, work: URL
     ) {
         self.application = application
         self.name = name
         self.product = product
         self.binaries = binaries
-        self.release = release
+        self.identity = identity
         self.minimumSystem = minimumSystem
         self.platform = platform
         self.work = work
@@ -58,15 +58,8 @@ public struct UIKitBundle: Sendable {
     public var bundlePath: String { "\(product).app" }
     public var programPath: String { "\(product).app/\(product)" }
 
-    /// The bundle's identifier: the application's own `Info.plist`'s where it names one, else `com.stateui.<name>`.
-    public var identifier: String { Self.identifier(of: application, name: name) }
-
-    /// The identifier of the bundle of `application` named `name`.
-    public static func identifier(of application: URL, name: String) -> String {
-        let own = try? Data(contentsOf: application.appendingPathComponent("Platforms/UIKit/Info.plist"))
-        let keys = own.flatMap { try? PropertyListSerialization.propertyList(from: $0, format: nil) as? [String: Any] }
-        return keys?["CFBundleIdentifier"] as? String ?? "com.stateui.\(name.lowercased())"
-    }
+    /// The bundle's identifier, its `stateui.json`'s.
+    public var identifier: String { identity.identifier }
 
     /// Assembles the bundle in `staging`, signed as `signing` says, and answers its folder.
     ///
@@ -85,7 +78,7 @@ public struct UIKitBundle: Sendable {
             try files.copyItem(at: binaries.appendingPathComponent(library), to: frameworks.appendingPathComponent(library))
         }
         // SwiftPM's rpaths point into its own folders; the bundle's libraries stand in Frameworks.
-        try? await ToolStep.run(.name("install_name_tool"), ["-add_rpath", "@executable_path/Frameworks", program.path])
+        _ = try? await ToolStep.run(.name("install_name_tool"), ["-add_rpath", "@executable_path/Frameworks", program.path])
 
         let images = application.appendingPathComponent("Resources/Images")
         if files.fileExists(atPath: images.path) {
@@ -94,7 +87,7 @@ public struct UIKitBundle: Sendable {
             try files.copyItem(at: drawn, to: bundle.appendingPathComponent("Images"))
         }
 
-        var keys = InfoPlist.iOS(name: name, product: product, release: release, minimumSystem: minimumSystem, platform: platform)
+        var keys = InfoPlist.iOS(name: name, product: product, identity: identity, minimumSystem: minimumSystem, platform: platform)
         let artwork = application.appendingPathComponent("Resources/AppIcon")
         let (background, mark) = (artwork.appendingPathComponent("appicon_bkg.svg"), artwork.appendingPathComponent("appicon_mark.svg"))
         if files.fileExists(atPath: background.path), files.fileExists(atPath: mark.path) {

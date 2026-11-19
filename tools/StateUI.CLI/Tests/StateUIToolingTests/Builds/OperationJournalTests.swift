@@ -28,4 +28,22 @@ final class OperationJournalTests: XCTestCase {
         let output = try String(contentsOf: journal.folder.appendingPathComponent("op-1/output.log"), encoding: .utf8)
         XCTAssertEqual(output, "Compiling Notes\nBuild complete!\n")
     }
+
+    /// The journal keeps its newest operations and lets the older ones go as another opens - never one running, nor a
+    /// folder whose record is not written yet.
+    func testTheJournalKeepsItsNewestOperations() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("journal-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let journal = OperationJournal(root: root)
+        _ = try journal.open(id: "op-000", kind: "run")
+        try FileManager.default.createDirectory(at: journal.folder.appendingPathComponent("op-half"), withIntermediateDirectories: true)
+        let opened = OperationJournal.kept + 5
+        for number in 1...opened {
+            try journal.open(id: String(format: "op-%03d", number), kind: "build").finish(.succeeded)
+        }
+
+        let left = try FileManager.default.contentsOfDirectory(atPath: journal.folder.path).sorted()
+        let newest = (opened - OperationJournal.kept + 1...opened).map { String(format: "op-%03d", $0) }
+        XCTAssertEqual(left, ["op-000"] + newest + ["op-half"])
+    }
 }

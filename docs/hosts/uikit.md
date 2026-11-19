@@ -71,12 +71,12 @@ and `appicon_mark.svg` in its middle, opaque, which iOS rounds itself. Its
 An application's own keys - the reason it asks for the local network, a
 capability the device must have - stand in `Platforms/UIKit/Info.plist`,
 which the bundle's `Info.plist` takes in, the application's value where both
-name one key. The head's target leaves the file out, as a head leaves out
-anything that is not its Swift:
+name one key. The head's target, in `Platforms/UIKit/Package.swift`, leaves the
+file out, as a head leaves out anything that is not its Swift:
 
 ```swift quote
 .executableTarget(
-    name: "NotesUIKit", dependencies: head, path: "Platforms/UIKit", exclude: ["Info.plist"])
+    name: "NotesUIKit", dependencies: head, path: ".", exclude: ["Package.swift", "Info.plist"])
 ```
 
 ```xml
@@ -90,11 +90,11 @@ anything that is not its Swift:
 </plist>
 ```
 
-`STATEUI_HOST=uikit` is what makes a build a UIKit one: the application's
-manifest reads it, declares its `Platforms/UIKit` head, and defines the
-`UIKIT` compilation condition for every module of the application;
-`lib/StateUI.Head` brings the `StateUIUIKit` host to the head. Swift written for this host alone stands
-under `#if UIKIT`.
+The trait `UIKit` is what makes a build a UIKit one: the head's own package,
+`Platforms/UIKit`, makes the executable and enables the trait on the
+application, which defines the `UIKIT` compilation condition for every module
+of the application, and on `lib/StateUI.Head`, which brings the `StateUIUIKit`
+host to the head. Swift written for this host alone stands under `#if UIKIT`.
 
 A new application - **StateUI: New Application**, `stateui new`, or
 `stateui new` - has a UIKit head, as HelloWorld does.
@@ -321,11 +321,11 @@ or its UDID, or a simulator's name or UDID; with none named it is the
 simulator booted, else an iPhone. A simulator is booted where it is not
 running and the Simulator opened; a device is reached over USB or Wi-Fi, its
 build signed for it. `stateui build` builds and bundles without running.
-On a simulator a switch such as `STATEUI_TALLY=1` reaches the application
-under the prefix `simctl` gives what its children are handed:
+Every `STATEUI_` variable of the shell that runs it reaches the application,
+on a simulator and on a device:
 
 ```bash
-SIMCTL_CHILD_STATEUI_TALLY=1 stateui run --project apps/Gallery --host uikit --configuration release --device "iPhone 18 Pro"
+STATEUI_TALLY=1 stateui run --project apps/Gallery --host uikit --configuration release --device "iPhone 18 Pro"
 ```
 
 In VS Code, choose **UIKit** as the host and an iPhone, an iPad or a
@@ -360,7 +360,7 @@ or an iPhone or iPad, the bundle then signed for it - and lays the bundle,
 `<App>UIKit.app`, in the folder named, made anew. **StateUI: Package** in the
 editor does so for the application and the device chosen, and lays the
 bundle in `artifacts/<application>/UIKit` of the application's workspace -
-the folder of the stateui.json listing it, a checkout's or a project
+the folder of the stateui-workspace.json listing it, a checkout's or a project
 group's.
 
 ## Testing

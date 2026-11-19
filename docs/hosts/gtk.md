@@ -77,18 +77,20 @@ GalleryEventSources.start()
 // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
 WebViewGTK.register()
 // Then GTK holds this thread until the last window closes.
-GTKHost.run(applicationID: "com.stateui.gallery")
+GTKHost.run()
 ```
 
-The name is the one the desktop knows the application by. GTK keeps one
-instance of it: launched again, the running application brings its window
-forward.
+The identifier in the application's `stateui.json` - which the tool lays
+beside the program, and the host reads as it starts - is the one the desktop
+knows the application by, its entry and icon named by it; its name and
+version are what `app.info` tells. GTK keeps one instance of it: launched
+again, the running application brings its window forward.
 
-`STATEUI_HOST=gtk` is what makes a build a GTK one: the application's
-manifest reads it, declares its `Platforms/GTK` head, the executable it makes,
-and defines the `GTK` compilation condition for every module of the
-application; `lib/StateUI.Head` brings the `StateUIGTK` host to the head. Swift written for this host alone stands under
-`#if GTK`.
+The trait `GTK` is what makes a build a GTK one: the head's own package,
+`Platforms/GTK`, makes the executable and enables the trait on the
+application, which defines the `GTK` compilation condition for every module of
+the application, and on `lib/StateUI.Head`, which brings the `StateUIGTK`
+host to the head. Swift written for this host alone stands under `#if GTK`.
 
 A new application - **StateUI: New Application**, `stateui new`, or
 `stateui new` - has a GTK head,
@@ -292,7 +294,7 @@ private static func report() {
 
 ```bash
 stateui run --project apps/HelloWorld --host gtk
-stateui run --project apps/HelloWorld --host gtk --debugger
+stateui run --project apps/HelloWorld --host gtk --gdb
 ```
 
 `stateui run` builds the head, installs it for the user, stops a running
@@ -303,9 +305,10 @@ what the desktop shows the application by: its icon,
 both named by the application's ID, in `~/.local/share/icons` and
 `~/.local/share/applications` - `stateui install --artifact <folder>` writes
 them for a build alone. GNOME finds a window's icon through that entry.
-`--configuration release` builds the optimized head; `--debugger` runs it
+`--configuration release` builds the optimized head; `--gdb` runs it
 under gdb, the stack of every GTK critical and of a crash said as it comes,
-the application going on past a critical. Every `STATEUI_` variable of the
+the application going on past a critical, the run ending with its status;
+`--debugger` holds it for LLDB, saying the commands that reach it. Every `STATEUI_` variable of the
 shell that runs it - `STATEUI_TALLY=1`, `STATEUI_INSPECT=1` - reaches the
 application.
 
@@ -321,12 +324,12 @@ stateui package --project apps/Gallery --host gtk
 
 `stateui package` builds an application's head for release and lays it in
 `--output`, else `artifacts/<application>/GTK`, made anew: the head, the
-StateUI libraries it links, and its pictures in `Images/`. It lays nothing the system provides - GTK, libadwaita,
-WebKitGTK: the machine that runs the folder has them installed.
-**StateUI: Package** in the editor does so for the application chosen,
-and lays the head in `artifacts/<application>/GTK` of the application's
-workspace - the folder of the stateui.json listing it, a checkout's or a
-project group's.
+StateUI libraries it links, and its pictures in `Images/`. It lays nothing the
+system provides - GTK, libadwaita, WebKitGTK: the machine that runs the folder
+has them installed. **StateUI: Package** in the editor does so for the
+application chosen, and lays the head in `artifacts/<application>/GTK` of the
+application's workspace - the folder of the stateui-workspace.json listing it,
+a checkout's or a project group's.
 
 ## Testing
 

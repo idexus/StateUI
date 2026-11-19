@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The Android devices a head runs on, as the stateui tool lists them (`devices/list`), and the one chosen for the
-// workspace. An emulator not running is named by its virtual device; the tool boots it when a run or a suite needs it.
+// The Android devices a head runs on, as the stateui tool lists them (`devices/list`), and the one chosen - by its
+// name, an emulator by its virtual device's - which the tool boots when a run or a suite needs it.
 
 import * as vscode from "vscode";
+import { DeviceStore } from "./choices";
 import { Destination } from "./Tooling/protocol";
 
 /** A place an Android head can run: a device attached and ready - a running emulator among them - or a virtual device. */
@@ -17,13 +18,8 @@ export interface AttachedDevice {
     readonly name: string;
 }
 
-/** The device chosen for a workspace: what the tool knows it by - a serial, or a virtual device's name - and its name. */
-export type ChosenDevice = Omit<AttachedDevice, "kind">;
-
 /** The devices and virtual devices as the tool lists them, or nothing, said, where it could not. */
 export type AndroidLister = () => Promise<AndroidDevice[] | undefined>;
-
-const deviceKey = "stateui.androidDevice";
 
 /** A destination the tool listed, as an Android device stands in the editor. */
 export function androidDeviceOf(destination: Destination): AndroidDevice {
@@ -32,40 +28,35 @@ export function androidDeviceOf(destination: Destination): AndroidDevice {
         : { kind: "device", serial: destination.id, name: destination.name };
 }
 
-/** The device chosen for the workspace, where one is. */
-export function chosenDevice(state: vscode.Memento): ChosenDevice | undefined {
-    return state.get<ChosenDevice>(deviceKey);
-}
-
 /**
- * What the tool knows the device `chosen` by among `listed`: its serial while it runs - an emulator started since it
- * was chosen too, by its virtual device's name - else the virtual device's name, which the tool boots; nothing where
- * it is listed no more.
+ * What the tool knows the device `chosen` - its name, or its serial - by among `listed`: its serial while it runs - an
+ * emulator started since it was chosen too, by its virtual device's name - else the virtual device's name, which the
+ * tool boots; nothing where it is listed no more.
  */
-export function deviceAmong(listed: AndroidDevice[], chosen: ChosenDevice | undefined): string | undefined {
+export function deviceAmong(listed: AndroidDevice[], chosen: string | undefined): string | undefined {
     if (!chosen) {
         return undefined;
     }
     const running = listed.find((each): each is AttachedDevice =>
-        each.kind === "device" && (each.serial === chosen.serial || each.name === chosen.name));
-    return running?.serial ?? listed.find((each) => each.kind === "avd" && each.name === chosen.name)?.name;
+        each.kind === "device" && (each.serial === chosen || each.name === chosen));
+    return running?.serial ?? listed.find((each) => each.kind === "avd" && each.name === chosen)?.name;
 }
 
 /**
  * The device a launch or a suite runs on: the one chosen, while it is listed, else asked for - or nothing, where none
  * is picked.
  */
-export async function deviceToRunOn(state: vscode.Memento, list: AndroidLister): Promise<string | undefined> {
+export async function deviceToRunOn(store: DeviceStore, list: AndroidLister): Promise<string | undefined> {
     const listed = await list();
-    const found = listed && deviceAmong(listed, chosenDevice(state));
+    const found = listed && deviceAmong(listed, store.device("android"));
     if (found) {
         return found;
     }
-    return listed ? askForDevice(state, list, listed) : undefined;
+    return listed ? askForDevice(store, list, listed) : undefined;
 }
 
 /** Asks for a device among those the tool lists, remembers it, and answers what the tool knows it by. */
-export async function askForDevice(state: vscode.Memento, list: AndroidLister, listed?: AndroidDevice[]): Promise<string | undefined> {
+export async function askForDevice(store: DeviceStore, list: AndroidLister, listed?: AndroidDevice[]): Promise<string | undefined> {
     listed ??= await list();
     if (!listed) {
         return undefined;
@@ -76,7 +67,7 @@ export async function askForDevice(state: vscode.Memento, list: AndroidLister, l
         return undefined;
     }
 
-    const current = chosenDevice(state)?.serial;
+    const current = deviceAmong(listed, store.device("android"));
     const attached = listed.filter((each): each is AttachedDevice => each.kind === "device");
     const emulators = listed.filter((each) => each.kind === "avd");
     type Item = vscode.QuickPickItem & { device?: AndroidDevice };
@@ -93,17 +84,16 @@ export async function askForDevice(state: vscode.Memento, list: AndroidLister, l
     if (!device) {
         return undefined;
     }
-    const known = device.kind === "device" ? device.serial : device.name;
-    await state.update(deviceKey, { serial: known, name: device.name } satisfies ChosenDevice);
-    return known;
+    await store.choose("android", device.name);
+    return device.kind === "device" ? device.serial : device.name;
 }
 
 /** Chooses the device `wanted` names - its serial or its name - as the tool lists it; answers its name, or nothing. */
-export async function chooseListedDevice(state: vscode.Memento, wanted: string, list: AndroidLister): Promise<string | undefined> {
+export async function chooseListedDevice(store: DeviceStore, wanted: string, list: AndroidLister): Promise<string | undefined> {
     const found = (await list())?.find((each) => (each.kind === "device" && each.serial === wanted) || each.name === wanted);
     if (!found) {
         return undefined;
     }
-    await state.update(deviceKey, { serial: found.kind === "device" ? found.serial : found.name, name: found.name } satisfies ChosenDevice);
+    await store.choose("android", found.name);
     return found.name;
 }

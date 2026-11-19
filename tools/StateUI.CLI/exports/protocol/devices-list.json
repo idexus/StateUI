@@ -15,6 +15,10 @@
         {
           "booted" : false,
           "connection" : "USB",
+          "debugger" : true,
+          "emulated" : [
+
+          ],
           "id" : "0B05862F-1427-5E93-AFC2-5FEAA82B99FB",
           "kind" : "device",
           "name" : "Example iPad",
@@ -23,6 +27,10 @@
         },
         {
           "booted" : true,
+          "debugger" : true,
+          "emulated" : [
+
+          ],
           "id" : "C8992893-1166-4CDF-AF44-2169C94EE53B",
           "kind" : "simulator",
           "name" : "iPhone 18 Pro",

@@ -26,7 +26,11 @@ let package = Package(
         .target(
             name: "CWebViewWinUI",
             path: "Relay",
-            cxxSettings: [.unsafeFlags(["-I", Context.packageDirectory + "/../../StateUI/StateUI.WinUI/.projection"])],
+            // Design: docs/design/platforms/winui/relay.md#the-compiler-the-library-expects
+            cxxSettings: [
+                .unsafeFlags(["-I", Context.packageDirectory + "/../../StateUI/StateUI.WinUI/.projection"]),
+                .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH"),
+            ],
             linkerSettings: [.linkedLibrary("shcore"), .linkedLibrary("shlwapi")]
         ),
         .target(

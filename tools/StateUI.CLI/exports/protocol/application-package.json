@@ -28,6 +28,10 @@
     "destination" : {
       "booted" : false,
       "connection" : "USB",
+      "debugger" : true,
+      "emulated" : [
+
+      ],
       "id" : "0B05862F-1427-5E93-AFC2-5FEAA82B99FB",
       "kind" : "device",
       "name" : "Example iPad",

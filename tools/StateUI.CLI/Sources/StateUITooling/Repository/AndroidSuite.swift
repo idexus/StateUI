@@ -9,6 +9,10 @@ import StateUIToolingProtocol
 /// records, and the facade to its API record; or the test APK built alone, with its identity, to run elsewhere.
 /// Design: docs/design/tooling/repository.md#the-android-hosts-suite
 struct AndroidSuite {
+    /// What the test APK is - no application's `stateui.json`, the suite's own - at StateUI's release.
+    static let identity = ApplicationFile(
+        identifier: "com.stateui.androidtests", version: Release.version, build: 1, name: "StateUI Android host tests")
+
     let checkout: URL
     let tools: ToolResolver
     /// Whether the API phase writes its records rather than holds them.
@@ -118,22 +122,21 @@ struct AndroidSuite {
             compiler: (await ToolOutput.text(compiler, ["--version"]))?.split(separator: "\n").first.map(String.init) ?? "",
             sdk: target.sdkIdentity, library: checkout)
         let common = ["--package-path", tests.path, "--scratch-path", context.scratch.path, "--configuration", "debug"] + target.arguments
-        let building = target.environment.reduce(environment.setting("STATEUI_HOST", to: "android")) { $0.setting($1.key, to: $1.value) }
+        let building = target.environment.reduce(environment) { $0.setting($1.key, to: $1.value) }
         reporter.progress("building the Android host's tests for \(abi)")
         let outcome = try await ProcessRunner().run(
             ProcessRequest(compiler, arguments: ["build", "--product", product] + common, environment: building), output: reporter.output)
         try Task.checkCancellation()
-        guard outcome.succeeded,
-              let binaries = (await ToolOutput.text(compiler, ["build", "--show-bin-path"] + common, environment: building))?
-                .split(separator: "\n").last.map({ URL(fileURLWithPath: String($0).trimmingCharacters(in: .whitespaces)) })
-        else { throw ToolingError(.toolFailed, "The Android host's tests did not build.") }
+        guard outcome.succeeded else { throw ToolingError(.toolFailed, "The Android host's tests did not build.") }
+        let binaries = try await ProductFolder.of(compiler, placing: common, environment: building)
 
         let work = context.scratch.appendingPathComponent("stateui")
         let folder = work.appendingPathComponent("suite")
         try? FileManager.default.removeItem(at: folder)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let head = AndroidHead(
-            application: tests, name: product, product: product, library: checkout, configuration: .debug, work: work, tools: android)
+            application: tests, name: product, identity: Self.identity, product: product, library: checkout, configuration: .debug,
+            work: work, tools: android)
         _ = try await head.assemble(abi: abi, binaries: binaries, swiftSDK: swiftSDK, ndk: ndk, in: folder, reporter: reporter)
         let identity = Identity(suite: "host:android", architecture: architecture, revision: await revision(), swiftSDK: swiftSDK)
         let encoder = JSONEncoder()

@@ -80,13 +80,14 @@ needs no Java of its own. Its `build.gradle.kts` depends on AndroidX's
 keeps their Java beside the head, in `Java/`, and may extend the activity,
 declaring its own class in the manifest instead.
 
-`STATEUI_HOST=android` is what makes a build an Android Views one: the
-application's manifest reads it, declares its `Platforms/Android/Swift` head
-and the library it makes, and defines the `ANDROID` compilation condition for
-every module of the application; `lib/StateUI.Head` brings the
-`StateUIAndroid` host to the head. Swift written for this host alone stands
-under `#if ANDROID`. The `stateui` tool sets it for the Android build, and
-nothing else: the library itself is built as every host builds it.
+The trait `Android` is what makes a build an Android Views one: the head's
+own package, `Platforms/Android`, makes the library of `Platforms/Android/Swift`
+and enables the trait on the application, which defines the `ANDROID`
+compilation condition for every module of the application, and on
+`lib/StateUI.Head`, which brings the `StateUIAndroid` host to the head. Swift
+written for this host alone stands under `#if ANDROID`. The `stateui` tool
+builds that package for the Android build; the library itself is built as
+every host builds it.
 
 A new application - **StateUI: New Application**, `stateui new`, or
 `stateui new` - has an Android head, as HelloWorld does, and runs and
@@ -326,8 +327,8 @@ are drawn for it as the APK is built: an SVG three times over, as a PNG,
 which `Image("mark.png")` finds as it does on UIKit, and as it finds the SVG
 on the hosts that draw one. An application's `print` reaches logcat under
 the tag `StateUI`, and so does what `STATEUI_TALLY=1` and `STATEUI_INSPECT=1`
-write: the run hands every `STATEUI_` variable of its environment to the
-application's. A head's manifest asks for `ACCESS_NETWORK_STATE`, which the
+write: the run hands the application every `STATEUI_` variable of its
+environment. A head's manifest asks for `ACCESS_NETWORK_STATE`, which the
 host needs to report the network to the application's views.
 
 In VS Code, choose **Android** as the host and a device, and press **F5**.

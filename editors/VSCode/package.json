@@ -2,7 +2,7 @@
   "name": "stateui",
   "displayName": "StateUI",
   "description": "Build, run and debug StateUI applications on AppKit, UIKit, Android, WinUI, GTK and the Web.",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "publisher": "idexus",
   "license": "Apache-2.0",
   "icon": "icon.png",
@@ -49,9 +49,9 @@
         },
         "stateui.minimumRelease": {
           "type": "string",
-          "default": "0.5.0",
+          "default": "0.8.6",
           "pattern": "^\\d+\\.\\d+\\.\\d+$",
-          "markdownDescription": "The oldest StateUI release **StateUI: New Project Group** offers to clone into a group: the first whose scripts build into `.build/<host>` and name the host by `STATEUI_HOST`, as this extension does."
+          "markdownDescription": "The oldest StateUI release **StateUI: New Project Group** offers to clone into a group: the first whose heads are packages of their own, each naming its host by a trait, as this extension builds them."
         }
       }
     },
@@ -79,6 +79,11 @@
       {
         "command": "stateui.selectBrowser",
         "title": "Select Browser",
+        "category": "StateUI"
+      },
+      {
+        "command": "stateui.selectMachine",
+        "title": "Select Machine",
         "category": "StateUI"
       },
       {

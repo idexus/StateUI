@@ -33,7 +33,8 @@ names the versions the host's suite passes on.
 
 ## The head
 
-An application's AppKit head is `Platforms/AppKit/main.swift`. It registers the
+An application's AppKit head is a package of its own, `Platforms/AppKit`, its
+program `Platforms/AppKit/main.swift`. It registers the
 application, says what this host answers for it, then starts the host - here
 the Gallery's:
 
@@ -372,13 +373,13 @@ as an application bundle - `<Name>AppKit.app`: the head, the StateUI
 libraries it links, the application's pictures, its icon drawn from
 `Resources/AppIcon/appicon_macos.svg`, an `Info.plist` and an ad-hoc
 signature - and says where it published it, in the application's
-`.build/stateui/artifacts/`. The bundle's identifier is
-`com.stateui.<name>`; the application's own `Platforms/AppKit/Info.plist`
-lays its keys over the host's - the Gallery's names it "StateUI Gallery",
-opens its `stateui-gallery://` links and says why it asks where you are. A
-build that fails publishes nothing, so nothing older ever runs in its place.
-`stateui run` builds it, then runs it in the foreground until it ends or
-Ctrl+C stops it.
+`.build/stateui/artifacts/`. The bundle's identifier, version and build are
+the application's `stateui.json`'s; its own `Platforms/AppKit/Info.plist`
+lays its other keys over the host's - the Gallery's names it "StateUI
+Gallery", opens its `stateui-gallery://` links and says why it asks where
+you are. A build that fails publishes nothing, so nothing older ever runs in
+its place. `stateui run` builds it, then runs it in the foreground until it
+ends or Ctrl+C stops it.
 
 In VS Code, choose **AppKit** as the host and press **F5**. **StateUI: Debug**
 has the tool build the bundle, its progress in a notification that cancels
@@ -394,9 +395,9 @@ stateui package --project apps/Gallery --host appkit
 
 `stateui package` builds an application's head for release and lays its
 bundle, made anew, in `artifacts/<application>/AppKit` of the application's
-workspace - the folder of the stateui.json listing it, a checkout's or a
-project group's - or in the `--output` folder named. **StateUI: Package** in
-the editor does the same for the application chosen.
+workspace - the folder of the stateui-workspace.json listing it, a checkout's
+or a project group's - or in the `--output` folder named. **StateUI: Package**
+in the editor does the same for the application chosen.
 
 ## Testing
 

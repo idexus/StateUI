@@ -12,6 +12,10 @@
             "configuration" : "debug",
             "destination" : {
               "booted" : true,
+              "debugger" : true,
+              "emulated" : [
+
+              ],
               "id" : "C8992893-1166-4CDF-AF44-2169C94EE53B",
               "kind" : "simulator",
               "name" : "iPhone 18 Pro",
@@ -21,6 +25,20 @@
             "folderUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/uikit-arm64-b0d562ff4ef0-debug",
             "host" : "uikit",
             "programUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/uikit-arm64-b0d562ff4ef0-debug/NotesUIKit.app/NotesUIKit"
+          },
+          "debugger" : {
+            "attachCommands" : [
+
+            ],
+            "initCommands" : [
+
+            ],
+            "kind" : "lldb",
+            "process" : 33316,
+            "request" : "attach",
+            "terminateCommands" : [
+              "process kill"
+            ]
           },
           "held" : true,
           "process" : 33316
@@ -63,6 +81,10 @@
         "configuration" : "debug",
         "destination" : {
           "booted" : true,
+          "debugger" : true,
+          "emulated" : [
+
+          ],
           "id" : "C8992893-1166-4CDF-AF44-2169C94EE53B",
           "kind" : "simulator",
           "name" : "iPhone 18 Pro",
@@ -72,6 +94,20 @@
         "folderUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/uikit-arm64-b0d562ff4ef0-debug",
         "host" : "uikit",
         "programUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/uikit-arm64-b0d562ff4ef0-debug/NotesUIKit.app/NotesUIKit"
+      },
+      "debugger" : {
+        "attachCommands" : [
+
+        ],
+        "initCommands" : [
+
+        ],
+        "kind" : "lldb",
+        "process" : 33316,
+        "request" : "attach",
+        "terminateCommands" : [
+          "process kill"
+        ]
       },
       "held" : true,
       "process" : 33316

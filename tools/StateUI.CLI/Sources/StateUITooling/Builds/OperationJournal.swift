@@ -12,6 +12,8 @@ import Synchronization
 public struct OperationJournal: Sendable {
     /// The project root the journal stands in: a workspace's folder, else the application's.
     public let root: URL
+    /// How many operations the journal keeps: the newest, every running one besides.
+    public static let kept = 50
 
     /// The journal of the project at `root`.
     public init(root: URL) {
@@ -23,7 +25,8 @@ public struct OperationJournal: Sendable {
         root.appendingPathComponent(".stateui").appendingPathComponent("operations")
     }
 
-    /// Opens the record of operation `id` of `kind`, asked as `request`, running.
+    /// Opens the record of operation `id` of `kind`, asked as `request`, running - and lets go of the oldest records
+    /// beyond the newest ``kept``.
     public func open(id: String, kind: String, request: JSONValue? = nil) throws -> Entry {
         let entry = folder.appendingPathComponent(id)
         try FileManager.default.createDirectory(at: entry, withIntermediateDirectories: true)
@@ -35,7 +38,20 @@ public struct OperationJournal: Sendable {
         guard FileManager.default.createFile(atPath: output.path, contents: nil) else {
             throw CocoaError(.fileWriteUnknown, userInfo: [NSFilePathErrorKey: output.path])
         }
+        letGoOfTheOldest()
         return Entry(folder: entry, record: record)
+    }
+
+    /// Removes the records beyond the newest ``kept`` - by when they opened, then by id - but one running, or one
+    /// not yet written, which another process may be opening.
+    /// Design: docs/design/tooling/builds.md#the-operation-journal
+    private func letGoOfTheOldest() {
+        let files = FileManager.default
+        let ids = (try? files.contentsOfDirectory(atPath: folder.path)) ?? []
+        let records = ids.compactMap { try? record(of: $0) }.sorted { ($0.createdAt, $0.id) > ($1.createdAt, $1.id) }
+        for old in records.dropFirst(Self.kept) where old.state != .running {
+            try? files.removeItem(at: folder.appendingPathComponent(old.id))
+        }
     }
 
     /// The record of operation `id`, as it was last written.

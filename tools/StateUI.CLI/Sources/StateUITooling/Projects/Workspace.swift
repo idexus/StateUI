@@ -4,7 +4,7 @@
 import Foundation
 import StateUIToolingProtocol
 
-/// A workspace: the folder of the nearest `stateui.json` up from a command's folder, and what its file says.
+/// A workspace: the folder of the nearest `stateui-workspace.json` up from a command's folder, and what its file says.
 /// Design: docs/design/tooling/projects.md#a-workspace
 struct Workspace: Sendable {
     /// The folder the file stands in.
@@ -12,7 +12,7 @@ struct Workspace: Sendable {
     /// What the file says.
     var file: WorkspaceFile
 
-    /// The workspace whose `stateui.json` is nearest up from `folder`, itself included.
+    /// The workspace whose `stateui-workspace.json` is nearest up from `folder`, itself included.
     static func nearest(from folder: URL) throws(ToolingError) -> Workspace? {
         var current = RealPath.of(folder)
         while true {
@@ -29,24 +29,26 @@ struct Workspace: Sendable {
     func applications() throws(ToolingError) -> [URL] {
         try file.projects.map { (path: String) throws(ToolingError) -> URL in
             let folder = ApplicationMaker.folder(named: path, from: self.folder)
-            guard !ProjectReader.hosts(of: folder).isEmpty else {
+            guard ProjectReader.isApplication(folder) else {
                 throw ToolingError(
                     .invalidConfiguration,
-                    "\(self.folder.appendingPathComponent(WorkspaceFile.name).path) lists \(path), which is no application.")
+                    "\(self.folder.appendingPathComponent(WorkspaceFile.name).path) lists \(path), which holds no"
+                        + " \(ApplicationFile.name) - no application.")
             }
             return folder
         }
     }
 
-    /// The application a run starts where none is named: the folder `startup` names, one the file lists.
+    /// The application a run starts where none is named: the one chosen on this machine, a folder the file lists.
     ///
-    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a `startup` the file does not list.
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a choice the file does not list.
     func startup() throws(ToolingError) -> URL? {
-        guard let path = file.startup else { return nil }
+        guard let path = try WorkspaceSettings.read(in: folder).startup else { return nil }
         guard file.projects.contains(path) else {
             throw ToolingError(
                 .invalidConfiguration,
-                "\(folder.appendingPathComponent(WorkspaceFile.name).path) starts \(path), which it does not list in projects.")
+                "\(WorkspaceSettings.file(in: folder).path) starts \(path), which the workspace does not list:"
+                    + " choose another with `stateui settings --startup <application>`.")
         }
         return ApplicationMaker.folder(named: path, from: folder)
     }
@@ -63,25 +65,12 @@ struct Workspace: Sendable {
     /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a manifest naming its checkout in a form the tool does
     ///   not write - nothing is rewritten then.
     mutating func use(_ checkout: URL) throws -> [URL] {
-        var rewritten: [(URL, String)] = []
-        for application in try applications() {
-            let manifest = application.appendingPathComponent("Package.swift")
-            let text = try String(contentsOf: manifest, encoding: .utf8)
-            guard let old = text.firstMatch(of: /\.package\(name: "StateUIRoot", path: "([^"]*)"\)/)?.output.1 else {
-                throw ToolingError(
-                    .invalidConfiguration,
-                    "\(manifest.path) names no checkout as `.package(name: \"StateUIRoot\", path: ...)`; name it by hand.")
-            }
-            let new = ApplicationMaker.relativePath(from: application, to: checkout)
-            let renamed = text.replacingOccurrences(of: "path: \"\(old)\"", with: "path: \"\(new)\"")
-                .replacingOccurrences(of: "path: \"\(old)/", with: "path: \"\(new)/")
-            if renamed != text { rewritten.append((manifest, renamed)) }
-        }
+        let rewritten = try applications().flatMap { try ApplicationManifest.naming(checkout, in: $0) }
         for (manifest, text) in rewritten { try Data(text.utf8).write(to: manifest) }
         file.library = .init(path: ApplicationMaker.relativePath(from: folder, to: checkout))
         let own = folder.appendingPathComponent(WorkspaceFile.name)
         try file.write(to: own)
-        return rewritten.map(\.0) + [own]
+        return rewritten.map(\.manifest) + [own]
     }
 
     /// Lists `application` in the file and writes it, unless listed already.

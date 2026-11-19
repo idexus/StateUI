@@ -21,8 +21,11 @@ fails at once, so a handler awaiting it goes on.
 
 ## Starting
 
-The page loads the module and calls its `_start`, which runs the head's
-`main`: it names the application and calls `WebHost.run(name:applicationID:)`. The host
+The page loads the module - and beside it the application's `stateui.json`,
+which the tool lays by the page's `index.html` - and calls its `_start`, which
+runs the head's `main`: it names the application and calls `WebHost.run()`,
+which reads what the application is off that file (its name, identifier,
+version and build; none where the page stands without it). The host
 claims the page's one thread as the UI thread, hands the relay the two
 functions the page calls it through, and starts in the order every host keeps
 ([starting](../../host/runtime.md#starting)): it tells the core what it
@@ -76,6 +79,17 @@ its loop ([WebAssembly](../../core/concurrency.md#webassembly)).
 Words read back - a field's value - are read in two steps: the relay encodes
 them and answers their length, and Swift hands it a buffer of that length to
 copy them into.
+
+### What already stands
+
+The relay writes only what changes: an element's words or an attribute that
+already says what Swift asks is left alone, and new words for an element
+holding one text node change that node's `data` in place. A view shown again
+as its look follows the pointer - a bar's button pressed, hovered - writes
+its words and attributes again, and a text node replaced between a press and
+its release is a click WebKit never sends (Chrome sends it, so the suite's
+browser alone never shows it). `WebRelayWritesTests` holds both: the same
+write changes nothing, and a press on a bar's button replaces no node.
 
 A DOM event crosses by its name, and a name is only ever the DOM's - an
 application's custom element hears its own `closed` or `focus`. What the
@@ -312,8 +326,8 @@ hand takes no frame of the browser's.
 
 A page downloads the application's module before anything shows, so its size
 is the Web's first cost. A release head links with `--strip-debug`
-(`lib/StateUI.Head`): no DWARF, while the name section stays, so a trap still
-names its functions. A server sends the module compressed; the size that
+([The build](../../tooling/web-heads.md#the-build)): no DWARF, while the name
+section stays, so a trap still names its functions. A server sends the module compressed; the size that
 counts is the module gzipped.
 
 `stateui repo web-size check` builds each application's release head

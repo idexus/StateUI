@@ -22,7 +22,7 @@ final class AppKitBundleTests: XCTestCase {
         try svg.write(to: application.appendingPathComponent("Resources/Images/mark.svg"), atomically: true, encoding: .utf8)
         try svg.write(to: application.appendingPathComponent("Resources/AppIcon/appicon_macos.svg"), atomically: true, encoding: .utf8)
         if ownKeys {
-            let own: [String: Any] = ["CFBundleDisplayName": "My Notes", "NSLocationUsageDescription": "Where notes were written."]
+            let own: [String: Any] = ["NSLocationUsageDescription": "Where notes were written."]
             try PropertyListSerialization.data(fromPropertyList: own, format: .xml, options: 0)
                 .write(to: application.appendingPathComponent("Platforms/AppKit/Info.plist"))
         }
@@ -41,7 +41,8 @@ final class AppKitBundleTests: XCTestCase {
         let (application, binaries, staging) = try application(ownKeys: true)
         try Data("library".utf8).write(to: binaries.appendingPathComponent("libStateUI.dylib"))
         let bundle = try await AppKitBundle(
-            application: application, name: "Notes", product: "NotesAppKit", binaries: binaries, release: "1.0.0",
+            application: application, name: "Notes", product: "NotesAppKit", binaries: binaries,
+            identity: ApplicationFile(identifier: "pl.example.notes", version: "2.1", build: 9, name: "My Notes"),
             minimumSystem: "26.4").assemble(in: staging, sign: false)
 
         let files = FileManager.default
@@ -52,7 +53,8 @@ final class AppKitBundleTests: XCTestCase {
         XCTAssertEqual(bundle.lastPathComponent, "NotesAppKit.app")
         let plist = try XCTUnwrap(try PropertyListSerialization.propertyList(
             from: Data(contentsOf: bundle.appendingPathComponent("Contents/Info.plist")), format: nil) as? [String: Any])
-        XCTAssertEqual(plist["CFBundleIdentifier"] as? String, "com.stateui.notes")
+        XCTAssertEqual(plist["CFBundleIdentifier"] as? String, "pl.example.notes")
+        XCTAssertEqual([plist["CFBundleShortVersionString"], plist["CFBundleVersion"]] as? [String], ["2.1", "9"])
         XCTAssertEqual(plist["CFBundleDisplayName"] as? String, "My Notes")
         XCTAssertEqual(plist["NSLocationUsageDescription"] as? String, "Where notes were written.")
         XCTAssertEqual(plist["CFBundleIconFile"] as? String, "StateUI")
@@ -63,7 +65,8 @@ final class AppKitBundleTests: XCTestCase {
     func testTheBundleIsSignedAdHoc() async throws {
         let (application, binaries, staging) = try application(ownKeys: false)
         let bundle = try await AppKitBundle(
-            application: application, name: "Notes", product: "NotesAppKit", binaries: binaries, release: "1.0.0",
+            application: application, name: "Notes", product: "NotesAppKit", binaries: binaries,
+            identity: ApplicationFile(identifier: "pl.example.notes", version: "2.1", build: 9, name: "My Notes"),
             minimumSystem: "26.4").assemble(in: staging)
         let said = Gathered()
         let verified = try await ProcessRunner().run(

@@ -22,25 +22,28 @@ public struct ApplicationRunner: Sendable {
     ///   build held for a debugger, `TOOL_FAILED` where it does not start - or `CancellationError` once stopped.
     public func run(_ request: RunRequest, in folder: URL, operation: String, reporter: RunReporter = RunReporter())
         async throws -> RunResult {
+        try Self.refuse(request)
+        var request = request
+        request.build = try ApplicationBuilder.chosen(request.build, in: folder)
+        try Self.refuse(request)
         if request.build.host == .android {
             return try await runAndroid(request, in: folder, operation: operation, reporter: reporter)
+        }
+        if let host = request.build.host, HostFamily.desktop.contains(host) {
+            let (built, _) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
+            return try await DesktopLaunch().run(built, underGDB: request.gdb == true, held: request.debugger, reporter: reporter)
         }
         if request.build.host == .web {
             #if canImport(NIOPosix)
             let (built, _) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
+            let debugged = request.debugger ? await Self.debuggedBrowser(request.build.device) : nil
             return try await WebLaunch(
                 site: try FileURI.url(built.folderUri), port: request.port, lan: request.lan ?? false, browser: request.build.device,
-                environment: ProcessInfo.processInfo.environment
+                environment: HandedEnvironment(of: ProcessInfo.processInfo.environment), debugged: debugged
             ).run(built, reporter: reporter)
             #else
             throw ToolingError(.invalidConfiguration, "A Web head's page is served on macOS and Linux.")
             #endif
-        }
-        guard request.build.host == .uikit else {
-            throw ToolingError(.invalidConfiguration, "application/run starts UIKit, Android and Web heads; \(request.build.host.rawValue) runs from the program application/build names.")
-        }
-        if request.debugger, request.build.configuration == .release {
-            throw ToolingError(.invalidConfiguration, "Only a debug build is held for a debugger.")
         }
         let (built, root) = try await builder.built(request.build, in: folder, operation: operation, reporter: reporter.build)
         #if os(macOS)
@@ -55,12 +58,16 @@ public struct ApplicationRunner: Sendable {
         switch destination.kind {
         case .simulator:
             let logs = root.appendingPathComponent(".stateui/operations").appendingPathComponent(operation)
-            return try await SimulatorLaunch(simulator: destination, bundle: bundle, identifier: identifier, logs: logs)
+            return try await SimulatorLaunch(
+                simulator: destination, bundle: bundle, identifier: identifier, logs: logs,
+                environment: HandedEnvironment(of: ProcessInfo.processInfo.environment))
                 .run(built, held: request.debugger, reporter: reporter)
         case .device:
-            return try await DeviceLaunch(device: destination, bundle: bundle, identifier: identifier)
+            return try await DeviceLaunch(
+                device: destination, bundle: bundle, identifier: identifier,
+                environment: HandedEnvironment(of: ProcessInfo.processInfo.environment))
                 .run(built, held: request.debugger, reporter: reporter)
-        case .emulator, .browser:
+        case .machine, .emulator, .browser, .guest, .remote:
             throw ToolingError(.internalError, "A UIKit head runs on no \(destination.kind.rawValue).")
         }
         #else
@@ -69,12 +76,31 @@ public struct ApplicationRunner: Sendable {
         #endif
     }
 
+    /// The browser `named` - by id or name, the system's own where none is named - where a debugger follows its pages.
+    static func debuggedBrowser(_ named: String?) async -> Destination? {
+        let browsers = await Browsers.list()
+        let chosen = named.flatMap { name in browsers.first { $0.id == name || $0.name == name } } ?? browsers.first(where: \.booted)
+        return chosen?.debugger == true ? chosen : nil
+    }
+
+    /// Refuses, before anything is read or built, a run under gdb of another head than GTK's, one both under gdb and
+    /// held for LLDB, and a release build held for a debugger; a request naming no host yet passes.
+    static func refuse(_ request: RunRequest) throws {
+        guard let host = request.build.host else { return }
+        if request.gdb == true, host != .gtk {
+            throw ToolingError(.invalidConfiguration, "A GTK head alone runs under gdb.")
+        }
+        if request.gdb == true, request.debugger {
+            throw ToolingError(.invalidConfiguration, "A run goes under gdb, or is held for LLDB - not both.")
+        }
+        if request.debugger, request.build.configuration == .release {
+            throw ToolingError(.invalidConfiguration, "Only a debug build is held for a debugger.")
+        }
+    }
+
     /// An Android head run on the device or emulator the request names - a virtual device not running booted first,
     /// so the build is for its ABI.
     private func runAndroid(_ request: RunRequest, in folder: URL, operation: String, reporter: RunReporter) async throws -> RunResult {
-        if request.debugger, request.build.configuration == .release {
-            throw ToolingError(.invalidConfiguration, "Only a debug build can be debugged.")
-        }
         let environment = ProcessInfo.processInfo.environment
         let tools = AndroidTools(environment: environment)
         let destinations = AndroidDestinations(tools: tools)
@@ -92,6 +118,6 @@ public struct ApplicationRunner: Sendable {
         let ndk = request.debugger ? tools.ndk(for: await tools.swift()?.sdk) : nil
         return try await AndroidLaunch(
             device: built.destination ?? destination, apk: apk, package: package, activity: activity, ndk: ndk, tools: tools,
-            environment: environment).run(built, debugger: request.debugger, reporter: reporter)
+            environment: HandedEnvironment(of: environment)).run(built, debugger: request.debugger, reporter: reporter)
     }
 }

@@ -3,32 +3,35 @@
 
 // The integration suite, run inside VS Code by Tests/run.ts.
 //
-// The editor's host is asked of the LANGUAGE SERVER, which cannot be faked: a
-// symbol of the AppKit head resolves only while SourceKit-LSP runs with
-// STATEUI_HOST=appkit, and a symbol under no condition resolves in either mode -
-// which is what tells "not this host" from "not ready yet".
+// The editor's host is asked of the LANGUAGE SERVER, which cannot be faked: the
+// application's code under `#if UIKIT` resolves only while SourceKit-LSP indexes
+// it with the trait UIKit, a head - a package of its own - resolves as its host,
+// and a symbol under no condition resolves in every mode - which is what tells
+// "not this host" from "not ready yet".
 
 import { execSync, spawn } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, applicationsOf, hasHead, readApplications } from "../Sources/applications";
-import { Configuration, configurations, runPlace, StateUIDebugConfigurationProvider, uiKitAttach, webLaunch } from "../Sources/debug";
+import { Application, applicationsOf, folderHolding, hasHead, readApplications } from "../Sources/applications";
+import { Configuration, configurations, debugConfiguration, runPlace, StateUIDebugConfigurationProvider } from "../Sources/debug";
+import { chosenApplication, chosenHost, offeredHosts } from "../Sources/choices";
 import { androidDeviceOf, deviceAmong } from "../Sources/devices";
-import { browserOf, isChromium } from "../Sources/browsers";
+import { browserOf } from "../Sources/browsers";
 import { simulatorForSuites, uiKitDeviceOf } from "../Sources/uiKitDevices";
-import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
-import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
+import { applyEditorMode, buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings } from "../Sources/editorMode";
+import { machineOf } from "../Sources/machines";
+import { availableHosts, describe, Host, HostDescription, hosts, placeOf, reconsidered, worksAnew } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { editorCommandLine, hasExtensionSources } from "../Sources/reinstall";
 import { conformanceRequest, failedPhases } from "../Sources/conformance";
-import { packageDestination, toolArchitecture, winUIArchitectures } from "../Sources/packaging";
+import { Architecture, packageDestination, toolArchitecture, windowsArchitecture } from "../Sources/packaging";
 import {
-    atLeast, checkedPythonIn, debuggerFinding, Finding, lldbDapFailure, report,
+    atLeast, checkedPythonIn, debuggerFinding, Finding, lldbDapFailure, report, wasmDebuggingFinding,
 } from "../Sources/toolchain";
 import { pathToFileUri, ToolingClient } from "../Sources/Tooling/client";
-import { TestSuiteDescription } from "../Sources/Tooling/protocol";
+import { BuildResult, DebugDescriptor, HostPlace, TestSuiteDescription } from "../Sources/Tooling/protocol";
 import { locateTool } from "../Sources/Tooling/locate";
 
 const started = Date.now();
@@ -54,6 +57,20 @@ async function resolves(file: string, needle: string, after?: string): Promise<b
     const found = await vscode.commands.executeCommand<unknown[]>(
         "vscode.executeDefinitionProvider", document.uri, document.positionAt(at + 1));
     return (found?.length ?? 0) > 0;
+}
+
+// The line the definition of `needle` in `file` - asked `offset` characters into it - stands on; none where none is found.
+async function definitionLine(file: string, needle: string, offset: number): Promise<number | undefined> {
+    const document = await vscode.workspace.openTextDocument(file);
+    await vscode.window.showTextDocument(document, { preview: false });
+    const at = document.getText().indexOf(needle);
+    if (at < 0) {
+        throw new Error(`${needle} is not in ${file}`);
+    }
+    const found = await vscode.commands.executeCommand<(vscode.Location | vscode.LocationLink)[]>(
+        "vscode.executeDefinitionProvider", document.uri, document.positionAt(at + offset));
+    const first = found?.[0];
+    return first === undefined ? undefined : "targetUri" in first ? first.targetRange.start.line : first.range.start.line;
 }
 
 // A probe that throws has not yet seen it: a request the language server's restart rejected is asked again.
@@ -86,22 +103,55 @@ export async function run(): Promise<void> {
         const root = vscode.workspace.workspaceFolders![0];
         const gallery = path.join(root.uri.fsPath, "apps", "Gallery");
         const plain = path.join(gallery, "Sources", "Samples", "BasicInput", "SliderSample.swift");
-        // A head's own view exists only while the editor works as that host: its target is declared for it alone. A
-        // member under an inactive `#if` resolves all the same - the server reads it through its type.
-        const appKitOnly = (): Promise<boolean> =>
+        // A head's own view resolves in its own package, the head's index written as the editor works as its host. The
+        // light theme's sidebar is declared under `#if APPKIT` and under its `#else`, and used past both: the use
+        // resolves to the one the trait compiled - a member under an inactive `#if` resolves all the same, through its
+        // type, so where a use lands tells the trait, never whether one resolves.
+        const appKitHead = (): Promise<boolean> =>
             resolves(path.join(gallery, "Platforms", "AppKit", "Host", "GalleryControls.swift"), "MetalCube3DView.register");
-        const uiKitOnly = (): Promise<boolean> =>
+        const uiKitHead = (): Promise<boolean> =>
             resolves(path.join(gallery, "Platforms", "UIKit", "Host", "GalleryControls.swift"), "MetalCube3DView.register");
+        const looks = path.join(gallery, "Sources", "Gallery", "Looks.swift");
+        const looksLines = fs.readFileSync(looks, "utf8").split("\n");
+        const appKitSidebar = looksLines.findIndex((line) => line.includes("let sidebar = SurfaceLook(material: .glass"));
+        const otherSidebar = looksLines.findIndex((line) => line.includes("let sidebar = SurfaceLook.platform"));
+        const sidebarIs = (line: number) => async (): Promise<boolean> =>
+            (await definitionLine(looks, "sidebar: sidebar, sidebarOverlay: .platform", "sidebar: ".length + 1)) === line;
         const head = path.join(gallery, "Platforms", "AppKit", "Host", "MetalCube3DView.swift");
-        const uiKitHead = path.join(gallery, "Platforms", "UIKit", "Host", "MetalCube3DView.swift");
+        const uiKitCube = path.join(gallery, "Platforms", "UIKit", "Host", "MetalCube3DView.swift");
 
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
+
+        // The hosts this machine builds and where their heads run, as the stateui tool says them (`server/info`).
+        const places: HostPlace[] = await (async () => {
+            const asking = await ToolingClient.start({
+                executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
+                folder: root.uri.fsPath, clientVersion: "suite",
+            });
+            const info = await asking.request("server/info", {});
+            await asking.dispose();
+            return info.hosts;
+        })();
+        // A Mac's, Linux's and Windows' places, as the tool names them on each.
+        const macPlaces: HostPlace[] = [
+            { host: "appkit", place: "machine" }, { host: "uikit", place: "device" }, { host: "android", place: "device" },
+            { host: "winui", place: "guest" }, { host: "gtk", place: "guest" }, { host: "web", place: "browser" },
+        ];
+        const linuxPlaces: HostPlace[] = [{ host: "gtk", place: "machine" }, { host: "web", place: "browser" }];
+        const windowsPlaces: HostPlace[] = [{ host: "winui", place: "machine" }];
 
         // The applications, found at activation through the stateui tool: this checkout's workspace lists Gallery and HelloWorld.
         const found = api.applications().map((each) => each.name).join(" ");
         check(`the extension finds this checkout's applications through the stateui tool${found === "Gallery HelloWorld" ? "" : ` - not "${found}"`}`,
             found === "Gallery HelloWorld");
+        // The suite starts with no application chosen to start (run.ts sets the workspace's settings aside).
+        const startup = (): string | undefined => {
+            const file = path.join(root.uri.fsPath, ".stateui", "workspace-settings.json");
+            return fs.existsSync(file) ? (JSON.parse(fs.readFileSync(file, "utf8")) as { startup?: string }).startup : undefined;
+        };
+        await until("the application the window works on - the first listed, none chosen - stands in .stateui/workspace-settings.json",
+            async () => api.application() === "Gallery" && startup() === "apps/Gallery", 30);
 
         // 0. A restart the Swift extension rejects - its server, still loading packages, not stopped in time, or its
         //    client still starting - is asked again until it takes; a refusal that lasts is the caller's.
@@ -125,27 +175,28 @@ export async function run(): Promise<void> {
 
         // 1-3 ask the language server as the hosts only macOS builds.
         if (process.platform === "darwin") {
-            // 1. Android: the plain symbol resolves, the AppKit one does not.
+            // 1. Android: the plain symbol resolves, and the application's code is compiled with its trait, not AppKit's.
             await api.selectHost("android");
             await until("android: a symbol under no condition resolves", () => resolves(plain, "Palette.accent"), 900);
-            await until("android: neither head's own view resolves", async () => !(await appKitOnly()) && !(await uiKitOnly()), 900);
+            await until("android: the light theme's sidebar is the one every host but AppKit declares", sidebarIs(otherSidebar), 900);
 
-            // 2. AppKit, with no reload: the head's own view and the head resolve.
+            // 2. AppKit, with no reload: the head's own view and the head resolve in the head's package.
             await api.selectHost("appkit");
-            await until("appkit: its head's own view resolves", appKitOnly, 900);
-            // A target the package did not have a moment ago: the server has to
-            // load it, so this is waited for rather than asked once.
+            await until("appkit: its head's own view resolves", appKitHead, 900);
             await until("appkit: Cube3DContract in Platforms/AppKit resolves", () => resolves(head, "Cube3DContract.self"), 900);
+            await until("appkit: the light theme's sidebar is AppKit's own", sidebarIs(appKitSidebar), 900);
 
-            // 2b. UIKit, compiled for the iOS simulator by its triple and SDK: its head resolves, the AppKit symbol not.
+            // 2b. UIKit, compiled for the iOS simulator by its triple and SDK: its head resolves, and the application's
+            //     code is compiled with its trait, not AppKit's.
             await api.selectHost("uikit");
-            await until("uikit: Cube3DContract in Platforms/UIKit resolves", () => resolves(uiKitHead, "Cube3DContract.self"), 900);
-            await until("uikit: its head's own view resolves, and AppKit's does not", async () => (await uiKitOnly()) && !(await appKitOnly()), 900);
+            await until("uikit: Cube3DContract in Platforms/UIKit resolves", () => resolves(uiKitCube, "Cube3DContract.self"), 900);
+            await until("uikit: its head's own view resolves", uiKitHead, 900);
+            await until("uikit: the light theme's sidebar is no longer AppKit's", sidebarIs(otherSidebar), 900);
 
             // 3. And back, still with no reload.
             await api.selectHost("android");
-            await until("android again: the heads' views stop resolving while the plain symbol does", async () =>
-                (await resolves(plain, "Palette.accent")) && !(await appKitOnly()) && !(await uiKitOnly()), 900);
+            await until("android again: the plain symbol resolves, and the sidebar is every other host's", async () =>
+                (await resolves(plain, "Palette.accent")) && (await sidebarIs(otherSidebar)()), 900);
         } else {
             say("skip the language server as AppKit and Android: only macOS builds those hosts");
         }
@@ -165,7 +216,7 @@ export async function run(): Promise<void> {
             check(`another window is refused ${other} on this window's packages - held as ${current} - and shares ${current}`,
                 refused.conflict?.host === current && refused.rootUris.length === 0
                 && shared.conflict === undefined && shared.rootUris.length === rootUris.length);
-            const switchable = availableHosts().map((each) => each.id).find((each) => each !== current);
+            const switchable = availableHosts(places).map((each) => each.id).find((each) => each !== current);
             if (switchable) {
                 await api.selectHost(switchable);
                 check(`while that window works as ${current}, this one is refused ${switchable} and stays ${current}`, api.host() === current);
@@ -180,28 +231,95 @@ export async function run(): Promise<void> {
             }
         }
 
-        // 4. The hosts a machine is offered: AppKit, UIKit and Android on macOS,
-        //    WinUI on Windows, GTK on Linux, and the Web on macOS and Linux.
-        //    A launch on a machine that runs no host resolves to nothing.
+        // 4. The hosts a machine is offered, as the stateui tool says them: AppKit,
+        //    UIKit and Android on macOS, WinUI on Windows, GTK on Linux - both in
+        //    a Mac's guests too - and the Web on macOS and Linux. A launch on a
+        //    machine that runs no host resolves to nothing.
         const gallery_ = api.applications().find((each) => each.name === "Gallery")!;
-        check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, and the Web on macOS and Linux",
-            JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android", "web"])
-            && JSON.stringify(availableHosts("win32").map((each) => each.id)) === JSON.stringify(["winui"])
-            && JSON.stringify(availableHosts("linux").map((each) => each.id)) === JSON.stringify(["gtk", "web"])
-            && availableHosts("freebsd").length === 0);
+        const placed = (list: readonly HostPlace[]): string => JSON.stringify(list.map((each) => [each.host, each.place]));
+        const expected: Record<string, HostPlace[]> = { darwin: macPlaces, linux: linuxPlaces, win32: windowsPlaces };
+        check("the tool names this machine's hosts and where they run - a Mac's AppKit itself, UIKit and Android on devices, WinUI and GTK in guests, the Web in browsers",
+            placed(places) === placed(expected[process.platform] ?? []));
+        check("the host picker offers the hosts the tool names, in the matrix's order, and none where it names none",
+            JSON.stringify(availableHosts(macPlaces).map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android", "winui", "gtk", "web"])
+            && JSON.stringify(availableHosts([...linuxPlaces].reverse()).map((each) => each.id)) === JSON.stringify(["gtk", "web"])
+            && availableHosts([]).length === 0
+            && placeOf("gtk", macPlaces) === "guest" && placeOf("gtk", linuxPlaces) === "machine" && placeOf("appkit", linuxPlaces) === undefined);
         {
             const ran: string[] = [];
             const provider = new StateUIDebugConfigurationProvider({
-                build: async (_folder, application) => { ran.push(application.name); return undefined; },
+                prepare: async (_folder, application) => { ran.push(application.name); return undefined; },
                 host: () => undefined, application: async () => gallery_,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
+                machine: async () => undefined,
+                place: () => undefined,
                 runHead: async () => undefined,
                 browser: async () => undefined,
+                wasmDebugging: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
             check("with no host a launch runs nothing and opens no session", resolved === undefined && ran.length === 0);
+        }
+        {
+            // A head worked on another machine - a GTK or WinUI head in a guest of a Mac, a host a machine paired runs -
+            // is built and run by the tool on the machine chosen; a Debug build on one a debugger reaches is held, and
+            // lldb-dap reaches it as the tool says; elsewhere there is no session.
+            const runs: { host: string; device: string; debug: boolean; configuration: string }[] = [];
+            const relayed: DebugDescriptor = {
+                kind: "lldb", request: "launch", programUri: "file:///home/me/stateui-guest/abc/Notes/NotesGTK",
+                workingUri: "file:///home/me/stateui-guest/abc/Notes", adapterPort: 51000, initCommands: [], attachCommands: [],
+                terminateCommands: [],
+            };
+            const onAMachine = (forHost: Host, named: string | undefined, at: "guest" | "remote" = "guest", reached = false) => new StateUIDebugConfigurationProvider({
+                prepare: async () => undefined, host: () => forHost, application: async () => gallery_,
+                device: async () => undefined, uiKitDevice: async () => undefined, place: () => at,
+                machine: async () => named === undefined ? undefined
+                    : { name: named, kind: at, system: "", state: "running", debugger: reached, architectures: ["arm64"] },
+                runHead: async (_folder, _application, ran, asked, device, debug) => {
+                    runs.push({ host: ran, device, debug, configuration: asked });
+                    return debug ? { launched: { build: { application: "Gallery" } as unknown as BuildResult, held: true, debugger: relayed }, token: "run-1" } : undefined;
+                },
+                browser: async () => undefined,
+                wasmDebugging: async () => undefined,
+            });
+            const launch = (configuration: string) => ({ name: "StateUI", type: "stateui", request: "launch", configuration });
+            const released = await onAMachine("gtk", "Ubuntu").resolveDebugConfiguration(root, launch("release"));
+            const debugged = await onAMachine("winui", "Windows 11").resolveDebugConfiguration(root, launch("debug"));
+            const paired = await onAMachine("appkit", "studio", "remote").resolveDebugConfiguration(root, launch("debug"));
+            const declined = await onAMachine("gtk", undefined).resolveDebugConfiguration(root, launch("release"));
+            check("a launch on another machine runs on the machine chosen - a guest, a machine paired - with no session where no debugger reaches it, and none without one",
+                released === undefined && debugged === undefined && paired === undefined && declined === undefined
+                && JSON.stringify(runs) === JSON.stringify([
+                    { host: "gtk", device: "Ubuntu", debug: false, configuration: "release" },
+                    { host: "winui", device: "Windows 11", debug: false, configuration: "debug" },
+                    { host: "appkit", device: "studio", debug: false, configuration: "debug" },
+                ]));
+            runs.length = 0;
+            const held = await onAMachine("gtk", "Ubuntu", "guest", true).resolveDebugConfiguration(root, launch("debug"));
+            const heldRelease = await onAMachine("gtk", "Ubuntu", "guest", true).resolveDebugConfiguration(root, launch("release"));
+            check("a Debug launch on a machine a debugger reaches is held there, and its lldb-dap is reached through the tool's relay; a Release launch has no session",
+                held?.type === "lldb-dap" && held?.request === "launch" && held?.stateuiRun === "run-1"
+                && held?.debugAdapterPort === 51000 && held?.program === "/home/me/stateui-guest/abc/Notes/NotesGTK" && heldRelease === undefined
+                && JSON.stringify(runs) === JSON.stringify([
+                    { host: "gtk", device: "Ubuntu", debug: true, configuration: "debug" },
+                    { host: "gtk", device: "Ubuntu", debug: false, configuration: "release" },
+                ]));
+            check("a machine is listed by its name, kind, system and state, whether a debugger reaches it, and its architectures - its own first; no other destination is one",
+                JSON.stringify(machineOf({
+                    id: "Ubuntu", udid: "{1}", emulated: [], debugger: false, name: "Ubuntu", kind: "guest", version: "ubuntu", booted: false, connection: "suspended",
+                    architecture: "arm64",
+                })) === JSON.stringify({ name: "Ubuntu", kind: "guest", system: "ubuntu", state: "suspended", debugger: false, architectures: ["arm64"] })
+                && JSON.stringify(machineOf({
+                    id: "Windows 11", udid: "{2}", emulated: ["x86_64"], debugger: false, name: "Windows 11", kind: "guest", version: "win-11",
+                    booted: true, connection: "running", architecture: "arm64",
+                })?.architectures) === JSON.stringify(["arm64", "x86_64"])
+                && JSON.stringify(machineOf({
+                    id: "office", udid: "", emulated: [], debugger: false, name: "office", kind: "remote", version: "windows", booted: false,
+                    connection: "192.168.1.20:7979", architecture: "x86_64",
+                })) === JSON.stringify({ name: "office", kind: "remote", system: "windows", state: "192.168.1.20:7979", debugger: false, architectures: ["x86_64"] })
+                && machineOf({ id: "machine", udid: "machine", emulated: [], debugger: true, name: "This machine", kind: "machine", version: "macos", booted: false }) === undefined);
         }
 
         // 5. The suites, found for each host as the stateui tool runs them; the core's is named by the checkout's folder.
@@ -234,20 +352,64 @@ export async function run(): Promise<void> {
             && plainSuites.every((each) => each.kind === "package" && each.host === undefined && !each.onDevice)
             && !plainSuites.some((each) => each.id === "lib/StateUI/StateUI.AppKit" || each.id === "lib/StateUI/StateUI.Android/Tests"));
 
-        // 6. Android: the environment, the language server's file, the
-        //    devices, and the commands a launch and a suite run - captured,
-        //    not run.
-        check("each host's environment names it in one variable - STATEUI_HOST=android for Android - and no host clears it",
-            hosts.every((host) => JSON.stringify(environment(host.id)) === JSON.stringify({ STATEUI_HOST: host.id }))
-            && environment("android").STATEUI_HOST === "android"
-            && JSON.stringify(Object.entries(environment(undefined))) === JSON.stringify([["STATEUI_HOST", undefined]]));
+        // 6. Android: the language server's file, the devices, and the
+        //    commands a launch and a suite run - captured, not run.
+        {
+            const asAndroid = { host: "android" as const, trait: "Android", scratchPath: ".build/android/index-build" };
+            check("an application's own package is indexed with the host's trait and its condition, its head's package with "
+                + "neither, plain Swift with neither",
+                JSON.stringify(serverSettings(asAndroid).traits) === JSON.stringify(["Android"])
+                && JSON.stringify(serverSettings(asAndroid).swiftCompilerFlags) === JSON.stringify(["-DANDROID"])
+                && serverSettings(asAndroid, "head").traits === undefined
+                && serverSettings(asAndroid, "head").swiftCompilerFlags === undefined
+                && serverSettings({ scratchPath: ".build/index-build" }).traits === undefined);
+        }
+        {
+            // The hosts and machines of a window of two folders are the chosen application's project's, else the first's.
+            const [one, two] = [path.join(os.tmpdir(), "one"), path.join(os.tmpdir(), "two")];
+            check("the hosts and machines are read for the folder the chosen application stands in, else the first folder",
+                folderHolding(path.join(two, "apps", "Notes"), [one, two]) === two
+                && folderHolding(undefined, [one, two]) === one
+                && folderHolding(path.join(os.tmpdir(), "elsewhere"), [one, two]) === one
+                && folderHolding(path.join(os.tmpdir(), "one-more", "Notes"), [two, one]) === two
+                && folderHolding(undefined, []) === undefined);
+        }
+        {
+            // A pairing alone can give the window another host, a folder alone other packages: either works it anew.
+            check("the window works anew where its host or its packages changed, a pairing's host with the same packages too",
+                worksAnew({ host: undefined, roots: ["/a"] }, { host: "appkit", roots: ["/a"] })
+                && worksAnew({ host: "appkit", roots: ["/a"] }, { host: undefined, roots: ["/a"] })
+                && worksAnew({ host: "appkit", roots: ["/a"] }, { host: "appkit", roots: ["/a", "/b"] })
+                && !worksAnew({ host: "appkit", roots: ["/a"] }, { host: "appkit", roots: ["/a"] }));
+        }
+        {
+            // A choice changing the host as it is made - an application of no workspace chosen, the window's own key
+            // deciding at once - is a change: what the window worked as is taken before the choice.
+            let current: Host | undefined = "appkit";
+            const worked: (Host | undefined)[] = [];
+            await reconsidered(() => ({ host: current, roots: ["/a", "/b"] }), async () => { current = "uikit"; }, async () => undefined,
+                async (forHost) => { worked.push(forHost); });
+            await reconsidered(() => ({ host: current, roots: ["/a", "/b"] }), async () => undefined, async () => undefined,
+                async (forHost) => { worked.push(forHost); });
+            check("a choice that changes the host as it is made works the window anew as the new host, and one changing nothing does not",
+                JSON.stringify(worked) === JSON.stringify(["uikit"]));
+        }
+        {
+            // The tool unreachable, or answering no lease: nothing of the index is written - a write needs a lease held.
+            const unleased = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-unleased-"));
+            const wrote = await applyEditorMode("android", [unleased],
+                async () => ({ host: "android", trait: "Android", scratchPath: ".build/android/index-build" }), async () => undefined);
+            check("no lease of the index answered: the editor's mode writes no language server's file",
+                wrote === false && !fs.existsSync(path.join(unleased, ".sourcekit-lsp", "config.json")));
+            fs.rmSync(unleased, { recursive: true, force: true });
+        }
         {
             const asWinUI = otherHostsExcluded("winui", { "**/mine": true, "**/lib/StateUI/StateUI.WinUI": true });
             const excluded = Object.keys(asWinUI).filter((pattern) => asWinUI[pattern]);
-            check("as WinUI the Swift extension loads no other host's package nor backend, and the user's own exclusions stay",
+            check("as WinUI the Swift extension loads no other host's package, backend nor head, and the user's own exclusions stay",
                 excluded.includes("**/lib/StateUI/StateUI.Android") && excluded.includes("**/lib/Backends/*.GTK")
-                && !excluded.some((pattern) => pattern.endsWith(".WinUI")) && asWinUI["**/mine"] === true
-                && Object.keys(otherHostsExcluded(undefined, {})).length === hosts.length * 2);
+                && excluded.includes("**/Platforms/GTK") && !excluded.some((pattern) => pattern.endsWith("WinUI"))
+                && asWinUI["**/mine"] === true && Object.keys(otherHostsExcluded(undefined, {})).length === hosts.length * 3);
             check("every host's own package stands where its exclusion names it",
                 hosts.every((host) => fs.existsSync(path.join(root.uri.fsPath, "lib", "StateUI", `StateUI.${host.label}`, "Package.swift"))));
         }
@@ -255,22 +417,30 @@ export async function run(): Promise<void> {
             // The index's settings are the tool's context (`index/describe`), the server's file keeping the rest.
             const sdk = "swift-6.4.2-RELEASE_android";
             const android = serverConfig(
-                { swiftPM: { scratchPath: ".build/appkit/index-build", configuration: "debug" }, index: { indexStorePath: "x" } },
-                serverSettings({ host: "android", scratchPath: ".build/android/index-build", swiftSDK: sdk, triple: "aarch64-unknown-linux-android28" }));
-            const back = serverConfig(android, serverSettings({ host: "appkit", scratchPath: ".build/appkit/index-build" }));
-            check("as Android the language server indexes where the tool says, with the Swift SDK and the triple, by building",
+                { swiftPM: { scratchPath: ".build/appkit/index-build", configuration: "debug", swiftCompilerFlags: ["-DAPPKIT", "-DMINE"] },
+                    index: { indexStorePath: "x" } },
+                serverSettings({ host: "android", trait: "Android", scratchPath: ".build/android/index-build", swiftSDK: sdk,
+                    triple: "aarch64-unknown-linux-android28" }));
+            const back = serverConfig(android, serverSettings({ host: "appkit", trait: "AppKit", scratchPath: ".build/appkit/index-build" }));
+            const plainConfig = serverConfig(back, serverSettings({ scratchPath: ".build/index-build" }));
+            check("as Android the language server indexes where the tool says, with the trait, its condition, the Swift SDK and "
+                + "the triple, by building - the user's own flag kept",
                 android.swiftPM?.scratchPath === ".build/android/index-build" && android.swiftPM?.swiftSDK === sdk
+                && JSON.stringify(android.swiftPM?.swiftCompilerFlags) === JSON.stringify(["-DMINE", "-DANDROID"])
+                && JSON.stringify(android.swiftPM?.traits) === JSON.stringify(["Android"])
                 && android.swiftPM?.triple === "aarch64-unknown-linux-android28" && android.backgroundPreparationMode === "build");
-            check("the rest of the file is kept, and back on AppKit the SDK and the triple are gone",
+            check("the rest of the file is kept, back on AppKit the SDK and the triple are gone, and as plain Swift the trait",
                 android.swiftPM?.configuration === "debug" && JSON.stringify(android.index) === JSON.stringify({ indexStorePath: "x" })
                 && back.swiftPM?.scratchPath === ".build/appkit/index-build" && back.swiftPM?.configuration === "debug"
-                && !("swiftSDK" in back.swiftPM!) && !("triple" in back.swiftPM!));
+                && !("swiftSDK" in back.swiftPM!) && !("triple" in back.swiftPM!)
+                && JSON.stringify(back.swiftPM?.traits) === JSON.stringify(["AppKit"]) && !("traits" in plainConfig.swiftPM!)
+                && JSON.stringify(plainConfig.swiftPM?.swiftCompilerFlags) === JSON.stringify(["-DMINE"]));
             // What the tool answers here, for each host this machine runs and for plain Swift.
             const asked = await ToolingClient.start({
                 executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
                 folder: root.uri.fsPath, clientVersion: "suite",
             });
-            const contexts = await Promise.all([undefined, ...availableHosts().map((each) => each.id)].map((each) =>
+            const contexts = await Promise.all([undefined, ...availableHosts(places).map((each) => each.id)].map((each) =>
                 asked.request("index/describe", each ? { host: each } : {})));
             await asked.dispose();
             say(`     index: ${contexts.map((each) => `${each.host ?? "plain"} ${each.scratchPath} ${each.triple ?? ""} ${each.swiftSDK ?? each.sdk ?? ""}`).join("; ")}`);
@@ -284,9 +454,9 @@ export async function run(): Promise<void> {
         }
         {
             const listed = [
-                androidDeviceOf({ id: "190a991d", udid: "190a991d", name: "CPH2363", kind: "device", version: "13", booted: false, connection: "USB", architecture: "arm64" }),
-                androidDeviceOf({ id: "emulator-5554", udid: "emulator-5554", name: "Pixel_3a", kind: "emulator", version: "14", booted: true, architecture: "arm64" }),
-                androidDeviceOf({ id: "Medium_Phone", udid: "Medium_Phone", name: "Medium_Phone", kind: "emulator", version: "", booted: false }),
+                androidDeviceOf({ id: "190a991d", udid: "190a991d", emulated: [], debugger: true, name: "CPH2363", kind: "device", version: "13", booted: false, connection: "USB", architecture: "arm64" }),
+                androidDeviceOf({ id: "emulator-5554", udid: "emulator-5554", emulated: [], debugger: true, name: "Pixel_3a", kind: "emulator", version: "14", booted: true, architecture: "arm64" }),
+                androidDeviceOf({ id: "Medium_Phone", udid: "Medium_Phone", emulated: [], debugger: true, name: "Medium_Phone", kind: "emulator", version: "", booted: false }),
             ];
             check("the tool's list reads as the devices attached and running, by serial and name, and the virtual devices not running",
                 JSON.stringify(listed) === JSON.stringify([
@@ -294,11 +464,37 @@ export async function run(): Promise<void> {
                     { kind: "device", serial: "emulator-5554", name: "Pixel_3a" },
                     { kind: "avd", name: "Medium_Phone" },
                 ]));
-            check("a device chosen is known by its serial while it runs - an emulator chosen when it was not, by its name - else by its virtual device's name",
-                deviceAmong(listed, { serial: "190a991d", name: "CPH2363" }) === "190a991d"
-                && deviceAmong(listed, { serial: "Pixel_3a", name: "Pixel_3a" }) === "emulator-5554"
-                && deviceAmong(listed, { serial: "Medium_Phone", name: "Medium_Phone" }) === "Medium_Phone"
-                && deviceAmong(listed, { serial: "gone", name: "Gone" }) === undefined);
+            check("a device chosen by its name or serial is known by its serial while it runs - an emulator chosen when it was not too - else by its virtual device's name",
+                deviceAmong(listed, "CPH2363") === "190a991d"
+                && deviceAmong(listed, "190a991d") === "190a991d"
+                && deviceAmong(listed, "Pixel_3a") === "emulator-5554"
+                && deviceAmong(listed, "Medium_Phone") === "Medium_Phone"
+                && deviceAmong(listed, "Gone") === undefined);
+            const one = { name: "One", directory: "/w/One", hosts: [] as Host[], workspace: "/w" };
+            const two = { name: "Two", directory: "/w/b/Two", hosts: [] as Host[], workspace: "/w" };
+            const alone = { name: "Alone", directory: "/a/Alone", hosts: [] as Host[] };
+            const starts = new Map([["/w", "Two"]]);
+            check("the application a window works on: the one it remembers where its workspace starts it or none - else the workspace's start - else the first listed",
+                chosenApplication([one, two], starts, "One") === two
+                && chosenApplication([one, two], new Map(), "One") === one
+                && chosenApplication([one, two, alone], starts, "Alone") === alone
+                && chosenApplication([one, two], new Map()) === one
+                && chosenApplication([alone], new Map()) === alone
+                && chosenApplication([], new Map()) === undefined);
+            const panel = { name: "Panel", directory: "/d/apps/Panel", hosts: ["web"] as Host[], workspace: "/d" };
+            const reader = { name: "Reader", directory: "/d/apps/Reader", hosts: ["android"] as Host[], workspace: "/d" };
+            const mac = availableHosts(macPlaces);
+            const ids = (offered: HostDescription[]): string => offered.map((each) => each.id).join(",");
+            check("a window offers the chosen application's heads this machine runs, and those alone - none where none is chosen",
+                ids(offeredHosts(mac, panel)) === "web"
+                && ids(offeredHosts(mac, reader)) === "android"
+                && ids(offeredHosts(mac, undefined)) === ""
+                && ids(offeredHosts(availableHosts(linuxPlaces), reader)) === "");
+            check("a window works as a host it offers: the application's saved, else the window's own, else the first",
+                chosenHost(offeredHosts(mac, panel), "appkit", "appkit") === "web"
+                && chosenHost(offeredHosts(mac, reader), "android", "web") === "android"
+                && chosenHost(offeredHosts(mac, panel), undefined, "web") === "web"
+                && chosenHost(offeredHosts(mac, undefined), undefined, "appkit") === undefined);
         }
 
         const helloWorld = api.applications().find((each) => each.name === "HelloWorld")!;
@@ -306,23 +502,36 @@ export async function run(): Promise<void> {
             hasHead(helloWorld, "android") && hasHead(gallery_, "android"));
         {
             // What the tool's run says once the application runs, faked - or nothing, where it never starts.
-            const launchOnAndroid = async (serial: string | undefined, configuration = "release", starts = true) => {
+            const launchOnAndroid = async (serial: string | undefined, configuration = "release", starts = true, noDebug = false) => {
                 const runs: { host: string; device: string; debug: boolean; configuration: string }[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
-                    build: async () => undefined,
+                    prepare: async () => undefined,
                     host: () => "android", application: async () => helloWorld,
                     device: async () => serial,
                     uiKitDevice: async () => undefined,
+                    machine: async () => undefined,
+                    place: () => "device",
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
                         runs.push({ host: forHost, device, debug, configuration: asked });
                         if (!starts) {
                             return undefined;
                         }
-                        const destination = { id: device, udid: device, name: "Pixel_3a", kind: "emulator" as const, version: "14", booted: true, architecture: "arm64" as const };
+                        const destination = { id: device, udid: device, emulated: [], debugger: true, name: "Pixel_3a", kind: "emulator" as const, version: "14", booted: true, architecture: "arm64" as const };
                         return {
                             token: "RUN-2",
                             launched: {
-                                held: false, process: 4242, debuggerSocket: debug ? "com.stateui.helloworld/stateui-debugger.sock" : undefined,
+                                held: false, process: 4242, debugger: debug ? {
+                                    kind: "lldb" as const, request: "attach" as const, process: 4242, terminateCommands: [],
+                                    initCommands: [
+                                        "settings set plugin.jit-loader.gdb.enable off", "platform select remote-android",
+                                        `platform connect unix-abstract-connect://${device}/com.stateui.helloworld/stateui-debugger.sock`,
+                                        "settings append target.exec-search-paths /build/symbols/arm64-v8a",
+                                    ],
+                                    attachCommands: [
+                                        "process attach --pid 4242", "process handle SIGSEGV --pass true --stop false --notify false",
+                                        "process handle SIGBUS --pass true --stop false --notify false",
+                                    ],
+                                } : undefined,
                                 build: {
                                     application: "HelloWorld", host: "android" as const, configuration: asked as Configuration, architecture: "arm64" as const,
                                     folderUri: "file:///build", programUri: "file:///build/HelloWorld.apk", bundleUri: "file:///build/HelloWorld.apk",
@@ -332,13 +541,41 @@ export async function run(): Promise<void> {
                         };
                     },
                     browser: async () => undefined,
+                    wasmDebugging: async () => undefined,
                 });
                 const resolved = await provider.resolveDebugConfiguration(root, {
                     name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
-                    request: "launch", configuration,
+                    request: "launch", configuration, ...(noDebug ? { noDebug: true } : {}),
                 });
                 return { resolved, runs };
             };
+
+            // Run Without Debugging (Ctrl+F5) of a debug build: the build is a debug one, and no debugger is readied.
+            const undebugged = await launchOnAndroid("emulator-5554", "debug", true, true);
+            check("Android Debug run without debugging: the tool runs the debug build with no debugger readied, and no session",
+                undebugged.resolved === undefined
+                && JSON.stringify(undebugged.runs) === JSON.stringify([{ host: "android", device: "emulator-5554", debug: false, configuration: "debug" }]));
+
+            // A head of this machine run without debugging: lldb-dap starts it, told to debug nothing.
+            const own = new StateUIDebugConfigurationProvider({
+                prepare: async (_folder, _application, forHost, asked) => ({
+                    build: {
+                        application: "HelloWorld", host: forHost, configuration: asked, architecture: "arm64",
+                        folderUri: "file:///build", programUri: "file:///build/HelloWorldAppKit",
+                    },
+                    debugger: {
+                        kind: "lldb", request: "launch", programUri: "file:///build/HelloWorldAppKit", workingUri: root.uri.toString(),
+                        initCommands: [], attachCommands: [], terminateCommands: [],
+                    },
+                }),
+                host: () => "appkit", application: async () => helloWorld,
+                device: async () => undefined, uiKitDevice: async () => undefined, machine: async () => undefined,
+                place: () => "machine", runHead: async () => undefined, browser: async () => undefined, wasmDebugging: async () => undefined,
+            });
+            const ownUndebugged = await own.resolveDebugConfiguration(root,
+                { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug", noDebug: true });
+            check("A head of this machine run without debugging: lldb-dap launches its debug build told to debug nothing",
+                ownUndebugged?.type === "lldb-dap" && ownUndebugged.request === "launch" && ownUndebugged.noDebug === true);
 
             const released = await launchOnAndroid("emulator-5554");
             check("Android Release: the tool runs HelloWorld on that device, no debugger readied, and no session",
@@ -351,13 +588,13 @@ export async function run(): Promise<void> {
 
             const debugged = await launchOnAndroid("emulator-5554", "debug");
             say(`     android debugged: ${JSON.stringify(debugged.resolved)}`);
-            check("Android Debug: the tool readies the debugger's server, then lldb-dap attaches through it to the process started, the session carrying the run",
+            check("Android Debug: the tool readies the debugger's server, then lldb-dap attaches through it as the tool says, the session carrying the run",
                 debugged.resolved?.type === "lldb-dap" && debugged.resolved.request === "attach" && debugged.resolved.stateuiRun === "RUN-2"
                 && JSON.stringify(debugged.resolved.initCommands) === JSON.stringify([
                     "settings set plugin.jit-loader.gdb.enable off",
                     "platform select remote-android",
                     "platform connect unix-abstract-connect://emulator-5554/com.stateui.helloworld/stateui-debugger.sock",
-                    `settings append target.exec-search-paths ${vscode.Uri.parse("file:///build/symbols/arm64-v8a").fsPath}`,
+                    "settings append target.exec-search-paths /build/symbols/arm64-v8a",
                 ])
                 && JSON.stringify(debugged.resolved.attachCommands) === JSON.stringify([
                     "process attach --pid 4242",
@@ -399,29 +636,42 @@ export async function run(): Promise<void> {
             const simulator = { id: "S", name: "iPhone 18 Pro", kind: "simulator" as const, os: "27.0", state: "" };
             const pad = { id: "A", name: "iPad Air 13-inch (M4)", kind: "simulator" as const, os: "27.0", state: "" };
             check("a suite runs on the simulator chosen, never on a device - an iPhone chosen asks for a simulator, or takes the one chosen for suites",
-                simulatorForSuites([phone, simulator, pad], simulator) === "S"
-                && simulatorForSuites([phone, simulator, pad], phone) === undefined
-                && simulatorForSuites([phone, simulator, pad], phone, pad) === "A"
-                && simulatorForSuites([phone, simulator], phone, pad) === undefined);
+                simulatorForSuites([phone, simulator, pad], simulator.name) === "S"
+                && simulatorForSuites([phone, simulator, pad], phone.name) === undefined
+                && simulatorForSuites([phone, simulator, pad], phone.name, pad) === "A"
+                && simulatorForSuites([phone, simulator], phone.name, pad) === undefined);
         }
         {
             check("a destination the tool lists stands as a UIKit device: a device by how it is reached, a simulator by whether it is booted",
                 JSON.stringify([
-                    uiKitDeviceOf({ id: "PHONE-ID", udid: "U", name: "Phone", kind: "device", version: "26.6.2", booted: false, connection: "USB" }),
-                    uiKitDeviceOf({ id: "SIM", udid: "SIM", name: "iPhone 18 Pro", kind: "simulator", version: "27.0", booted: true }),
-                    uiKitDeviceOf({ id: "PAD", udid: "PAD", name: "iPad Air 13-inch (M4)", kind: "simulator", version: "27.0", booted: false }),
+                    uiKitDeviceOf({ id: "PHONE-ID", udid: "U", emulated: [], debugger: true, name: "Phone", kind: "device", version: "26.6.2", booted: false, connection: "USB" }),
+                    uiKitDeviceOf({ id: "SIM", udid: "SIM", emulated: [], debugger: true, name: "iPhone 18 Pro", kind: "simulator", version: "27.0", booted: true }),
+                    uiKitDeviceOf({ id: "PAD", udid: "PAD", emulated: [], debugger: true, name: "iPad Air 13-inch (M4)", kind: "simulator", version: "27.0", booted: false }),
                 ]) === JSON.stringify([
                     { id: "PHONE-ID", name: "Phone", kind: "device", os: "26.6.2", state: "USB" },
                     { id: "SIM", name: "iPhone 18 Pro", kind: "simulator", os: "27.0", state: "booted" },
                     { id: "PAD", name: "iPad Air 13-inch (M4)", kind: "simulator", os: "27.0", state: "" },
                 ]));
-            const onDevice = uiKitAttach("StateUI: Debug", { process: 37779, device: "PHONE", symbols: "/b/App.app" });
-            check("on a device lldb-dap selects the device, attaches to the process through it, reads symbols from the bundle built, and kills it as the session ends",
+            const onDevice = debugConfiguration("StateUI: Debug", {
+                kind: "lldb", request: "attach", process: 37779, terminateCommands: ["process kill"],
+                initCommands: ["settings append target.exec-search-paths /b/App.app", "settings append target.exec-search-paths /b/App.app/Frameworks"],
+                attachCommands: ["device select PHONE", "device process attach --pid 37779"],
+            });
+            check("lldb-dap reaches an application as the tool says - its commands as given, no process number where they attach",
                 onDevice.request === "attach" && onDevice.pid === undefined
                 && JSON.stringify(onDevice.terminateCommands) === JSON.stringify(["process kill"])
                 && JSON.stringify(onDevice.attachCommands) === JSON.stringify(["device select PHONE", "device process attach --pid 37779"])
                 && JSON.stringify(onDevice.initCommands) === JSON.stringify([
                     "settings append target.exec-search-paths /b/App.app", "settings append target.exec-search-paths /b/App.app/Frameworks"]));
+            const onWindows = debugConfiguration("StateUI: Debug", {
+                kind: "lldb", request: "launch", programUri: "file:///C:/Users/me/stateui-guest/abc/Notes/NotesWinUI.exe",
+                workingUri: "file:///C:/Users/me/stateui-guest/abc/Notes", adapterPort: 51200, attachCommands: [], terminateCommands: [],
+                initCommands: ["settings set target.source-map \"C:\\Users\\me\\stateui-guest\\abc\" \"/Users/me\""],
+            });
+            check("an lldb-dap already listening - another machine's, through the relay - is connected to, and starts that machine's program",
+                onWindows.request === "launch" && onWindows.debugAdapterHostname === "127.0.0.1" && onWindows.debugAdapterPort === 51200
+                && /^c:[\\/]Users[\\/]me[\\/]stateui-guest/i.test(onWindows.program) && onWindows.initCommands?.length === 1
+                && onDevice.debugAdapterPort === undefined);
         }
         {
             const helloWorldHere = api.applications().find((each) => each.name === "HelloWorld")!;
@@ -429,20 +679,26 @@ export async function run(): Promise<void> {
             const launchOnUIKit = async (udid: string | undefined, configuration = "release", starts = true) => {
                 const runs: { device: string; debug: boolean; configuration: string }[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
-                    build: async () => undefined,
+                    prepare: async () => undefined,
                     host: () => "uikit", application: async () => helloWorldHere,
                     device: async () => undefined,
                     uiKitDevice: async () => udid,
+                    machine: async () => undefined,
+                    place: () => "device",
                     runHead: async (_folder, _application, _host, asked, device, debug) => {
                         runs.push({ device, debug, configuration: asked });
                         if (!starts) {
                             return undefined;
                         }
-                        const destination = { id: device, udid: device, name: "iPhone 18 Pro", kind: "simulator" as const, version: "27.0", booted: true };
+                        const destination = { id: device, udid: device, emulated: [], debugger: true, name: "iPhone 18 Pro", kind: "simulator" as const, version: "27.0", booted: true };
                         return {
                             token: "RUN-1",
                             launched: {
                                 held: debug, process: 4343,
+                                debugger: debug ? {
+                                    kind: "lldb" as const, request: "attach" as const, process: 4343, initCommands: [], attachCommands: [],
+                                    terminateCommands: ["process kill"],
+                                } : undefined,
                                 build: {
                                     application: "HelloWorld", host: "uikit" as const, configuration: asked as Configuration, architecture: "arm64" as const,
                                     folderUri: "file:///a", programUri: "file:///a/HelloWorldUIKit.app/HelloWorldUIKit",
@@ -452,6 +708,7 @@ export async function run(): Promise<void> {
                         };
                     },
                     browser: async () => undefined,
+                    wasmDebugging: async () => undefined,
                 });
                 const resolved = await provider.resolveDebugConfiguration(root, {
                     name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
@@ -472,6 +729,7 @@ export async function run(): Promise<void> {
             check("UIKit Debug: the tool runs it held, then lldb-dap attaches to the process it started, the session carrying the run",
                 JSON.stringify(debugged.runs) === JSON.stringify([{ device: "SIM-1", debug: true, configuration: "debug" }])
                 && debugged.resolved?.type === "lldb-dap" && debugged.resolved.request === "attach" && debugged.resolved.pid === 4343
+                && JSON.stringify(debugged.resolved.terminateCommands) === JSON.stringify(["process kill"])
                 && debugged.resolved.stateuiRun === "RUN-1");
 
             const failed = await launchOnUIKit("SIM-1", "debug", false);
@@ -487,28 +745,41 @@ export async function run(): Promise<void> {
                 && !uiKitSuites.some((each) => each.id === "lib/StateUI/StateUI.AppKit" || each.id === "lib/StateUI/StateUI.Android/Tests"));
         }
 
-        // 6b. WinUI: HelloWorld's head, built by the stateui tool and launched under lldb-dap, and the host's own
-        //     package through stateui repo test.
+        // 6b. WinUI: HelloWorld's head, built by the stateui tool and launched under lldb-dap where Windows runs it - a
+        //     Mac's guest runs it with no debugger (4.) - and the host's own package through stateui repo test.
         check("HelloWorld has a WinUI head", hasHead(helloWorld, "winui"));
-        {
+        if (placeOf("winui", places) !== "guest") {
             const built: string[] = [];
             const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "winui-release", "HelloWorldWinUI.exe");
             const provider = new StateUIDebugConfigurationProvider({
-                build: async (_folder, application, forHost, configuration) => {
+                prepare: async (_folder, application, forHost, configuration) => {
                     built.push(`${application.name} ${forHost} ${configuration}`);
-                    return program;
+                    return {
+                        build: {
+                            application: "HelloWorld", host: forHost, configuration, architecture: "arm64",
+                            folderUri: vscode.Uri.file(path.dirname(program)).toString(), programUri: vscode.Uri.file(program).toString(),
+                        },
+                        debugger: {
+                            kind: "lldb", request: "launch", programUri: vscode.Uri.file(program).toString(), workingUri: root.uri.toString(),
+                            initCommands: [], attachCommands: [], terminateCommands: [],
+                        },
+                    };
                 },
                 host: () => "winui", application: async () => helloWorld,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
+                machine: async () => undefined,
+                place: () => "machine",
                 runHead: async () => undefined,
                 browser: async () => undefined,
+                wasmDebugging: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
-            check("WinUI: the tool builds HelloWorld for release, then lldb-dap launches the program it published",
+            check("WinUI: the tool builds and readies HelloWorld for release, then lldb-dap launches its program as the tool says",
                 JSON.stringify(built) === JSON.stringify(["HelloWorld winui release"])
-                && resolved?.type === "lldb-dap" && resolved.request === "launch" && resolved.program === program);
+                && resolved?.type === "lldb-dap" && resolved.request === "launch" && resolved.program === program
+                && resolved.cwd === root.uri.fsPath);
         }
         {
             const winUISuites = await discover("winui");
@@ -520,22 +791,38 @@ export async function run(): Promise<void> {
         }
 
         // 6c. GTK: HelloWorld's head, built and installed by the stateui tool and
-        //     launched under lldb-dap, and the host's own suite by the tool.
+        //     launched under lldb-dap where Linux runs it - a Mac's guest runs it
+        //     with no debugger (4.) - and the host's own suite by the tool.
         check("HelloWorld has a GTK head", hasHead(helloWorld, "gtk"));
-        {
+        if (placeOf("gtk", places) !== "guest") {
             const built: string[] = [];
             const program = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "gtk-arm64-x-debug", "HelloWorldGTK");
             const provider = new StateUIDebugConfigurationProvider({
-                build: async (_folder, _application, forHost, configuration) => { built.push(`${forHost} ${configuration}`); return program; },
+                prepare: async (_folder, _application, forHost, configuration) => {
+                    built.push(`${forHost} ${configuration}`);
+                    return {
+                        build: {
+                            application: "HelloWorld", host: forHost, configuration, architecture: "arm64",
+                            folderUri: vscode.Uri.file(path.dirname(program)).toString(), programUri: vscode.Uri.file(program).toString(),
+                        },
+                        debugger: {
+                            kind: "lldb", request: "launch", programUri: vscode.Uri.file(program).toString(), workingUri: root.uri.toString(),
+                            initCommands: [], attachCommands: [], terminateCommands: [],
+                        },
+                    };
+                },
                 host: () => "gtk", application: async () => helloWorld,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
+                machine: async () => undefined,
+                place: () => "machine",
                 runHead: async () => undefined,
                 browser: async () => undefined,
+                wasmDebugging: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
-            check("GTK: the tool builds HelloWorld for GTK, then lldb-dap launches the program it published",
+            check("GTK: the tool builds and readies HelloWorld for GTK - installed, a running copy stopped - then lldb-dap launches its program",
                 JSON.stringify(built) === JSON.stringify(["gtk debug"])
                 && resolved?.type === "lldb-dap" && resolved.request === "launch" && resolved.program === program);
         }
@@ -553,38 +840,56 @@ export async function run(): Promise<void> {
         //     one of Chromium's VS Code's JavaScript debugger on the page the run's `started` event names.
         check("HelloWorld has a Web head", hasHead(helloWorld, "web"));
         {
-            const browserOn = (id: string, name: string, program: string | undefined, booted: boolean) =>
-                browserOf({ id, udid: id, name, kind: "browser", version: "", booted, programUri: program && vscode.Uri.file(program).toString() });
+            const browserOn = (id: string, name: string, program: string | undefined, booted: boolean, followed = false) =>
+                browserOf({
+                    id, udid: id, name, kind: "browser", version: "", booted, emulated: [], debugger: followed,
+                    programUri: program && vscode.Uri.file(program).toString(),
+                });
             const listed = [
                 browserOn("com.apple.Safari", "Safari", "/Applications/Safari.app/Contents/MacOS/Safari", true),
-                browserOn("com.google.Chrome", "Google Chrome", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", false),
+                browserOn("com.google.Chrome", "Google Chrome", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", false, true),
                 browserOn("firefox.desktop", "Firefox", "/usr/bin/firefox", false),
                 browserOn("chromium.desktop", "Chromium", undefined, false),
+                browserOn("com.apple.Safari", "Safari", "/Applications/Safari.app/Contents/MacOS/Safari", true, true),
             ];
             // A program reads as this system spells a path.
             const spelled = (file: string): string => vscode.Uri.file(file).fsPath;
-            check("the tool's browsers read by id, name and program, the system's own marked, and Chromium's told apart",
+            check("the tool's browsers read by id, name and program, the system's own marked, and a debugger following one as the tool says",
                 listed[0].isDefault && !listed[1].isDefault && listed[1].name === "Google Chrome"
                 && listed[1].program === spelled("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
                 && listed[2].program === spelled("/usr/bin/firefox")
                 && listed[3].program === undefined
-                && !isChromium(listed[0]) && isChromium(listed[1]) && !isChromium(listed[2])
-                && isChromium({ id: "com.microsoft.edgemac" }) && isChromium({ id: "brave-browser.desktop" }));
+                && !listed[0].debugger && listed[1].debugger && !listed[2].debugger && !listed[3].debugger);
 
             const site = path.join(helloWorld.directory, ".build", "stateui", "artifacts", "web-debug");
             const launchOnWeb = async (browser: (typeof listed)[number], configuration: string) => {
                 const runs: { device: string; debug: boolean; configuration: string; host: string }[] = [];
+                const offered: string[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
-                    build: async () => undefined,
+                    prepare: async () => undefined,
                     host: () => "web", application: async () => helloWorld,
                     device: async () => undefined,
                     uiKitDevice: async () => undefined,
+                    machine: async () => undefined,
+                    place: () => "browser",
                     runHead: async (_folder, _application, forHost, asked, device, debug) => {
+                        offered.push(`run ${device}`);
                         runs.push({ host: forHost, device, debug, configuration: asked });
+                        // As the tool answers: a page readied for the browser's debugger where the run asked one - in
+                        // Safari LLDB's way to the page through Safari's WebAssembly debugger.
+                        const safariPage = {
+                            kind: "lldb" as const, request: "attach" as const, process: 26206,
+                            initCommands: ["platform select webinspector-wasm"], attachCommands: ["process attach --pid 26206"], terminateCommands: [],
+                        };
+                        const readied = !debug || browser.program === undefined ? undefined : device === "com.apple.Safari" ? safariPage : {
+                            kind: "browser" as const, request: "launch" as const, programUri: vscode.Uri.file(browser.program).toString(),
+                            url: "http://127.0.0.1:8460/", sourceUri: vscode.Uri.file(site).toString(),
+                            initCommands: [], attachCommands: [], terminateCommands: [],
+                        };
                         return {
                             token: "RUN-3",
                             launched: {
-                                held: false, url: "http://127.0.0.1:8460/",
+                                held: false, url: "http://127.0.0.1:8460/", debugger: readied,
                                 build: {
                                     application: "HelloWorld", host: "web" as const, configuration: asked as Configuration, architecture: "wasm32" as const,
                                     folderUri: vscode.Uri.file(site).toString(), programUri: vscode.Uri.file(path.join(site, "index.html")).toString(),
@@ -593,10 +898,11 @@ export async function run(): Promise<void> {
                         };
                     },
                     browser: async () => browser,
+                    wasmDebugging: async () => { offered.push("WebAssembly DWARF Debugging"); },
                 });
                 const resolved = await provider.resolveDebugConfiguration(root,
                     { name: "StateUI: Debug", type: "stateui", request: "launch", configuration });
-                return { resolved, runs };
+                return { resolved, runs, offered };
             };
 
             const safari = await launchOnWeb(listed[0], "debug");
@@ -605,19 +911,32 @@ export async function run(): Promise<void> {
                     [{ host: "web", device: "com.apple.Safari", debug: false, configuration: "debug" }]));
 
             const chrome = await launchOnWeb(listed[1], "debug");
-            check("Web in Chrome: the page served with no browser opened, then VS Code's JavaScript debugger starts Chrome on it, its end stopping the run",
-                chrome.runs[0]?.device === "none"
-                && JSON.stringify(chrome.resolved) === JSON.stringify(
-                    { ...webLaunch("StateUI: Debug", "http://127.0.0.1:8460/", listed[1], spelled(site)), stateuiRun: "RUN-3" })
-                && chrome.resolved?.type === "chrome" && chrome.resolved.runtimeExecutable === listed[1].program);
+            check("Web in Chrome: the tool readies the page for its debugger, then VS Code's JavaScript debugger starts Chrome on it, its end stopping the run",
+                chrome.runs[0]?.device === "com.google.Chrome" && chrome.runs[0]?.debug === true
+                && chrome.resolved?.type === "chrome" && chrome.resolved.runtimeExecutable === listed[1].program
+                && chrome.resolved.url === "http://127.0.0.1:8460/" && chrome.resolved.webRoot === spelled(site)
+                && chrome.resolved.stateuiRun === "RUN-3");
+            check("Web in Chrome: WebAssembly DWARF Debugging, which the debugger reads Swift's lines through, offered once the run readies the page; in Safari and released none",
+                JSON.stringify(chrome.offered) === JSON.stringify(["run com.google.Chrome", "WebAssembly DWARF Debugging"])
+                && JSON.stringify(safari.offered) === JSON.stringify(["run com.apple.Safari"]));
+
+            const debuggedSafari = await launchOnWeb(listed[4], "debug");
+            check("Web in Safari with its WebAssembly debugger: the tool opens the page, then lldb-dap attaches to it as the tool says, no DWARF extension offered",
+                debuggedSafari.runs[0]?.device === "com.apple.Safari" && debuggedSafari.runs[0]?.debug === true
+                && debuggedSafari.resolved?.type === "lldb-dap" && debuggedSafari.resolved.request === "attach"
+                && JSON.stringify(debuggedSafari.resolved.initCommands) === JSON.stringify(["platform select webinspector-wasm"])
+                && JSON.stringify(debuggedSafari.resolved.attachCommands) === JSON.stringify(["process attach --pid 26206"])
+                && debuggedSafari.resolved.stateuiRun === "RUN-3"
+                && JSON.stringify(debuggedSafari.offered) === JSON.stringify(["run com.apple.Safari"]));
 
             const unknown = await launchOnWeb(listed[3], "debug");
-            check("Web in a Chromium whose program is not known: the tool opens it, with no session",
-                unknown.resolved === undefined && unknown.runs[0]?.device === "chromium.desktop");
+            check("Web in a browser the tool says no debugger follows: the tool opens it, with no session",
+                unknown.resolved === undefined && unknown.runs[0]?.device === "chromium.desktop" && unknown.runs[0]?.debug === false);
 
             const released = await launchOnWeb(listed[1], "release");
             check("Web released in Chrome is opened by the tool, with no session",
-                released.resolved === undefined && released.runs[0]?.device === "com.google.Chrome" && released.runs[0]?.configuration === "release");
+                released.resolved === undefined && released.runs[0]?.device === "com.google.Chrome" && released.runs[0]?.configuration === "release"
+                && !released.offered.includes("WebAssembly DWARF Debugging"));
         }
         {
             const webSuites = await discover("web");
@@ -631,9 +950,9 @@ export async function run(): Promise<void> {
         }
 
         const palette = await vscode.commands.getCommands(true);
-        check("the palette has Select Android Device, Select UIKit Device and Select Browser, and no Select Debugger",
+        check("the palette has Select Android Device, Select UIKit Device, Select Browser and Select Machine, and no Select Debugger",
             palette.includes("stateui.selectAndroidDevice") && palette.includes("stateui.selectUIKitDevice")
-            && palette.includes("stateui.selectBrowser")
+            && palette.includes("stateui.selectBrowser") && palette.includes("stateui.selectMachine")
             && !palette.includes("stateui.selectDebugger") && !palette.includes("stateui.selectSimulator"));
 
         // 7. A new application is HelloWorld renamed in a checkout's apps/,
@@ -669,11 +988,11 @@ export async function run(): Promise<void> {
             const manifest = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8"));
             const setting = manifest.contributes.configuration.properties;
             check("the palette has New Project Group; New Application shows where a folder is a workspace; "
-                + "stateui.checkout and stateui.cliPath are this machine's, stateui.minimumRelease 0.5.0",
+                + "stateui.checkout and stateui.cliPath are this machine's, stateui.minimumRelease 0.8.6",
                 commands.includes("stateui.newProjectGroup")
                 && manifest.contributes.commands.some((each: { command: string; enablement?: string }) =>
                     each.command === "stateui.newApplicationInApps" && each.enablement === "stateui.hasWorkspace")
-                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.5.0"
+                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.8.6"
                 && setting["stateui.cliPath"].scope === "machine");
             const helloWorld = api.applications().find((each) => each.name === "HelloWorld");
             check("the tool finds this checkout's applications, each building with the checkout its Package.swift names: this one",
@@ -682,7 +1001,8 @@ export async function run(): Promise<void> {
                 && api.applications().every((each) => each.checkout !== undefined));
         }
         // 7a. A project group, made by the command itself with its questions answered: one building with this checkout,
-        //     one with the newest release offered cloned into it - a workspace, its stateui.json listing its applications.
+        //     one with the newest release offered cloned into it - a workspace, its stateui-workspace.json listing its
+        //     applications.
         //     Each application names its StateUI in its Package.swift, New Application makes another the same way beside
         //     it, and each group's Notes builds.
         {
@@ -696,11 +1016,11 @@ export async function run(): Promise<void> {
                 const appKit = process.platform === "darwin";
                 const name = path.basename(application);
                 try {
-                    // As an AppKit build on macOS, as plain Swift elsewhere.
-                    const env = Object.fromEntries(Object.entries({ ...process.env, ...environment(appKit ? "appkit" : undefined) })
-                        .filter((entry): entry is [string, string] => entry[1] !== undefined));
-                    execSync(`swift build --package-path "${application}"${appKit ? ` --scratch-path "${path.join(application, ".build", "appkit")}" --product ${name}AppKit` : ""}`,
-                        { env, stdio: "pipe" });
+                    // Its AppKit head's package on macOS, the application as plain Swift elsewhere.
+                    const head = path.join(application, "Platforms", "AppKit");
+                    execSync(appKit
+                        ? `swift build --package-path "${head}" --scratch-path "${path.join(application, ".build", "appkit")}" --product ${name}AppKit`
+                        : `swift build --package-path "${application}"`, { stdio: "pipe" });
                     return true;
                 } catch (error) {
                     say(`     ${String((error as { stdout?: Buffer }).stdout ?? error).split("\n").slice(-8).join("\n     ")}`);
@@ -717,8 +1037,8 @@ export async function run(): Promise<void> {
                 { location, name: "LocalGroup", checkout: root.uri.fsPath, application: "Notes" });
             const localNotes = path.join(local ?? "", "Notes");
             const launch = local ? JSON.parse(fs.readFileSync(path.join(local, ".vscode", "launch.json"), "utf8")) : {};
-            const listed = (group: string): string => JSON.parse(fs.readFileSync(path.join(group, "stateui.json"), "utf8")).projects.join(" ");
-            check("a group is a workspace: its stateui.json listing Notes, a .gitignore, and the editor's settings with StateUI: Debug and Release",
+            const listed = (group: string): string => JSON.parse(fs.readFileSync(path.join(group, "stateui-workspace.json"), "utf8")).projects.join(" ");
+            check("a group is a workspace: its stateui-workspace.json listing Notes, a .gitignore, and the editor's settings with StateUI: Debug and Release",
                 same(local, path.join(location, "LocalGroup")) && listed(local!) === "Notes"
                 && [".gitignore", ".vscode/settings.json", "Notes/Package.swift"].every((each) => fs.existsSync(path.join(local, each)))
                 && JSON.stringify(launch.configurations.map((each: vscode.DebugConfiguration) => [each.name, each.type, each.configuration]))
@@ -751,14 +1071,14 @@ export async function run(): Promise<void> {
             check(`Notes' example test passes as ${testHost ?? "plain Swift"}, run by the tool`, passes);
 
             // StateUI: Package in the group: Notes built for release and laid in the group's artifacts/Notes/<platform>,
-            // on WinUI per architecture - this machine's own, and x64 too on an ARM64 machine - and run from there.
+            // on WinUI per architecture the tool says this machine runs - its own, and x64 too on an ARM64 one - and run
+            // from there.
             const notes = (await described(local!)).find((each) => each.name === "Notes")!;
             const titled = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8"))
                 .contributes.commands.find((each: { command: string }) => each.command === "stateui.deploy")?.title;
             check("Package lays an application in artifacts/<application>/<platform> of its workspace, on WinUI per architecture - x64 the tool's x86_64",
                 commands.includes("stateui.deploy") && titled === "Package"
-                && JSON.stringify(winUIArchitectures("arm64")) === JSON.stringify(["arm64", "x64"])
-                && JSON.stringify(winUIArchitectures("x64")) === JSON.stringify(["x64"])
+                && windowsArchitecture("x86_64") === "x64" && windowsArchitecture("arm64") === "arm64" && windowsArchitecture("wasm32") === undefined
                 && toolArchitecture("x64") === "x86_64" && toolArchitecture("arm64") === "arm64"
                 && packageDestination(notes, "winui", "x64") === path.join(local!, "artifacts", "Notes", "WinUI", "x64")
                 && packageDestination(notes, "gtk") === path.join(local!, "artifacts", "Notes", "GTK")
@@ -766,7 +1086,17 @@ export async function run(): Promise<void> {
                 && fs.readFileSync(path.join(local!, ".gitignore"), "utf8").includes("\n/artifacts/\n"));
             const own: Record<string, Host> = { darwin: "appkit", win32: "winui", linux: "gtk" };
             await api.selectHost(own[process.platform]);
-            for (const architecture of process.platform === "win32" ? winUIArchitectures() : [undefined]) {
+            // On Windows, the architectures the tool says this machine builds a WinUI head for, its own first.
+            const machineArchitectures: (Architecture | undefined)[] = process.platform !== "win32" ? [undefined] : await (async () => {
+                const asking = await ToolingClient.start({
+                    executable: locateTool(vscode.workspace.getConfiguration("stateui").get<string>("cliPath")),
+                    folder: root.uri.fsPath, clientVersion: "suite",
+                });
+                const machine = (await asking.request("devices/list", { host: "winui" })).destinations.find((each) => each.kind === "machine");
+                await asking.dispose();
+                return machine ? [machine.architecture, ...machine.emulated].flatMap((each) => each && windowsArchitecture(each) ? [windowsArchitecture(each)] : []) : [];
+            })();
+            for (const architecture of machineArchitectures) {
                 const laid = await vscode.commands.executeCommand<string>("stateui.deploy", { application: notes.directory, architecture });
                 const platform = describe(own[process.platform]).label;
                 check(`Package lays the group's Notes in its artifacts/Notes/${platform}${architecture ? `/${architecture}` : ""}`,
@@ -797,7 +1127,7 @@ export async function run(): Promise<void> {
             // The releases as the command lists them: by the stateui tool on the search path.
             const every = await tool.request("releases/list", { minimum: "0.0.0", repository: "https://github.com/idexus/StateUI.git" });
             const offered = await tool.request("releases/list", { minimum, repository: "https://github.com/idexus/StateUI.git" });
-            check(`GitHub lists its releases, and none older than ${minimum} is offered - 0.4.0 builds differently`,
+            check(`GitHub lists its releases, and none older than ${minimum} is offered - those build differently`,
                 every.releases.includes("0.4.0") && !offered.releases.includes("0.4.0")
                 && offered.releases.every((each) => every.releases.includes(each)));
             const newest = offered.releases[0];
@@ -885,8 +1215,14 @@ export async function run(): Promise<void> {
                 && checkedPythonIn("error: unable to find 'python310.dll'.\r\nEnsure Python 3.10 (arm64) is installed and available"
                     + " in your Path.\r\n") === undefined
                 && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined
+                && wasmDebuggingFinding(true).found === "installed" && wasmDebuggingFinding(false).found === undefined
+                && wasmDebuggingFinding(false).advice.includes("ms-vscode.wasm-dwarf-debugging")
                 && report([{ component: "Node.js 20 or newer", neededBy: "it", tooOld: "19.4.0", advice: "Install it." }])[0]
-                    === "✗ Node.js 20 or newer - 19.4.0 found, too old [it]. Install it.");
+                    === "✗ Node.js 20 or newer - 19.4.0 found, too old [it]. Install it."
+                && JSON.stringify(report([
+                    { component: "Swift", neededBy: "every host", found: "6.4", advice: "" },
+                    { component: "Swift", neededBy: "GTK", found: "6.4.2", advice: "", machine: "Ubuntu" },
+                ])) === JSON.stringify(["✓ Swift - 6.4 [every host]", "Ubuntu:", "✓ Swift - 6.4.2 [GTK]"]));
             // As the command answers: the tool's components, the LLDB DAP extension, and whether the lldb-dap a launch
             // takes starts (Linux, Windows).
             const findings = await vscode.commands.executeCommand<Finding[] | undefined>("stateui.checkToolchain") ?? [];

@@ -29,4 +29,4 @@ swift.type.method StateUIEvents.declares(_:): @MainActor static func declares<Ow
 swift.type.method StateUIEvents.raise(_:_:): nonisolated static func raise<Owner, each Value>(_ event: ElementEvent<Owner, (repeat each Value)>, _ value: repeat each Value) where Owner : ApplicationTier, repeat each Value : HostRepresentable
 swift.type.method StateUIScripts.call(_:_:): @MainActor static func call(_ name: String, _ words: String = "") async throws -> String
 swift.type.method StateUIScripts.hear(_:_:): @MainActor static func hear(_ name: String, _ action: @escaping @MainActor @Sendable (String) -> Void)
-swift.type.method WebHost.run(name:applicationID:): @MainActor static func run(name: String, applicationID: String? = nil)
+swift.type.method WebHost.run(): @MainActor static func run()

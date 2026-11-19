@@ -41,9 +41,15 @@ final class GTKRenderer {
         toolkit: actToolkit, files: fileToolkit, network: GTKNetwork(), answers: runtime.core,
         tree: { [unowned self] in runtime.tree })
 
-    /// The application's ID, which the desktop knows it by.
+    /// The application's ID, which the desktop knows it by - the program's name for one standing without it.
     var applicationID: String {
-        g_application_get_application_id(application.of(GApplication.self)).map { String(cString: $0) } ?? ""
+        (g_application_get_application_id(application.of(GApplication.self)) ?? g_get_prgname()).map { String(cString: $0) } ?? ""
+    }
+
+    /// What the application is: what its head carries, else its name and ID as GTK has them.
+    var applicationInfo: HostApplicationInfo {
+        GTKHost.carried ?? HostApplicationInfo(
+            name: g_get_application_name().map { String(cString: $0) } ?? "", packageName: applicationID, version: "", build: "")
     }
 
     /// The windows the tree holds, each with its controller, in the tree's order.
@@ -152,7 +158,7 @@ final class GTKRenderer {
             register: GTKRealization.register,
             complainingTo: GTKRenderer.log,
             environment: {
-                GTKEnvironment.report(to: runtime.core, applicationID: applicationID)
+                GTKEnvironment.report(to: runtime.core, application: applicationInfo)
                 GTKEnvironment.watch { [weak self] in self?.environmentChanged() }
             },
             kept: { GTKKeptValues.readKept(into: runtime.core, applicationID: applicationID) },

@@ -114,11 +114,11 @@ final class WebActToolkit: ActToolkit {
     func keep(_ call: HostActCall) -> Bool {
         switch call.act {
         case .persistValue:
-            WebKeptValues.keep(call, application: renderer.applicationName)
+            WebKeptValues.keep(call, application: renderer.keptUnder)
         case .persistSceneValue:
             let scenes = renderer.scenes
             if scenes.keep(call.arguments), let text = scenes.changed(root: renderer.runtime.tree.root) {
-                WebKeptValues.writeScenes(text, application: renderer.applicationName)
+                WebKeptValues.writeScenes(text, application: renderer.keptUnder)
             }
         default:
             return false

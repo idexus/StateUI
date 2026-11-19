@@ -38,16 +38,16 @@ struct WinUISuite {
         guard try await swift(["build", "--package-path", testing, "--build-tests"], environment, reporter) else {
             return phases + [SuiteResult.Phase(name: "tests", passed: false)]
         }
-        let modules = (await ToolOutput.text(tools.swift, ["build", "--package-path", testing, "--show-bin-path"], environment: environment))?
-            .split(separator: "\n").last.map { String($0).trimmingCharacters(in: .whitespaces) } ?? ""
+        let products = try await ProductFolder.of(tools.swift, placing: ["--package-path", testing], environment: environment)
+        let modules = products.path
         let machine = Architecture(rawValue: Machine.current.architecture) ?? .arm64
         reporter.progress("laying the Windows App SDK beside the test runner")
         try await WinUIHead.makeSelfContained(
-            URL(fileURLWithPath: modules), executables: ["StateUIWinUITests-test-runner.exe"], architecture: machine, machine: machine,
+            products, executables: ["StateUIWinUITests-test-runner.exe"], architecture: machine, machine: machine,
             dependencies: try await WinUIHead.resolvedDependencies(
                 of: URL(fileURLWithPath: testing), scratch: [], compiler: tools.swift, environment: environment),
             packages: packages,
-            compiler: try ApplicationBuilder.compilerPath(tools.swift), cache: URL(fileURLWithPath: modules).appendingPathComponent("swift-runtime"),
+            compiler: try ApplicationBuilder.compilerPath(tools.swift), cache: products.appendingPathComponent("swift-runtime"),
             reporter: reporter)
         reporter.progress("testing the WinUI host")
         phases.append(SuiteResult.Phase(name: "tests", passed: try await swift(

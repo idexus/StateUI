@@ -128,6 +128,17 @@ while the page stands in it, and lets go of one the moment it goes - popped,
 replaced or taken back by the user - libadwaita keeping its own while it shows
 the page going; held longer, the page and every widget in it live on.
 
+## A page replaced with the focus in it
+
+A page holding the window's focus as `adw_navigation_view_replace` takes it
+away is never let go of, with every widget in it, once the focus came to it
+from a page replaced away before it (GTK 4.22, libadwaita 1.9, shown in plain
+C beside them): the focus stays on a widget no longer in the window until the
+next frame moves it. A link that changes a stack's top page replaces it, so
+every page a link left stayed. The view therefore takes the window's focus out
+of the pages it replaces away before the replace, and once the new stack
+stands gives it to the top page, as libadwaita's push and pop bring it there.
+
 ## A split view
 
 A split view is libadwaita's `AdwOverlaySplitView`: the sidebar beside the

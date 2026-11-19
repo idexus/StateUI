@@ -16,13 +16,16 @@ enum WinUIEnvironment {
         if let device = HostDeviceInfo(words: facts(.device), formFactor: .desktop, platform: "Windows") {
             core.setDeviceInfo(device)
         }
-        let application = facts(.application)
-        if application.count == 4 {
-            core.setApplicationInfo(HostApplicationInfo(
-                name: application[0], packageName: application[1], version: application[2],
-                build: application[3]))
-        }
+        if let application = application() { core.setApplicationInfo(application) }
         reportChanging(to: core)
+    }
+
+    /// What the application is: the `stateui.json` its head carries beside the program, else the program's name alone.
+    static func application() -> HostApplicationInfo? {
+        let application = facts(.application)
+        guard application.count == 2 else { return nil }
+        return HostApplicationInfo(applicationFile: Array(application[1].utf8))
+            ?? HostApplicationInfo(name: application[0], packageName: "", version: "", build: "")
     }
 
     /// Tells `core` the theme and the accent, the user's locale, the battery, the network and the accessibility

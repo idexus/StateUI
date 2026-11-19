@@ -151,7 +151,8 @@ public struct ProcessRunner: Sendable {
 }
 
 extension ProcessExecutable {
-    fileprivate var subprocess: Executable {
+    /// The program as swift-subprocess names it.
+    var subprocess: Executable {
         switch self {
         case .name(let name): .name(name)
         case .path(let path): .path(FilePath(path))

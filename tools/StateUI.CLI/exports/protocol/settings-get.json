@@ -1,0 +1,24 @@
+{
+  "request" : {
+    "id" : "4",
+    "jsonrpc" : "2.0",
+    "method" : "settings/get",
+    "params" : {
+      "projectUri" : "file:///Users/example/Projects/Demo"
+    }
+  },
+  "response" : {
+    "id" : "4",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "applicationUri" : "file:///Users/example/Projects/Demo/apps/Notes",
+      "devices" : {
+        "android" : "emulator-5554",
+        "uikit" : "iPhone 18 Pro"
+      },
+      "host" : "uikit",
+      "startup" : "Notes",
+      "workspaceUri" : "file:///Users/example/Projects/Demo"
+    }
+  }
+}

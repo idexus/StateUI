@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What only the editor knows of what a Debug launch needs - the LLDB DAP extension, and whether the lldb-dap
-// `lldb-dap.executable-path` names starts - beside the stateui tool's own findings (`toolchain/check`), and the
-// findings as StateUI: Check Toolchain shows them.
+// What only the editor knows of what a Debug launch needs - the LLDB DAP extension, WebAssembly DWARF Debugging for a
+// page, and whether the lldb-dap `lldb-dap.executable-path` names starts - beside the stateui tool's own findings
+// (`toolchain/check`), and the findings as StateUI: Check Toolchain shows them.
 
 import { execFile } from "child_process";
 import { onPath } from "./Tooling/locate";
@@ -24,6 +24,9 @@ export interface Finding {
 
     /** How to get it, where it is missing. */
     readonly advice: string;
+
+    /** The machine it was looked for on - a guest of this one - where not this one. */
+    readonly machine?: string;
 }
 
 /** Below 0, 0 or above 0 as version `a` is older than, the same as or newer than `b`, part by part. */
@@ -62,6 +65,18 @@ export function debuggerFinding(types: readonly string[]): Finding {
     return {
         component: "the LLDB DAP extension", neededBy: "Debug", found: types.includes("lldb-dap") ? "installed" : undefined,
         advice: "Install LLDB DAP (llvm-vs-code-extensions.lldb-dap) from the Extensions view.",
+    };
+}
+
+/** The extension through which VS Code's JavaScript debugger reads a page's DWARF: Swift's lines, its functions. */
+export const wasmDebuggingExtension = "ms-vscode.wasm-dwarf-debugging";
+
+/** WebAssembly DWARF Debugging, which a Debug launch in a browser reads Swift's lines through, found or not. */
+export function wasmDebuggingFinding(installed: boolean): Finding {
+    return {
+        component: "the WebAssembly DWARF Debugging extension", neededBy: "Debug in Chromium's browsers",
+        found: installed ? "installed" : undefined,
+        advice: `Install WebAssembly DWARF Debugging (${wasmDebuggingExtension}) from the Extensions view: the browser's debugger then stops on lines of Swift.`,
     };
 }
 
@@ -122,8 +137,12 @@ async function windowsLldbDapFinding(executable: string | undefined): Promise<Fi
 
 /** The findings as the output shows them: a line each, found, too old or missing, and what to install for each not found. */
 export function report(findings: readonly Finding[]): string[] {
-    return findings.map((each) => each.found !== undefined
-        ? `✓ ${each.component} - ${each.found} [${each.neededBy}]`
-        : `✗ ${each.component} - ${each.tooOld !== undefined ? `${each.tooOld} found, too old` : "not found"} [${
-            each.neededBy}]. ${each.advice}`);
+    return findings.flatMap((each, index) => [
+        // A heading wherever the machine changes - none while every finding is this machine's.
+        ...(each.machine !== (index === 0 ? undefined : findings[index - 1].machine) ? [`${each.machine ?? "This machine"}:`] : []),
+        each.found !== undefined
+            ? `✓ ${each.component} - ${each.found} [${each.neededBy}]`
+            : `✗ ${each.component} - ${each.tooOld !== undefined ? `${each.tooOld} found, too old` : "not found"} [${
+                each.neededBy}]. ${each.advice}`,
+    ]);
 }

@@ -6,31 +6,13 @@ import Foundation
 import StateUITooling
 import StateUIToolingProtocol
 
-/// `stateui workspace`: a folder of applications and the StateUI they build with, kept in its `stateui.json`.
+/// `stateui workspace`: a folder of applications and the StateUI they build with, kept in its `stateui-workspace.json`.
 struct WorkspaceCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "workspace",
-        abstract: "Makes a workspace, or changes the StateUI its applications build with.",
-        subcommands: [Create.self, Library.self]
+        abstract: "Makes a workspace of applications and the StateUI they build with.",
+        subcommands: [Create.self]
     )
-
-    /// The library named on a command line: a checkout or a release.
-    struct LibraryOptions: ParsableArguments {
-        @Option(help: "A StateUI checkout to build with.")
-        var checkout: String?
-
-        @Option(help: "A StateUI release to build with, cloned into the workspace's StateUI/.")
-        var release: String?
-
-        @Option(help: "The repository a release is cloned from; StateUI's own when left out.")
-        var repository: String?
-
-        func validate() throws {
-            guard (checkout == nil) != (release == nil) else {
-                throw ValidationError("Name one library: --checkout or --release.")
-            }
-        }
-    }
 
     /// `stateui workspace create`: a workspace, its library, and maybe its first application.
     struct Create: AsyncParsableCommand {
@@ -54,27 +36,6 @@ struct WorkspaceCommand: AsyncParsableCommand {
                 try await ToolingService().createWorkspace(
                     name, in: parent, checkout: library.checkout.map { URL(fileURLWithPath: $0) }, release: library.release,
                     repository: library.repository, application: application)
-            }, text: WorkspaceCommand.words)
-        }
-    }
-
-    /// `stateui workspace library`: the StateUI a workspace's applications build with from now on.
-    struct Library: AsyncParsableCommand {
-        static let configuration = CommandConfiguration(
-            abstract: "Makes a checkout or a release the library of a workspace, rewriting its applications' manifests.")
-
-        @Option(help: "A folder of the workspace; the working directory when left out.")
-        var project: String?
-
-        @OptionGroup var library: LibraryOptions
-        @OptionGroup var output: OutputOptions
-
-        func run() async throws {
-            let folder = URL(fileURLWithPath: project ?? FileManager.default.currentDirectoryPath)
-            try await output.answer({
-                try await ToolingService().useLibrary(
-                    in: folder, checkout: library.checkout.map { URL(fileURLWithPath: $0) }, release: library.release,
-                    repository: library.repository)
             }, text: WorkspaceCommand.words)
         }
     }

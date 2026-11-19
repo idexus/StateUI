@@ -1,0 +1,27 @@
+{
+  "request" : {
+    "id" : "32",
+    "jsonrpc" : "2.0",
+    "method" : "files/write",
+    "params" : {
+      "pieces" : [
+        {
+          "data" : "LyogKi8=",
+          "executable" : false,
+          "modified" : 1763380800,
+          "offset" : 0,
+          "path" : "Package.swift",
+          "size" : 4
+        }
+      ],
+      "root" : "/home/example/stateui-guest/Demo"
+    }
+  },
+  "response" : {
+    "id" : "32",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "completed" : 1
+    }
+  }
+}

@@ -52,7 +52,7 @@ final class WorkspaceMakerTests: XCTestCase {
             "Demo", in: parent, library: .checkout(ProjectReaderTests.repository), application: "Notes")
         let demo = RealPath.of(parent).appendingPathComponent("Demo")
 
-        let file = try WorkspaceFile.read(demo.appendingPathComponent("stateui.json"))
+        let file = try WorkspaceFile.read(demo.appendingPathComponent("stateui-workspace.json"))
         XCTAssertEqual(file.projects, ["Notes"])
         XCTAssertEqual(file.library?.path, ApplicationMaker.relativePath(from: demo, to: ProjectReaderTests.repository))
         XCTAssertEqual(change.changedUris.count, 2)
@@ -72,7 +72,8 @@ final class WorkspaceMakerTests: XCTestCase {
         let demo = RealPath.of(parent).appendingPathComponent("Demo")
 
         XCTAssertNotNil(Checkout(at: demo.appendingPathComponent("StateUI")))
-        XCTAssertEqual(try WorkspaceFile.read(demo.appendingPathComponent("stateui.json")).library?.path, "StateUI")
+        XCTAssertEqual(
+            try WorkspaceFile.read(demo.appendingPathComponent("stateui-workspace.json")).library?.path, "StateUI")
         XCTAssertTrue(try text(demo.appendingPathComponent("Notes/Package.swift")).contains(#"path: "../StateUI")"#))
         XCTAssertTrue(try text(demo.appendingPathComponent(".gitignore")).contains("/StateUI/"))
     }
@@ -95,8 +96,8 @@ final class WorkspaceMakerTests: XCTestCase {
         XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: parent.path), [])
     }
 
-    /// A library changed is named by every listed application's manifest and by the file; a manifest naming its
-    /// checkout in another form is refused, and nothing is rewritten.
+    /// A library changed is named by every manifest of every listed application - its own and each head's - and by the
+    /// file; a manifest naming its checkout in another form is refused, and nothing is rewritten.
     func testALibraryChangedRewritesEveryManifest() async throws {
         let origin = try await GitFixture.repository(tagged: ["0.9.1"])
         let parent = try folder()
@@ -110,15 +111,43 @@ final class WorkspaceMakerTests: XCTestCase {
         let path = ApplicationMaker.relativePath(from: demo.appendingPathComponent("Notes"), to: origin.folder)
         XCTAssertTrue(manifest.contains("path: \"\(path)\")"), manifest)
         XCTAssertTrue(manifest.contains("path: \"\(path)/lib/StateUI/StateUI.Testing\")"), manifest)
-        XCTAssertEqual(rewritten.map(\.lastPathComponent), ["Package.swift", "stateui.json"])
+        let notes = demo.appendingPathComponent("Notes")
+        XCTAssertEqual(rewritten.map(\.path), (ApplicationManifest.manifests(of: notes) + [demo.appendingPathComponent("stateui-workspace.json")]).map(\.path))
+        XCTAssertEqual(ApplicationManifest.manifests(of: notes).count, 1 + HostFamily.allCases.count)
 
         let other = demo.appendingPathComponent("Notes/Package.swift")
         try manifest.replacingOccurrences(of: "\"StateUIRoot\", path:", with: "\"StateUIRoot\",  path:").write(to: other, atomically: true, encoding: .utf8)
-        let before = try text(demo.appendingPathComponent("stateui.json"))
+        let before = try text(demo.appendingPathComponent("stateui-workspace.json"))
         XCTAssertThrowsError(try workspace.use(ProjectReaderTests.repository)) {
             XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration)
         }
-        XCTAssertEqual(try text(demo.appendingPathComponent("stateui.json")), before)
+        XCTAssertEqual(try text(demo.appendingPathComponent("stateui-workspace.json")), before)
+    }
+
+    /// An application standing in no workspace takes another checkout in its manifest alone; a release, which a
+    /// workspace's clone holds, is refused, and nothing is rewritten.
+    func testAnApplicationTakesACheckoutOfItsOwn() async throws {
+        let origin = try await GitFixture.repository(tagged: ["0.9.1"])
+        let parent = try folder()
+        let made = try ApplicationMaker().make("Notes", in: parent, from: ProjectReaderTests.repository)
+
+        let change = try await ToolingService().useLibrary(
+            in: made.appendingPathComponent("Sources"), checkout: origin.folder, release: nil, repository: nil)
+        let path = ApplicationMaker.relativePath(from: made, to: origin.folder)
+        XCTAssertEqual(change.projectUri, FileURI.string(made))
+        XCTAssertEqual(change.library, path)
+        XCTAssertEqual(change.changedUris, ApplicationManifest.manifests(of: made).map(FileURI.string))
+        let manifest = try text(made.appendingPathComponent("Package.swift"))
+        XCTAssertTrue(manifest.contains("path: \"\(path)\")"), manifest)
+
+        do {
+            _ = try await ToolingService().useLibrary(in: made, checkout: nil, release: "0.9.1", repository: origin.url)
+            XCTFail("an application outside a workspace took a release")
+        } catch let error as ToolingError {
+            XCTAssertEqual(error.code, .invalidConfiguration)
+        }
+        XCTAssertEqual(try text(made.appendingPathComponent("Package.swift")), manifest)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: made.appendingPathComponent("StateUI").path))
     }
 
     /// A release replaces a workspace's clone only where the clone holds no changes of its own.

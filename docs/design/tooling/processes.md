@@ -75,6 +75,16 @@ never ends a run: swift-subprocess's own line reader fails a run on a line
 past its limit, so the runner reads bytes and cuts them itself
 (`OutputLines`).
 
+## A pipe whose reader ended
+
+A write to a pipe whose reader ended - a served stateui gone before its input
+was written, an editor gone before it read the tool's output - fails, and the
+caller hears why; it never ends the tool. On macOS and Linux such a write
+raises SIGPIPE, which ends a process by default, so the tool ignores it once
+before it writes to another program's input or to its own output
+(`BrokenPipe.ignore`); a socket's write asks the same of its own (`MSG_NOSIGNAL`,
+`SO_NOSIGPIPE`). Windows raises no signal.
+
 ## A program the machine keeps
 
 An emulator the tool boots belongs to the machine, as a booted simulator

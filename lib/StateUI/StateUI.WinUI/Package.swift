@@ -24,7 +24,11 @@ let package = Package(
         .target(
             name: "CStateUIWinUI",
             path: "Sources/CStateUIWinUI",
-            cxxSettings: [.headerSearchPath("../../.projection"), .define("STATEUI_WINUI_RELAY")],
+            // Design: docs/design/platforms/winui/relay.md#the-compiler-the-library-expects
+            cxxSettings: [
+                .headerSearchPath("../../.projection"), .define("STATEUI_WINUI_RELAY"),
+                .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH"),
+            ],
             // An SVG is handed to WinUI from memory; a zone's offset is ICU's, and the kept values stand in the
             // user's local data; a canvas draws with Direct2D and DirectWrite on a Direct3D device.
             linkerSettings: [

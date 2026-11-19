@@ -42,17 +42,16 @@ struct ToolDistribution: Sendable {
         defer { try? files.removeItem(at: staging) }
 
         let package = checkout.appendingPathComponent("tools/StateUI.CLI")
-        var build = ["build", "-c", "release", "--package-path", package.path, "--product", "stateui"]
+        var placing = ["-c", "release", "--package-path", package.path, "--product", "stateui"]
         #if !os(macOS)
-        build.append("--static-swift-stdlib")
+        placing.append("--static-swift-stdlib")
         #endif
         reporter.progress("building stateui \(Release.version) for release")
-        guard try await run(tools.swift, build, reporter: reporter),
-              let bin = await ToolOutput.standardOutput(tools.swift, build + ["--show-bin-path"], limit: .seconds(300))?
-                  .trimmingCharacters(in: .whitespacesAndNewlines) else {
+        guard try await run(tools.swift, ["build"] + placing, reporter: reporter) else {
             return SuiteResult(suite: "distribution", phases: [SuiteResult.Phase(name: "build", passed: false)])
         }
-        try files.copyItem(at: URL(fileURLWithPath: bin).appendingPathComponent(Self.program),
+        let bin = try await ProductFolder.of(tools.swift, placing: placing)
+        try files.copyItem(at: bin.appendingPathComponent(Self.program),
                            to: staging.appendingPathComponent("bin/\(Self.program)"))
         for file in ["LICENSE", "NOTICE"] {
             try files.copyItem(at: checkout.appendingPathComponent(file), to: staging.appendingPathComponent(file))

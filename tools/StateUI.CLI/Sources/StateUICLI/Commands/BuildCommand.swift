@@ -14,23 +14,27 @@ struct BuildOptions: ParsableArguments {
     @Option(help: "The application, where the project holds more than one.")
     var application: String?
 
-    @Option(help: "The host it is built for: appkit, uikit, android or gtk.")
-    var host: HostFamily
+    @Option(help: "The host it is built for: appkit, uikit, android, winui, gtk or web; the one chosen (stateui settings) when left out.")
+    var host: HostFamily?
 
     @Option(help: "debug or release; debug for a build and a run, release for a package.")
     var configuration: BuildConfiguration?
 
-    @Option(help: "The architecture it is built for; left out, this machine's for AppKit, WinUI and GTK, the device's for UIKit and Android - on Windows arm64 or x86_64, the other run by Windows' emulation.")
+    @Option(help: "The architecture it is built for; left out, this machine's for AppKit, WinUI and GTK, the device's for UIKit and Android, the guest's for GTK and WinUI in a guest - on Windows arm64 or x86_64, the other run by Windows' emulation.")
     var architecture: Architecture?
 
-    @Option(help: "A UIKit head's device or simulator, an Android head's device or emulator, by name or id (stateui devices --host <host>); left out, the booted simulator, else an iPhone - the only Android device running.")
+    @Option(help: "A UIKit head's device or simulator, an Android head's device or emulator, a Web head's browser, a GTK or WinUI head's guest on a Mac, by name or id (stateui devices --host <host>); left out, the one chosen for the host (stateui settings), else the booted simulator, else an iPhone - the only Android device running.")
     var device: String?
+
+    @Option(help: "A machine paired with the project (stateui remote list) whose device --device names - its simulator or iPhone, its Android device, its browser - which builds and runs the head; left out, the device is this machine's.")
+    var machine: String?
 
     /// The request these options name, laid in `output` where given.
     func request(output: String? = nil) -> BuildRequest {
         BuildRequest(
             projectUri: project.map { FileURI.string(URL(fileURLWithPath: $0)) }, application: application, host: host,
-            configuration: configuration, architecture: architecture, device: device, outputUri: output.map { FileURI.string(URL(fileURLWithPath: $0)) })
+            configuration: configuration, architecture: architecture, device: device, machine: machine,
+            outputUri: output.map { FileURI.string(URL(fileURLWithPath: $0)) })
     }
 
     /// The folder a project is read from where none is named.
@@ -46,7 +50,7 @@ struct BuildOptions: ParsableArguments {
 
     /// The words naming the device or simulator a build was for, where it was for one.
     static func destination(of built: BuildResult) -> String {
-        built.destination.map { " for \($0.name) (\($0.kind.rawValue), \($0.version))" } ?? ""
+        built.destination.map { " for \($0.name) (\($0.kind.rawValue), \($0.version))\($0.machine.map { " on \($0)" } ?? "")" } ?? ""
     }
 
     /// An operation's id of its own.
@@ -67,7 +71,7 @@ struct BuildCommand: AsyncParsableCommand {
     func run() async throws {
         try await output.answer({
             try await ToolingService().build(build.request(), in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
-        }) { built in "Built \((try? FileURI.url(built.programUri).path) ?? built.programUri)\(BuildOptions.destination(of: built))" }
+        }) { built in "Built \(FileURI.shown(built.programUri))\(BuildOptions.destination(of: built))" }
     }
 }
 
@@ -92,7 +96,8 @@ struct PackageCommand: AsyncParsableCommand {
 }
 
 /// `stateui run`: an application built, then run in the foreground until it ends or Ctrl+C stops it - an AppKit
-/// head on this Mac, a UIKit or Android head on its device, simulator or emulator, its output followed.
+/// head on this Mac, a UIKit or Android head on its device, simulator or emulator, a page in a browser, a GTK or WinUI
+/// head on this machine or another - its output followed.
 struct RunCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "run", abstract: "Builds an application and runs it in the foreground; Ctrl+C stops it.")
@@ -105,17 +110,22 @@ struct RunCommand: AsyncParsableCommand {
     @Option(help: "A Web head's page served on this machine alone, loopback, or shared with the network, lan.")
     var listen: String?
 
-    @Flag(help: "Ready a debugger: a UIKit head starts held until one attaches, an Android head with the debugger's server in its sandbox - what to attach to said as it starts; a GTK head runs under gdb, each GTK critical's stack and a crash's said as they come.")
+    @Flag(help: "Ready LLDB: a UIKit head starts held until it attaches, an Android head with the debugger's server in its sandbox, a GTK or WinUI head held by the toolchain's lldb-dap, a page in Safari reached through Safari's WebAssembly debugger - the way said as it starts.")
     var debugger = false
+
+    @Flag(help: "A GTK head runs under gdb, each GTK critical's stack and a crash's said as they come.")
+    var gdb = false
 
     func run() async throws {
         do {
-            if [.uikit, .android, .web].contains(build.host) {
+            let request = try ApplicationBuilder.chosen(build.request(), in: build.here)
+            let remotes = try RemoteMachines(project: build.project.map { URL(fileURLWithPath: $0) } ?? build.here).list()
+            if let host = request.host, try host != .appkit || RemoteWork.asks(request, remotes: remotes) {
                 guard listen == nil || ["loopback", "lan"].contains(listen ?? "") else {
                     throw ToolingError(.invalidConfiguration, "--listen is loopback or lan.")
                 }
-                _ = try await ToolingService().run(
-                    RunRequest(build: build.request(), debugger: debugger, port: port, lan: listen.map { $0 == "lan" }), in: build.here,
+                let ran = try await ToolingService().run(
+                    RunRequest(build: request, debugger: debugger, gdb: gdb ? true : nil, port: port, lan: listen.map { $0 == "lan" }), in: build.here,
                     operation: BuildOptions.operation,
                     reporter: RunReporter(
                         build: BuildOptions.terminal, started: { FileHandle.standardError.write(Data((Self.words($0) + "\n").utf8)) },
@@ -123,26 +133,14 @@ struct RunCommand: AsyncParsableCommand {
                             (line.stream == .standardError ? FileHandle.standardError : FileHandle.standardOutput)
                                 .write(Data((line.text + "\n").utf8))
                         }))
+                // A desktop head's end is the command's: a crash under gdb, its signal's.
+                if let status = ran.failureStatus { throw ExitCode(status) }
                 return
             }
-            let built = try await ToolingService().build(build.request(), in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
+            let built = try await ToolingService().build(request, in: build.here, operation: BuildOptions.operation, reporter: BuildOptions.terminal)
             let program = try FileURI.url(built.programUri)
-            if build.host == .gtk {
-                // A GTK application is one instance: a second start would only bring a running copy forward.
-                _ = try await ToolingService().install(try FileURI.url(built.folderUri))
-                _ = try? await ProcessRunner().run(ProcessRequest(.name("pkill"), arguments: ["-f", "^\(program.path)( |$)"]))
-            }
             FileHandle.standardError.write(Data("stateui: running \(program.path)\n".utf8))
-            var started = ProcessRequest(.path(program.path), streams: .terminal)
-            let commands = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-gdb-\(UUID().uuidString).cmd")
-            defer { try? FileManager.default.removeItem(at: commands) }
-            if build.host == .gtk, debugger {
-                // Under gdb, each GTK critical's stack and a crash's are said as they come.
-                try Data(ToolingService.gdbCommands(for: built.architecture).utf8).write(to: commands)
-                started = ProcessRequest(
-                    .name("gdb"), arguments: ["-batch", "-x", commands.path, "--args", program.path],
-                    environment: ProcessEnvironment.inherited.setting("SWIFT_BACKTRACE", to: "enable=no"), streams: .terminal)
-            }
+            let started = ProcessRequest(.path(program.path), streams: .terminal)
             let outcome = try await ProcessRunner().run(started)
             if outcome.exitStatus != 0 { throw ExitCode(outcome.exitStatus) }
         } catch let error as ToolingError {
@@ -151,13 +149,22 @@ struct RunCommand: AsyncParsableCommand {
         }
     }
 
-    /// What a run says as its application starts: where, as which process, and whether it waits for a debugger.
+    /// What a run says as its application starts: where, as which process, whether it waits for a debugger, and the
+    /// commands that bring LLDB to it, where the run readied one.
     static func words(_ launched: LaunchedApplication) -> String {
         let place = launched.build.destination.map { " on \($0.name)" } ?? ""
         let process = launched.process.map { ", process \($0)" } ?? ""
-        let server = launched.debuggerSocket.map { ", the debugger's server at unix-abstract:///\($0)" } ?? ""
-        if let url = launched.url { return "stateui: serving \(launched.build.application) at \(url)" }
-        return "stateui: started \(launched.build.application)\(place)\(process)\(launched.held ? ", held for a debugger" : "")\(server)"
+        let lldb = launched.debugger.flatMap { way -> String? in
+            guard way.kind == .lldb else { return nil }
+            if let port = way.adapterPort {
+                return "\nstateui: lldb-dap reaches it at 127.0.0.1:\(port), launching \(way.programUri.map(FileURI.shown) ?? "its program")"
+                    + (way.initCommands.isEmpty ? "" : " after: " + way.initCommands.joined(separator: "; "))
+            }
+            let attach = way.attachCommands.isEmpty ? way.process.map { ["process attach --pid \($0)"] } ?? [] : way.attachCommands
+            return "\nstateui: LLDB reaches it with: " + (way.initCommands + attach).joined(separator: "; ")
+        } ?? ""
+        if let url = launched.url { return "stateui: serving \(launched.build.application) at \(url)\(lldb)" }
+        return "stateui: started \(launched.build.application)\(place)\(process)\(launched.held ? ", held for a debugger" : "")\(lldb)"
     }
 }
 

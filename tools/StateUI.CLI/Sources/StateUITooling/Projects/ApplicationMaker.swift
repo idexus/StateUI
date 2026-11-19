@@ -19,12 +19,20 @@ public struct ApplicationMaker: Sendable {
         return name == "StateUI" ? "'StateUI' is the library. Pick a name of the application's own." : nil
     }
 
-    /// Makes application `name` in `parent` from `checkout`'s HelloWorld: written beside, then put in place whole.
+    /// Makes application `name` in `parent` from `checkout`'s HelloWorld, its `stateui.json` naming it `identifier` -
+    /// `com.example.<name>` where none is given - at version 1.0.0, build 1, with the heads of `platforms` alone where
+    /// they are given: written beside, then put in place whole.
     ///
     /// - Returns: The new application's folder.
-    /// - Throws: ``ToolingError`` - a name that cannot be, a folder already holding something, no checkout.
-    public func make(_ name: String, in parent: URL, from checkout: URL) throws(ToolingError) -> URL {
+    /// - Throws: ``ToolingError`` - a name or identifier that cannot be, no platform, a folder already holding
+    ///   something, no checkout.
+    public func make(
+        _ name: String, identifier: String? = nil, platforms: [HostFamily]? = nil, in parent: URL, from checkout: URL
+    ) throws(ToolingError) -> URL {
+        if platforms?.isEmpty == true { throw ToolingError(.invalidName, "\(name) cannot be made for no platform.") }
         if let problem = Self.problem(with: name) { throw ToolingError(.invalidName, problem) }
+        let file = ApplicationFile(identifier: identifier ?? "com.example.\(name.lowercased())", version: "1.0.0", build: 1)
+        if let problem = file.problem { throw ToolingError(.invalidName, "\(name) cannot be made: \(problem)") }
         guard let checkout = Checkout(at: RealPath.lexical(checkout)) else {
             throw ToolingError(.projectNotFound, "No StateUI checkout stands at \(checkout.path).")
         }
@@ -36,7 +44,13 @@ public struct ApplicationMaker: Sendable {
             .appendingPathComponent(".\(name).stateui-new-\(UUID().uuidString.lowercased())")
         do {
             try copy(checkout.root.appendingPathComponent("apps/HelloWorld"), to: staging, naming: name)
-            try nameCheckout(checkout.root, in: staging, standingAt: destination)
+            for (manifest, text) in try ApplicationManifest.naming(checkout.root, in: staging) {
+                try Data(text.utf8).write(to: manifest)
+            }
+            try file.write(to: staging.appendingPathComponent(ApplicationFile.name))
+            for host in HostFamily.allCases where platforms.map({ !$0.contains(host) }) ?? false {
+                try? files.removeItem(at: staging.appendingPathComponent("Platforms").appendingPathComponent(host.folder))
+            }
             if files.fileExists(atPath: destination.path) { try files.removeItem(at: destination) }
             try files.moveItem(at: staging, to: destination)
         } catch {
@@ -66,16 +80,6 @@ public struct ApplicationMaker: Sendable {
                 try (renamed ?? contents).write(to: target)
             }
         }
-    }
-
-    /// Names `checkout` in the manifest of the application in `folder`, which will stand at `destination`: every
-    /// `../..` - the checkout's root as HelloWorld says it - the path from there instead.
-    private func nameCheckout(_ checkout: URL, in folder: URL, standingAt destination: URL) throws {
-        let path = Self.relativePath(from: destination, to: checkout)
-        guard path != "../.." else { return }
-        let manifest = folder.appendingPathComponent("Package.swift")
-        let text = try String(contentsOf: manifest, encoding: .utf8)
-        try Data(text.replacingOccurrences(of: "../..", with: path).utf8).write(to: manifest)
     }
 
     /// The path from folder `from` to `to`, written with `/` as SwiftPM reads it everywhere.

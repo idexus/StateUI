@@ -61,6 +61,13 @@ final class TestDiscoveryTests: XCTestCase {
         XCTAssertNil(found[3].host, "an application runs as plain Swift for GTK")
     }
 
+    /// A host worked in a guest - GTK's and WinUI's on a Mac - runs its own suite there, named as a device is.
+    func testAGuestsHostRunsItsSuiteInTheGuest() {
+        let found = TestDiscovery.suites(in: root, host: .gtk, applications: [root.appendingPathComponent("apps/Notes")], elsewhere: true)
+        XCTAssertEqual(found.filter(\.onDevice).map(\.id), ["lib/StateUI/StateUI.GTK/Testing"])
+        XCTAssertTrue(found.first { $0.onDevice }?.detail.contains("on the machine chosen") ?? false)
+    }
+
     /// Android and UIKit run their host's suite last, on a device, and the application as plain Swift.
     func testADevicesSuiteRunsLastOnTheDevice() {
         for (host, folder) in [(HostFamily.android, "lib/StateUI/StateUI.Android/Tests"), (.uikit, "lib/StateUI/StateUI.UIKit/Tests")] {
@@ -81,8 +88,10 @@ final class TestDiscoveryTests: XCTestCase {
 
     /// A run takes a suite the folder holds for the host, and a device for a suite that runs on one.
     func testARunTakesAHeldSuiteAndADevicesSuiteItsDevice() async throws {
-        try write(#"{ "schemaVersion": 1, "library": { "path": "." }, "projects": ["apps/Notes"] }"#, to: "stateui.json")
-        try write("", to: "apps/Notes/Platforms/AppKit/main.swift")
+        try write(
+            #"{ "schemaVersion": 1, "library": { "path": "." }, "projects": ["apps/Notes"] }"#, to: "stateui-workspace.json")
+        try write("", to: "apps/Notes/Platforms/AppKit/Package.swift")
+        try write(#"{"build":1,"identifier":"com.example.notes","schemaVersion":1,"version":"1.0.0"}"#, to: "apps/Notes/stateui.json")
         let service = ToolingService()
         let listed = try await service.discoverTests(for: .android, in: root)
         XCTAssertEqual(listed.suites.map(\.id), ["Checkout", "lib/StateUI/Core", "apps/Notes", "lib/StateUI/StateUI.Android/Tests"])
@@ -96,4 +105,40 @@ final class TestDiscoveryTests: XCTestCase {
             }
         }
     }
+
+    #if os(macOS)
+    /// On a Mac a GTK or WinUI host suite runs on another machine, and one named by no guest or machine paired is
+    /// refused before anything runs.
+    func testAGuestsHostSuiteIsRefusedWithoutItsGuest() async throws {
+        for marked in ["lib/StateUI.Head/Package.swift", "apps/HelloWorld/Package.swift"] { try write("", to: marked) }
+        try write(#"{ "schemaVersion": 1, "library": { "path": "." }, "projects": ["apps/Notes"] }"#, to: "stateui-workspace.json")
+        try write(#"{"build":1,"identifier":"com.example.notes","schemaVersion":1,"version":"1.0.0"}"#, to: "apps/Notes/stateui.json")
+        let service = ToolingService()
+        let listed = try await service.discoverTests(for: .gtk, in: root)
+        XCTAssertEqual(listed.suites.filter(\.onDevice).map(\.id), ["lib/StateUI/StateUI.GTK/Testing"])
+        do {
+            _ = try await service.testSuite("host:gtk", filter: nil, in: root, reporter: BuildReporter())
+            XCTFail("host:gtk ran on the Mac")
+        } catch let error as ToolingError {
+            XCTAssertEqual(error.code, .invalidConfiguration)
+            XCTAssertTrue(error.message.contains("runs on another machine"), error.message)
+        }
+    }
+
+    /// On a Mac a GTK or WinUI conformance run goes to another machine, and one named by no guest or machine paired is
+    /// refused before anything runs.
+    func testAGuestsConformanceRunIsRefusedWithoutItsMachine() async throws {
+        for marked in ["lib/StateUI.Head/Package.swift", "apps/HelloWorld/Package.swift"] { try write("", to: marked) }
+        try write(#"{ "schemaVersion": 1, "library": { "path": "." }, "projects": [] }"#, to: "stateui-workspace.json")
+        for host in [HostFamily.gtk, .winui] {
+            do {
+                _ = try await ToolingService().runConformance(host, selection: .all, record: true, device: nil, in: root, reporter: BuildReporter())
+                XCTFail("\(host)'s families ran on the Mac")
+            } catch let error as ToolingError {
+                XCTAssertEqual(error.code, .invalidConfiguration)
+                XCTAssertTrue(error.message.contains("families run on another machine"), error.message)
+            }
+        }
+    }
+    #endif
 }

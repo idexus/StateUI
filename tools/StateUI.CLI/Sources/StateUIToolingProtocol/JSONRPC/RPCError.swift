@@ -35,6 +35,8 @@ public struct RPCError: Error, Codable, Equatable, Sendable {
     public static let notInitialized = RPCError(code: -32002, message: "The connection is not initialized.")
     /// A request after `shutdown`.
     public static let shuttingDown = RPCError(code: -32003, message: "The service is shutting down.")
+    /// A client the service does not admit: not paired with it, or not proving it.
+    public static func notAdmitted(_ message: String) -> RPCError { RPCError(code: -32004, message: message) }
     /// The method refused the request, for the reason `error` gives.
     public static func refused(_ error: ToolingError) -> RPCError {
         RPCError(code: -32010, message: error.message, data: error)

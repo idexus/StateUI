@@ -14,7 +14,7 @@ Last verified 2026-11-14, on Swift 6.4.2, through `stateui repo test`: the porta
 | Machine | Apple M1 Max |
 | System | macOS 26.6.2 (25G83) |
 | Xcode | 27.1 (27A9275), with its Swift 6.4 (`swiftlang-6.4.0.34.1`) |
-| Editor | VS Code 1.144.0; the StateUI extension 0.8.5, Swift (`swiftlang.swift-vscode`) 2.18.0, LLDB DAP 0.4.1 |
+| Editor | VS Code 1.144.0; the StateUI extension 0.8.6, Swift (`swiftlang.swift-vscode`) 2.18.0, LLDB DAP 0.4.1 |
 | Node.js | 26.10.0, for building and testing the extension |
 | resvg | 0.50.0 (Homebrew), drawing the AppKit, UIKit and Android heads' pictures and icons since 2026-11-14 |
 
@@ -63,8 +63,8 @@ Node, and the conformance suite in a headless browser
 | --- | --- |
 | Swift | the swift.org toolchain `swift-6.4.2-RELEASE` |
 | Swift SDK | `swift-6.4.2-RELEASE_wasm` |
-| Server | Python 3.14.4 |
-| Browser | Safari 26.6.2; Google Chrome 152.0.7977.84, headless, for the conformance suite |
+| Server | the `stateui` tool's own |
+| Browser | Safari 27.2, its WebAssembly debugger for LLDB; Google Chrome 152.0.7977.84, headless, for the conformance suite |
 | Node.js | 26.10.0, for the host's own suite and the conformance run's controller |
 
 ### GTK 4, in Docker

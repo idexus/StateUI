@@ -47,6 +47,11 @@ public struct BuildContext: Hashable, Sendable {
     /// The published artifact this build replaces: its host, its key and its configuration.
     public var artifact: String { "\(host.rawValue)-\(key)-\(configuration.rawValue)" }
 
+    /// The head's own package, which builds the application for its host: `<application>/Platforms/<Host>`.
+    public var head: URL {
+        application.appendingPathComponent("Platforms").appendingPathComponent(host.folder)
+    }
+
     /// The SwiftPM scratch folder this build writes: `<application>/.build/<host>/<key>`.
     public var scratch: URL {
         application.appendingPathComponent(".build").appendingPathComponent(host.rawValue).appendingPathComponent(key)

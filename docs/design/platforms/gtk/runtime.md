@@ -24,16 +24,19 @@ its panel and drops the reference it held.
 
 ## Starting
 
-The head's `main` names the application and hands the thread to
-`GTKHost.run(applicationID:)`, which makes an `AdwApplication` under that
-name and runs GLib's main loop on the thread until the last window closes,
-then ends the process with the code GLib's application ended with - a refused
-start, an unknown option, its own: `run` never returns (`Never`). The
-application's first activation calls the host, whose first act is to claim
-that thread as the UI thread: `claimUIThread()` makes StateUI's UI executor
-`MainActor`'s and drains it there. The name is the one the desktop knows the application by, and
-GTK keeps one instance of it: a second launch activates the first, which
-brings its window forward.
+The head's `main` registers the application and hands the thread to
+`GTKHost.run()`. It reads the `stateui.json` the head carries beside its
+program - the application's identifier, name, version and build - makes an
+`AdwApplication` under the identifier, gives GLib the name shown and the
+windows' icon the identifier, and runs GLib's main loop on the thread until
+the last window closes, then ends the process with the code GLib's
+application ended with - a refused start, an unknown option, its own: `run`
+never returns (`Never`). The application's first activation calls the host,
+whose first act is to claim that thread as the UI thread: `claimUIThread()`
+makes StateUI's UI executor `MainActor`'s and drains it there. The
+identifier is the one the desktop knows the application by, and GTK keeps
+one instance of it: a second launch activates the first, which brings its
+window forward. A program standing without the file runs unnamed.
 
 A test process runs no main loop: it starts libadwaita, registers an
 application of its own so windows have one to belong to, and turns GLib's
@@ -170,6 +173,19 @@ first control in it that takes it, and taken off by leaving it nowhere,
 which GTK allows. The keyboard GNOME shows on a touch screen stands for the
 field holding the focus, so taking it down lets that field's focus go, and
 answers whether a field held it.
+
+## The input method
+
+GTK hands a field the keyboard through its input method, which on Wayland
+binds the compositor's text input only when the compositor answers the first
+field of the process. GTK 4.22 keeps a field gone before that answer as the
+method's current one after it is freed, and the compositor's next word
+reaching it ends the process - a prompt a test answers at once, or a focused
+field an application drops in the same turn, meets it. So the window waits
+for that answer as the first field on its display takes the keyboard -
+`gdk_display_sync`, one roundtrip on Wayland - and no field can go before it
+(`GTKInputMethod`). Only the process's first field meets the defect, so its
+test proves it run alone.
 
 ## The clipboard
 

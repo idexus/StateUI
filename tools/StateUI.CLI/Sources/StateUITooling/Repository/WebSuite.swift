@@ -27,7 +27,10 @@ struct WebSuite {
         "WebLinksTests",
         "WebTabTitleTests",
         "WebLeaveTests",
+        // Before WebLookTests, whose page holds a desktop's pointer after a touch screen's run.
+        "WebTouchScreenTests",
         "WebLookTests",
+        "WebRelayWritesTests",
         "WebScrollOffsetTests",
         "WebHandTests",
         "WebPointerTests",
@@ -56,21 +59,19 @@ struct WebSuite {
     private var relay: String { checkout.appendingPathComponent("lib/StateUI/StateUI.Web/JavaScript/stateui-web.js").path }
 
     func run(filter: String?, environment: ProcessEnvironment, reporter: BuildReporter) async throws -> [SuiteResult.Phase] {
-        let target = try await BuildTarget.web(compiler: tools.swift)
+        let target = try await BuildTarget.web(compiler: tools.swift, configuration: .debug)
         guard let sdk = target.webSDK else { throw ToolingError(.internalError, "The Web target named no Swift SDK.") }
         let scratch = testing.appendingPathComponent(".build/web")
         // The tests' archive only gains members: one of a source since renamed or gone would link twice. Made anew.
         try? FileManager.default.removeItem(at: scratch.appendingPathComponent("out/Products/Debug-webassembly-wasm32/libStateUIWebTests.a"))
         let common = ["--package-path", testing.path, "--scratch-path", scratch.path, "--swift-sdk", sdk]
-        let building = environment.setting("STATEUI_HOST", to: "web")
+        let building = environment
         reporter.progress("building the Web host's tests")
         let built = try await ProcessRunner().run(
             ProcessRequest(tools.swift, arguments: ["build", "--build-tests"] + common, environment: building), output: reporter.output)
         try Task.checkCancellation()
-        guard built.succeeded,
-              let products = (await ToolOutput.text(tools.swift, ["build", "--show-bin-path"] + common, environment: building))?
-                .split(separator: "\n").last.map({ String($0).trimmingCharacters(in: .whitespaces) })
-        else { return [SuiteResult.Phase(name: "tests", passed: false)] }
+        guard built.succeeded else { return [SuiteResult.Phase(name: "tests", passed: false)] }
+        let products = try await ProductFolder.of(tools.swift, placing: common, environment: building).path
 
         var phases = [SuiteResult.Phase(name: "api StateUIWeb", passed: try await recordAPI(sdk: sdk, products: products, environment: environment, reporter: reporter))]
         let program = "\(products)/StateUIWebTests-test-runner.wasm"

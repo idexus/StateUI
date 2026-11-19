@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The applications the stateui tool finds in a folder (`project/describe`): the nearest application up from it, else
-// the ones its workspace's stateui.json lists.
+// the ones its workspace's stateui-workspace.json lists.
 
+import * as path from "path";
 import * as vscode from "vscode";
 import { pathToFileUri, ToolingClient, toolingErrorCode, ToolRequestError } from "./Tooling/client";
 import { Project } from "./Tooling/protocol";
@@ -20,7 +21,7 @@ export interface Application {
     /** The hosts it has a head for: `Platforms/<Host>/main.swift`, Android's `Platforms/Android/build.gradle.kts`. */
     readonly hosts: readonly Host[];
 
-    /** The workspace listing it - the folder of its stateui.json - where one does. */
+    /** The workspace listing it - the folder of its stateui-workspace.json - where one does. */
     readonly workspace?: string;
 
     /**
@@ -58,6 +59,18 @@ export async function readApplications(client: ToolingClient, folder?: string): 
         }
         throw error;
     }
+}
+
+/**
+ * The folder of `folders` that `directory` stands in - the deepest where several hold it - else the first: the folder
+ * a window's hosts and machines are read for, an application's project.
+ */
+export function folderHolding(directory: string | undefined, folders: readonly string[]): string | undefined {
+    const holding = directory === undefined ? [] : folders.filter((folder) => {
+        const inside = path.relative(folder, directory);
+        return inside === "" || (!inside.startsWith("..") && !path.isAbsolute(inside));
+    });
+    return holding.sort((a, b) => b.length - a.length)[0] ?? folders[0];
 }
 
 /** Whether `application` has a head for `host`. */

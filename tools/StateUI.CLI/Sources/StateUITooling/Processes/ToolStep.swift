@@ -6,13 +6,15 @@ import StateUIToolingProtocol
 
 /// A program a build or a run takes as a step - `codesign`, `actool`, `simctl` - which must succeed.
 enum ToolStep {
-    /// Runs `executable` with `arguments` in `environment`, for at most `limit`.
+    /// Runs `executable` with `arguments` in `environment`, for at most `limit`, and returns what it printed to its
+    /// standard output, a line each.
     ///
     /// - Throws: ``ToolingError`` `TOOL_FAILED` with the last of what it said, where it failed.
+    @discardableResult
     static func run(
         _ executable: ProcessExecutable, _ arguments: [String], environment: ProcessEnvironment = .inherited,
         limit: Duration = .seconds(120)
-    ) async throws {
+    ) async throws -> String {
         let said = Gathered()
         let request = ProcessRequest(executable, arguments: arguments, environment: environment, timeout: limit)
         let outcome = try await ProcessRunner().run(request, output: said.add)
@@ -26,6 +28,7 @@ enum ToolStep {
             let asked = arguments.prefix(name == "xcrun" ? 2 : 1).joined(separator: " ")
             throw ToolingError(.toolFailed, "\(name) \(asked) refused - \(ending(outcome, limit: limit)):\n\(words)")
         }
+        return said.lines(of: .standardOutput).joined(separator: "\n")
     }
 
     /// How a step that failed ended, in words: a step saying nothing is still told apart.

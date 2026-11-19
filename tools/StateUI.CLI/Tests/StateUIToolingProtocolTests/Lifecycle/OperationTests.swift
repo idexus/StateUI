@@ -68,12 +68,14 @@ final class OperationTests: XCTestCase {
         let first = try await client.messages(until: ended)
         await client.request("2", "test/work", work("t1"))
         await client.request("3", "test/work", work("t1", #""steps":3"#))
-        let again = try await client.messages()
+        // The two answers, by their ids: an event of the first run may still come between them.
+        let answers = try await client.messages(until: { $0.filter { $0["id"] != nil }.count >= 2 }).filter { $0["id"] != nil }
+        let same = answers.first { $0["id"] == .string("2") }, other = answers.first { $0["id"] == .string("3") }
 
-        XCTAssertEqual(again.count, 2)
-        XCTAssertEqual(handle(again[0]), handle(first[0]))
-        XCTAssertEqual(again[0]["result"]?["state"], .string("succeeded"))
-        XCTAssertEqual(again[1]["error"]?["data"]?["code"], .string("REQUEST_TOKEN_CONFLICT"))
+        XCTAssertEqual(answers.count, 2)
+        XCTAssertEqual(same.flatMap(handle), handle(first[0]))
+        XCTAssertEqual(same?["result"]?["state"], .string("succeeded"))
+        XCTAssertEqual(other?["error"]?["data"]?["code"], .string("REQUEST_TOKEN_CONFLICT"))
     }
 
     /// A mutation takes a token, and its parameters are read whole beside it.

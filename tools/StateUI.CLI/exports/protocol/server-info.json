@@ -18,6 +18,32 @@
           "minMinor" : 0
         }
       ],
+      "hosts" : [
+        {
+          "host" : "appkit",
+          "place" : "machine"
+        },
+        {
+          "host" : "uikit",
+          "place" : "device"
+        },
+        {
+          "host" : "android",
+          "place" : "device"
+        },
+        {
+          "host" : "winui",
+          "place" : "guest"
+        },
+        {
+          "host" : "gtk",
+          "place" : "guest"
+        },
+        {
+          "host" : "web",
+          "place" : "browser"
+        }
+      ],
       "machine" : {
         "architecture" : "arm64",
         "system" : "macos"
@@ -25,7 +51,8 @@
       "server" : {
         "name" : "stateui",
         "version" : "1.0.0"
-      }
+      },
+      "workFolder" : "/Users/example/stateui-guest"
     }
   }
 }

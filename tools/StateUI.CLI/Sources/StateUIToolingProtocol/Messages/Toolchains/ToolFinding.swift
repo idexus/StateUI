@@ -15,10 +15,13 @@ public struct ToolFinding: Codable, Equatable, Sendable {
     public var tooOld: String?
     /// How to get it, where it is not found.
     public var advice: String
+    /// The machine it is of: a guest's name; nil for this one.
+    public var machine: String?
 
     /// A finding of `component`.
     public init(
-        component: String, neededBy: String, hosts: [HostFamily], found: String?, tooOld: String?, advice: String
+        component: String, neededBy: String, hosts: [HostFamily], found: String?, tooOld: String?, advice: String,
+        machine: String? = nil
     ) {
         self.component = component
         self.neededBy = neededBy
@@ -26,5 +29,6 @@ public struct ToolFinding: Codable, Equatable, Sendable {
         self.found = found
         self.tooOld = tooOld
         self.advice = advice
+        self.machine = machine
     }
 }

@@ -22,7 +22,7 @@ final class UIKitBundleTests: XCTestCase {
         for picture in ["Images/mark.svg", "AppIcon/appicon_bkg.svg", "AppIcon/appicon_mark.svg"] {
             try svg.write(to: application.appendingPathComponent("Resources/\(picture)"), atomically: true, encoding: .utf8)
         }
-        let own: [String: Any] = ["CFBundleDisplayName": "My Notes", "NSLocationWhenInUseUsageDescription": "Where notes were written."]
+        let own: [String: Any] = ["NSLocationWhenInUseUsageDescription": "Where notes were written."]
         try PropertyListSerialization.data(fromPropertyList: own, format: .xml, options: 0)
             .write(to: application.appendingPathComponent("Platforms/UIKit/Info.plist"))
         let binaries = root.appendingPathComponent("bin")
@@ -31,7 +31,8 @@ final class UIKitBundleTests: XCTestCase {
         try files.copyItem(at: URL(fileURLWithPath: "/usr/bin/true"), to: binaries.appendingPathComponent("NotesUIKit"))
         try files.createDirectory(at: root.appendingPathComponent("staging"), withIntermediateDirectories: true)
         return UIKitBundle(
-            application: application, name: "Notes", product: "NotesUIKit", binaries: binaries, release: "1.0.0",
+            application: application, name: "Notes", product: "NotesUIKit", binaries: binaries,
+            identity: ApplicationFile(identifier: "pl.example.notes", version: "2.1", build: 9, name: "My Notes"),
             minimumSystem: "26.4", platform: platform, work: root.appendingPathComponent("work"))
     }
 
@@ -51,7 +52,8 @@ final class UIKitBundleTests: XCTestCase {
         XCTAssertTrue(try files.contentsOfDirectory(atPath: folder.path).contains { $0.hasPrefix("AppIcon60x60") })
         let plist = try XCTUnwrap(try PropertyListSerialization.propertyList(
             from: Data(contentsOf: folder.appendingPathComponent("Info.plist")), format: nil) as? [String: Any])
-        XCTAssertEqual(plist["CFBundleIdentifier"] as? String, "com.stateui.notes")
+        XCTAssertEqual(plist["CFBundleIdentifier"] as? String, "pl.example.notes")
+        XCTAssertEqual([plist["CFBundleShortVersionString"], plist["CFBundleVersion"]] as? [String], ["2.1", "9"])
         XCTAssertEqual(plist["CFBundleDisplayName"] as? String, "My Notes")
         XCTAssertEqual(plist["NSLocationWhenInUseUsageDescription"] as? String, "Where notes were written.")
         XCTAssertEqual(plist["CFBundleSupportedPlatforms"] as? [String], ["iPhoneSimulator"])

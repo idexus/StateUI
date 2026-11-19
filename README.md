@@ -172,7 +172,8 @@ Android heads' pictures and icons.
 WinUI builds on Windows, GTK on Linux, and the Web on macOS and Linux; their
 pages say what each needs:
 [WinUI host](docs/hosts/winui.md#requirements), [GTK host](docs/hosts/gtk.md#requirements),
-[Web host](docs/hosts/web.md#requirements).
+[Web host](docs/hosts/web.md#requirements). A Mac builds and runs WinUI and GTK
+too, in Parallels guests: [Every host from one Mac](docs/every-host-from-a-mac.md).
 
 Android asks for more, and builds on macOS only:
 

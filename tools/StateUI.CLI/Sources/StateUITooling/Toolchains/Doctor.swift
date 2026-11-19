@@ -60,7 +60,7 @@ public struct Doctor: Sendable {
 
     func checks() -> [Check] {
         #if os(macOS)
-        let own = macChecks() + webChecks()
+        let own = macChecks() + webChecks() + [safariCheck()]
         #elseif os(Linux)
         let own = linuxChecks() + webChecks()
         #elseif os(Windows)
@@ -99,6 +99,12 @@ public struct Doctor: Sendable {
     }
 
     static func present(_ what: String?) -> Look { what.map(Look.found) ?? .missing }
+
+    /// Safari by its version where its WebAssembly debugger stands, else as too old; no Safari, missing.
+    static func safari(version: String?, debugger: Bool) -> Look {
+        guard let version else { return .missing }
+        return debugger ? .found(version) : .tooOld(version)
+    }
 
     private func swiftCheck() -> Check {
         let (tools, path) = (tools, path)
@@ -158,7 +164,7 @@ public struct Doctor: Sendable {
     }
 
     private func webChecks() -> [Check] {
-        let (tools, path) = (tools, path)
+        let tools = tools
         return [
             Check(
                 component: "the Swift SDK for WebAssembly of Swift's release", neededBy: "Web", hosts: [.web],
@@ -166,12 +172,6 @@ public struct Doctor: Sendable {
                     let release = await ToolOutput.text(tools.swift, ["--version"]).flatMap { Versions.swiftRelease(in: $0) }
                     let list = await ToolOutput.text(tools.swift, ["sdk", "list"]) ?? ""
                     return Self.present(Versions.swiftSDK(of: release, in: list, family: "wasm"))
-                },
-            Check(
-                component: "Python 3", neededBy: "Web, which serves its page with it", hosts: [.web],
-                advice: "Install Python 3: macOS's comes with Xcode's command line tools; on Linux, the distribution's python3.") {
-                    guard path.find("python3") != nil else { return .missing }
-                    return Self.present(await ToolOutput.text(.name("python3"), ["--version"]).flatMap { Versions.first(in: $0) })
                 },
         ]
     }

@@ -21,7 +21,8 @@ public enum HostFamily: String, Codable, Sendable, CaseIterable, Comparable {
         allCases.firstIndex(of: left)! < allCases.firstIndex(of: right)!
     }
 
-    /// The host's name in a head's folder, a compilation condition's root and a product's suffix: `AppKit`.
+    /// The host's name in a head's folder, a compilation condition's root, a product's suffix and the package trait a
+    /// build for it enables: `AppKit`.
     public var folder: String {
         switch self {
         case .appkit: "AppKit"

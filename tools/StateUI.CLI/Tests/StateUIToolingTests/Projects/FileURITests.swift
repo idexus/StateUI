@@ -30,4 +30,13 @@ final class FileURITests: XCTestCase {
         XCTAssertEqual(RealPath.lexical(URL(fileURLWithPath: "/")).path, "/")
         #endif
     }
+
+    /// A file of a Windows drive is shown as Windows writes it, wherever it is told - a guest's on a Mac; any other as its
+    /// path.
+    func testAFileIsShownAsItsMachineWritesIt() {
+        XCTAssertEqual(FileURI.shown("file:///C:/Users/me/stateui-guest/a%20b.exe"), #"C:\Users\me\stateui-guest\a b.exe"#)
+        #if !os(Windows)
+        XCTAssertEqual(FileURI.shown("file:///home/me/stateui-guest/Notes%20GTK"), "/home/me/stateui-guest/Notes GTK")
+        #endif
+    }
 }

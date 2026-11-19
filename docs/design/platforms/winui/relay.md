@@ -93,3 +93,16 @@ and what was launched the relay keeps nowhere: the host's act and file
 toolkits keep them while a test asks (`announcedForTesting`,
 `holdsLaunchesForTesting`), as every host's do - a launch held never reaches
 Windows - and keep nothing for an application.
+
+## The compiler the library expects
+
+Visual Studio's C++ library refuses, by a static assertion, a Clang older
+than the one its own Visual Studio ships - MSVC 14.52's every Clang below 22,
+`error STL1000: Unexpected compiler version`. The Clang that compiles a relay
+is the Swift toolchain's, 21 in Swift 6.4, which reads those headers past the
+check. So every C++ target that includes the library - the host's relay, a
+backend's, an application's own - defines
+`_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH`, the library's own switch for its
+check, in its manifest: a define there reaches every road into the build, the
+stateui tool's, SwiftPM's alone and the editor's index. It stands while the
+toolchain's Clang is older than the library expects.

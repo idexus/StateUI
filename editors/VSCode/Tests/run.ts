@@ -36,9 +36,31 @@ fs.writeFileSync(settings, JSON.stringify({ "stateui.cliPath": program }));
 // The tool's state of its own - its index leases and build permit - so the suite switches hosts on this checkout's
 // packages while a window of the user's works on them: as before, it rewrites that window's index configuration.
 const env: NodeJS.ProcessEnv = { ...process.env, STATEUI_TEST_RESULTS: results, STATEUI_STATE: path.join(profile, "stateui") };
-// The suite starts from no host at all; an inherited one would decide the first answer.
-delete env.STATEUI_HOST;
 delete env.ELECTRON_RUN_AS_NODE;
+
+// Nor from anything chosen: the checkout's own choices - its workspace's and each application's `.stateui/`
+// settings, out of git - stand aside while the suite chooses, and are put back as they were.
+const chosenFiles = [
+    path.join(repository, ".stateui", "workspace-settings.json"),
+    ...fs.readdirSync(path.join(repository, "apps"), { withFileTypes: true })
+        .filter((each) => each.isDirectory() && !each.name.startsWith("."))
+        .map((each) => path.join(repository, "apps", each.name, ".stateui", "settings.json")),
+];
+const kept = new Map(chosenFiles.filter((each) => fs.existsSync(each)).map((each) => [each, fs.readFileSync(each)]));
+const putBack = (): void => {
+    for (const file of chosenFiles) {
+        fs.rmSync(file, { force: true });
+        const content = kept.get(file);
+        if (content) {
+            fs.writeFileSync(file, content);
+        } else if (fs.existsSync(path.dirname(file)) && fs.readdirSync(path.dirname(file)).length === 0) {
+            fs.rmdirSync(path.dirname(file));
+        }
+    }
+};
+for (const file of chosenFiles) {
+    fs.rmSync(file, { force: true });
+}
 
 const child = spawn(code, [
     repository,
@@ -50,6 +72,7 @@ const child = spawn(code, [
 ], { env, stdio: "ignore" });
 
 child.on("exit", (status) => {
+    putBack();
     process.stdout.write(fs.existsSync(results) ? fs.readFileSync(results, "utf8") : "no results written\n");
     process.stdout.write(`exit ${status}\n`);
     process.exit(status ?? 1);

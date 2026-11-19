@@ -56,18 +56,19 @@ public struct ApplicationBuilder: Sendable {
     ///   its project or its checkout, `ALREADY_EXISTS` for one holding what no package laid.
     public func package(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter = BuildReporter())
         async throws -> BuildResult {
-        var release = request
+        var release = try Self.chosen(request, in: folder)
         release.configuration = request.configuration ?? .release
-        let (project, application) = try await resolve(release, in: folder)
+        let (project, application, host) = try await resolve(release, in: folder)
         let folderOfApplication = try FileURI.url(application.packageUri)
         let root = try project.workspaceUri.map(FileURI.url) ?? folderOfApplication
         let output = try request.outputUri.map(FileURI.url)
-            ?? root.appendingPathComponent("artifacts").appendingPathComponent(application.name).appendingPathComponent(release.host.folder)
+            ?? root.appendingPathComponent("artifacts").appendingPathComponent(application.name).appendingPathComponent(host.folder)
         let keeping = [folderOfApplication, root] + (try application.libraryUri.map { [try FileURI.url($0)] } ?? [])
         try PackageOutput.check(output, keeping: keeping)
-        let (built, _) = try await built(release, project: project, application: application, operation: operation, reporter: reporter)
+        let (built, _) = try await built(
+            release, project: project, application: application, host: host, operation: operation, reporter: reporter)
         let artifact = try FileURI.url(built.folderUri)
-        let head = "\(application.name) \(release.host.folder)"
+        let head = "\(application.name) \(host.folder)"
         guard let bundleUri = built.bundleUri else {
             // A head with no bundle is its artifact's folder: the program, its libraries, its pictures.
             let files = FileManager.default
@@ -101,13 +102,16 @@ public struct ApplicationBuilder: Sendable {
     /// The build, and the project root its records stand in: the workspace's folder, else the application's.
     func built(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter)
         async throws -> (result: BuildResult, root: URL) {
-        let (project, application) = try await resolve(request, in: folder)
-        return try await built(request, project: project, application: application, operation: operation, reporter: reporter)
+        let request = try Self.chosen(request, in: folder)
+        let (project, application, host) = try await resolve(request, in: folder)
+        return try await built(
+            request, project: project, application: application, host: host, operation: operation, reporter: reporter)
     }
 
-    /// The build of `application`, of `project`, and the root its records stand in.
+    /// The build of `application`, of `project`, for `host`, and the root its records stand in.
     private func built(
-        _ request: BuildRequest, project: Project, application: Application, operation: String, reporter: BuildReporter
+        _ request: BuildRequest, project: Project, application: Application, host: HostFamily, operation: String,
+        reporter: BuildReporter
     ) async throws -> (result: BuildResult, root: URL) {
         guard let libraryUri = application.libraryUri else {
             throw ToolingError(.projectNotFound, "\(application.name) names no StateUI checkout in its Package.swift.")
@@ -115,32 +119,32 @@ public struct ApplicationBuilder: Sendable {
         let folderOfApplication = try FileURI.url(application.packageUri)
         let configuration = request.configuration ?? .debug
         let machine = Architecture(rawValue: Machine.current.architecture) ?? .arm64
-        let target = switch request.host {
+        let target = switch host {
         case .uikit:
             try await BuildTarget.uiKit(
                 device: request.device, listed: await destinations(.uikit), architecture: request.architecture, machine: machine,
-                application: folderOfApplication, name: application.name)
+                identifier: application.identifier)
         case .android:
             try await BuildTarget.android(
                 device: request.device, listed: await destinations(.android), architecture: request.architecture,
                 tools: AndroidTools(environment: environment))
         case .gtk:
-            try BuildTarget.native(request.architecture ?? machine, machine: machine, host: request.host)
+            try BuildTarget.native(request.architecture ?? machine, machine: machine, host: host)
         case .winui:
             try BuildTarget.winUI(request.architecture ?? machine, machine: machine)
         case .web:
-            try await BuildTarget.web(compiler: tools.swift)
+            try await BuildTarget.web(compiler: tools.swift, configuration: configuration)
         default:
             await BuildTarget.appKit(request.architecture ?? machine, machine: machine)
         }
         let compiler = target.compiler ?? tools.swift
         let context = BuildContext(
-            application: folderOfApplication, product: "\(application.name)\(request.host.folder)", host: request.host,
+            application: folderOfApplication, product: "\(application.name)\(host.folder)", host: host,
             configuration: configuration, architecture: target.architecture,
             compiler: (await ToolOutput.text(compiler, ["--version"]))?.split(separator: "\n").first.map(String.init) ?? "",
             sdk: target.sdkIdentity, library: try FileURI.url(libraryUri))
 
-        let lease = try await permit.acquire(for: "\(application.name) for \(request.host.rawValue), stateui \(ProcessInfo.processInfo.processIdentifier)") {
+        let lease = try await permit.acquire(for: "\(application.name) for \(host.rawValue), stateui \(ProcessInfo.processInfo.processIdentifier)") {
             reporter.progress("waiting for \($0)")
         }
         defer { lease.release() }
@@ -148,7 +152,11 @@ public struct ApplicationBuilder: Sendable {
         let root = try project.workspaceUri.map(FileURI.url) ?? folderOfApplication
         let entry = try OperationJournal(root: root).open(id: operation, kind: "application/build", request: try JSONValue(encoding: request))
         do {
-            let result = try await compileAndPublish(context, target, name: application.name, operation: operation, entry: entry, reporter: reporter)
+            let identity = ApplicationFile(
+                identifier: application.identifier, version: application.version, build: application.build,
+                name: application.displayName)
+            let result = try await compileAndPublish(
+                context, target, name: application.name, identity: identity, operation: operation, entry: entry, reporter: reporter)
             try entry.finish(.succeeded)
             return (result, root)
         } catch let error as ToolingError {
@@ -161,14 +169,12 @@ public struct ApplicationBuilder: Sendable {
     }
 
     private func compileAndPublish(
-        _ context: BuildContext, _ target: BuildTarget, name: String, operation: String, entry: OperationJournal.Entry,
-        reporter: BuildReporter
+        _ context: BuildContext, _ target: BuildTarget, name: String, identity: ApplicationFile, operation: String,
+        entry: OperationJournal.Entry, reporter: BuildReporter
     ) async throws -> BuildResult {
-        let common = ["--package-path", context.application.path, "--scratch-path", context.scratch.path,
-                      "--configuration", context.configuration.rawValue, "--disable-build-manifest-caching"] + target.arguments
-        let environment = target.environment.reduce(ProcessEnvironment.inherited.setting("STATEUI_HOST", to: context.host.rawValue)) {
-            $0.setting($1.key, to: $1.value)
-        }
+        let common = ["--package-path", context.head.path, "--scratch-path", context.scratch.path,
+                      "--configuration", context.configuration.rawValue] + target.arguments
+        let environment = target.environment.reduce(ProcessEnvironment.inherited) { $0.setting($1.key, to: $1.value) }
         let compiler = target.compiler ?? tools.swift
         if context.host == .winui {
             // A running head holds its executable, which publishing writes again: it stops first.
@@ -189,9 +195,7 @@ public struct ApplicationBuilder: Sendable {
             let last = (said.lines(of: .standardOutput) + said.lines(of: .standardError)).suffix(12).joined(separator: "\n")
             throw ToolingError(.toolFailed, "\(context.product) did not build; nothing was published:\n\(last)")
         }
-        let binaries = (await ToolOutput.text(compiler, ["build", "--show-bin-path"] + common, environment: environment))?
-            .split(separator: "\n").last.map { URL(fileURLWithPath: String($0).trimmingCharacters(in: .whitespaces)) }
-        guard let binaries else { throw ToolingError(.toolFailed, "SwiftPM did not say where it laid \(context.product).") }
+        let binaries = try await ProductFolder.of(compiler, placing: common, environment: environment)
 
         reporter.progress("assembling \(context.product)")
         let store = ArtifactStore(application: context.application)
@@ -202,13 +206,15 @@ public struct ApplicationBuilder: Sendable {
                 entry.write(output: line.text + "\n")
                 reporter.output(line)
             })
-            let head = try await assemble(context, target, name: name, binaries: binaries, common: common, environment: environment, in: staging, reporter: logged)
+            let head = try await assemble(
+                context, target, name: name, identity: identity, binaries: binaries, common: common, environment: environment,
+                in: staging, reporter: logged)
             let (bundle, program, signing) = (head.bundle, head.program, head.signing)
             let manifest = ArtifactManifest(
                 id: context.artifact, producerOperationId: operation,
                 createdAt: Operations.timestamp(), applicationUri: FileURI.string(context.application), host: context.host,
                 configuration: context.configuration, architecture: context.architecture, productName: context.product,
-                entryPoints: [program], signing: signing, applicationName: name, identifier: head.identifier)
+                entryPoints: [program], signing: signing, applicationName: identity.name ?? name, identifier: head.identifier)
             let published = try store.publish(staging, as: manifest)
             return BuildResult(
                 application: name, host: context.host, configuration: context.configuration, architecture: context.architecture,
@@ -232,17 +238,20 @@ public struct ApplicationBuilder: Sendable {
         var symbols: String?
     }
 
-    /// The head assembled in `staging` - an Apple bundle, an Android APK.
+    /// The head assembled in `staging` - an Apple bundle, an Android APK - for the application `identity` says; a head
+    /// whose platform keeps no record of the application - WinUI's, GTK's, a page - carries its `stateui.json`.
+    /// Design: docs/design/tooling/projects.md#a-head-carries-what-the-application-is
     private func assemble(
-        _ context: BuildContext, _ target: BuildTarget, name: String, binaries: URL, common: [String], environment: ProcessEnvironment,
-        in staging: URL, reporter: BuildReporter
+        _ context: BuildContext, _ target: BuildTarget, name: String, identity: ApplicationFile, binaries: URL, common: [String],
+        environment: ProcessEnvironment, in staging: URL, reporter: BuildReporter
     ) async throws -> Head {
+        try Self.lay(identity, for: context.host, in: staging)
         if context.host == .web {
             let page = WebPage(
-                application: context.application, name: name, product: context.product, binaries: binaries, library: context.library,
-                stamp: Int(Date().timeIntervalSince1970))
+                application: context.application, name: identity.name ?? name, product: context.product, binaries: binaries,
+                library: context.library, stamp: Int(Date().timeIntervalSince1970))
             try page.assemble(in: staging)
-            return Head(bundle: nil, program: "index.html", signing: .none)
+            return Head(bundle: nil, program: "index.html", signing: .none, identifier: identity.identifier)
         }
         if context.host == .winui {
             let compiler = try Self.compilerPath(tools.swift)
@@ -250,20 +259,20 @@ public struct ApplicationBuilder: Sendable {
                 application: context.application, product: context.product, binaries: binaries, architecture: context.architecture,
                 machine: Architecture(rawValue: Machine.current.architecture) ?? .arm64,
                 dependencies: try await WinUIHead.resolvedDependencies(
-                    of: context.application, scratch: ["--scratch-path", context.scratch.path], compiler: tools.swift, environment: environment),
+                    of: context.head, scratch: ["--scratch-path", context.scratch.path], compiler: tools.swift, environment: environment),
                 packages: WinUIPackages(environment: self.environment),
                 compiler: compiler, cache: ArtifactStore(application: context.application).cache("swift-runtime-\(context.architecture.rawValue)"))
             try await head.assemble(in: staging, reporter: reporter)
-            return Head(bundle: nil, program: "\(context.product).exe", signing: .none)
+            return Head(bundle: nil, program: "\(context.product).exe", signing: .none, identifier: identity.identifier)
         }
         if context.host == .gtk {
             let head = GTKHead(application: context.application, product: context.product, binaries: binaries)
             try head.assemble(in: staging)
-            return Head(bundle: nil, program: context.product, signing: .none, identifier: GTKHead.applicationID(of: context.application))
+            return Head(bundle: nil, program: context.product, signing: .none, identifier: identity.identifier)
         }
         if context.host == .android, let (swiftSDK, ndk) = target.android {
             let head = AndroidHead(
-                application: context.application, name: name, product: context.product, library: context.library,
+                application: context.application, name: name, identity: identity, product: context.product, library: context.library,
                 configuration: context.configuration, work: context.scratch.appendingPathComponent("stateui"),
                 tools: AndroidTools(environment: self.environment))
             guard let abi = AndroidDestinations.abi(of: context.architecture) else {
@@ -277,14 +286,13 @@ public struct ApplicationBuilder: Sendable {
         if context.host == .appkit {
             let bundle = AppKitBundle(
                 application: context.application, name: name, product: context.product, binaries: binaries,
-                release: Release.version, minimumSystem: Doctor.appleFloor)
+                identity: identity, minimumSystem: Doctor.appleFloor)
             _ = try await bundle.assemble(in: staging)
-            return Head(bundle: bundle.bundlePath, program: bundle.programPath, signing: .adHoc,
-                        identifier: Self.identifier(of: staging.appendingPathComponent(bundle.bundlePath).appendingPathComponent("Contents/Info.plist")))
+            return Head(bundle: bundle.bundlePath, program: bundle.programPath, signing: .adHoc, identifier: identity.identifier)
         }
         let bundle = UIKitBundle(
             application: context.application, name: name, product: context.product, binaries: binaries,
-            release: Release.version, minimumSystem: Doctor.appleFloor, platform: target.sdk?.platform ?? .iOSSimulator,
+            identity: identity, minimumSystem: Doctor.appleFloor, platform: target.sdk?.platform ?? .iOSSimulator,
             work: context.scratch.appendingPathComponent("stateui"))
         switch target.signing {
         case .adHoc:
@@ -299,6 +307,12 @@ public struct ApplicationBuilder: Sendable {
         #endif
     }
 
+    /// Lays `identity` - the name in it - in a head of `host` whose platform keeps no record of the application.
+    static func lay(_ identity: ApplicationFile, for host: HostFamily, in staging: URL) throws {
+        guard [.web, .winui, .gtk].contains(host) else { return }
+        try identity.write(to: staging.appendingPathComponent(ApplicationFile.name))
+    }
+
     /// Where `compiler` stands: its path, or where the search path finds it.
     static func compilerPath(_ compiler: ProcessExecutable) throws -> URL {
         switch compiler {
@@ -309,32 +323,41 @@ public struct ApplicationBuilder: Sendable {
         }
     }
 
-    /// The bundle identifier the property list at `plist` names.
-    private static func identifier(of plist: URL) -> String? {
-        let keys = (try? Data(contentsOf: plist)).flatMap { try? PropertyListSerialization.propertyList(from: $0, format: nil) }
-        return (keys as? [String: Any])?["CFBundleIdentifier"] as? String
+    /// `request` with what was chosen for its application where it names nothing: the host, and that host's device.
+    /// Design: docs/design/tooling/projects.md#what-was-chosen
+    ///
+    /// - Throws: ``ToolingError`` - the project's, and `INVALID_CONFIGURATION` for no host named or chosen.
+    public static func chosen(_ request: BuildRequest, in folder: URL) throws -> BuildRequest {
+        var chosen = request
+        let application = try ProjectReader.applicationFolder(
+            named: request.application, containing: try request.projectUri.map(FileURI.url) ?? folder)
+        let settings = try ApplicationSettings.read(in: application)
+        guard let host = request.host ?? settings.host else {
+            throw ToolingError(
+                .invalidConfiguration,
+                "Name the host with --host, or choose one for \(application.lastPathComponent): `stateui settings --host <host>`.")
+        }
+        chosen.host = host
+        // A machine paired picks its own device where none is named: the one chosen here is of this machine.
+        chosen.device = request.device ?? (request.machine == nil ? settings.device(for: host) : nil)
+        return chosen
     }
 
-    /// The project `request` names - its `projectUri`, else `folder` - and the application in it it means: the one
-    /// it names, else the only one, else the workspace's startup.
-    private func resolve(_ request: BuildRequest, in folder: URL) async throws -> (Project, Application) {
-        let project = try await ProjectReader(tools: tools).describe(containing: try request.projectUri.map(FileURI.url) ?? folder)
-        let named = if let name = request.application {
-            project.applications.filter { $0.name == name }
-        } else if project.applications.count > 1, let startup = project.startupUri {
-            project.applications.filter { $0.packageUri == startup }
-        } else {
-            project.applications
+    /// The project `request` names - its `projectUri`, else `folder` - the application in it it means
+    /// (`ProjectReader.applicationFolder`), and the host it is built for.
+    private func resolve(_ request: BuildRequest, in folder: URL) async throws -> (Project, Application, HostFamily) {
+        let projectFolder = try request.projectUri.map(FileURI.url) ?? folder
+        let project = try await ProjectReader(tools: tools).describe(containing: projectFolder)
+        let meant = FileURI.string(try ProjectReader.applicationFolder(named: request.application, containing: projectFolder))
+        guard let application = project.applications.first(where: { $0.packageUri == meant }) else {
+            throw ToolingError(.internalError, "\(meant) was meant, but the project's description holds no such application.")
         }
-        guard named.count == 1, let application = named.first else {
-            let names = project.applications.map(\.name).joined(separator: ", ")
-            throw ToolingError(.invalidConfiguration, named.isEmpty
-                ? "No application \(request.application ?? "") here; the project holds \(names)."
-                : "Name the application to build: the project holds \(names).")
+        guard let host = request.host else {
+            throw ToolingError(.invalidConfiguration, "No host is named for \(application.name).")
         }
-        guard application.declaredHosts.contains(request.host) else {
-            throw ToolingError(.invalidConfiguration, "\(application.name) has no \(request.host.rawValue) head.")
+        guard application.declaredHosts.contains(host) else {
+            throw ToolingError(.invalidConfiguration, "\(application.name) has no \(host.rawValue) head.")
         }
-        return (project, application)
+        return (project, application, host)
     }
 }

@@ -41,9 +41,9 @@ application - the one named, else the only one - and refuses before anything
 runs what cannot be: a host whose row has not moved to the tool, an
 application with no head for it, one naming no checkout. It resolves the
 build's context, waits for the machine's permit, journals the operation, and
-runs `swift build --product <Name><Host>` with exactly the host's
-`STATEUI_HOST`, `--disable-build-manifest-caching` (the manifest reads that
-variable) and the target's triple and SDK: an AppKit head's only for an
+runs `swift build --product <Name><Host>` in the head's own package,
+`Platforms/<Host>` - which enables the host's trait on the application - with
+the target's triple and SDK: an AppKit head's only for an
 architecture not the machine's own, a UIKit head's always - the simulator's
 or the device's the build is for (destinations.md) - and an Android head's
 Swift SDK and triple, built by the swift.org compiler of the SDK's release
@@ -64,6 +64,21 @@ or Ctrl+C stops it with everything it started; standard output keeps the
 result alone, the build's words going to standard error. The run ends with
 the program's status - one a signal ended as 128 and the signal, as a shell
 says it - so a crash is never a success.
+
+## Where SwiftPM laid a build
+
+Every build the tool runs - an application's head, a host's tests, the
+tool's own release - finds its products where SwiftPM says it laid them:
+`swift build --show-bin-path` with the arguments that placed the build (its
+package, scratch, configuration, triple and SDK), one step for all of them
+(`ProductFolder.swift`). The folder is the last line of SwiftPM's standard
+output; what it writes to its errors - a warning about an unhandled file - is
+never taken for it. The answer is a step of the build, not a query: SwiftPM
+reads the whole package graph again, which a busy machine takes more than
+half a minute to do, so it has the limit any build step has, five minutes.
+Where SwiftPM names no folder, the build fails saying what SwiftPM said and
+how it ended - its status, a signal, the limit it ran past - and never as a
+test phase failed without a word.
 
 ## A package
 
@@ -86,7 +101,11 @@ workspace's folder, else the application's - with `operation.json` (schema
 version 1: the operation, its kind, what was asked, its state, when it started
 and ended, the failure) written as it opens and again as it ends, through a
 file written beside and moved into place, and `output.log`, what its programs
-said. `.stateui/` stands in every workspace's `.gitignore`.
+said. `.stateui/` stands in every workspace's `.gitignore`, and an
+application's standing alone. The journal keeps the newest 50: as one opens,
+the records beyond them - by when they opened, then by id - go, but one still
+running, or a folder whose record is not written yet, which another process
+may be opening.
 
 ## An artifact published whole
 

@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
+
 /// Runs a StateUI application in a web page, as the browser's own elements, from the WebAssembly module the page
 /// loaded.
 ///
@@ -11,7 +13,7 @@
 ///     import StateUIWeb
 ///
 ///     HelloWorldApp.register()
-///     WebHost.run(name: "HelloWorld", applicationID: "com.stateui.helloworld")
+///     WebHost.run()
 ///
 /// `stateui run --host web` builds the head, lays the page out beside it
 /// and serves it. A control this host does not present yet shows its name in
@@ -20,12 +22,12 @@ public enum WebHost {
     /// Shows the application in the page and returns: from then on the browser calls it, as the user acts and as
     /// the display draws.
     ///
-    /// - Parameters:
-    ///   - name: the application's name, which `app.info.name` tells it.
-    ///   - applicationID: the application's identity, `com.example.App`, which `app.info.packageName` tells it; a
-    ///     page without one tells none.
+    /// What the application is - its name, identifier, version - comes from the `stateui.json` the page carries
+    /// beside its `index.html`; a page standing without it tells none.
     @MainActor
-    public static func run(name: String, applicationID: String? = nil) {
-        WebRenderer.start(applicationName: name, applicationID: applicationID)
+    public static func run() {
+        let application = HostApplicationInfo(applicationFile: WebRelay.applicationFile)
+            ?? HostApplicationInfo(name: "", packageName: "", version: "", build: "")
+        WebRenderer.start(application: application)
     }
 }

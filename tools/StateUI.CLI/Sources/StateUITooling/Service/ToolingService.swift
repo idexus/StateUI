@@ -18,9 +18,13 @@ public struct ToolingService: Sendable {
     /// The tool's name and release.
     public static let identity = ToolIdentity(name: "stateui", version: Release.version)
 
-    /// The tool's name, release, API versions and machine - `server/info`.
-    public func serverInfo() -> ServerInfo {
-        ServerInfo(server: Self.identity, apiVersions: Release.apiVersions, machine: .current)
+    /// The tool's name, release, API versions and machine, and the hosts it builds - beside its own, those of the
+    /// machines paired with the project holding `folder` - `server/info`.
+    public func serverInfo(in folder: URL? = nil) -> ServerInfo {
+        let remotes = folder.map { (try? RemoteMachines(project: $0).list()) ?? [] } ?? []
+        return ServerInfo(
+            server: Self.identity, apiVersions: Release.apiVersions, machine: .current, hosts: HostPlaces.available(remotes: remotes),
+            workFolder: HostPlaces.workFolder)
     }
 
     /// The project holding `folder` - `project/describe`.
@@ -39,16 +43,23 @@ public struct ToolingService: Sendable {
     }
 
     /// Makes application `name` in `parent` from a checkout's HelloWorld - `checkout`, else the workspace's library,
-    /// else the checkout `parent` stands in - and lists it in the workspace - `project/create`.
-    public func createApplication(_ name: String, in parent: URL, from checkout: URL?) async throws -> ProjectCreation {
+    /// else the checkout `parent` stands in - named `identifier`, and lists it in the workspace, else gives it the
+    /// `.gitignore` a workspace has - `project/create`.
+    public func createApplication(
+        _ name: String, identifier: String? = nil, platforms: [HostFamily]? = nil, in parent: URL, from checkout: URL?
+    ) async throws -> ProjectCreation {
         var workspace = try Workspace.nearest(from: parent)
         guard let checkout = checkout ?? workspace?.library ?? Checkout.holding(parent)?.root else {
             throw ToolingError(
                 .projectNotFound, "No StateUI checkout is named for \(parent.path): name one with --checkout, or in a"
-                    + " stateui.json's library.")
+                    + " stateui-workspace.json's library.")
         }
-        let made = try ApplicationMaker().make(name, in: parent, from: checkout)
+        let made = try ApplicationMaker().make(name, identifier: identifier, platforms: platforms, in: parent, from: checkout)
         var created = [FileURI.string(made)]
+        if workspace == nil {
+            // An application standing alone keeps what its builds and the tool write out of git, as a workspace does.
+            try Data(WorkspaceMaker.ignored(cloned: false).utf8).write(to: made.appendingPathComponent(".gitignore"))
+        }
         if workspace != nil {
             try workspace?.add(made)
             created.append(FileURI.string(workspace!.folder.appendingPathComponent(WorkspaceFile.name)))
@@ -73,14 +84,35 @@ public struct ToolingService: Sendable {
             name, in: parent, library: try Self.library(checkout, release, repository), application: application)
     }
 
-    /// Makes `checkout` or `release` the library of the workspace `folder` stands in, rewriting its applications'
-    /// manifests - `workspace/useLibrary`.
-    public func useLibrary(in folder: URL, checkout: URL?, release: String?, repository: String?) async throws -> WorkspaceChange {
+    /// Makes `checkout` or `release` the library of the project `folder` stands in - `project/useLibrary`: the
+    /// application, whose manifest names a checkout from then on, else the workspace, every listed application's
+    /// manifest and its file naming a checkout or a release cloned into it.
+    /// Design: docs/design/tooling/projects.md#a-library-changed
+    public func useLibrary(in folder: URL, checkout: URL?, release: String?, repository: String?) async throws -> LibraryChange {
+        let folder = RealPath.of(RealPath.lexical(folder))
+        let chosen = try Self.library(checkout, release, repository)
+        if let application = ProjectReader.application(holding: folder) {
+            guard case .checkout(let named) = chosen else {
+                throw ToolingError(
+                    .invalidConfiguration,
+                    "A release is cloned into a workspace's StateUI/: name a checkout for \(application.lastPathComponent),"
+                        + " or change its workspace's library.")
+            }
+            guard Checkout(at: named) != nil else {
+                throw ToolingError(.projectNotFound, "No StateUI checkout stands at \(named.path).")
+            }
+            let rewritten = try ApplicationManifest.naming(named, in: application)
+            for (manifest, text) in rewritten { try Data(text.utf8).write(to: manifest) }
+            return LibraryChange(
+                projectUri: FileURI.string(application), library: ApplicationMaker.relativePath(from: application, to: named),
+                changedUris: rewritten.map { FileURI.string($0.manifest) })
+        }
         guard var workspace = try Workspace.nearest(from: folder) else {
-            throw ToolingError(.projectNotFound, "No stateui.json stands in or above \(folder.path).")
+            throw ToolingError(
+                .projectNotFound, "No StateUI application or stateui-workspace.json stands in or above \(folder.path).")
         }
         let library: URL
-        switch try Self.library(checkout, release, repository) {
+        switch chosen {
         case .checkout(let named):
             guard Checkout(at: named) != nil else {
                 throw ToolingError(.projectNotFound, "No StateUI checkout stands at \(named.path).")
@@ -90,8 +122,8 @@ public struct ToolingService: Sendable {
             library = try await Self.replaceClone(in: workspace.folder, with: release, of: repository)
         }
         let rewritten = try workspace.use(library)
-        return WorkspaceChange(
-            workspaceUri: FileURI.string(workspace.folder), library: workspace.file.library?.path ?? "",
+        return LibraryChange(
+            projectUri: FileURI.string(workspace.folder), library: workspace.file.library?.path ?? "",
             changedUris: rewritten.map(FileURI.string))
     }
 
@@ -127,9 +159,57 @@ public struct ToolingService: Sendable {
         return clone
     }
 
-    /// What this machine has of every component it needs - `toolchain/check`.
-    public func checkToolchain() async -> ToolchainReport {
-        await Doctor().check()
+    /// What this machine has of every component it needs - `toolchain/check` - and, where `query` names a guest, then
+    /// what that guest has of what a head of its host needs, for the application and checkout of its project.
+    public func checkToolchain(_ query: ToolchainQuery = ToolchainQuery()) async -> ToolchainReport {
+        let here = await Doctor().check()
+        guard let device = query.device, let host = query.host else { return here }
+        let projectFolder = query.projectUri.flatMap { try? FileURI.url($0) }
+        let remotes = projectFolder.map { (try? RemoteMachines(project: $0).list()) ?? [] } ?? []
+        if let paired = remotes.first(where: { $0.name == device && $0.machineHosts.contains(host) }) {
+            // A guest paired is checked as a guest: the way to it, then inside it.
+            let guests = HostPlaces.place(of: host) == .guest ? await ParallelsGuests().list() : []
+            if !guests.contains(where: { $0.name == device || $0.id == device }) {
+                return ToolchainReport(findings: here.findings + (await RemoteDoctor().check(host: host, machine: paired)).findings)
+            }
+        }
+        var folders: [URL] = []
+        if let folder = projectFolder, let project = try? await ProjectReader().describe(containing: folder) {
+            // The project itself travels through the connection; the checkout is shared, as the guest's tool is laid from it.
+            folders.append(contentsOf: project.applications.compactMap { $0.libraryUri.flatMap { try? FileURI.url($0) } })
+        }
+        var seen: Set<String> = []
+        let there = await GuestDoctor(guests: ParallelsGuests())
+            .check(host: host, device: device, folders: folders.filter { seen.insert($0.standardizedFileURL.path).inserted })
+        return ToolchainReport(findings: here.findings + there.findings)
+    }
+
+    /// Lays the stateui of the checkout `folder` builds with in `device`, a guest of this Mac; its program's path
+    /// there.
+    public func prepareGuest(_ device: String, in folder: URL, reporter: BuildReporter) async throws -> String {
+        let guests = ParallelsGuests()
+        guard let prlctl = guests.prlctl else {
+            throw ToolingError(.missingToolchain, "Parallels Desktop's prlctl is not here: its Pro or Business edition has it.")
+        }
+        guard let guest = await guests.list().first(where: { $0.name == device || $0.id == device }) else {
+            throw ToolingError(.invalidConfiguration, "No guest named \(device) stands here: `stateui devices` lists them.")
+        }
+        let project = try? await ProjectReader().describe(containing: folder)
+        guard let library = project?.applications.compactMap(\.libraryUri).first.flatMap({ try? FileURI.url($0) })
+            ?? Checkout.holding(folder)?.root
+        else { throw ToolingError(.projectNotFound, "No StateUI checkout stands in or above \(folder.path).") }
+        return try await GuestPreparation(commands: GuestCommands(prlctl: prlctl, guest: guest)).lay(checkout: library, reporter: reporter)
+    }
+
+    /// Pairs this Mac with the guest `device` names as with any machine of the network: its stateui's service laid to
+    /// start with its user's session, listening on `port`, the guest kept by its name with the project holding `folder`.
+    public func pairGuest(_ device: String, port: UInt16, in folder: URL, reporter: BuildReporter) async throws -> RemoteMachine {
+        let project = try? await ProjectReader().describe(containing: folder)
+        guard let library = project?.applications.compactMap(\.libraryUri).first.flatMap({ try? FileURI.url($0) })
+            ?? Checkout.holding(folder)?.root
+        else { throw ToolingError(.projectNotFound, "No StateUI checkout stands in or above \(folder.path).") }
+        return try await GuestPairing(guests: ParallelsGuests()).pair(
+            device, port: port, checkout: library, remotes: RemoteMachines(project: folder), reporter: reporter)
     }
 
     /// The suites the folder holding `folder` - a checkout, a workspace, an application - holds for `host`, in the
@@ -138,7 +218,9 @@ public struct ToolingService: Sendable {
         let project = try await describeProject(containing: folder)
         let root = try project.workspaceUri.map(FileURI.url) ?? FileURI.url(project.rootUri)
         let applications = try project.applications.map { try FileURI.url($0.packageUri) }
-        return TestSuiteList(host: host, suites: TestDiscovery.suites(in: root, host: host, applications: applications))
+        let elsewhere = RemoteWork.elsewhere(host, remotes: try RemoteMachines(project: folder).list())
+        return TestSuiteList(
+            host: host, suites: TestDiscovery.suites(in: root, host: host, applications: applications, elsewhere: elsewhere))
     }
 
     /// Runs suite `request.suite` of the folder holding `folder` - `tests/run`.
@@ -152,8 +234,12 @@ public struct ToolingService: Sendable {
         if suite.onDevice, request.device == nil {
             throw ToolingError(.invalidConfiguration, "\(suite.id) runs on a device: name it.")
         }
+        if suite.kind == .host, let host = suite.host, suite.onDevice {
+            let ran = try await testSuite("host:\(host.rawValue)", filter: request.filter, device: request.device, in: folder, reporter: reporter)
+            return SuiteResult(suite: suite.id, phases: ran.phases)
+        }
         return try await TestRunner(tools: ToolResolver()).run(
-            suite, device: request.device, checkout: Checkout.holding(folder)?.root, reporter: reporter)
+            suite, device: request.device, filter: request.filter, checkout: Checkout.holding(folder)?.root, reporter: reporter)
     }
 
     /// What an editor's language server indexes `host`'s code with - `index/describe`: its scratch folder, and the
@@ -176,35 +262,88 @@ public struct ToolingService: Sendable {
             removedUris: cleaned.removed.map(FileURI.string), conflicts: cleaned.conflicts.isEmpty ? nil : cleaned.conflicts)
     }
 
-    /// Where `host`'s heads can run on this machine - `devices/list`: UIKit's iPhones, iPads and simulators on a Mac,
-    /// Android's devices and emulators.
+    /// Where `host`'s heads can run from this machine - `devices/list`, as its place says (`HostPlaces`): this machine
+    /// itself, UIKit's iPhones, iPads and simulators, Android's devices and emulators, the Web's browsers, and on a Mac
+    /// the virtual machines of GTK's and WinUI's systems; and after them the machines paired with the project holding
+    /// `folder` whose own programs `host`'s heads run as, a guest paired listed once, as a guest; then the devices of
+    /// the machines paired that run `host` on theirs, each named by its `machine`.
     ///
-    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose heads run on this machine itself.
-    public func listDestinations(of host: HostFamily) async throws -> DestinationList {
-        switch host {
-        case .uikit:
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a host whose heads this machine does not build, nor a
+    ///   machine paired, or a project's paired machines the tool does not read.
+    public func listDestinations(of host: HostFamily, in folder: URL? = nil) async throws -> DestinationList {
+        let remotes = try folder.map { try RemoteMachines(project: $0).list() } ?? []
+        var destinations: [Destination]
+        switch HostPlaces.place(of: host) {
+        case .machine:
+            destinations = [HostPlaces.machine()]
+        case .device where host == .uikit:
             #if os(macOS)
-            return DestinationList(host: host, destinations: await AppleDestinations().list())
+            destinations = await AppleDestinations().list()
             #else
-            return DestinationList(host: host, destinations: [])
+            destinations = []
             #endif
-        case .android:
-            return DestinationList(host: host, destinations: await AndroidDestinations().list())
-        case .web:
-            return DestinationList(host: host, destinations: await Browsers.list())
-        default:
-            throw ToolingError(.invalidConfiguration, "Heads of \(host.rawValue) run on this machine itself; uikit's and android's run on devices, web's in browsers.")
+        case .device:
+            destinations = await AndroidDestinations().list()
+        case .browser:
+            destinations = await Browsers.list()
+        case .guest:
+            // A guest paired is reached through its service, and a debugger with it.
+            let system = ParallelsGuests.system(for: host)
+            destinations = await ParallelsGuests().list().filter { $0.system == system }.map { guest in
+                var destination = ParallelsGuests.destination(of: guest)
+                destination.debugger = remotes.contains { $0.name == guest.name }
+                return destination
+            }
+        case .remote, nil:
+            destinations = []
         }
+        let listed = Set(destinations.map(\.name))
+        let paired = remotes.filter { $0.machineHosts.contains(host) && !listed.contains($0.name) }
+        let theirs = remotes.filter { $0.deviceHosts.contains(host) }
+        guard HostPlaces.place(of: host) != nil || !paired.isEmpty || !theirs.isEmpty else {
+            let built = HostPlaces.available(remotes: remotes).map(\.host.rawValue).joined(separator: ", ")
+            throw ToolingError(.invalidConfiguration, "This machine builds no heads of \(host.rawValue), nor a machine paired: \(built.isEmpty ? "none" : built).")
+        }
+        return DestinationList(
+            host: host, destinations: destinations + paired.map(HostPlaces.remote) + (await RemoteWork.devices(of: host, on: theirs)))
+    }
+
+    /// The work of `request` on another machine, where it asks for one - a guest of this Mac, a machine paired with the
+    /// project holding `folder`; nil where it is worked here.
+    private static func elsewhere(_ request: BuildRequest, in folder: URL) throws -> RemoteWork? {
+        let remotes = try RemoteMachines(project: try request.projectUri.map(FileURI.url) ?? folder).list()
+        return try RemoteWork.asks(request, remotes: remotes) ? RemoteWork(guests: ParallelsGuests(), remotes: remotes) : nil
     }
 
     /// Builds `request`'s application and publishes it - `application/build`.
     public func build(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> BuildResult {
-        try await ApplicationBuilder().build(request, in: folder, operation: operation, reporter: reporter)
+        let chosen = try ApplicationBuilder.chosen(request, in: folder)
+        if let elsewhere = try Self.elsewhere(chosen, in: folder) { return try await elsewhere.build(chosen, in: folder, reporter: reporter) }
+        return try await ApplicationBuilder().build(request, in: folder, operation: operation, reporter: reporter)
+    }
+
+    /// Builds `request`'s application and readies it for a debugger to start on this machine - `application/prepare`: a
+    /// GTK head installed and a copy of it running stopped; its build, and how LLDB starts its program.
+    ///
+    /// - Throws: ``ToolingError`` `INVALID_CONFIGURATION` for a head that runs elsewhere than on this machine itself,
+    ///   which `application/run` readies on its device, browser or guest.
+    public func prepare(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> PreparedApplication {
+        let chosen = try ApplicationBuilder.chosen(request, in: folder)
+        guard let host = chosen.host, HostPlaces.place(of: host) == .machine else {
+            throw ToolingError(.invalidConfiguration, "A head of \(chosen.host?.rawValue ?? "no host") does not run on this machine itself: application/run readies it for a debugger where it runs.")
+        }
+        let built = try await ApplicationBuilder().build(chosen, in: folder, operation: operation, reporter: reporter)
+        try await DesktopLaunch.ready(built)
+        let project = try await ProjectReader().describe(containing: folder)
+        let working = try project.workspaceUri.map(FileURI.url) ?? FileURI.url(project.rootUri)
+        return PreparedApplication(build: built, debugger: DebugDescriptors.program(try FileURI.url(built.programUri), working: working))
     }
 
     /// Builds `request`'s application for release and lays it out to be shipped - `application/package`.
     public func package(_ request: BuildRequest, in folder: URL, operation: String, reporter: BuildReporter) async throws -> BuildResult {
-        try await ApplicationBuilder().package(request, in: folder, operation: operation, reporter: reporter)
+        let chosen = try ApplicationBuilder.chosen(request, in: folder)
+        if let elsewhere = try Self.elsewhere(chosen, in: folder) { return try await elsewhere.package(chosen, in: folder, reporter: reporter) }
+        return try await ApplicationBuilder().package(request, in: folder, operation: operation, reporter: reporter)
     }
 
     /// gdb's commands for a GTK head run under it on `architecture`.
@@ -219,12 +358,15 @@ public struct ToolingService: Sendable {
 
     /// Builds `request`'s application, starts it and follows it until it ends - `application/run`.
     public func run(_ request: RunRequest, in folder: URL, operation: String, reporter: RunReporter) async throws -> RunResult {
-        try await ApplicationRunner().run(request, in: folder, operation: operation, reporter: reporter)
+        var chosen = request
+        chosen.build = try ApplicationBuilder.chosen(request.build, in: folder)
+        if let elsewhere = try Self.elsewhere(chosen.build, in: folder) { return try await elsewhere.run(chosen, in: folder, reporter: reporter) }
+        return try await ApplicationRunner().run(request, in: folder, operation: operation, reporter: reporter)
     }
 
     /// Runs suite `suite` - `host:<host>` - of the StateUI checkout holding `folder`, `filter`ed where given, a UIKit
-    /// or Android one on the device `device` names; an Android one built alone for `architecture`, or run from
-    /// `artifact`, what such a build made.
+    /// or Android one on the device `device` names, a GTK or WinUI one on a Mac in the guest it names; an Android one
+    /// built alone for `architecture`, or run from `artifact`, what such a build made.
     ///
     /// - Throws: ``ToolingError`` `PROJECT_NOT_FOUND` outside a checkout, `INVALID_CONFIGURATION` for a suite there is
     ///   none of.
@@ -237,6 +379,13 @@ public struct ToolingService: Sendable {
         }
         guard suite.hasPrefix("host:"), let host = HostFamily(rawValue: String(suite.dropFirst("host:".count))) else {
             throw ToolingError(.invalidConfiguration, "No suite \(suite): host:appkit, host:uikit, host:android, host:winui, host:gtk and host:web are.")
+        }
+        let remotes = try RemoteMachines(project: folder).list()
+        if RemoteWork.elsewhere(host, remotes: remotes) || RemoteWork.asks(host, device: device, remotes: remotes) {
+            guard device != nil else {
+                throw ToolingError(.invalidConfiguration, "\(suite) runs on another machine: name a guest or a machine paired with --device (`stateui devices --host \(host.rawValue)`).")
+            }
+            return try await RemoteWork(guests: ParallelsGuests(), remotes: remotes).test(host, filter: filter, device: device, checkout: checkout, reporter: reporter)
         }
         return try await HostSuite(checkout: checkout).run(
             host, filter: filter, device: device, buildOnly: buildOnly, architecture: architecture, artifact: artifact, reporter: reporter)
@@ -272,12 +421,17 @@ public struct ToolingService: Sendable {
     }
 
     /// Runs the `kind` plan of the StateUI checkout holding `folder` - its suite `only` where named - on the device
-    /// `device` names for UIKit and Android.
+    /// `device` names for UIKit and Android, or on the machine it names: a guest of this Mac, a machine paired -
+    /// `repository/plan`.
     public func runPlan(
-        _ kind: RepositoryPlan.Kind, only: String?, device: String?, in folder: URL, reporter: BuildReporter
+        _ kind: PlanKind, only: String?, device: String?, in folder: URL, reporter: BuildReporter
     ) async throws -> SuiteResult {
         guard let checkout = Checkout.holding(folder)?.root else {
             throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        let elsewhere = RemoteWork(guests: ParallelsGuests(), remotes: try RemoteMachines(project: folder).list())
+        if let device, await elsewhere.names(device) {
+            return try await elsewhere.plan(kind, only: only, device: device, checkout: checkout, reporter: reporter)
         }
         return try await RepositoryPlan(checkout: checkout).run(kind, only: only, device: device, reporter: reporter)
     }
@@ -303,8 +457,9 @@ public struct ToolingService: Sendable {
         return SuiteResult(suite: samples ? "samples" : "docs", phases: [phase])
     }
 
-    /// Runs `host`'s conformance families `selection` takes in the StateUI checkout holding `folder`, recording their
-    /// verdicts and rendering the documents where `record`.
+    /// Runs `host`'s conformance families `selection` takes in the StateUI checkout holding `folder` - on the machine
+    /// `device` names where this one works the host on another - recording their verdicts and rendering the documents
+    /// where `record`.
     ///
     /// - Throws: ``ToolingError`` `PROJECT_NOT_FOUND` outside a checkout, `INVALID_CONFIGURATION` for an unknown family.
     public func runConformance(
@@ -312,6 +467,14 @@ public struct ToolingService: Sendable {
     ) async throws -> SuiteResult {
         guard let checkout = Checkout.holding(folder)?.root else {
             throw ToolingError(.projectNotFound, "No StateUI checkout holds \(folder.path).")
+        }
+        let remotes = try RemoteMachines(project: folder).list()
+        if RemoteWork.elsewhere(host, remotes: remotes) || RemoteWork.asks(host, device: device, remotes: remotes) {
+            guard device != nil else {
+                throw ToolingError(.invalidConfiguration, "\(host.folder)'s families run on another machine: name a guest or a machine paired with --device (`stateui devices --host \(host.rawValue)`).")
+            }
+            return try await RemoteWork(guests: ParallelsGuests(), remotes: remotes).conformance(
+                host, selection: selection, record: record, device: device, checkout: checkout, reporter: reporter)
         }
         return try await ConformanceRun(checkout: checkout).run(host, selection: selection, record: record, device: device, reporter: reporter)
     }
@@ -350,21 +513,35 @@ public struct ToolingService: Sendable {
     private static func reporting<Result: Sendable>(
         _ context: OperationContext, _ work: (RunReporter) async throws -> Result
     ) async throws -> Result {
+        try await reporting(tell: { each in
+            switch each {
+            case .progress(let words): await context.progress(OperationProgress(stage: words))
+            case .output(let line): await context.output(Array((line.text + "\n").utf8), on: line.stream == .standardError ? .stderr : .stdout)
+            case .started(let application): await context.started(application)
+            }
+        }, work)
+    }
+
+    /// `work` given a reporter whose words `tell` takes in the order they were said - every one told before the work's
+    /// end is, a failure's last words included, as an operation ended takes no more.
+    static func reporting<Result: Sendable>(
+        tell: @escaping @Sendable (Reported) async -> Void, _ work: (RunReporter) async throws -> Result
+    ) async throws -> Result {
         let (said, saying) = AsyncStream<Reported>.makeStream()
         let telling = Task {
-            for await each in said {
-                switch each {
-                case .progress(let words): await context.progress(OperationProgress(stage: words))
-                case .output(let line): await context.output(Array((line.text + "\n").utf8), on: line.stream == .standardError ? .stderr : .stdout)
-                case .started(let application): await context.started(application)
-                }
-            }
+            for await each in said { await tell(each) }
         }
-        defer { saying.finish() }
         let reporter = RunReporter(
             build: BuildReporter(progress: { saying.yield(.progress($0)) }, output: { saying.yield(.output($0)) }),
             started: { saying.yield(.started($0)) }, output: { saying.yield(.output($0)) })
-        let result = try await work(reporter)
+        let result: Result
+        do {
+            result = try await work(reporter)
+        } catch {
+            saying.finish()
+            await telling.value
+            throw error
+        }
         saying.finish()
         await telling.value
         return result
@@ -381,9 +558,11 @@ public struct ToolingService: Sendable {
     /// The methods an editor calls, each answered by this service.
     public var methods: Methods {
         var methods = Methods()
-        methods.query("server/info") { (_: NoParameters) in serverInfo() }
-        methods.query("toolchain/check") { (_: NoParameters) in await checkToolchain() }
-        methods.query("devices/list") { (query: DestinationQuery) in try await listDestinations(of: query.host) }
+        methods.query("server/info") { (_: NoParameters, caller: RequestContext) in serverInfo(in: try? Self.folder(of: caller)) }
+        methods.query("toolchain/check") { (query: ToolchainQuery) in await checkToolchain(query) }
+        methods.query("devices/list") { (query: DestinationQuery, caller: RequestContext) in
+            try await listDestinations(of: query.host, in: try? Self.folder(of: caller))
+        }
         methods.query("index/describe") { (query: IndexQuery) in await describeIndex(of: query.host) }
         methods.query("tests/discover") { (query: TestDiscoveryQuery, caller: RequestContext) in
             try await discoverTests(for: query.host, in: try query.folderUri.map(FileURI.url) ?? Self.folder(of: caller))
@@ -399,7 +578,14 @@ public struct ToolingService: Sendable {
             try await Self.reporting(context) { reporter in
                 try await runConformance(
                     request.host, selection: request.selection, record: request.record, device: request.device,
-                    in: try Self.folder(of: caller), reporter: reporter.build)
+                    in: try request.folderUri.map(FileURI.url) ?? Self.folder(of: caller), reporter: reporter.build)
+            }
+        }
+        methods.mutation("repository/plan") { (request: PlanRequest, context: OperationContext, caller: RequestContext) in
+            try await Self.reporting(context) { reporter in
+                try await runPlan(
+                    request.kind, only: request.only, device: request.device,
+                    in: try request.folderUri.map(FileURI.url) ?? Self.folder(of: caller), reporter: reporter.build)
             }
         }
         methods.mutation("repository/integrationPackage") { (request: IntegrationPackageRequest, context: OperationContext, caller: RequestContext) in
@@ -413,6 +599,11 @@ public struct ToolingService: Sendable {
         methods.mutation("application/build") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
             try await Self.reporting(context) { reporter in
                 try await build(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter.build)
+            }
+        }
+        methods.mutation("application/prepare") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
+            try await Self.reporting(context) { reporter in
+                try await prepare(request, in: try Self.folder(of: caller), operation: context.operationId, reporter: reporter.build)
             }
         }
         methods.mutation("application/package") { (request: BuildRequest, context: OperationContext, caller: RequestContext) in
@@ -439,17 +630,34 @@ public struct ToolingService: Sendable {
                 request.name, in: try FileURI.url(request.parentUri), checkout: try request.checkoutUri.map(FileURI.url),
                 release: request.release, repository: request.repository, application: request.application)
         }
-        methods.mutation("workspace/useLibrary") { (request: LibraryRequest, _: OperationContext) in
-            guard let uri = request.workspaceUri else {
-                throw ToolingError(.projectNotFound, "No workspace is named.")
+        methods.mutation("project/useLibrary") { (request: LibraryRequest, _: OperationContext, caller: RequestContext) in
+            guard let uri = request.projectUri ?? caller.workspaceUri else {
+                throw ToolingError(.projectNotFound, "No project is named, and the connection opened no workspace.")
             }
             return try await useLibrary(
                 in: try FileURI.url(uri), checkout: try request.checkoutUri.map(FileURI.url), release: request.release,
                 repository: request.repository)
         }
+        methods.query("folder/survey") { (request: FolderSurveyRequest) in try FolderFiles.survey(request) }
+        methods.query("files/write") { (request: FilesWriteRequest) in try FolderFiles.write(request) }
+        methods.query("file/read") { (request: FileReadRequest) in try FolderFiles.read(request) }
+        methods.query("files/remove") { (request: FilesRemoveRequest) in try FolderFiles.remove(request) }
         methods.mutation("project/create") { (request: ApplicationRequest, _: OperationContext) in
             try await createApplication(
-                request.name, in: try FileURI.url(request.parentUri), from: try request.checkoutUri.map(FileURI.url))
+                request.name, identifier: request.identifier, platforms: request.platforms, in: try FileURI.url(request.parentUri),
+                from: try request.checkoutUri.map(FileURI.url))
+        }
+        methods.query("settings/get") { (request: SettingsRequest, context: RequestContext) in
+            guard let uri = request.projectUri ?? context.workspaceUri else {
+                throw ToolingError(.projectNotFound, "No project is named, and the connection opened no workspace.")
+            }
+            return try settings(in: try FileURI.url(uri), application: request.application)
+        }
+        methods.mutation("settings/set") { (change: SettingsChange, _: OperationContext, caller: RequestContext) in
+            guard let uri = change.projectUri ?? caller.workspaceUri else {
+                throw ToolingError(.projectNotFound, "No project is named, and the connection opened no workspace.")
+            }
+            return try changeSettings(change, in: try FileURI.url(uri))
         }
         methods.query("project/describe") { (reference: ProjectReference, context: RequestContext) in
             guard let uri = reference.projectUri ?? context.workspaceUri else {
@@ -462,7 +670,8 @@ public struct ToolingService: Sendable {
 }
 
 /// What a build said, kept in order on its way to an editor.
-private enum Reported: Sendable {
+/// A word an operation's work says: how far it came, a program's line, an application started.
+enum Reported: Sendable {
     case progress(String)
     case output(ProcessOutput)
     case started(LaunchedApplication)

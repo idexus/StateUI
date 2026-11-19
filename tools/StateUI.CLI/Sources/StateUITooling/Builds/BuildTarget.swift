@@ -56,14 +56,17 @@ struct BuildTarget: Sendable {
         #endif
     }
 
-    /// A Web head: the Swift SDK `_wasm` of `compiler`'s release (web-heads.md), else `MISSING_TOOLCHAIN`.
-    static func web(compiler: ProcessExecutable) async throws -> BuildTarget {
+    /// A Web head: the Swift SDK `_wasm` of `compiler`'s release (web-heads.md), else `MISSING_TOOLCHAIN`; a release
+    /// module linked without its debugging information.
+    /// Design: docs/design/tooling/web-heads.md#the-build
+    static func web(compiler: ProcessExecutable, configuration: BuildConfiguration) async throws -> BuildTarget {
         let version = await ToolOutput.text(compiler, ["--version"]) ?? ""
         let list = await ToolOutput.standardOutput(compiler, ["sdk", "list"]) ?? ""
         guard let sdk = Versions.swiftSDK(of: Versions.swiftRelease(in: version), in: list, family: "wasm") else {
             throw ToolingError(.missingToolchain, "No Swift SDK for WebAssembly of this compiler's release is installed: https://www.swift.org/documentation/articles/wasm-getting-started.html")
         }
-        var target = BuildTarget(architecture: .wasm32, arguments: ["--swift-sdk", sdk])
+        let stripped = configuration == .release ? ["-Xlinker", "--strip-debug"] : []
+        var target = BuildTarget(architecture: .wasm32, arguments: ["--swift-sdk", sdk] + stripped)
         target.webSDK = sdk
         return target
     }
@@ -100,7 +103,7 @@ struct BuildTarget: Sendable {
     /// A UIKit head for the destination `device` names among `listed`: its SDK, triple and a device's signing; no
     /// destination or signing is `INVALID_CONFIGURATION`, no SDK `MISSING_TOOLCHAIN`.
     static func uiKit(
-        device: String?, listed: [Destination], architecture: Architecture?, machine: Architecture, application: URL, name: String
+        device: String?, listed: [Destination], architecture: Architecture?, machine: Architecture, identifier: String
     ) async throws -> BuildTarget {
         #if os(macOS)
         let destination = try AppleDestinations.choose(device, from: listed)
@@ -113,7 +116,6 @@ struct BuildTarget: Sendable {
             architecture: architecture, sdk: sdk, destination: destination,
             arguments: ["--triple", platform.triple(architecture, floor: Doctor.appleFloor), "--sdk", sdk.path])
         if destination.kind == .device {
-            let identifier = UIKitBundle.identifier(of: application, name: name)
             target.signing = .development(try await DevelopmentSigning.find(identifier: identifier, device: destination.udid))
         }
         return target

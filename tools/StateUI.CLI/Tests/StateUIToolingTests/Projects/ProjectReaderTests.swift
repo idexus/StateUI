@@ -12,6 +12,9 @@ final class ProjectReaderTests: XCTestCase {
         .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
         .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
 
+    /// An application's file, as `stateui new` writes one.
+    private static let mark = #"{"build":1,"identifier":"com.example.demo","schemaVersion":1,"version":"1.0.0"}"#
+
     private func package(_ files: [String: String]) throws -> URL {
         let folder = FileManager.default.temporaryDirectory
             .appendingPathComponent("stateui-cli-tests-\(UUID().uuidString)").appendingPathComponent("Demo")
@@ -32,6 +35,9 @@ final class ProjectReaderTests: XCTestCase {
         XCTAssertEqual(project.applications.map(\.id), ["apps/Gallery", "apps/HelloWorld"])
         let hello = try XCTUnwrap(project.applications.last)
         XCTAssertEqual(hello.name, "HelloWorld")
+        XCTAssertEqual([hello.identifier, hello.displayName, hello.version], ["com.stateui.helloworld", "HelloWorld", Release.version])
+        XCTAssertEqual(project.applications.first?.displayName, "StateUI Gallery")
+        XCTAssertEqual(hello.build, 1)
         XCTAssertEqual(hello.declaredHosts, HostFamily.allCases)
         XCTAssertEqual(hello.products, ["HelloWorldUI"])
         XCTAssertEqual(hello.testSuites, ["HelloWorldTests"])
@@ -51,15 +57,17 @@ final class ProjectReaderTests: XCTestCase {
         XCTAssertEqual(project.applications.map(\.name), ["HelloWorld"])
     }
 
-    /// A workspace's applications are the ones its `stateui.json` lists, in any folders; inside one of them, the
-    /// project is that application, standing in its workspace.
+    /// A workspace's applications are the ones its `stateui-workspace.json` lists, in any folders; inside one of them,
+    /// the project is that application, standing in its workspace.
     func testAWorkspaceIsTheApplicationsItsFileLists() async throws {
         let root = try package([
-            "a/One/Package.swift": "", "a/One/Platforms/AppKit/main.swift": "",
-            "b/c/Two/Package.swift": "", "b/c/Two/Platforms/Android/build.gradle.kts": "",
-            "Unlisted/Package.swift": "", "Unlisted/Platforms/GTK/main.swift": "",
+            "a/One/Package.swift": "", "a/One/stateui.json": Self.mark, "a/One/Platforms/AppKit/Package.swift": "",
+            "b/c/Two/Package.swift": "", "b/c/Two/stateui.json": Self.mark,
+            "b/c/Two/Platforms/Android/Package.swift": "",
+            "Unlisted/Package.swift": "", "Unlisted/stateui.json": Self.mark, "Unlisted/Platforms/GTK/Package.swift": "",
         ])
-        try WorkspaceFile(projects: ["b/c/Two", "a/One"]).write(to: root.appendingPathComponent("stateui.json"))
+        try WorkspaceFile(projects: ["b/c/Two", "a/One"])
+            .write(to: root.appendingPathComponent("stateui-workspace.json"))
         let workspace = try XCTUnwrap(try Workspace.nearest(from: root.appendingPathComponent("b")))
         XCTAssertEqual(try workspace.applications().map(\.lastPathComponent), ["One", "Two"])
         XCTAssertEqual(ProjectReader.application(holding: root.appendingPathComponent("a/One/Platforms"))?.lastPathComponent, "One")
@@ -69,11 +77,12 @@ final class ProjectReaderTests: XCTestCase {
     /// A workspace file listing a folder that is no application, or saying what the tool does not read, is refused
     /// by what and where.
     func testAWorkspaceFileIsReadWhole() throws {
-        let root = try package(["notes/readme.txt": ""])
-        let file = root.appendingPathComponent("stateui.json")
+        let root = try package(["notes/Package.swift": "", "notes/Platforms/AppKit/Package.swift": ""])
+        let file = root.appendingPathComponent("stateui-workspace.json")
         try WorkspaceFile(projects: ["notes"]).write(to: file)
         XCTAssertThrowsError(try Workspace.nearest(from: root)?.applications()) {
             XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration)
+            XCTAssertTrue(($0 as? ToolingError)?.message.contains("stateui.json") == true)
         }
         try #"{"schemaVersion":1,"projects":[],"profiles":{}}"#.write(to: file, atomically: true, encoding: .utf8)
         XCTAssertThrowsError(try Workspace.nearest(from: root)) {
@@ -82,7 +91,12 @@ final class ProjectReaderTests: XCTestCase {
         }
         try #"{"schemaVersion":2,"projects":[]}"#.write(to: file, atomically: true, encoding: .utf8)
         XCTAssertThrowsError(try Workspace.nearest(from: root))
-        try WorkspaceFile(projects: ["notes"], startup: "elsewhere").write(to: file)
+        try #"{"schemaVersion":1,"projects":["notes"],"startup":"notes"}"#.write(to: file, atomically: true, encoding: .utf8)
+        XCTAssertThrowsError(try Workspace.nearest(from: root)) {
+            XCTAssertTrue(($0 as? ToolingError)?.message.contains("/startup") == true, "the workspace's file says no startup")
+        }
+        try WorkspaceFile(projects: ["notes"]).write(to: file)
+        try WorkspaceSettings(startup: "elsewhere").write(to: WorkspaceSettings.file(in: root))
         XCTAssertThrowsError(try Workspace.nearest(from: root)?.startup()) {
             XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration)
             XCTAssertTrue(($0 as? ToolingError)?.message.contains("elsewhere") == true)
@@ -91,7 +105,7 @@ final class ProjectReaderTests: XCTestCase {
 
     /// The file is written the same every time: keys and projects sorted, a line break at its end.
     func testAWorkspaceFileIsWrittenTheSameEveryTime() throws {
-        let file = try package(["x": ""]).appendingPathComponent("stateui.json")
+        let file = try package(["x": ""]).appendingPathComponent("stateui-workspace.json")
         try WorkspaceFile(library: .init(path: "StateUI"), projects: ["b", "a"]).write(to: file)
         XCTAssertEqual(
             try String(contentsOf: file, encoding: .utf8),
@@ -99,20 +113,52 @@ final class ProjectReaderTests: XCTestCase {
                 + "  \"schemaVersion\" : 1\n}\n")
     }
 
-    /// A host this tool inherited reaches no description: SwiftPM reads the package without one.
-    func testAnInheritedHostChangesNoDescription() async throws {
-        TestEnvironment.set("STATEUI_HOST", "appkit")
-        defer { TestEnvironment.set("STATEUI_HOST", nil) }
-        let project = try await ProjectReader().describe(containing: Self.repository.appendingPathComponent("apps/HelloWorld"))
-
-        XCTAssertEqual(project.applications.first?.products, ["HelloWorldUI"])
+    /// An application is a folder holding its `stateui.json`: a package with heads and none is no application, and
+    /// the folder holding the file is one wherever its heads are.
+    func testAnApplicationIsAFolderHoldingItsFile() throws {
+        let root = try package([
+            "Heads/Package.swift": "", "Heads/Platforms/AppKit/Package.swift": "",
+            "Marked/Package.swift": "", "Marked/stateui.json": Self.mark,
+        ])
+        XCTAssertNil(ProjectReader.application(holding: root.appendingPathComponent("Heads/Platforms")))
+        XCTAssertEqual(ProjectReader.application(holding: root.appendingPathComponent("Marked"))?.lastPathComponent, "Marked")
     }
 
-    /// The hosts a package has heads for: a `main.swift` in `Platforms/<Host>`, Android's Gradle build there.
+    /// An application's file is read whole and checked: what it does not say, a field it has no place for, and an
+    /// identifier, version or build some platform refuses are each refused by what and where.
+    func testAnApplicationFileIsReadWhole() throws {
+        let file = try package(["x": ""]).appendingPathComponent("stateui.json")
+        let refused = { (json: String, said: String) in
+            try json.write(to: file, atomically: true, encoding: .utf8)
+            XCTAssertThrowsError(try ApplicationFile.read(file), json) {
+                XCTAssertEqual(($0 as? ToolingError)?.code, .invalidConfiguration, json)
+                XCTAssertTrue(($0 as? ToolingError)?.message.contains(said) == true, "\($0)")
+            }
+        }
+        try refused(#"{"build":1,"identifier":"pl.example.notes","schemaVersion":1}"#, "version")
+        try refused(#"{"build":1,"identifier":"pl.example.notes","schemaVersion":1,"version":"1","title":"N"}"#, "/title")
+        try refused(#"{"build":1,"identifier":"notes","schemaVersion":1,"version":"1"}"#, "identifier")
+        try refused(#"{"build":1,"identifier":"pl.my-company.notes","schemaVersion":1,"version":"1"}"#, "identifier")
+        try refused(#"{"build":1,"identifier":"pl.example.2notes","schemaVersion":1,"version":"1"}"#, "identifier")
+        try refused(#"{"build":1,"identifier":"pl.example.notes","schemaVersion":1,"version":"1.0.0.0"}"#, "version")
+        try refused(#"{"build":1,"identifier":"pl.example.notes","schemaVersion":1,"version":"1.02"}"#, "version")
+        try refused(#"{"build":0,"identifier":"pl.example.notes","schemaVersion":1,"version":"1"}"#, "build")
+        try refused(#"{"build":1,"identifier":"pl.example.notes","name":" ","schemaVersion":1,"version":"1"}"#, "name")
+        try refused(#"{"build":1,"identifier":"pl.example.notes","schemaVersion":2,"version":"1"}"#, "schemaVersion")
+
+        try ApplicationFile(identifier: "pl.example.notes", version: "1.10.0", build: 7).write(to: file)
+        XCTAssertEqual(
+            try String(contentsOf: file, encoding: .utf8),
+            "{\n  \"build\" : 7,\n  \"identifier\" : \"pl.example.notes\",\n  \"schemaVersion\" : 1,\n"
+                + "  \"version\" : \"1.10.0\"\n}\n")
+        XCTAssertEqual(try ApplicationFile.read(file), ApplicationFile(identifier: "pl.example.notes", version: "1.10.0", build: 7))
+    }
+
+    /// The hosts a package has heads for: a package of its own in `Platforms/<Host>`.
     func testAPackagesHostsAreItsHeads() throws {
         let folder = try package([
-            "Package.swift": "", "Platforms/UIKit/main.swift": "", "Platforms/Android/build.gradle.kts": "",
-            "Platforms/GTK/notes.txt": "",
+            "Package.swift": "", "Platforms/UIKit/Package.swift": "", "Platforms/Android/Package.swift": "",
+            "Platforms/GTK/main.swift": "",
         ])
         XCTAssertEqual(ProjectReader.hosts(of: folder), [.uikit, .android])
     }
@@ -132,7 +178,7 @@ final class ProjectReaderTests: XCTestCase {
     func testAManifestSwiftPMCannotReadIsAToolFailure() async throws {
         let folder = try package([
             "Package.swift": "// swift-tools-version:6.4\nimport PackageDescription\nlet package = Package(nonsense)\n",
-            "Platforms/AppKit/main.swift": "",
+            "Platforms/AppKit/Package.swift": "", "stateui.json": Self.mark,
         ])
         do {
             _ = try await ProjectReader().describe(containing: folder)
@@ -145,7 +191,7 @@ final class ProjectReaderTests: XCTestCase {
 
     /// Swift that cannot be found is a missing toolchain, saying how to name it.
     func testSwiftThatCannotBeFoundIsAMissingToolchain() async throws {
-        let folder = try package(["Package.swift": "", "Platforms/AppKit/main.swift": ""])
+        let folder = try package(["Package.swift": "", "Platforms/AppKit/Package.swift": "", "stateui.json": Self.mark])
         let reader = ProjectReader(tools: ToolResolver(environment: ["SWIFT_BIN": "/no/such/swift"]))
         do {
             _ = try await reader.describe(containing: folder)

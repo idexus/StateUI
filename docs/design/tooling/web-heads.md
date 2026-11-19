@@ -11,6 +11,14 @@ never its Embedded `_wasm-embedded` sibling, which StateUI is not written
 for. The SDK names the build's context (builds.md); `stateui doctor --host
 web` says where to get one that is missing.
 
+A debug module keeps its DWARF, which the browser's debugger reads to stop
+on a line of Swift; a release module is linked without it (`-Xlinker
+--strip-debug`, HelloWorld's 14.5 MB rather than 23.7), as it is the page's
+first download. The tool passes that flag to a release build itself: a
+library's linker settings conditioned on a configuration reach a product in
+every configuration under SwiftPM's build system, so the head's manifest
+cannot say it.
+
 ## The page
 
 The artifact is the page, laid beside the module (`WebPage`): `index.html`

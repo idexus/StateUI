@@ -5,7 +5,7 @@
 // (tools/StateUI.CLI, StateUIToolingProtocol), written again here by hand and held to the tool's recorded examples
 // (tools/StateUI.CLI/exports/protocol) by the protocol tests.
 
-import { array, boolean, Decoder, DecodingError, json, number, object, oneOf, optional, string } from "./decoding";
+import { array, boolean, Decoder, DecodingError, dictionary, json, number, object, oneOf, optional, string } from "./decoding";
 
 export interface ToolIdentity { name: string; version: string }
 export const ToolIdentity = object<ToolIdentity>({ name: string, version: string });
@@ -15,9 +15,6 @@ export const APIVersionRange = object<APIVersionRange>({ major: number, minMinor
 
 export interface Machine { system: string; architecture: string }
 export const Machine = object<Machine>({ system: string, architecture: string });
-
-export interface ServerInfo { server: ToolIdentity; apiVersions: APIVersionRange[]; machine: Machine }
-export const ServerInfo = object<ServerInfo>({ server: ToolIdentity, apiVersions: array(APIVersionRange), machine: Machine });
 
 export interface InitializeParameters { apiVersions: APIVersionRange[]; client: ToolIdentity; workspaceUri: string }
 export const InitializeParameters = object<InitializeParameters>({
@@ -127,9 +124,31 @@ export const OperationEvent = object<OperationEvent>({
 export type HostFamily = "appkit" | "uikit" | "android" | "winui" | "gtk" | "web";
 export const HostFamily = oneOf<HostFamily>("appkit", "uikit", "android", "winui", "gtk", "web");
 
+export type Place = "machine" | "device" | "browser" | "guest" | "remote";
+export const Place = oneOf<Place>("machine", "device", "browser", "guest", "remote");
+
+export interface HostPlace { host: HostFamily; place: Place }
+export const HostPlace = object<HostPlace>({ host: HostFamily, place: Place });
+
+export interface ServerInfo {
+    server: ToolIdentity;
+    apiVersions: APIVersionRange[];
+    machine: Machine;
+    hosts: HostPlace[];
+    /** The folder another machine's projects are copied into for work on this one. */
+    workFolder: string;
+}
+export const ServerInfo = object<ServerInfo>({
+    server: ToolIdentity, apiVersions: array(APIVersionRange), machine: Machine, hosts: array(HostPlace), workFolder: string,
+});
+
 export interface Application {
     id: string;
     name: string;
+    identifier: string;
+    displayName: string;
+    version: string;
+    build: number;
     packageUri: string;
     declaredHosts: HostFamily[];
     products: string[];
@@ -137,8 +156,8 @@ export interface Application {
     libraryUri?: string;
 }
 export const Application = object<Application>({
-    id: string, name: string, packageUri: string, declaredHosts: array(HostFamily), products: array(string),
-    testSuites: array(string), libraryUri: optional(string),
+    id: string, name: string, identifier: string, displayName: string, version: string, build: number, packageUri: string,
+    declaredHosts: array(HostFamily), products: array(string), testSuites: array(string), libraryUri: optional(string),
 });
 
 export interface Library { rootUri: string; release?: string; revision?: string; dirty?: boolean }
@@ -157,8 +176,34 @@ export const Project = object<Project>({
 export interface ProjectReference { projectUri?: string }
 export const ProjectReference = object<ProjectReference>({ projectUri: optional(string) });
 
-export interface ApplicationRequest { name: string; parentUri: string; checkoutUri?: string }
-export const ApplicationRequest = object<ApplicationRequest>({ name: string, parentUri: string, checkoutUri: optional(string) });
+export interface ApplicationRequest {
+    name: string; identifier?: string; platforms?: HostFamily[]; parentUri: string; checkoutUri?: string;
+}
+export const ApplicationRequest = object<ApplicationRequest>({
+    name: string, identifier: optional(string), platforms: optional(array(HostFamily)), parentUri: string,
+    checkoutUri: optional(string),
+});
+
+export interface FileEntry { path: string; size: number; modified: number; executable?: boolean }
+export const FileEntry = object<FileEntry>({ path: string, size: number, modified: number, executable: optional(boolean) });
+export interface FolderSurveyRequest { root: string }
+export const FolderSurveyRequest = object<FolderSurveyRequest>({ root: string });
+export interface FolderSurvey { files: FileEntry[] }
+export const FolderSurvey = object<FolderSurvey>({ files: array(FileEntry) });
+export interface FilePiece { path: string; offset: number; size: number; modified: number; executable?: boolean; data: string }
+export const FilePiece = object<FilePiece>({
+    path: string, offset: number, size: number, modified: number, executable: optional(boolean), data: string,
+});
+export interface FilesWriteRequest { root: string; pieces: FilePiece[] }
+export const FilesWriteRequest = object<FilesWriteRequest>({ root: string, pieces: array(FilePiece) });
+export interface FilesWritten { completed: number }
+export const FilesWritten = object<FilesWritten>({ completed: number });
+export interface FileReadRequest { root: string; path: string; offset: number; length: number }
+export const FileReadRequest = object<FileReadRequest>({ root: string, path: string, offset: number, length: number });
+export interface FilesRemoveRequest { root: string; paths: string[] }
+export const FilesRemoveRequest = object<FilesRemoveRequest>({ root: string, paths: array(string) });
+export interface FilesRemoved { removed: number }
+export const FilesRemoved = object<FilesRemoved>({ removed: number });
 
 export type Architecture = "arm64" | "x86_64" | "armv7" | "x86" | "wasm32";
 export const Architecture = oneOf<Architecture>("arm64", "x86_64", "armv7", "x86", "wasm32");
@@ -166,8 +211,8 @@ export const Architecture = oneOf<Architecture>("arm64", "x86_64", "armv7", "x86
 export type BuildConfiguration = "debug" | "release";
 export const BuildConfiguration = oneOf<BuildConfiguration>("debug", "release");
 
-export type DestinationKind = "device" | "simulator" | "emulator" | "browser";
-export const DestinationKind = oneOf<DestinationKind>("device", "simulator", "emulator", "browser");
+export type DestinationKind = "machine" | "device" | "simulator" | "emulator" | "browser" | "guest" | "remote";
+export const DestinationKind = oneOf<DestinationKind>("machine", "device", "simulator", "emulator", "browser", "guest", "remote");
 
 export interface Destination {
     id: string;
@@ -178,11 +223,16 @@ export interface Destination {
     booted: boolean;
     connection?: string;
     architecture?: Architecture;
+    emulated: Architecture[];
+    debugger: boolean;
     programUri?: string;
+    /** The machine paired with the project it stands on; nothing for this machine's own. */
+    machine?: string;
 }
 export const Destination = object<Destination>({
     id: string, udid: string, name: string, kind: DestinationKind, version: string, booted: boolean,
-    connection: optional(string), architecture: optional(Architecture), programUri: optional(string),
+    connection: optional(string), architecture: optional(Architecture), emulated: array(Architecture), debugger: boolean,
+    programUri: optional(string), machine: optional(string),
 });
 
 export interface DestinationQuery { host: HostFamily }
@@ -194,15 +244,17 @@ export const DestinationList = object<DestinationList>({ host: HostFamily, desti
 export interface BuildRequest {
     projectUri?: string;
     application?: string;
-    host: HostFamily;
+    host?: HostFamily;
     configuration?: BuildConfiguration;
     architecture?: Architecture;
     device?: string;
+    /** The machine paired with the project whose device `device` names, which works the head. */
+    machine?: string;
     outputUri?: string;
 }
 export const BuildRequest = object<BuildRequest>({
-    projectUri: optional(string), application: optional(string), host: HostFamily, configuration: optional(BuildConfiguration),
-    architecture: optional(Architecture), device: optional(string), outputUri: optional(string),
+    projectUri: optional(string), application: optional(string), host: optional(HostFamily), configuration: optional(BuildConfiguration),
+    architecture: optional(Architecture), device: optional(string), machine: optional(string), outputUri: optional(string),
 });
 
 export interface BuildResult {
@@ -223,13 +275,40 @@ export const BuildResult = object<BuildResult>({
     symbolsUri: optional(string),
 });
 
-export interface RunRequest { build: BuildRequest; debugger: boolean; port?: number; lan?: boolean }
-export const RunRequest = object<RunRequest>({ build: BuildRequest, debugger: boolean, port: optional(number), lan: optional(boolean) });
-
-export interface LaunchedApplication { build: BuildResult; process?: number; held: boolean; debuggerSocket?: string; url?: string }
-export const LaunchedApplication = object<LaunchedApplication>({
-    build: BuildResult, process: optional(number), held: boolean, debuggerSocket: optional(string), url: optional(string),
+export interface RunRequest { build: BuildRequest; debugger: boolean; gdb?: boolean; port?: number; lan?: boolean }
+export const RunRequest = object<RunRequest>({
+    build: BuildRequest, debugger: boolean, gdb: optional(boolean), port: optional(number), lan: optional(boolean),
 });
+
+export type DebugKind = "lldb" | "browser";
+export type DebugRequest = "launch" | "attach";
+export interface DebugDescriptor {
+    kind: DebugKind;
+    request: DebugRequest;
+    programUri?: string;
+    workingUri?: string;
+    process?: number;
+    initCommands: string[];
+    attachCommands: string[];
+    terminateCommands: string[];
+    url?: string;
+    sourceUri?: string;
+    /** The port of this machine's loopback an lldb-dap already listens on, reached through the tool's relay. */
+    adapterPort?: number;
+}
+export const DebugDescriptor = object<DebugDescriptor>({
+    kind: oneOf<DebugKind>("lldb", "browser"), request: oneOf<DebugRequest>("launch", "attach"), programUri: optional(string),
+    workingUri: optional(string), process: optional(number), initCommands: array(string), attachCommands: array(string),
+    terminateCommands: array(string), url: optional(string), sourceUri: optional(string), adapterPort: optional(number),
+});
+
+export interface LaunchedApplication { build: BuildResult; process?: number; held: boolean; debugger?: DebugDescriptor; url?: string }
+export const LaunchedApplication = object<LaunchedApplication>({
+    build: BuildResult, process: optional(number), held: boolean, debugger: optional(DebugDescriptor), url: optional(string),
+});
+
+export interface PreparedApplication { build: BuildResult; debugger: DebugDescriptor }
+export const PreparedApplication = object<PreparedApplication>({ build: BuildResult, debugger: DebugDescriptor });
 
 export interface RunResult { launched: LaunchedApplication; exitStatus?: number }
 export const RunResult = object<RunResult>({ launched: LaunchedApplication, exitStatus: optional(number) });
@@ -259,11 +338,15 @@ export interface ToolFinding {
     found?: string;
     tooOld?: string;
     advice: string;
+    machine?: string;
 }
 export const ToolFinding = object<ToolFinding>({
     component: string, neededBy: string, hosts: array(HostFamily), found: optional(string), tooOld: optional(string),
-    advice: string,
+    advice: string, machine: optional(string),
 });
+
+export interface ToolchainQuery { host?: HostFamily; device?: string; projectUri?: string }
+export const ToolchainQuery = object<ToolchainQuery>({ host: optional(HostFamily), device: optional(string), projectUri: optional(string) });
 
 export interface ToolchainReport { findings: ToolFinding[] }
 export const ToolchainReport = object<ToolchainReport>({ findings: array(ToolFinding) });
@@ -287,10 +370,32 @@ export const WorkspaceRequest = object<WorkspaceRequest>({
     repository: optional(string), application: optional(string),
 });
 
-export interface LibraryRequest { workspaceUri?: string; checkoutUri?: string; release?: string; repository?: string }
+export interface LibraryRequest { projectUri?: string; checkoutUri?: string; release?: string; repository?: string }
 export const LibraryRequest = object<LibraryRequest>({
-    workspaceUri: optional(string), checkoutUri: optional(string), release: optional(string), repository: optional(string),
+    projectUri: optional(string), checkoutUri: optional(string), release: optional(string), repository: optional(string),
 });
+
+export interface SettingsRequest { projectUri?: string; application?: string }
+export const SettingsRequest = object<SettingsRequest>({ projectUri: optional(string), application: optional(string) });
+
+export interface SettingsChange {
+    projectUri?: string; application?: string; startup?: string; host?: HostFamily; devices?: Record<string, string>;
+}
+export const SettingsChange = object<SettingsChange>({
+    projectUri: optional(string), application: optional(string), startup: optional(string), host: optional(HostFamily),
+    devices: optional(dictionary(string)),
+});
+
+export interface Settings {
+    workspaceUri?: string; startup?: string; applicationUri?: string; host?: HostFamily; devices: Record<string, string>;
+}
+export const Settings = object<Settings>({
+    workspaceUri: optional(string), startup: optional(string), applicationUri: optional(string), host: optional(HostFamily),
+    devices: dictionary(string),
+});
+
+export interface LibraryChange { projectUri: string; library: string; changedUris: string[] }
+export const LibraryChange = object<LibraryChange>({ projectUri: string, library: string, changedUris: array(string) });
 
 export interface WorkspaceChange { workspaceUri: string; library: string; changedUris: string[] }
 export const WorkspaceChange = object<WorkspaceChange>({ workspaceUri: string, library: string, changedUris: array(string) });
@@ -308,6 +413,7 @@ export const IndexQuery = object<IndexQuery>({ host: optional(HostFamily), rootU
 
 export interface IndexContext {
     host?: HostFamily;
+    trait?: string;
     scratchPath: string;
     triple?: string;
     sdk?: string;
@@ -315,8 +421,8 @@ export interface IndexContext {
     fallback?: string;
 }
 export const IndexContext = object<IndexContext>({
-    host: optional(HostFamily), scratchPath: string, triple: optional(string), sdk: optional(string), swiftSDK: optional(string),
-    fallback: optional(string),
+    host: optional(HostFamily), trait: optional(string), scratchPath: string, triple: optional(string), sdk: optional(string),
+    swiftSDK: optional(string), fallback: optional(string),
 });
 
 export interface IndexConflict { rootUri: string; host?: HostFamily }
@@ -348,9 +454,9 @@ export const TestSuiteDescription = object<TestSuiteDescription>({
 export interface TestSuiteList { host?: HostFamily; suites: TestSuiteDescription[] }
 export const TestSuiteList = object<TestSuiteList>({ host: optional(HostFamily), suites: array(TestSuiteDescription) });
 
-export interface TestRunRequest { suite: string; host?: HostFamily; device?: string; folderUri?: string }
+export interface TestRunRequest { suite: string; host?: HostFamily; device?: string; folderUri?: string; filter?: string }
 export const TestRunRequest = object<TestRunRequest>({
-    suite: string, host: optional(HostFamily), device: optional(string), folderUri: optional(string),
+    suite: string, host: optional(HostFamily), device: optional(string), folderUri: optional(string), filter: optional(string),
 });
 
 export interface SuitePhase { name: string; passed: boolean }
@@ -375,9 +481,19 @@ export const ConformanceSelection: Decoder<ConformanceSelection> = (value, path)
     throw new DecodingError(path, "a selection is changed, families or all");
 };
 
-export interface ConformanceRequest { host: HostFamily; selection: ConformanceSelection; record: boolean; device?: string }
+export interface ConformanceRequest {
+    host: HostFamily; selection: ConformanceSelection; record: boolean; device?: string; folderUri?: string;
+}
 export const ConformanceRequest = object<ConformanceRequest>({
-    host: HostFamily, selection: ConformanceSelection, record: boolean, device: optional(string),
+    host: HostFamily, selection: ConformanceSelection, record: boolean, device: optional(string), folderUri: optional(string),
+});
+
+export type PlanKind = "portable" | "native";
+export const PlanKind = oneOf<PlanKind>("portable", "native");
+
+export interface PlanRequest { kind: PlanKind; only?: string; device?: string; folderUri?: string }
+export const PlanRequest = object<PlanRequest>({
+    kind: PlanKind, only: optional(string), device: optional(string), folderUri: optional(string),
 });
 
 export type Editor = "vscode";
@@ -396,7 +512,8 @@ export const IntegrationInstallRequest = object<IntegrationInstallRequest>({ edi
 export const methods = {
     "server/info": query(NoParameters, ServerInfo),
     "project/describe": query(ProjectReference, Project),
-    "toolchain/check": query(NoParameters, ToolchainReport),
+    "settings/get": query(SettingsRequest, Settings),
+    "toolchain/check": query(ToolchainQuery, ToolchainReport),
     "name/check": query(NameCheck, NameVerdict),
     "devices/list": query(DestinationQuery, DestinationList),
     "index/describe": query(IndexQuery, IndexContext),
@@ -408,13 +525,20 @@ export const methods = {
     "operation/cancel": query(OperationReference, CancelResult),
     "project/create": mutation(ApplicationRequest, ProjectCreation),
     "application/build": mutation(BuildRequest, BuildResult),
+    "application/prepare": mutation(BuildRequest, PreparedApplication),
+    "folder/survey": query(FolderSurveyRequest, FolderSurvey),
+    "files/write": query(FilesWriteRequest, FilesWritten),
+    "file/read": query(FileReadRequest, FilePiece),
+    "files/remove": query(FilesRemoveRequest, FilesRemoved),
     "application/package": mutation(BuildRequest, BuildResult),
     "application/run": mutation(RunRequest, RunResult),
     "application/install": mutation(InstallRequest, InstallResult),
     "workspace/create": mutation(WorkspaceRequest, WorkspaceChange),
-    "workspace/useLibrary": mutation(LibraryRequest, WorkspaceChange),
+    "project/useLibrary": mutation(LibraryRequest, LibraryChange),
+    "settings/set": mutation(SettingsChange, Settings),
     "tests/run": mutation(TestRunRequest, SuiteResult),
     "repository/conformance": mutation(ConformanceRequest, SuiteResult),
+    "repository/plan": mutation(PlanRequest, SuiteResult),
     "repository/integrationPackage": mutation(IntegrationPackageRequest, EditorExtension),
     "repository/integrationInstall": mutation(IntegrationInstallRequest, EditorExtension),
 };

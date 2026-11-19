@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The test APK: the host's tests, its Java layer, and the instrumentation that
-// runs them. The stateui tool names every path below.
+// runs them. The stateui tool names every path below, and its id, name, version
+// and build: the suite's own.
 
 plugins {
     id("com.android.application") version "9.2.1"
@@ -19,11 +20,12 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.stateui.androidtests"
+        applicationId = stated("stateui.identifier")
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.8.5"
+        versionCode = stated("stateui.versionCode").toInt()
+        versionName = stated("stateui.version")
+        manifestPlaceholders["stateuiName"] = stated("stateui.name")
     }
 
     sourceSets {

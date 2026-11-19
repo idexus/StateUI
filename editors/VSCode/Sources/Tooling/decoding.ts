@@ -54,6 +54,18 @@ export function array<T>(item: Decoder<T>): Decoder<T[]> {
 }
 
 /** A field left out; `null` is no value of it - the tool leaves an absent field out. */
+/** An object of `value`s by their names. */
+export function dictionary<T>(value: Decoder<T>): Decoder<Record<string, T>> {
+    return (input, path) => {
+        expect(typeof input === "object" && input !== null && !Array.isArray(input), path, "not an object");
+        const read: Record<string, T> = {};
+        for (const [key, each] of Object.entries(input as Record<string, unknown>)) {
+            read[key] = value(each, `${path}/${key}`);
+        }
+        return read;
+    };
+}
+
 export function optional<T>(decoder: Decoder<T>): Decoder<T | undefined> {
     return (value, path) => value === undefined ? undefined : decoder(value, path);
 }

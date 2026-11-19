@@ -14,22 +14,20 @@ final class GTKHeadTests: XCTestCase {
         return folder
     }
 
-    /// An application laid out as StateUI's are: its GTK head naming its ID, its pictures, its icon and link schemes.
+    /// An application laid out as StateUI's are: its GTK head, its pictures, its icon and link schemes.
     private func application(in root: URL) throws -> URL {
         let application = root.appendingPathComponent("Notes")
         for folder in ["Platforms/GTK", "Resources/Images", "Resources/AppIcon"] {
             try FileManager.default.createDirectory(at: application.appendingPathComponent(folder), withIntermediateDirectories: true)
         }
-        try "GTKHost.run(applicationID: \"com.stateui.notes\")\n".write(
-            to: application.appendingPathComponent("Platforms/GTK/main.swift"), atomically: true, encoding: .utf8)
+        try "GTKHost.run()\n".write(to: application.appendingPathComponent("Platforms/GTK/main.swift"), atomically: true, encoding: .utf8)
         try "notes\n\nstateui-notes\n".write(to: application.appendingPathComponent("Platforms/GTK/link-schemes"), atomically: true, encoding: .utf8)
         try "<svg/>".write(to: application.appendingPathComponent("Resources/Images/mark.svg"), atomically: true, encoding: .utf8)
         try "<svg/>".write(to: application.appendingPathComponent("Resources/AppIcon/appicon_gnome.svg"), atomically: true, encoding: .utf8)
         return application
     }
 
-    /// The head is the program, every library beside it and the pictures as they are; it is known by the ID its head
-    /// runs as.
+    /// The head is the program, every library beside it and the pictures as they are.
     func testTheHeadIsItsProgramLibrariesAndPictures() throws {
         let root = try folder()
         let application = try application(in: root)
@@ -45,8 +43,6 @@ final class GTKHeadTests: XCTestCase {
 
         XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: staging.path).sorted(),
                        ["Images", "NotesGTK", "libStateUI.so", "libStateUIGTK.so"])
-        XCTAssertEqual(GTKHead.applicationID(of: application), "com.stateui.notes")
-        XCTAssertNil(GTKHead.applicationID(of: root))
     }
 
     /// The desktop entry starts the program with the links it opens, shows the icon by the ID and matches the
@@ -112,7 +108,29 @@ final class GTKHeadTests: XCTestCase {
         let arm = GTKHead.gdbCommands(for: .arm64)
         XCTAssertTrue(arm.contains("break g_return_if_fail_warning"))
         XCTAssertTrue(arm.contains("(char *)$x1, (char *)$x2"))
-        XCTAssertTrue(arm.contains("continue\nend\nrun\nprintf \"=== STOPPED\\n\""))
+        XCTAssertTrue(arm.contains("continue\nend\nrun\n"))
         XCTAssertTrue(GTKHead.gdbCommands(for: .x86_64).contains("(char *)$rsi, (char *)$rdx"))
+    }
+
+    /// Under gdb a program that ends by itself ends the run with its own status and says no stop; one a signal
+    /// stops says its stack and ends the run as that signal would.
+    func testGdbEndsTheRunAsTheProgramEnds() async throws {
+        guard FileManager.default.isExecutableFile(atPath: "/usr/bin/gdb") else { throw XCTSkip("No gdb on this machine.") }
+        let commands = FileManager.default.temporaryDirectory.appendingPathComponent("gdb-\(UUID().uuidString).cmd")
+        defer { try? FileManager.default.removeItem(at: commands) }
+        #if arch(x86_64)
+        try Data(GTKHead.gdbCommands(for: .x86_64).utf8).write(to: commands)
+        #else
+        try Data(GTKHead.gdbCommands(for: .arm64).utf8).write(to: commands)
+        #endif
+        for (script, status, stops) in [("exit 3", Int32(3), false), ("exit 0", 0, false), ("kill -SEGV $$", 139, true)] {
+            let said = Gathered()
+            let outcome = try await ProcessRunner().run(
+                ProcessRequest(.path("/usr/bin/gdb"), arguments: ["-batch", "-x", commands.path, "--args", "/bin/sh", "-c", script]),
+                output: said.add)
+            let words = said.lines(of: .standardOutput) + said.lines(of: .standardError)
+            XCTAssertEqual(outcome.exitStatus, status, "\(script): \(words.suffix(4))")
+            XCTAssertEqual(words.contains("=== STOPPED"), stops, script)
+        }
     }
 }

@@ -11,6 +11,9 @@ import Synchronization
 /// simulator's triple and SDK.
 /// Design: docs/design/tooling/repository.md#the-uikit-hosts-suite
 struct UIKitSuite {
+    /// What the tests' application is - no application's `stateui.json`, the suite's own - at StateUI's release.
+    static let identity = ApplicationFile(identifier: "com.stateui.uikit.tests", version: Release.version, build: 1)
+
     let checkout: URL
     let tools: ToolResolver
     /// Whether the API phase writes its records rather than holds them.
@@ -49,17 +52,15 @@ struct UIKitSuite {
         let built = try await ProcessRunner().run(
             ProcessRequest(tools.swift, arguments: ["build", "--product", product] + common, environment: environment), output: reporter.output)
         try Task.checkCancellation()
-        guard built.succeeded,
-              let binaries = (await ToolOutput.text(tools.swift, ["build", "--show-bin-path"] + common, environment: environment))?
-                .split(separator: "\n").last.map({ URL(fileURLWithPath: String($0).trimmingCharacters(in: .whitespaces)) })
-        else { return [SuiteResult.Phase(name: "tests", passed: false)] }
+        guard built.succeeded else { return [SuiteResult.Phase(name: "tests", passed: false)] }
+        let binaries = try await ProductFolder.of(tools.swift, placing: common, environment: environment)
 
         let work = context.scratch.appendingPathComponent("stateui")
         let staging = work.appendingPathComponent("suite")
         try? FileManager.default.removeItem(at: staging)
         try FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true)
         let bundle = try await UIKitBundle(
-            application: package, name: product, product: product, binaries: binaries, release: Release.version,
+            application: package, name: product, product: product, binaries: binaries, identity: Self.identity,
             minimumSystem: Doctor.appleFloor, platform: .iOSSimulator, work: work).assemble(in: staging, signing: .adHoc)
 
         // The suite stands as a screen reader does: UIKit's accessibility answers for its controls as for a VoiceOver
@@ -74,8 +75,9 @@ struct UIKitSuite {
 
         let summary = Summary()
         let launch = SimulatorLaunch(
-            simulator: simulator, bundle: bundle, identifier: UIKitBundle.identifier(of: package, name: product),
-            logs: work.appendingPathComponent("logs"), environment: Self.launched(filter: filter, environment: environment))
+            simulator: simulator, bundle: bundle, identifier: Self.identity.identifier,
+            logs: work.appendingPathComponent("logs"),
+            environment: HandedEnvironment(of: Self.launched(filter: filter, environment: environment)))
         let suite = BuildResult(
             application: product, host: .uikit, configuration: .debug, architecture: architecture,
             folderUri: FileURI.string(staging), programUri: FileURI.string(bundle.appendingPathComponent(product)),

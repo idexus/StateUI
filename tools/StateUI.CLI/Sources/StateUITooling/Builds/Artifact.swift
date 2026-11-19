@@ -30,7 +30,7 @@ public struct ArtifactManifest: Codable, Equatable, Sendable {
     /// The programs it starts by, relative to its folder: `GalleryAppKit.app/Contents/MacOS/GalleryAppKit`.
     public var entryPoints: [String]
     public var signing: Signing
-    /// The application's name: `Gallery`.
+    /// The name the application is shown by: `StateUI Gallery`.
     public var applicationName: String?
     /// What the platform knows the application by: a bundle's identifier, an APK's package, a GTK application ID.
     public var identifier: String?

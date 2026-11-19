@@ -6,7 +6,7 @@ import StateUIToolingProtocol
 
 /// The options every command writing a result takes.
 struct OutputOptions: ParsableArguments {
-    @Option(help: "How the result is written: text, json or jsonl.")
+    @Option(help: "How the result is written: text; json, its envelope; jsonl, the envelope on one line. An operation's events are the protocol's, through `stateui serve`.")
     var format: OutputFormat = .text
 
     /// Writes what `work` answers, or the tooling error it fails with and the status that error ends with.

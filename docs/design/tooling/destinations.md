@@ -1,8 +1,47 @@
 # Destinations
 
 A destination is where a head runs. An AppKit, WinUI or GTK head runs on the
-machine that built it; a UIKit head runs on an iPhone or iPad simulator, or
-on a real iPhone or iPad paired with the Mac.
+machine that built it - from a Mac a GTK or WinUI head in a virtual machine
+of its system ([Guests](guests.md)); a UIKit head runs on an iPhone or iPad
+simulator, or on a real iPhone or iPad paired with the Mac.
+
+## Where a host's heads run
+
+The tool says which hosts a machine builds, and where each one's heads run
+(`HostPlaces`), in one list every client reads - `server/info`'s `hosts`, which
+`stateui version` prints - so an editor, a generated project and the terminal
+are told the same and none keeps a table of its own: on a Mac AppKit on the
+machine itself, UIKit and Android on a device, WinUI and GTK in a guest, the
+Web in a browser; on Linux GTK on the machine and the Web in a browser; on
+Windows WinUI on the machine. `devices/list` answers by that place, and whether
+a host's work goes to a guest is read from it.
+
+A machine paired with the project ([Pairing](service.md#pairing)) adds the
+hosts whose heads run there as its own programs - AppKit on a Mac, WinUI on
+Windows, GTK on Linux - as its service said them: a host this machine builds
+not stands in `hosts` at `remote`, and `devices/list` lists each such machine
+after the destinations of the host's own place (`remote`), a guest paired
+listed once, as a guest. Its devices, browsers and guests are reached on that
+machine itself. `server/info` says the folder another machine's projects are
+copied into there (`workFolder`).
+
+A machine paired that runs a host on its devices or in its browsers - a Mac's
+iPhones, iPads and simulators, its Android devices, its browsers - offers
+them too: the host stands at `remote` where this machine builds none of it,
+and `devices/list` asks each such machine for its own list through its
+service, within fifteen seconds, each destination named by its `machine`; one
+that answers not lists none. A request names such a device by `machine` and
+`device` together (`--machine studio --device "iPhone 18 Pro"`): the machine
+builds and runs the head on its device, the device chosen here never handed
+to it - where none is named, the machine picks its own. A `machine` that is
+no machine paired with the project running the host on its devices is
+refused before anything is built: the work never falls back to this one.
+
+Each destination says what a client needs to offer it: whether a debugger
+reaches an application run there (`debugger`) - not in a guest, nor in a
+browser not of Chromium's, whose pages no debugger follows - and the
+architectures it runs emulated beside its own (`emulated`), which a head can
+be built for too: x86_64 on an ARM64 Windows, a machine or a guest.
 
 ## Listing them
 
@@ -15,7 +54,8 @@ newer, the newest runtime first and each runtime's in its own order, each
 saying whether it is booted. A destination is known by `id` - a device's
 `devicectl` identifier, a simulator's UDID - and keeps the hardware's UDID
 apart, the one a development profile provisions. A host whose heads run on
-the machine itself has no destinations, and asking for them is refused.
+the machine itself has one destination, the machine (`machine`), with its
+architecture; a host the machine builds no heads of is refused.
 
 ## Android
 
@@ -40,7 +80,12 @@ bundle id; on Linux every desktop entry taking `x-scheme-handler/https` and
 `text/html` and shown on the desktop running - `NoDisplay`, `Hidden`,
 `OnlyShowIn` and `NotShowIn` read as the desktop does - by its file's name.
 The system's own is marked, and each names its program (`programUri`): the
-bundle's executable, the entry's `Exec` past `env` and its variables. A run
+bundle's executable, the entry's `Exec` past `env` and its variables. A
+browser of Chromium's - Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Arc,
+told by its id - with its program found is one a debugger follows, and so is
+Safari where its WebAssembly debugger stands: Safari 27 lays the program
+LLDB's `webinspector-wasm` platform starts
+(`/System/Cryptexes/App/usr/libexec/webinspector-wasm-lldb-platform`). A run
 opens the page in the one it names, the system's own where it names none, and
 no browser for `none` - the page left to a debugger, which starts a browser's
 program on it.

@@ -12,6 +12,17 @@ struct DeviceLaunch {
     var device: Destination
     var bundle: URL
     var identifier: String
+    /// What the run hands the application of the tool's environment.
+    var environment: HandedEnvironment
+
+    /// `devicectl`'s words handing the application `environment`, a JSON object of its variables; none where it is
+    /// empty.
+    static func handing(_ environment: HandedEnvironment) -> [String] {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+        guard !environment.variables.isEmpty, let json = try? encoder.encode(environment.variables) else { return [] }
+        return ["--environment-variables", String(decoding: json, as: UTF8.self)]
+    }
 
     func run(_ built: BuildResult, held: Bool, reporter: RunReporter) async throws -> RunResult {
         reporter.build.progress("installing on \(device.name)")
@@ -22,7 +33,7 @@ struct DeviceLaunch {
             defer { launching.finish() }
             return try await ProcessRunner().run(
                 ProcessRequest(.name("xcrun"), arguments: ["devicectl", "device", "process", "launch", "--console", "--terminate-existing"]
-                    + (held ? ["--start-stopped"] : []) + ["--device", device.id, identifier]),
+                    + (held ? ["--start-stopped"] : []) + Self.handing(environment) + ["--device", device.id, identifier]),
                 output: { line in
                     if line.text.hasPrefix("Launched application") { launching.yield() }
                     reporter.output(line)
@@ -45,7 +56,10 @@ struct DeviceLaunch {
                 guard process != nil || !held else {
                     throw ToolingError(.toolFailed, "\(identifier) started on \(device.name), but devicectl does not list its process.")
                 }
-                reporter.started(LaunchedApplication(build: built, process: process, held: held))
+                let bundle = try built.bundleUri.map(FileURI.url)
+                reporter.started(LaunchedApplication(
+                    build: built, process: process, held: held,
+                    debugger: held ? process.map { DebugDescriptors.device(device.id, process: $0, bundle: bundle) } : nil))
                 _ = try await console.value
                 try Task.checkCancellation()
             } onCancel: {

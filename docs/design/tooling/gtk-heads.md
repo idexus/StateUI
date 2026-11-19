@@ -8,9 +8,11 @@ architecture, beside the libraries it links.
 `stateui build --host gtk` publishes the program, every library SwiftPM laid
 beside it - which the program finds there - and the application's
 `Resources/Images` as they are, since GTK draws SVG (`GTKHead`). The program
-runs from the artifact; its Swift runtime is the toolchain's. The head's
-application ID is read from `Platforms/GTK/main.swift`
-(`GTKHost.run(applicationID:)`) and stands in the artifact's manifest.
+runs from the artifact; its Swift runtime is the toolchain's. Beside it
+stands the application's `stateui.json` (projects.md, A head carries what the
+application is), whose identifier is the application ID the desktop entry and
+icon are named by, and stands in the artifact's manifest; its name is the
+entry's.
 `stateui package --host gtk` lays the artifact's files in
 `artifacts/<Name>/GTK`, made anew.
 
@@ -33,5 +35,19 @@ takes a published artifact as it stands.
 
 `stateui run --host gtk` builds, installs, stops a copy of the program still
 running - a GTK application is one instance, and a second start would only
-bring the first forward - and runs it in the foreground, sharing the
-terminal; Ctrl+C ends it.
+bring the first forward - and runs it, its output told as it comes; Ctrl+C
+ends it. With `--device` naming a guest or a machine paired, all of it happens
+there, the output told here.
+
+With `--gdb` (`RunRequest.gdb`) it runs under gdb. A breakpoint on
+`g_return_if_fail_warning` says each GTK critical - its domain and
+expression read from the architecture's argument registers - with its stack,
+and the program goes on; a signal that stops it says its stack and every
+thread's. gdb ends as the program does: one that ends by itself with its own
+status and no stop said, one a signal stopped as that signal would, 128 and
+its number - so the run fails on a crash and only on one, on another machine
+as here (`application/run`'s `debugger`). gdb 17 says of every Clang module a Swift
+library's debug information names - read as split DWARF, which it is not -
+`During symbol reading: Could not find DWO CU ….pcm(…)`, some two thousand
+lines a start that no setting of its own quiets (`complaints`, its worker
+threads): the run leaves those lines out, and every other gdb word stays.

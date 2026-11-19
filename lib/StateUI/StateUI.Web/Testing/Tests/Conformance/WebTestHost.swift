@@ -45,7 +45,8 @@ extension WebRenderer {
         if !keeping { forgetWhatIsKept() }
         Renderer.shared.setApplication(application())
         let renderer = WebRenderer(
-            applicationName: "Conformance", clock: clock.map { clock in { clock.now } },
+            application: HostApplicationInfo(name: "Conformance", packageName: "", version: "", build: ""),
+            clock: clock.map { clock in { clock.now } },
             reducesMotion: { reducesMotion })
         renderer.run()
         renderer.step()

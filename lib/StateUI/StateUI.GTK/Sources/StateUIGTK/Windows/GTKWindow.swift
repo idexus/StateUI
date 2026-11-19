@@ -77,11 +77,12 @@ final class GTKWindow {
         typing.pointee?.assumingMemoryBound(to: GtkWidget.self)
     }
 
-    /// Keeps the widget the window's focus moved to, where the user types into it.
+    /// Keeps the widget the window's focus moved to, where the user types into it, its input method bound first.
     func noteTyping() {
         guard let focus = gtk_root_get_focus(widget.opaque), GTKKeys.types(into: focus),
               UnsafeMutableRawPointer(focus) != typing.pointee
         else { return }
+        GTKInputMethod.bind(for: focus)
         forgetTyping()
         typing.pointee = UnsafeMutableRawPointer(focus)
         g_object_add_weak_pointer(focus.of(GObject.self), typing)

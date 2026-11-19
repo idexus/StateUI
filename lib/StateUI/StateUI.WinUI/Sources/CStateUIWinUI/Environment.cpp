@@ -9,6 +9,8 @@
 #include "Relay.h"
 
 #include <cstring>
+#include <fstream>
+#include <iterator>
 #include <optional>
 #include <string>
 
@@ -57,13 +59,17 @@ namespace {
               << (product.find("Virtual") != std::string::npos);
     }
 
+    // The program's name, and the `stateui.json` its head carries beside it - empty where none stands there.
     void application(Facts &facts) {
         wchar_t path[MAX_PATH] = {};
         GetModuleFileNameW(nullptr, path, MAX_PATH);
-        std::wstring name(path);
-        name = name.substr(name.find_last_of(L"\\/") + 1);
+        std::wstring program(path);
+        auto folder = program.substr(0, program.find_last_of(L"\\/") + 1);
+        auto name = program.substr(folder.size());
         name = name.substr(0, name.find_last_of(L'.'));
-        facts << winrt::to_string(name) << std::string() << std::string() << std::string();
+        std::ifstream file(folder + L"stateui.json", std::ios::binary);
+        std::string carried(std::istreambuf_iterator<char>(file), {});
+        facts << winrt::to_string(name) << carried;
     }
 
     void locale(Facts &facts) {

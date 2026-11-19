@@ -53,7 +53,12 @@ final class ProtocolExamplesTests: XCTestCase {
             capabilities: ServerCapabilities(
                 methods: ToolingService().methods.names, notifications: ToolingService().methods.notifications),
             limits: .current)
-        let info = ServerInfo(server: tool, apiVersions: Release.apiVersions, machine: Machine(system: "macos", architecture: "arm64"))
+        let info = ServerInfo(
+            server: tool, apiVersions: Release.apiVersions, machine: Machine(system: "macos", architecture: "arm64"),
+            hosts: [HostPlace(host: .appkit, place: .machine), HostPlace(host: .uikit, place: .device),
+                    HostPlace(host: .android, place: .device), HostPlace(host: .winui, place: .guest),
+                    HostPlace(host: .gtk, place: .guest), HostPlace(host: .web, place: .browser)],
+            workFolder: "/Users/example/stateui-guest")
         let demo = "file:///Users/example/Projects/Demo"
         let operation = "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69"
         var finished = OperationSnapshot(
@@ -66,17 +71,21 @@ final class ProtocolExamplesTests: XCTestCase {
         let project = Project(
             rootUri: demo,
             applications: [Application(
-                id: "apps/Notes", name: "Notes", packageUri: demo + "/apps/Notes", declaredHosts: [.appkit, .uikit],
+                id: "apps/Notes", name: "Notes", identifier: "com.example.notes", displayName: "Notes", version: "1.0.0", build: 1,
+                packageUri: demo + "/apps/Notes", declaredHosts: [.appkit, .uikit],
                 products: ["NotesUI"], testSuites: ["NotesTests"], libraryUri: demo + "/StateUI")],
             libraries: [Library(
                 rootUri: demo + "/StateUI", release: "1.0.0", revision: "0123456789abcdef0123456789abcdef01234567",
                 dirty: false)])
-        let creation = ProjectCreation(project: project, createdUris: [demo + "/apps/Notes", demo + "/stateui.json"])
+        let creation = ProjectCreation(
+            project: project, createdUris: [demo + "/apps/Notes", demo + "/stateui-workspace.json"])
         finished.result = try JSONValue(encoding: creation)
         let made = WorkspaceChange(
-            workspaceUri: demo, library: "StateUI", changedUris: [demo + "/stateui.json", demo + "/StateUI", demo + "/Notes"])
-        let used = WorkspaceChange(
-            workspaceUri: demo, library: "../../StateUI", changedUris: [demo + "/stateui.json", demo + "/Notes/Package.swift"])
+            workspaceUri: demo, library: "StateUI",
+            changedUris: [demo + "/stateui-workspace.json", demo + "/StateUI", demo + "/Notes"])
+        let used = LibraryChange(
+            projectUri: demo, library: "../../StateUI",
+            changedUris: [demo + "/stateui-workspace.json", demo + "/Notes/Package.swift"])
         let artifact = demo + "/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug"
         let built = BuildResult(
             application: "Notes", host: .appkit, configuration: .debug, architecture: .arm64, folderUri: artifact,
@@ -89,7 +98,7 @@ final class ProtocolExamplesTests: XCTestCase {
             build: BuildResult(
                 application: "Notes", host: .uikit, configuration: .debug, architecture: .arm64, folderUri: ran,
                 programUri: ran + "/NotesUIKit.app/NotesUIKit", bundleUri: ran + "/NotesUIKit.app", destination: simulator),
-            process: 33316, held: true)
+            process: 33316, held: true, debugger: DebugDescriptor(kind: .lldb, request: .attach, process: 33316, terminateCommands: ["process kill"]))
         let laid = demo + "/artifacts/Notes/UIKit"
         let packaged = BuildResult(
             application: "Notes", host: .uikit, configuration: .release, architecture: .arm64, folderUri: laid,
@@ -108,6 +117,21 @@ final class ProtocolExamplesTests: XCTestCase {
             Example(name: "project-describe", messages: [
                 ("request", try request("4", "project/describe", ProjectReference(projectUri: demo))),
                 ("response", try response("4", project)),
+            ], answeredAsWritten: false),
+            Example(name: "settings-get", messages: [
+                ("request", try request("4", "settings/get", SettingsRequest(projectUri: demo))),
+                ("response", try response("4", Settings(
+                    workspaceUri: demo, startup: "Notes", applicationUri: demo + "/apps/Notes", host: .uikit,
+                    devices: ["android": "emulator-5554", "uikit": "iPhone 18 Pro"]))),
+            ], answeredAsWritten: false),
+            Example(name: "settings-set", messages: [
+                ("request", try request("12", "settings/set", Mutation(
+                    requestToken: "2b8e4f6a-9c1d-4e3f-8a5b-7d9c1e3f5a7b",
+                    request: SettingsChange(projectUri: demo, host: .uikit, devices: ["uikit": "iPhone 18 Pro"])))),
+                ("response", try response("12", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: Settings(
+                    workspaceUri: demo, startup: "Notes", applicationUri: demo + "/apps/Notes", host: .uikit,
+                    devices: ["uikit": "iPhone 18 Pro"]))),
             ], answeredAsWritten: false),
             Example(name: "toolchain-check", messages: [
                 ("request", try request("5", "toolchain/check", NoParameters())),
@@ -152,6 +176,15 @@ final class ProtocolExamplesTests: XCTestCase {
                     request: BuildRequest(projectUri: demo + "/apps/Notes", host: .appkit)))),
                 ("response", try response("13", OperationHandle(operationId: operation, state: .queued))),
                 ("result", try JSONValue(encoding: built)),
+            ], answeredAsWritten: false),
+            Example(name: "application-prepare", messages: [
+                ("request", try request("17", "application/prepare", Mutation(
+                    requestToken: "6e3a1c5b-7d2f-4b8e-a0c4-3f5b7d9e1a2c",
+                    request: BuildRequest(projectUri: demo + "/apps/Notes", host: .appkit)))),
+                ("response", try response("17", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: PreparedApplication(
+                    build: built,
+                    debugger: DebugDescriptor(kind: .lldb, request: .launch, programUri: built.programUri, workingUri: demo)))),
             ], answeredAsWritten: false),
             Example(name: "application-package", messages: [
                 ("request", try request("14", "application/package", Mutation(
@@ -224,6 +257,15 @@ final class ProtocolExamplesTests: XCTestCase {
                     SuiteResult.Phase(name: "tests", passed: true), SuiteResult.Phase(name: "documents", passed: true),
                 ]))),
             ], answeredAsWritten: false),
+            Example(name: "repository-plan", messages: [
+                ("request", try request("35", "repository/plan", Mutation(
+                    requestToken: "6e8a0c2e-4f5b-4d7c-8a9e-1b3d5f7a9c35",
+                    request: PlanRequest(kind: .portable, only: "tool", device: "Ubuntu 26")))),
+                ("response", try response("35", OperationHandle(operationId: operation, state: .queued))),
+                ("result", try JSONValue(encoding: SuiteResult(suite: "plan:portable", phases: [
+                    SuiteResult.Phase(name: "tool", passed: true),
+                ]))),
+            ], answeredAsWritten: false),
             Example(name: "repository-integrationPackage", messages: [
                 ("request", try request("21", "repository/integrationPackage", Mutation(
                     requestToken: "4c6e8a0c-2d3f-4b5a-8e7c-9b1d3f5a7c22", request: IntegrationPackageRequest(editor: .vscode)))),
@@ -244,7 +286,7 @@ final class ProtocolExamplesTests: XCTestCase {
             Example(name: "index-describe", messages: [
                 ("request", try request("16", "index/describe", IndexQuery(host: .uikit))),
                 ("response", try response("16", IndexContext(
-                    host: .uikit, scratchPath: ".build/uikit/index-build", triple: "arm64-apple-ios26.4-simulator",
+                    host: .uikit, trait: "UIKit", scratchPath: ".build/uikit/index-build", triple: "arm64-apple-ios26.4-simulator",
                     sdk: "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk"))),
             ], answeredAsWritten: false),
             Example(name: "index-acquire", messages: [
@@ -268,10 +310,34 @@ final class ProtocolExamplesTests: XCTestCase {
                 ("response", try response("10", OperationHandle(operationId: operation, state: .queued))),
                 ("result", try JSONValue(encoding: made)),
             ], answeredAsWritten: false),
-            Example(name: "workspace-useLibrary", messages: [
-                ("request", try request("11", "workspace/useLibrary", Mutation(
+            Example(name: "folder-survey", messages: [
+                ("request", try request("31", "folder/survey", FolderSurveyRequest(root: "/home/example/stateui-guest/Demo"))),
+                ("response", try response("31", FolderSurvey(files: [
+                    FileEntry(path: "Package.swift", size: 812, modified: 1_763_380_800, executable: false),
+                    FileEntry(path: "Sources/NotesApp.swift", size: 2_048, modified: 1_763_380_860, executable: false),
+                ]))),
+            ], answeredAsWritten: false),
+            Example(name: "files-write", messages: [
+                ("request", try request("32", "files/write", FilesWriteRequest(root: "/home/example/stateui-guest/Demo", pieces: [
+                    FilePiece(path: "Package.swift", offset: 0, size: 4, modified: 1_763_380_800, executable: false, data: "LyogKi8="),
+                ]))),
+                ("response", try response("32", FilesWritten(completed: 1))),
+            ], answeredAsWritten: false),
+            Example(name: "file-read", messages: [
+                ("request", try request("33", "file/read", FileReadRequest(
+                    root: "/home/example/stateui-guest/artifacts/Notes/GTK", path: "NotesGTK", offset: 0, length: 4_194_304))),
+                ("response", try response("33", FilePiece(
+                    path: "NotesGTK", offset: 0, size: 4, modified: 1_763_380_900, executable: true, data: "f0VMRg=="))),
+            ], answeredAsWritten: false),
+            Example(name: "files-remove", messages: [
+                ("request", try request("34", "files/remove", FilesRemoveRequest(
+                    root: "/home/example/stateui-guest/Demo", paths: ["Sources/Gone.swift"]))),
+                ("response", try response("34", FilesRemoved(removed: 1))),
+            ], answeredAsWritten: false),
+            Example(name: "project-useLibrary", messages: [
+                ("request", try request("11", "project/useLibrary", Mutation(
                     requestToken: "7c3e1a9b-5f2d-4e8c-a6b4-1d3f5a7c9e20",
-                    request: LibraryRequest(workspaceUri: demo, checkoutUri: "file:///Users/example/StateUI")))),
+                    request: LibraryRequest(projectUri: demo, checkoutUri: "file:///Users/example/StateUI")))),
                 ("response", try response("11", OperationHandle(operationId: operation, state: .queued))),
                 ("result", try JSONValue(encoding: used)),
             ], answeredAsWritten: false),
@@ -338,7 +404,7 @@ final class ProtocolExamplesTests: XCTestCase {
     }
 
     /// The examples' requests, sent to the service in their order, are answered as their responses say - the
-    /// service's instance, identity and machine aside.
+    /// service's instance, identity, machine, hosts and work folder aside.
     func testTheServiceAnswersAsTheExamplesSay() async throws {
         let written = Written()
         let connection = Connection(
@@ -361,10 +427,11 @@ final class ProtocolExamplesTests: XCTestCase {
         XCTAssertEqual(answers, expected.map(Self.withoutTheServer))
     }
 
-    /// `value` without what differs between services: the instance, the identity and the machine.
+    /// `value` without what differs between services: the instance, the identity, the machine and what is its own -
+    /// the hosts it builds, its work folder.
     private static func withoutTheServer(_ value: JSONValue) -> JSONValue {
         guard case .object(var object) = value else { return value }
-        for key in ["serverInstanceId", "server", "machine"] where object[key] != nil { object[key] = .null }
+        for key in ["serverInstanceId", "server", "machine", "hosts", "workFolder"] where object[key] != nil { object[key] = .null }
         return .object(object.mapValues(withoutTheServer))
     }
 }

@@ -93,7 +93,10 @@ the answer that names its operation - for a batch, before the whole batch's
 answer. Events go to the connection that started the operation, numbered from
 1 in the order they happened (`operation/event`): a state reached, progress a
 tool told, a program's output. The snapshot is written before the event that
-tells it, and the terminal state is the operation's last event.
+tells it, and the terminal state is the operation's last event: every word
+its work said - a failure's last ones, the compiler's error among them - is
+told before the work's end is (`ToolingService.reporting`), as an operation
+ended takes no more.
 
 A cancel stops a queued operation at once and a running one through
 `cancelling`, which cancels its work's task; the operation is `cancelled`
@@ -133,7 +136,10 @@ started end with it, and one that hears no call is waited for no longer than
 a stop may take. What the connection held goes with its process:
 a package it indexed is another connection's to take. The input is read
 beside the connection's life, so its end, an `exit` and a client lost all
-end the service the same way.
+end the service the same way. A TCP client of `stateui service` lost ends its connection
+alone: its socket shuts before the frames still waiting for it are written,
+so they fail rather than wait (`ServiceListener.end`), and the service goes
+on for its other clients.
 
 ## The recorded examples
 

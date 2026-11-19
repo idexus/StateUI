@@ -17,7 +17,7 @@ public struct ProjectReader: Sendable {
     }
 
     /// The project at `path`: the nearest application up from it, else the applications its workspace - the nearest
-    /// `stateui.json` up - lists.
+    /// `stateui-workspace.json` up - lists.
     ///
     /// - Throws: ``ToolingError`` - `PROJECT_NOT_FOUND`, `INVALID_CONFIGURATION`, `MISSING_TOOLCHAIN`, `TOOL_FAILED` -
     ///   or `CancellationError`.
@@ -29,7 +29,8 @@ public struct ProjectReader: Sendable {
         }
         guard let workspace else {
             throw ToolingError(
-                .projectNotFound, "No StateUI application stands in or above \(path.path), and no stateui.json lists one.")
+                .projectNotFound,
+                "No StateUI application stands in or above \(path.path), and no stateui-workspace.json lists one.")
         }
         return try await describe(
             root: workspace.folder, packages: try workspace.applications(), workspace: workspace, startup: try workspace.startup())
@@ -57,12 +58,20 @@ public struct ProjectReader: Sendable {
     }
 
     private func application(at package: URL, root: URL) async throws -> (Application, Checkout?) {
+        let file = try ApplicationFile.read(package.appendingPathComponent(ApplicationFile.name))
+        guard FileManager.default.fileExists(atPath: package.appendingPathComponent("Package.swift").path) else {
+            throw ToolingError(.invalidConfiguration, "\(package.path) holds its \(ApplicationFile.name) but no Package.swift.")
+        }
         let description = try await describePackage(package)
         let checkout = description.dependencies.lazy.compactMap { $0.path.flatMap { Checkout(at: URL(fileURLWithPath: $0)) } }
             .first
         let application = Application(
             id: Self.relativePath(of: package, from: root),
             name: package.lastPathComponent,
+            identifier: file.identifier,
+            displayName: file.name ?? package.lastPathComponent,
+            version: file.version,
+            build: file.build,
             packageUri: FileURI.string(package),
             declaredHosts: Self.hosts(of: package),
             products: description.products.map(\.name).sorted(),
@@ -76,7 +85,7 @@ public struct ProjectReader: Sendable {
         let output = Gathered()
         let request = ProcessRequest(
             tools.swift, arguments: ["package", "describe", "--type", "json"],
-            environment: ProcessEnvironment.inherited.removing("STATEUI_HOST"),
+            environment: ProcessEnvironment.inherited,
             workingDirectory: package.path, timeout: .seconds(300))
         let outcome: ProcessOutcome
         do {
@@ -97,24 +106,64 @@ public struct ProjectReader: Sendable {
         }
     }
 
+    /// The folder of the application a command in `folder` means, read off the files alone: the application `folder`
+    /// stands in - `name`, where one is given - else of its workspace the one `name` names, else the only one listed,
+    /// else the one chosen to start.
+    ///
+    /// - Throws: ``ToolingError`` - `PROJECT_NOT_FOUND`, `INVALID_CONFIGURATION` for none or several meant.
+    static func applicationFolder(named name: String?, containing folder: URL) throws(ToolingError) -> URL {
+        let folder = RealPath.of(RealPath.lexical(folder))
+        if let application = application(holding: folder) {
+            guard name == nil || name == application.lastPathComponent else {
+                throw ToolingError(.invalidConfiguration, "No application \(name ?? "") here; the project holds \(application.lastPathComponent).")
+            }
+            return application
+        }
+        guard let workspace = try Workspace.nearest(from: folder) else {
+            throw ToolingError(
+                .projectNotFound,
+                "No StateUI application stands in or above \(folder.path), and no stateui-workspace.json lists one.")
+        }
+        let listed = try workspace.applications()
+        let meant: [URL] = if let name {
+            listed.filter { $0.lastPathComponent == name }
+        } else if listed.count > 1, let startup = try workspace.startup() {
+            [startup]
+        } else {
+            listed
+        }
+        guard meant.count == 1, let application = meant.first else {
+            let names = listed.map(\.lastPathComponent).joined(separator: ", ")
+            throw ToolingError(.invalidConfiguration, meant.isEmpty
+                ? "No application \(name ?? "") here; the project holds \(names)."
+                : "Name the application, or choose one to start (`stateui settings --startup <application>`): the project holds \(names).")
+        }
+        return application
+    }
+
     /// The application `folder` stands in: itself, or the nearest folder above it that is one.
     static func application(holding folder: URL) -> URL? {
         var current = folder
         while true {
-            if !hosts(of: current).isEmpty { return current }
+            if isApplication(current) { return current }
             guard let parent = Folders.parent(of: current) else { return nil }
             current = parent
         }
     }
 
-    /// The hosts a package has a head for: a `main.swift` in `Platforms/<Host>`, or Android's Gradle build there.
+    /// Whether `folder` is an application: whether it holds its `stateui.json`.
+    /// Design: docs/design/tooling/projects.md#a-project-read
+    static func isApplication(_ folder: URL) -> Bool {
+        FileManager.default.fileExists(atPath: folder.appendingPathComponent(ApplicationFile.name).path)
+    }
+
+    /// The hosts a package has a head for: a package of its own in `Platforms/<Host>`.
     static func hosts(of package: URL) -> [HostFamily] {
         let files = FileManager.default
         guard files.fileExists(atPath: package.appendingPathComponent("Package.swift").path) else { return [] }
         return HostFamily.allCases.filter { host in
             let head = package.appendingPathComponent("Platforms").appendingPathComponent(host.folder)
-            let file = host == .android ? "build.gradle.kts" : "main.swift"
-            return files.fileExists(atPath: head.appendingPathComponent(file).path)
+            return files.fileExists(atPath: head.appendingPathComponent("Package.swift").path)
         }
     }
 

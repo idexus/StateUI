@@ -288,6 +288,11 @@ enum WebRelay {
     }
 
     /// The page's address where it carries a fragment - a link into the application; empty otherwise.
+    /// The application's `stateui.json` beside the page; empty where none stands there.
+    static var applicationFile: [UInt8] {
+        Array(copyRead(length: stateui_web_application_file()).utf8)
+    }
+
     static var pageLink: String {
         copyRead(length: stateui_web_page_link())
     }

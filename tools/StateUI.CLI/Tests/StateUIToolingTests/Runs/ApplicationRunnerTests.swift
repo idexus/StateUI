@@ -4,15 +4,17 @@
 import Foundation
 @testable import StateUITooling
 import StateUIToolingProtocol
+import Synchronization
 import XCTest
 
 final class ApplicationRunnerTests: XCTestCase {
-    /// A run starts UIKit, Android and Web heads - another host runs from the program its build names - and holds only a
-    /// debug build for a debugger; both are refused before anything is built.
+    /// A run runs a GTK head alone under gdb, never one both under gdb and held for LLDB, and holds only a debug build;
+    /// each is refused before anything is built.
     func testWhatARunCannotStartIsRefusedFirst() async throws {
         let nowhere = FileManager.default.temporaryDirectory.appendingPathComponent("run-\(UUID().uuidString)")
         for (request, said) in [
-            (RunRequest(build: BuildRequest(host: .appkit)), "starts UIKit, Android and Web heads"),
+            (RunRequest(build: BuildRequest(host: .winui), gdb: true), "A GTK head alone runs under gdb"),
+            (RunRequest(build: BuildRequest(host: .gtk), debugger: true, gdb: true), "under gdb, or is held for LLDB"),
             (RunRequest(build: BuildRequest(host: .uikit, configuration: .release), debugger: true), "Only a debug build"),
         ] {
             do {
@@ -23,6 +25,67 @@ final class ApplicationRunnerTests: XCTestCase {
                 XCTAssertTrue(error.message.contains(said), error.message)
             }
         }
+    }
+
+    /// A GTK head run under gdb says every GTK critical's stack and a crash's, Swift's own backtrace off; a GTK or WinUI
+    /// head held for LLDB is started by the `lldb-dap` listening on the loopback port the way names; any other run is
+    /// its program alone.
+    func testAGTKHeadForADebuggerRunsUnderGDB() throws {
+        XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: .gtk), gdb: true)))
+        // Every host's head runs - an AppKit head as a desktop one, another machine's too - and a desktop head is held
+        // for LLDB alike.
+        for host in HostFamily.allCases {
+            XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: host))), "\(host)")
+        }
+        for host in [HostFamily.appkit, .gtk, .winui] {
+            XCTAssertNoThrow(try ApplicationRunner.refuse(RunRequest(build: BuildRequest(host: host), debugger: true)))
+        }
+        let held = DebugDescriptors.adapter(program: URL(fileURLWithPath: "/home/me/Notes/NotesGTK"), port: 41300)
+        XCTAssertEqual([held.request.rawValue, String(held.adapterPort ?? 0)], ["launch", "41300"], "an lldb-dap listening")
+        XCTAssertEqual(held.programUri, FileURI.string(URL(fileURLWithPath: "/home/me/Notes/NotesGTK")))
+        XCTAssertEqual(held.workingUri, FileURI.string(URL(fileURLWithPath: "/home/me/Notes")))
+        let (program, commands) = (URL(fileURLWithPath: "/home/me/Notes/NotesGTK"), URL(fileURLWithPath: "/tmp/gdb.cmd"))
+        let under = DesktopLaunch.request(program, gdbCommands: commands)
+        XCTAssertEqual(under.executable, .name("gdb"))
+        XCTAssertEqual(under.arguments, ["-batch", "-x", "/tmp/gdb.cmd", "--args", "/home/me/Notes/NotesGTK"])
+        XCTAssertEqual(under.environment.set["SWIFT_BACKTRACE"], "enable=no")
+        XCTAssertEqual(DesktopLaunch.request(program, gdbCommands: nil).executable, .path("/home/me/Notes/NotesGTK"))
+        XCTAssertTrue(GTKHead.gdbCommands(for: .arm64).contains("break g_return_if_fail_warning"))
+    }
+
+    /// What gdb says of Clang modules' debug information it cannot read as split DWARF - thousands of lines a start,
+    /// which no setting of gdb 17 quiets - is left out of a run's output; a critical, a stop and the program's own
+    /// words stay.
+    func testGDBsNoiseOfModulesIsLeftOut() {
+        XCTAssertTrue(DesktopLaunch.gdbNoise(
+            "During symbol reading: Could not find DWO CU /home/me/.build/out/ModuleCache.noindex/3VP/Dispatch-3U3.pcm(0x5174cdc4c6e3d656) referenced by CU at offset 0x878e7 [in module /home/me/libStateUIHost.so]"))
+        for kept in ["=== CRITICAL Gtk: GTK_IS_WIDGET (widget)", "=== STOPPED", "StateUI-Message: 01:05:15.012: StateUI GTK: x",
+                     "During symbol reading: unsupported tag"] {
+            XCTAssertFalse(DesktopLaunch.gdbNoise(kept), kept)
+        }
+    }
+
+    /// A held head is told started only once its `lldb-dap` says it listens: a debugger connecting before then finds
+    /// no one, and the relay closes on it. Every line is told as it comes.
+    func testAHeldHeadStartsOnceItsAdapterListens() {
+        let said = Mutex<[String]>([])
+        let started = Mutex(0)
+        let output = DesktopLaunch.announcing(output: { line in said.withLock { $0.append(line.text) } }, started: { started.withLock { $0 += 1 } })
+        output(ProcessOutput(stream: .standardOutput, text: "lldb-dap starting"))
+        XCTAssertEqual(started.withLock { $0 }, 0, "not before it listens")
+        output(ProcessOutput(stream: .standardOutput, text: "Listening for: connection://[127.0.0.1]:36663"))
+        output(ProcessOutput(stream: .standardOutput, text: "Listening for: connection://[127.0.0.1]:36663"))
+        XCTAssertEqual(started.withLock { $0 }, 1, "once")
+        XCTAssertEqual(said.withLock { $0 }.count, 3)
+    }
+
+    /// A port is relayed to only while a run's `lldb-server` holds it.
+    func testADebugPortIsHeldWhileItsRunLasts() async throws {
+        let port = try DebugPorts.free()
+        XCTAssertFalse(DebugPorts.holds(port))
+        let inside = await DebugPorts.holding(port) { DebugPorts.holds(port) }
+        XCTAssertTrue(inside)
+        XCTAssertFalse(DebugPorts.holds(port))
     }
 
     /// A file another process writes is read in lines as it grows, the last one at the end though no line feed ended it.

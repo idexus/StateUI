@@ -19,4 +19,25 @@ public struct ToolResolver: Sendable {
 
     /// Git, on the search path.
     public var git: ProcessExecutable { .name("git") }
+
+    /// The Swift toolchain's `lldb-dap`: beside `swift` - its links followed - else on the search path; nil where none
+    /// stands.
+    var lldbDap: URL? { toolchainProgram("lldb-dap") }
+
+    /// The Swift toolchain's `lldb`, found as `lldbDap` is.
+    var lldb: URL? { toolchainProgram("lldb") }
+
+    /// The Swift toolchain's program `name`: beside `swift` - its links followed - else on the search path.
+    private func toolchainProgram(_ name: String) -> URL? {
+        let path = SearchPath(environment: environment)
+        if let swift = (environment["SWIFT_BIN"].map { URL(fileURLWithPath: $0) } ?? path.find("swift"))?.resolvingSymlinksInPath() {
+            #if os(Windows)
+            let beside = swift.deletingLastPathComponent().appendingPathComponent(name + ".exe")
+            #else
+            let beside = swift.deletingLastPathComponent().appendingPathComponent(name)
+            #endif
+            if FileManager.default.fileExists(atPath: beside.path) { return beside }
+        }
+        return path.find(name)
+    }
 }

@@ -9,10 +9,10 @@ import StateUI
 @MainActor
 public enum WebViewGTK {
     /// Registers the web view with the GTK host - its control, the members it takes and tells, and its four acts.
-    /// Said once, from the application's GTK head, before `GTKHost.run(applicationID:)`.
+    /// Said once, from the application's GTK head, before `GTKHost.run()`.
     ///
     ///     WebViewGTK.register()
-    ///     GTKHost.run(applicationID: "com.example.App")
+    ///     GTKHost.run()
     public static func register() {
         StateUIControls.add(WebViewContract.self, create: { reports -> GTKWebView in
             let web = GTKWebView()

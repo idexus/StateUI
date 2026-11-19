@@ -10,13 +10,12 @@
 /// Design: docs/design/platforms/web/runtime.md#the-environment
 @MainActor
 enum WebEnvironment {
-    static func report(to core: CoreLink, applicationName: String, applicationID: String?) {
+    static func report(to core: CoreLink, application: HostApplicationInfo) {
         let touch = WebRelay.touchScreen
         core.setDeviceInfo(HostDeviceInfo(
             formFactor: touch > 0 ? .touchScreen(smallestWidth: touch) : .desktop, platform: "Web", model: "",
             manufacturer: "", name: "", platformVersion: "", isVirtual: nil))
-        core.setApplicationInfo(HostApplicationInfo(
-            name: applicationName, packageName: applicationID ?? "", version: "", build: ""))
+        core.setApplicationInfo(application)
         reportChanging(to: core)
     }
 

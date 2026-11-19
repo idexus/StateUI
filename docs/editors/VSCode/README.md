@@ -34,18 +34,33 @@ The extension installs the **Swift** extension (swiftlang) with it. Install
 ## Running an application
 
 Open the repository folder. The status bar shows two StateUI items: the
-[host](#the-host) the editor and the launches work as, and the
-[application](#the-application) they run. While the host is UIKit, Android or
-the Web a third item shows the device: an iPhone, an iPad or a simulator for
-UIKit; an attached phone or an emulator, started when it is picked, for
-Android; the browser the page opens in, for the Web.
+[application](#the-application) the launches run, and the [host](#the-host)
+it and the editor work as. While the host is UIKit, Android or the Web - or
+one this machine works on another - a third item after them shows the device:
+an iPhone, an iPad or a simulator for UIKit; an attached phone or an emulator,
+started when it is picked, for Android; the browser the page opens in, for the
+Web; the machine the head is built and runs on - a Parallels guest for GTK and
+WinUI on a Mac, a machine paired with the project - for the others.
+
+What is chosen there is the project's choice on this machine, which the
+`stateui` tool keeps out of git in its `.stateui/` - the workspace's
+application to start in `workspace-settings.json`, the application's host and
+each host's device in its `settings.json`: the window works as the chosen
+application's host, and `stateui run` in a terminal, naming no host or device,
+takes the same. A change made by `stateui settings` shows here at once. A
+window holding no application keeps its host and devices as its own.
 
 Press **F5** to run **StateUI: Debug**, or choose **StateUI: Release** in Run
 and Debug. The application's head is built, installed where the host needs
 it, and started under `lldb-dap`, a breakpoint holding from the first line -
 on Android `lldb-dap` attaches once the application has started, and a
 breakpoint holds from then on; on UIKit and Android **StateUI Run** follows the
-application's output, and the notification that follows it stops it. On UIKit, Android and the Web a Release launch runs
+application's output, and the notification that follows it stops it. A head
+worked on another machine is built and started on the machine chosen, followed
+the same way - on a machine paired held for `lldb-dap`, which reaches it
+through the `stateui` tool's relay, a breakpoint holding from the first line. Run Without Debugging
+(Ctrl+F5) runs the Debug build with no debugger on every host - on AppKit,
+WinUI and GTK `lldb-dap` starts it told to debug nothing. On UIKit, Android and the Web a Release launch runs
 without a debugger; on AppKit, WinUI and GTK `lldb-dap` starts the optimized
 build. A Web head is built, its page served and opened in the chosen browser;
 StateUI: Debug in Chrome, Edge or another of Chromium's browsers opens it
@@ -67,6 +82,7 @@ The Command Palette offers the rest under **StateUI:**
 | [Select UIKit Device](#the-uikit-device) | the iPhone, iPad or simulator a UIKit head runs on |
 | [Select Android Device](#the-android-device) | the device or emulator an Android head runs on |
 | [Select Browser](#the-browser) | the browser a Web head's page opens in |
+| [Select Machine](#the-machine) | the machine - a Parallels guest of a Mac, a machine paired - a head is built and runs on |
 | [Select Application](#the-application) | the application F5 runs |
 | [Run Tests](#tests) | the workspace's suites, run as the chosen host |
 | [Package](#package) | the chosen application built for release and laid, with what it runs with, in `artifacts/<application>/<platform>` of its workspace - on WinUI per architecture |
@@ -80,20 +96,26 @@ The Command Palette offers the rest under **StateUI:**
 ## The host
 
 The status bar shows the host - **AppKit**, **UIKit**, **Android**, **WinUI**,
-**GTK** or **Web**. Click it, or run **StateUI: Select Host**. AppKit, UIKit and Android are
-offered on macOS, UIKit and Android where an application has their head
-(`Platforms/UIKit`, `Platforms/Android`); WinUI on Windows; GTK on Linux; the
-Web on macOS and Linux, where an application has its head (`Platforms/Web`). On a machine that runs no host the status bar
-says **no host**, a launch says why it runs nothing, and the editor and
-**StateUI: Run Tests** work as plain Swift.
+**GTK** or **Web**. Click it, or run **StateUI: Select Host**. It offers the
+[application](#the-application)'s heads (`Platforms/<Host>`) that this machine
+runs, and those alone: an application with an Android head alone runs as
+Android. Which hosts this machine runs, and where, the `stateui` tool says
+(`stateui version` prints them): AppKit, UIKit and Android on macOS, WinUI on
+Windows, GTK on Linux - both on a Mac too, in a [guest](#the-machine) - the Web
+on macOS and Linux; and a host a [machine paired](#the-machine) with the
+project runs as its own program, at its place `remote`. Where none is offered - no head of the
+application runs here, or no application is here - the status bar says **no
+host**, a launch says why it runs nothing, and the editor and **StateUI: Run
+Tests** work as plain Swift.
 
 - **The editor works as that host.** Code under `#if APPKIT` is compiled and
-  completed while AppKit is chosen, and an application's `Platforms/AppKit`
-  head belongs to its package only then. Switching restarts the Swift language
+  completed while AppKit is chosen: the application's package is indexed with
+  the trait `AppKit`, and its `Platforms/AppKit` head - a package of its own,
+  always AppKit's - with AppKit's index. Switching restarts the Swift language
   server; the window does not reload. From the editor's next start the Swift
-  extension loads no other host's packages - `lib/StateUI/StateUI.<Host>` and
-  `lib/Backends/*.<Host>`, set in the user's `swift.excludePathsFromActivation`
-  - so it starts sooner. As
+  extension loads no other host's packages - `lib/StateUI/StateUI.<Host>`,
+  `lib/Backends/*.<Host>` and every application's `Platforms/<Host>`, set in
+  the user's `swift.excludePathsFromActivation` - so it starts sooner. As
   Android the server compiles for Android - the Swift SDK for Android of the
   toolchain's release, `aarch64-unknown-linux-android28` - so code under
   `#if ANDROID` and `Platforms/Android/Swift` resolve. With no such SDK
@@ -103,7 +125,9 @@ says **no host**, a launch says why it runs nothing, and the editor and
   `Platforms/Web` resolve. As UIKit it
   compiles for the iOS simulator - `arm64-apple-ios26.4-simulator` against
   Xcode's simulator SDK - so code under `#if UIKIT` and `Platforms/UIKit`
-  resolve.
+  resolve. As GTK or WinUI on a Mac it compiles for the Mac with the host's
+  trait, so the application's code under `#if GTK` or `#if WINUI` resolves;
+  the head's package is the guest's to build.
 - **StateUI: Debug and StateUI: Release run on it.** On AppKit the `stateui`
   tool builds the application's bundle - its progress in a notification that
   cancels it, SwiftPM's words in the **StateUI Build** output - and its
@@ -133,7 +157,24 @@ says **no host**, a launch says why it runs nothing, and the editor and
   in Chrome, Edge or another of Chromium's browsers then starts the browser
   chosen below on the page under VS Code's own JavaScript debugger: the page's
   console is in the Debug Console, and ending the session stops the server.
+  A breakpoint on a line of Swift holds through the WebAssembly DWARF
+  Debugging extension, which StateUI: Debug offers to install where it is
+  missing; the variables shown are WebAssembly's, not Swift's
+  ([The Web](../../hosts/web.md)). In Safari 27, its WebAssembly debugger
+  turned on, the tool opens the page there and `lldb-dap` attaches to it:
+  Swift's lines and call stack, the variables' Swift types without their
+  values.
   Any other browser, and StateUI: Release, the tool opens itself.
+  A head worked on another [machine](#the-machine) - GTK and WinUI in a guest
+  of a Mac, a host a machine paired runs - is that machine's: the `stateui`
+  tool copies the project to it, has its own `stateui` build and start the
+  head there, and **StateUI Run** follows what it prints; the notification
+  that follows it stops it there. On a machine paired with the project the
+  debug build is held there by that machine's `lldb-dap`, which VS Code's
+  debugger reaches through the tool's relay - the paths turned to this
+  machine's files; on a
+  guest not paired StateUI: Debug runs the debug build without one, and says
+  so.
 
 ## The Android device
 
@@ -141,17 +182,17 @@ While the host is Android, a third status bar item shows the device - click it,
 or run **StateUI: Select Android Device**. It offers the devices attached and
 the emulators set up, as the `stateui` tool lists them; an emulator picked that
 is not running is started when a launch or the tests need it. The device is
-remembered for the workspace, so a launch or a run of the tests asks only when
-none is chosen or the one chosen is no longer listed.
+the application's choice, by its name, so a launch or a run of the tests asks
+only when none is chosen or the one chosen is no longer listed.
 
 ## The UIKit device
 
 While the host is UIKit, the third status bar item shows the iPhone or iPad a
 launch runs on - click it, or run **StateUI: Select UIKit Device**. It offers
 the devices paired with this Mac, over USB or Wi-Fi, and the simulators, each
-of iOS 26.4 or later, the newest runtime first. It is remembered for the
-workspace, so a launch asks only when none is chosen or the one chosen is
-gone. A device runs with Developer Mode on, and its build is signed with a
+of iOS 26.4 or later, the newest runtime first. It is the application's
+choice, by its name, so a launch asks only when none is chosen or the one
+chosen is gone. A device runs with Developer Mode on, and its build is signed with a
 development profile of this Mac's that provisions it - Xcode makes one for a
 team once the device is added. The host's own suites run on a simulator: the
 one chosen where it is one, else one asked for among the simulators alone and
@@ -163,32 +204,56 @@ While the host is the Web, the third status bar item shows the browser a
 launch opens the page in - click it, or run **StateUI: Select Browser**. It
 offers the browsers installed on this machine - what the system opens both a
 web address and a web page with - the system's own first, as the `stateui`
-tool lists them. It is remembered
-for the workspace, so a launch asks only when none is chosen or the one
-chosen is no longer installed.
+tool lists them. It is the application's choice,
+by its name, so a launch asks only when none is chosen or the one chosen is
+no longer installed.
+
+## The machine
+
+While the host is one this machine works on another - GTK or WinUI on a Mac,
+or a host this machine builds none of that a machine paired with the project
+runs - the third status bar item shows the machine a launch and Package build
+on - click it, or run **StateUI: Select Machine**. It offers, as `stateui
+devices` lists them, the Parallels Desktop guests of the host's system - Linux
+for GTK, Windows for WinUI - each with its state, a guest suspended or stopped
+resumed or started when a build needs it; and the machines paired with the
+project (`stateui remote add`) that run the host as their own program, each
+with where its service listens - the project of the chosen application, its
+hosts and machines read again as the choice, the folders or a pairing
+(`.stateui/remotes.json`) change. It is the application's choice, by its name,
+so a launch asks only when none is chosen or the one chosen is gone. What a
+guest needs, and how a Mac makes one: [Every host from one
+Mac](../../every-host-from-a-mac.md); **StateUI: Check Toolchain** checks the
+machine chosen too, and **StateUI: Run Tests** runs the host's own suite
+there. Its conformance marks are made there too, and the tool brings them
+home.
 
 ## The application
 
-A second status bar item shows the application **StateUI: Debug** and
+The first status bar item shows the application **StateUI: Debug** and
 **StateUI: Release** run - click it, or run **StateUI: Select Application**.
-It is remembered for the workspace, so a launch asks only when nothing is
-chosen yet, or when the chosen application has no head for the host. A launch
-configuration naming `"application": "Gallery"` runs that one instead.
+In a workspace it is the application the workspace starts on this machine
+(`.stateui/workspace-settings.json`), else the first it lists, which is then
+written there, so a launch asks only when the application has no head for the
+host; the window then works as the host chosen for it. A launch configuration naming
+`"application": "Gallery"` runs that one instead.
 
 ## A new application
 
 The extension finds applications through the `stateui` tool: in a folder that
-is an application, that one; else the ones its workspace lists - the nearest
-`stateui.json` up from the folder, which names the applications and the
-StateUI they build with. A StateUI checkout is a workspace of its own
-(`apps/Gallery`, `apps/HelloWorld`), and so is a [project group](#a-project-group).
-An application added, removed or listed there is found again by itself.
+is an application - one holding its `stateui.json` - that one; else the ones
+its workspace lists - the nearest `stateui-workspace.json` up from the folder,
+which names the applications and the StateUI they build with. A StateUI
+checkout is a workspace of its own (`apps/Gallery`, `apps/HelloWorld`), and so
+is a [project group](#a-project-group). An application added, removed or
+listed there is found again by itself.
 
 **StateUI: New Application** - in a workspace, asks for a name, and the
 `stateui` tool makes HelloWorld under that name beside the workspace's
-applications - at its root where it lists none yet - building with the
-StateUI its `stateui.json` names, and lists it there. Its example test in
-`Tests/` comes with it, which **StateUI: Run Tests** runs. A notification
+applications - at its root where it lists none yet - building with the StateUI
+its `stateui-workspace.json` names, and lists it there. Its `stateui.json`
+names it `com.example.<name>` until it is given its own identifier. Its example
+test in `Tests/` comes with it, which **StateUI: Run Tests** runs. A notification
 follows the making and cancels it. The application is then chosen, so
 **StateUI: Debug** runs it.
 
@@ -210,31 +275,31 @@ build with, and the name of its first application:
 
 ```text
 MyApps/
-  stateui.json        the applications, and the StateUI they build with
+  stateui-workspace.json  the applications, and the StateUI they build with
   .gitignore
-  .vscode/            StateUI: Debug and StateUI: Release
-  StateUI/            the release, left out of git; absent with a local checkout
-  Notes/              HelloWorld renamed; its Package.swift names ../StateUI
+  .vscode/                StateUI: Debug and StateUI: Release
+  StateUI/                the release, left out of git; absent with a local checkout
+  Notes/                  HelloWorld renamed; its Package.swift names ../StateUI
 ```
 
 Its applications are HelloWorld renamed, and each one's `Package.swift` names
 its StateUI by path: `../StateUI` for a release, the path from the
 application to the checkout for a local one. The `stateui` tool builds and
 runs every head from it, and the group copies nothing of it. **StateUI: New
-Application** makes the next application beside it, and `stateui workspace
+Application** makes the next application beside it, and `stateui project
 library` points every application at another StateUI.
 
 `StateUI/` is left out of git. A clone of the group gets it back with the
 command its `.gitignore` names:
 
 ```bash
-stateui workspace library --release <release>
+stateui project library --release <release>
 ```
 
 | Setting | What it holds |
 | --- | --- |
 | `stateui.checkout` | the local checkout a group builds with - set on this machine, so it is not asked for |
-| `stateui.minimumRelease` | the oldest release offered, `0.5.0` - the first that builds into `.build/<host>` and reads `STATEUI_HOST`, as the extension does; until it is published, a group builds with the local checkout |
+| `stateui.minimumRelease` | the oldest release offered, `0.8.6` - the first whose heads are packages of their own, each naming its host by a trait, as the extension builds them; until it is published, a group builds with the local checkout |
 
 ## Tests
 
@@ -244,8 +309,8 @@ found again when the host changes. **StateUI: Run Tests** offers them, every
 one ticked, and runs them AS THE HOST, one after another, each through the tool
 (`stateui test run --suite <suite>`), its output in Test Results:
 
-- **AppKit**: the library, `lib/StateUI/StateUI.AppKit`, and each application as an
-  AppKit build (`STATEUI_HOST=appkit`, on `.build/appkit`).
+- **AppKit**: the library, `lib/StateUI/StateUI.AppKit`, and each application with
+  the trait `AppKit` (on `.build/appkit`).
 - **UIKit**: the library and each application as plain Swift, and the UIKit
   host's own tests, `lib/StateUI/StateUI.UIKit/Tests` - an application of tests - run
   on the simulator chosen by `stateui repo test --suite host:uikit`.
@@ -260,6 +325,9 @@ one ticked, and runs them AS THE HOST, one after another, each through the tool
 - **GTK**: the library and each application as plain Swift, and the GTK host's
   own tests, `lib/StateUI/StateUI.GTK/Testing`, by
   `stateui repo test --suite host:gtk`, its windows on the desktop's display.
+- **WinUI and GTK on a Mac**: the library and each application as plain Swift
+  on the Mac, and the host's own tests in the [guest](#the-machine) chosen, by
+  `stateui repo test --suite host:<host> --device <guest>`.
 - **Web**: the library and each application as plain Swift, and the Web host's
   own tests, `lib/StateUI/StateUI.Web/Testing`, by
   `stateui repo test --suite host:web`, which compiles them for WebAssembly
@@ -283,6 +351,9 @@ The `stateui` tool packages it:
   `artifacts/<application>/WinUI/arm64` or `.../x64`; an x64 machine builds x64
   without asking.
 - **GTK**: the head, the StateUI libraries it links and the pictures.
+- A head worked on another [machine](#the-machine) is packaged there, into
+  this machine's `artifacts/<application>/<platform>`, which the tool fetches
+  through its connection.
 - **AppKit**: the application bundle where the checkout bundles the
   application, else the head and the StateUI libraries it links.
 - **UIKit**: the application bundle, for the simulator or device chosen.
@@ -326,15 +397,21 @@ what it needs to build and run the hosts it runs - what `stateui doctor` prints 
 as [Requirements](#requirements) and the handbook's host pages say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
 JDK and Swift SDK on macOS; Visual Studio's C++ tools, the Windows SDK and the
 WebView2 runtime on Windows; GTK, libadwaita, WebKitGTK, gdk-pixbuf's SVG
-loader and a desktop session on Linux; the Swift SDK for WebAssembly and Python 3 for the Web on macOS and
+loader and a desktop session on Linux; the Swift SDK for WebAssembly for the Web on macOS and
 Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch - on Linux
-and Windows an `lldb-dap` that starts with the Python its LLDB loads; Git for a project group's
-releases; and Node.js for this extension's own build. The LLDB DAP extension
-and whether the `lldb-dap` it is set to starts are the extension's own
+and Windows an `lldb-dap` that starts with the Python its LLDB loads; the
+WebAssembly DWARF Debugging extension for a Debug launch in one of Chromium's
+browsers, where this machine offers the Web, and Safari 27 with its
+WebAssembly debugger for one in Safari, on macOS; Git for a project group's
+releases; and Node.js for this extension's own build. The two extensions
+and whether the `lldb-dap` LLDB DAP is set to starts are the extension's own
 findings, added to the tool's. The **StateUI Toolchain** output lists each
 with what was found - a version older than the one required marked as too old - and
 for each not found what to install. It looks where the tool's builds look
-(the NDK as an Android build finds it); it installs nothing.
+(the NDK as an Android build finds it); it installs nothing. While the host is
+worked on another machine and one is chosen, its findings follow this
+machine's, under its name - what `stateui doctor --host <host> --device
+<machine>` prints.
 
 ## The extension itself
 
@@ -394,5 +471,3 @@ launch file at all:
   the toolchain was built for, its Python library installed (Check
   Toolchain names the one missing, and F5 stops before the build).
 
-Do not set `STATEUI_HOST` in `swift.swiftEnvironmentVariables`: that setting
-is laid over the host chosen here, and the extension offers to remove it.

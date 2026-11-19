@@ -289,36 +289,13 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(try WebBrowser.evaluate(selectable, on: 0) ?? "", "", "buttons whose words a hold selects")
     }
 
-    /// On a touch screen a button the user tapped is not left lit: what lights a button under the pointer waits for a
-    /// pointer that hovers, which a finger is not - the browser holds the tapped one hovered till the next tap.
-    func testATappedButtonIsNotLeftLitOnATouchScreen() throws {
-        WebBrowser.ask([("hover", .words("none"))])
-        defer { WebBrowser.ask([("hover", .words(""))]) }
-        let host = WebRenderer.running {
-            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Text("Root").pageTitle("Notes").toolbar { ToolbarButton("Save") }
-            } destination: { _ in Text("Pushed") }
-        }
-        let save = "[...document.querySelectorAll('.stateui-window > .stateui-bar button')]"
-            + ".find((b) => b.innerText.trim() === 'Save')"
-        host.settle { (try? WebBrowser.truth("!!\(save)", on: 0)) == true }
-        // A question an earlier test of this page left open would stand over the bar, under the finger; the button's
-        // fade is taken out, so its color reads at once.
-        try WebBrowser.run("document.querySelectorAll('dialog[open]').forEach((d) => d.close())")
-        try WebBrowser.run("\(save).style.transition = 'none'")
-        let ground = try XCTUnwrap(WebBrowser.evaluate("getComputedStyle(\(save)).backgroundColor", on: 0))
-        let middle = try XCTUnwrap(WebBrowser.evaluate(
-            "(() => { const r = \(save).getBoundingClientRect(); return (r.left + r.width / 2) + ',' + (r.top + r.height / 2); })()",
-            on: 0)).split(separator: ",").compactMap { Double($0) }
+    /// The page stands in a desktop's window on every machine, a machine with no mouse too, and after a touch screen's
+    /// run: its pointer a mouse that hovers, which the looks under the pointer wait for.
+    func testThePagesPointerIsADesktopsMouseOnEveryMachine() throws {
+        let pointer = "['hover', 'any-hover', 'pointer', 'any-pointer'].map((f) => f + ' '"
+            + " + ['hover', 'fine', 'coarse', 'none'].find((v) => matchMedia(`(${f}: ${v})`).matches)).join(', ')"
 
-        WebBrowser.ask([("touch", .words("touchStart")), ("points", .points([Point(x: middle[0], y: middle[1])]))])
-        WebBrowser.ask([("touch", .words("touchEnd")), ("points", .points([]))])
-        let lit = { try WebBrowser.evaluate("getComputedStyle(\(save)).backgroundColor", on: 0) }
-        // The press's own light goes as the finger lifts; what stays is the browser's hover.
-        host.settle { (try? WebBrowser.truth("\(save).matches(':active')", on: 0)) == false }
-
-        XCTAssertTrue(try WebBrowser.truth("\(save).matches(':hover')", on: 0), "the browser holds the tapped button hovered")
-        XCTAssertEqual(try lit(), ground, "and leaves it unlit")
+        XCTAssertEqual(try WebBrowser.evaluate(pointer, on: 0), "hover hover, any-hover hover, pointer fine, any-pointer fine")
     }
 
     /// A grouped button lights under a pointer that hovers, whatever the bar's style: its group's ground at rest, its

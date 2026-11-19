@@ -17,7 +17,7 @@ export interface TestSuitesContext {
     readonly tool: ToolingClients;
     /** The host the editor works as, none for plain Swift. */
     readonly host: () => Host | undefined;
-    /** The device, simulator or emulator a suite of `host` that runs on one runs on - asked for where none is chosen. */
+    /** The device, simulator, emulator or guest a suite of `host` that runs on one runs on - asked for where none is chosen. */
     readonly device: (host: Host) => Promise<string | undefined>;
 }
 

@@ -2,8 +2,10 @@
 
 `stateui <command> [options]`. Each command writes its result in the format
 `--format` names: `text`, words for a person; `json`, the result in its
-envelope; `jsonl`, an operation's events and then its result, a document a
-line.
+envelope; `jsonl`, the same envelope on one line, a document a line to append
+to a log of them. An operation's events - its progress, a program's output,
+an application started - are the protocol's (`operation/event`, through
+`stateui serve`); the terminal writes them as words on standard error.
 
 ## Standard output
 

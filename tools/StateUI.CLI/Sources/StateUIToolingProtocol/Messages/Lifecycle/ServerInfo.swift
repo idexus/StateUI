@@ -11,11 +11,17 @@ public struct ServerInfo: Codable, Equatable, Sendable {
     public var apiVersions: [APIVersionRange]
     /// The machine the tool runs on.
     public var machine: Machine
+    /// The hosts this machine builds and runs heads of, in the matrix's order, each with where its heads run.
+    public var hosts: [HostPlace]
+    /// The folder another machine's projects are copied into for work here: `stateui-guest` under the user's home.
+    public var workFolder: String
 
     /// The information a tool gives of itself.
-    public init(server: ToolIdentity, apiVersions: [APIVersionRange], machine: Machine) {
+    public init(server: ToolIdentity, apiVersions: [APIVersionRange], machine: Machine, hosts: [HostPlace], workFolder: String) {
         self.server = server
         self.apiVersions = apiVersions
         self.machine = machine
+        self.hosts = hosts
+        self.workFolder = workFolder
     }
 }

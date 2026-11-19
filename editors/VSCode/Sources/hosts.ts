@@ -1,58 +1,72 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The hosts a StateUI application can run on, and what makes a build - and the
-// editor - one host's.
+// The hosts a StateUI application can run on, as the editor shows them; which of them this machine builds, and
+// where their heads run, the stateui tool says.
+
+import type { HostPlace, Place } from "./Tooling/protocol";
 
 /** A host an application is built for and run on. */
 export type Host = "appkit" | "uikit" | "android" | "winui" | "gtk" | "web";
 
-/** What the extension knows about one host. */
+/** What the extension shows of one host. */
 export interface HostDescription {
     readonly id: Host;
     readonly label: string;
     readonly detail: string;
+}
 
-    /** The machines that build and run this host's heads. */
-    readonly platforms: readonly NodeJS.Platform[];
+/**
+ * Whether the window works anew - its editor's mode applied again - after what it read changed its host or the packages
+ * it indexes: a pairing alone can give it another host, a folder alone other packages.
+ */
+export function worksAnew(before: { host: Host | undefined; roots: readonly string[] },
+    after: { host: Host | undefined; roots: readonly string[] }): boolean {
+    return before.host !== after.host || before.roots.join("\n") !== after.roots.join("\n");
+}
+
+/** What the window works as and the packages it indexes, as they stand. */
+export interface WindowWork {
+    readonly host: Host | undefined;
+    readonly roots: readonly string[];
+}
+
+/**
+ * `change` made, `then` done, and the window worked anew - `work` given its host - where its host or its packages
+ * changed: what it worked as taken before `change`, so a choice that changes the host as it is made is seen as a change.
+ */
+export async function reconsidered(now: () => WindowWork, change: () => Promise<void>, then: () => Promise<void>,
+    work: (host: Host | undefined) => Promise<unknown>): Promise<void> {
+    const before = now();
+    await change();
+    await then();
+    const after = now();
+    if (worksAnew(before, after)) {
+        await work(after.host);
+    }
 }
 
 /** Every host, in the order the picker offers them. */
 export const hosts: readonly HostDescription[] = [
-    { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process", platforms: ["darwin"] },
-    {
-        id: "uikit", label: "UIKit", detail: "iOS and iPadOS on a simulator, in the application's own process", platforms: ["darwin"],
-    },
-    {
-        id: "android", label: "Android", detail: "Android Views, in the application's own process", platforms: ["darwin"],
-    },
-    { id: "winui", label: "WinUI", detail: "WinUI 3 on Windows, in the application's own process", platforms: ["win32"] },
-    { id: "gtk", label: "GTK", detail: "GTK 4 with libadwaita on Linux, in the application's own process", platforms: ["linux"] },
-    {
-        id: "web", label: "Web", detail: "a page in the browser chosen, the application a WebAssembly module in it",
-        platforms: ["darwin", "linux"],
-    },
+    { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process" },
+    { id: "uikit", label: "UIKit", detail: "iOS and iPadOS on a simulator or a device, in the application's own process" },
+    { id: "android", label: "Android", detail: "Android Views, in the application's own process" },
+    { id: "winui", label: "WinUI", detail: "WinUI 3 on Windows, in the application's own process" },
+    { id: "gtk", label: "GTK", detail: "GTK 4 with libadwaita on Linux, in the application's own process" },
+    { id: "web", label: "Web", detail: "a page in the browser chosen, the application a WebAssembly module in it" },
 ];
 
+/** The hosts `places` names - this machine's, as the stateui tool says them (`server/info`) - in the picker's order. */
+export function availableHosts(places: readonly HostPlace[]): HostDescription[] {
+    return hosts.filter((each) => places.some((one) => one.host === each.id));
+}
 
-/** The hosts this machine builds and runs - AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, Web on macOS and Linux. */
-export function availableHosts(platform: NodeJS.Platform = process.platform): HostDescription[] {
-    return hosts.filter((each) => each.platforms.includes(platform));
+/** Where `host`'s heads run from this machine, as `places` says; nothing where it builds none. */
+export function placeOf(host: Host, places: readonly HostPlace[]): Place | undefined {
+    return places.find((each) => each.host === host)?.place;
 }
 
 /** The description of one host. */
 export function describe(host: Host): HostDescription {
     return hosts.find((each) => each.id === host) ?? hosts[0];
-}
-
-/**
- * The variable a build names its host by - `STATEUI_HOST=appkit` - which an
- * application's manifest reads to declare that host's head and define its
- * condition. One variable holds one host, so no build is two hosts' at once.
- */
-export const hostVariable = "STATEUI_HOST";
-
-/** The environment that makes a process work as `host`: the variable naming it, and absent with no host. */
-export function environment(host: Host | undefined): Record<string, string | undefined> {
-    return { [hostVariable]: host };
 }

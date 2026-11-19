@@ -70,11 +70,13 @@ final class ServeCommandTests: XCTestCase {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("lost-\(UUID().uuidString)")
         addTeardownBlock { try? FileManager.default.removeItem(at: root) }
         let (state, package) = (root.appendingPathComponent("state"), root.appendingPathComponent("Notes"))
-        for path in ["Package.swift", "Platforms/AppKit/main.swift"] {
+        for path in ["Package.swift", "Platforms/AppKit/Package.swift"] {
             let file = package.appendingPathComponent(path)
             try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
             try Data().write(to: file)
         }
+        try ApplicationFile(identifier: "com.example.notes", version: "1.0.0", build: 1)
+            .write(to: package.appendingPathComponent("stateui.json"))
         // Swift asked to describe the package starts a program and waits for it, as a slow manifest does.
         let started = root.appendingPathComponent("descendant")
         let process = Process()

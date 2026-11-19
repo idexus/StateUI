@@ -16,8 +16,9 @@ enum TestDiscovery {
         return HostFamily.allCases.first { $0.folder == suffix }
     }
 
-    /// The suites of `root` for `host`, `applications` its applications' package folders.
-    static func suites(in root: URL, host: HostFamily?, applications: [URL]) -> [TestSuiteDescription] {
+    /// The suites of `root` for `host`, `applications` its applications' package folders; a host's own suite run on
+    /// another machine where `elsewhere` - GTK's and WinUI's in a guest of a Mac, a host's a machine paired runs.
+    static func suites(in root: URL, host: HostFamily?, applications: [URL], elsewhere: Bool = false) -> [TestSuiteDescription] {
         let files = FileManager.default
         func children(_ folder: URL) -> [URL] {
             ((try? files.contentsOfDirectory(atPath: folder.path)) ?? []).sorted().map { folder.appendingPathComponent($0) }
@@ -38,8 +39,8 @@ enum TestDiscovery {
             if let own = self.host(of: folder) {
                 guard own == host else { continue }
                 suites.append(TestSuiteDescription(
-                    id: id, detail: "stateui repo test - the \(own.folder) host's tests, every verdict held, then its API records",
-                    kind: .host, packageUri: uri, host: own))
+                    id: id, detail: "stateui repo test - the \(own.folder) host's tests\(elsewhere ? " on the machine chosen" : ""), every verdict held, then its API records",
+                    kind: .host, packageUri: uri, host: own, onDevice: elsewhere))
             } else if host == .appkit, owned.contains(folder.standardizedFileURL.path) {
                 suites.append(TestSuiteDescription(id: id, detail: "swift test as an AppKit build, on .build/appkit", kind: .package,
                                                    packageUri: uri, host: .appkit))
@@ -59,26 +60,29 @@ enum TestDiscovery {
 }
 
 /// One suite run as `TestDiscovery` describes it: a package's by `swift test` - an application built as an AppKit head
-/// with `STATEUI_HOST=appkit` in `.build/appkit`, every other as plain Swift - a host's by its repository suite.
+/// with the trait `AppKit` in `.build/appkit`, every other as plain Swift - a host's by its repository suite.
 /// Design: docs/design/tooling/tests.md
 struct TestRunner {
     let tools: ToolResolver
 
-    /// Runs `suite`, a host's on `device` where it runs on one, the checkout's suites from `checkout`.
-    func run(_ suite: TestSuiteDescription, device: String?, checkout: URL?, reporter: BuildReporter) async throws -> SuiteResult {
+    /// Runs `suite`, a host's on `device` where it runs on one, the checkout's suites from `checkout`, `filter`ed where
+    /// given.
+    func run(
+        _ suite: TestSuiteDescription, device: String?, filter: String? = nil, checkout: URL?, reporter: BuildReporter
+    ) async throws -> SuiteResult {
         if suite.kind == .host, let host = suite.host {
             guard let checkout else { throw ToolingError(.projectNotFound, "A host's suite runs in a StateUI checkout.") }
-            let ran = try await HostSuite(checkout: checkout).run(host, device: device, reporter: reporter)
+            let ran = try await HostSuite(checkout: checkout).run(host, filter: filter, device: device, reporter: reporter)
             return SuiteResult(suite: suite.id, phases: ran.phases)
         }
         let package = try FileURI.url(suite.packageUri)
-        var environment = ProcessEnvironment.inherited.removing(
-            "STATEUI_HOST", "STATEUI_UPDATE_EXPORTS", "STATEUI_UPDATE_DOCS", "STATEUI_UPDATE_SAMPLES", "STATEUI_STALE_ONLY")
+        let environment = ProcessEnvironment.inherited.removing(
+            "STATEUI_UPDATE_EXPORTS", "STATEUI_UPDATE_DOCS", "STATEUI_UPDATE_SAMPLES", "STATEUI_STALE_ONLY")
         var arguments = ["test", "--package-path", package.path]
         if suite.host == .appkit {
-            environment = environment.setting("STATEUI_HOST", to: "appkit")
-            arguments += ["--scratch-path", package.appendingPathComponent(".build/appkit").path]
+            arguments += ["--traits", HostFamily.appkit.folder, "--scratch-path", package.appendingPathComponent(".build/appkit").path]
         }
+        if let filter { arguments += ["--filter", filter] }
         reporter.progress("testing \(suite.id)")
         let passed = try await TestRun.swift(tools.swift, arguments, environment, reporter)
         return SuiteResult(suite: suite.id, phases: [SuiteResult.Phase(name: "tests", passed: passed)])

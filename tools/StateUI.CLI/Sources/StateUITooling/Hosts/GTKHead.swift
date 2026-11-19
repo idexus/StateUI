@@ -26,20 +26,12 @@ struct GTKHead {
             try files.copyItem(at: images, to: staging.appendingPathComponent("Images"))
         }
     }
-
-    /// The application ID the head runs as - `GTKHost.run(applicationID: "com.stateui.gallery")` - which names its
-    /// desktop entry and icon; `nil` where the head names none.
-    static func applicationID(of application: URL) -> String? {
-        let head = application.appendingPathComponent("Platforms/GTK/main.swift")
-        guard let text = try? String(contentsOf: head, encoding: .utf8) else { return nil }
-        return text.firstMatch(of: /applicationID: "([^"]+)"/).map { String($0.1) }
-    }
 }
 
 extension GTKHead {
     /// gdb's commands for a GTK head run under it: every GTK critical's stack said and the run going on past it -
     /// `g_return_if_fail_warning`'s domain and expression read from `architecture`'s argument registers - and a
-    /// crash's whole stack, every thread's after it.
+    /// crash's whole stack, every thread's after it; gdb ends with the program's status, a crash's as its signal's.
     /// Design: docs/design/tooling/gtk-heads.md#running
     static func gdbCommands(for architecture: Architecture) -> String {
         let (domain, expression) = architecture == .x86_64 ? ("$rsi", "$rdx") : ("$x1", "$x2")
@@ -60,10 +52,14 @@ extension GTKHead {
             continue
             end
             run
+            if $_isvoid($_exitcode)
             printf "=== STOPPED\\n"
             bt 60
             info threads
             thread apply all bt 12
+            quit 128 + $_siginfo.si_signo
+            end
+            quit $_exitcode
 
             """
     }

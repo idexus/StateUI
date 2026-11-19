@@ -74,20 +74,23 @@ GalleryApp.register()
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
-WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
+WebHost.run()
 ```
 
-`name:` is what `app.info.name` tells the application, and `applicationID:`
-what `app.info.packageName` tells: a page has no identity of its own, so a
-head that names none leaves it empty.
+What `app.info` tells the application - its name, identifier, version and
+build - is its `stateui.json`'s, which the tool lays beside the page's
+`index.html` and the page reads as it starts: a page has no record of an
+application of its own. The browser keeps the application's values under its
+identifier.
 
-`STATEUI_HOST=web` is what makes a build a Web one: the application's manifest
-reads it, declares its `Platforms/Web` head and the module it makes, links the
-application's own library into it rather than beside it - a page loads one
-module - and defines the `WEB` compilation condition for every module of the
-application; `lib/StateUI.Head` brings the `StateUIWeb` host to the head and
-links it with an 8 MB stack. Swift written for this host alone stands under
-`#if WEB`.
+The trait `Web` is what makes a build a Web one: the head's own package,
+`Platforms/Web`, makes the module and enables the trait on the application,
+which defines the `WEB` compilation condition for every module of the
+application, and on `lib/StateUI.Head`, which brings the `StateUIWeb` host to
+the head and links it with an 8 MB stack. A page loads one module, so the
+application, StateUI and the host link into it: built for WebAssembly, a
+package takes StateUI's static product, `StateUIStatic`. Swift written for
+this host alone stands under `#if WEB`.
 
 A new application - **StateUI: New Application**, `stateui new`, or
 `stateui new` - has a Web head, as HelloWorld does.
@@ -331,9 +334,8 @@ it is taken. The page is served to this machine alone; `--listen lan` serves
 it on every interface, so a phone or a tablet on its network opens it, each
 address said. `--device` names the browser - `stateui devices --host web`
 lists those installed, the system's own marked - and `--device none` opens
-none. Every `STATEUI_` variable of the shell that runs it but the build's own
-`STATEUI_HOST` - `STATEUI_TALLY=1` - reaches the application as a parameter
-of the page's address, which the application reads as its environment.
+none. Every `STATEUI_` variable of the shell that runs it - `STATEUI_TALLY=1` -
+reaches the application as a parameter of the page's address, which the application reads as its environment.
 `stateui build` builds and lays the page out, serving nothing.
 
 Safari on iOS and iPadOS 27 runs a page served over plain http with no JIT
@@ -356,6 +358,25 @@ on the page, in a profile of its own: the page's console is in the Debug
 Console, and ending the session stops the server. Any other browser, and
 **StateUI: Release**, the tool opens.
 
+A breakpoint on a line of Swift holds there through VS Code's WebAssembly
+DWARF Debugging extension (`ms-vscode.wasm-dwarf-debugging`), which
+**StateUI: Debug** offers to install where it is missing: the debugger reads
+the module's DWARF, which a debug build keeps, steps through Swift's lines and
+names Swift's functions in the call stack. The variables it shows are
+WebAssembly's - the module's locals, globals and stack - not Swift's: the
+browser's debugger reads no Swift types.
+
+In Safari 27 or newer, **StateUI: Debug** has the tool open the page in
+Safari and `lldb-dap` attach to it through Safari's WebAssembly debugger.
+Turn it on once: Safari's Settings, Advanced, *Show features for web
+developers*, then Develop, Feature Flags, *Experimental WebAssembly
+Debugger (Disables JIT)*. Safari 27 comes to macOS 26 by Software Update;
+`stateui doctor` says whether this Mac has it. LLDB stops on a line of Swift
+and walks Swift's call stack into StateUI itself; attaching takes some
+seconds while it reads the module's debugging information, and the page runs
+without Safari's JIT while the flag is on. It does not yet read a variable's
+value: the variables show their Swift types alone.
+
 ## Packaging
 
 ```bash
@@ -366,7 +387,7 @@ stateui package --project apps/HelloWorld --host web --output artifacts/HelloWor
 folder named, else `artifacts/<application>/Web`, made anew: a folder any web
 server serves as it is. **StateUI: Package** in the editor does so for the
 application chosen, and lays the page in `artifacts/<application>/Web` of the
-application's workspace - the folder of the stateui.json listing it.
+application's workspace - the folder of the stateui-workspace.json listing it.
 
 ## Testing
 

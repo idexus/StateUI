@@ -1,0 +1,273 @@
+# The service
+
+Another machine's tool - a Parallels guest's, a computer of the network - is
+reached by its service: `stateui service` listening on the network, speaking
+the protocol an editor speaks ([The protocol](protocol.md)) over a TCP
+connection instead of a program's standard streams. Any machine running it is
+a destination of any other: a Mac's guest, a Windows computer from Linux, a
+Mac from Windows.
+
+## The socket
+
+The tool reaches the network through a socket layer of its own
+(`StreamSocket`), one implementation over each system's sockets - BSD sockets
+on macOS and Linux, Winsock on Windows, started once in a process - rather
+than a networking library that builds on some systems alone. A socket listens
+on an address and a port - any free one for 0 - or connects to one, either
+named as the system resolves it (`getaddrinfo`, IPv4 and IPv6 alike); the
+first of its places that binds or connects is taken. Reads and writes block,
+each on a thread of its own; a read answers nothing once the other end
+closed, and a write to a closed connection fails rather than ending the
+process (`MSG_NOSIGNAL` on Linux, `SO_NOSIGPIPE` on a Mac). Closing a socket
+ends both directions, so a read or a write waiting on it returns, and no call
+starts on it after; its number goes back to the system only as the last call
+on it returns - a number given back is the next socket's, and a write queued
+for a client lost must never reach another's peer. An accept waits for a
+connection a tenth of a second at a time (`poll`), and so does a read on
+Windows, whose shutdown wakes no `recv`: a close ends either wait on every
+system, the number kept until it has. A name nothing
+resolves is refused as a configuration; a place that answers no connection,
+as a failure of the socket - on Windows only after its retries, some seconds
+later (both tests of it take 13 s there, against milliseconds on a Mac and
+Linux).
+
+## The service listening
+
+`stateui service --listen <address:port>` (`ServiceListener`) accepts
+connections on a thread of its own and serves each as `serve --stdio` serves
+one: the protocol's connection, the tool's methods, each frame written whole
+and in order (`SocketWriter`, which counts what a client leaves unread), the
+socket closed once the connection ends. Many clients are served at once, each
+its own connection. It says the port it took - `stateui: serving on
+10.211.55.2:7979` - and serves until it is stopped, on whichever address it
+is given: the loopback, a virtual machine's host-only network, the LAN. It
+builds and runs code for whoever reaches it, so it admits a paired client
+alone ([Pairing](#pairing)).
+
+A client of the tool reaches another stateui either way (`ServedTool`): the
+program that serves it over its standard streams - a guest's `serve --stdio`
+through `prlctl exec` - or its service, by address and port; the same
+conversation runs over either.
+
+## Pairing
+
+A service admits a client it paired with, and none other (`ServicePairing`,
+`Admission`). It shows a pairing code as it starts - six digits, good for ten
+minutes and one machine, retired after five wrong tries, and a new one shown
+whenever one goes. On the other machine `stateui remote add <name>
+<address:port> --code <code>` asks `service/pair` with it - before
+`initialize`, the one thing a connection takes then beside a challenge - and
+keeps what it is given (`RemoteMachines`): the machine's name here, where its
+service listens, the client's id and a token of 32 random bytes from the
+system's secure source. The service keeps its clients in its user's state
+folder (`service/clients.json`), as it serves every project of its machine; a
+project keeps the machines it is paired with in its own `.stateui/remotes.json`
+(`RemotesFile`, a tool file of its version) - its workspace's, else its
+application's - out of git, so a machine is paired for the work it serves.
+Each is readable by its user alone, and pairing outside a project is refused
+before the service is asked. `--project` names the project of `stateui remote`
+and `stateui devices`, the working directory else; `server/info` and
+`devices/list` read the project of the connection's workspace.
+
+Every connection is proved afresh: the client asks `service/challenge` for a
+nonce, and `initialize` carries a credential - its id and the HMAC-SHA256 of
+the nonce under its token, compared in a time its likeness does not tell -
+which the service admits once; the token itself never crosses the network.
+A connection with none, or a wrong one, is refused (`-32004`) before anything
+runs. `serve --stdio` admits its client as before: the program that started
+it is its user. Encryption is a later step, measured system by system: the
+messages travel in plain text on the network they are given.
+
+On a Mac a program of another maker reaches the local network only with the
+Local Network permission of the application it runs under - Terminal, VS
+Code - which macOS asks once; until then a connection fails as the host
+unreachable (`EHOSTUNREACH`). A connection to the Mac is not held by it.
+
+## Files through the connection
+
+A folder travels between machines through the connection itself, whichever
+road it takes - a program's standard streams or the service - so no machine
+reads another's shared folder (`FolderFiles` answering, `FolderTransfer`
+asking, `ServedTool.Session` keeping one connection for all of it). The asking
+side lists the other's files (`folder/survey`: each file's path, size, time and
+whether it is a program, but for what a machine makes where it builds - `.build`, `.git`,
+`.stateui`, `.swiftpm` and the like - and never through a link; a folder that
+cannot be read fails the survey, as a list without it would not be whole and
+its files would be removed as gone), compares
+them with its own by size, by a time a millisecond or more apart and by that
+mark, and sends what
+differs (`files/write`) - or fetches it (`file/read`) - in pieces of at most
+4 MiB a message, base64 within the protocol's frames; what the other side
+holds beyond them is removed (`files/remove`). A file's first piece starts it
+anew beside itself (`<name>.stateui-part`), each next one must follow where
+the last ended, and its last puts it in place with its time and mode - a
+file stands only once whole, a program still one (`0755`, any other `0644`).
+A copy keeps its source's time, which APFS, ext4 and NTFS hold finer than a
+millisecond: a file written again to the same length a moment later is
+another file, and one carried stays the same however long after.
+Windows keeps no such mark: its files say none (`executable` absent), and
+what it writes takes its own. A path names a file inside its folder alone: none empty,
+absolute, with `.`, `..` or a backslash, and none passing a link there - written,
+read or removed, a path through a linked folder or a linked file is refused, as
+what lies past the link is another folder's. An offset, a length or a size below
+zero is a refused request: the service answers it and stays for its other
+clients. These are queries, answered at once:
+a folder of the checkout's 4,476 files is some 27 MB.
+
+## The service in the background
+
+`stateui service install --listen <address:port>` lays the service to start
+with its user's desktop session, where an application it starts opens its
+windows, and starts it now (`ServiceAutostart`); `restart` starts it again as it was
+laid - its program laid anew - and `uninstall` stops it and takes it away. Each system starts it as it starts a user's own program: a
+launch agent on a Mac (`~/Library/LaunchAgents/com.stateui.service.plist`,
+started again should it end); a user unit of the graphical session on Linux
+(`~/.config/systemd/user/stateui.service`, whose process has the desktop's
+display and bus); on Windows the user's `Run` value, starting it in a console
+of no window (`conhost --headless`) - a logon task of the Task Scheduler is
+refused to a user who is not elevated. Running, the service keeps what it
+says of itself in its user's state folder (`ServiceState`, `service/state.json`):
+its process, where it listens and the pairing code it shows now, which
+`stateui service status` tells - running means its port answers.
+
+Windows' firewall holds a program listening on the network until someone
+answers its alert, and a Parallels network is a Public profile: the alert's
+answer allows or blocks the program for any address. `install` takes every
+rule laid for the program away and lays one, `StateUI service`, allowing the
+service's port from the local subnet alone, by a PowerShell script handed
+encoded (`-EncodedCommand`), which no command line's quoting breaks; it asks
+UAC on that machine's desktop once, unless the rule stands, and checks the
+rule after. On Windows a running program's file cannot be written: laying a
+guest's stateui again ends its service first.
+
+## A guest paired
+
+`stateui guest pair --device <guest>` pairs a Mac with its guest as with any
+machine of the network (`GuestPairing`): the guest's stateui laid where it is
+not the checkout's, the service laid in its user's session listening on the
+port given (7979), its code read through `prlctl exec` (`service status
+--format json`), and the guest paired by the first of its addresses - as
+Parallels Tools report them, IPv4 first - at which its service answers, kept
+by the guest's name. A Windows guest's firewall is opened by the Mac itself,
+through `prlctl exec` as the guest's system account, with no prompt - the
+guest is the Mac's own machine - so `install` finds the rule standing; a
+program run through `prlctl exec` as the user could show no UAC prompt.
+
+## Work on another machine
+
+A head of a project is built, packaged and run on another machine, and a
+host's own suite run there, by that machine's own stateui (`RemoteWork`):
+where the device names a machine paired with the project that runs the host
+as its own program, or, on a Mac, a guest for GTK and WinUI; or where the
+request's `machine` names a machine paired that runs the host on its devices,
+its `device` then that machine's own ([Destinations](destinations.md#where-a-hosts-heads-run)). A guest is
+reached through `prlctl exec` - started, its stateui laid where it is not the
+checkout's ([Guests](guests.md#a-head-worked-in-a-guest)) - and its
+connection is then its service's where the Mac is paired with it and it
+answers as this release, else the served program's. A machine paired is
+reached through its service alone: its `server/info` says where it keeps
+another machine's work (`workFolder`, `stateui-guest` under its user's home)
+and its system; its stateui must be this release, answering every method the
+work asks, or the work is refused saying so - nothing is laid on a machine
+the tool reaches only through the network. Then alike: the project and its
+checkout copied there through the connection into this machine's own folder
+of the work folder, `stateui-guest/<identity>`, which no other machine's work
+shares - its packages laid there too, `artifacts/<Name>/<Host>` - the request asked with that
+machine's path of the application, a package fetched home, a run's output
+told as it comes and cancelled with it, the result naming that machine as
+its destination (`remote` or `guest`). A host this machine builds none of is
+offered at `remote` in `tests/discover` as on a device, its suite refused
+without one.
+
+`toolchain/check` of a host with a machine paired as its device says what
+that machine has (`RemoteDoctor`): whether its service answers and admits
+this machine - else how to start it or pair again - its stateui's release,
+then the findings its own `toolchain/check` gives, each of that machine; a
+guest paired is checked as a guest.
+
+## A machine's identity
+
+The tool knows itself on a machine, for its user, by one identity
+(`MachineIdentity`): 32 random bytes from the system's secure source, made
+the first time one is asked for and kept in the user's state folder
+(`identity.json`, a tool file of its version) - written so that two processes
+asking at once make one. A name or an address changes; the identity does not.
+Its first twelve hexadecimal digits name this machine's own folder in another
+machine's work folder, so two machines working a project of one name there
+never write over each other's copy or package.
+
+A service answers for its machine's identity: with each challenge
+(`service/challenge`'s `identity`), in a pairing (`PairingResult.identity`,
+which the client keeps) and in `stateui service status`. Before a client
+proves its token on a connection it checks the identity against the one kept,
+and refuses a service answering for another - another machine at that address,
+or the machine set up anew, paired again. Without keys of their own the
+identity proves nothing by itself; it catches a machine mistaken for another.
+
+## Machines a project declares
+
+A project's manifest may declare the machines it is worked on for everyone
+who works on it (`DeclaredMachine`): `remotes` of its workspace's
+`stateui-workspace.json`, else of its application's `stateui.json` - each a
+name, where its service listens and the identity it answers for:
+
+```text
+"remotes" : [ { "address" : "192.168.1.20:7979", "identity" : "3f9c…", "name" : "office" } ]
+```
+
+It holds no secret - a public repository may hold it: each user still pairs
+with the machine once, by the code it shows (`stateui remote add office
+--code <code>`, the address taken from the declaration), and the token stays
+in the project's `.stateui`. A declared name is paired only with a service
+answering for the identity declared, checked before the code is spent; once
+paired, the machine is reached at the address and identity declared, whatever
+its pairing kept, so a changed address reaches everyone through git.
+`stateui remote declare <name>` writes a machine paired into the manifest,
+sorted by name; `stateui remote list` names the machines declared but not
+paired here. A name given twice, an address of no port or an identity not 64
+hexadecimal digits refuses the manifest, as does an application of a
+workspace declaring its own.
+
+## A debugger relayed
+
+A debug server knows no client: a port of one open to the network would give
+anyone reaching it a process on the machine. A debugger reaches a desktop
+head of another machine alone - the one way relayed here, its adapter's -
+so a run of a device's, a simulator's or a browser's head there asking for
+one is refused before that machine is touched (`RemoteWork.refuse`): the
+process it would name, its device and its paths are that machine's. So a debugger reaches another
+machine through the service alone. A desktop head - AppKit's, GTK's, WinUI's -
+run there with `debugger` is held by that machine's own `lldb-dap`, listening on a free port
+of its loopback ([A desktop head](runs.md#a-desktop-head)), which the run
+holds while it lasts (`DebugPorts`). The client asks for a relay to it on a
+connection of its own (`service/relay`, before `initialize`): the challenge's
+nonce answered with the token, as `initialize`'s credential would, and the
+port - refused for a port no run holds now; granted, the service writes its
+answer and carries the rest of the connection's bytes to that port and back
+until either end closes. On the client, `DebugRelay` listens on a port of its
+own loopback and makes such a connection for each the editor's debugger
+makes; `started` names that port (`adapterPort`), and the editor connects to
+the adapter rather than starting its own.
+
+LLDB runs where the program was built: with that machine's SDK, its Clang
+modules and its process plugin, so a stop shows every type at once. LLDB
+there takes no source map to a folder it has not, so the relay carries the
+adapter's messages one by one and turns every `path` under this machine's
+folder into the copy's - written as that machine writes a path - and back
+(`PathTranslation`): the editor sets and sees breakpoints in its own files. A
+guest reached through `prlctl exec` alone has no service to relay through: a
+debugger there asks it be paired.
+
+## A service probed
+
+`stateui remote probe <address:port>` says whether a stateui service answers
+at a place - it answers `service/challenge`, which no pairing is asked for -
+and whether this machine is paired with it; `stateui remote list` says of
+each machine paired whether its service answers and admits this one,
+showing its system, release and hosts (`server/info`), that its pairing is
+gone, or that another machine answers there - an identity not the one kept or
+declared (`ServiceProbe`). Each place is given three seconds: a connection to a
+place that answers nothing would wait for minutes, and is left to end by
+itself. A place answering none fails the command (status 1), as `stateui
+service status` does where no service runs.
+

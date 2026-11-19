@@ -1,0 +1,46 @@
+{
+  "request" : {
+    "id" : "17",
+    "jsonrpc" : "2.0",
+    "method" : "application/prepare",
+    "params" : {
+      "host" : "appkit",
+      "projectUri" : "file:///Users/example/Projects/Demo/apps/Notes",
+      "requestToken" : "6e3a1c5b-7d2f-4b8e-a0c4-3f5b7d9e1a2c"
+    }
+  },
+  "response" : {
+    "id" : "17",
+    "jsonrpc" : "2.0",
+    "result" : {
+      "operationId" : "op-6f2b9a1c-0d4e-4a8b-9f3c-1e2d3c4b5a69",
+      "state" : "queued"
+    }
+  },
+  "result" : {
+    "build" : {
+      "application" : "Notes",
+      "architecture" : "arm64",
+      "bundleUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug/NotesAppKit.app",
+      "configuration" : "debug",
+      "folderUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug",
+      "host" : "appkit",
+      "programUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug/NotesAppKit.app/Contents/MacOS/NotesAppKit"
+    },
+    "debugger" : {
+      "attachCommands" : [
+
+      ],
+      "initCommands" : [
+
+      ],
+      "kind" : "lldb",
+      "programUri" : "file:///Users/example/Projects/Demo/apps/Notes/.build/stateui/artifacts/appkit-arm64-67f9bfc089c6-debug/NotesAppKit.app/Contents/MacOS/NotesAppKit",
+      "request" : "launch",
+      "terminateCommands" : [
+
+      ],
+      "workingUri" : "file:///Users/example/Projects/Demo"
+    }
+  }
+}

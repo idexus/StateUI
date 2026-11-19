@@ -22,8 +22,8 @@ final class AppsTests: XCTestCase {
 
     /// Every application under `apps/` is wired to the repository: its Swift
     /// manifest declares the application's module, `<Name>UI`, every package
-    /// and target path the manifest names resolves, and the one export a host
-    /// calls by name is declared under `Sources/`.
+    /// and target path its manifest and each head's names resolves, and the one
+    /// export a host calls by name is declared under `Sources/`.
     ///
     /// A new application is checked the moment it exists, with nothing to
     /// remember.
@@ -55,13 +55,20 @@ final class AppsTests: XCTestCase {
                 "\(name): Package.swift declares no target called \(name)UI - SwiftPM refuses "
                     + "the package.")
 
-            for (path, isPackage) in manifestPaths(in: manifest) {
-                let directory = app.appendingPathComponent(path).standardizedFileURL
-                let wanted = isPackage ? directory.appendingPathComponent("Package.swift") : directory
+            // Its own manifest and each head's, every path read from the manifest's folder.
+            let heads = ((try? FileManager.default.contentsOfDirectory(atPath: app.appendingPathComponent("Platforms").path)) ?? [])
+                .sorted().map { app.appendingPathComponent("Platforms").appendingPathComponent($0) }
+                .filter { FileManager.default.fileExists(atPath: $0.appendingPathComponent("Package.swift").path) }
+            for folder in [app] + heads {
+                let text = try String(contentsOf: folder.appendingPathComponent("Package.swift"), encoding: .utf8)
+                for (path, isPackage) in manifestPaths(in: text) {
+                    let directory = folder.appendingPathComponent(path).standardizedFileURL
+                    let wanted = isPackage ? directory.appendingPathComponent("Package.swift") : directory
 
-                XCTAssertTrue(
-                    FileManager.default.fileExists(atPath: wanted.path),
-                    "\(name): Package.swift names \(path), and \(wanted.path) does not exist.")
+                    XCTAssertTrue(
+                        FileManager.default.fileExists(atPath: wanted.path),
+                        "\(name): \(folder.lastPathComponent)'s Package.swift names \(path), and \(wanted.path) does not exist.")
+                }
             }
 
             // Every head names the application to its host by its one public type, in Swift, before the host runs;
@@ -176,9 +183,8 @@ final class AppsTests: XCTestCase {
 
     /// Every path a manifest names, and whether it names a package - a
     /// directory holding a Package.swift - rather than a target's own files.
-    /// Comment lines are left out, and so is a path built from the build's
-    /// host - `Platforms/\(host)` - whose head NativeProjectTests asks about
-    /// host by host.
+    /// Comment lines are left out, and so is a path built from a variable -
+    /// `\($0)` - which names no one folder.
     private func manifestPaths(in manifest: String) -> [(path: String, isPackage: Bool)] {
         manifest.split(separator: "\n")
             .filter { !$0.drop(while: { $0 == " " }).hasPrefix("//") }

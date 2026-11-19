@@ -3,6 +3,220 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
+## 0.8.6 - 2026-11-16
+
+### Breaking changes
+
+- **A build names its host by a package trait, and each head is a package of its own.** `STATEUI_HOST` is gone: a
+  head, `Platforms/<Host>`, has a `Package.swift` of its own that builds the application with its host's trait and
+  depends on `lib/StateUI.Head` with the same trait, which brings the host. The application's own package is its
+  module and its tests, declares a trait per host and defines each host's condition from it; it declares no head and
+  depends on no `StateUIHead`. Nothing is inherited from an environment any more - Xcode, SourceKit-LSP and SwiftPM's
+  caches see the host as declared - and a head's files need no condition. An application made before moves each
+  head's target into its folder's manifest and writes its own as HelloWorld's:
+
+  ```swift
+  // Package.swift
+  let hosts = ["AppKit", "UIKit", "Android", "WinUI", "GTK", "Web"]
+  let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+      + hosts.map { .define($0.uppercased(), .when(traits: [$0])) }
+  // traits: Set(hosts.map { Trait(name: $0) }), the module's StateUI dynamic on every platform but WebAssembly
+
+  // Platforms/AppKit/Package.swift
+  .package(name: "NotesUI", path: "../..", traits: ["AppKit"]),
+  .package(name: "StateUIHead", path: "../../../../lib/StateUI.Head", traits: ["AppKit"]),
+  ```
+
+  WebAssembly links no library dynamically, so StateUI and the host layer have a static product beside the dynamic
+  one, `StateUIStatic` and `StateUIHostStatic`, which a package built for it takes `.when(platforms: [.wasi])`; an
+  application's own library is linked into its head. `stateui build` builds a head by its package, `stateui new` and
+  `stateui project library` name the checkout in every manifest of the application, and the VS Code extension indexes
+  the application with the chosen host's trait (`swiftPM.traits`, and its condition as a flag, which SourceKit-LSP's
+  build system does not yet take from the trait) and the head by its package; it offers releases
+  from 0.8.6 on.
+- **An application is a folder holding its `stateui.json`.** Beside its `Package.swift`, the file says what the
+  application is on every platform - the `identifier` naming it, the `name` shown (its folder's where none is given),
+  the `version` shown to its user and its `build` - and neither `stateui` nor the VS Code extension takes a folder
+  without one for an application. Every head takes them from there: an Apple bundle's `CFBundleIdentifier`,
+  `CFBundleShortVersionString` and `CFBundleVersion` - which were `com.stateui.<name>`, StateUI's release and 1, and
+  which an application's own `Info.plist` may no longer say, with `CFBundleDisplayName` and `CFBundleName` from its
+  `name` - and an Android head's `applicationId`, `versionName`, `versionCode` and label. `stateui new` writes the
+  file: the identifier `--identifier` gives, else `com.example.<name>`, at version 1.0.0, build 1. An application made
+  before adds its own file, and its `Platforms/Android/build.gradle.kts` reads it:
+
+  ```json
+  { "build": 1, "identifier": "pl.example.notes", "schemaVersion": 1, "version": "1.0.0" }
+  ```
+
+  ```kotlin
+  applicationId = stated("stateui.identifier")
+  versionCode = stated("stateui.versionCode").toInt()
+  versionName = stated("stateui.version")
+  manifestPlaceholders["stateuiName"] = stated("stateui.name")
+  ```
+
+  and its `AndroidManifest.xml` says `android:label="${stateuiName}"`.
+
+- **WinUI, GTK and the Web read what the application is from its `stateui.json`.** The tool lays the file beside a
+  WinUI or GTK program and a page's `index.html`, and `app.info` tells its name, identifier, version and build on
+  these hosts too. `GTKHost.run(applicationID:)` is `GTKHost.run()` - the desktop knows the application by the file's
+  identifier - and `WebHost.run(name:applicationID:)` is `WebHost.run()`; the browser keeps an application's values
+  under its identifier, so what a page kept under its name before is not read again.
+- **A workspace's file is `stateui-workspace.json`.** `stateui.json` is an application's now: a workspace made before
+  renames its file, which keeps what it says.
+- **What was chosen stands out of git.** A workspace's application to start leaves `stateui-workspace.json` for its
+  `.stateui/workspace-settings.json`, which `stateui settings --startup <application>` writes; a file still saying
+  `startup` is refused. Each application keeps its chosen host and each host's device in its `.stateui/settings.json`,
+  and `stateui build`, `run` and `package` take them where `--host` or `--device` is left out. `stateui settings` -
+  `settings/get` and `settings/set` - shows and changes both. A build's `host` may be left out of `BuildRequest`. The
+  VS Code extension chooses through the same files: the window works as the chosen application's host, a device is
+  the application's choice by its name, and what `stateui settings` changes shows in the status bar at once.
+- **`stateui project library` changes the StateUI a project builds with.** It acts on the project a command reads:
+  in an application, the checkout its manifest names - no workspace needed; in a workspace, a checkout or a release
+  for every application it lists, as `stateui workspace library` did. `stateui workspace library` and the API's
+  `workspace/useLibrary` are gone; `project/useLibrary` takes a `projectUri` and answers a `LibraryChange`.
+
+### Fixed
+
+- The tool: a checkout named by a path that begins as the old one did - `../..` changed to `../../StateUI` - is
+  written once in an application's manifest; it was written twice, `../../StateUI/StateUI`.
+- The tool: `stateui repo test --plan native --device <device>` gives the device to the suite whose host it is a device
+  of - an iPhone to UIKit's, a serial to Android's - and a device of neither is refused; it went to both, so the other
+  stood as not run. A suite's own options - `--filter`, `--build-only`, `--architecture`, `--artifact` - are refused
+  with `--plan`, which dropped them.
+- The tool: a failed operation's last output - the compiler's error - reaches the editor before the operation's end;
+  told after it, it was dropped.
+- The tool: a launch on a simulator that `simctl` refuses says what `simctl` said and how it ended; it was told as
+  one that named no process within a minute, `simctl`'s own words dropped.
+- The tool: a build gives SwiftPM five minutes, as any build step, to say where it laid the products, reads the folder
+  from SwiftPM's standard output alone, and where SwiftPM names none says what it said and how it ended. Given half a
+  minute, a busy machine's answer was lost and a host's suite failed its tests without a word; a warning SwiftPM wrote
+  to its errors was taken for the folder.
+- VS Code: Run Without Debugging (Ctrl+F5) runs the Debug build with no debugger on every host; it readied one and
+  attached it.
+- VS Code: no language server's configuration is written while the tool answers no lease of the index; a lease not
+  answered was taken for one held.
+- VS Code: folders asked for at once share one connection to the tool, and one opens again once it ended; each opened
+  its own `stateui serve`, and all but the last were lost. A connection refused at opening ends the process it started.
+- The tool: `stateui doctor` asks for no Python 3 for the Web, which nothing uses - the tool serves a page itself; a
+  machine without it was told it could not build the Web.
+- Web: a debug build's module keeps its DWARF, which the browser's debugger reads. The head's release-only
+  `--strip-debug` reached debug builds too - SwiftPM's build system applies a library's linker settings conditioned
+  on a configuration in every configuration - so a debugger found no Swift in the page; the tool now links a release
+  module without its debugging information itself.
+- Web: a bar button whose look follows the pointer and the press takes its click in Safari. The page wrote its words
+  and attributes again as the press came and went, its words in a new text node, and WebKit sends no click where the
+  node under the pointer was replaced; what already stands is written no more, and new words change the one text node
+  in place.
+- WinUI: the host and the web view's backend build with Visual Studio 18.12, whose C++ library, MSVC 14.52, refuses
+  every Clang below 22 - the Swift toolchain's is 21 - and stopped their relays' first file. Each relay defines
+  `_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH`; an application with a relay of its own defines it in that target's
+  `cxxSettings` too.
+- GTK: a page replaced while the focus stood in it is let go. A link replacing the stack's top page left that page,
+  and everything it held, alive for the rest of the run; the focus is taken out of a page before it is replaced away.
+- GTK on Wayland: a field that takes the keyboard and goes at once no longer ends the process. GTK 4.22 binds its input
+  method as the compositor answers the first field, and kept a field gone before that answer, freed, for the
+  compositor's next word to reach; the window now waits for that answer as the first field takes the keyboard.
+
+### Tooling
+
+- A Mac works its GTK and WinUI heads in Parallels guests. `stateui devices --host gtk` (`winui`) lists the Mac's
+  Linux (Windows) guests as devices of the kind `guest`, with their state; `stateui guest prepare --device <guest>`
+  lays the checkout's stateui in the guest - copied from the folder it shares, built by the guest's Swift - under its
+  user's `stateui-guest`; `stateui doctor --host gtk --device <guest>` checks the way to it from the Mac - Parallels'
+  `prlctl` (the Pro and Business editions), the guest, Parallels Tools, the project's folders shared, its user's
+  desktop session, its stateui - and then what its own stateui finds in it, each finding naming its machine. The tool
+  asks the guest's stateui over the protocol an editor speaks, through `prlctl exec`. `stateui build`, `package` and
+  `run --host gtk|winui --device <guest>` work there: the guest started or resumed, its stateui laid where it is not
+  this release, the project and its checkout copied in - the files git tracks and would track - and
+  the request asked of it; a package lands in the Mac's `artifacts`, and Ctrl+C on the Mac stops the application in
+  the guest. `application/run` starts a GTK or WinUI head of its own machine too, followed until it ends. The VS Code
+  extension offers GTK and WinUI on a Mac, the guest chosen in the status bar (**StateUI: Select Guest**): a launch
+  and **StateUI: Package** work there - a Debug launch with no debugger, said - and **StateUI: Check Toolchain**
+  checks the guest chosen too. In a checkout, `stateui repo test --suite host:gtk|winui --device <guest>` runs the
+  host's own suite in the guest, and **StateUI: Run Tests** there too; a test run (`tests/run`) takes a `filter`.
+- The tool decides, and every client shows: `server/info` - and `stateui version` - names the hosts this machine
+  builds and where each one's heads run (`hosts`: the machine itself, a device, a browser or a guest); `devices/list`
+  names this machine (`machine`) for a host whose heads run on it, and each destination says whether a debugger
+  reaches it (`debugger`) and the architectures it runs emulated (`emulated`, x86_64 on an ARM64 Windows); `stateui
+  doctor --host <host> --device <guest>` checks this machine and then the guest, in one report. The VS Code extension
+  reads all of it from the tool - the hosts it offers, a browser's or a guest's debugger, WinUI's package
+  architectures - and keeps no table of its own.
+- The tool says how a debugger reaches every application it readies (`DebugDescriptor`): `application/prepare`
+  builds and readies a head of this machine - AppKit, WinUI, GTK, a GTK head installed and a copy running stopped -
+  for LLDB to start its program; `application/run` with `debugger` hands the way to a simulator's, a device's or an
+  Android head's process in its `started` event (`debugger`, in place of `debuggerSocket`), and readies a page for a
+  browser a debugger follows, which it then opens in none. `stateui run --debugger` prints the LLDB commands. The VS
+  Code extension maps the way to lldb-dap or its JavaScript debugger and builds none itself.
+- The VS Code extension offers the WebAssembly DWARF Debugging extension as a Debug launch in one of Chromium's browsers
+  is readied, where it is missing, and **StateUI: Check Toolchain** says whether it is installed wherever the machine
+  offers the Web: through it a breakpoint on a line of Swift holds in the page, the call stack naming Swift's
+  functions; the variables are WebAssembly's, as the browser's debugger reads no Swift types.
+- A page is debugged in Safari 27 with LLDB: a Debug run in Safari opens the page there and names LLDB's way to it
+  through Safari's WebAssembly debugger (`platform select webinspector-wasm`, the page's process attached), which VS
+  Code's lldb-dap takes - Swift's lines and call stack, the variables' Swift types without their values yet. Safari's
+  feature flag *Experimental WebAssembly Debugger* turns it on, and the run says so where no page appears; `stateui
+  doctor` requires Safari 27 for Debug in Safari, and `stateui run --debugger` prints LLDB's commands for a page too.
+- `stateui service --listen <address:port>` serves the tool's protocol over TCP - the one an editor speaks over
+  `serve --stdio` - to many clients at once, on any address it is given; its sockets are the tool's own on macOS,
+  Linux and Windows. It admits a paired client alone: it shows a pairing code, `stateui remote add <name>
+  <address:port> --code <code>` pairs a project with another machine (`stateui remote list`, `remove`, `--project`),
+  kept in the project's `.stateui/remotes.json` out of git, and every connection proves its token by the HMAC-SHA256
+  of a challenge, the token never sent.
+- A project's manifest declares the machines everyone works it on: `remotes` of `stateui-workspace.json`, else of
+  `stateui.json` - a name, an address and the identity the machine's service answers for, no secret. `stateui remote
+  declare <name>` writes a machine paired there, `stateui remote add <name> --code <code>` pairs a declared one by its
+  name, refused where another identity answers, and a declared machine is reached at the address declared.
+- A machine paired with a project is a destination of the hosts whose heads run there as its own programs:
+  `server/info` tells them at the place `remote` and says the folder another machine's projects are copied into
+  (`workFolder`), and `devices/list` lists the machine (`remote`).
+- `stateui build`, `run`, `package` and `repo test --suite host:<host>` with a machine paired as the device are that
+  machine's work, through its service: the project and its checkout copied there, the request asked of its own
+  `stateui` - which is to be this release - a package fetched home, a run's output told as it comes; each machine's
+  copies and packages stand in a folder of its own there, `stateui-guest/<identity>`, named by the identity the tool
+  makes once in its state folder (`identity.json`), which a service answers for in its challenge, its pairing and
+  `stateui service status`, and which every connection checks before it proves its token; a guest paired is
+  reached through its service too, else through `prlctl exec`. `stateui doctor --device <machine>` says whether its
+  service answers and admits this machine, its release, and what it has of what the host needs. The VS Code
+  extension's **StateUI: Select Machine** offers a host's guests and machines paired, and a launch on one runs there.
+- `stateui repo conformance run --host <host> --device <machine>` runs a host this machine works on another - GTK and
+  WinUI on a Mac - on that machine, the checkout copied there; `--record` fetches the host's
+  `lib/StateUI/exports/marks/<host>` home and renders the documents here. The VS Code extension's conformance commands
+  run there for such a host.
+- A machine paired offers its devices and browsers - a Mac's simulators and iPhones, Android devices: `devices/list`
+  asks it through its service, each destination named by its `machine`, and `--machine <name> --device <its device>`
+  (`BuildRequest.machine`) builds, packages and runs a head there.
+- `stateui repo test --plan portable|native --device <machine>` runs the plan on a guest or a machine paired, the
+  checkout copied there - `repository/plan`, the plan's operation, which any client asks.
+- `stateui run --host gtk --gdb` (`RunRequest.gdb`) runs the head under gdb through `application/run`, so on another
+  machine too - `--device <guest>` - each GTK critical's stack and a crash's told here, the command ending as gdb does.
+  `--debugger` means LLDB on every host: a GTK or WinUI head is held by the toolchain's `lldb-dap`, listening on a port
+  of the loopback (`DebugDescriptor.adapterPort`), which the editor's debugger connects to. On another machine the
+  debugger is relayed through its service - `service/relay`, granted to a paired client for a port a run holds - to a
+  port of this machine's loopback, the relay turning the adapter's paths between the two machines; no debugger port
+  listens on the network. The VS Code extension's Debug launch on a machine
+  paired - a paired guest too - holds the head there and attaches lldb-dap that way. `stateui run` of a GTK or WinUI head takes the protocol's road.
+- A folder travels to another machine's tool, and back, through the connection itself - `folder/survey`,
+  `files/write`, `file/read`, `files/remove`, in pieces of at most 4 MiB, a file's time kept - over a guest's
+  `prlctl exec` as over the service: a guest reads the project and hands a package back through no shared folder;
+  only its own stateui is laid from the shared checkout.
+- `stateui service install --listen <address:port>` lays the service to start with its user's desktop session - a
+  launch agent on macOS, a user unit of the graphical session on Linux, the user's `Run` value with no window on
+  Windows - and starts it; `uninstall` takes it away, `status` says where it listens and the code it shows. On Windows
+  it opens the service's port in the firewall to the local subnet alone, asking UAC once. `stateui guest pair --device
+  <guest>` lays a guest's service and pairs the Mac with it by its address, a Windows guest's firewall opened by the
+  Mac with no prompt; `stateui service restart` starts the service again on its program laid anew. A guest's stateui laid by the Mac is
+  the `stateui` of the guest's terminals, and its service is started again on it. `stateui remote list` says whether each machine's service answers and admits this one, with its system
+  and hosts; `stateui remote probe <address:port>` whether a stateui service answers at a place and is paired here.
+- `stateui new --platforms appkit,web,winui` makes an application with those hosts' heads alone; an application's
+  hosts are its heads, so one is taken away by removing its `Platforms/<Host>`.
+- The operation journal in `.stateui/operations` keeps the newest 50 operations, never one still running; an
+  application `stateui new` makes outside a workspace has a `.gitignore` keeping `.stateui/` out of git.
+- `stateui run` hands an application it starts on a simulator, a device, Android or a page every `STATEUI_` variable
+  of its own environment, `STATEUI_TALLY=1` among them, as a head on the Mac, Linux or Windows has always had.
+- A GTK head run with `--gdb` ends as its program does: its exit status, or a crash's signal with every thread's
+  stack.
+
 ## 0.8.5 - 2026-11-13
 
 ### Breaking changes

@@ -29,8 +29,7 @@ struct GTKSuite {
             ["test", "--package-path", testing] + (filter.map { ["--filter", $0] } ?? []), desktop, reporter)))
 
         reporter.progress("checking the API records")
-        let modules = (await ToolOutput.text(tools.swift, ["build", "--package-path", testing, "--show-bin-path"], environment: environment))?
-            .split(separator: "\n").last.map { String($0).trimmingCharacters(in: .whitespaces) } ?? ""
+        let modules = try await ProductFolder.of(tools.swift, placing: ["--package-path", testing], environment: environment).path
         let maps = ["StateUI/StateUI.GTK/Sources/CStateUIGTK", "StateUI/StateUI.GTK/Sources/CStateUISoup", "StateUI/StateUI.Host/CStateUIHost",
                     "Backends/WebView.GTK/Sources/CWebKitGTK"]
             .map { "-fmodule-map-file=\(checkout.path)/lib/\($0)/module.modulemap" }

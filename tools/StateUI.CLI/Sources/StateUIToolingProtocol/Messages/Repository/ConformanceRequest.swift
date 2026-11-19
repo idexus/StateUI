@@ -43,14 +43,18 @@ public struct ConformanceRequest: Codable, Equatable, Sendable {
     public var selection: ConformanceSelection
     /// Whether the verdicts are written and the documents rendered, instead of held.
     public var record: Bool
-    /// UIKit's simulator, or Android's device or emulator, by name or id.
+    /// UIKit's simulator, Android's device or emulator, or the machine GTK's and WinUI's run on - a guest, a machine
+    /// paired - by name or id.
     public var device: String?
+    /// A folder of the checkout whose families run; the connection's workspace where none is named.
+    public var folderUri: String?
 
-    /// `host`'s families `selection` takes, recorded where `record`, on `device`.
-    public init(host: HostFamily, selection: ConformanceSelection, record: Bool, device: String? = nil) {
+    /// `host`'s families `selection` takes, recorded where `record`, on `device`, of the checkout holding `folderUri`.
+    public init(host: HostFamily, selection: ConformanceSelection, record: Bool, device: String? = nil, folderUri: String? = nil) {
         self.host = host
         self.selection = selection
         self.record = record
         self.device = device
+        self.folderUri = folderUri
     }
 }

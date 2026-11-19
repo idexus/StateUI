@@ -27,13 +27,16 @@ final class VersionCommandTests: XCTestCase {
         XCTAssertNoThrow(try ToolingJSON.decoder().decode(Envelope<ServerInfo>.self, from: Data(output[0].utf8)))
     }
 
-    /// The words name the release, the API version and the machine.
-    func testTextNamesTheReleaseTheAPIAndTheMachine() async throws {
+    /// The words name the release, the API version, the machine and the hosts it builds, each with where it runs.
+    func testTextNamesTheReleaseTheAPITheMachineAndItsHosts() async throws {
         let (outcome, output, _) = try await Stateui.run("version")
         let machine = Machine.current
+        let hosts = ToolingService().serverInfo().hosts.map { "\($0.host.rawValue) (\($0.place.rawValue))" }.joined(separator: ", ")
 
         XCTAssertTrue(outcome.succeeded)
-        XCTAssertEqual(output, ["stateui \(Release.version), API 1.0, \(machine.system) \(machine.architecture)"])
+        XCTAssertEqual(output, [
+            "stateui \(Release.version), API 1.0, \(machine.system) \(machine.architecture)", "hosts: \(hosts.isEmpty ? "none" : hosts)",
+        ])
     }
 
     /// A command line naming no command, or arguments a command does not take, ends with status 2.

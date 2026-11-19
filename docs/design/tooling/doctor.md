@@ -19,7 +19,8 @@ Linux     pkg-config, GTK, libadwaita, WebKitGTK (the web view), gdk-pixbuf's
           SVG loader, a desktop session
 Windows   Swift from swift.org, Visual Studio with the C++ tools, the WebView2
           runtime (the web view), the Windows SDK
-macOS and Linux   the Swift SDK for WebAssembly, Python 3 (the Web)
+macOS and Linux   the Swift SDK for WebAssembly (the Web)
+macOS     Safari 27 with its WebAssembly debugger (Debug in Safari)
 ```
 
 Each finding names its component with the least of it that serves, who needs
@@ -31,6 +32,9 @@ once and are told in their order.
 Doctor fails - status 3 - when something is missing that every host needs, or,
 given `--host`, something that host needs. A machine lacking another
 platform's tools is no failure: a Mac without the Android NDK builds AppKit.
+Given `--device` naming a guest of the Mac, it checks that guest for the
+host's heads instead, each finding naming its machine
+([The doctor of a guest](guests.md#the-doctor-of-a-guest)).
 
 ## Android's tools
 
