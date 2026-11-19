@@ -120,6 +120,35 @@ copy of an animated value, or a native animation left to run beside the
 channel, drifts from the channel within a frame, and two controls tied to one
 state then stand in two places.
 
+What always holds for a moving value ([the handbook's
+list](../concepts/architecture.md#what-always-holds)) is kept where its rule
+lives, each by tests of its own:
+
+```text
+  one value              State.Storage holds the destination; a frame's report
+                         moves the image's standing lanes, never the value
+                         (JourneyTests, StateTests)
+  one sample             StateChannels: one channel a state, one animator;
+                         HostStorage.sample is the host's last report, whole
+                         (StateChannelsTests, ChannelLifetimeTests)
+  nothing starts         Journey's getters make no image; a channel is counted
+  by being named         by consumers and settled once a walk
+                         (ChannelLifetimeTests, ConversionGraphTests)
+  destinations in        ConversionGraph settles by the sources' target
+                         revisions; a conversion's arithmetic is refused a
+                         state it was not handed (ConversionGraphTests,
+                         ConversionCycleTests)
+  watching changes       PresentationWatch is a reader set of its own; a
+  nothing                reading is booked on the frame's time
+                         (PresentationEngineTests, StateTests)
+  one result             MotionRun ends once; a channel's generation and a
+                         run's number keep an old one from a new
+                         (MotionRunTests, EngineMotionTests)
+  one clock              DisplayCycle's frame time is the board's; reduced
+                         motion lands above every animator
+                         (DisplayCycleTests, TestClockTests, WoundSequenceTests)
+```
+
 Two movements stand on the core's side. A state declared
 `@State(animatedBy: .engine)` is animated by an engine of the application,
 which writes each frame's value and speed, and the host wears them as they

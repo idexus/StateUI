@@ -202,6 +202,50 @@ writes ([Custom engines](#custom-engines)), and a
 [motion layout](../interface/layout.md#a-motion-layout), whose run under the
 hand and whose bodies the core works out on the host's frames.
 
+### How a value flows
+
+```mermaid
+flowchart TD
+    S["State: the destination and its motion"] --> C["Conversions of destinations: convert, multi"]
+    S --> H["Host channel: where the value stands, its speed, its run"]
+    C --> H
+    N["Native input"] -->|"the user's report"| S
+    N -->|"the hand over a layout"| L
+    H --> P["A control's property"]
+    H --> E["Engines and readings following a journey"]
+    E -->|"write a state"| S
+    H --> L["Motion layout: its parameters and its room"]
+    L --> G["Each child's place"]
+    P --> V["The native view"]
+    G --> V
+```
+
+A write goes down: from the state, through a conversion where one stands
+between, to the channel, and from the channel to whatever shows the value -
+a property, a layout's parameters. Only two things come back up, and both
+are writes of a state like any other: what the user did to a control, and
+what an engine or a reading following a journey chose to write. A frame of an
+animation never comes back as a write.
+
+### What always holds
+
+These hold for every state and every host, and the library's tests keep
+them:
+
+| | |
+| --- | --- |
+| One value | A state's value is the one value of the model. While it animates, it is where the animation is going, never the frame it has reached. |
+| One sample | A state has one channel, and every control showing the state draws the same sample of it. |
+| Nothing starts by being named | Making a binding, taking `$x.journey` or declaring a conversion starts no channel and no clock. A channel lives while something shows or follows the state. |
+| Destinations in, a destination out | A conversion reads where its sources are going and nothing else: never where they stand, how fast they go, or their motion. |
+| Watching changes nothing | Reading where a value stands - an engine following a journey, a reading, a body reading the sample - is said outright and never alters the movement it watches. |
+| One result | Every movement ends exactly once, with one result, and a movement begun earlier never answers for one begun later. |
+| One clock | Every movement runs on the display's one clock, under one rule for a user who asks for less motion. |
+
+A clock wound by hand therefore gives the same frames every time: a test
+that advances it by the same steps reads the same values
+([Testing an application](../interface/testing.md#time-wound-by-hand)).
+
 ## Journey
 
 A state remains discrete: reading the state answers its destination
