@@ -23,6 +23,10 @@
     /// The width of the last arrangement; nil before the first.
     private var arrangedWidth: Double?
 
+    /// Whether this arrangement places what a patch said, and whether the layout's own width is another.
+    private var said = false
+    private var resized = false
+
     private var arrangement = Arrangement()
 
     /// A layout not arranged yet.
@@ -36,8 +40,8 @@
     /// Starts an arrangement `width` wide, deciding once for every child how it is placed: what a patch said
     /// travels, what a new width gave arrives - as does everything while a frame under it is read.
     public func begin(width: Double) {
-        let said = patched && arrangedWidth != nil
-        let resized = arrangedWidth.map { abs($0 - width) > 0.5 } ?? false
+        said = patched && arrangedWidth != nil
+        resized = arrangedWidth.map { abs($0 - width) > 0.5 } ?? false
         patched = false
         arrangedWidth = width
 
@@ -60,6 +64,11 @@
         var stated: MotionLanes = []
         if values.width != nil { stated.insert(.width) }
         if values.height != nil { stated.insert(.height) }
+        // A child that is a body - its own, or its layout's for every child - comes onto its place as its body says.
+        let arrangement = values.body.map {
+            layoutMotion.arrangement(
+                of: $0, said: said, resized: resized, framesRead: framesRead, among: arrangement)
+        } ?? arrangement
         layoutMotion.place(
             view, mount: mount, at: place, stated: stated, words: values.words, natural: natural,
             fadeIn: fadeIn, in: arrangement)

@@ -214,7 +214,7 @@ enum UIKitRealization {
         .notPlanned(WindowContract.width, reason: Self.sizedBySystem),
         .notPlanned(WindowContract.x, reason: Self.placedBySystem),
         .notPlanned(WindowContract.y, reason: Self.placedBySystem),
-    ] + pickerWords + HostRecord.motionLayout
+    ] + pickerWords + HostRecord.motionLayout + HostRecord.layoutBodies
         + BarItemLook.notPlanned(reason: "A bar's items stand in the system's own look.")
 
     /// Why a window takes no size: the user's hand gives it, and a scene asks only for orientations.

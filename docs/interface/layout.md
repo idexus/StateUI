@@ -237,6 +237,42 @@ clear and still takes the user's touch, a region for a gesture. A figure - its
 line dashed or joined, its corners rounded one by one - is a shape: a
 `Rectangle`, a `Capsule`, a `Path`.
 
+### How children come onto their places
+
+A stack, a grid and a `ZStack` bring a child onto a new place under their
+`.motion(_:)` when the tree changes them - a row added, a size said anew -
+and stand it there at once when the room itself moves. `.layoutBodies(_:)`
+says otherwise for every child of a layout, and `.layoutBody(_:)` for one
+child, which wins:
+
+```swift
+struct Rows: View {
+    @State private var rows = ["Inbox", "Drafts", "Sent"]
+
+    var body: some View {
+        VStack {
+            ForEach(rows, id: \.self) { row in
+                Text(row)
+            }
+            Button("Add").onClicked { rows.insert("New", at: 0) }
+                .layoutBody(.none)
+        }
+        .layoutBodies(.onChange(Spring(response: .milliseconds(320), damping: 0.7)))
+    }
+}
+```
+
+A `LayoutBody` is one of three. `.onChange(_:)` brings the child onto a new
+place on a `Spring` when the tree changes the layout, whatever the layout's
+own motion; `.followsLayout(_:)` does so whenever the place moves - on a
+frame too, as a neighbor grows under a state the host animates - so the
+child lags behind its place and settles onto it; `.none` stands the child at
+its place at once. A body takes a spring and no other motion: following a
+place that keeps moving is what a spring does, and an eased length has no
+way to say when it began. Under less motion every child stands at its
+place. A [motion layout](#a-motion-layout)'s views are bodies by the same
+two modifiers.
+
 ## Grid
 
 A grid owns row and column definitions; each child states its cell and spans:

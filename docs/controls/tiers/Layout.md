@@ -2,7 +2,7 @@
 
 # Layout
 
-What every layout has: the edges it runs under what stands over its page on, and whether its children are clipped or let input through.
+What every layout has: the edges it runs under what stands over its page on, whether its children are clipped or let input through, and how its children come onto the places it gives them.
 
 ```swift
 VStack {
@@ -26,3 +26,4 @@ How each of them realizes these members is on its own page.
 | `ignoresSafeArea` | property | `SafeAreaEdges` | adaptive |
 | `clipsContent` | property | `Bool` | native |
 | `letsInputThrough` | property | `Bool` | native |
+| `layoutBodies` | property | `LayoutBody` | stateUI |

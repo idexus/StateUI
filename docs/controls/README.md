@@ -37,14 +37,14 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [DatePicker](DatePicker.md) | 95 | 47 ✅ · 3 ☑️ · 37 ✓ · 8 – | 38 ✅ · 2 ☑️ · 38 ✓ · 13 – | 68 ✅ · 6 ☑️ · 15 ✓ · 4 – | 57 ✅ · 4 ☑️ · 28 ✓ · 6 – | 57 ✅ · 7 ☑️ · 24 ✓ · 7 – | 65 ✅ · 1 ☑️ · 21 ✓ · 7 – |
 | [Ellipse](Ellipse.md) | 83 | 43 ✅ · 3 ☑️ · 36 ✓ · 1 – | 42 ✅ · 4 ☑️ · 36 ✓ · 1 – | 64 ✅ · 6 ☑️ · 10 ✓ · 2 – | 44 ✅ · 2 ☑️ · 30 ✓ · 7 – | 49 ✅ · 5 ☑️ · 22 ✓ · 7 – | 57 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Fill](Fill.md) | 78 | 39 ✅ · 2 ☑️ · 36 ✓ · 1 – | 38 ✅ · 3 ☑️ · 36 ✓ · 1 – | 61 ✅ · 5 ☑️ · 10 ✓ · 2 – | 42 ✅ · 2 ☑️ · 30 ✓ · 4 – | 46 ✅ · 3 ☑️ · 22 ✓ · 7 – | 53 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| [Grid](Grid.md) | 88 | 48 ✅ · 2 ☑️ · 36 ✓ · 1 – | 45 ✅ · 3 ☑️ · 38 ✓ · 1 – | 69 ✅ · 5 ☑️ · 12 ✓ · 2 – | 52 ✅ · 2 ☑️ · 28 ✓ · 5 – | 53 ✅ · 3 ☑️ · 24 ✓ · 8 – | 63 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| [HStack](HStack.md) | 88 | 49 ✅ · 2 ☑️ · 35 ✓ · 1 – | 45 ✅ · 3 ☑️ · 38 ✓ · 1 – | 69 ✅ · 5 ☑️ · 12 ✓ · 2 – | 53 ✅ · 2 ☑️ · 27 ✓ · 5 – | 53 ✅ · 3 ☑️ · 24 ✓ · 8 – | 63 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [Grid](Grid.md) | 89 | 49 ✅ · 2 ☑️ · 36 ✓ · 1 – | 46 ✅ · 3 ☑️ · 38 ✓ · 1 – | 70 ✅ · 5 ☑️ · 12 ✓ · 2 – | 53 ✅ · 2 ☑️ · 28 ✓ · 5 – | 54 ✅ · 3 ☑️ · 24 ✓ · 8 – | 64 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [HStack](HStack.md) | 89 | 50 ✅ · 2 ☑️ · 35 ✓ · 1 – | 46 ✅ · 3 ☑️ · 38 ✓ · 1 – | 70 ✅ · 5 ☑️ · 12 ✓ · 2 – | 54 ✅ · 2 ☑️ · 27 ✓ · 5 – | 54 ✅ · 3 ☑️ · 24 ✓ · 8 – | 64 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Image](Image.md) | 78 | 37 ✅ · 3 ☑️ · 36 ✓ · 1 – | 37 ✅ · 3 ☑️ · 36 ✓ · 1 – | 58 ✅ · 5 ☑️ · 10 ✓ · 2 – | 39 ✅ · 1 ☑️ · 30 ✓ · 7 – | 44 ✅ · 4 ☑️ · 22 ✓ · 7 – | 52 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [ItemsView](ItemsView.md) | 93 | 45 ✅ · 3 ☑️ · 40 ✓ · 5 – | 43 ✅ · 3 ☑️ · 42 ✓ · 5 – | 71 ✅ · 5 ☑️ · 13 ✓ · 3 – | 54 ✅ · 2 ☑️ · 28 ✓ · 9 – | 55 ✅ · 3 ☑️ · 24 ✓ · 10 – | 64 ✅ · 1 ☑️ · 22 ✓ · 6 – |
 | [Line](Line.md) | 84 | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 66 ✅ · 5 ☑️ · 10 ✓ · 2 – | 46 ✅ · 1 ☑️ · 30 ✓ · 7 – | 51 ✅ · 4 ☑️ · 22 ✓ · 7 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Link](Link.md) | 85 | 43 ✅ · 3 ☑️ · 37 ✓ · 2 – | 38 ✅ · 3 ☑️ · 39 ✓ · 5 – | 61 ✅ · 6 ☑️ · 13 ✓ · 4 – | 48 ✅ · 2 ☑️ · 29 ✓ · 6 – | 49 ✅ · 4 ☑️ · 25 ✓ · 7 – | 59 ✅ · 1 ☑️ · 22 ✓ · 3 – |
 | [Map](Map.md) | 83 | 41 ✅ · 3 ☑️ · 37 ✓ · 2 – | 41 ✅ · 3 ☑️ · 37 ✓ · 2 – | 83 🧩 | 83 🧩 | 83 🧩 | 83 🧩 |
-| [MotionLayout](MotionLayout.md) | 96 | 43 ✅ · 2 ☑️ · 45 ✓ · 2 – | 42 ✅ · 3 ☑️ · 47 ✓ · 2 – | 69 ✅ · 5 ☑️ · 16 ✓ · 3 – | 48 ✅ · 2 ☑️ · 36 ✓ · 9 – | 49 ✅ · 3 ☑️ · 31 ✓ · 9 – | 65 ✅ · 2 ☑️ · 25 ✓ · 4 – |
+| [MotionLayout](MotionLayout.md) | 97 | 44 ✅ · 2 ☑️ · 45 ✓ · 2 – | 43 ✅ · 3 ☑️ · 47 ✓ · 2 – | 70 ✅ · 5 ☑️ · 16 ✓ · 3 – | 49 ✅ · 2 ☑️ · 36 ✓ · 9 – | 50 ✅ · 3 ☑️ · 31 ✓ · 9 – | 66 ✅ · 2 ☑️ · 25 ✓ · 4 – |
 | [Path](Path.md) | 86 | 46 ✅ · 3 ☑️ · 36 ✓ · 1 – | 45 ✅ · 4 ☑️ · 36 ✓ · 1 – | 67 ✅ · 6 ☑️ · 10 ✓ · 2 – | 47 ✅ · 2 ☑️ · 30 ✓ · 7 – | 52 ✅ · 5 ☑️ · 22 ✓ · 7 – | 60 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Picker](Picker.md) | 97 | 51 ✅ · 3 ☑️ · 37 ✓ · 3 – | 44 ✅ · 4 ☑️ · 41 ✓ · 5 – | 68 ✅ · 6 ☑️ · 13 ✓ · 5 – | 61 ✅ · 2 ☑️ · 28 ✓ · 6 – | 56 ✅ · 4 ☑️ · 24 ✓ · 13 – | 52 ✅ · 1 ☑️ · 20 ✓ · 17 – |
 | [Polygon](Polygon.md) | 87 | 47 ✅ · 3 ☑️ · 36 ✓ · 1 – | 46 ✅ · 4 ☑️ · 36 ✓ · 1 – | 68 ✅ · 6 ☑️ · 10 ✓ · 2 – | 48 ✅ · 2 ☑️ · 30 ✓ · 7 – | 53 ✅ · 5 ☑️ · 22 ✓ · 7 – | 61 ✅ · 2 ☑️ · 21 ✓ · 3 – |
@@ -63,13 +63,13 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [TextEditor](TextEditor.md) | 104 | 61 ✅ · 4 ☑️ · 36 ✓ · 3 – | 61 ✅ · 3 ☑️ · 38 ✓ · 2 – | 82 ✅ · 6 ☑️ · 12 ✓ · 2 – | 67 ✅ · 3 ☑️ · 28 ✓ · 6 – | 63 ✅ · 6 ☑️ · 28 ✓ · 7 – | 79 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [TextField](TextField.md) | 107 | 59 ✅ · 5 ☑️ · 36 ✓ · 4 – | 64 ✅ · 3 ☑️ · 38 ✓ · 2 – | 84 ✅ · 6 ☑️ · 12 ✓ · 3 – | 67 ✅ · 5 ☑️ · 28 ✓ · 6 – | 65 ✅ · 6 ☑️ · 28 ✓ · 8 – | 81 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [TimePicker](TimePicker.md) | 93 | 45 ✅ · 3 ☑️ · 37 ✓ · 8 – | 39 ✅ · 2 ☑️ · 38 ✓ · 10 – | 68 ✅ · 6 ☑️ · 13 ✓ · 4 – | 52 ✅ · 3 ☑️ · 28 ✓ · 6 – | 56 ✅ · 4 ☑️ · 25 ✓ · 7 – | 63 ✅ · 1 ☑️ · 21 ✓ · 7 – |
-| [VStack](VStack.md) | 85 | 45 ✅ · 2 ☑️ · 36 ✓ · 1 – | 43 ✅ · 3 ☑️ · 37 ✓ · 1 – | 67 ✅ · 5 ☑️ · 11 ✓ · 2 – | 49 ✅ · 2 ☑️ · 28 ✓ · 5 – | 51 ✅ · 3 ☑️ · 23 ✓ · 8 – | 60 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [VStack](VStack.md) | 86 | 46 ✅ · 2 ☑️ · 36 ✓ · 1 – | 44 ✅ · 3 ☑️ · 37 ✓ · 1 – | 68 ✅ · 5 ☑️ · 11 ✓ · 2 – | 50 ✅ · 2 ☑️ · 28 ✓ · 5 – | 52 ✅ · 3 ☑️ · 23 ✓ · 8 – | 61 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [WebView](WebView.md) | 91 | 49 ✅ · 3 ☑️ · 37 ✓ · 2 – | 47 ✅ · 3 ☑️ · 39 ✓ · 2 – | 68 ✅ · 5 ☑️ · 12 ✓ · 5 – | 50 ✅ · 13 ✓ · 27 – | 56 ✅ · 4 ☑️ · 24 ✓ · 7 – | 60 ✅ · 1 ☑️ · 21 ✓ · 6 – |
-| [ZStack](ZStack.md) | 84 | 44 ✅ · 2 ☑️ · 36 ✓ · 1 – | 41 ✅ · 3 ☑️ · 38 ✓ · 1 – | 65 ✅ · 5 ☑️ · 12 ✓ · 2 – | 48 ✅ · 2 ☑️ · 28 ✓ · 5 – | 49 ✅ · 3 ☑️ · 24 ✓ · 8 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| ✅ |  | 1669 | 1611 | 2334 | 1792 | 1875 | 2205 |
+| [ZStack](ZStack.md) | 85 | 45 ✅ · 2 ☑️ · 36 ✓ · 1 – | 42 ✅ · 3 ☑️ · 38 ✓ · 1 – | 66 ✅ · 5 ☑️ · 12 ✓ · 2 – | 49 ✅ · 2 ☑️ · 28 ✓ · 5 – | 50 ✅ · 3 ☑️ · 24 ✓ · 8 – | 60 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| ✅ |  | 1674 | 1616 | 2339 | 1797 | 1880 | 2210 |
 | ✓ |  | 1352 | 1395 | 402 | 1027 | 860 | 759 |
 | – |  | 93 | 106 | 187 | 250 | 273 | 145 |
-| **Met** | 3248 | **3114** | **3112** | **2923** | **3069** | **3008** | **3109** |
+| **Met** | 3253 | **3119** | **3117** | **2928** | **3074** | **3013** | **3114** |
 | 🧩 |  | 0 | 0 | 83 | 83 | 83 | 83 |
 <!-- controls:end -->
 
@@ -122,7 +122,7 @@ Members many elements share, declared once.
 - [AutomationElement](tiers/AutomationElement.md) - What an element the platform's automation meets has - a drawn element, a menu's entry or a bar's item, an arrangement of pages: the name automation finds it by.
 - [VisualElement](tiers/VisualElement.md) - What every drawn element has: its size and its bounds, how it is shown and turned, whether it answers input and holds the keyboard focus, the visual states it enters, and what a screen reader says about it.
 - [View](tiers/View.md) - What every view a layout positions has: where it sits in its layout, the space kept around it, and the gestures, drags and frame reports it answers.
-- [Layout](tiers/Layout.md) - What every layout has: the edges it runs under what stands over its page on, and whether its children are clipped or let input through.
+- [Layout](tiers/Layout.md) - What every layout has: the edges it runs under what stands over its page on, whether its children are clipped or let input through, and how its children come onto the places it gives them.
 - [Stack](tiers/Stack.md) - What both stacks have: the space between their children.
 - [TextInput](tiers/TextInput.md) - What every field a user types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
 - [Shape](tiers/Shape.md) - What every drawn shape has: the line along it, how it fits its room, and a transform of its own drawing.

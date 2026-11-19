@@ -28,18 +28,21 @@ struct ProgramPresentation {
     /// Whether a child is still on its way to its place.
     var moves: Bool { !bodies.isEmpty }
 
-    /// Takes `answer` at `now` and says where each child is shown, in the children's order. A change the element
-    /// has not set out yet sets each child it names out from where it was shown - one never shown, from nothing -
-    /// at the speed it had, or the hand's; a child following its place is carried by its place's move; less motion,
-    /// and a child of no body, stand at their places.
-    mutating func take(_ answer: HostLayoutAnswer, at now: Double, reducesMotion: Bool) -> [HostPlacement] {
+    /// Takes `answer` at `now` and says where each child is shown, in the children's order. A child is the body it
+    /// says itself, else `layoutBodies`, its layout's for every child. A change the element has not set out yet sets each
+    /// child it names out from where it was shown - one never shown, from nothing - at the speed it had, or the
+    /// hand's; a child following its place is carried by its place's move; less motion, and a child of no body,
+    /// stand at their places.
+    mutating func take(
+        _ answer: HostLayoutAnswer, layoutBodies: LayoutBody = .onChange(), at now: Double, reducesMotion: Bool
+    ) -> [HostPlacement] {
         // The first answer shows the layout as it stands: nothing was shown for a change to set out from.
         let sets = applied != nil && applied != answer.change
         applied = answer.change
 
         var bodied = Set<Int>()
         for view in answer.views {
-            guard let body = view.body, !reducesMotion else { continue }
+            guard let body = (view.body ?? layoutBodies).host, !reducesMotion else { continue }
 
             bodied.insert(view.key)
             var last = stood[view.key]?.target

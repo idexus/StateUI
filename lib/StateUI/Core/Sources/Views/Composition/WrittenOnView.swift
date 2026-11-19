@@ -15,6 +15,11 @@ struct WrittenOnView {
         return node
     }
 
+    /// What a modifier wrote as `property`; nil where none did.
+    func value(_ property: Prop) -> PropValue? {
+        (written.type == .anchor ? written.children.first : written)?.props[property]
+    }
+
     /// Writes one modifier's change, as a `ModifiedContent` does.
     mutating func write<Shown: View>(_ change: (inout Node) -> Void, on shown: Shown.Type) {
         written = written.writing(change, flips: Node.flips(shown))

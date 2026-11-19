@@ -586,7 +586,7 @@ final class GalleryViewTests: XCTestCase {
     /// EACH CARD IS THE BODY ITS GALLERY GIVES ITS ITEMS: with one given, every card is answered it - following its
     /// place - and with none, a body that follows no moving place.
     func testEachCardIsTheBodyItsGalleryGivesItsItems() throws {
-        func bodies(_ body: LayoutBody?) throws -> [HostLayoutBody?] {
+        func bodies(_ body: LayoutBody?) throws -> [LayoutBody?] {
             Renderer.shared.clearInvalidation()
             Renderer.shared.clearStates()
             let renders = Renders()
@@ -598,9 +598,9 @@ final class GalleryViewTests: XCTestCase {
         let following = try bodies(.followsLayout(Spring(response: .milliseconds(300), damping: 0.8)))
 
         XCTAssertFalse(plain.isEmpty)
-        XCTAssertTrue(plain.allSatisfy { $0?.follows == false }, "carried by its place with no lag")
+        XCTAssertTrue(plain.allSatisfy { $0 == nil }, "none of its own: the gallery's layout decides")
         XCTAssertTrue(
-            following.allSatisfy { $0 == HostLayoutBody(milliseconds: 300, damping: 0.8, follows: true) },
+            following.allSatisfy { $0 == .followsLayout(Spring(response: .milliseconds(300), damping: 0.8)) },
             "behind its place as the hand carries it")
     }
 

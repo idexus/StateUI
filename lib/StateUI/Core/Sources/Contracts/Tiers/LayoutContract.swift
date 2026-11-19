@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What every layout has: the edges it runs under what stands over its page
-/// on, and whether its children are clipped or let input through.
+/// on, whether its children are clipped or let input through, and how its
+/// children come onto the places it gives them.
 public enum LayoutContract: Tier {
     /// The tier's name.
     public static let name = "Layout"
@@ -23,6 +24,10 @@ public enum LayoutContract: Tier {
     /// it.
     public static let letsInputThrough = ElementProperty<Self, Bool>("letsInputThrough", layer: .native)
 
+    /// How each child comes onto the place the layout gives it, unless the child says its own
+    /// (`ViewContract.layoutBody`); where the layout says none, under the layout's motion.
+    public static let layoutBodies = ElementProperty<Self, LayoutBody>("layoutBodies", layer: .stateUI, travels: false)
+
     /// The tier's own members.
-    public static let members: [any ContractMember] = [ignoresSafeArea, clipsContent, letsInputThrough]
+    public static let members: [any ContractMember] = [ignoresSafeArea, clipsContent, letsInputThrough, layoutBodies]
 }

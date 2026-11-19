@@ -227,11 +227,15 @@ three:
   .followsLayout(s) answers a change, and lags behind a place that moves too
 ```
 
-The layout says one for every view (`.layoutBodies(_:)`, `.onChange()` -
-the standard spring, 300 ms critically damped - unless said), and a view
-says its own (`.layoutBody(_:)`, `ViewContract.layoutBody`), which wins: a
-view with a body in a layout of none travels, one with none in a layout of
-bodies lands. A view's own is read off each item's view
+The layout says one for every view (`.layoutBodies(_:)`, the member every
+layout has, `LayoutContract.layoutBodies`; a motion layout that says none
+is `.onChange()` - the standard spring, 300 ms critically damped), and a
+view says its own (`.layoutBody(_:)`, `ViewContract.layoutBody`), which
+wins: a view with a body in a layout of none travels, one with none in a
+layout of bodies lands. The layout answers the host each view's own body
+alone; which body a view is, the host layer resolves as it does for every
+layout ([a child that is a body](../host/motion.md#a-child-that-is-a-body)).
+A view's own is read off each item's view
 the first time a frame asks, and again once that view is built again - a
 state the view reads, a switch turning its body on, builds the view without
 the layout or its holder, so the layout forgets that view's body as it

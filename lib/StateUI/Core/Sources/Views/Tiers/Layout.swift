@@ -40,6 +40,19 @@ extension LayoutProperties {
     public func ignoresSafeArea(_ edges: SafeAreaEdges) -> Modified {
         setValue(LayoutContract.ignoresSafeArea, edges)
     }
+
+    /// How every child of the layout comes onto the place the layout gives it, unless the child says its own
+    /// (`layoutBody(_:)`).
+    ///
+    ///     VStack { rows }.layoutBodies(.onChange(Spring(response: .milliseconds(320), damping: 0.8)))
+    ///
+    /// `.onChange(_:)` brings a child onto a new place on a spring when the tree changes the layout - a child
+    /// added, a size said anew; `.followsLayout(_:)` also when its place moves on a frame, as a neighbor grows;
+    /// `.none` stands every child at its place at once. Where a layout says none of them its children travel under
+    /// its `motion(_:)`, as before.
+    public func layoutBodies(_ body: LayoutBody) -> Modified {
+        setValue(LayoutContract.layoutBodies, body)
+    }
 }
 
 extension Layout {

@@ -1,16 +1,21 @@
-# revision 4.2
+# revision 5.2
 Grid.clipsContent: ✅
 Grid.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
+Grid.layoutBodies: ✅
 Grid.letsInputThrough: not realized
 HStack.clipsContent: ✅
 HStack.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
+HStack.layoutBodies: ✅
 HStack.letsInputThrough: not realized
 MotionLayout.clipsContent: ✅
 MotionLayout.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
+MotionLayout.layoutBodies: ✅
 MotionLayout.letsInputThrough: not realized
 VStack.clipsContent: ✅
 VStack.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
+VStack.layoutBodies: ✅
 VStack.letsInputThrough: not realized
 ZStack.clipsContent: ✅
 ZStack.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
+ZStack.layoutBodies: ✅
 ZStack.letsInputThrough: not realized

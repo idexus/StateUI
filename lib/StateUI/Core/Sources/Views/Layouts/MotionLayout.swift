@@ -181,9 +181,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// How the run travels to where the program or the hand's throw sends it.
     private var law = Motion.inherited
 
-    /// What the views move by between where the arithmetic puts them and where they are shown.
-    private var viewsBody = LayoutBody.onChange()
-
     /// How a throw goes on once the hand lets go, every axis alike.
     private var throwLaw = Motion.eased(.milliseconds(400), curve: .cubicOut)
 
@@ -477,9 +474,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     ///   once - the parameters still travel under `parameterMotion(_:)`.
     /// - Returns: the layout, its views moving as that body.
     public func layoutBodies(_ body: LayoutBody) -> Self {
-        var copy = self
-        copy.viewsBody = body
-        return copy
+        setValue(LayoutContract.layoutBodies, body)
     }
 
     /// Whether the layout follows the direction its language is read in, as a stack does: laid out right to left,
@@ -840,7 +835,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             focus: hands.first { $0.way != nil },
             law: law,
             throwing: throwLaw,
-            viewsBody: viewsBody,
+            viewsBody: written.value(LayoutContract.layoutBodies.token).flatMap(LayoutBody.init(propValue:)) ?? .onChange(),
             body: { [bodies] index in bodies(index) },
             rebuilt: { [bodies] index in bodies.rebuilt(index) },
             settled: settled,
@@ -905,7 +900,7 @@ extension MotionLayout: WalkedView {
             ("source", source), ("parameters", parameters), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("consumed", consumed), ("mask", mask as Any), ("activated", activated),
             ("itemStart", itemStart as Any), ("dragged", dragged), ("dismissals", dismissals),
-            ("law", law), ("viewsBody", viewsBody), ("throwLaw", throwLaw), ("settled", settled), ("sized", sized as Any),
+            ("law", law), ("throwLaw", throwLaw), ("settled", settled), ("sized", sized as Any),
             ("mirrors", mirrors),
             ("named", named as Any), ("written", written),
         ]

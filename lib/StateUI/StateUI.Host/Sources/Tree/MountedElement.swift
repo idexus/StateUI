@@ -114,7 +114,11 @@
     func takeProgramPlaces(at now: Double, reducesMotion: Bool) -> Bool {
         guard let program = layoutProgram else { return false }
 
-        let placed = programPresentation.take(program.answered(), at: now, reducesMotion: reducesMotion)
+        // A view is the body it says itself, else the layout's for every child - a spring answering a change where
+        // the layout says none.
+        let bodies = value(LayoutContract.layoutBodies.token).flatMap(LayoutBody.init(propValue:)) ?? .onChange()
+        let placed = programPresentation.take(
+            program.answered(), layoutBodies: bodies, at: now, reducesMotion: reducesMotion)
         // The layout is at rest only once the element moves none of its children: it hears either way.
         program.bodiesMove(programPresentation.moves)
         return presents(placed)
@@ -919,6 +923,12 @@
         values.area = value(.area).flatMap(Area.init(propValue:))
         values.grows = type == .space
         values.words = NodeType.laidOutWords[type] ?? .none
+        // Its own body wins; else what its layout says for every child. A motion layout's view is a body of that
+        // layout, whose program places its holder: in the holder it stands as the holder does.
+        if parent?.parent?.type != .motionLayout {
+            values.body = value(ViewContract.layoutBody.token).flatMap(LayoutBody.init(propValue:))
+                ?? parent?.value(LayoutContract.layoutBodies.token).flatMap(LayoutBody.init(propValue:))
+        }
         return values
     }
 

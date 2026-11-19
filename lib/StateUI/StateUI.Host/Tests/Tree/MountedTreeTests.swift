@@ -404,6 +404,46 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.arranged, ["child", "bare", "stack"], "the bare one has no view; its parent places the child too")
     }
 
+    /// A CHILD IS THE BODY IT SAYS ITSELF, ELSE ITS LAYOUT'S FOR EVERY CHILD, else none said: what a layout reads of
+    /// it carries the one that holds.
+    @MainActor
+    func testAChildsBodyIsItsOwnElseItsLayouts() {
+        let (tree, _) = Self.tree(viewless: [])
+        let (own, layouts) = (LayoutBody.followsLayout(Spring(damping: 0.6)), LayoutBody.onChange())
+        var saying = HostPatch(id: .manual("saying"), type: .text)
+        saying.properties[ViewContract.layoutBody.token] = own.propValue
+        var bodied = HostPatch(id: .manual("bodied"), type: .vStack)
+        bodied.properties[LayoutContract.layoutBodies.token] = layouts.propValue
+        bodied.children = .arranged([saying, HostPatch(id: .manual("silent"), type: .text)])
+        var plain = HostPatch(id: .manual("plain"), type: .vStack)
+        plain.children = .arranged([HostPatch(id: .manual("left"), type: .text)])
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([bodied, plain])
+        tree.apply(stack, complete: true)
+
+        let layout = tree.root!.children[0]
+        XCTAssertEqual(layout.children[0].layoutValues.body, own, "its own word")
+        XCTAssertEqual(layout.children[1].layoutValues.body, layouts, "its layout's, saying none itself")
+        XCTAssertNil(tree.root!.children[1].children[0].layoutValues.body, "neither says one")
+        XCTAssertNil(layout.layoutValues.body, "a layout's bodies are its children's, not its own")
+    }
+
+    /// A MOTION LAYOUT'S VIEW IS A BODY OF THAT LAYOUT ALONE: the holder its program places gives it the holder's
+    /// own room, so the view is no body a second time inside it.
+    @MainActor
+    func testAMotionLayoutsViewIsNoBodyInItsHolder() {
+        let (tree, _) = Self.tree(viewless: [])
+        var view = HostPatch(id: .manual("view"), type: .text)
+        view.properties[ViewContract.layoutBody.token] = LayoutBody.followsLayout().propValue
+        var holder = HostPatch(id: .manual("holder"), type: .grid)
+        holder.children = .arranged([view])
+        var layout = HostPatch(id: .manual("layout"), type: .motionLayout)
+        layout.children = .arranged([holder])
+        tree.apply(layout, complete: true)
+
+        XCTAssertNil(tree.root!.children[0].children[0].layoutValues.body)
+    }
+
     /// A child's place `x` across, as a layout program answers one.
     private static func place(x: Double) -> HostPlacement {
         HostPlacement(

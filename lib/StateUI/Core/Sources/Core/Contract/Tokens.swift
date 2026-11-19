@@ -144,6 +144,7 @@ extension NodeType {
     static let layoutDirection = VisualElementContract.layoutDirection.token
     static let language = LanguageElementContract.language.token
     static let letsInputThrough = LayoutContract.letsInputThrough.token
+    static let layoutBodies = LayoutContract.layoutBodies.token
     static let fontAttributes = FontElementContract.fontAttributes.token
     static let fontWeight = FontElementContract.fontWeight.token
     static let isSelectable = TextContract.isSelectable.token

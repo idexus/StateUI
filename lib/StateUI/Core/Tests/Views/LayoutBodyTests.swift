@@ -63,42 +63,32 @@ final class LayoutBodyTests: XCTestCase {
 
     // MARK: - What the layout answers
 
-    /// A LAYOUT'S VIEWS ANSWER A CHANGE UNLESS IT SAYS OTHERWISE: with nothing said, each view is answered a body
-    /// on the standard spring that follows no moving place.
-    func testALayoutsViewsAnswerAChangeUnlessSaidOtherwise() {
-        let phase = State(wrappedValue: 0.0)
-        _ = bench.laid(Renders(), {
-            MotionLayout([0, 1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in
-                [Placement(Rect(0, 0, 10, 10)), Placement(Rect(100, 0, 10, 10))]
-            }
-            .node
-        })
-
-        let standard = HostLayoutBody(milliseconds: 300, damping: 1, follows: false)
-        XCTAssertEqual(bench.answer.views.map(\.body), [standard, standard])
-    }
-
-    /// A VIEW'S OWN BODY WINS OVER ITS LAYOUT'S, either way: one saying none is answered none among views with a
-    /// body, and one saying a body is answered it in a layout whose views have none.
-    func testAViewsOwnBodyWinsOverItsLayouts() {
+    /// THE LAYOUT ANSWERS EACH VIEW THE BODY THE VIEW SAYS ITSELF, and none for a view that says nothing: its
+    /// layout's bodies decide that one, on the host.
+    func testTheLayoutAnswersEachViewsOwnBody() {
         let (items, phase) = (State(wrappedValue: [0, 1, 2]), State(wrappedValue: 0.0))
-        let spring = HostLayoutBody(milliseconds: 160, damping: 1, follows: false)
-
-        _ = bench.laid(Renders(), { self.row(items, phase: phase, bodies: .onChange(self.quick), own: LayoutBody.none) })
-        XCTAssertEqual(bench.answer.views.map(\.body), [nil, spring, spring], "its own none among bodies")
-
-        _ = bench.laid(Renders(), { self.row(items, phase: phase, bodies: .none, own: .onChange(self.quick)) })
-        XCTAssertEqual(bench.answer.views.map(\.body), [spring, nil, nil], "its own body among none")
-    }
-
-    /// A BODY FOLLOWING ITS PLACE IS ANSWERED AS ONE THAT FOLLOWS, on its own spring.
-    func testAFollowingBodyIsAnsweredAsFollowing() {
-        let (items, phase) = (State(wrappedValue: [0, 1]), State(wrappedValue: 0.0))
         let own = LayoutBody.followsLayout(Spring(response: .milliseconds(420), damping: 0.6))
 
         _ = bench.laid(Renders(), { self.row(items, phase: phase, bodies: .onChange(self.quick), own: own) })
+        XCTAssertEqual(bench.answer.views.map(\.body), [own, nil, nil])
 
-        XCTAssertEqual(bench.answer.views[0].body, HostLayoutBody(milliseconds: 420, damping: 0.6, follows: true))
-        XCTAssertEqual(bench.answer.views[1].body?.follows, false)
+        _ = bench.laid(Renders(), { self.row(items, phase: phase, bodies: .onChange(self.quick), own: LayoutBody.none) })
+        XCTAssertEqual(bench.answer.views.map(\.body), [LayoutBody.none, nil, nil], "a view saying none says so")
+    }
+
+    /// WHAT A LAYOUT SAYS FOR EVERY VIEW IS A MEMBER OF ITS CONTRACT, written on its element as any layout's.
+    func testALayoutsBodiesAreWrittenOnItsElement() throws {
+        let (items, phase) = (State(wrappedValue: [0, 1]), State(wrappedValue: 0.0))
+        let renders = Renders()
+
+        let said = renders.render(row(items, phase: phase, bodies: .onChange(quick)))
+        let layout = try XCTUnwrap(said.first(.motionLayout))
+        XCTAssertEqual(
+            layout.properties[LayoutContract.layoutBodies.token].flatMap(LayoutBody.init(propValue:)), .onChange(quick))
+
+        let stack = renders.renderFromScratch(VStack { Text("row") }.layoutBodies(.none).node)
+        XCTAssertEqual(
+            stack.first(.vStack)?.properties[LayoutContract.layoutBodies.token].flatMap(LayoutBody.init(propValue:)),
+            LayoutBody.none)
     }
 }

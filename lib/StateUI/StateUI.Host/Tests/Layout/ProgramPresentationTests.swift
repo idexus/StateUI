@@ -10,8 +10,8 @@ import XCTest
 /// where it was shown, a moving place carrying a child that follows it, and the bodies stepped to rest.
 /// Design: docs/design/host/layout.md#bodies
 final class ProgramPresentationTests: XCTestCase {
-    private let spring = HostLayoutBody(milliseconds: 160, damping: 1, follows: false)
-    private let follower = HostLayoutBody(milliseconds: 160, damping: 1, follows: true)
+    private let spring = LayoutBody.onChange(Spring(response: .milliseconds(160)))
+    private let follower = LayoutBody.followsLayout(Spring(response: .milliseconds(160)))
 
     /// A child `x` across, ten points square, at `opacity`.
     private func place(_ x: Double, opacity: Double = 1) -> HostPlacement {
@@ -90,11 +90,31 @@ final class ProgramPresentationTests: XCTestCase {
         XCTAssertEqual(placed[0], place(0), "the child the change moves nowhere stands")
     }
 
+    /// A CHILD THAT SAYS NO BODY OF ITS OWN IS ITS LAYOUT'S: a spring answering a change where the layout says
+    /// nothing, what the layout says where it does - and a child's own word wins over it either way.
+    func testAChildIsItsOwnBodyElseItsLayouts() {
+        func firstFrame(_ own: LayoutBody?, layout: LayoutBody?) -> Double {
+            var shown = ProgramPresentation()
+            let bodies = layout ?? .onChange()
+            _ = shown.take(
+                answer([HostLayoutView(key: 1, target: place(100), body: own)]), layoutBodies: bodies, at: 0,
+                reducesMotion: false)
+            let changed = answer([HostLayoutView(key: 1, target: place(0), body: own, discrete: place(0))], change: 1)
+            return shown.take(changed, layoutBodies: bodies, at: 16, reducesMotion: false)[0].bounds.x
+        }
+
+        XCTAssertEqual(firstFrame(nil, layout: nil), 100, "nothing said: a body answering the change")
+        XCTAssertEqual(firstFrame(nil, layout: LayoutBody.none), 0, "the layout's none: at its place at once")
+        XCTAssertEqual(firstFrame(spring, layout: LayoutBody.none), 100, "its own body in a layout of none")
+        XCTAssertEqual(firstFrame(LayoutBody.none, layout: spring), 0, "its own none among bodies")
+    }
+
     /// A CHILD OF NO BODY, AND EVERY CHILD UNDER LESS MOTION, STANDS AT ITS PLACE AT ONCE - one on its way too.
     func testNoBodyAndLessMotionLand() {
         var shown = ProgramPresentation()
-        _ = shown.take(answer([HostLayoutView(key: 1, target: place(100))]), at: 0, reducesMotion: false)
-        let bare = answer([HostLayoutView(key: 1, target: place(0), discrete: place(0))], change: 1)
+        let none = LayoutBody.none
+        _ = shown.take(answer([HostLayoutView(key: 1, target: place(100), body: none)]), at: 0, reducesMotion: false)
+        let bare = answer([HostLayoutView(key: 1, target: place(0), body: none, discrete: place(0))], change: 1)
         XCTAssertEqual(shown.take(bare, at: 16, reducesMotion: false), [place(0)], "no body")
 
         var reduced = ProgramPresentation()
@@ -127,7 +147,7 @@ final class ProgramPresentationTests: XCTestCase {
 
     /// A FOLLOWING CHILD DAMPED BELOW ONE PASSES ITS PLACE AND SETTLES ONTO IT.
     func testALighterDampedFollowerPassesItsPlaceAndSettles() {
-        let swaying = HostLayoutBody(milliseconds: 400, damping: 0.5, follows: true)
+        let swaying = LayoutBody.followsLayout(Spring(response: .milliseconds(400), damping: 0.5))
         var shown = ProgramPresentation()
         _ = shown.take(answer([HostLayoutView(key: 1, target: place(0), body: swaying)]), at: 0, reducesMotion: false)
         _ = shown.take(answer([HostLayoutView(key: 1, target: place(100), body: swaying)]), at: 16, reducesMotion: false)

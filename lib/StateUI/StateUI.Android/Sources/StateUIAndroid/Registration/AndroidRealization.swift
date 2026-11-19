@@ -210,7 +210,7 @@ enum AndroidRealization {
         .complete(MotionLayoutContract.pans),
         .complete(MotionLayoutContract.rotates),
         .complete(MotionLayoutContract.pinchRotationUpdated),
-    ] + windowRoom + wordsInTheirLanguage + HostRecord.motionLayout
+    ] + windowRoom + wordsInTheirLanguage + HostRecord.motionLayout + HostRecord.layoutBodies
         + BarItemLook.notPlanned(reason: "A toolbar's actions stand in Android's own look.")
 
     /// What Android leaves out of a blur.

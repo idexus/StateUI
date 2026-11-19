@@ -267,7 +267,7 @@ enum GTKRealization {
         .complete(WindowContract.windowValue),
         .notPlanned(WindowContract.x, reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),
         .notPlanned(WindowContract.y, reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),
-    ] + HostRecord.motionLayout
+    ] + HostRecord.motionLayout + HostRecord.layoutBodies
         + BarItemLook.notPlanned(reason: "A header bar's buttons stand in libadwaita's own look.")
 
     /// What GTK's registry says it realizes: the export's content.

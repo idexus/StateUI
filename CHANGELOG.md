@@ -131,6 +131,11 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   from the room offered (`context.proposal`) and its views; without it the layout takes the room it is given, as
   before. A row that becomes a column where the room runs out is one layout of the same views, each keeping its
   state and the keyboard.
+- **Every layout's children can be bodies.** `.layoutBodies(_:)` on a `VStack`, an `HStack`, a `Grid` or a `ZStack`
+  says how each child comes onto a new place - `.onChange(Spring(...))` on a spring when the tree changes the
+  layout, `.followsLayout(Spring(...))` also when the place moves on a frame, `.none` at once - and
+  `.layoutBody(_:)` says it for one child, which wins. A layout that says neither moves its children under its
+  `.motion(_:)`, as before.
 - **A motion layout follows a journey.** `.following($tilt.journey)` runs the arithmetic on every frame the value
   moves, where it reads `$tilt.journey.sample`; `.following($tilt)` runs it at a write of where the state is going,
   as before.

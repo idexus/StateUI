@@ -381,6 +381,9 @@ lane: the bounds' place and size, the transform's five drawn numbers apart
 shade; the drawing order is the place's at once. A body (`LayoutBodies`)
 is a shift and how fast each lane goes, pulled onto nought on its spring.
 
+- A child is the body it says itself (`HostLayoutView.body`), else its
+  layout's for every child (`LayoutContract.layoutBodies`, read off the
+  element), else a spring answering a change.
 - A change the element has not set out yet (`HostLayoutAnswer.change`)
   sets each child it names out: its shift is where the element showed it
   against the place the change measures to (`discrete`) - a child never

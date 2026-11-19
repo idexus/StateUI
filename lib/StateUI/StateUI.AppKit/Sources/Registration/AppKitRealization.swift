@@ -303,7 +303,7 @@ enum AppKitRealization {
         .notPlanned(TintElementContract.tint, on: SwitchContract.self, reason: accentColored),
         .notPlanned(ButtonContract.iconSpacing,
             reason: "AppKit's button stands its picture at its own gap from the words: it takes no other."),
-    ] + dayPickers + HostRecord.motionLayout
+    ] + dayPickers + HostRecord.motionLayout + HostRecord.layoutBodies
         + BarItemLook.notPlanned(reason: "The Mac's toolbar draws its items in the Mac's own look.")
 
     /// Why a progress indicator and a switch take no color of their own.

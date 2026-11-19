@@ -272,6 +272,76 @@ final class LayoutMotionTests: XCTestCase {
         XCTAssertFalse(layout.animator.isMoving)
     }
 
+    // MARK: - A child that is a body
+
+    /// A CHILD OF NO BODY ARRIVES while its layout's other children travel under the layout's law.
+    func testAChildOfNoBodyArrivesWhileTheOthersTravel() {
+        let layout = HandWoundLayout()
+        let (landing, traveling) = (Placed(), Placed())
+        layout.arrange([(landing, 2, Self.row(1)), (traveling, 3, Self.row(2))])
+
+        layout.arrange([(landing, 2, Self.row(0)), (traveling, 3, Self.row(1))], bodies: [2: .none])
+
+        XCTAssertEqual(landing.placedFrame, Self.row(0), "no body: at its place at once")
+        XCTAssertEqual(traveling.placedFrame, Self.row(2), "the layout's law: from where it stood")
+    }
+
+    /// A CHILD ANSWERING A CHANGE TRAVELS ON ITS OWN SPRING where a patch moved it - in a layout that moves nothing
+    /// too - passing its place where its spring is damped below one, and arrives where its place moved otherwise.
+    func testAChildAnsweringAChangeTravelsOnItsSpring() {
+        let layout = HandWoundLayout(motion: HostLayoutMotion(motion: .none, lanes: .all))
+        let body = LayoutBody.onChange(Spring(response: .milliseconds(300), damping: 0.4))
+        let child = Placed()
+        layout.arrange([(child, 2, Self.row(1))], bodies: [2: body])
+
+        layout.arrange([(child, 2, Self.row(0))], bodies: [2: body])
+        XCTAssertEqual(child.placedFrame, Self.row(1), "from where it stood, though its layout moves nothing")
+
+        var highest = child.placedFrame.y
+        for frame in 1...200 {
+            layout.frame(at: Double(frame) * 16)
+            highest = min(highest, child.placedFrame.y)
+        }
+        XCTAssertLessThan(highest, -1, "past its place, on its spring")
+        XCTAssertEqual(child.placedFrame, Self.row(0), "and onto it")
+
+        // Its place moved by no patch - a neighbor's size on a frame - it arrives.
+        layout.arrange([(child, 2, Self.row(1))], patched: false, bodies: [2: body])
+        XCTAssertEqual(child.placedFrame, Self.row(1))
+    }
+
+    /// A CHILD FOLLOWING ITS PLACE TRAVELS WHENEVER ITS PLACE MOVES: by no patch too, and as its layout's width
+    /// changes, where one answering a change alone arrives.
+    func testAChildFollowingItsPlaceTravelsWheneverItMoves() {
+        let layout = HandWoundLayout()
+        let body = LayoutBody.followsLayout(Spring(response: .milliseconds(300)))
+        let (follower, answering) = (Placed(), Placed())
+        layout.arrange([(follower, 2, Self.row(1)), (answering, 3, Self.row(2))])
+
+        layout.arrange(
+            [(follower, 2, Self.row(0)), (answering, 3, Self.row(1))], width: 320, patched: false,
+            bodies: [2: body, 3: .onChange()])
+
+        XCTAssertEqual(follower.placedFrame, Self.row(1), "behind its place, which moved under it")
+        XCTAssertEqual(answering.placedFrame, Self.row(1), "no change of the layout: at its place")
+        for frame in 1...200 { layout.frame(at: Double(frame) * 16) }
+        XCTAssertEqual(follower.placedFrame, Self.row(0), "onto it")
+    }
+
+    /// UNDER LESS MOTION A BODY ARRIVES, whichever it is.
+    func testWithLessMotionABodyArrives() {
+        let layout = HandWoundLayout()
+        layout.reducesMotion = true
+        let (follower, answering) = (Placed(), Placed())
+        layout.arrange([(follower, 2, Self.row(1)), (answering, 3, Self.row(2))])
+
+        layout.arrange(
+            [(follower, 2, Self.row(0)), (answering, 3, Self.row(1))], bodies: [2: .followsLayout(), 3: .onChange()])
+
+        XCTAssertEqual(follower.placedFrame, Self.row(0))
+        XCTAssertEqual(answering.placedFrame, Self.row(1))
+    }
+
     /// A child that leaves takes its animation with it: nothing moves a place for an element the tree no longer
     /// holds.
     func testAChildThatLeavesEndsItsAnimation() {
@@ -340,7 +410,8 @@ private final class HandWoundLayout {
         heights: [UInt64: Double] = [:],
         measured: Set<UInt64> = [],
         words: [UInt64: LayoutSize] = [:],
-        boxed: Set<UInt64> = []
+        boxed: Set<UInt64> = [],
+        bodies: [UInt64: LayoutBody] = [:]
     ) {
         if patched { places.patchArrived() }
         places.begin(width: width)
@@ -349,6 +420,7 @@ private final class HandWoundLayout {
             values.width = measured.contains(child.mount) ? nil : 100
             values.height = heights[child.mount]
             values.words = words[child.mount] == nil ? .none : boxed.contains(child.mount) ? .boxed : .bare
+            values.body = bodies[child.mount]
             places.place(
                 child.view, mount: child.mount, at: child.place, values: values,
                 natural: { words[child.mount] ?? .zero }

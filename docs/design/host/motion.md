@@ -120,6 +120,42 @@ again keeps its running animation, and a new place bends a running one from
 where it has reached, at its speed. Layout motion holds each child's view
 weakly: a view the tree dropped is not kept alive for its place.
 
+## A child that is a body
+
+A child comes onto its place as its body says where it has one - its own
+(`ViewContract.layoutBody`), else what its layout says for every child
+(`LayoutContract.layoutBodies`); the element resolves it into what a layout
+reads of it (`LayoutValues.body`), so every host, placing through
+`TravelingPlaces`, places a body with no code of its own. Where neither
+says one, the arrangement above stands.
+
+```text
+                      a patch moved its place          its place moved otherwise
+  no body said        the layout's motion              arrives
+  .none               arrives                          arrives
+  .onChange(s)        travels on the spring s          arrives
+  .followsLayout(s)   travels on the spring s          travels on the spring s
+```
+
+`LayoutMotion.arrangement(of:said:resized:framesRead:among:)` is the rule.
+A body's spring is the child's law whatever the layout's own motion - a
+layout told to move nothing still brings a body onto its place - and the
+place travels by the one animation a place has (`AnimationTarget.placed`):
+a new place bends it from where it has reached, at its speed, which is all
+following a moving place is. A body answering a change arrives where its
+layout's own width changed, as every child does; one following its place
+travels then too. Less motion, and a frame read under the layout, arrive.
+
+An element running a layout program resolves a child's body the same way -
+its own, its layout's, and a spring answering a change where the layout
+says none ([bodies](layout.md#bodies)). Such a view is a body of that
+layout alone: the holder the program places gives the view the holder's
+own room, and reads no body of it - a body in both would spring twice.
+
+The trap is two movers of one place: a body's spring beside the layout's
+motion would each take the child part of the way. A child has one law for
+its place, chosen once as it is placed.
+
 ## A sidebar sliding
 
 A host whose toolkit moves a split view's pane by itself - the detail beside it

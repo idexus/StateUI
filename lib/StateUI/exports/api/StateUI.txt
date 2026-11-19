@@ -4817,6 +4817,7 @@ swift.method Grid.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<
 swift.method Grid.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Grid.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
+swift.method Grid.layoutBodies(_:): @MainActor func layoutBodies(_ body: LayoutBody) -> Self.Modified
 swift.method Grid.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Grid.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
 swift.method Grid.letsInputThrough(_:): @MainActor func letsInputThrough(_ state: Binding<Bool>) -> Self.Modified
@@ -5201,6 +5202,7 @@ swift.method HStack.isDraggable(_:): @MainActor func isDraggable(_ state: Bindin
 swift.method HStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method HStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
+swift.method HStack.layoutBodies(_:): @MainActor func layoutBodies(_ body: LayoutBody) -> Self.Modified
 swift.method HStack.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method HStack.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
 swift.method HStack.letsInputThrough(_:): @MainActor func letsInputThrough(_ state: Binding<Bool>) -> Self.Modified
@@ -5778,6 +5780,7 @@ swift.method LayoutCurve.value(at:segment:knots:values:): func value(at place: D
 swift.method LayoutInterpolation.value(at:segment:knots:values:): func value(at place: Double, segment: Int, knots: [Double], values: [Double]) -> Double
 swift.method LayoutProperties.clipsContent(_:): @MainActor func clipsContent(_ value: Bool) -> Self.Modified
 swift.method LayoutProperties.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ edges: SafeAreaEdges) -> Self.Modified
+swift.method LayoutProperties.layoutBodies(_:): @MainActor func layoutBodies(_ body: LayoutBody) -> Self.Modified
 swift.method LayoutProperties.letsInputThrough(_:): @MainActor func letsInputThrough(_ value: Bool) -> Self.Modified
 swift.method LayoutSubview.firstBaseline(_:): @MainActor func firstBaseline(_ proposal: LayoutProposal) -> Double?
 swift.method LayoutSubview.sizeThatFits(_:): @MainActor func sizeThatFits(_ proposal: LayoutProposal) -> LayoutSize
@@ -10162,6 +10165,7 @@ swift.method Styling.isTextPredictionEnabled(_:): @MainActor func isTextPredicti
 swift.method Styling.isVisible(_:): @MainActor func isVisible(_ value: Bool) -> Self.Modified
 swift.method Styling.isZoomEnabled(_:): @MainActor func isZoomEnabled(_ value: Bool) -> Self.Modified
 swift.method Styling.kind(_:): @MainActor func kind(_ value: MapKind) -> Self.Modified
+swift.method Styling.layoutBodies(_:): @MainActor func layoutBodies(_ body: LayoutBody) -> Self.Modified
 swift.method Styling.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Styling.layoutDirection(_:): @MainActor func layoutDirection(_ value: LayoutDirection) -> Self.Modified
 swift.method Styling.letsInputThrough(_:): @MainActor func letsInputThrough(_ value: Bool) -> Self.Modified
@@ -11697,6 +11701,7 @@ swift.method VStack.isDraggable(_:): @MainActor func isDraggable(_ state: Bindin
 swift.method VStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method VStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
+swift.method VStack.layoutBodies(_:): @MainActor func layoutBodies(_ body: LayoutBody) -> Self.Modified
 swift.method VStack.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method VStack.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
 swift.method VStack.letsInputThrough(_:): @MainActor func letsInputThrough(_ state: Binding<Bool>) -> Self.Modified
@@ -12333,6 +12338,7 @@ swift.method ZStack.isDraggable(_:): @MainActor func isDraggable(_ state: Bindin
 swift.method ZStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ZStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
+swift.method ZStack.layoutBodies(_:): @MainActor func layoutBodies(_ body: LayoutBody) -> Self.Modified
 swift.method ZStack.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method ZStack.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
 swift.method ZStack.letsInputThrough(_:): @MainActor func letsInputThrough(_ state: Binding<Bool>) -> Self.Modified
@@ -13290,6 +13296,7 @@ swift.type.property LanguageElementContract.name: static let name: String
 swift.type.property LayoutBody.none: static let none: LayoutBody
 swift.type.property LayoutContract.clipsContent: static let clipsContent: ElementProperty<LayoutContract, Bool>
 swift.type.property LayoutContract.ignoresSafeArea: static let ignoresSafeArea: ElementProperty<LayoutContract, SafeAreaEdges>
+swift.type.property LayoutContract.layoutBodies: static let layoutBodies: ElementProperty<LayoutContract, LayoutBody>
 swift.type.property LayoutContract.letsInputThrough: static let letsInputThrough: ElementProperty<LayoutContract, Bool>
 swift.type.property LayoutContract.name: static let name: String
 swift.type.property LayoutCurve.catmullRom: static var catmullRom: LayoutCurve { get }

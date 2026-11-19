@@ -35,7 +35,7 @@ public struct LayoutBody: Equatable, Sendable {
     }
 
     /// The body as a host runs it; nil for none.
-    var host: HostLayoutBody? {
+    @_spi(Host) public var host: HostLayoutBody? {
         spring.map { HostLayoutBody(milliseconds: $0.response, damping: $0.damping, follows: follows) }
     }
 

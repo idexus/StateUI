@@ -199,7 +199,7 @@ enum WebRealization {
             missing: "A page's fetch refuses the methods CONNECT, TRACE and TRACK: a request with one fails with that reason."),
         .notPlanned(ColorPickerContract.choosesOpacity,
             reason: "The browser's color input chooses no opacity: every color it gives is opaque."),
-    ] + pickerOpening + dayFields + HostRecord.motionLayout + BarItemLook.realized
+    ] + pickerOpening + dayFields + HostRecord.motionLayout + HostRecord.layoutBodies + BarItemLook.realized
 
     /// A day's and a time's field: left to right, whatever the direction around them.
     private static let dayFields: [HostRecord] = ([DatePickerContract.self, TimePickerContract.self] as [any ElementContract.Type]).map {

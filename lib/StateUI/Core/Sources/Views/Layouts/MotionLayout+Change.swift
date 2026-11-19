@@ -25,11 +25,6 @@ extension MotionLayout.Run {
         return (memory, discrete)
     }
 
-    /// The body the view at `index` is: its own, else the layout's for every view.
-    func bodied(_ index: Int) -> LayoutBody {
-        body(index) ?? viewsBody
-    }
-
     /// Answers the host `poses` - worked out at `parameters` in `room` - each with its body, the places a change
     /// measures its views' ways to, and the view the hand holds where it holds it; and keeps what it answered for
     /// the next description to be measured against. Whether the hand's own movement goes on.
@@ -55,7 +50,7 @@ extension MotionLayout.Run {
         views.reserveCapacity(poses.count)
         for (index, identity) in identities.enumerated() {
             var view = HostLayoutView(
-                key: identity, target: HostBoundary.placement(of: poses[index]), body: bodied(index).host)
+                key: identity, target: HostBoundary.placement(of: poses[index]), body: body(index))
             view.discrete = states.slot.discrete[identity].map(HostBoundary.placement(of:))
             view.velocity = states.slot.released[identity]
             if let held = hand.held, held.index == index {

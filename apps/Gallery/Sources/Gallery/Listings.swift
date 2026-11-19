@@ -6871,6 +6871,7 @@ enum Listings {
         @State private var rows = [0, 1, 2]
         @State private var next = 3
         @State private var wide = false
+        @State private var springy = false
 
         static let names = ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India"]
 
@@ -6893,7 +6894,7 @@ enum Listings {
                 Text("A stack")
                     .tracking(1)
 
-                VStack {
+                let stack = VStack {
                     // INSIDE these braces, because that is where `rows` is read:
                     // Add, Remove and Shuffle build this closure, and the views
                     // left standing keep their controls.
@@ -6909,6 +6910,13 @@ enum Listings {
                         .height(40)
                     }
                 }
+
+                // A BODY FOR EVERY ROW, where asked: each comes onto its new
+                // place on a spring of its own - past it, and back - in place of
+                // the layout's motion.
+                springy ? stack.layoutBodies(.onChange(Spring(response: .milliseconds(420), damping: 0.55))) : stack
+
+                SwitchRow("Springy rows", $springy)
 
                 HStack {
                     Button("Add").onClicked {

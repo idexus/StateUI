@@ -38,7 +38,7 @@ enum WinUIRealization {
         + "ScrollView it does not pull."
 
     /// Every record, the tiers' first.
-    static let records: [HostRecord] = tierRecords + entryRecords + pageRecords + HostRecord.motionLayout
+    static let records: [HostRecord] = tierRecords + entryRecords + pageRecords + HostRecord.motionLayout + HostRecord.layoutBodies
         + BarItemLook.notPlanned(reason: "The title bar's commands stand in WinUI's own look.")
 
     /// A tier's member every wearer realizes alike.

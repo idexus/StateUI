@@ -16,4 +16,11 @@ extension HostRecord {
             reason: "A motion layout stands its views where its arithmetic says, from its own top left: it takes no "
                 + "padding."),
     ]
+
+    /// What every host records alike of a layout's bodies: the host layer places every layout's children, and
+    /// brings each onto its place as its body says.
+    /// Design: docs/design/host/motion.md#a-child-that-is-a-body
+    public static let layoutBodies: [HostRecord] = [
+        .complete(LayoutContract.layoutBodies),
+    ]
 }

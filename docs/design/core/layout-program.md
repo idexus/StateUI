@@ -88,7 +88,7 @@ one.
 ```text
   key       the layout's own number for the child's item - the same while the item stands
   target    where the layout puts the child now
-  body      the spring it comes onto its place on, and whether it lags behind a moving place; none: at once
+  body      the body the child says itself; none said: its layout's bodies decide, on the host
   discrete  at a change of the layout: where the new arithmetic puts the child where the last frame stood
   velocity  the speed a child the hand let go sets out at
   held      where the hand holds the child, which is shown exactly there

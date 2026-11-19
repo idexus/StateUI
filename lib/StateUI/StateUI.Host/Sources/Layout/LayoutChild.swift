@@ -65,6 +65,10 @@
     /// How the child lays out words (`NodeType.laidOutWords`): its place travels no narrower than they need.
     public var words = LaidOutWords.none
 
+    /// How the child comes onto its place, as it or its layout says; nil where neither does, and the layout's
+    /// motion decides.
+    public var body: LayoutBody?
+
     /// Values with every part at its default.
     public init() {}
 

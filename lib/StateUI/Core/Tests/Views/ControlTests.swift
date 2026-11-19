@@ -583,6 +583,8 @@ final class ControlTests: XCTestCase {
                 .ignoresSafeArea([.start, .top])
                 .clipsContent(true)
                 .letsInputThrough(true)
+                // How its children come onto their places is the layout tier's too.
+                .layoutBodies(.onChange(Spring(response: .milliseconds(320), damping: 0.8)))
                 .style(.card)
                 .padding(start: 24, top: 16, end: 24, bottom: 16)
                 .margin(start: 4, top: 8, end: 4, bottom: 8)
@@ -828,6 +830,7 @@ final class ControlTests: XCTestCase {
             // A value the host cannot be handed whole - a gradient among them.
             "icon", "pageIcon", "dash", "points", "options", "columns", "rows",
             "shape", "geometryTransform", "transform", "motion", "parameterMotion", "throwMotion", "layoutBody",
+            "layoutBodies",
             "id", "assign", "area",
             // Tiers no view wears: a bar's item, a run of text, a map's marker - and an entry's automation name,
             // whose twin a view's tier carries.
@@ -894,7 +897,6 @@ final class ControlTests: XCTestCase {
             "Views/Collections/GalleryView.swift|throwMotion:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
             "Views/Layouts/MotionLayout.swift|itemDrag:ItemDragStart",
             "Views/Layouts/MotionLayout.swift|mirrorsRightToLeft:Bool",
-            "Views/Layouts/MotionLayout.swift|layoutBodies:LayoutBody",
         ]
         let missing = values
             .filter { value in

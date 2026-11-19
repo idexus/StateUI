@@ -29,8 +29,9 @@
     /// Where the layout puts the child now.
     public var target: HostPlacement
 
-    /// How the child comes onto its place; nil for a child that stands there at once.
-    public var body: HostLayoutBody?
+    /// How the child says it comes onto its place; nil for a child that says nothing, which its layout's bodies
+    /// decide (`LayoutContract.layoutBodies`).
+    public var body: LayoutBody?
 
     /// At a change of the layout, where the new arithmetic puts the child where the last frame stood: the place its
     /// way is measured to. Nil for a child the change moves nowhere.
@@ -45,7 +46,7 @@
 
     /// The child `key` at `target`.
     public init(
-        key: Int, target: HostPlacement, body: HostLayoutBody? = nil, discrete: HostPlacement? = nil,
+        key: Int, target: HostPlacement, body: LayoutBody? = nil, discrete: HostPlacement? = nil,
         velocity: Point? = nil, held: HostPlacement? = nil
     ) {
         self.key = key

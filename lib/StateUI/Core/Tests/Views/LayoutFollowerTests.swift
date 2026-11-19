@@ -71,28 +71,28 @@ final class LayoutFollowerTests: XCTestCase {
         let worn = try XCTUnwrap(layout.driven?[.parameters]?.state)
         // Read off the answer as the host does, no tree described again: a new description would read the bodies
         // anew.
-        func follows() -> Bool? { bench.answer.views.first?.body?.follows }
+        func body() -> LayoutBody? { bench.answer.views.first?.body }
         moved(worn, to: [1, 1, 0], mask: 0b111)
         bench.cycle()
-        XCTAssertEqual(follows(), false, "no body of its own yet: carried by its place (shaded \(shaded))")
+        XCTAssertNil(body(), "no body of its own yet (shaded \(shaded))")
 
         sways.wrappedValue = true
         renders.revisit(changed: Renderer.shared.pendingChanges)
         moved(worn, to: [2, 2, 0], mask: 0b111)
         bench.cycle()
-        XCTAssertEqual(follows(), true, "a body now: answered as following its place (shaded \(shaded))")
-        XCTAssertEqual(bench.answer.views.first?.body?.milliseconds, 400)
+        XCTAssertEqual(
+            body(), .followsLayout(Spring(response: .milliseconds(400), damping: 0.5)),
+            "a body now: answered as following its place (shaded \(shaded))")
     }
 
-    /// A VIEW FOLLOWING ITS PLACE IS ANSWERED SO, ON ITS OWN SPRING; the layout's own views are answered bodies
-    /// their place carries.
+    /// A VIEW FOLLOWING ITS PLACE IS ANSWERED SO, ON ITS OWN SPRING; the layout's own views are answered none of
+    /// their own.
     func testAFollowingViewIsAnsweredAmongTheLayoutsOwn() throws {
         let phase = State(wrappedValue: 0.0)
         _ = bench.laid(Renders(), { self.tree(phase) })
 
         XCTAssertEqual(bench.answer.views.map(\.body), [
-            HostLayoutBody(milliseconds: 400, damping: 0.5, follows: true),
-            HostLayoutBody(milliseconds: 300, damping: 1, follows: false),
+            .followsLayout(Spring(response: .milliseconds(400), damping: 0.5)), nil,
         ])
     }
 }

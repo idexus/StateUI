@@ -15,6 +15,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
     @State private var rows = [0, 1, 2]
     @State private var next = 3
     @State private var wide = false
+    @State private var springy = false
 
     static let names = ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India"]
 
@@ -39,7 +40,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 .tracking(1)
                 .textColor(Palette.subtle)
 
-            VStack {
+            let stack = VStack {
                 // INSIDE these braces, because that is where `rows` is read:
                 // Add, Remove and Shuffle build this closure, and the views
                 // left standing keep their controls.
@@ -59,6 +60,14 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 }
             }
             .spacing(6)
+
+            // A BODY FOR EVERY ROW, where asked: each comes onto its new
+            // place on a spring of its own - past it, and back - in place of
+            // the layout's motion.
+            springy ? stack.layoutBodies(.onChange(Spring(response: .milliseconds(420), damping: 0.55))) : stack
+
+            SwitchRow("Springy rows", $springy)
+                .accessibilityIdentifier("living.springy")
 
             HStack {
                 Button("Add").onClicked {
@@ -127,6 +136,11 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 + "example says nothing about animation: it writes "
                 + "`rows.insert(…)`, and the layout works out where everything "
                 + "belongs the same way it would if nothing moved.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Springy rows gives every row of the stack a body: it comes onto its new place on a spring, a "
+                + "little past it and back, where the rows otherwise slide under the layout's own motion.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

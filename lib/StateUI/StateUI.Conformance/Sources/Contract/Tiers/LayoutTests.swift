@@ -16,6 +16,7 @@
                 clipped(element), throughIt(element), underTheBars(element), clearOfTheKeyboard(element),
                 Aspects.holds(LayoutContract.clipsContent, on: element, false, then: true),
                 Aspects.holds(LayoutContract.letsInputThrough, on: element, false, then: true),
+                bodied(element), unbodied(element),
             ]
         }
     }
@@ -184,6 +185,131 @@ extension LayoutTests {
             s.settle { foot() == alone }
             s.expect(foot(), alone, "and where it stood once the keyboard goes")
         }
+    }
+}
+
+extension LayoutTests {
+    /// A child a change of its layout moves comes onto its new place as the layout's bodies say: on their spring -
+    /// past its place, where the spring is damped below one - though the layout's own motion moves nothing.
+    @MainActor
+    static func bodied(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aChildComesOntoItsPlaceAsItsBodiesSay", proves: [
+            Covered(LayoutContract.layoutBodies, on: element),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+            let clock = TestClock()
+            let far = State(wrappedValue: false)
+            let bodies = LayoutBody.onChange(Spring(response: .milliseconds(400), damping: 0.5))
+            s.start(clock: clock) {
+                VStack {
+                    Shifting(element: element, bodies: bodies, law: .none, far: far.projectedValue)
+                    Button("Move").onClicked { far.wrappedValue = true }.id("move")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            while clock.now < 200 {
+                clock.now += 16
+                s.frame()
+            }
+            let start = try s.place(of: s.element("specimen"))
+            let moved = { () -> Double in
+                guard let place = try? s.place(of: s.element("specimen")) else { return .nan }
+                return max(abs(place.x - start.x), abs(place.y - start.y))
+            }
+
+            try s.perform(.activate, on: s.element("move"))
+            var (first, farthest) = (Double.nan, 0.0)
+            while clock.now < 3_400 {
+                clock.now += 16
+                s.frame()
+                if first.isNaN, moved() > 0 { first = moved() }
+                farthest = max(farthest, moved())
+            }
+            s.expect(first < 120, true, "on its way, not there at once: \(first)")
+            s.expect(farthest > 161, true, "past its place, on its bodies' spring: \(farthest)")
+            s.expect(abs(moved() - 160) < 0.5, true, "and onto it: \(moved())")
+        }
+    }
+
+    /// A layout whose bodies are none stands a child at its new place at once, though the layout's own motion
+    /// would take it there in time.
+    @MainActor
+    static func unbodied(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aLayoutOfNoBodiesStandsItsChildAtOnce", proves: [
+            Covered(LayoutContract.layoutBodies, on: element),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+            let clock = TestClock()
+            let far = State(wrappedValue: false)
+            s.start(clock: clock) {
+                VStack {
+                    Shifting(
+                        element: element, bodies: LayoutBody.none, law: .eased(.milliseconds(600), curve: .linear),
+                        far: far.projectedValue)
+                    Button("Move").onClicked { far.wrappedValue = true }.id("move")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            while clock.now < 200 {
+                clock.now += 16
+                s.frame()
+            }
+            let start = try s.place(of: s.element("specimen"))
+
+            try s.perform(.activate, on: s.element("move"))
+            for _ in 0..<3 {
+                clock.now += 16
+                s.frame()
+            }
+            let place = try s.place(of: s.element("specimen"))
+            let moved = max(abs(place.x - start.x), abs(place.y - start.y))
+            s.expect(abs(moved - 160) < 0.5, true, "at its place within a frame or two: \(moved)")
+        }
+    }
+}
+
+/// A layout of `element`'s kind, two hundred points square, holding one view of forty at its start - or, once `far`,
+/// at its end: a change of the layout that moves the view a hundred and sixty points. Its children are the bodies
+/// `bodies`, and its own motion is `law`.
+private struct Shifting: View {
+    let element: String
+    let bodies: LayoutBody
+    let law: Motion
+    let far: Binding<Bool>
+
+    var body: some View {
+        let far = far.wrappedValue
+        let edge: Alignment = far ? .end : .start
+        let dressing = Dressing([
+            Write(LayoutContract.layoutBodies, bodies), Write(VisualElementContract.width, 200),
+            Write(VisualElementContract.height, 200), Write(ViewContract.horizontalAlignment, Alignment.start),
+            Write(ViewContract.verticalAlignment, Alignment.start),
+        ], id: "layout")
+        let held = Rectangle()
+            .fill(.red)
+            .width(40)
+            .height(40)
+            .horizontalAlignment(edge)
+            .verticalAlignment(edge)
+            .id("specimen")
+
+        let layout: any View = switch element {
+        case "Grid": dressing.dress(Grid { held }.motion(law))
+        case "HStack": dressing.dress(HStack { held }.motion(law))
+        case "ZStack": dressing.dress(ZStack { held }.motion(law))
+        case "MotionLayout":
+            dressing.dress(AnyView(
+                MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
+                    Rectangle()
+                        .fill(.red)
+                        .id("specimen")
+                } placements: { _, _ in
+                    [Placement(Rect(far ? 160 : 0, far ? 160 : 0, 40, 40))]
+                }
+                .motion(law)))
+        default: dressing.dress(VStack { held }.motion(law))
+        }
+        return AnyView(layout)
     }
 }
 

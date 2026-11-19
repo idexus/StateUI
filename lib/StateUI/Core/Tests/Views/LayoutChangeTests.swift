@@ -76,7 +76,6 @@ final class LayoutChangeTests: XCTestCase {
         XCTAssertEqual(changed.views.map(\.key), Array(stood.views.map(\.key).dropFirst()), "the others, as they were")
         XCTAssertEqual(changed.views.map(\.target.bounds.x), [0, 100])
         XCTAssertEqual(changed.views.map { $0.discrete?.bounds.x }, [0, 100], "where each one's way is measured to")
-        XCTAssertEqual(changed.views.first?.body, HostLayoutBody(milliseconds: 160, damping: 1, follows: false))
         XCTAssertNotEqual(changed.change, stood.change, "a change of its own")
     }
 
@@ -203,20 +202,6 @@ final class LayoutChangeTests: XCTestCase {
 
         XCTAssertNotEqual(second.change, first.change)
         XCTAssertEqual(second.views[2].discrete?.bounds.x, 200)
-    }
-
-    /// A LAYOUT WHOSE VIEWS HAVE NO BODY ANSWERS NONE: each view stands at its place at once.
-    func testALayoutOfNoBodiesAnswersNone() {
-        let still = State(wrappedValue: [0, 1, 2])
-        let renders = Renders()
-        func plain() -> Node { row(still, bodies: .none) }
-        _ = bench.laid(renders, plain)
-
-        still.wrappedValue = [1, 2]
-        let changed = answer(renders, plain)
-
-        XCTAssertEqual(changed.views.map(\.body), [nil, nil])
-        XCTAssertEqual(changed.views.map(\.target.bounds.x), [0, 100])
     }
 
     /// A RENDER THAT CHANGES NOTHING MOVES NOTHING: the same arithmetic described again shows the same run.

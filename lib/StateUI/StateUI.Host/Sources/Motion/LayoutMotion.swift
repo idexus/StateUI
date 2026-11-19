@@ -97,6 +97,23 @@ extension PlacedView {
         return Arrangement(law: law, lanes: resized || framesRead ? [] : lanes, fades: true)
     }
 
+    /// How a child that is a body is placed in an arrangement whose other children are placed as `arrangement`
+    /// says: a body of none arrives; one answering a change travels on its spring where a patch `said` the
+    /// arrangement and the layout's own width stands, whatever the layout's own motion; one following its place
+    /// travels on its spring whenever its place moves. Under less motion, and while a frame under the layout is
+    /// read, it arrives.
+    /// Design: docs/design/host/motion.md#a-child-that-is-a-body
+    public func arrangement(
+        of body: LayoutBody, said: Bool, resized: Bool, framesRead: Bool, among arrangement: Arrangement
+    ) -> Arrangement {
+        guard let spring = body.host, !reducesMotion(), !framesRead, spring.follows || (said && !resized)
+        else { return Arrangement() }
+
+        let law = Motion.spring(
+            Spring(response: .milliseconds(Int64(spring.milliseconds.rounded())), damping: spring.damping))
+        return Arrangement(law: law, lanes: .all, fades: arrangement.fades || said)
+    }
+
     /// The timing `motion` resolves to, or nil where nothing animates.
     public func law(of motion: HostLayoutMotion?) -> Motion? {
         let law = motion.map { $0.motion.kind == .inherited ? applicationMotion : $0.motion } ?? applicationMotion
