@@ -258,6 +258,53 @@
                 s.settle { apart() == 60 }
                 s.expect(apart(), 60, "and under the taller layout once its view grew")
             },
+            ConformanceCase("aRowTurnedColumnKeepsItsFieldsAndTheKeyboard", proves: [
+                Covered(MotionLayoutContract.self), Covered(MotionLayoutContract.layout),
+            ], needs: [
+                Covered(FocusElementContract.focus, on: "TextField"), Covered(TextElementContract.text, on: "TextField"),
+            ]) { s in
+                let (name, city) = (State(wrappedValue: ""), State(wrappedValue: ""))
+                let width = State(wrappedValue: 400.0)
+                let rows = Received<Int>()
+                s.start {
+                    VStack {
+                        MotionLayout([0, 1], parameters: State(wrappedValue: 0.0).projectedValue) { index in
+                            TextField(index == 0 ? name.projectedValue : city.projectedValue)
+                                .width(150)
+                                .id(index == 0 ? "name" : "city")
+                        } placements: { context, _ in
+                            // Side by side while the fields' own widths fit the room, else one under the other.
+                            let sizes = context.subviews.map { $0.sizeThatFits(LayoutProposal()) }
+                            let stacked = sizes.reduce(10) { $0 + $1.width } > context.bounds.width
+                            rows.values.append(stacked ? 2 : 1)
+                            var (across, down) = (0.0, 0.0)
+                            return sizes.map { size in
+                                defer { if stacked { down += size.height + 10 } else { across += size.width + 10 } }
+                                return Placement(Rect(across, down, size.width, size.height))
+                            }
+                        }
+                        .width(width.projectedValue).height(140)
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                let field = try s.element("name")
+                let mounted = field.mount
+
+                try s.perform(.focus, on: field)
+                try s.settle { try s.focused(field) }
+                try s.perform(.type("Ada"), on: field)
+                s.settle { name.wrappedValue == "Ada" && rows.values.last == 1 }
+                s.expect(rows.values.last, 1, "side by side while the room holds both")
+
+                width.wrappedValue = 200
+                s.settle { rows.values.last == 2 }
+                s.expect(rows.values.last, 2, "one under the other in the narrower room")
+                let after = try s.element("name")
+                s.expect(after.mount, mounted, "the same field, made once")
+                s.expect(try s.focused(after), true, "which holds the keyboard still")
+                s.expect(try s.held(TextElementContract.text, on: after), "Ada", "and the words typed in it")
+            },
             ConformanceCase("mirroredRightToLeftItsViewsStandTurnedAboutItsMiddle", proves: [
                 Covered(MotionLayoutContract.mirrorsRightToLeft),
             ], needs: [Covered(VisualElementContract.layoutDirection, on: "VStack")]) { s in
