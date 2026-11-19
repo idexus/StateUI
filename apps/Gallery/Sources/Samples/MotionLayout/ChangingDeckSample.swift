@@ -150,10 +150,10 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         .itemDrag(begins: .perpendicular)
         .onItemDismissed(directions: .up, threshold: 120) { name in remove(name) }
         // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
-        // where the parameters stand; `.dynamics` THE CARDS reaching their new
-        // places after a card joins, leaves or the order changes.
+        // where the parameters stand; `.layoutBodies` THE CARDS reaching their
+        // new places after a card joins, leaves or the order changes.
         .parameterMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
-        .dynamics(.spring(Spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1)))
+        .layoutBodies(.onChange(Spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1)))
     }
 
     /// Where one card stands in the fan: along an arc and turned with it, the
@@ -240,13 +240,14 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
             Text("Add, insert, remove, reverse or spread the cards while the deck stands - or while it "
                 + "still turns. Nothing here animates a card: after a change of the layout's description "
                 + "each card goes from where it was shown to where the new arithmetic puts it on the "
-                + "layout's `.dynamics`, while `.parameterMotion` moves the parameters - the turn between cards.")
+                + "spring `.layoutBodies` names, while `.parameterMotion` moves the parameters - the turn between "
+                + "cards.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("Slow turn changes `.parameterMotion` alone: swipe or remove the front card and the turn "
                 + "takes longer, while a card added or the order reversed moves as before. Bouncy cards "
-                + "changes `.dynamics` alone: the cards overshoot their new places, and the turn is as it was.")
+                + "changes `.layoutBodies` alone: the cards overshoot their new places, and the turn is as it was.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

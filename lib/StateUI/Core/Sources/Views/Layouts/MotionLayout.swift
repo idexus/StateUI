@@ -182,7 +182,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     private var law = Motion.inherited
 
     /// What the views move by between where the arithmetic puts them and where they are shown.
-    private var world = LayoutDynamics.standard
+    private var viewsBody = LayoutBody.onChange()
 
     /// How a throw goes on once the hand lets go, every axis alike.
     private var throwLaw = Motion.eased(.milliseconds(400), curve: .cubicOut)
@@ -440,7 +440,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
 
     /// How the parameters travel where the program or a settle sends them; let go short of the next snap, the run comes
     /// onto it at a unit a length of this motion, so the short way is short. How a view a change moves comes onto its
-    /// new place is the world's (`dynamics(_:)`).
+    /// new place is its body's (`layoutBodies(_:)`).
     ///
     ///     .parameterMotion(.spring(Spring(response: .milliseconds(240))))
     ///
@@ -467,18 +467,18 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         return copy
     }
 
-    /// What the views move by between where the arithmetic puts them and where they are shown: a view a change
-    /// moves - joining, the run arranged anew, let go by the hand - comes onto its new place as a body of this
-    /// world, and one with a body of its own (`layoutBody(_:)`) as that body says.
+    /// How every view of the layout comes onto the place the arithmetic gives it, unless the view says its own
+    /// (`layoutBody(_:)`): a view a change moves - joining, the run arranged anew, let go by the hand - comes onto
+    /// its new place as this body says.
     ///
-    ///     .dynamics(.spring(Spring(response: .milliseconds(420), damping: 0.8)))
+    ///     .layoutBodies(.onChange(Spring(response: .milliseconds(420), damping: 0.8)))
     ///
-    /// - Parameter dynamics: the layout's dynamics; `.standard` unless said, `.none` for views standing at their
-    ///   places at once - the parameters still travel under `parameterMotion(_:)`.
-    /// - Returns: the layout, its views moving by those dynamics.
-    public func dynamics(_ dynamics: LayoutDynamics) -> Self {
+    /// - Parameter body: the views' body; `.onChange()` unless said, `.none` for views standing at their places at
+    ///   once - the parameters still travel under `parameterMotion(_:)`.
+    /// - Returns: the layout, its views moving as that body.
+    public func layoutBodies(_ body: LayoutBody) -> Self {
         var copy = self
-        copy.world = dynamics
+        copy.viewsBody = body
         return copy
     }
 
@@ -840,7 +840,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             focus: hands.first { $0.way != nil },
             law: law,
             throwing: throwLaw,
-            world: world,
+            viewsBody: viewsBody,
             body: { [bodies] index in bodies(index) },
             rebuilt: { [bodies] index in bodies.rebuilt(index) },
             settled: settled,
@@ -905,7 +905,7 @@ extension MotionLayout: WalkedView {
             ("source", source), ("parameters", parameters), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("consumed", consumed), ("mask", mask as Any), ("activated", activated),
             ("itemStart", itemStart as Any), ("dragged", dragged), ("dismissals", dismissals),
-            ("law", law), ("world", world), ("throwLaw", throwLaw), ("settled", settled), ("sized", sized as Any),
+            ("law", law), ("viewsBody", viewsBody), ("throwLaw", throwLaw), ("settled", settled), ("sized", sized as Any),
             ("mirrors", mirrors),
             ("named", named as Any), ("written", written),
         ]

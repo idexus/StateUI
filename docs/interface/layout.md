@@ -791,11 +791,12 @@ A change of the layout where its parameters stand travels too. A view
 joining fades in where the arithmetic puts it; one leaving goes at once and
 the others close up; a new order slides; and a value read in the body - a
 switch between a fan and a pile - takes every view from where it was to its
-new place as a body of the layout's world, while the parameters go on as they
-go. `.dynamics(_:)` says how, a `LayoutDynamics`: each view on a spring to its place,
-`.standard` - 300 milliseconds, never past it - unless said, `.none` for
-views standing at their places at once - the parameters still travel; `.parameterMotion(_:)`
-is the parameters' law alone, moving between the views' rests, and `.dynamics`
+new place as a body, while the parameters go on as they
+go. `.layoutBodies(_:)` says how, a `LayoutBody` for every view: `.onChange(_:)`
+brings each view onto its place on a `Spring` - the standard one, 300
+milliseconds and never past the place, unless said - and `.none` stands the
+views at their places at once - the parameters still travel; `.parameterMotion(_:)`
+is the parameters' law alone, moving between the views' rests, and `.layoutBodies`
 the views reaching their new places:
 
 ```swift
@@ -816,7 +817,7 @@ struct Hand: View {
                     Placement(Rect(context.bounds.width / 2 - 60 + Double(index) * gap, 0, 120, context.bounds.height))
                 }
             }
-            .dynamics(.spring(Spring(response: .milliseconds(300), damping: 0.8)))
+            .layoutBodies(.onChange(Spring(response: .milliseconds(300), damping: 0.8)))
             .height(160)
 
             Button("Add").onClicked {
@@ -834,12 +835,13 @@ others close up. Where the front card was the last, the parameters themselves ha
 go: `$turn.journey.move(to:)` in the same handler sends the run to the card
 before it, under `.parameterMotion(_:)`.
 
-A view can be a body of its own: `.layoutBody(.followsLayout(Spring(response:damping:)))` on
-it makes it follow its place on a spring of its own - carried by the run, it
-lags behind its place while the run turns, swings past where a throw stops
-and settles back onto it. The world is worked out at a fixed step, so every
-host and frame rate shows the same motion; under less motion every view
-stands at its place. `.onSettled { parameters in … }` is told once the run comes to
+A view can say its own body, which wins over its layout's: `.layoutBody(.none)`
+stands it at its place at once, `.layoutBody(.onChange(_:))` gives it a spring of
+its own, and `.layoutBody(.followsLayout(_:))` makes it follow its place too -
+carried by the run, it lags behind its place while the run turns, swings past
+where a throw stops and settles back onto it. Bodies are worked out at a fixed
+step, so every host and frame rate shows the same motion; under less motion
+every view stands at its place. `.onSettled { parameters in … }` is told once the run comes to
 rest - no hand holding it, the parameters at its destination and every view at its
 place - with the parameters it rests at, whatever moved it: the one place to save
 where the user left a run:

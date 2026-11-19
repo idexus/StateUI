@@ -143,13 +143,16 @@ extension MotionLayout.Run {
         }
         var placement = hand.held(shown[index], over: shown)
         if let thrown = hand.velocity, !hand.dismissed {
+            states.item.wrappedValue = nil
+            // A view with no body is back at its place at once.
+            guard let spring = bodied(index).spring else { return false }
+
             let lanes = LayoutShift(from: placement, to: poses[index]).lanes
             var velocity = LayoutShift.none.lanes
             velocity[LayoutShift.x] = thrown.x
             velocity[LayoutShift.y] = thrown.y
-            bodies.set(hand.identity, lanes: lanes, velocity: velocity, spring: spring(of: index), at: now)
+            bodies.set(hand.identity, lanes: lanes, velocity: velocity, spring: spring, at: now)
             shown[index] = LayoutShift(lanes: lanes).applied(to: poses[index])
-            states.item.wrappedValue = nil
             return true
         }
         if hand.dismissed {
@@ -169,10 +172,10 @@ extension MotionLayout.Run {
     }
 
     /// How fast a dismissed view flies on, per second: the hand's speed, and its way out no slower than the room's
-    /// length a response of the world's spring.
+    /// length a response of the layout's bodies' spring.
     func flight(of hand: LayoutItemHand, in room: Rect) -> Point {
         var velocity = hand.velocity ?? Point(x: 0, y: 0)
-        let length = max(world.spring?.response ?? 0, 1) / 1_000
+        let length = max(viewsBody.spring?.response ?? 0, 1) / 1_000
         let across = hand.at.x - hand.from.x, down = hand.at.y - hand.from.y
         if abs(down) >= abs(across) {
             velocity.y = down < 0 ? min(velocity.y, -room.height / length) : max(velocity.y, room.height / length)

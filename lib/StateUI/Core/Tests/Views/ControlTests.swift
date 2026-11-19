@@ -367,7 +367,7 @@ final class ControlTests: XCTestCase {
                         .fill(.black)
                 }
                 .parameterMotion(.spring(Spring(response: .milliseconds(240))))
-                .dynamics(.standard)
+                .layoutBodies(.onChange())
                 .mirrorsRightToLeft(true)
                 .onItemActivated { _ in }
                 .itemDrag(begins: .longPress)
@@ -894,7 +894,7 @@ final class ControlTests: XCTestCase {
             "Views/Collections/GalleryView.swift|throwMotion:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
             "Views/Layouts/MotionLayout.swift|itemDrag:ItemDragStart",
             "Views/Layouts/MotionLayout.swift|mirrorsRightToLeft:Bool",
-            "Views/Layouts/MotionLayout.swift|dynamics:LayoutDynamics",
+            "Views/Layouts/MotionLayout.swift|layoutBodies:LayoutBody",
         ]
         let missing = values
             .filter { value in

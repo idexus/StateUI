@@ -2102,10 +2102,10 @@ enum Listings {
             .itemDrag(begins: .perpendicular)
             .onItemDismissed(directions: .up, threshold: 120) { name in remove(name) }
             // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
-            // where the parameters stand; `.dynamics` THE CARDS reaching their new
-            // places after a card joins, leaves or the order changes.
+            // where the parameters stand; `.layoutBodies` THE CARDS reaching their
+            // new places after a card joins, leaves or the order changes.
             .parameterMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
-            .dynamics(.spring(Spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1)))
+            .layoutBodies(.onChange(Spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1)))
         }
 
         /// Where one card stands in the fan: along an arc and turned with it, the

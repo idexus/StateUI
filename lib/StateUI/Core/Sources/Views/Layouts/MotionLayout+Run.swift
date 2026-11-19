@@ -76,9 +76,9 @@ extension MotionLayout {
         /// How a throw goes on once the hands let go, every axis alike (`throwMotion(_:)`).
         let throwing: Motion
 
-        /// What the views move by between their places and where they are shown, and the body each view at an index
-        /// says it is - nil for one of the world's own.
-        let world: LayoutDynamics
+        /// How the views come onto their places (`layoutBodies(_:)`), and the body the view at an index says it is
+        /// itself - nil for one that says none.
+        let viewsBody: LayoutBody
         let body: @MainActor (Int) -> LayoutBody?
 
         /// The view at an index was built again: its body is read anew.

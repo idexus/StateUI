@@ -76,7 +76,8 @@ public enum ViewContract: Tier {
     /// The space kept outside the view, between it and its neighbors.
     public static let margin = ElementProperty<Self, Insets>("margin", layer: .native, moves: .spacing)
 
-    /// How the view moves as a body of its motion layout's world, inside one; where it is none, the world's own.
+    /// How the view comes onto the place its motion layout gives it, inside one; where it says none, as the layout
+    /// says for every view.
     public static let layoutBody = ElementProperty<Self, LayoutBody>("layoutBody", layer: .stateUI, travels: false)
 
     /// How many pointers a pan must have.

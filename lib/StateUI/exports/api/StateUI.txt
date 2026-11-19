@@ -456,8 +456,6 @@ swift.conformance LayoutDirection: Swift.Equatable
 swift.conformance LayoutDirection: Swift.Hashable
 swift.conformance LayoutDirection: Swift.RawRepresentable
 swift.conformance LayoutDirection: Swift.Sendable
-swift.conformance LayoutDynamics: Swift.Equatable
-swift.conformance LayoutDynamics: Swift.Sendable
 swift.conformance LayoutInput: Swift.Equatable
 swift.conformance LayoutInput: Swift.Sendable
 swift.conformance LayoutInterpolation: Swift.Sendable
@@ -6653,7 +6651,6 @@ swift.method MotionLayout.contextMenu(_:): @MainActor func contextMenu(@MenuBuil
 swift.method MotionLayout.debugInfo(): @MainActor func debugInfo() -> String
 swift.method MotionLayout.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method MotionLayout.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
-swift.method MotionLayout.dynamics(_:): @MainActor func dynamics(_ dynamics: LayoutDynamics) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.engine(animating:priority:_:): @MainActor func engine<Value>(animating state: Binding<Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle, EngineMotion<Value>) -> EngineAnswer) -> Self.Modified where Value : Walked
 swift.method MotionLayout.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method MotionLayout.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified where First : Walked, repeat each More : Walked
@@ -6677,6 +6674,7 @@ swift.method MotionLayout.isDraggable(_:): @MainActor func isDraggable(_ value: 
 swift.method MotionLayout.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.itemDrag(begins:): @MainActor func itemDrag(begins start: ItemDragStart) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.layoutBodies(_:): @MainActor func layoutBodies(_ body: LayoutBody) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method MotionLayout.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
 swift.method MotionLayout.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
@@ -12859,7 +12857,6 @@ swift.struct KeyPress: struct KeyPress
 swift.struct LayoutBody: struct LayoutBody
 swift.struct LayoutContext: struct LayoutContext<ID> where ID : Hashable
 swift.struct LayoutCurve: struct LayoutCurve
-swift.struct LayoutDynamics: struct LayoutDynamics
 swift.struct LayoutInput: struct LayoutInput
 swift.struct LayoutMeasurementContext: struct LayoutMeasurementContext<ID> where ID : Hashable
 swift.struct LayoutProposal: struct LayoutProposal
@@ -13014,8 +13011,8 @@ swift.type.method GridTracks.fixed(_:count:): static func fixed(_ length: Double
 swift.type.method GridTracks.proportional(_:count:): static func proportional(_ share: Double, count: Int = 1) -> GridTracks
 swift.type.method ImageSource.icon(_:): static func icon(_ icon: Icon) -> ImageSource
 swift.type.method LayoutBody.followsLayout(_:): static func followsLayout(_ spring: Spring = .standard) -> LayoutBody
+swift.type.method LayoutBody.onChange(_:): static func onChange(_ spring: Spring = .standard) -> LayoutBody
 swift.type.method LayoutCurve.catmullRom(tension:): static func catmullRom(tension: Double) -> LayoutCurve
-swift.type.method LayoutDynamics.spring(_:): static func spring(_ spring: Spring = .standard) -> LayoutDynamics
 swift.type.method LayoutInput.pages(_:): static func pages(_ orientation: Orientation) -> LayoutInput
 swift.type.method LayoutInput.rotation(degreesPerUnit:): static func rotation(degreesPerUnit: Double) -> LayoutInput
 swift.type.method LayoutInput.scroll(_:lengthPerUnit:): static func scroll(_ orientation: Orientation, lengthPerUnit: Double? = nil) -> LayoutInput
@@ -13290,6 +13287,7 @@ swift.type.property KeyboardElementContract.keysTaken: static let keysTaken: Ele
 swift.type.property KeyboardElementContract.name: static let name: String
 swift.type.property LanguageElementContract.language: static let language: ElementProperty<LanguageElementContract, LocaleTag>
 swift.type.property LanguageElementContract.name: static let name: String
+swift.type.property LayoutBody.none: static let none: LayoutBody
 swift.type.property LayoutContract.clipsContent: static let clipsContent: ElementProperty<LayoutContract, Bool>
 swift.type.property LayoutContract.ignoresSafeArea: static let ignoresSafeArea: ElementProperty<LayoutContract, SafeAreaEdges>
 swift.type.property LayoutContract.letsInputThrough: static let letsInputThrough: ElementProperty<LayoutContract, Bool>
@@ -13297,8 +13295,6 @@ swift.type.property LayoutContract.name: static let name: String
 swift.type.property LayoutCurve.catmullRom: static var catmullRom: LayoutCurve { get }
 swift.type.property LayoutCurve.linear: static var linear: LayoutCurve { get }
 swift.type.property LayoutCurve.monotone: static var monotone: LayoutCurve { get }
-swift.type.property LayoutDynamics.none: static let none: LayoutDynamics
-swift.type.property LayoutDynamics.standard: static let standard: LayoutDynamics
 swift.type.property LayoutInput.magnification: static var magnification: LayoutInput { get }
 swift.type.property LayoutInterpolation.catmullRom: static var catmullRom: LayoutCurve { get }
 swift.type.property LayoutInterpolation.linear: static var linear: LayoutCurve { get }

@@ -1,38 +1,86 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// How one view of a motion layout moves as a body of its layout's world (`LayoutDynamics`).
+/// How a view of a motion layout comes onto the place its layout gives it: at once, on a spring when the layout
+/// changes, or on a spring behind a place that keeps moving.
 ///
 ///     MotionLayout(cards, id: \.name, parameters: $turn) { card in
 ///         CardFace(card).layoutBody(.followsLayout(Spring(response: .milliseconds(420), damping: 0.6)))
 ///     } placements: { context, turn in … }
+///     .layoutBodies(.onChange(Spring(response: .milliseconds(300), damping: 0.8)))
 ///
+/// `layoutBodies(_:)` says it for every view of a layout, `layoutBody(_:)` for one, which wins.
 /// Design: docs/design/views/motion-layout.md#bodies
 public struct LayoutBody: Equatable, Sendable {
-    /// The spring it follows its place on.
-    let spring: Spring
+    /// What a body answers.
+    enum Kind: Equatable, Sendable {
+        case none
+        case onChange(Spring)
+        case followsLayout(Spring)
+    }
 
-    /// A body following its place on `spring`: carried by the layout, it lags behind its place while the run
-    /// moves - a card swaying as the run scrolls, flying a little past where a throw stops at the end - and settles
-    /// back onto it.
+    let kind: Kind
+
+    /// The spring the body comes onto its place on; nil for one that stands there at once.
+    var spring: Spring? {
+        switch kind {
+        case .none: nil
+        case .onChange(let spring), .followsLayout(let spring): spring
+        }
+    }
+
+    /// Whether the body lags behind a place that moves under it.
+    var follows: Bool {
+        if case .followsLayout = kind { true } else { false }
+    }
+
+    /// No body: the view stands at its place at once, however the layout changes. The layout's parameters still
+    /// travel as their state says.
+    public static let none = LayoutBody(kind: .none)
+
+    /// A body answering a change of the layout - a view joining, a new order, a new arrangement, a view the hand
+    /// lets go: it comes onto its new place on `spring`. A place moved by the parameters carries it with no lag.
+    ///
+    /// - Parameter spring: how quickly the body answers and how it is damped; the standard spring where none is
+    ///   named.
+    /// - Returns: the body.
+    public static func onChange(_ spring: Spring = .standard) -> LayoutBody {
+        LayoutBody(kind: .onChange(spring))
+    }
+
+    /// A body following its place on `spring`: it answers a change as `onChange(_:)` does, and lags behind its
+    /// place while the run moves too - a card swaying as the run scrolls, flying a little past where a throw stops
+    /// at the end - and settles back onto it.
     ///
     /// - Parameter spring: how quickly the body answers and how it is damped; the standard spring where none is
     ///   named.
     /// - Returns: the body.
     public static func followsLayout(_ spring: Spring = .standard) -> LayoutBody {
-        LayoutBody(spring: spring)
+        LayoutBody(kind: .followsLayout(spring))
     }
 }
 
 extension LayoutBody: HostRepresentable {
-    /// Its spring's response, in milliseconds, and damping.
-    public var propValue: PropValue { .numbers([spring.response, spring.damping]) }
+    /// Which body it is - 0 none, 1 answering a change, 2 following its place - then its spring's response, in
+    /// milliseconds, and damping.
+    public var propValue: PropValue {
+        switch kind {
+        case .none: .numbers([0])
+        case .onChange(let spring): .numbers([1, spring.response, spring.damping])
+        case .followsLayout(let spring): .numbers([2, spring.response, spring.damping])
+        }
+    }
 
-    /// The body back from its spring's numbers, or nil for anything else.
+    /// The body back from its numbers, or nil for anything else.
     /// - Parameter propValue: what crossed.
     public init?(propValue: PropValue) {
-        guard case .numbers(let numbers) = propValue, numbers.count == 2 else { return nil }
+        guard case .numbers(let numbers) = propValue, let which = numbers.first else { return nil }
 
-        spring = Spring(milliseconds: numbers[0], damping: numbers[1])
+        switch (which, numbers.count) {
+        case (0, 1): kind = .none
+        case (1, 3): kind = .onChange(Spring(milliseconds: numbers[1], damping: numbers[2]))
+        case (2, 3): kind = .followsLayout(Spring(milliseconds: numbers[1], damping: numbers[2]))
+        default: return nil
+        }
     }
 }

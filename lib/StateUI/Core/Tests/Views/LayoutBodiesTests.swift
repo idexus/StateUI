@@ -136,12 +136,14 @@ final class LayoutFollowerTests: XCTestCase {
         .node
     }
 
-    /// A BODY FOLLOWING ITS LAYOUT MOVES ON THE SPRING the world's dynamics of the same words would be.
-    func testABodyFollowingItsLayoutMovesOnTheWorldsSpring() {
-        XCTAssertEqual(
-            LayoutBody.followsLayout(Spring(response: .milliseconds(420), damping: 0.55)).spring,
-            LayoutDynamics.spring(Spring(response: .milliseconds(420), damping: 0.55)).spring)
-        XCTAssertEqual(LayoutBody.followsLayout(Spring(damping: .nan)).spring, LayoutDynamics.standard.spring)
+    /// A BODY'S SPRING IS THE ONE IT WAS GIVEN, whichever body it is, and the standard one where none is named.
+    func testABodysSpringIsTheOneItWasGiven() {
+        let spring = Spring(response: .milliseconds(420), damping: 0.55)
+
+        XCTAssertEqual(LayoutBody.followsLayout(spring).spring, spring)
+        XCTAssertEqual(LayoutBody.onChange(spring).spring, spring)
+        XCTAssertEqual(LayoutBody.followsLayout(Spring(damping: .nan)).spring, .standard)
+        XCTAssertEqual(LayoutBody.onChange().spring, .standard)
     }
 
     /// A VIEW'S BODY FOLLOWS THE STATE ITS VIEW READS: a switch the views' own closure reads turns their bodies on,
@@ -185,7 +187,8 @@ final class LayoutFollowerTests: XCTestCase {
         XCTAssertLessThan(shown(), 150, "a body now: behind its place as it leaps (shaded \(shaded))")
     }
 
-    /// A BODY FOLLOWING ITS PLACE LAGS BEHIND IT, PASSES IT AND SETTLES ONTO IT; the world's own goes with its place.
+    /// A BODY FOLLOWING ITS PLACE LAGS BEHIND IT, PASSES IT AND SETTLES ONTO IT; one answering a change alone - the
+    /// layout's own - goes with its place, with no lag.
     func testABodyFollowingItsPlaceLagsPassesAndSettles() throws {
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
@@ -196,7 +199,7 @@ final class LayoutFollowerTests: XCTestCase {
         bench.cycle()
         let first = bench.shown(renders.renderFromScratch(built()))
         XCTAssertLessThan(first[0].bounds.x, 50, "behind its place as it leaps")
-        XCTAssertEqual(first[1].bounds.x, 100, accuracy: 0.000_1, "the world's own with its place")
+        XCTAssertEqual(first[1].bounds.x, 100, accuracy: 0.000_1, "the layout's own with its place")
 
         var farthest = 0.0
         for _ in 0..<200 {

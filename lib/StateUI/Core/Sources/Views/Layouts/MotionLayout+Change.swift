@@ -11,8 +11,7 @@ extension MotionLayout.Run {
     /// Design: docs/design/views/motion-layout.md#a-change-where-the-parameters-stand
     func changed(at now: Double, from: Parameters, reducesMotion: Bool) -> LayoutShown<Parameters> {
         var memory = states.shown.wrappedValue
-        guard memory.description != description || memory.from != from, let last = memory.parameters, !reducesMotion,
-              world.spring != nil
+        guard memory.description != description || memory.from != from, let last = memory.parameters, !reducesMotion
         else { return memory }
 
         let room = Rect(0, 0, memory.room.width, memory.room.height)
@@ -21,11 +20,12 @@ extension MotionLayout.Run {
             let going = memory.bodies[slot.identity]
             let shift = memory.shown[slot.identity].map { LayoutShift(from: $0, to: before[index]) }
                 ?? .joining(before[index])
-            guard shift != .none || going != nil else { continue }
+            // A view with no body stands at its new place at once.
+            guard shift != .none || going != nil, let spring = bodied(index).spring else { continue }
 
             memory.bodies.set(
                 slot.identity, lanes: shift.lanes, velocity: going?.velocity ?? LayoutShift.none.lanes,
-                spring: spring(of: index), at: now)
+                spring: spring, at: now)
         }
         // The poses as this description stands them where the last frame stood: a body following its place is carried
         // by the parameters' move alone.
@@ -33,9 +33,9 @@ extension MotionLayout.Run {
         return memory
     }
 
-    /// The spring the view at `index` comes onto its place on: its own body's, else the world's.
-    func spring(of index: Int) -> Spring {
-        body(index)?.spring ?? world.spring ?? .standard
+    /// The body the view at `index` is: its own, else the layout's for every view.
+    func bodied(_ index: Int) -> LayoutBody {
+        body(index) ?? viewsBody
     }
 
     /// Shows `poses` - worked out at `parameters` in `room` - each shifted by its body in the world `memory` holds, a
@@ -48,13 +48,17 @@ extension MotionLayout.Run {
     ) -> Bool {
         let identities = slots.map { $0.identity }
         var bodies = memory.bodies
-        if reducesMotion || world.spring == nil {
+        if reducesMotion {
             bodies = LayoutBodies()
         } else {
-            bodies.keep(only: Set(identities))
-            for (index, identity) in identities.enumerated() {
-                guard let follower = body(index), let last = memory.poses[identity], last != poses[index] else { continue }
-                bodies.carry(identity, by: LayoutShift(from: last, to: poses[index]).lanes, spring: follower.spring, at: now)
+            // A view that left, and one whose body is none, is no body any more; one following its place is
+            // carried by its place's move.
+            let bodied = identities.indices.map { self.bodied($0) }
+            bodies.keep(only: Set(zip(identities, bodied).filter { $0.1.spring != nil }.map(\.0)))
+            for (index, identity) in identities.enumerated() where bodied[index].follows {
+                guard let spring = bodied[index].spring, let last = memory.poses[identity], last != poses[index]
+                else { continue }
+                bodies.carry(identity, by: LayoutShift(from: last, to: poses[index]).lanes, spring: spring, at: now)
             }
             bodies.step(to: now)
         }

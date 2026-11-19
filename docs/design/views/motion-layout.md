@@ -202,9 +202,9 @@ goes at once, and the others close up. The shift is a body's, going on at
 the speed the body had, so a change changed again does not jump; the poses
 then stand as the new description puts them at the last frame's parameters, so a
 body following its place is carried by the parameters' move alone. The engine
-runs again each frame while a body is on its way. Less motion, or a world of
-none, shows a change at once, and a new room never travels: the layout
-follows the window.
+runs again each frame while a body is on its way. Less motion, or a view
+with no body, shows a change at once, and a new room never travels: the
+layout follows the window.
 
 A shift is the bounds' place and size, the opacity and the shade apart, and
 the transform's five drawn numbers apart - its move, its turn the short way,
@@ -216,36 +216,55 @@ at once; a shade the layout draws none of is not blended.
 
 ## Bodies
 
-Each view the run shows a shift of is a body of the layout's world
-(`LayoutDynamics`, `.dynamics(_:)`): a mass on a spring to its place, its
-shift's lanes and how fast each goes (`LayoutBodies`), pulled onto nought -
-the world's spring, `.standard` 300 ms critically damped, or the body's own
-(`.layoutBody(_:)`, `ViewContract.layoutBody`, read off each item's view
+How a view comes onto its place is its body (`LayoutBody`), which is one of
+three:
+
+```text
+  .none            no body: the view stands at its place at once
+  .onChange(s)     answers a change of the layout on the spring s; the parameters carry it with no lag
+  .followsLayout(s) answers a change, and lags behind a place that moves too
+```
+
+The layout says one for every view (`.layoutBodies(_:)`, `.onChange()` -
+the standard spring, 300 ms critically damped - unless said), and a view
+says its own (`.layoutBody(_:)`, `ViewContract.layoutBody`), which wins: a
+view with a body in a layout of none travels, one with none in a layout of
+bodies lands. A view's own is read off each item's view
 the first time a frame asks, and again once that view is built again - a
 state the view reads, a switch turning its body on, builds the view without
 the layout or its holder, so the layout forgets that view's body as it
-builds it, shade or none). The world is worked out at
+builds it, shade or none.
+
+Each view the run shows a shift of is a body: a mass on a spring to its
+place, its shift's lanes and how fast each goes (`LayoutBodies`), pulled
+onto nought on its body's spring. The bodies are worked out at
 a fixed step - 240 a second, each step `HostMotionLaw`'s own closed form for
 one lane (`HostMotionLaw.spring`), so a step of any spring is where the
 spring then is and none runs away - with an accumulator, so other frames,
 another host or another rate bring a body to the same place; a frame works
-out at most 32 steps, and a world further behind lets the rest go, slowing
+out at most 32 steps, and bodies further behind let the rest go, slowing
 rather than spending a frame catching up (the Web without a JIT). A body as
-near and as slow as an animation counts arrived leaves the world, and one
+near and as slow as an animation counts arrived is one no more, and one
 still moving the longest a spring animates since it was set or carried lands
 on its place, as an animation does - as does one whose step comes out no
 number, its speed told back per second included.
 
-A body of the world's own is at its place but where a change shifted it: the
-parameters and the hand carry it exactly. A body following its layout
-(`.layoutBody(.followsLayout(Spring(response:damping:)))`) is carried by its place's moves too: the place moving
+A body answering a change alone is at its place but where a change shifted
+it: the parameters and the hand carry it exactly. A body following its layout
+(`.followsLayout(_:)`) is carried by its place's moves too: the place moving
 under it since the last frame, it keeps where it was shown and its spring
 pulls it after - a card lagging while the run scrolls and settling back,
 flying past where a throw stops at the end and coming back. The view the hand
 lets go goes back onto its place as a body setting out at the hand's speed.
 `.parameterMotion` is the parameters' law alone: how a change, a join or a hand's let go
-comes onto a place is the world's. Under less motion, and in a world of none,
-no body stands: every view at its place.
+comes onto a place is the body's. A view whose body becomes none on its way
+stands at its place at the next frame. Under less motion no body stands:
+every view at its place.
+
+The trap is a body that is any motion. Following a place that keeps moving
+is a spring's answer; an eased length and a glide are laws of a finite way,
+and a body given one would have to guess when its way began. The type takes
+a `Spring` and nothing else.
 
 ## At rest
 
