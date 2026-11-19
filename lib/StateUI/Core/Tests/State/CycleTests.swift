@@ -801,6 +801,26 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(seen, [1, 1, 2], "the next cycle latched the post")
     }
 
+    /// ONE ENTRY A NUMBER. An engine armed under a number the board still holds takes that entry's place: a
+    /// differ begun afresh numbers from one again, and an entry left under the same number would never run, armed
+    /// for ever, the board asking for a cycle with nothing to do.
+    func testAnEngineArmedUnderAHeldNumberTakesItsPlace() {
+        var ran = [0, 0]
+        board.arm(EngineEntry(id: 1, priority: 0, follows: []) { _ in
+            ran[0] += 1
+            return .wait
+        })
+        board.arm(EngineEntry(id: 1, priority: 0, follows: []) { _ in
+            ran[1] += 1
+            return .wait
+        })
+
+        board.cycle(now: 0, reducesMotion: false)
+
+        XCTAssertEqual(ran, [0, 1], "the entry armed last runs, once")
+        XCTAssertFalse(board.asked, "and nothing is left armed")
+    }
+
     /// AN ENGINE FOLLOWS WHAT THE LATEST RENDER NAMED. `following:` is an
     /// expression the body evaluates, so a render may hand the engine other
     /// states than the one before did - and the entry takes them, forgetting

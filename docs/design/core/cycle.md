@@ -41,6 +41,12 @@ runs the closure, and notes what it answered by the engine's number: the
 closure reads and writes states, and an engine it disarms or arms moves the
 list under it.
 
+The list holds one entry a number, and the cycle finds an engine by its
+number. An engine armed under a number the board still holds takes that
+entry's place - a differ begun afresh numbers from one again - since an
+entry left under the same number would never be found, never run, and stay
+armed for ever, the board asking for a cycle with nothing to do.
+
 ## Three copies of a value
 
 ```text

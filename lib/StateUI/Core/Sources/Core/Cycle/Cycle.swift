@@ -219,8 +219,11 @@ final class CycleBoard {
         storages.first { $0.storage?.number == number }?.storage?.crossing()
     }
 
-    /// Registers an engine, which runs from the next cycle.
+    /// Registers an engine, which runs from the next cycle. One entry a number: an entry the board still holds
+    /// under it - a differ begun afresh numbers from one again - gives way, with what it claimed.
+    /// Design: docs/design/core/cycle.md#the-board
     func arm(_ entry: EngineEntry) {
+        disarm(entry.id)
         engines.append(entry)
         order()
     }
