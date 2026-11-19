@@ -24,10 +24,28 @@ public struct TestElement {
     /// where the act cannot be made, and where a run the act began is still under way after ten seconds.
     ///
     ///     try await button.perform(.activate)
+    ///
+    /// - Throws: `TestFailure` too in a window a `TestClock` winds: it waits by running frames, and there the test
+    ///   moves the time - `send(_:)` the act, then advance the clock.
     public func perform(_ act: UserAct) async throws {
+        guard window.clock == nil else {
+            throw TestFailure(description: "\(self) cannot perform \(act) and wait for its work: the window's clock "
+                + "is wound by hand. Use send(_:), then flush() or advance the clock.")
+        }
         let begun = HostBoundary.runsBegun
         try does(act)
         try await window.settle(since: begun)
+    }
+
+    /// Does `act` to the view as its user does, and waits for nothing: the handlers it raises run at the next
+    /// `flush()` or as the clock advances.
+    ///
+    ///     try button.send(.activate)
+    ///     try await clock.advance(by: .milliseconds(100))
+    ///
+    /// - Throws: `TestFailure` where the act cannot be made.
+    public func send(_ act: UserAct) throws {
+        try does(act)
     }
 
     /// The same, the driver's steps alone running the work it began - on a host's own loop.
@@ -41,7 +59,12 @@ public struct TestElement {
     private func does(_ act: UserAct) throws {
         let element = try mounted()
         do {
-            try window.driver.perform(act.driven(on: element), on: element)
+            try window.driver.perform(act.driven(on: element, pressedAt: window.pressedAt), on: element)
+            switch act {
+            case .pressDown(let point), .drag(let point): window.pressedAt = point
+            case .lift, .cancelInteraction: window.pressedAt = nil
+            default: break
+            }
         } catch let cannot as DriverCannot {
             throw TestFailure(description: "\(self) cannot \(act): \(cannot.because ?? cannot.ability)")
         }

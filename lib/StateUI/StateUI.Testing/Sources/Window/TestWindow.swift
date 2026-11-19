@@ -37,6 +37,15 @@ public final class TestWindow {
     /// The window standing: one at a time.
     private static weak var standing: TestWindow?
 
+    /// The clock winding the window by hand; nil where the window runs its frames itself.
+    let clock: TestClock?
+
+    /// Whether the window stands: it has not been closed.
+    var isOpen: Bool { tree != nil }
+
+    /// Where the press under way stands; nil with none.
+    var pressedAt: Point?
+
     /// Shows `page` in a window, every change in it animating under `motion` - `.none` for a change shown at once,
     /// where a test reads what it changed with no waiting.
     public convenience init(motion: Motion = .standard, @ViewBuilder _ page: @escaping @MainActor () -> some View)
@@ -46,19 +55,50 @@ public final class TestWindow {
         try await settle(since: nil)
     }
 
+    /// Shows `page` in a window standing at `clock`'s time, moving no time: a movement in it travels only as the
+    /// test advances the clock.
+    ///
+    ///     let clock = TestClock()
+    ///     let window = try await TestWindow(clock: clock) { PanelPage() }
+    ///
+    /// Acts are sent with `TestElement.send(_:)`, which waits for nothing; `flush()` shows what they changed at the
+    /// present time, and `clock.advance(by:)` moves it on.
+    ///
+    /// - Throws: `TestFailure` where `clock` already winds an open window.
+    public convenience init(
+        motion: Motion = .standard, clock: TestClock, @ViewBuilder _ page: @escaping @MainActor () -> some View
+    ) async throws {
+        if let wound = clock.window, wound.isOpen {
+            throw TestFailure(description: "the clock already winds an open window: one clock winds one at a time")
+        }
+        try await Self.standing?.close()
+        self.init(driver: CoreDriver(), motion: motion, clock: clock, page)
+        clock.window = self
+        try await flush()
+    }
+
     /// Shows `page` through `driver` - a host's own, on its toolkit - every change animating under `motion`, a second
     /// of its frames run: what a host's suite walks a window through (`TestWindowWalk`).
-    @_spi(Host) public init(
+    @_spi(Host) public convenience init(
         driver: any HostDriver, motion: Motion = .standard, @ViewBuilder _ page: @escaping @MainActor () -> some View
     ) {
-        self.driver = driver
-        Self.standing?.beginClose()
-        HostBoundary.application.motion = motion
-        tree = driver.start(clock: nil, reducesMotion: false) { page() }
-        registration = Renderer.shared.applicationRegistration
-        Self.standing = self
+        self.init(driver: driver, motion: motion, clock: nil, page)
         // The page's own work - a service begun as it appears - is the page's, not an act's: a second of frames.
         try? settleNow(since: nil)
+    }
+
+    /// Mounts `page` through `driver`, its frames at `clock`'s time where one is given, and runs none.
+    private init(
+        driver: any HostDriver, motion: Motion, clock: TestClock?,
+        @ViewBuilder _ page: @escaping @MainActor () -> some View
+    ) {
+        self.driver = driver
+        self.clock = clock
+        Self.standing?.beginClose()
+        HostBoundary.application.motion = motion
+        tree = driver.start(clock: clock?.source, reducesMotion: false) { page() }
+        registration = Renderer.shared.applicationRegistration
+        Self.standing = self
     }
 
     isolated deinit {
@@ -140,6 +180,41 @@ public final class TestWindow {
 
     /// The elements the page mounted now, searched from the window's root; none once the window closed.
     var root: MountedElement? { tree?.root }
+
+    /// Runs the work that is ready and shows what it changed, at the present time: the handlers an act raised, the
+    /// build they asked for, the patch. No time passes, so a movement begun stands where it began and an engine
+    /// asking for its next frame waits for the clock. A closed window has nothing to flush.
+    ///
+    ///     try button.send(.activate)
+    ///     try await window.flush()
+    ///
+    /// - Throws: `TestFailure` where work keeps coming with no time passing.
+    /// Design: docs/design/host/testing.md#a-clock-wound-by-hand
+    public func flush() async throws {
+        var quiet = 0
+        var rounds = 0
+        while isOpen, quiet < 2 {
+            guard rounds < Self.flushRounds else {
+                throw TestFailure(description: "the page's work never came to rest at one time: \(rounds) turns ran")
+            }
+            let waited = HostBoundary.wantsTurn || HostBoundary.resumesWaiting
+            driver.turn()
+            await Task.yield()
+            quiet = waited || HostBoundary.wantsTurn || HostBoundary.resumesWaiting ? 0 : quiet + 1
+            rounds += 1
+        }
+    }
+
+    /// One display frame at the clock's time, the work ready before it and what it raised after.
+    func frame() async throws {
+        try await flush()
+        guard isOpen else { return }
+        driver.frame()
+        try await flush()
+    }
+
+    /// How many turns a flush takes before it says the work never rests.
+    private static let flushRounds = 1_000
 
     /// Runs the page's work until nothing more waits: the runs begun since `mark` - the handlers an act raised, the
     /// work they began - to their end, and a second of frames after the last, the UI thread's work run between the

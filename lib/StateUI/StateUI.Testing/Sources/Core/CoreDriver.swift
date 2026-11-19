@@ -23,9 +23,13 @@ final class CoreDriver: HostDriver {
     /// The element holding the keyboard; nil for none.
     private weak var focused: MountedElement?
 
+    /// The press under way; nil with none.
+    var press: CorePress?
+
     func start(
-        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
+        clock: StateUIHost.TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
+        self.clock.wound = clock
         Renderer.shared.setApplication(OneWindowApplication(page: page))
         let runtime = HostRuntime(
             clock: self.clock, reducesMotion: { reducesMotion }, makeNative: { _ in CoreView() }, log: { _ in })
@@ -51,8 +55,9 @@ final class CoreDriver: HostDriver {
     }
 
     func frame() {
-        clock.time += 1_000 / 60
-        runtime?.displayCycle.frame(now: clock.time)
+        // A clock wound by hand says the frame's time; with none the window winds its own, a frame at a time.
+        if clock.wound == nil { clock.time += 1_000 / 60 }
+        runtime?.displayCycle.frame(now: clock.now())
     }
 
     func close() {
@@ -62,6 +67,7 @@ final class CoreDriver: HostDriver {
         clock.onFrame = nil
         presentation = WindowPresentation()
         focused = nil
+        press = nil
     }
 
     func perform(_ act: StateUIHost.UserAct, on element: MountedElement) throws {
@@ -70,8 +76,15 @@ final class CoreDriver: HostDriver {
         // control offers them, by the host layer's rules.
         // Design: docs/design/host/testing.md#a-window-with-no-toolkit
         guard let runtime else { throw DriverCannot(act, on: element) }
+        // A press under way ends whatever became of its view: one disabled since hears it as cancelled.
+        if act == .cancelInteraction { return try endPress(at: nil, on: element, in: runtime) }
+        if case .lift(let point) = act { return try endPress(at: point, on: element, in: runtime) }
         guard element.isEffectivelyEnabled else { throw DriverCannot("\(act) on \(element.type.name)", because: "it is disabled") }
         switch act {
+        case .pressDown(let point):
+            try pressDown(at: point, on: element, in: runtime)
+        case .drag(let point):
+            try drag(to: point, on: element, in: runtime)
         case .activate where element.handler(.clicked) != nil:
             element.send(.clicked, [], in: runtime)
         case .activate, .tap(count: 1):
@@ -199,11 +212,12 @@ extension CoreDriver: HostPresenter {
     }
 }
 
-/// The clock a test's window winds, a frame at a time.
+/// The clock a test's window winds, a frame at a time - or the test's own, wound by hand.
 @MainActor
 private final class CoreClock: FrameClock {
     var time = 0.0
-    var now: () -> Double { { [unowned self] in time } }
+    var wound: StateUIHost.TestClock?
+    var now: () -> Double { { [unowned self] in wound?.now ?? time } }
     var held = false
     var onFrame: ((Double) -> Void)?
 }

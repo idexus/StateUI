@@ -98,6 +98,84 @@ start waits a second of frames alone. `motion: .none` makes a change show at
 once, where a test reads what it changed with no frames of motion between;
 the default motion animates as the application's does.
 
+## A clock wound by hand
+
+A window given a `TestClock` runs no frame of its own. The clock is the
+application's face of the one time source a driver's frames already read -
+the host layer's clock a conformance case winds (`HostDriver.start(clock:)`)
+- so there is no second clock: `advance(by:step:)` moves that source and runs
+a display frame at each step, a last, shorter one for what is left, and
+never back. The window mounts its page moving no time.
+
+```text
+  send(_:)        the act is done to the view; nothing is waited for
+  flush()         the work ready runs and its patch lands, at the present time
+  advance(by:)    time moves a step, a frame at it, the work it raised, and again
+```
+
+`flush()` turns the runtime while a turn has anything to do
+(`HostBoundary.wantsTurn`) or a resumed handler has not run yet
+(`HostBoundary.resumesWaiting`), and stops after two quiet turns. It runs
+no display frame, so a movement begun stands where it began and an engine
+asking for its next frame waits for the clock; work that keeps coming at
+one time fails the flush after a thousand turns. A frame is flushed before
+and after, so what an act raised is on the page when its time comes and
+what the frame raised - a movement's end, the handler waiting on it - has
+run when `advance` returns.
+
+One clock winds one window: a second window on a clock whose window stands
+is refused, where an ordinary new window closes the last. A clock whose
+window closed advances nothing and says so, and closing waits for the
+page's lifecycle work alone - it moves no time to see an animation out.
+`perform(_:)` waits by running frames, so in a window wound by hand it
+refuses and names `send(_:)`. The trap is reading time off the wall: a
+window with a clock never does, and a test of it never sleeps.
+
+## A press in phases
+
+`pressDown(at:)`, `drag(to:)`, `lift` and `cancelInteraction` are one press
+told as a host's toolkit tells it: down, its moves, let go or taken away.
+With no toolkit the window reads them by the host layer's own recognition -
+a drag (`DragRecognition`), the hand over a layout (`HandRecognition`) - with
+no distance to pass first, so the first move is the drag's. What the view
+listens for (`MountedElement.hearing`) says what a press becomes:
+
+```text
+  pressDown   the pointer's press; the hand's beginning over a layout
+  drag        the pointer's move; a pan's start and its moves; the hand's moves
+  lift        the pan's and the hand's end, the pointer's release; never
+              moved, the view's tap or a button's click
+  cancel      the pan's and the hand's end as cancelled; no release, no tap
+```
+
+A point is the view's own, in the rectangle its layout put it in: a
+transform the drag itself changes moves no point, which is what every
+host's driver measures in. A pan's speed is the host layer's
+(`SpeedReading`) from the frame clock, so on a clock wound by hand a test
+gives the hand its speed by the time it lets pass between two moves. One
+press stands at a time, a move and a lift are a press's own view's, and a
+view that listens for no press takes none - each a failure naming the
+view. A host's driver takes the first three through its toolkit's input;
+a press taken away is the window's alone until a host's driver can tell
+its toolkit one.
+
+## What a view presents
+
+`TestElement.presentation()` reads how the view stands now as the host
+layer worked it out: its opacity, how its transform draws it
+(`MountedElement.drawingTransform` - `scale` over `scaleX` and `scaleY`),
+whether the hand reaches it, and how assistive technology meets it. A
+property a movement carries reads where the movement has got to, while the
+state holds where it is going. It is no proof of a platform's pixels: a
+host's own tests and the conformance cases prove those.
+
+A `TestPresentationID` is the view's place, the keys from the window's
+root down, and `generation` the mounting standing there. A view taken off
+the page presents nothing under its id; one the page names with `.id(_:)`
+shown again answers under the same id with another generation, and any
+other is a new view with a new id - the differ's rule, not the window's
+([identity](../core/identity-and-diffing.md)).
+
 ## What a view holds
 
 A read names a contract member - `TextElementContract.text`,

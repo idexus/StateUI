@@ -141,6 +141,22 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   for every application it lists, as `stateui workspace library` did. `stateui workspace library` and the API's
   `workspace/useLibrary` are gone; `project/useLibrary` takes a `projectUri` and answers a `LibraryChange`.
 
+### New
+
+- **A test winds its window's time by hand.** `TestWindow(clock:)` takes a `TestClock`: the page mounts moving no
+  time, `element.send(_:)` does an act and waits for nothing, `window.flush()` runs the work that is ready at the
+  present time, and `try await clock.advance(by:)` moves the time on a display frame at a time. A movement travels
+  only as far as the test advances the clock, so a test stops half-way, reads, interrupts and goes on, with no
+  waiting. `perform(_:)` in such a window fails and names `send(_:)`; an ordinary window works as before, and sends
+  and flushes too.
+- **A press in phases.** `UserAct` gains `.pressDown(at:)`, `.drag(to:)`, `.lift` and `.cancelInteraction`: a pan at
+  the speed the clock gives its moves, its end or its being taken away, and - let go where it went down - a tap or a
+  click.
+- **What a view presents.** `element.presentation()` answers a `TestPresentation`: the view's opacity, translation,
+  scale and rotation where a movement has got them to, whether it takes input and how assistive technology meets it.
+  Its `id` may be kept and asked again with `window.presentation(_:)`, and `generation` tells one mounting of a view
+  from the next.
+
 ### Fixed
 
 - The tool: a checkout named by a path that begins as the old one did - `../..` changed to `../../StateUI` - is

@@ -34,6 +34,16 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case performAccessibilityAction(String)
     /// The view stepped up or down as a screen reader steps it.
     case adjust(AccessibilityAdjustment)
+    /// A press going down on the view, at a point of the view as its layout placed it: a transform moving the view
+    /// moves no point. It stays down until `lift` or `cancelInteraction`.
+    case pressDown(at: Point)
+    /// The press under way moved to a point: past where it went down it is a drag, at the speed the window's clock
+    /// gives its moves.
+    case drag(to: Point)
+    /// The press under way let go where it stands: a drag's end, or - never moved - a tap or a click.
+    case lift
+    /// The press under way taken away, as a call arriving takes it: what it began ends as cancelled.
+    case cancelInteraction
 
     /// The act's name, as a failure says what cannot be done.
     public var description: String {
@@ -52,14 +62,18 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .pickColor: "pickColor"
         case .performAccessibilityAction: "performAccessibilityAction"
         case .adjust: "adjust"
+        case .pressDown: "pressDown"
+        case .drag: "drag"
+        case .lift: "lift"
+        case .cancelInteraction: "cancelInteraction"
         }
     }
 
     /// The act as a driver does it to `element`: a choice at the one place among the picker's options that says its
-    /// words.
+    /// words, a lift where the press last stood, `pressedAt`.
     /// - Throws: `DriverCannot` where the picker offers no choice of those words, or two.
     /// Design: docs/design/host/testing.md#the-acts-a-window-offers
-    @MainActor func driven(on element: MountedElement) throws -> StateUIHost.UserAct {
+    @MainActor func driven(on element: MountedElement, pressedAt: Point?) throws -> StateUIHost.UserAct {
         switch self {
         case .activate: return .activate
         case .tap(let count): return .tap(count: count)
@@ -83,6 +97,10 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .pickColor(let color): return .pickColor(color)
         case .performAccessibilityAction(let name): return .performAccessibilityAction(name)
         case .adjust(let step): return .adjust(step)
+        case .pressDown(let point): return .pressDown(at: point)
+        case .drag(let point): return .drag(to: point)
+        case .lift: return .lift(at: pressedAt ?? Point(x: 0, y: 0))
+        case .cancelInteraction: return .cancelInteraction
         }
     }
 }

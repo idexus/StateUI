@@ -13,6 +13,8 @@ final class UserActTests: XCTestCase {
         .activate, .tap(count: 2), .toggle, .type("Ada"), .submit, .focus, .slide(to: 0.5), .step(up: true),
         .choose("Week"), .pickDate(CalendarDate(year: 2026, month: 11, day: 9)), .pickTime(ClockTime(hour: 10, minute: 30)),
         .pickColor(.blue), .performAccessibilityAction("Archive"), .adjust(.increment),
+        .pressDown(at: Point(x: 10, y: 10)), .drag(to: Point(x: 30, y: 10)), .cancelInteraction,
+        .pressDown(at: Point(x: 10, y: 10)), .lift,
     ]
 
     /// The view on `EveryActPage` an act is done to: a switch over every act, so an act the window offers that no
@@ -29,6 +31,7 @@ final class UserActTests: XCTestCase {
         case .pickDate: "acts.date"
         case .pickTime: "acts.time"
         case .pickColor: "acts.color"
+        case .pressDown, .drag, .lift, .cancelInteraction: "acts.pan"
         }
     }
 
@@ -176,6 +179,11 @@ private struct EveryActPage: View {
             DatePicker($day).accessibilityIdentifier("acts.date")
             TimePicker($time).accessibilityIdentifier("acts.time")
             ColorPicker($tint).accessibilityIdentifier("acts.color")
+            Rectangle()
+                .onPointerPressed { _ in heard.append("pressed") }
+                .onPointerReleased { _ in heard.append("released") }
+                .onPanUpdated { heard.append("panned \($0.phase)") }
+                .accessibilityIdentifier("acts.pan")
             Text("\(heard) \(lit) \(name) \(focused) \(level) \(count) \(span) \(day) \(time) \(tint)")
                 .accessibilityIdentifier("acts.shown")
         }

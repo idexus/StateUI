@@ -320,6 +320,10 @@
     /// Whether any state or engine is waiting for a host cycle.
     public static var cyclesPending: Bool { Renderer.shared.cycleAwake() }
 
+    /// Whether a handler was told what it awaited is over and has not run a line since: work on its way that no
+    /// turn sees yet.
+    public static var resumesWaiting: Bool { Renderer.shared.resumesPending > 0 }
+
     /// How many runs have begun so far - a handler's, a task's through a gate: the mark a test takes before an act,
     /// to wait on the runs the act began alone.
     public static var runsBegun: Int { HandlerRun.begun }

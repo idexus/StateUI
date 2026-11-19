@@ -38,6 +38,8 @@ import StateUI
     case drag(to: Point)
     /// The pointer pressed down let go, at a point of the element's.
     case lift(at: Point)
+    /// The press under way taken away by the platform: what it began on the element ends as cancelled.
+    case cancelInteraction
     /// The pointer moved over the element to a point of its own, coming in first where it was not over it.
     case hover(at: Point)
     /// The pointer left the element.
@@ -128,6 +130,7 @@ import StateUI
         case .pressDown: "pressDown"
         case .drag: "drag"
         case .lift: "lift"
+        case .cancelInteraction: "cancelInteraction"
         case .hover: "hover"
         case .leave: "leave"
         case .tap: "tap"

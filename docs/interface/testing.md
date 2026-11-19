@@ -86,3 +86,123 @@ only where the picker chooses it.
 member's own type, nil where the view holds none. Like `perform(_:)`, it
 fails where no view, or two, is the one it names - a view gone with its
 window included - and where the view wears no contract of the member's.
+
+## Time wound by hand
+
+A window given a `TestClock` stands at the clock's time. A movement begun
+in it travels only as far as the test advances the clock, so a test stops
+half-way, reads, interrupts and goes on, and never waits:
+
+```swift
+import StateUI
+import StateUITesting
+
+struct PanelPage: View {
+    @State private var lift = 0.0
+    @State private var said = "closed"
+
+    var body: some View {
+        VStack {
+            Rectangle()
+                .translationY($lift)
+                .accessibilityIdentifier("panel")
+            Text(said)
+                .accessibilityIdentifier("panel.said")
+            Button("Open")
+                .accessibilityIdentifier("panel.open")
+                .onClicked(policy: .ignoreWhileRunning) {
+                    let result = try await $lift.journey.move(to: -240, .eased(.milliseconds(300), curve: .linear)).result()
+                    said = result == .reached(.animated) ? "open" : "stopped on the way"
+                }
+            Button("Stop")
+                .accessibilityIdentifier("panel.stop")
+                .onClicked { $lift.journey.stop() }
+        }
+    }
+}
+
+let clock = TestClock()
+let window = try await TestWindow(clock: clock) { PanelPage() }
+let panel = try window.element("panel")
+
+try window.element("panel.open").send(.activate)
+try await clock.advance(by: .milliseconds(150))
+let halfWay = try panel.presentation()
+assert(abs(halfWay.translation.y + 120) < 0.5)
+
+try window.element("panel.stop").send(.activate)
+try await window.flush()
+let words = try window.element("panel.said").value(TextElementContract.text)
+assert(words == "stopped on the way")
+
+try await clock.advance(by: .seconds(1))
+let later = try panel.presentation()
+assert(abs(later.translation.y + 120) < 0.5)
+try await window.close()
+```
+
+`TestWindow(clock:)` mounts the page moving no time. `send(_:)` does an act
+and waits for nothing. `flush()` runs the work that is ready - the handlers
+the act raised, the build they asked for - and shows it at the present
+time: a movement begun stands where it began. `clock.advance(by:)` moves
+the time on a display frame at a time, every ten milliseconds unless `step:`
+says otherwise, with a last shorter step for what is left; `clock.now` is
+how far it has come. A clock is never wound back, winds one window at a
+time, and winds nothing once its window closed - each a `TestFailure`.
+Closing moves no time. `perform(_:)` waits by running frames, so in a
+window wound by hand it fails and names `send(_:)`.
+
+A press is told in phases: `.pressDown(at:)`, `.drag(to:)`, then `.lift`
+or `.cancelInteraction`, the press taken away as a call arriving takes it.
+A point is the view's own, in the rectangle its layout put it in. Past
+where it went down the press is a pan, at the speed the clock gives its
+moves - twenty points in ten milliseconds is two thousand a second; let go
+where it went down it is the view's tap, or a button's click.
+
+```swift
+import StateUI
+import StateUITesting
+
+struct SlidingPage: View {
+    @State private var across = 0.0
+
+    var body: some View {
+        Rectangle()
+            .translationX($across)
+            .onPanUpdated { update in
+                switch update.phase {
+                case .changed: $across.journey.snap(to: update.total.x)
+                case .cancelled: $across.journey.snap(to: 0)
+                default: break
+                }
+            }
+            .accessibilityIdentifier("slide")
+    }
+}
+
+let clock = TestClock()
+let window = try await TestWindow(clock: clock) { SlidingPage() }
+let box = try window.element("slide")
+
+try box.send(.pressDown(at: Point(x: 10, y: 10)))
+try await clock.advance(by: .milliseconds(10))
+try box.send(.drag(to: Point(x: 40, y: 10)))
+try await window.flush()
+let dragged = try box.presentation()
+assert(dragged.translation.x == 30)
+
+try box.send(.cancelInteraction)
+try await window.flush()
+let back = try box.presentation()
+assert(back.translation.x == 0)
+try await window.close()
+```
+
+`presentation()` answers a `TestPresentation`, how a view stands now - its
+`opacity`, its `translation`, `scaleX`, `scaleY` and `rotation`, whether it
+`takesInput` and its `accessibilityPresence` - where a movement has got it
+to, while its states hold where they are going. Its `id`, a `TestPresentationID`, may be
+kept: `window.presentation(id)` answers how that view stands later, nil
+once it is off the page, and `generation` tells one mounting of a view from
+the next. It reads what StateUI decided, the same on every platform, and
+proves nothing of a platform's pixels.
