@@ -3,7 +3,7 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
-## 0.8.6 - 2026-11-16
+## 0.9.0 - 2026-11-19
 
 ### Breaking changes
 
@@ -33,7 +33,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `stateui project library` name the checkout in every manifest of the application, and the VS Code extension indexes
   the application with the chosen host's trait (`swiftPM.traits`, and its condition as a flag, which SourceKit-LSP's
   build system does not yet take from the trait) and the head by its package; it offers releases
-  from 0.8.6 on.
+  from 0.9.0 on.
 - **An application is a folder holding its `stateui.json`.** Beside its `Package.swift`, the file says what the
   application is on every platform - the `identifier` naming it, the `name` shown (its folder's where none is given),
   the `version` shown to its user and its `build` - and neither `stateui` nor the VS Code extension takes a folder

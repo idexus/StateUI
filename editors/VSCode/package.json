@@ -2,7 +2,7 @@
   "name": "stateui",
   "displayName": "StateUI",
   "description": "Build, run and debug StateUI applications on AppKit, UIKit, Android, WinUI, GTK and the Web.",
-  "version": "0.8.6",
+  "version": "0.9.0",
   "publisher": "idexus",
   "license": "Apache-2.0",
   "icon": "icon.png",
@@ -49,7 +49,7 @@
         },
         "stateui.minimumRelease": {
           "type": "string",
-          "default": "0.8.6",
+          "default": "0.9.0",
           "pattern": "^\\d+\\.\\d+\\.\\d+$",
           "markdownDescription": "The oldest StateUI release **StateUI: New Project Group** offers to clone into a group: the first whose heads are packages of their own, each naming its host by a trait, as this extension builds them."
         }

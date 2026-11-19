@@ -988,11 +988,11 @@ export async function run(): Promise<void> {
             const manifest = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8"));
             const setting = manifest.contributes.configuration.properties;
             check("the palette has New Project Group; New Application shows where a folder is a workspace; "
-                + "stateui.checkout and stateui.cliPath are this machine's, stateui.minimumRelease 0.8.6",
+                + "stateui.checkout and stateui.cliPath are this machine's, stateui.minimumRelease 0.9.0",
                 commands.includes("stateui.newProjectGroup")
                 && manifest.contributes.commands.some((each: { command: string; enablement?: string }) =>
                     each.command === "stateui.newApplicationInApps" && each.enablement === "stateui.hasWorkspace")
-                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.8.6"
+                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.9.0"
                 && setting["stateui.cliPath"].scope === "machine");
             const helloWorld = api.applications().find((each) => each.name === "HelloWorld");
             check("the tool finds this checkout's applications, each building with the checkout its Package.swift names: this one",

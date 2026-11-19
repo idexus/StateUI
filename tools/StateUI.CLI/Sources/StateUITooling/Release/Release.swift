@@ -6,7 +6,7 @@ import StateUIToolingProtocol
 /// The StateUI release this tool belongs to.
 public enum Release {
     /// The release, a copy of the library's `ApplicationInfo.libraryVersion`.
-    public static let version = "0.8.6"
+    public static let version = "0.9.0"
 
     /// StateUI's own repository, which releases are read and cloned from.
     public static let repository = "https://github.com/idexus/StateUI.git"
