@@ -51,7 +51,8 @@ final class PlacingRunTests: XCTestCase {
     /// A placement is drawn about its rectangle's center, turned as the run says.
     func testAPlacementIsDrawnAboutItsRectanglesCenter() throws {
         let run = PlacedRun([Placement(Rect(0, 0, 100, 60), transform: .rotate(30))])
-        let drawing = try XCTUnwrap(HostBoundary.placements(from: run.carried)).drawing(of: 0)
+        let drawing = HostPlacementRun(placements: HostBoundary.placements(of: run), direction: .leftToRight)
+            .drawing(of: 0)
 
         XCTAssertEqual(drawing.rotation, 30, accuracy: 1e-9)
         XCTAssertEqual(drawing.pivotX, 0.5)

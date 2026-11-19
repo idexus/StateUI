@@ -3,7 +3,7 @@
 
 #if os(macOS)
 import AppKit
-@_spi(Host) import StateUI
+@_spi(Host) @testable import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIAppKit
 
@@ -76,6 +76,21 @@ extension AppKitRenderer {
 
     func applyStateForTesting(_ state: Int32, value: HostStateValue) {
         applyStatesForTesting([state: value])
+    }
+
+    /// A layout program that answers what `run` answers, for a patch written by hand.
+    static func programForTesting(
+        slot: UInt64, placing run: @escaping @MainActor () -> PlacedRun
+    ) -> HostLayoutUpdate {
+        .replace(HostLayoutProgram(
+            slot: slot, revision: 1, layOut: { _, _ in }, placed: { HostBoundary.placements(of: run()) }))
+    }
+
+    /// Presents where the layout program `slot` names puts its children, as a frame does after the cycle worked
+    /// it out.
+    func presentLayoutForTesting(_ slot: UInt64) {
+        guard let mount = runtime.tree.mount(ofLayout: slot) else { return }
+        presentFrame(movedChrome: runtime.tree.present(states: [:], properties: [mount: [.area]]).windowChrome)
     }
 
     /// Presents the values as a frame's walk does: in the tree, then the chrome where it moved.

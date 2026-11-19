@@ -135,7 +135,7 @@ A host never:
 - samples a timing law, advances an animation, runs the core's cycle, renders
   or takes the acts - `Animator`, `DisplayCycle` and `Pump` each do that
   alone - or calls the core except through `CoreLink`, but for the lane
-  codecs (`journey(from:)`, `value(of:)`, `placements(from:)`), arithmetic on
+  codecs (`journey(from:)`, `value(of:)`), arithmetic on
   values it already holds;
 - keeps a write flag of its own: `ProgramWrite` is the one mark;
 - times a scroller's rest on a clock of its own, or aims, shortens or corrects

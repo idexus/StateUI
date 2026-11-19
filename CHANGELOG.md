@@ -66,6 +66,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **A hand's speed is no longer written into a journey.** `$x.journey.velocity = update.velocity.x` is gone with the
   setter. A throw is a movement of its own: a cubic-out journey sets out three times as fast as it averages, so one
   to `update.total.x + update.velocity.x * seconds / 3` over `seconds` goes on at the hand's speed and slows to rest.
+- **A placement is no value a state carries.** `Placement.carried`, `Placement.init(carried:)` and
+  `Placement.lanes` are gone, and `Placement` is no `LaneValue`: a motion layout hands the host its views' places
+  typed, so nothing reads a placement as twelve numbers any more. A `Placement` is what `placements:` answers, as
+  before.
 - **For a host: a report says who wrote, and a movement's end says how.** `HostBoundary.report(_:through:origin:)`
   and `report(_:updating:through:at:origin:)` take a `WriteOrigin` - `.user` for a control the user moved,
   `.animation` for a frame, `.measurement` for a size read, `.program` for a halt the application asked for - and

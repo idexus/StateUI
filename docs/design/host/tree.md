@@ -115,8 +115,9 @@ keeps a control alive after the tree drops it.
 How an element's view is drawn over the place its layout gave it is put
 together once (`MountedElement.drawingTransform`): moved, turned and scaled,
 `scale` multiplying both axes on top of their own, turned about its middle
-where the tree names no pivot. A layout a state places - a placing run - keeps
-its measure: the run moves its children without the layout measuring again.
+where the tree names no pivot. A layout whose program places its children -
+a placing run - keeps its measure: the run moves its children without the
+layout measuring again.
 
 ## A frame arranges what moved
 

@@ -367,14 +367,19 @@ extension MotionLayout {
             let isFinite = bounds.x.isFinite && bounds.y.isFinite && bounds.width.isFinite && bounds.height.isFinite
                 && turn.a.isFinite && turn.b.isFinite && turn.c.isFinite && turn.d.isFinite && turn.tx.isFinite
                 && turn.ty.isFinite && placement.opacity.isFinite && placement.shade.isFinite
-            guard !isFinite,
-                  case .lanes(let lanes) = placement.carried, case .lanes(let neutral) = Placement(.zero).carried,
-                  neutral.count == lanes.count
-            else { return placement }
+            guard !isFinite else { return placement }
             complain("A MotionLayout's placements answered a number that is not finite - a division by nothing, an "
                 + "infinity: each stands as a placement at the top left holds it.")
-            let held = zip(lanes, neutral).map { $0.isFinite ? $0 : $1 }
-            return Placement(carried: .lanes(held)) ?? Placement(.zero)
+            let neutral = Placement(.zero)
+            func held(_ number: Double, _ standIn: Double) -> Double { number.isFinite ? number : standIn }
+            return Placement(
+                Rect(held(bounds.x, 0), held(bounds.y, 0), held(bounds.width, 0), held(bounds.height, 0)),
+                transform: ViewTransform(
+                    x: held(turn.x, 0), y: held(turn.y, 0), rotation: held(turn.rotation, 0),
+                    width: held(turn.width, 1), height: held(turn.height, 1)),
+                opacity: held(placement.opacity, neutral.opacity),
+                shade: held(placement.shade, neutral.shade),
+                zIndex: placement.zIndex)
         }
 
         // MARK: - The hand

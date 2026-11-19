@@ -404,13 +404,21 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.arranged, ["child", "bare", "stack"], "the bare one has no view; its parent places the child too")
     }
 
+    /// A child's place `x` across, as a layout program answers one.
+    private static func place(x: Double) -> HostPlacement {
+        HostPlacement(
+            bounds: Rect(x: x, y: 0, width: 10, height: 10), translationX: 0, translationY: 0, rotation: 0, scaleX: 1,
+            scaleY: 1, opacity: 1, zIndex: 0, shade: 0)
+    }
+
     /// A LAYOUT'S RUN MOVED PLACES ITS CHILDREN, AND ARRANGES NOTHING AGAIN: the run is put by the element's own
     /// presentation; another of its values moved arranges its children as ever.
     @MainActor
     func testALayoutsRunMovedArrangesNothingAgain() {
         let (tree, log) = Self.tree(viewless: [])
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
-        layout.driven = .replace([.area: HostStateBinding(state: 900, mode: .out, kind: .placement, laneKind: .number)])
+        var places = [HostPlacement](repeating: Self.place(x: 0), count: 2)
+        layout.layout = .replace(HostLayoutProgram(slot: 900, revision: 1, layOut: { _, _ in }, placed: { places }))
         layout.children = .arranged([HostPatch(id: .manual("a"), type: .text), HostPatch(id: .manual("b"), type: .text)])
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([layout])
@@ -418,7 +426,10 @@ final class MountedTreeTests: XCTestCase {
         let layoutMount = tree.root!.children[0].mount
 
         log.arranged.removeAll()
-        tree.present(states: [900: .lanes(Array(repeating: 0, count: 24))], properties: [:])
+        places = [Self.place(x: 10), Self.place(x: 20)]
+        XCTAssertEqual(tree.mount(ofLayout: 900), layoutMount, "the program put its children somewhere new")
+        XCTAssertNil(tree.mount(ofLayout: 900), "and nowhere new since")
+        tree.present(states: [:], properties: [layoutMount: [.area]])
         XCTAssertEqual(log.arranged, [], "the run placed the children")
 
         tree.present(states: [:], properties: [layoutMount: [.padding]])
@@ -434,8 +445,8 @@ final class MountedTreeTests: XCTestCase {
         defer { locale.writingDirection = .leftToRight }
         func layout(_ name: String, mirrors: Bool) -> HostPatch {
             var layout = HostPatch(id: .manual(name), type: .motionLayout)
-            layout.driven = .replace([.area: HostStateBinding(state: name == "mirrored" ? 901 : 902, mode: .out,
-                                                              kind: .placement, laneKind: .number)])
+            layout.layout = .replace(HostLayoutProgram(
+                slot: name == "mirrored" ? 901 : 902, revision: 1, layOut: { _, _ in }, placed: { [] }))
             if mirrors { layout.properties[.mirrorsRightToLeft] = .bool(true) }
             layout.children = .arranged([HostPatch(id: .manual("\(name).a"), type: .text)])
             return layout

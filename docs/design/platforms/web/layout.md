@@ -135,7 +135,7 @@ resized - sets out from where it no longer is.
 
 ## A placing run
 
-A ZStack whose children a placing run stands - an engine's - stands each
+A ZStack whose children a placing run stands - a layout program's - stands each
 where the run says - and writes only what moved: each view keeps the place
 the run last stood it at (`placedByRun`), its fixed styles written as the
 run takes it and its size as it changes, since numbers made words for 48

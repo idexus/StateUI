@@ -200,13 +200,12 @@ final class AppKitMeasurementTests: XCTestCase {
         var card = HostPatch(id: .manual("card"), type: .rectangle)
         card.properties[.opacity] = .number(1)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
-        layout.driven = .replace([
-            .area: HostStateBinding(state: handMadeState(95), mode: .out, kind: .placement, laneKind: .number),
-        ])
+        layout.layout = AppKitRenderer.programForTesting(slot: 95) {
+            PlacedRun([Placement(Rect(0, 0, 100, 60), transform: .rotate(30))])
+        }
         layout.children = .arranged([card])
         renderer.applyForTesting(layout)
-        let run = PlacedRun([Placement(Rect(0, 0, 100, 60), transform: .rotate(30))]).carried
-        renderer.applyStateForTesting(handMadeState(95), value: run)
+        renderer.presentLayoutForTesting(95)
 
         let nativeLayout = try XCTUnwrap(renderer.viewForTesting(id: .manual("layout")))
         let nativeCard = try XCTUnwrap(renderer.viewForTesting(id: .manual("card")))
@@ -221,9 +220,6 @@ final class AppKitMeasurementTests: XCTestCase {
         var path = HostPatch(id: .manual("layout"), type: .zStack)
         path.children = .changed([fading])
         renderer.applyForTesting(path)
-        // The layout reads its placement from StateUI's state on every apply;
-        // this test's state lives only in the host, so it is delivered again.
-        renderer.applyStateForTesting(handMadeState(95), value: run)
         nativeLayout.layoutSubtreeIfNeeded()
 
         now = 100
@@ -247,16 +243,15 @@ final class AppKitMeasurementTests: XCTestCase {
         card.properties[.opacity] = .number(1)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.properties[VisualElementContract.height.token] = .number(120)
-        layout.driven = .replace([
-            .area: HostStateBinding(state: handMadeState(96), mode: .out, kind: .placement, laneKind: .number),
-        ])
+        var run = PlacedRun([Placement(Rect(0, 0, 100, 60))])
+        layout.layout = AppKitRenderer.programForTesting(slot: 96) { run }
         layout.children = .arranged([card])
         var caption = HostPatch(id: .manual("caption"), type: .text)
         caption.properties[.text] = .string("The card in front")
         var outer = HostPatch(id: .manual("outer"), type: .vStack)
         outer.children = .arranged([layout, caption])
         renderer.applyForTesting(outer)
-        renderer.applyStateForTesting(handMadeState(96), value: PlacedRun([Placement(Rect(0, 0, 100, 60))]).carried)
+        renderer.presentLayoutForTesting(96)
 
         let nativeOuter = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("outer")) as? AppKitStackView)
@@ -268,7 +263,8 @@ final class AppKitMeasurementTests: XCTestCase {
         let arrangements = nativeOuter.arrangementCountForTesting
         let measurements = nativeCaption.nativeMeasurementCountForTesting
 
-        renderer.applyStateForTesting(handMadeState(96), value: PlacedRun([Placement(Rect(80, 20, 100, 60))]).carried)
+        run = PlacedRun([Placement(Rect(80, 20, 100, 60))])
+        renderer.presentLayoutForTesting(96)
         nativeOuter.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(nativeCard.frame.origin.x, 80, accuracy: 0.001, "the run moved the card")

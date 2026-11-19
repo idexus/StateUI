@@ -32,8 +32,8 @@ language.
 - [Drawing on a canvas](drawing.md) - a drawing as a list of records.
 - [Motion](motion.md) - the timing laws, the groups of values, a view's plan.
 - [Transforms](transforms.md) - one transform, worked out in the core.
-- [Placement](placement.md) - where a view of a placed layout goes, as
-  twelve numbers.
+- [Placement](placement.md) - where a view of a placed layout goes, and a
+  run of them as the host is handed it.
 - [Dates and time](dates-and-time.md) - days, times of day and time zones
   without Foundation.
 - [Gestures](gestures.md) - what a gesture report carries.
@@ -133,9 +133,9 @@ text, and the host's state channel moves it. A value of numbers is a
 ```
 
 A closed vocabulary rides a state as its member's number
-([choices a state can carry](vocabularies.md#choices-a-state-can-carry)), and
-a run of placements rides one as twelve numbers a view
-([placement](placement.md#twelve-numbers-a-view)).
+([choices a state can carry](vocabularies.md#choices-a-state-can-carry)). A
+run of placements rides no state: a layout's program hands it over typed
+([placement](placement.md#a-run-as-the-host-is-handed-it)).
 
 ## What the host knows
 

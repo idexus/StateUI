@@ -706,8 +706,6 @@ swift.conformance PickerContract: StateUI.ElementContract
 swift.conformance PickerPresentation: StateUI.HostRepresentable
 swift.conformance PlaceholderElement: StateUI.PropertyContainer
 swift.conformance PlaceholderElementContract: StateUI.Contract
-swift.conformance Placement: StateUI.LaneValue
-swift.conformance Placement: StateUI.StateValue
 swift.conformance Point: StateUI.HostRepresentable
 swift.conformance Point: StateUI.LaneValue
 swift.conformance Point: StateUI.StateValue
@@ -1623,7 +1621,6 @@ swift.init PersistentKind.init(rawValue:): init?(rawValue: Int32)
 swift.init PersistentValue.init(persistentValue:): init?(persistentValue: PropValue)
 swift.init PickerPresentation.init(propValue:): init?(propValue: PropValue)
 swift.init PickerPresentation.init(rawValue:): init?(rawValue: Int32)
-swift.init Placement.init(carried:): init?(carried: StateCarried)
 swift.init Point.init(carried:): init?(carried: StateCarried)
 swift.init Point.init(propValue:): init?(propValue: PropValue)
 swift.init PropValue.init(propValue:): init?(propValue: PropValue)
@@ -2464,7 +2461,6 @@ swift.property PersistentValue.persistentValue: var persistentValue: PropValue {
 swift.property Picker.node: @MainActor var node: Node
 swift.property Picker.nodes: @MainActor var nodes: [Node] { get }
 swift.property PickerPresentation.propValue: var propValue: PropValue { get }
-swift.property Placement.carried: var carried: StateCarried { get }
 swift.property Point.carried: var carried: StateCarried { get }
 swift.property Point.propValue: var propValue: PropValue { get }
 swift.property Polygon.node: @MainActor var node: Node
@@ -3194,9 +3190,6 @@ swift.type.property PickerContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property PickerContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property PlaceholderElementContract.members: static let members: [any ContractMember]
 swift.type.property PlaceholderElementContract.tiers: static var tiers: [any Tier.Type] { get }
-swift.type.property Placement.laneKind: static var laneKind: LaneKind { get }
-swift.type.property Placement.lanes: static var lanes: Int { get }
-swift.type.property Placement.moving: static var moving: MotionValues { get }
 swift.type.property Point.laneKind: static var laneKind: LaneKind { get }
 swift.type.property Point.lanes: static var lanes: Int { get }
 swift.type.property Point.moving: static var moving: MotionValues { get }

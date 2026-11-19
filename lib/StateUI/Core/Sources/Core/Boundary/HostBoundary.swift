@@ -204,13 +204,6 @@
                 + [Double(journey.completion ?? 0), Double(journey.stopped)])
     }
 
-    /// Decodes an engine-authored arrangement without exposing its lane layout.
-    public static func placements(from value: HostStateValue) -> HostPlacementRun? {
-        guard let run = PlacedRun(carried: value) else { return nil }
-
-        return HostPlacementRun(placements: placements(of: run), direction: .leftToRight)
-    }
-
     /// A run's places as a host draws them.
     static func placements(of run: PlacedRun) -> [HostPlacement] {
         run.placements.map {

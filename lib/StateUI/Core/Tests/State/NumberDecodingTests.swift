@@ -62,12 +62,6 @@ final class NumberDecodingTests: XCTestCase {
         XCTAssertEqual(CalendarDate(carried: .lanes([2026, 10, 9])), CalendarDate(year: 2026, month: 10, day: 9))
     }
 
-    func testAPlacementWithNoWholeDepthStandsAtNought() {
-        var lanes = [Double](repeating: 0, count: Placement.lanes)
-        lanes[10] = .nan
-        XCTAssertEqual(Placement(carried: .lanes(lanes))?.zIndex, 0)
-    }
-
     func testAColorChannelThatIsNoNumberIsNought() {
         let color = Color(carried: .lanes([.nan, 0.5, 1, 1]))
         XCTAssertEqual(color?.light.red, 0)

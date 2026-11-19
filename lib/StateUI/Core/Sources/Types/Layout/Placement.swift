@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Where one view of a placed layout goes, said once for the author as a
-// `Placement` and once for the host as twelve numbers.
+// Where one view of a placed layout goes, as its author says it: a `Placement`.
 // Design: docs/design/types/placement.md#where-one-view-goes
 
 /// Where one view goes and how it is turned: what a `MotionLayout`'s
@@ -18,7 +17,7 @@
 /// in that closure.
 ///
 /// Design: docs/design/types/placement.md#one-picture-on-every-platform
-public struct Placement: LaneValue {
+public struct Placement: Equatable, Sendable {
     /// Where the view goes, in device units from the layout's own top left.
     public var bounds: Rect
 
@@ -96,49 +95,6 @@ extension Placement {
 }
 
 extension Placement {
-    /// The twelve numbers a placement is, in the order a host reads them.
-    public var carried: StateCarried {
-        .lanes([
-            bounds.x,
-            bounds.y,
-            bounds.width,
-            bounds.height,
-            transform.x,
-            transform.y,
-            transform.rotation,
-            transform.width,
-            transform.height,
-            opacity,
-            Double(zIndex),
-            shade,
-        ])
-    }
-
-    /// A placement back from its twelve numbers. A transform's move, turn and
-    /// sizes come back; a shear does not.
-    ///
-    /// Design: docs/design/types/transforms.md#reading-the-five-properties-back
-    public init?(carried: StateCarried) {
-        guard case .lanes(let lanes) = carried, lanes.count == Placement.lanes else {
-            return nil
-        }
-
-        self.init(
-            Rect(lanes[0], lanes[1], lanes[2], lanes[3]),
-            transform: ViewTransform(
-                x: lanes[4],
-                y: lanes[5],
-                rotation: lanes[6],
-                width: lanes[7],
-                height: lanes[8]),
-            opacity: lanes[9],
-            shade: lanes[11],
-            zIndex: Int(nearest: lanes[10]) ?? 0)
-    }
-
-    /// Twelve, which is what the host reads by stride.
-    public static var lanes: Int { 12 }
-
     /// The shade of a layout with none: a number no opacity can be, which tells
     /// the host to look for no shade view.
     static let unshaded = -1.0

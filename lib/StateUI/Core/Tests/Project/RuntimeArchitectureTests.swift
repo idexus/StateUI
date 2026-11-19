@@ -75,7 +75,7 @@ final class RuntimeArchitectureTests: XCTestCase {
     /// runtime calls `HostBoundary`, except for the lane codecs, which are
     /// arithmetic on values the runtime already holds.
     func testOnlyTheCoreLinkCallsIntoTheCore() throws {
-        let codecs = ["journey(from:", "value(of:", "placements(from:"]
+        let codecs = ["journey(from:", "value(of:"]
         var calls: [String] = []
 
         for (path, text) in try SourceTree.runtimeSources() where !path.hasSuffix("/CoreLink.swift") {

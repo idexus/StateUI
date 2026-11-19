@@ -36,6 +36,8 @@ struct HostPatch {
     var clearedProperties: [Prop] = []
     var transitions: [Prop: HostTransition] = [:]
     var driven: HostDrivenUpdate?
+    var followed: HostFollowedUpdate?
+    var layout: HostLayoutUpdate?
     var events: HostEventUpdate?
     var motion: HostLayoutMotion?
     var children: HostChildrenUpdate = .unchanged
@@ -49,6 +51,15 @@ enum HostChildrenUpdate {
 
 enum HostDrivenUpdate {
     case replace([Prop: HostStateBinding])
+}
+
+enum HostFollowedUpdate {
+    case replace([HostStateBinding])
+}
+
+enum HostLayoutUpdate {
+    case replace(HostLayoutProgram)
+    case clear
 }
 
 enum HostEventUpdate {
@@ -75,7 +86,9 @@ struct HostLayoutMotion {
 Absence is meaningful:
 
 - `nil` and `.unchanged` mean no update;
-- `.replace([:])` clears a complete binding or event map;
+- `.replace([:])` clears a complete binding or event map, and `.replace([])`
+  lets every followed state go;
+- `.clear` ends the element's layout program;
 - `.arranged([])` removes every child;
 - `replace` rebuilds the native element from a complete patch for that
   identity.
@@ -103,8 +116,12 @@ A host applies one generation as one transaction:
    a new complete patch;
 3. replace an element only when `replace` says so;
 4. clear `clearedProperties`, then take the changed `properties`;
-5. replace driven bindings and event subscriptions only when their optional
-   update is present;
+5. replace driven bindings, followed states, the layout program and event
+   subscriptions only when their optional update is present - a followed
+   state is a consumer of its channel as a driven one is
+   ([state channels](../design/host/motion.md#state-channels)), and a layout
+   program is told the room the element stands in and read after each cycle
+   that worked it out ([a layout program](../design/host/layout.md#a-layout-program));
 6. apply the changed layout-motion rule;
 7. reconcile children according to `changed` or `arranged`;
 8. tell the native half the element's changes with its children in place:

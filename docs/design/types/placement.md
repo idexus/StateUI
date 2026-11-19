@@ -1,18 +1,16 @@
 # Placement
 
 A `MotionLayout` puts each of its views where an application's arithmetic
-says. A `Placement` is that answer for one view, its twelve numbers what a
-host reads of it, and a `PlacedRun` the answer for the whole run as the host is
-handed it.
+says. A `Placement` is that answer for one view, and a `PlacedRun` the
+answer for the whole run, which the host is handed typed.
 
 ## Where one view goes
 
 A placement is a rectangle, a transform about the view's center, an opacity,
 a shade and a z-index. Every field but the rectangle defaults to the view as
 it was drawn, so a layout that only positions its views says
-`Placement(rect)`. The type is the author's; the twelve numbers are the
-boundary's. Both live in one file because they are the same fact, what one
-view's place is, said once for each.
+`Placement(rect)`. The type is the author's; the boundary's is
+`HostPlacement`, the same fact as numbers a toolkit sets.
 
 ## Written onto the placed view
 
@@ -68,26 +66,21 @@ out from, whose journey a host walks. A host walking places from one to the
 next draws a straight line: a chord across a ring, and for a whole turn
 nothing at all.
 
-## Twelve numbers a view
+## A run as the host is handed it
 
-A placement crosses as twelve numbers, in one order, and a run as each
-view's twelve.
+A run reaches the host typed, through the layout's program
+([a layout's program](../core/layout-program.md)): one `HostPlacement` a
+view, in the views' order - the rectangle, the move, the turn, the two
+scales, the opacity, the rank and the shade as numbers a toolkit sets. No
+state carries a run and nothing encodes it: the host holds the views
+already, so there is no identity to carry, no property to name and nothing
+to diff. The host finds a shade as a placed view's second child, so a
+layout with no shade draws none, whatever number its run holds for it. A
+run of no placements is an empty run - what a layout whose room is not
+measured answers - so a layout with nothing on it yet is a picture rather
+than a failure.
 
-```text
-  x  y  width  height    translationX  translationY  rotation  scaleX  scaleY    opacity  zIndex  shade
-  0  1  2      3         4             5             6         7       8         9        10      11
-```
-
-A view's numbers always start at `12 × index`, which lets a host read one view's place by stride and know which view a
-changed lane belongs to. A state's dirty word has a bit per lane and runs
-out at lane 63, so a run says exactly which of its first five views moved
-and reports the rest together. That costs nothing: a view given the place it
-already has is skipped before anything is written.
-
-A run lies on the state image as these twelve numbers a view, which the host
-reads on the platform's own frames: there is no identity to carry, no
-property to name and nothing to diff, since the host holds the views
-already. The host finds a shade as a placed view's second child, so a layout
-with no shade draws none, whatever number its run holds for it. An empty
-image is an empty run - what a state never written stands at - so a layout
-with nothing on it yet is a picture rather than a failure.
+The trap was a run as lanes on a state: twelve numbers a view, read by
+stride, with a dirty word that ran out at the sixth view. It crossed what
+both sides already held typed, and made a placement a value a state could
+carry, which nothing ever asked of it.

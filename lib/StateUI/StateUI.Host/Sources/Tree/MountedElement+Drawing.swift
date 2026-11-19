@@ -32,21 +32,17 @@ extension MountedElement {
             pivotY: number(.pivotY) ?? 0.5)
     }
 
-    /// The property carrying the layout's own placing run, where a state drives one: the run moves the children
-    /// without changing what the layout measures.
+    /// The property a layout's own placing run is presented under, where the element runs a layout program: the
+    /// run moves the children without changing what the layout measures.
     public var ownPlacementRun: Set<Prop> {
-        layoutProgram != nil || driven[.area]?.kind == .placement ? [.area] : []
+        layoutProgram != nil ? [.area] : []
     }
 
-    /// The places an engine gives the layout's children, one each, standing in the run's direction; nil while no
-    /// state drives them.
+    /// The places the layout program gives the element's children, one each, standing in the run's direction; nil
+    /// where the element runs none.
     public var placement: HostPlacementRun? {
-        if layoutProgram != nil {
-            return HostPlacementRun(placements: programPlaces, direction: runDirection)
-        }
-        guard !ownPlacementRun.isEmpty, let carried = carriedValue(.area),
-              let run = HostBoundary.placements(from: carried) else { return nil }
-        return HostPlacementRun(placements: run.placements, direction: runDirection)
+        guard layoutProgram != nil else { return nil }
+        return HostPlacementRun(placements: programPlaces, direction: runDirection)
     }
 
     /// The direction a motion layout's run and the hand over it stand in: right to left only where the layout mirrors

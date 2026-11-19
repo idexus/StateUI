@@ -202,7 +202,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | Folder | What it holds | Reasons |
 | --- | --- | --- |
 | `Geometry/` | `Point`, `Rect`, `Insets`, `CornerRadius`, `ViewTransform` | [runs of numbers](../design/types/values.md#runs-of-numbers), [transforms](../design/types/transforms.md) |
-| `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeAreaEdges`, `Placement`, `PlacedRun`, `LayoutInput` | [placement](../design/types/placement.md), [motion layout](../design/views/motion-layout.md) |
+| `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeAreaEdges`, `Placement`, `LayoutInput` | [placement](../design/types/placement.md), [motion layout](../design/views/motion-layout.md) |
 | `Color/` | `Color`, `GradientStop`, `Brush`, `Material`, `Blur`, `Glass` | [color and theme](../design/types/color-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
 | `Drawing/` | `ImageSource`, `ContainerShape`, `ContentMode`, the strokes, `Draw`, `DrawCommand`, `DrawingBuilder` | [drawing on a canvas](../design/types/drawing.md) |
 | `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `SubmitLabel`, `AccessibilityHeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
@@ -552,9 +552,8 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 `Core/Boundary/` is the core's face to a host: `HostBoundary`, an enum of
 static calls, and the typed values it hands over and takes back, all behind
 `@_spi(Host)` and never serialized. In a runtime the host layer's `CoreLink`
-alone calls it, and the lane codecs are called where the values are held - in
-the layer, and `placements(from:)` in AppKit's element too
-([core link](../design/host/runtime.md#core-link)). The
+alone calls it, and the lane codecs are called where the values are held, in
+the layer ([core link](../design/host/runtime.md#core-link)). The
 [host contract](host-contract.md) says what each value means.
 
 - **Render and patch.** `needsRender` and `render(baseline:)` answer a
@@ -572,9 +571,9 @@ the layer, and `placements(from:)` in AppKit's element too
   `report(_:updating:through:at:origin:)` bring a value or a channel's sample
   back, saying who wrote; `complete(_:as:)` answers an awaited movement with
   its `HostMotionOutcome`; `gestureValue(state:)`
-  and `moveGestureValue(_:state:)` follow a pan. The codecs `journey(from:)`,
-  `value(of:)` and `placements(from:)` turn an image into a `HostJourney` or
-  a `HostPlacementRun` and back, so no host knows a lane.
+  and `moveGestureValue(_:state:)` follow a pan. The codecs `journey(from:)`
+  and `value(of:)` turn an image into a `HostJourney` and back, so no host
+  knows a lane.
   ([What the host reports](../design/core/cycle.md#what-the-host-reports))
 - **Handlers and the application's events.** `dispatch(_:payload:)` runs the
   handlers an event names, each through its gate, and `raise(_:_:)` an event

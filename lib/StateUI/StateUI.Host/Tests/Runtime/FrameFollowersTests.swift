@@ -123,7 +123,7 @@ final class FrameFollowersTests: XCTestCase {
         let element = Self.elements(of: runtime, ["reader"])[0]
         let reader = Standing(element, in: runtime, log)
         var reads = HostPatch(id: element.id, type: element.type)
-        reads.driven = .replace([.frame: HostStateBinding(state: 1, mode: .out, kind: .placement, laneKind: .number)])
+        reads.driven = .replace([.frame: HostStateBinding(state: 1, mode: .in, kind: .feed, laneKind: .number)])
         element.apply(reads)
         runtime.frames.follow(reader, of: element, reads: true)
         runtime.frames.commit(now: 16)
@@ -133,7 +133,7 @@ final class FrameFollowersTests: XCTestCase {
         runtime.frames.commit(now: 32)
         XCTAssertEqual(log.values, ["said"], "followed again for the same reader, nothing to say")
 
-        reads.driven = .replace([.frame: HostStateBinding(state: 2, mode: .out, kind: .placement, laneKind: .number)])
+        reads.driven = .replace([.frame: HostStateBinding(state: 2, mode: .in, kind: .feed, laneKind: .number)])
         element.apply(reads)
         runtime.frames.follow(reader, of: element, reads: true)
         runtime.frames.commit(now: 48)

@@ -52,13 +52,11 @@ final class AppKitViewDrawingTests: XCTestCase {
         var own = box(rotation: 10)
         own.properties[.opacity] = .number(0.5)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
-        layout.driven = .replace([
-            .area: HostStateBinding(state: handMadeState(95), mode: .out, kind: .placement, laneKind: .number),
-        ])
+        let run = PlacedRun([Placement(Rect(0, 0, 100, 60), transform: .rotate(30), opacity: 0.5)])
+        layout.layout = AppKitRenderer.programForTesting(slot: 95) { run }
         layout.children = .arranged([own])
         renderer.applyForTesting(tree(layout))
-        let run = PlacedRun([Placement(Rect(0, 0, 100, 60), transform: .rotate(30), opacity: 0.5)])
-        renderer.applyStateForTesting(handMadeState(95), value: run.carried)
+        renderer.presentLayoutForTesting(95)
 
         let nativeLayout = try XCTUnwrap(renderer.viewForTesting(id: .manual("layout")))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))

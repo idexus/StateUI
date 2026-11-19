@@ -20,7 +20,7 @@ enum StateLaw {
     static func within(_ door: StateKind, lanes: Int) -> Int? {
         switch door {
         case .property: return lanes >= 8 ? lanes - 5 : nil
-        case .placement, .text, .feed, .plain: return nil
+        case .text, .feed, .plain: return nil
         }
     }
 

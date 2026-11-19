@@ -314,8 +314,8 @@ containment says the same.
 
 ## A placing run
 
-A state that places a ZStack's children - a placing run - stands each child
-where the run says, no size below nothing, drawn at the run's opacity within
+A layout program's answer for a ZStack's children - a placing run - stands
+each child where the run says, no size below nothing, drawn at the run's opacity within
 0 and 1, and draws them back to front by their z-index, the earlier first
 among equals, the children it places none of after them in their order
 (`ZStackArithmetic.drawingOrder`, `HostPlacement.place`, `drawnOpacity`).
