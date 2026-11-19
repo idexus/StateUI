@@ -299,7 +299,7 @@ stateui project library --release <release>
 | Setting | What it holds |
 | --- | --- |
 | `stateui.checkout` | the local checkout a group builds with - set on this machine, so it is not asked for |
-| `stateui.minimumRelease` | the oldest release offered, `0.9.0` - the first whose heads are packages of their own, each naming its host by a trait, as the extension builds them; until it is published, a group builds with the local checkout |
+| `stateui.minimumRelease` | the oldest release offered, `0.8.6` - the first whose heads are packages of their own, each naming its host by a trait, as the extension builds them |
 
 ## Tests
 

@@ -49,7 +49,7 @@
         },
         "stateui.minimumRelease": {
           "type": "string",
-          "default": "0.9.0",
+          "default": "0.8.6",
           "pattern": "^\\d+\\.\\d+\\.\\d+$",
           "markdownDescription": "The oldest StateUI release **StateUI: New Project Group** offers to clone into a group: the first whose heads are packages of their own, each naming its host by a trait, as this extension builds them."
         }

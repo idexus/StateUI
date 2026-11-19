@@ -72,6 +72,27 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the frame's time; `complete(_:as:)` takes a `HostMotionOutcome` in place of a `Bool`, and the movements an engine
   ended come in `HostCycle.finished`. A state followed by an engine or a reading with no property showing it reaches
   the host in `HostPatch.followed`. The host layer does all of it; a host built on `StateUIHost` changes nothing.
+
+### New
+
+- **A test winds its window's time by hand.** `TestWindow(clock:)` takes a `TestClock`: the page mounts moving no
+  time, `element.send(_:)` does an act and waits for nothing, `window.flush()` runs the work that is ready at the
+  present time, and `try await clock.advance(by:)` moves the time on a display frame at a time. A movement travels
+  only as far as the test advances the clock, so a test stops half-way, reads, interrupts and goes on, with no
+  waiting. `perform(_:)` in such a window fails and names `send(_:)`; an ordinary window works as before, and sends
+  and flushes too.
+- **A press in phases.** `UserAct` gains `.pressDown(at:)`, `.drag(to:)`, `.lift` and `.cancelInteraction`: a pan at
+  the speed the clock gives its moves, its end or its being taken away, and - let go where it went down - a tap or a
+  click.
+- **What a view presents.** `element.presentation()` answers a `TestPresentation`: the view's opacity, translation,
+  scale and rotation where a movement has got them to, whether it takes input and how assistive technology meets it.
+  Its `id` may be kept and asked again with `window.presentation(_:)`, and `generation` tells one mounting of a view
+  from the next.
+
+## 0.8.6 - 2026-11-16
+
+### Breaking changes
+
 - **A build names its host by a package trait, and each head is a package of its own.** `STATEUI_HOST` is gone: a
   head, `Platforms/<Host>`, has a `Package.swift` of its own that builds the application with its host's trait and
   depends on `lib/StateUI.Head` with the same trait, which brings the host. The application's own package is its
@@ -98,7 +119,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `stateui project library` name the checkout in every manifest of the application, and the VS Code extension indexes
   the application with the chosen host's trait (`swiftPM.traits`, and its condition as a flag, which SourceKit-LSP's
   build system does not yet take from the trait) and the head by its package; it offers releases
-  from 0.9.0 on.
+  from 0.8.6 on.
 - **An application is a folder holding its `stateui.json`.** Beside its `Package.swift`, the file says what the
   application is on every platform - the `identifier` naming it, the `name` shown (its folder's where none is given),
   the `version` shown to its user and its `build` - and neither `stateui` nor the VS Code extension takes a folder
@@ -140,22 +161,6 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   in an application, the checkout its manifest names - no workspace needed; in a workspace, a checkout or a release
   for every application it lists, as `stateui workspace library` did. `stateui workspace library` and the API's
   `workspace/useLibrary` are gone; `project/useLibrary` takes a `projectUri` and answers a `LibraryChange`.
-
-### New
-
-- **A test winds its window's time by hand.** `TestWindow(clock:)` takes a `TestClock`: the page mounts moving no
-  time, `element.send(_:)` does an act and waits for nothing, `window.flush()` runs the work that is ready at the
-  present time, and `try await clock.advance(by:)` moves the time on a display frame at a time. A movement travels
-  only as far as the test advances the clock, so a test stops half-way, reads, interrupts and goes on, with no
-  waiting. `perform(_:)` in such a window fails and names `send(_:)`; an ordinary window works as before, and sends
-  and flushes too.
-- **A press in phases.** `UserAct` gains `.pressDown(at:)`, `.drag(to:)`, `.lift` and `.cancelInteraction`: a pan at
-  the speed the clock gives its moves, its end or its being taken away, and - let go where it went down - a tap or a
-  click.
-- **What a view presents.** `element.presentation()` answers a `TestPresentation`: the view's opacity, translation,
-  scale and rotation where a movement has got them to, whether it takes input and how assistive technology meets it.
-  Its `id` may be kept and asked again with `window.presentation(_:)`, and `generation` tells one mounting of a view
-  from the next.
 
 ### Fixed
 
