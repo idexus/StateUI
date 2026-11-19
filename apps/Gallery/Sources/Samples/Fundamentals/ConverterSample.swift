@@ -1,8 +1,9 @@
 import StateUI
 
 /// A BINDING CONVERTED ON ITS WAY TO A CONTROL: one state shown in two units,
-/// a caption worked out from it, two states worked into one - all by engines
-/// the differ writes, on the host's frames, with nothing built for any of it.
+/// a caption worked out from it, two states worked into one - each result
+/// worked out from where its sources are going, with nothing built for any of
+/// it.
 struct ConverterSample: SampleContent, ExampleContent {
     // listing: ConverterSample
     /// The one value the first three rows are about, in 0 to 1.
@@ -16,9 +17,15 @@ struct ConverterSample: SampleContent, ExampleContent {
 
     @State private var height = 80.0
 
-    /// What the last row calls the rectangle - a third source, and a text
+    /// What the seventh row calls the rectangle - a third source, and a text
     /// among the numbers.
     @State private var named = "panel"
+
+    /// How many cells, and how wide each: the last row's bar is as wide as
+    /// both together.
+    @State private var columns = 2.0
+
+    @State private var cell = 80.0
     // listing: end
 
     static let id = "converters"
@@ -44,8 +51,8 @@ struct ConverterSample: SampleContent, ExampleContent {
 
             row("2 · the same state in percent") {
                 // THE SAME STATE IN PERCENT: a second state the host carries,
-                // worked out by an engine following `volume` - and a drag comes
-                // back through `back`, in the source's own terms and type.
+                // worked out from `volume` whenever it is written - and a drag
+                // comes back through `back`, in the source's own terms and type.
                 Slider($volume.convert { $0 * 100 } back: { $0 / 100 })
                     .accessibilityIdentifier("converters.volume.percent")
                     .accessibilityLabel("Volume, in percent")
@@ -138,6 +145,31 @@ struct ConverterSample: SampleContent, ExampleContent {
                     .fontSize(17)
                 DebugInfoLabel()
             }
+
+            row("8 · a result with a motion of its own") {
+                // TWO SOURCES, ONE RESULT, ITS OWN MOTION: the bar's width is
+                // where both are GOING, multiplied - worked out once a write -
+                // and it travels there on a spring that is the result's alone.
+                // The sources are plain numbers: nothing animates them.
+                Rectangle()
+                    .fill(Palette.accent)
+                    .height(12)
+                    .cornerRadius(6)
+                    .width(Binding<Double>.multi($columns, $cell).convert({ $0 * $1 }, motion: .spring()))
+                    .horizontalAlignment(.start)
+                    .accessibilityIdentifier("converters.bar")
+                // The same result with no motion: the destination, at once.
+                Text(.multi($columns, $cell).convert { "going to \(Int($0 * $1))" })
+                    .accessibilityIdentifier("converters.going")
+                    .fontSize(15)
+                Button("Change both")
+                    .accessibilityIdentifier("converters.both")
+                    .onClicked {
+                        // One handler, two writes: the result is worked out once, from both.
+                        (columns, cell) = columns == 2 ? (3, 100) : (2, 80)
+                    }
+                DebugInfoLabel()
+            }
         }
         .spacing(10)
     }
@@ -146,9 +178,9 @@ struct ConverterSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("`$volume.convert { $0 * 100 }` is a second state the host carries, worked "
-                + "out from the first by an engine the differ writes for you: drag either "
-                + "slider and the other follows, because `back` is the engine the other "
-                + "way, landing a report on the source in the source's own terms. "
+                + "out from where the first is going whenever it is written: drag either "
+                + "slider and the other follows, because `back` lands what the user did to "
+                + "the result on the source, in the source's own terms. "
                 + "The caption under them is words converted from the same state.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -177,9 +209,20 @@ struct ConverterSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`back` is meant to be the inverse of the conversion; where it is "
-                + "not exactly, the source settles once on the value the round trip "
-                + "lands on.")
+            Text("`back` is meant to be the inverse of the conversion. What the user does "
+                + "to a control lands on the source through it, once, and the control then "
+                + "shows what the conversion makes of that source; a frame of an animation "
+                + "never goes back. A conversion with no `back` is read-only.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("The last row's bar is a result too: its width is where both sources are "
+                + "going, multiplied, and `motion: .spring()` is the result's own motion. "
+                + "Press Change both: the two writes work the result out once, the bar makes "
+                + "one journey to it, and the caption - the same result with no motion - "
+                + "says where it is going at once. A conversion never follows a source "
+                + "frame by frame; a value that must is written by an engine following a "
+                + "journey, as Reading a driven state shows.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

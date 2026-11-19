@@ -2563,9 +2563,15 @@ enum Listings {
 
         @State private var height = 80.0
 
-        /// What the last row calls the rectangle - a third source, and a text
+        /// What the seventh row calls the rectangle - a third source, and a text
         /// among the numbers.
         @State private var named = "panel"
+
+        /// How many cells, and how wide each: the last row's bar is as wide as
+        /// both together.
+        @State private var columns = 2.0
+
+        @State private var cell = 80.0
 
         var body: some View {
             // Every row is a closure of its own, and every one of them takes
@@ -2582,8 +2588,8 @@ enum Listings {
 
                 row("2 · the same state in percent") {
                     // THE SAME STATE IN PERCENT: a second state the host carries,
-                    // worked out by an engine following `volume` - and a drag comes
-                    // back through `back`, in the source's own terms and type.
+                    // worked out from `volume` whenever it is written - and a drag
+                    // comes back through `back`, in the source's own terms and type.
                     Slider($volume.convert { $0 * 100 } back: { $0 / 100 })
                         .minimum(0)
                         .maximum(100)
@@ -2654,6 +2660,26 @@ enum Listings {
                     // building it.
                     Text(.multi($named, $width, $height)
                             .convert { "\($0): \(Int($1.rounded())) × \(Int($2.rounded()))" })
+                    DebugInfoLabel()
+                }
+
+                row("8 · a result with a motion of its own") {
+                    // TWO SOURCES, ONE RESULT, ITS OWN MOTION: the bar's width is
+                    // where both are GOING, multiplied - worked out once a write -
+                    // and it travels there on a spring that is the result's alone.
+                    // The sources are plain numbers: nothing animates them.
+                    Rectangle()
+                        .fill(Palette.accent)
+                        .height(12)
+                        .width(Binding<Double>.multi($columns, $cell).convert({ $0 * $1 }, motion: .spring()))
+                        .horizontalAlignment(.start)
+                    // The same result with no motion: the destination, at once.
+                    Text(.multi($columns, $cell).convert { "going to \(Int($0 * $1))" })
+                    Button("Change both")
+                        .onClicked {
+                            // One handler, two writes: the result is worked out once, from both.
+                            (columns, cell) = columns == 2 ? (3, 100) : (2, 80)
+                        }
                     DebugInfoLabel()
                 }
             }
