@@ -131,6 +131,25 @@ extension UIKitDriver {
         listening.pressed(up)
     }
 
+    /// The touch under way taken away, as UIKit cancels one: a control's cancel, and each recognizer's cancelled
+    /// state told as its action tells it.
+    func takeAway(_ listening: UIKitListening?) {
+        guard let (pan, dragging) = press else { return }
+        press = nil
+        (pan.on as? UIControl)?.sendActions(for: .touchCancel)
+        if let listening, listening.hearing.contains(.hand) { listening.hand(.cancelled, moved: .zero) }
+        if let listening, Self.hearsPresses(listening) { listening.press(.cancelled, at: pan.point) }
+        if dragging, let listening, listening.hearing.contains(.drags) {
+            pan.driven = .cancelled
+            listening.dragged(pan)
+        }
+        guard let listening, listening.hearing.contains(.pointer) else { return }
+        let up = DrivenPress(on: pan.on)
+        up.driven = .cancelled
+        up.point = pan.point
+        listening.pressed(up)
+    }
+
     /// A control following a finger held on it, as its own tracking does: a slider's thumb under the finger.
     private static func track(_ view: UIView, to point: Point) {
         guard let slider = view as? UIKitSliderView, slider.bounds.width > 0 else {

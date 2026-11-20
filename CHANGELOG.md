@@ -196,6 +196,15 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### New
 
+- **A gesture taken away ends once, as cancelled, the same on every platform.** A press, a pan, a pinch, a value
+  under the hand and a view the hand carries each end as `.cancelled` when the platform takes the touch, a scroller
+  around the view begins to scroll, or the view stops being a target - disabled, or drawn at no size: no tap, no
+  swipe, no throw, no dismissal. It is told once, and nothing more of that touch is heard, though the view be a
+  target again before the touch ends. A view's own `.press` effect lets go as the hand takes the layout it stands
+  in. A view drawn at no size - its own scale or a holder's nought - is under no hand. In a test,
+  `.cancelInteraction` takes a press away; every host's conformance driver takes one away by its toolkit's own
+  cancel.
+
 - **A view thrown away.** A drag's `.dismissal(directions:threshold:motion:)` lets the hand throw the view out of
   the room that holds it; `.onDismissed` hears a `Dismissal` - the way it went, the hand's speed - once it is out,
   on any view. A press catches a view on its way out, and a view nobody removes comes back.

@@ -113,6 +113,7 @@ extension WebDriver {
         case (.pressDown(let point), _): try mouse("mousePressed", at: point, on: e)
         case (.drag(let point), _): try mouse("mouseMoved", at: point, on: e, held: true)
         case (.lift(let point), _): try mouse("mouseReleased", at: point, on: e)
+        case (.cancelInteraction, _): try takeAway(e)
         case (.hover(let point), _): try mouse("mouseMoved", at: point, on: e)
         case (.leave, _): try leave(e)
         case (.pan(let offset), _): try pan(e, by: offset)
@@ -244,6 +245,15 @@ extension WebDriver {
             mouse("mousePressed", at: middle, in: box, count: each)
             mouse("mouseReleased", at: middle, in: box, count: each)
         }
+    }
+
+    /// The press under way on the element `e` taken away, as a browser cancels a pointer: its `pointercancel`
+    /// at the element - the mouse's pointer - then the button let go off the page, which a press taken away hears
+    /// as nothing of its own.
+    private func takeAway(_ e: Int32) throws {
+        let cancel = "new PointerEvent('pointercancel', { pointerId: 1, pointerType: 'mouse', bubbles: true, composed: true })"
+        try WebBrowser.run("e.dispatchEvent(\(cancel))", on: e)
+        mouse("mouseReleased", at: Point(x: -10, y: -10), in: Rect(x: 0, y: 0, width: 0, height: 0))
     }
 
     /// The mouse's `type` of event at `point` of the element `e`.

@@ -121,6 +121,8 @@ extension AndroidDriver {
         case (.pressDown(let point), let view?): view.touch(Self.down, x: Self.pixels(point.x), y: Self.pixels(point.y))
         case (.drag(let point), let view?): view.touch(Self.move, x: Self.pixels(point.x), y: Self.pixels(point.y))
         case (.lift(let point), let view?): view.touch(Self.up, x: Self.pixels(point.x), y: Self.pixels(point.y))
+        // Android taking the touch away: its own cancel, dispatched as a parent taking the touch dispatches it.
+        case (.cancelInteraction, let view?): view.touch(Self.takenAway, x: 0, y: 0)
         case (.hover(let point), let view?):
             TestTouches.hover(view, action: Self.hoverEnter, x: Self.pixels(point.x), y: Self.pixels(point.y))
             TestTouches.hover(view, action: Self.hoverMove, x: Self.pixels(point.x), y: Self.pixels(point.y))
@@ -252,7 +254,7 @@ extension AndroidDriver {
     private static let longPressTimeout = Java.staticMethod(JavaAPI.viewConfiguration, "getLongPressTimeout", "()I")
 
     /// A motion event's actions, as Android numbers them.
-    private static let (down, up, move) = (Int32(0), Int32(1), Int32(2))
+    private static let (down, up, move, takenAway) = (Int32(0), Int32(1), Int32(2), Int32(3))
     private static let (hoverMove, hoverEnter, hoverExit) = (Int32(7), Int32(9), Int32(10))
 
     /// Types `words` as the whole of a field's words, as a keyboard does: through the input connection the field

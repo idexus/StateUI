@@ -44,30 +44,41 @@ extension MountedElement {
     public func hear(_ input: HeardInput, in runtime: HostRuntime) -> Bool {
         // A view thrown away and out of its room hears nothing until its handlers have had their say.
         guard !awaitsDismissal else { return false }
-        guard isEffectivelyEnabled else {
-            // A disabled branch hears no beginning: what began in it ends there, as cancelled, and takes nothing.
+        // A run taken away says nothing more: its own end closes the taking, and so does the next beginning.
+        // Design: docs/design/host/interaction.md#a-hand-taken-away
+        if let step = input.step, takenAway.contains(step.stream) {
+            if step.phase != .changed { takenAway.remove(step.stream) }
+            if step.phase != .began { return false }
+        }
+        guard isTarget else {
+            // A view that is no target hears no beginning: what began on it ends there, as cancelled, at the
+            // first step it hears - and takes nothing.
             // Design: docs/design/host/runtime.md#a-disabled-branch
-            if let ending = ending(of: input) { take(ending, in: runtime) }
+            if let ending = ending(of: input) {
+                take(ending, in: runtime)
+                if let step = input.step, step.phase == .changed { takenAway.insert(step.stream) }
+            }
             return false
         }
         return take(input, in: runtime)
     }
 
-    /// `input` as a disabled view still hears it: the end, as cancelled, of what began on it - a press, a drag, a
-    /// pinch, a turn, the hand - a pointer over it leaving, a drag between views ending or leaving; nil for the rest.
+    /// `input` as a view that is no target still hears it: the end, as cancelled, of what began on it - a press,
+    /// a drag, a pinch, a turn, the hand, at any step after its beginning - a pointer over it leaving, a drag
+    /// between views ending or leaving; nil for the rest.
     private func ending(of input: HeardInput) -> HeardInput? {
         switch input {
-        case .press(_, let at, let size, let byFinger):
+        case .press(let phase, let at, let size, let byFinger) where phase != .began:
             return .press(.cancelled, at: at, size: size, byFinger: byFinger)
-        case .drag(let phase, let x, let y, let from) where Self.ends(phase) && panUnderWay:
+        case .drag(let phase, let x, let y, let from) where phase != .began && panUnderWay:
             return .drag(.cancelled, x: x, y: y, from: from)
-        case .pinch(let phase, _, let at) where Self.ends(phase) && (pinchFromStart != nil || hearsFingers):
+        case .pinch(let phase, _, let at) where phase != .began && (pinchFromStart != nil || hearsFingers):
             return .pinch(.cancelled, scale: 1, at: at)
-        case .rotation(let phase, _) where Self.ends(phase) && (rotationFromStart != nil || hearsFingers):
+        case .rotation(let phase, _) where phase != .began && (rotationFromStart != nil || hearsFingers):
             return .rotation(.cancelled, degrees: 0)
-        case .mirrored(let phase, let at, let middle) where Self.ends(phase):
+        case .mirrored(let phase, let at, let middle) where phase != .began:
             return .mirrored(.cancelled, at: at, middle: middle)
-        case .hand(let phase, let moved, _, let at, let point) where Self.ends(phase):
+        case .hand(let phase, let moved, _, let at, let point) where phase != .began:
             return .hand(.cancelled, moved: moved, speed: nil, at: at, point: point)
         case .pointer(.pointerExited, _, _) where pointerIsOver, .dragEnded, .dragLeft:
             return input
@@ -195,6 +206,8 @@ extension MountedElement {
     /// beginning heard, as a trackpad may tell, beginning one first.
     /// Design: docs/design/types/gestures.md#a-pinch-from-its-start
     private func pinched(_ phase: GesturePhase, scale: Double, at: Point, in runtime: HostRuntime) {
+        // An end of no pinch under way says nothing: one is taken away once.
+        if Self.ends(phase), pinchFromStart == nil { return }
         if phase != .began, pinchFromStart == nil { pinched(.began, scale: 1, at: at, in: runtime) }
         let now = runtime.clock.now()
         if phase == .began { pinchSpeed = SpeedReading() }
@@ -211,6 +224,7 @@ extension MountedElement {
     /// beginning heard beginning one first, as a pinch's does.
     /// Design: docs/design/types/gestures.md#a-gestures-speed
     private func rotated(_ phase: GesturePhase, degrees: Double, in runtime: HostRuntime) {
+        if Self.ends(phase), rotationFromStart == nil { return }
         if phase != .began, rotationFromStart == nil { rotated(.began, degrees: 0, in: runtime) }
         let now = runtime.clock.now()
         if phase == .began { rotationSpeed = SpeedReading() }
@@ -398,14 +412,27 @@ extension MountedElement {
     }
 
     /// A hand taking the touch takes every press under way in the layout - its own and those of the views it holds:
-    /// a swipe across them taps none.
-    /// Design: docs/design/host/runtime.md#a-press-as-a-button-takes-it
+    /// a swipe across them taps none, and a view's own press lets its effect go. The press on the element the
+    /// hand is over keeps its effect: the hand and the press there are one touch on one view.
+    /// Design: docs/design/host/interaction.md#one-gesture-taking-anothers-touch
     private func takePresses(in runtime: HostRuntime) {
         if buttonPress.isPressed { pressed(.cancelled, over: false, in: runtime) }
-        for child in children { child.takePresses(in: runtime) }
+        for child in children { child.yieldPresses(in: runtime) }
+    }
+
+    /// The presses under way on the element and in it are taken away: a button's goes out, a view's own lets go.
+    private func yieldPresses(in runtime: HostRuntime) {
+        if buttonPress.isPressed { pressed(.cancelled, over: false, in: runtime) }
+        if pressReading.isDown {
+            pressReading.takenAway(time: runtime.clock.now())
+            runtime.handPace.opened(self)
+        }
+        for child in children { child.yieldPresses(in: runtime) }
     }
 
     private func dragged(_ phase: GesturePhase, x: Double, y: Double, from: Point, in runtime: HostRuntime) {
+        // A step of no drag under way says nothing: one ends once, and none goes on after its end.
+        guard phase == .began || panUnderWay else { return }
         // A drag takes the press: no tap.
         if phase == .began { pressed(.cancelled, over: false, in: runtime) }
         // Every report tells how far the pan came since it began and how fast it goes - its end as fast as it lifted.

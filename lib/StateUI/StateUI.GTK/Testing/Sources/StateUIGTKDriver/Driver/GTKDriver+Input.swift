@@ -15,9 +15,10 @@ extension GTKDriver {
     func input(_ act: UserAct, on view: GTKView) -> Bool {
         if let button = view as? GTKButtonView, case .pressDown = act { pressButton(button, act) }
         if let button = view as? GTKButtonView, case .lift = act { pressButton(button, act) }
+        if let button = view as? GTKButtonView, case .cancelInteraction = act { pressButton(button, act) }
         // A view that hears no hand - an axis of keyframes alone - holds no drag of the host's: a sweep reaches nothing.
         if case .sweep = act, !view.hearing.contains(.hand) { return true }
-        guard let listening = view.listening else { return view is GTKButtonView && ["pressDown", "lift"].contains(act.description) }
+        guard let listening = view.listening else { return view is GTKButtonView && ["pressDown", "lift", "cancelInteraction"].contains(act.description) }
         let controllers = { (kind: Hearing) in listening.controllers[kind] ?? [] }
         // The press a tap is made of, or the one a view hears with no tap.
         let press = controllers(.taps).last ?? controllers(.presses).last
@@ -88,6 +89,14 @@ extension GTKDriver {
         case .lift(let point) where view.hearing.contains(.hand):
             guard let drag = controllers(.hand).first else { return false }
             GTKTestHost.emit(drag, "drag-end", [point.x - pressed.at.x, point.y - pressed.at.y])
+        // GTK taking the press away: its gesture's own `cancel`, of the hand's drag or of each press.
+        case .cancelInteraction where view.hearing.contains(.hand):
+            guard let drag = controllers(.hand).first else { return false }
+            GTKTestHost.emit(drag, "cancel")
+        case .cancelInteraction:
+            let presses = [controllers(.pointer).last, press].compactMap { $0 }
+            guard !presses.isEmpty else { return view is GTKButtonView }
+            for press in presses { GTKTestHost.emit(press, "cancel") }
         // A press goes down, moves and lifts through the pointer's own press and the press a tap is made of, as GTK
         // emits them.
         case .pressDown(let point):
@@ -113,6 +122,7 @@ extension GTKDriver {
     private func pressButton(_ button: GTKButtonView, _ act: UserAct) {
         if case .pressDown = act { GTKTestHost.emit(button.press, "drag-begin", [0, 0]) }
         if case .lift = act { GTKTestHost.emit(button.press, "drag-end", [0, 0]) }
+        if case .cancelInteraction = act { GTKTestHost.emit(button.press, "cancel") }
     }
 
     /// How many taps an act is: a tap's count, one for activating a view that hears taps.

@@ -71,8 +71,12 @@ extension AppKitDriver {
         case (.pressDown(let point), _) where native?.handReader != nil: native?.handReader?.dragging.pressed(at: point)
         case (.drag(let point), _) where native?.handReader != nil: native?.handReader?.dragging.moved(to: point)
         case (.lift, _) where native?.handReader != nil: native?.handReader?.dragging.released()
+        // AppKit taking the drag away: its recognizer's cancelled state, as its action tells it.
+        case (.cancelInteraction, _) where native?.handReader != nil:
+            native?.handReader?.dragging.recognized(.cancelled, at: .zero, moved: .zero)
         case (.pressDown(let point), let view?): try press(view, native, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, native, down: false, at: point, element)
+        case (.cancelInteraction, let view?): try takeAway(view, native, element)
         case (.drag(let point), _) where native?.pressRecognizer != nil || native?.pointerRecognizer != nil:
             native?.pressRecognizer?.press(.changed, at: point)
             native?.pointerRecognizer?.pointed(.pointerMoved, at: point)
@@ -254,6 +258,26 @@ extension AppKitDriver {
         default: break
         }
         if !done { throw DriverCannot(down ? .pressDown(at: point) : .lift(at: point), on: element) }
+    }
+
+    /// The press under way taken away, as another gesture takes one: a view that hears a press told it is
+    /// cancelled, a button let go with no click, a slider's thumb let go.
+    private func takeAway(_ view: NSView, _ native: AppKitElement?, _ element: MountedElement) throws {
+        var done = false
+        if let press = native?.pressRecognizer {
+            press.press(.cancelled, at: Point(x: 0, y: 0))
+            done = true
+        }
+        switch view {
+        case let button as AppKitButtonView:
+            button.onReleased?()
+            done = true
+        case let slider as AppKitSliderView:
+            slider.endDrag()
+            done = true
+        default: break
+        }
+        if !done { throw DriverCannot(.cancelInteraction, on: element) }
     }
 
     /// Chooses the tab at `place`: in the row beneath the window's toolbar where the window shows the tabs, else in

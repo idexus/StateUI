@@ -20,7 +20,8 @@ extension WinUIDriver {
         case "dropFiles": return "the relay's drop report told the driver's files, no drag WinUI began"
         case "sweep": return "the relay's report of the hand handed to the host with its speed, no pointer sent"
         case "pinch", "rotate": return "the relay's report of the manipulation handed to the host, no touch sent"
-        case "pressDown", "drag", "lift": return "the relay's report of the press handed to the host, no pointer sent"
+        case "pressDown", "drag", "lift", "cancelInteraction":
+            return "the relay's report of the press handed to the host, no pointer sent"
         case "hover", "leave": return "the relay's report of the pointer handed to the host, no pointer sent"
         case "tap": return "the relay's report of the tap handed to the host, no pointer sent"
         case "longPress": return "the relay's report of the long press handed to the host, no pointer sent"

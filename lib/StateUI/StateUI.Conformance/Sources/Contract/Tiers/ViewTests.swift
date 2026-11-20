@@ -19,7 +19,7 @@
         Specimens.wearing(ViewContract.self).flatMap { element in
             [
                 margined(element), drawn(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
-                tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), thrown(element), swiped(element), pinched(element), rotated(element), pointed(element),
+                tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), thrown(element), pressTakenAway(element), takenFromTheHand(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
         } + [
@@ -838,6 +838,76 @@
                 return drawn.values.last.map(FrameReport.place) == [0, 0, 100, 100]
             }
             s.expect(drawn.values.last.map(FrameReport.place), [0, 0, 100, 100], "nobody removed it: at its place again")
+        }
+    }
+
+    /// A press the platform takes away taps nothing, though it stood over the view; the next press taps as ever.
+    @MainActor
+    static func pressTakenAway(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aPressTakenAwayTapsNothing", proves: [
+            Covered(ViewContract.tapped, on: element),
+        ]) { s in
+            let heard = Received<String>()
+            s.start {
+                VStack {
+                    Specimens.view(element, [
+                        Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
+                        HearDone(ViewContract.tapped) { heard.values.append("tapped") },
+                    ])
+                }
+                .horizontalAlignment(.start)
+            }
+            let view = try s.element("specimen")
+
+            try s.perform(.pressDown(at: Point(x: 40, y: 20)), on: view)
+            try s.perform(.cancelInteraction, on: view)
+            s.turn()
+            s.expect(heard.values, [], "taken away over the view: no tap")
+
+            try s.perform(.pressDown(at: Point(x: 40, y: 20)), on: view)
+            try s.perform(.lift(at: Point(x: 40, y: 20)), on: view)
+            s.settle { heard.values == ["tapped"] }
+            s.expect(heard.values, ["tapped"], "and the next press taps")
+        }
+    }
+
+    /// A view the platform takes from the hand past its dismissal's threshold is not dismissed, as one let go
+    /// there is: it stands where its layout puts it again, and nobody is told.
+    @MainActor
+    static func takenFromTheHand(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aViewTakenFromTheHandIsNotDismissed", proves: [
+            Covered(ViewContract.interaction, on: element),
+        ], needs: [
+            Covered(ViewContract.dismissed, on: element), Covered(ViewContract.presentationFrameChanged, on: element),
+        ]) { s in
+            let (clock, drawn, told) = (TestClock(), Received<[Double]>(), Received<String>())
+            s.start(clock: clock) {
+                VStack {
+                    Opened.thrown(Specimens.view(element, [
+                        Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
+                        Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
+                        HearTwo(ViewContract.dismissed) { direction, _ in told.values.append("\(direction)") },
+                    ]))
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.settle { drawn.values.last.map(FrameReport.place) == [0, 0, 100, 100] }
+            let view = try s.element("specimen")
+
+            // Forty points up, past its thirty - where a hand letting go dismisses it.
+            try s.perform(.pressDown(at: Point(x: 50, y: 50)), on: view)
+            try s.perform(.drag(to: Point(x: 50, y: 10)), on: view)
+            s.frames(of: clock, until: clock.now + 48)
+            s.settle { drawn.values.last.map(FrameReport.place) == [0, -40, 100, 100] }
+            s.expect(drawn.values.last.map(FrameReport.place), [0, -40, 100, 100], "under the hand, past its threshold")
+
+            try s.perform(.cancelInteraction, on: view)
+            s.frames(of: clock, until: clock.now + 1_000)
+            s.settle { drawn.values.last.map(FrameReport.place) == [0, 0, 100, 100] }
+            s.turn()
+            s.expect(told.values, [], "taken away: no dismissal")
+            s.expect(drawn.values.last.map(FrameReport.place), [0, 0, 100, 100], "where its layout puts it again")
         }
     }
 

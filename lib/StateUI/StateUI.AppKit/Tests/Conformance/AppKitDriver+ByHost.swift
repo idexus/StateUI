@@ -10,7 +10,8 @@ extension AppKitDriver {
     func byHost(_ ability: String) -> String? {
         let (act, element) = (Ability(ability).act, Ability(ability).element)
         switch act {
-        case "tap", "longPress", "pan", "sweep", "notch", "pinch", "rotate", "hover", "leave", "drag", "pressDown", "lift":
+        case "tap", "longPress", "pan", "sweep", "notch", "pinch", "rotate", "hover", "leave", "drag", "pressDown", "lift",
+             "cancelInteraction":
             return "handed to the host's recognizer or handler, no NSEvent sent"
         case "open" where element == "Picker", "close" where element == "Picker":
             return "the host's menu delegate told, no menu opened"

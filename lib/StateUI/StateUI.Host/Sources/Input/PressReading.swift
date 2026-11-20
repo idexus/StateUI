@@ -10,6 +10,7 @@ struct PressReading: Sendable {
     /// Where the press went down, and where it last stood; nil while none stands.
     private var from: Point?
     private var last = Point.zero
+    private var size = LayoutSize(width: 0, height: 0)
 
     private var trail = SpeedReading()
 
@@ -27,6 +28,7 @@ struct PressReading: Sendable {
         }
         guard let from else { return }
 
+        self.size = size
         trail.moved(Point(x: point.x - last.x, y: point.y - last.y), at: time)
         last = point
         waiting = PressInput(
@@ -34,6 +36,13 @@ struct PressReading: Sendable {
             velocity: phase == .began ? .zero : trail.speed(at: time),
             bounds: Rect(x: 0, y: 0, width: size.width, height: size.height))
         if phase == .ended || phase == .cancelled { self.from = nil }
+    }
+
+    /// The press taken away where it last stood, at `time` - by a hand that took the touch from the view: nothing
+    /// for a view no press stands on.
+    mutating func takenAway(time: Double) {
+        guard from != nil else { return }
+        told(.cancelled, at: last, size: size, time: time)
     }
 
     /// What waits, taken: the frame asks the effect of it once.

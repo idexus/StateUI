@@ -198,6 +198,10 @@ final class WinUIDriver: HostDriver {
         case (.lift(let point), let view?) where view.hearing.contains(.hand):
             _ = view.heardFinger(
                 phase: Int32(StateUIPressPhase.letGo.rawValue), pointer: 1, at: point, inView: point, time: nil)
+        case (.cancelInteraction, let view?) where view.hearing.contains(.hand):
+            _ = view.heardFinger(
+                phase: Int32(StateUIPressPhase.takenAway.rawValue), pointer: 1, at: .zero, inView: .zero, time: nil)
+        case (.cancelInteraction, let view?): try takeAway(view, element)
         case (.pressDown(let point), let view?): try press(view, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, down: false, at: point, element)
         case (.drag(let point), let view?) where Self.hearsPresses(view) || view.hearing.contains(.pointer):
@@ -382,6 +386,26 @@ final class WinUIDriver: HostDriver {
     /// Whether the relay tells `view` a press: it hears taps, or presses with no tap.
     private static func hearsPresses(_ view: WinUIView) -> Bool {
         !view.hearing.isDisjoint(with: [.taps, .presses])
+    }
+
+    /// The press under way taken away, as the relay reports a pointer WinUI cancelled or whose capture it lost: a
+    /// view that hears a press told it is cancelled, a button and a slider's thumb let go.
+    private func takeAway(_ view: WinUIView, _ element: MountedElement) throws {
+        var done = false
+        if Self.hearsPresses(view) {
+            view.heardButtonPress(.cancelled, at: .zero, byFinger: false)
+            done = true
+        }
+        switch view {
+        case let button as WinUIButtonView:
+            WinUICallbacks.table.held(button.number, false)
+            done = true
+        case let slider as WinUISliderView:
+            WinUICallbacks.table.held(slider.number, false)
+            done = true
+        default: break
+        }
+        if !done { throw DriverCannot(.cancelInteraction, on: element) }
     }
 
     /// A pointer pressed down or let go: a button held, a slider's thumb taken, and a view that hears the pointer

@@ -269,6 +269,10 @@
     /// Whether a pan heard on the element is under way: begun, and not yet ended or cancelled.
     var panUnderWay = false
 
+    /// The runs of input taken away from the element while their platform's goes on: heard no more until each ends.
+    /// Design: docs/design/host/interaction.md#a-hand-taken-away
+    var takenAway: Set<HeardStream> = []
+
     /// How fast the pan, the pinch and the rotation heard on the element go (`SpeedReading`).
     var panSpeed = SpeedReading()
     var pinchSpeed = SpeedReading()

@@ -138,9 +138,11 @@ final class AppKitGestureTests: XCTestCase {
         XCTAssertEqual(onePointer.count, 1)
         XCTAssertTrue(twoPointers.isEmpty)
 
+        // A pan is told from its beginning, as AppKit's recognizer tells it: a step of none says nothing.
+        onePointer.first?.dragged(.began, x: 0, y: 0, from: Point(x: 10, y: 10))
         onePointer.first?.dragged(.changed, x: 8, y: 5, from: Point(x: 10, y: 10))
 
-        XCTAssertEqual(totals.values, [8])
+        XCTAssertEqual(totals.values, [0, 8])
     }
 
     /// ⌥ AND A DRAG ARE TWO FINGERS: a layout two fingers move wears a recognizer of a press with ⌥ - and a press

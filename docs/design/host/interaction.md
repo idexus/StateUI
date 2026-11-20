@@ -159,8 +159,8 @@ number that stays, or stands on its rest already, is put there at once, so
 it travels nowhere while the others do. The channel says the run as the
 user's: the state is written where each number rests before any moves.
 
-A hand taken away - the platform cancelling it - is no letting go: each
-number goes onto where its channel says it was bound, with no speed.
+A hand taken away is no letting go
+([a hand taken away](#a-hand-taken-away)).
 
 ## Coming onto where it rests
 
@@ -215,6 +215,73 @@ own, and both travel beside each other.
                  where the program sent it last, under the state's own
                  motion, and that write's waiter is answered by that run
 ```
+
+## A hand taken away
+
+A gesture ends two ways: the hand lets go, or it is taken away - and a
+taking is no letting go. Who takes it decides how a number it held goes on:
+
+```text
+  who takes it                         the number held
+  the platform - its cancel, a         let go with no speed: no throw, onto the rest
+  capture lost, its window gone        it was bound for, by its release's approach
+  a write of the program               the numbers written are the program's; the hand's
+                                       others go where they were bound
+  its program described again          a number it moves no longer goes where it was bound
+  its element leaving the tree         what its hand held goes where it was bound
+```
+
+The platform's taking still has the view's program to resolve a rest by
+(`InteractionSessions.letGo`, the speed nought whatever the hand had). The
+other three have none any more, so the number goes where its channel says
+it was bound, under its state's own motion (`cancel`). A hand that waits
+for the program (`.deferLatest`) goes where the program sent the number,
+taken away as let go.
+
+What a view holds of its own ends alike, whoever takes it: a press's effect
+lets go; a view the hand carried comes back to its place with no speed and
+is never dismissed, however far it was taken; a pan tells `cancelled` and
+is no swipe; a pinch and a turn end with no speed; a button's press goes
+out and taps nothing.
+
+A taking is told once. An end of nothing under way says nothing, so a
+platform telling a cancel and a lost capture of one touch ends it once, and
+an end with no beginning is none. A run taken away while the platform's
+goes on - its view stopped being a target on the way
+([a disabled branch](runtime.md#a-disabled-branch),
+[a view drawn at no size](runtime.md#a-view-drawn-at-no-size)) - ends at
+the first step heard after, and is marked (`MountedElement.takenAway`, a
+`HeardStream` each): nothing more of it is heard, though the view be a
+target again, until the run's own end or the next beginning closes the
+mark. A program's write marks the hand the same way in the sessions
+(`lost`).
+
+The trap is a cancel read as a release with the hand's speed. A system
+gesture taking the touch in the middle of a swipe would throw the run on,
+or dismiss a card the user never let go.
+
+## One gesture taking another's touch
+
+Which gesture a touch becomes is each platform's recognizers' to decide;
+what follows of the decision is the same on every host:
+
+- A pan beginning on a view takes its press: the press goes out, and its
+  lift over the view taps nothing.
+- A hand taking the touch over a layout - once it moves the run, or holds a
+  view - takes every press under way in the views it holds
+  (`takePresses`): a button's goes out, and a view's own press lets its
+  effect go where it last stood (`PressReading.takenAway`), the rest of
+  that press being nobody's. A press on the very element the hand is over
+  keeps its effect: the two are one touch on one view.
+- A native scroller taking the touch is the platform's cancel of the
+  press, by the same road.
+- A view's own press and its drag go on together, each over its own
+  numbers of the view's presentation - the press's `values`, the drag's
+  move - so a press shrinks a view the hand carries, and one of the two
+  taken away leaves the other.
+- A number is one hand's ([the hold](#the-hold)): another view's hand on
+  it moves nothing, and a hand on another number of the same state moves
+  its own.
 
 ## A view's own press and drag
 

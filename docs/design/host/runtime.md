@@ -574,11 +574,13 @@ A view the tree disables keeps its place and still stands in the way of a
 press, but answers none; on a layout the whole branch in it answers none
 (`MountedElement.isEffectivelyEnabled`). The rule is the host layer's, once:
 `hear` lets nothing begin on a view in a disabled branch, and what began
-there ends there - a press goes out; a drag, a pinch, a turn and the hand
-under way hear their end as cancelled, whatever the platform said, so none
-becomes a swipe or a throw; a pointer over the view leaves it; a drag between
-views ends or leaves - each the same road the platform's own cancel takes
-(`ending(of:)`), and none taken. A view's `isEnabled` reaches its control as
+there ends there, at the first step heard after - a press goes out; a drag,
+a pinch, a turn and the hand under way hear their end as cancelled, whatever
+the platform said, so none becomes a swipe or a throw; a pointer over the
+view leaves it; a drag between views ends or leaves - each the same road the
+platform's own cancel takes (`ending(of:)`), none taken, and none heard
+again should the branch be enabled before it ends
+([a hand taken away](interaction.md#a-hand-taken-away)). A view's `isEnabled` reaches its control as
 `presented(_:)` gives it, false wherever a view holding it is disabled. When
 a layout's `isEnabled` changes, every element in it presents its own again
 (`enablementTurned`), so a native control in the branch is disabled and
@@ -586,6 +588,17 @@ enabled with it. A host reads a view's members through `presented`, never
 the element's own value. A bar's action and a menu's item stand in no view,
 so a host reads `isEffectivelyEnabled` for them: one declared in a disabled
 branch is out of reach with it, and comes back as the branch is enabled.
+
+## A view drawn at no size
+
+A view drawn at no size - its own scale, or the scale of an element holding
+it, nought or no number - is under no hand: nothing of it can be pointed at,
+and no point of it answers a point of the hand
+(`MountedElement.isDrawnAtASize`). It is no target, as a view in a disabled
+branch is none (`isTarget`): `hear` lets nothing begin on it, and what began
+before it shrank ends at the first step heard after, as cancelled. A toolkit
+that still hands such a view its input - one finding its views by their
+frames, not by what is drawn - is answered here, once for every host.
 
 ## A press dragged
 

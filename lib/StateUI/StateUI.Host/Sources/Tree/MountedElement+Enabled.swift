@@ -11,6 +11,18 @@ extension MountedElement {
         value(.isEnabled)?.bool != false && parent?.isEffectivelyEnabled != false
     }
 
+    /// Whether the view is drawn at a size: its own scale and the scale of every element holding it are numbers
+    /// other than nought. One drawn at none is under no hand.
+    /// Design: docs/design/host/runtime.md#a-view-drawn-at-no-size
+    var isDrawnAtASize: Bool {
+        let scale = number(.scale) ?? 1
+        let (across, down) = (scale * (number(.scaleX) ?? 1), scale * (number(.scaleY) ?? 1))
+        return across.isFinite && down.isFinite && across != 0 && down != 0 && parent?.isDrawnAtASize != false
+    }
+
+    /// Whether the user's input may begin on the view: enabled, and drawn at a size.
+    var isTarget: Bool { isEffectivelyEnabled && isDrawnAtASize }
+
     /// `property` as the element's view presents it: its own value - but `isEnabled` false in a disabled branch,
     /// `isRefreshEnabled` true where the element hears the pull and says nothing of it and false where it is
     /// disabled, and `ignoresInput` true while it fades out.

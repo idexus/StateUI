@@ -422,6 +422,7 @@ final class UIKitDriver: HostDriver {
         case (.pressDown(let point), _): try touch(element) { listening, view in pressDown(listening, on: view, at: point) }
         case (.drag(let point), _): try touch(element) { listening, _ in drag(listening, to: point) }
         case (.lift(let point), _): try touch(element) { listening, _ in lift(listening, at: point) }
+        case (.cancelInteraction, _): try touch(element) { listening, _ in takeAway(listening) }
         case (.hover(let point), _): try touch(element) { listening, view in Self.hover(listening, on: view, at: point) }
         case (.leave, _): try touch(element) { listening, view in Self.leave(listening, on: view) }
         case (.pickDate(let day), let picker as UIKitDatePickerView):

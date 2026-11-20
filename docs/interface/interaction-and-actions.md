@@ -349,6 +349,44 @@ A press, a drag and values stand together in one
 a view taken by its drag is what `.onItemDragged` tells of, and one thrown
 away what `.onItemDismissed` does.
 
+### A gesture taken away
+
+A gesture ends when the hand lets go - or when it is taken away: a call
+arrives, a system gesture takes the touch, a scroller around the view
+begins to scroll, the view is disabled or shrunk to nothing under the hand.
+A gesture taken away is no letting go, on every platform:
+
+| What the hand had | Taken away |
+| --- | --- |
+| a press | no tap, no click; its pressed look and its `.press` effect let go |
+| a pan | `onPanUpdated` hears `.cancelled`, with no speed; never a swipe |
+| a pinch, a rotation | ends as `.cancelled`, with no speed |
+| a value (`.value`) | no throw: it comes to rest where it was bound, by its `.release` |
+| a view (`.drag`) | back at its place; never a dismissal, however far it was taken |
+
+It is told once, and nothing more of that touch reaches the view. A handler
+that moved something by a pan puts it back on `.cancelled`:
+
+```swift
+struct Drawer: View {
+    @State private var pulled = 0.0
+
+    var body: some View {
+        Rectangle()
+            .fill(.steelBlue)
+            .height(120)
+            .translationY($pulled)
+            .onPanUpdated { update in
+                switch update.phase {
+                case .began, .changed: pulled = update.total.y
+                case .ended: pulled = update.total.y > 60 ? 120 : 0
+                case .cancelled: pulled = 0
+                }
+            }
+    }
+}
+```
+
 ### Pointer
 
 Pointer handlers cover enter, exit, move, press, and release. Coordinate
