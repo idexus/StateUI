@@ -79,5 +79,5 @@ private final class PlainView: NativeElement {
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
     func directionChanged() {}
-    func leave() {}
+    func deactivate() {}
 }

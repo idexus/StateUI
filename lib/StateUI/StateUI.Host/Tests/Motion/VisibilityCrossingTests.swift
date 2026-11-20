@@ -49,7 +49,7 @@ final class VisibilityCrossingTests: XCTestCase {
 
         Self.show(true, in: runtime)
         element.crossVisibility(view, closingIn: nil)
-        XCTAssertFalse(element.isLeaving)
+        XCTAssertFalse(element.isFadingOut)
         XCTAssertEqual(runtime.tree.presentedPropertyValue(mount: element.mount, property: .opacity), .number(0.5),
                        "from where it stands")
         clock.time = 400
@@ -122,7 +122,7 @@ final class VisibilityCrossingTests: XCTestCase {
 
         Self.show(false, in: runtime)
         element.crossVisibility(view, closingIn: nil)
-        XCTAssertFalse(element.isLeaving)
+        XCTAssertFalse(element.isFadingOut)
         XCTAssertFalse(element.standsShown)
         XCTAssertEqual(view.said, [])
         XCTAssertEqual(Self.arranged(in: runtime), 0)

@@ -1319,7 +1319,7 @@ private final class TabsReading: NativeElement {
     func arrangeChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
-    func leave() {}
+    func deactivate() {}
 }
 
 /// A page whose text's context menu holds a setting's entry that also counts its turns.

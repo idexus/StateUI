@@ -75,7 +75,7 @@ final class GTKElement: NativeElement {
         if changed.contains(.showsSidebarToggle) { composeChrome() }
     }
 
-    func leave() {
+    func deactivate() {
         view?.detach()
     }
 }

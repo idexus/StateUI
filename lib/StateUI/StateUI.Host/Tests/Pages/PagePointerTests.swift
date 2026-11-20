@@ -54,7 +54,7 @@ private final class StillView: NativeElement {
     func arrangeChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
-    func leave() {}
+    func deactivate() {}
 }
 
 private struct PointerPage: View {

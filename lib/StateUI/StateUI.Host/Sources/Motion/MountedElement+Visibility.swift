@@ -27,7 +27,7 @@
 extension MountedElement {
     /// Whether the element stands shown: as the tree says, or while it fades out.
     public var standsShown: Bool {
-        isLeaving || value(.isVisible)?.bool != false
+        isFadingOut || value(.isVisible)?.bool != false
     }
 
     /// Whether the element answers no input: as the tree says, or while it fades out (`presented`).
@@ -61,8 +61,8 @@ extension MountedElement {
         let law = tree.layoutMotion.law(of: motion)
         let opacity = resolvedValue(.opacity) ?? .number(1)
         if value(.isVisible)?.bool == false {
-            guard view.isShown, !isLeaving, let law else { return }
-            isLeaving = true
+            guard view.isShown, !isFadingOut, let law else { return }
+            isFadingOut = true
             view.setIgnoresInput(true)
             let started = tree.receiveProperty(
                 mount: mount, property: .opacity, standing: .number(view.opacity), target: .number(0), motion: law,
@@ -71,11 +71,11 @@ extension MountedElement {
                     self.crossed(view, closingIn: places)
                 })
             if !started {
-                isLeaving = false
+                isFadingOut = false
                 view.setIgnoresInput(ignoresInput)
             }
-        } else if isLeaving {
-            isLeaving = false
+        } else if isFadingOut {
+            isFadingOut = false
             view.setIgnoresInput(ignoresInput)
             tree.receiveProperty(
                 mount: mount, property: .opacity, standing: .number(view.opacity), target: opacity, motion: law)
@@ -87,9 +87,9 @@ extension MountedElement {
 
     /// The fade out ended, landed or cut short: the view goes, and its layout closes over it.
     private func crossed(_ view: some FadingView, closingIn places: TravelingPlaces?) {
-        guard isLeaving else { return }
+        guard isFadingOut else { return }
 
-        isLeaving = false
+        isFadingOut = false
         view.setIgnoresInput(ignoresInput)
         view.setShown(standsShown)
         view.setOpacity(value(.opacity)?.number ?? 1)

@@ -137,7 +137,7 @@ final class UIKitElement: NativeElement {
         }
     }
 
-    func leave() {
+    func deactivate() {
         listening?.detach()
         listening = nil
         dragAndDrop?.detach()

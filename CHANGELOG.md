@@ -158,6 +158,13 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the frame's time; `complete(_:as:)` takes a `HostMotionOutcome` in place of a `Bool`, and the movements an engine
   ended come in `HostCycle.finished`. A state followed by an engine or a reading with no property showing it reaches
   the host in `HostPatch.followed`. The host layer does all of it; a host built on `StateUIHost` changes nothing.
+- **For a host: an element leaves in two steps.** `NativeElement.leave()` is `deactivate()`: the element stops
+  being the application's, and everything its native half attached outside the tree lets go. A mounted element has
+  a `lifecycle` - `.active`, `.exiting`, `.released` - with `deactivate()` and `release()` between them, each said
+  again doing nothing, and `leave()` both at once. What an element answers by itself is guarded by it in the host
+  layer: a toolkit's callback already on its way as its view left hears no input, tells no handler, writes no
+  state, opens no link and moves no focus. `MountedElement.isLeaving`, a view fading out as it is hidden, is
+  `isFadingOut`. A host built on `StateUIHost` renames the one method.
 - **For a host: a motion layout runs a layout program.** Its room and its views' places cross typed in
   `HostPatch.layout` (`HostLayoutProgram`), and `HostCycle.stirred` names the layouts to ask again; the host layer
   says the room, asks the places and tells the program how a view is measured. A host's `NativeElement` answers

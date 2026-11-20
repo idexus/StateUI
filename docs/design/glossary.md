@@ -130,6 +130,8 @@ and this table maps the two.
 | frame clock | display link, vsync | what ticks once per display frame while something holds it |
 | doorbell | wake-up | how a turn is posted to the UI thread's queue from any thread, when a job is queued or the UI thread made work |
 | pump, turn | event-loop pass | one pass of the host's work: jobs, a cycle, a render, then acts |
+| active, exiting, released (`ElementLifecycle`) | mounted, unmounting, unmounted | where an element stands in its life in the mounted tree: the application's; no more the application's, its view still standing; gone |
+| deactivate, release | teardown | the two steps of leaving: an element stops being the application's, then its presentation ends |
 | program write | programmatic change | a write to a control made by the program, not the user |
 | act | imperative control call | a call the application makes on a control, such as `focus` |
 | run | in-flight handler call | one going of a handler that awaits, or of a task through a gate, from its start to its end |

@@ -236,5 +236,5 @@ private final class CoreView: NativeElement {
     func arrangeChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
-    func leave() {}
+    func deactivate() {}
 }

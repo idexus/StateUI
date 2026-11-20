@@ -137,7 +137,7 @@ private final class ChangedView: NativeElement {
     func animates(_ property: Prop) -> Bool { false }
     func applied(changed: Set<Prop>, wasDescribed: Bool) { self.changed = changed }
     func presentFrame(_ changed: Set<Prop>) {}
-    func leave() {}
+    func deactivate() {}
     func arrangeChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}

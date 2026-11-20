@@ -104,11 +104,40 @@ own, which no resting value names.
 ## Leaving
 
 An element leaves by every road out of the tree - dropped from an arrangement,
-replaced, a new root - and everything under it leaves with it. It lets go of the states it wears, so a channel's
-last wearer takes the channel with it once it lands; its property and layout
-animations end; and its native half detaches what it attached outside the
-tree: observers, recognizers, a scroller's hold on the frame clock. Nothing
-keeps a control alive after the tree drops it.
+replaced, a new root - and everything under it leaves with it. Its life has
+three stands (`MountedElement.lifecycle`), and leaving is the two steps
+between them:
+
+```text
+  active    in the tree: measured, laid out, reached by input and by the application
+     │ deactivate()   the whole subtree exiting first, then each element lets go
+  exiting   the application's no more: nothing it hears, tells or reports has an effect
+     │ release()      its presentation ends
+  released  nothing of the host holds its view
+```
+
+Deactivating, an element lets go of the states it wears, so a channel's
+last wearer takes the channel with it once it lands; its property and
+layout animations end, its layout and interaction programs go, and its
+native half detaches what it attached outside the tree
+(`NativeElement.deactivate`): observers, recognizers, a scroller's hold on
+the frame clock. The subtree is marked exiting before any of it is let go,
+so nothing a detaching tells finds part of it active. Each step said again
+does nothing. A child no longer held is deactivated and released one after
+the other in the same transaction (`leave`), and nothing keeps a control
+alive after the tree drops it.
+
+What an element answers by itself is guarded by its life, once, where the
+effect begins: `hear`, `send` - a link's own opening and a return's handing
+the keyboard on with it - a user's change carried into a state, a scroll, a
+frame and the focus reported. A toolkit's callback already on its way as
+its view left has no effect; the core refuses the handler it would call by
+its number, and the host layer refuses what it does with no handler.
+
+The trap is one flag for two things. A view fading out because it is being
+hidden (`isFadingOut`) keeps its place in the tree and its state; it is
+active, deaf to input meanwhile by its own rule
+([showing and hiding](motion.md#showing-and-hiding)), and no leaving.
 
 ## Drawn over its place
 

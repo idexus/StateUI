@@ -75,8 +75,10 @@
     /// view takes it.
     func directionChanged()
 
-    /// The element leaves the tree: everything it attached outside the tree lets go of it.
-    func leave()
+    /// The element stops being the application's: everything it attached outside the tree lets go of it - its
+    /// observers, recognizers, focus and what it tells - while its view stands as it was drawn.
+    /// Design: docs/design/host/tree.md#leaving
+    func deactivate()
 
     /// The tab the user chose on a tabbed view, which the tree may not say yet; nil where none.
     var chosenTab: Int? { get }

@@ -86,7 +86,7 @@ final class WinUIElement: NativeElement {
         split.grounds = (element.sidebarMaterial(over: false), element.sidebarMaterial(over: true))
     }
 
-    func leave() {
+    func deactivate() {
         view?.detach()
     }
 }

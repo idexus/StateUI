@@ -270,7 +270,7 @@ private final class WordsView: NativeElement {
     func arrangeChildren() {}
     func invalidateMeasurements() { measuredAgain += 1 }
     func configureLayoutMotion() {}
-    func leave() {}
+    func deactivate() {}
 }
 
 /// No child at all: a layout measured with no view in it.

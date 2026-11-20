@@ -30,7 +30,7 @@ extension MountedElement {
         switch property {
         case .isEnabled where parent?.isEffectivelyEnabled == false: .bool(false)
         case .isRefreshEnabled: isEffectivelyEnabled ? offeredRefresh : offeredRefresh.map { _ in .bool(false) }
-        case .ignoresInput where isLeaving: .bool(true)
+        case .ignoresInput where isFadingOut: .bool(true)
         default: value(property)
         }
     }

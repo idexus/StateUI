@@ -61,7 +61,7 @@
     public internal(set) var isPagePresented = false
 
     /// Whether the element fades out on its way to being hidden, which it still stands shown for.
-    public internal(set) var isLeaving = false
+    public internal(set) var isFadingOut = false
 
     /// Whether this element was last told the focus stands in it.
     var reportedFocus = false
@@ -140,8 +140,9 @@
     /// How far from its place a press caught the view on its way out; nil once a hand moved it or let it go.
     var caught: Point?
 
-    /// Whether the element has left the tree for good.
-    private(set) var hasLeft = false
+    /// Where the element stands in its life: active until it leaves the tree.
+    /// Design: docs/design/host/tree.md#leaving
+    public private(set) var lifecycle = ElementLifecycle.active
 
     /// Whether a view standing in the element may be thrown out of it: the room it leaves is this element's.
     private(set) var holdsDismissing = false
@@ -718,9 +719,43 @@
         wornStates = worn
     }
 
-    /// Detaches this element and everything under it from the runtime as it leaves the tree.
+    /// This element and everything under it leave the tree for good: deactivated, then released, at once.
     /// Design: docs/design/host/tree.md#leaving
     public func leave() {
+        deactivate()
+        release()
+    }
+
+    /// This element and everything under it stop being the application's: the whole subtree is exiting before
+    /// anything of it is let go, then each lets go of its states, motions, programs and what its native half
+    /// attached. Said again, it does nothing.
+    /// Design: docs/design/host/tree.md#leaving
+    public func deactivate() {
+        guard lifecycle == .active else { return }
+
+        exits()
+        detach()
+        tree?.consumersChanged()
+    }
+
+    /// The presentation of this element and everything under it ends: deactivated first where it was not, then
+    /// nothing of the host holds its view. Said again, it does nothing.
+    public func release() {
+        guard lifecycle != .released else { return }
+
+        deactivate()
+        lifecycle = .released
+        for child in held { child.release() }
+    }
+
+    /// Marks the subtree exiting, before any of it is detached: nothing a detaching tells finds part of it active.
+    private func exits() {
+        lifecycle = .exiting
+        for child in held { child.exits() }
+    }
+
+    /// Lets go of what ties the element and everything under it to the runtime.
+    private func detach() {
         madeOrLeftByRender()
         if let tree {
             for state in wornStates { tree.stateChannels.detach(state) }
@@ -731,13 +766,11 @@
         layoutProgram = nil
         interactionProgram = nil
         flight = nil
-        hasLeft = true
         wornStates = []
         presentedStates = []
-        isLeaving = false
-        native.leave()
-        for child in held { child.leave() }
-        tree?.consumersChanged()
+        isFadingOut = false
+        native.deactivate()
+        for child in held { child.detach() }
     }
 
     /// The first element of `type` in this subtree, this one first.

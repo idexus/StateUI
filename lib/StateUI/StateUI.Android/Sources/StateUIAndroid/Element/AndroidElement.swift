@@ -80,7 +80,7 @@ final class AndroidElement: NativeElement {
         if changed.contains(.showsSidebarToggle) { refreshBars() }
     }
 
-    func leave() {
+    func deactivate() {
         view?.detach()
     }
 }

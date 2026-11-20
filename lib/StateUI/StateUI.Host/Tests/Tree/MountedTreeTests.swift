@@ -1255,7 +1255,7 @@ private final class RecordingNative: NativeElement {
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
     func directionChanged() { log.turned.append(name) }
-    func leave() { log.left.append(name) }
+    func deactivate() { log.left.append(name) }
 }
 
 /// A native half that reads each value it is handed as it is applied, as a host's does.
@@ -1277,7 +1277,7 @@ private final class ReadingNative: NativeElement {
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
     func directionChanged() {}
-    func leave() {}
+    func deactivate() {}
 }
 
 /// An application of two scenes, each a window alone.

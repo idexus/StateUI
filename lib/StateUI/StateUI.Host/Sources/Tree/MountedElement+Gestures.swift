@@ -42,8 +42,9 @@ extension MountedElement {
     /// it.
     @discardableResult
     public func hear(_ input: HeardInput, in runtime: HostRuntime) -> Bool {
-        // A view thrown away and out of its room hears nothing until its handlers have had their say.
-        guard !awaitsDismissal else { return false }
+        // A view that left the tree hears nothing, and one thrown away and out of its room nothing until its
+        // handlers have had their say.
+        guard lifecycle == .active, !awaitsDismissal else { return false }
         // A run taken away says nothing more: its own end closes the taking, and so does the next beginning.
         // Design: docs/design/host/interaction.md#a-hand-taken-away
         if let step = input.step, takenAway.contains(step.stream) {

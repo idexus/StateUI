@@ -119,7 +119,7 @@ private final class Drawing: NativeElement {
     func arrangeChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
-    func leave() {}
+    func deactivate() {}
 }
 
 /// A view drawing its books itself.

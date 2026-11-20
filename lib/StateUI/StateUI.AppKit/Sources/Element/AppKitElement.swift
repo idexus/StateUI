@@ -141,7 +141,7 @@ final class AppKitElement: NSObject, NativeElement {
         configureFrameObservation()
     }
 
-    func leave() {
+    func deactivate() {
         releaseNativeAttachments()
     }
 

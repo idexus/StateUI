@@ -56,6 +56,7 @@ extension MountedElement {
     /// a reader came since.
     /// Design: docs/design/host/runtime.md#two-rectangles
     public func reportFrame(_ numbers: [Double], in runtime: HostRuntime) {
+        guard lifecycle == .active else { return }
         // A layout's program works its children's places out of the room: it is told every room laid out.
         // Design: docs/design/host/layout.md#a-layout-program
         if numbers.count >= 4 {

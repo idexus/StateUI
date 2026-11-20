@@ -115,5 +115,5 @@ private final class AnimatingView: NativeElement {
     func arrangeChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
-    func leave() {}
+    func deactivate() {}
 }

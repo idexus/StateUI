@@ -111,7 +111,7 @@ final class WebElement: NativeElement {
         view?.setDirection(element.layoutDirection)
     }
 
-    func leave() {
+    func deactivate() {
         menuShown?.takeDown()
         host?.placements.beforeChange(along: layoutsUp)
         bottomBar?.release()

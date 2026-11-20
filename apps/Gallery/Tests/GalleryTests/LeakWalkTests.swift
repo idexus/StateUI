@@ -155,7 +155,7 @@ private final class WalkedHalf: NativeElement {
     func configureLayoutMotion() {}
     func directionChanged() {}
 
-    func leave() {
+    func deactivate() {
         walk.halves -= 1
     }
 }

@@ -36,7 +36,10 @@ final class NoView: NativeElement {
     func animates(_ property: Prop) -> Bool { false }
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}
     func presentFrame(_ changed: Set<Prop>) {}
-    func leave() {}
+
+    /// How many times the element was told it is the application's no more.
+    var deactivated = 0
+    func deactivate() { deactivated += 1 }
 
     /// How many times the element's children were arranged, and the layouts around it asked to measure again.
     var arranged = 0

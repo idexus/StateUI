@@ -56,7 +56,7 @@ final class CountedView: NativeElement, FrameReporter {
 
     func directionChanged() {}
 
-    func leave() {
+    func deactivate() {
         bench.calls.left += 1
     }
 

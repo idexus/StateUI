@@ -70,7 +70,7 @@ private final class ReaderView: NativeElement {
     func arrangeChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
-    func leave() {}
+    func deactivate() {}
 }
 
 private struct ReaderPage: View {

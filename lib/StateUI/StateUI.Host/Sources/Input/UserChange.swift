@@ -28,6 +28,9 @@ extension MountedElement {
     /// its address as a launched one opens; a field submitted whose return says Next hands the keyboard on
     /// (`NextField`).
     public func send(_ event: Event, _ values: [HostValue], in runtime: HostRuntime) {
+        // What a view that left tells late has no effect: no handler, no link opened, no focus moved.
+        // Design: docs/design/host/tree.md#leaving
+        guard lifecycle == .active else { return }
         if event == .clicked, type == .link { runtime.presenter?.open(link: string(.address) ?? "") }
         if let handler = handler(event) { runtime.dispatch(handler, payload: values) }
         if event == .submitted, let next = NextField.after(self) { runtime.presenter?.focus(next) }
@@ -39,6 +42,7 @@ extension MountedElement {
     /// moved asks, once the move has settled.
     /// Design: docs/design/host/runtime.md#the-focus
     public func reportFocus(in runtime: HostRuntime, holds: (MountedElement) -> Bool?) {
+        guard lifecycle == .active else { return }
         if handler(.isFocusedChanged) != nil, let focused = holds(self), focused != reportedFocus {
             reportedFocus = focused
             send(.isFocusedChanged, [.bool(focused)], in: runtime)
@@ -56,6 +60,7 @@ extension MountedElement {
     /// The user moved the scroller from `old` to `new`, as the display's frame saw it: onto its state, as one
     /// user's transaction.
     public func reportScrolled(from old: Point, to new: Point, in runtime: HostRuntime) {
+        guard lifecycle == .active else { return }
         runtime.performUserTransaction {
             if old != new, let binding = driven[.scrollOffset] {
                 runtime.take([new.x, new.y], through: binding)
@@ -68,6 +73,7 @@ extension MountedElement {
     func carry(
         _ property: Prop, _ value: HostValue, then event: Event, _ payload: [HostValue], in runtime: HostRuntime
     ) {
+        guard lifecycle == .active else { return }
         var reported = false
         if let carried = HostStateValue(carrying: value), let binding = driven[property] {
             if case .lanes(let lanes) = carried, binding.kind == .property {

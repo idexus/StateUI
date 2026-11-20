@@ -104,7 +104,7 @@ extension MountedElement {
         guard awaitedDismissals > 0 else { return }
 
         awaitedDismissals -= 1
-        if awaitedDismissals == 0, !hasLeft { comeBack(in: runtime) }
+        if awaitedDismissals == 0, lifecycle == .active { comeBack(in: runtime) }
     }
 
     /// The view nobody removed comes back to its place: by its layout's bodies, or as a body of its own.

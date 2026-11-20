@@ -129,7 +129,7 @@ private final class TellingView: NativeElement {
     func arrangeChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
-    func leave() {}
+    func deactivate() {}
 }
 
 private struct BranchPage: View {
