@@ -42,6 +42,8 @@ extension MountedElement {
     /// it.
     @discardableResult
     public func hear(_ input: HeardInput, in runtime: HostRuntime) -> Bool {
+        // A view thrown away and out of its room hears nothing until its handlers have had their say.
+        guard !awaitsDismissal else { return false }
         guard isEffectivelyEnabled else {
             // A disabled branch hears no beginning: what began in it ends there, as cancelled, and takes nothing.
             // Design: docs/design/host/runtime.md#a-disabled-branch
@@ -130,9 +132,16 @@ extension MountedElement {
             // When the platform says the hand moved, where it says: input that waited for a busy thread comes in a
             // burst its arrival would read as a throw.
             let now = runtime.clock.now()
+            // A press on a view on its way out catches it where it stands: its flight ends, and nothing is told.
+            if phase == .began, let stood = interruptFlight() { caught = stood }
             let heard = handReading.hand(
                 phase, moved: moved, speed: speed, at: time ?? now, way: handWay, point: point, drag: handDrag,
                 now: now)
+            // Caught and let go with no move, the view goes back to its place.
+            if phase == .ended || phase == .cancelled, caught != nil, heard.reports.isEmpty {
+                caught = nil
+                comeBack(in: runtime)
+            }
             gather(heard.reports, in: runtime)
             if handReading.wantsFrames { runtime.handPace.opened(self) }
             if phase == .began { handTookPresses = false }

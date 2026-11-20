@@ -30,6 +30,7 @@ extension MountedElement {
     /// place drives (`reportSidebarOverlays(_:in:)`), said with it once laid out.
     public var readsOwnFrame: Bool {
         frameReaders != nil || driven[.sidebarOverlays] != nil || layoutProgram != nil || movesByItsLength
+            || holdsDismissing || interactionProgram?.drag?.dismissal != nil
     }
 
     /// Whether the hand moves a value by the element's own length: the unit is read off where it stands.
@@ -58,6 +59,7 @@ extension MountedElement {
         // A layout's program works its children's places out of the room: it is told every room laid out.
         // Design: docs/design/host/layout.md#a-layout-program
         if numbers.count >= 4 {
+            laidOutCorner = Point(x: numbers[0], y: numbers[1])
             laidOutRoom = (numbers[2], numbers[3])
             layoutProgram?.layOut(numbers[2], numbers[3])
         }

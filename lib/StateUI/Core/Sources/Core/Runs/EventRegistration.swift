@@ -29,9 +29,11 @@ final class EventRegistration {
         handlers = Array(handlers.prefix(count))
     }
 
-    /// Starts every handler for an event carrying `payload`, each through its gate.
-    func start(payload: [PropValue]?) {
-        for (handler, owner) in zip(handlers, owners) {
+    /// Starts every handler for an event carrying `payload`, each through its gate: the runs' tasks, each ended
+    /// once its run has - at once where its gate let the event go.
+    @discardableResult
+    func start(payload: [PropValue]?) -> [Task<Void, Never>] {
+        zip(handlers, owners).map { handler, owner in
             handler.gate.runs(for: owner).start(handler.run, handler.gate.policy, payload: payload, owner: owner)
         }
     }
@@ -48,6 +50,14 @@ final class EventRegistration {
 
                 handler.gate.runs(for: owner).start(handler.run, handler.gate.policy, payload: nil, owner: owner)
             }
+        }
+    }
+
+    /// Starts `written` now - a composed view's handlers, given the values of an event - each through the owner
+    /// kept at its place: the runs' tasks, each ended once its run has.
+    func started(_ written: [Handler]) -> [Task<Void, Never>] {
+        zip(written, owners).map { handler, owner in
+            handler.gate.runs(for: owner).start(handler.run, handler.gate.policy, payload: nil, owner: owner)
         }
     }
 

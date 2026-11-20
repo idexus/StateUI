@@ -260,6 +260,16 @@ final class Renders {
         fire(Int(id), with: payload)
     }
 
+    /// Fires an event as a host waiting for its runs does: `ended` is said once every run it started has ended.
+    @discardableResult
+    func fire(_ id: Int, with payload: [PropValue] = [], ended: @escaping @MainActor () -> Void) -> Bool {
+        guard let registration = differ.handler(id) else { return false }
+
+        EventBuffer.current = payload
+        Renderer.shared.start(registration, ended: ended)
+        return true
+    }
+
     /// Tells the `index`th page of the tree, in its order, the phase `event`, as a host does: the core hears it, and
     /// its handlers run.
     func tell(_ event: Event, page index: Int) {

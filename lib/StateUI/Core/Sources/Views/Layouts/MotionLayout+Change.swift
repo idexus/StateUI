@@ -25,30 +25,23 @@ extension MotionLayout.Run {
         return (memory, discrete)
     }
 
-    /// Answers the host `poses` - worked out at `parameters` in `room` - each with its body, the places a change
-    /// measures its views' ways to, and the view the hand holds where it holds it; and keeps what it answered for
-    /// the next description to be measured against. Whether the hand's own movement goes on.
+    /// Answers the host `poses` - worked out at `parameters` in `room` - each with its body and the places a
+    /// change measures its views' ways to; and keeps what it answered for the next description to be measured
+    /// against. A view the hand holds, or one it threw away, is its host's to show.
     /// Design: docs/design/views/motion-layout.md#bodies
     func show(
-        _ poses: [Placement], after memory: LayoutShown<Parameters>, discrete: [Int: Placement], at now: Double,
+        _ poses: [Placement], after memory: LayoutShown<Parameters>, discrete: [Int: Placement],
         parameters: Parameters, from: Parameters, room: Rect
-    ) -> Bool {
+    ) {
         let identities = slots.map { $0.identity }
-        var poses = poses
-        let hand = hold(over: &poses, at: now, room: room)
         if !discrete.isEmpty { states.slot.changed(discrete) }
 
-        var placed = poses
         var views: [HostLayoutView] = []
         views.reserveCapacity(poses.count)
         for (index, identity) in identities.enumerated() {
             var view = HostLayoutView(
                 key: identity, target: HostBoundary.placement(of: poses[index]), body: body(index))
             view.discrete = states.slot.discrete[identity].map(HostBoundary.placement(of:))
-            if let held = hand.held, held.index == index {
-                view.held = HostBoundary.placement(of: held.placement)
-                placed[index] = held.placement
-            }
             views.append(view)
         }
 
@@ -57,7 +50,6 @@ extension MotionLayout.Run {
             poses: Dictionary(zip(identities, poses), uniquingKeysWith: { first, _ in first }),
             named: states.shown.wrappedValue.named, resting: memory.resting)
         states.slot.answer = HostLayoutAnswer(views: views, change: states.slot.changes)
-        states.slot.placed = PlacedRun(placed)
-        return hand.goesOn
+        states.slot.placed = PlacedRun(poses)
     }
 }

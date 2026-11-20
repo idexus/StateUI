@@ -302,8 +302,53 @@ the press stands in the view, measured from the view's other edge where the
 run is mirrored - as the layout's arithmetic reads its room - and gone only
 as far as the view's drag takes it: a view taken up and down is told with no
 way across, and its speed that way alone. What the layout makes of it - the
-item the view is over, a dismissal, the way a dismissed view flies - goes
-the way the view went. The view under the hand is the host's to show.
+item the view is over - goes the way the view went. The view under the hand
+is the host's to show.
+
+## A view thrown away
+
+A drag that says a dismissal lets its view go in one of two ways. At the
+lift the host layer asks its rule (`MountedElement.dismissed(by:gone:speed:)`):
+of the ways the rule names, the one the view went furthest - how far it
+stands from where the hand took it, plus what the rule's law carries a throw
+at the hand's speed - and whether that passes the threshold. Both are read
+along the drag's axes as the user sees them, so a layout mirrored right to
+left is thrown the way the hand went. A view short of it is let go as any
+dragged view is.
+
+```text
+   dragging ──lift, past the rule──▶ dismissing ──wholly out──▶ awaiting handlers
+      ▲                                  │                           │
+      └────────── a press ───────────────┘            every run ended, the view
+            (caught where it stands,                   still standing ──▶ returning
+             nothing told)                             the view removed ──▶ finished
+```
+
+Dismissing is one finite operation on the view's own presentation
+(`PresentationOperation`, its effect `.outside(direction)`): the view goes on
+from where the hand left it at the hand's speed, its way out no slower than
+the room's length in the law's time, until none of it stands in the room -
+its layout's room for a view a program places, else the room of what holds
+it, each read off the frame its host reports (`readsOwnFrame` is true for a
+view saying a dismissal and for what holds one). A layout's view is measured
+from its place at rest, not from where it is shown under the hand. A room
+nothing laid out gives no pace, and the operation ends once the law's time
+has run twice: it always ends. The element stays active and keeps its place
+in its layout; a press on it catches it where it stands, the operation ends
+interrupted, and nothing is told - moved, the hand has the view from there;
+lifted still, the view goes back.
+
+Out, the element raises `ViewContract.dismissed` - the way it went and the
+hand's speed - and a layout's view also tells its layout
+(`MotionLayoutContract.itemDismissed`, with its place among the layout's
+views). Each is dispatched with `ended:`
+([an event that says when its runs ended](../core/runs.md#an-event-that-says-when-its-runs-ended)),
+and the element waits for both: it hears nothing meanwhile and asks no
+frame. A handler that removes what the view shows takes the element out of
+the tree, and that is the end - nothing is shown leaving a second time.
+Where every run has ended and the element still stands - no handler, a gate
+that let the event go, an error, a handler that kept the item - the view
+comes back to its place: by its layout's bodies, or as a body of its own.
 
 ## A program described again
 

@@ -126,6 +126,23 @@ final class LayoutBench {
     /// The view the hand took last, by its place among the layout's views.
     private var taken = 0
 
+    /// A view of the layout `tree` describes thrown away and out of the room, as the host layer says it once the
+    /// view has left - its place among the layout's views, the way it went and the hand's speed - and a cycle
+    /// after it; `ended` is said once every run the layout's handlers started has ended. Whether the layout
+    /// hears it.
+    @discardableResult
+    func dismissed(
+        _ renders: Renders, _ tree: () -> Node, child: Int, direction: SwipeDirection = .up, velocity: Point = .zero,
+        ended: @escaping @MainActor () -> Void = {}
+    ) -> Bool {
+        let patch = renders.renderFromScratch(tree())
+        guard let heard = patch.first(.motionLayout)?.events?[.itemDismissed] else { return false }
+
+        let fired = renders.fire(Int(heard), with: MemberValues.encode(child, direction, velocity), ended: ended)
+        cycle()
+        return fired
+    }
+
     /// Renders `tree`, feeds the layout the room `room` as the host does, and turns the board until the arithmetic
     /// has answered: the run of placements the layout's own area carries.
     func laid(

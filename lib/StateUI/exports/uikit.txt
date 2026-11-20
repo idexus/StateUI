@@ -433,6 +433,7 @@ ZStack
   zIndex
   accessibilityActionPerformed()
   accessibilityAdjusted()
+  dismissed()
   dragEnded()
   dragEntered()
   dragExited()

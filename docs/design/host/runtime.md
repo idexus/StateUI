@@ -353,6 +353,11 @@ the children are, never as a local of `apply`. A WebAssembly start that fails ta
 its reason stands on the page rather than a load with no end, and ends the
 program with 1, so a test's runner waiting for it hears it failed.
 
+A patch is copied at every level the mount goes down, so what a patch carries
+inline is paid for at each of them. An interaction's program keeps the view's
+own press and drag out of line for it (`HostInteractionProgram`): a dismissal
+added to a drag grew every patch, and a level of the tree by a tenth.
+
 ## After a layout pass
 
 What a host must do once the layout pass under way is over - on GTK a field's

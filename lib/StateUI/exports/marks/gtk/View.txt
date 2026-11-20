@@ -1,6 +1,7 @@
-# revision 33.1
+# revision 34.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
+Button.dismissed: ✅
 Button.dragEnded: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -37,6 +38,7 @@ Button.tapped: ✅
 Button.verticalAlignment: ✅
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.area: ✅
+Canvas.dismissed: ✅
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -73,6 +75,7 @@ Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.area: ✅
+Capsule.dismissed: ✅
 Capsule.dragEnded: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -109,6 +112,7 @@ Capsule.tapped: ✅
 Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.area: ✅
+CheckBox.dismissed: ✅
 CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -145,6 +149,7 @@ CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.area: ✅
+ColorPicker.dismissed: ✅
 ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -181,6 +186,7 @@ ColorPicker.tapped: ✅
 ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.area: ✅
+DatePicker.dismissed: ✅
 DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -217,6 +223,7 @@ DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.area: ✅
+Ellipse.dismissed: ✅
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -253,6 +260,7 @@ Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
 Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.area: ✅
+Fill.dismissed: ✅
 Fill.dragEnded: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -289,6 +297,7 @@ Fill.tapped: ✅
 Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.area: ✅
+Grid.dismissed: ✅
 Grid.dragEnded: ✓ dragAndDrop on Grid: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -325,6 +334,7 @@ Grid.tapped: ✅
 Grid.verticalAlignment: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.area: ✅
+HStack.dismissed: ✅
 HStack.dragEnded: ✓ dragAndDrop on HStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -361,6 +371,7 @@ HStack.tapped: ✅
 HStack.verticalAlignment: ✅
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.area: ✅
+Image.dismissed: ✅
 Image.dragEnded: ✓ dragAndDrop on Image: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -397,6 +408,7 @@ Image.tapped: ✅
 Image.verticalAlignment: ✅
 ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.area: ✅
+ItemsView.dismissed: ✅
 ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -433,6 +445,7 @@ ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.area: ✅
+Line.dismissed: ✅
 Line.dragEnded: ✓ dragAndDrop on Line: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -469,6 +482,7 @@ Line.tapped: ✅
 Line.verticalAlignment: ✅
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.area: ✅
+Link.dismissed: ✅
 Link.dragEnded: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -505,6 +519,7 @@ Link.tapped: ✅
 Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
+Map.dismissed: 🧩
 Map.dragEnded: 🧩
 Map.dragEntered: 🧩
 Map.dragExited: 🧩
@@ -541,6 +556,7 @@ Map.tapped: 🧩
 Map.verticalAlignment: 🧩
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.area: ✅
+MotionLayout.dismissed: ✅
 MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -577,6 +593,7 @@ MotionLayout.tapped: ✅
 MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.area: ✅
+Path.dismissed: ✅
 Path.dragEnded: ✓ dragAndDrop on Path: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -613,6 +630,7 @@ Path.tapped: ✅
 Path.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.area: ✅
+Picker.dismissed: ✅
 Picker.dragEnded: ✓ dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -649,6 +667,7 @@ Picker.tapped: ✅
 Picker.verticalAlignment: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.area: ✅
+Polygon.dismissed: ✅
 Polygon.dragEnded: ✓ dragAndDrop on Polygon: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -685,6 +704,7 @@ Polygon.tapped: ✅
 Polygon.verticalAlignment: ✅
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.area: ✅
+Polyline.dismissed: ✅
 Polyline.dragEnded: ✓ dragAndDrop on Polyline: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -721,6 +741,7 @@ Polyline.tapped: ✅
 Polyline.verticalAlignment: ✅
 ProgressBar.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.area: ✅
+ProgressBar.dismissed: ✅
 ProgressBar.dragEnded: ✓ dragAndDrop on ProgressBar: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -757,6 +778,7 @@ ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.area: ✅
+Rectangle.dismissed: ✅
 Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -793,6 +815,7 @@ Rectangle.tapped: ✅
 Rectangle.verticalAlignment: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.area: ✅
+ScrollView.dismissed: ✅
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -829,6 +852,7 @@ ScrollView.tapped: ✅
 ScrollView.verticalAlignment: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.area: ✅
+SearchField.dismissed: ✅
 SearchField.dragEnded: ✓ dragAndDrop on SearchField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -865,6 +889,7 @@ SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.area: ✅
+Separator.dismissed: ✅
 Separator.dragEnded: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -901,6 +926,7 @@ Separator.tapped: ✅
 Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.area: ✅
+Slider.dismissed: ✅
 Slider.dragEnded: ✓ dragAndDrop on Slider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -937,6 +963,7 @@ Slider.tapped: ✅
 Slider.verticalAlignment: ✅
 Space.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.area: ✅
+Space.dismissed: ✅
 Space.dragEnded: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -973,6 +1000,7 @@ Space.tapped: ✅
 Space.verticalAlignment: ✅
 Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.area: ✅
+Spinner.dismissed: ✅
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1009,6 +1037,7 @@ Spinner.tapped: ✅
 Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.area: ✅
+Stepper.dismissed: ✅
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1045,6 +1074,7 @@ Stepper.tapped: ✅
 Stepper.verticalAlignment: ✅
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.area: ✅
+Switch.dismissed: ✅
 Switch.dragEnded: ✓ dragAndDrop on Switch: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1081,6 +1111,7 @@ Switch.tapped: ✅
 Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.area: ✅
+Text.dismissed: ✅
 Text.dragEnded: ✓ dragAndDrop on Text: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1117,6 +1148,7 @@ Text.tapped: ✅
 Text.verticalAlignment: ✅
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.area: ✅
+TextEditor.dismissed: ✅
 TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1153,6 +1185,7 @@ TextEditor.tapped: ✅
 TextEditor.verticalAlignment: ✅
 TextField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.area: ✅
+TextField.dismissed: ✅
 TextField.dragEnded: ✓ dragAndDrop on TextField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1189,6 +1222,7 @@ TextField.tapped: ✅
 TextField.verticalAlignment: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.area: ✅
+TimePicker.dismissed: ✅
 TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1225,6 +1259,7 @@ TimePicker.tapped: ✅
 TimePicker.verticalAlignment: ✅
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.area: ✅
+VStack.dismissed: ✅
 VStack.dragEnded: ✓ dragAndDrop on VStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1261,6 +1296,7 @@ VStack.tapped: ✅
 VStack.verticalAlignment: ✅
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.area: ✅
+WebView.dismissed: ✅
 WebView.dragEnded: ✓ dragAndDrop on WebView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1297,6 +1333,7 @@ WebView.tapped: ✅
 WebView.verticalAlignment: ✅
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.area: ✅
+ZStack.dismissed: ✅
 ZStack.dragEnded: ✓ dragAndDrop on ZStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began

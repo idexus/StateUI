@@ -230,6 +230,8 @@ swift.conformance DecorableTextElementContract: Swift.Sendable
 swift.conformance Device: Swift.Sendable
 swift.conformance DeviceDisplay: Swift.Sendable
 swift.conformance DeviceInfo: Swift.Sendable
+swift.conformance Dismissal: Swift.Equatable
+swift.conformance Dismissal: Swift.Sendable
 swift.conformance DisplayOrientation: Swift.Equatable
 swift.conformance DisplayOrientation: Swift.Hashable
 swift.conformance DisplayOrientation: Swift.RawRepresentable
@@ -1876,6 +1878,9 @@ swift.method @SwiftNever.onDestroying(_:): @MainActor func onDestroying(_ handle
 swift.method @SwiftNever.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method @SwiftNever.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method @SwiftNever.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method @SwiftNever.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method @SwiftNever.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method @SwiftNever.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method @SwiftNever.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2064,6 +2069,9 @@ swift.method AnyView.onDestroying(_:): @MainActor func onDestroying(_ handler: @
 swift.method AnyView.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method AnyView.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method AnyView.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method AnyView.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method AnyView.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method AnyView.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method AnyView.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method AnyView.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method AnyView.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2295,6 +2303,9 @@ swift.method Button.onDestroying(_:): @MainActor func onDestroying(_ handler: @e
 swift.method Button.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Button.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Button.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Button.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Button.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Button.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Button.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2506,6 +2517,9 @@ swift.method Canvas.onDestroying(_:): @MainActor func onDestroying(_ handler: @e
 swift.method Canvas.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Canvas.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Canvas.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Canvas.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Canvas.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Canvas.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Canvas.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2702,6 +2716,9 @@ swift.method Capsule.onDestroying(_:): @MainActor func onDestroying(_ handler: @
 swift.method Capsule.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Capsule.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Capsule.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Capsule.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Capsule.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Capsule.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Capsule.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2889,6 +2906,9 @@ swift.method CheckBox.onDestroying(_:): @MainActor func onDestroying(_ handler: 
 swift.method CheckBox.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method CheckBox.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method CheckBox.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method CheckBox.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method CheckBox.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method CheckBox.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method CheckBox.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method CheckBox.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method CheckBox.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3097,6 +3117,9 @@ swift.method ColorPicker.onDestroying(_:): @MainActor func onDestroying(_ handle
 swift.method ColorPicker.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ColorPicker.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ColorPicker.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ColorPicker.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method ColorPicker.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method ColorPicker.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method ColorPicker.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ColorPicker.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ColorPicker.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3309,6 +3332,9 @@ swift.method DatePicker.onDestroying(_:): @MainActor func onDestroying(_ handler
 swift.method DatePicker.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DatePicker.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DatePicker.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method DatePicker.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method DatePicker.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method DatePicker.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DatePicker.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3505,6 +3531,9 @@ swift.method DebugInspector.onDestroying(_:): @MainActor func onDestroying(_ han
 swift.method DebugInspector.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspector.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspector.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspector.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method DebugInspector.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method DebugInspector.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method DebugInspector.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspector.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspector.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3684,6 +3713,9 @@ swift.method DebugInspectorButton.onDestroying(_:): @MainActor func onDestroying
 swift.method DebugInspectorButton.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspectorButton.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspectorButton.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method DebugInspectorButton.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method DebugInspectorButton.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspectorButton.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspectorButton.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3892,6 +3924,9 @@ swift.method Either.onDestroying(_:): @MainActor func onDestroying(_ handler: @e
 swift.method Either.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Either.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Either.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Either.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Either.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Either.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Either.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Either.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Either.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4098,6 +4133,9 @@ swift.method Ellipse.onDestroying(_:): @MainActor func onDestroying(_ handler: @
 swift.method Ellipse.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Ellipse.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Ellipse.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Ellipse.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Ellipse.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Ellipse.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Ellipse.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Ellipse.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Ellipse.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4287,6 +4325,9 @@ swift.method Fill.onDestroying(_:): @MainActor func onDestroying(_ handler: @esc
 swift.method Fill.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Fill.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Fill.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Fill.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Fill.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Fill.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Fill.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4497,6 +4538,9 @@ swift.method GalleryView.onDestroying(_:): @MainActor func onDestroying(_ handle
 swift.method GalleryView.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GalleryView.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GalleryView.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method GalleryView.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method GalleryView.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method GalleryView.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method GalleryView.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GalleryView.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GalleryView.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4685,6 +4729,9 @@ swift.method GeometryReader.onDestroying(_:): @MainActor func onDestroying(_ han
 swift.method GeometryReader.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GeometryReader.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GeometryReader.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method GeometryReader.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method GeometryReader.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method GeometryReader.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method GeometryReader.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GeometryReader.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GeometryReader.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4873,6 +4920,9 @@ swift.method Grid.onDestroying(_:): @MainActor func onDestroying(_ handler: @esc
 swift.method Grid.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Grid.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Grid.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Grid.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Grid.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Grid.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Grid.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Grid.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Grid.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5072,6 +5122,9 @@ swift.method Group.onDestroying(_:): @MainActor func onDestroying(_ handler: @es
 swift.method Group.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Group.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Group.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Group.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Group.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Group.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Group.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Group.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Group.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5257,6 +5310,9 @@ swift.method HStack.onDestroying(_:): @MainActor func onDestroying(_ handler: @e
 swift.method HStack.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method HStack.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method HStack.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method HStack.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method HStack.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method HStack.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method HStack.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method HStack.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method HStack.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5459,6 +5515,9 @@ swift.method Image.onDestroying(_:): @MainActor func onDestroying(_ handler: @es
 swift.method Image.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Image.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Image.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Image.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Image.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Image.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Image.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Image.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Image.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5572,6 +5631,7 @@ swift.method Image.visualState(_:_:): @MainActor func visualState(_ state: Visua
 swift.method Image.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method ImageProperties.isAnimating(_:): @MainActor func isAnimating(_ value: Bool) -> Self.Modified
+swift.method Interaction.dismissal(directions:threshold:motion:): @MainActor func dismissal(directions: SwipeDirections, threshold: Double, motion: Motion = .spring()) -> Interaction
 swift.method Interaction.periodic(_:): @MainActor func periodic(_ enabled: Bool) -> Interaction
 swift.method Interaction.programWrites(_:): @MainActor func programWrites(_ policy: InteractionProgramWrites) -> Interaction
 swift.method Interaction.range(_:): @MainActor func range(_ range: ClosedRange<Double>) -> Interaction
@@ -5659,6 +5719,9 @@ swift.method ItemsView.onDestroying(_:): @MainActor func onDestroying(_ handler:
 swift.method ItemsView.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ItemsView.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ItemsView.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method ItemsView.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method ItemsView.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method ItemsView.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ItemsView.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5891,6 +5954,9 @@ swift.method Line.onDestroying(_:): @MainActor func onDestroying(_ handler: @esc
 swift.method Line.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Line.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Line.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Line.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Line.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Line.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Line.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6085,6 +6151,9 @@ swift.method Link.onDestroying(_:): @MainActor func onDestroying(_ handler: @esc
 swift.method Link.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Link.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Link.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Link.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Link.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Link.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Link.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6289,6 +6358,9 @@ swift.method Map.onDestroying(_:): @MainActor func onDestroying(_ handler: @esca
 swift.method Map.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Map.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Map.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Map.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Map.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Map.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Map.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6543,6 +6615,9 @@ swift.method ModifiedContent.onDestroying(_:): @MainActor func onDestroying(_ ha
 swift.method ModifiedContent.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ModifiedContent.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ModifiedContent.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method ModifiedContent.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method ModifiedContent.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method ModifiedContent.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ModifiedContent.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6730,6 +6805,9 @@ swift.method MotionLayout.onDestroying(_:): @MainActor func onDestroying(_ handl
 swift.method MotionLayout.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method MotionLayout.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method MotionLayout.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method MotionLayout.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method MotionLayout.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method MotionLayout.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method MotionLayout.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6754,9 +6832,9 @@ swift.method MotionLayout.onFrameChanged(in:stage:policy:_:): @MainActor func on
 swift.method MotionLayout.onItemActivated(_:): @MainActor func onItemActivated(_ handler: @escaping @MainActor @Sendable (ID) throws -> Void) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onItemActivated(gate:_:): @MainActor func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onItemActivated(policy:_:): @MainActor func onItemActivated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.onItemDismissed(directions:threshold:_:): @MainActor func onItemDismissed(directions: SwipeDirections, threshold: Double, _ handler: @escaping @MainActor @Sendable (ID) throws -> Void) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.onItemDismissed(directions:threshold:gate:_:): @MainActor func onItemDismissed(directions: SwipeDirections, threshold: Double, gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.onItemDismissed(directions:threshold:policy:_:): @MainActor func onItemDismissed(directions: SwipeDirections, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemDismissed(_:): @MainActor func onItemDismissed(_ handler: @escaping @MainActor @Sendable (ID) throws -> Void) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemDismissed(gate:_:): @MainActor func onItemDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemDismissed(policy:_:): @MainActor func onItemDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onItemDragged(_:): @MainActor func onItemDragged(_ handler: @escaping @MainActor @Sendable (ItemDrag<ID>) throws -> Void) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onItemDragged(gate:_:): @MainActor func onItemDragged(gate: Gate, _ handler: @escaping ValueEventHandler<ItemDrag<ID>>) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onItemDragged(policy:_:): @MainActor func onItemDragged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ItemDrag<ID>>) -> MotionLayout<Items, ID, Parameters>
@@ -6948,6 +7026,9 @@ swift.method NavigationStack.onDestroying(_:): @MainActor func onDestroying(_ ha
 swift.method NavigationStack.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method NavigationStack.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method NavigationStack.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method NavigationStack.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method NavigationStack.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method NavigationStack.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method NavigationStack.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method NavigationStack.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method NavigationStack.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7148,6 +7229,9 @@ swift.method Path.onDestroying(_:): @MainActor func onDestroying(_ handler: @esc
 swift.method Path.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Path.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Path.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Path.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Path.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Path.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Path.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Path.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Path.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7346,6 +7430,9 @@ swift.method Picker.onDestroying(_:): @MainActor func onDestroying(_ handler: @e
 swift.method Picker.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Picker.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Picker.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Picker.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Picker.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Picker.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Picker.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7563,6 +7650,9 @@ swift.method Polygon.onDestroying(_:): @MainActor func onDestroying(_ handler: @
 swift.method Polygon.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polygon.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Polygon.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Polygon.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Polygon.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Polygon.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polygon.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7763,6 +7853,9 @@ swift.method Polyline.onDestroying(_:): @MainActor func onDestroying(_ handler: 
 swift.method Polyline.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polyline.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Polyline.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Polyline.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Polyline.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Polyline.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polyline.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7971,6 +8064,9 @@ swift.method PositionDots.onDestroying(_:): @MainActor func onDestroying(_ handl
 swift.method PositionDots.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method PositionDots.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method PositionDots.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method PositionDots.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method PositionDots.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method PositionDots.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method PositionDots.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8158,6 +8254,9 @@ swift.method ProgressBar.onDestroying(_:): @MainActor func onDestroying(_ handle
 swift.method ProgressBar.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ProgressBar.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ProgressBar.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method ProgressBar.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method ProgressBar.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method ProgressBar.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ProgressBar.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8366,6 +8465,9 @@ swift.method Rectangle.onDestroying(_:): @MainActor func onDestroying(_ handler:
 swift.method Rectangle.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Rectangle.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Rectangle.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Rectangle.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Rectangle.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Rectangle.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Rectangle.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8570,6 +8672,9 @@ swift.method ScrollView.onDestroying(_:): @MainActor func onDestroying(_ handler
 swift.method ScrollView.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ScrollView.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ScrollView.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ScrollView.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method ScrollView.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method ScrollView.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method ScrollView.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ScrollView.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ScrollView.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8789,6 +8894,9 @@ swift.method SearchField.onDestroying(_:): @MainActor func onDestroying(_ handle
 swift.method SearchField.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SearchField.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SearchField.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method SearchField.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method SearchField.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method SearchField.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method SearchField.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SearchField.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SearchField.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8996,6 +9104,9 @@ swift.method Separator.onDestroying(_:): @MainActor func onDestroying(_ handler:
 swift.method Separator.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Separator.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Separator.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Separator.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Separator.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Separator.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Separator.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Separator.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Separator.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9196,6 +9307,9 @@ swift.method Slider.onDestroying(_:): @MainActor func onDestroying(_ handler: @e
 swift.method Slider.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Slider.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Slider.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Slider.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Slider.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Slider.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Slider.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9395,6 +9509,9 @@ swift.method Space.onDestroying(_:): @MainActor func onDestroying(_ handler: @es
 swift.method Space.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Space.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Space.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Space.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Space.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Space.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Space.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9582,6 +9699,9 @@ swift.method Spinner.onDestroying(_:): @MainActor func onDestroying(_ handler: @
 swift.method Spinner.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Spinner.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Spinner.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Spinner.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Spinner.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Spinner.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Spinner.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Spinner.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Spinner.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9777,6 +9897,9 @@ swift.method SplitView.onDestroying(_:): @MainActor func onDestroying(_ handler:
 swift.method SplitView.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SplitView.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SplitView.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method SplitView.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method SplitView.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method SplitView.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method SplitView.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SplitView.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SplitView.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9981,6 +10104,9 @@ swift.method Stepper.onDestroying(_:): @MainActor func onDestroying(_ handler: @
 swift.method Stepper.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Stepper.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Stepper.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Stepper.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Stepper.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Stepper.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Stepper.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Stepper.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Stepper.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10316,6 +10442,9 @@ swift.method Switch.onDestroying(_:): @MainActor func onDestroying(_ handler: @e
 swift.method Switch.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Switch.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Switch.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Switch.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Switch.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Switch.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Switch.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Switch.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Switch.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10519,6 +10648,9 @@ swift.method TabView.onDestroying(_:): @MainActor func onDestroying(_ handler: @
 swift.method TabView.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TabView.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TabView.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TabView.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method TabView.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method TabView.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method TabView.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TabView.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TabView.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10713,6 +10845,9 @@ swift.method Text.onDestroying(_:): @MainActor func onDestroying(_ handler: @esc
 swift.method Text.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Text.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Text.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Text.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method Text.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method Text.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method Text.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Text.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Text.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10930,6 +11065,9 @@ swift.method TextEditor.onDestroying(_:): @MainActor func onDestroying(_ handler
 swift.method TextEditor.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextEditor.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextEditor.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TextEditor.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method TextEditor.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method TextEditor.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method TextEditor.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextEditor.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextEditor.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11147,6 +11285,9 @@ swift.method TextField.onDestroying(_:): @MainActor func onDestroying(_ handler:
 swift.method TextField.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextField.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextField.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TextField.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method TextField.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method TextField.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method TextField.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextField.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextField.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11419,6 +11560,9 @@ swift.method TimePicker.onDestroying(_:): @MainActor func onDestroying(_ handler
 swift.method TimePicker.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TimePicker.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TimePicker.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method TimePicker.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method TimePicker.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method TimePicker.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TimePicker.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11729,6 +11873,9 @@ swift.method VStack.onDestroying(_:): @MainActor func onDestroying(_ handler: @e
 swift.method VStack.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method VStack.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method VStack.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method VStack.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method VStack.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method VStack.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method VStack.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11872,6 +12019,9 @@ swift.method View.onAppearing(policy:_:): @MainActor func onAppearing(policy: Ga
 swift.method View.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method View.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method View.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method View.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method View.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method View.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method View.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method View.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method View.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12138,6 +12288,9 @@ swift.method WebView.onDestroying(_:): @MainActor func onDestroying(_ handler: @
 swift.method WebView.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method WebView.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method WebView.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method WebView.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method WebView.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method WebView.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method WebView.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method WebView.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method WebView.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12363,6 +12516,9 @@ swift.method ZStack.onDestroying(_:): @MainActor func onDestroying(_ handler: @e
 swift.method ZStack.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ZStack.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ZStack.onDisappearing(policy:_:): @MainActor func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ZStack.onDismissed(_:): @MainActor func onDismissed(_ handler: @escaping @MainActor @Sendable (Dismissal) throws -> Void) -> Self.Modified
+swift.method ZStack.onDismissed(gate:_:): @MainActor func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
+swift.method ZStack.onDismissed(policy:_:): @MainActor func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Self.Modified
 swift.method ZStack.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ZStack.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ZStack.onDragEnded(policy:_:): @MainActor func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12560,6 +12716,8 @@ swift.property DeviceInfo.model: @MainActor var model: String { get }
 swift.property DeviceInfo.name: @MainActor var name: String { get }
 swift.property DeviceInfo.platform: @MainActor var platform: String { get }
 swift.property DeviceInfo.platformVersion: @MainActor var platformVersion: String { get }
+swift.property Dismissal.direction: var direction: SwipeDirection
+swift.property Dismissal.velocity: var velocity: Point
 swift.property Either.body: @MainActor var body: Never { get }
 swift.property ElementView.body: @MainActor var body: Never { get }
 swift.property Ellipse.body: @MainActor var body: Never { get }
@@ -12830,6 +12988,7 @@ swift.struct ColorPicker: @MainActor struct ColorPicker
 swift.struct DatePicker: @MainActor struct DatePicker
 swift.struct DebugInspector: @MainActor struct DebugInspector
 swift.struct DebugInspectorButton: @MainActor struct DebugInspectorButton
+swift.struct Dismissal: struct Dismissal
 swift.struct DrawCommand: struct DrawCommand
 swift.struct Ellipse: @MainActor struct Ellipse
 swift.struct EngineCycle: struct EngineCycle
@@ -13352,6 +13511,7 @@ swift.type.property MenuToggleContract.name: static var name: String { get }
 swift.type.property Motion.inherited: static let inherited: Motion
 swift.type.property Motion.none: static let none: Motion
 swift.type.property Motion.standard: static let standard: Motion
+swift.type.property MotionLayoutContract.itemDismissed: static let itemDismissed: ElementEvent<MotionLayoutContract, (Int, SwipeDirection, Point)>
 swift.type.property MotionLayoutContract.itemDragUpdated: static let itemDragUpdated: ElementEvent<MotionLayoutContract, (GesturePhase, Point, Point, Double, Int)>
 swift.type.property MotionLayoutContract.layout: static let layout: ElementProgram<MotionLayoutContract, LayoutProgramDefinition>
 swift.type.property MotionLayoutContract.mirrorsRightToLeft: static let mirrorsRightToLeft: ElementProperty<MotionLayoutContract, Bool>
@@ -13561,6 +13721,7 @@ swift.type.property TrackingElementContract.tracking: static let tracking: Eleme
 swift.type.property VStackContract.name: static var name: String { get }
 swift.type.property ViewContract.allowsDrop: static let allowsDrop: ElementProperty<ViewContract, Bool>
 swift.type.property ViewContract.area: static let area: ElementProperty<ViewContract, Area>
+swift.type.property ViewContract.dismissed: static let dismissed: ElementEvent<ViewContract, (SwipeDirection, Point)>
 swift.type.property ViewContract.dragEnded: static let dragEnded: ElementEvent<ViewContract, Void>
 swift.type.property ViewContract.dragEntered: static let dragEntered: ElementEvent<ViewContract, Void>
 swift.type.property ViewContract.dragExited: static let dragExited: ElementEvent<ViewContract, Void>

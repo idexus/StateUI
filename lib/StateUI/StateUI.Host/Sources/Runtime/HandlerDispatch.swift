@@ -20,6 +20,7 @@
         let handler: Int32
         let payload: [HostValue]
         let isPhase: Bool
+        var ended: (@MainActor () -> Void)?
     }
 
     /// Handlers raised through `core`, held while `intake` applies a message.
@@ -37,15 +38,16 @@
     /// Whether handlers wait for a turn to raise them.
     public var hasQueued: Bool { !queued.isEmpty }
 
-    /// Raises `handler` with `payload` now, or queues it while held; whether it ran.
+    /// Raises `handler` with `payload` now, or queues it while held; whether it ran. `ended` is said once every
+    /// run the handler started has ended.
     @discardableResult
-    public func raise(_ handler: Int32, payload: [HostValue] = []) -> Bool {
+    public func raise(_ handler: Int32, payload: [HostValue] = [], ended: (@MainActor () -> Void)? = nil) -> Bool {
         guard !isHeld else {
-            queued.append(Queued(handler: handler, payload: payload, isPhase: false))
+            queued.append(Queued(handler: handler, payload: payload, isPhase: false, ended: ended))
             return false
         }
 
-        _ = core.dispatch(handler, payload: payload)
+        _ = core.dispatch(handler, payload: payload, ended: ended)
         return true
     }
 
@@ -69,7 +71,7 @@
 
         while !queued.isEmpty {
             let each = queued.removeFirst()
-            _ = core.dispatch(each.handler, payload: each.payload)
+            _ = core.dispatch(each.handler, payload: each.payload, ended: each.ended)
             if each.isPhase { break }
         }
         return true

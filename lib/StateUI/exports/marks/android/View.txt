@@ -1,6 +1,7 @@
-# revision 33.1
+# revision 34.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Button.area: ✅
+Button.dismissed: ✅
 Button.dragEnded: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Button.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -37,6 +38,7 @@ Button.tapped: ✅
 Button.verticalAlignment: ✅
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Canvas.area: ✅
+Canvas.dismissed: ✅
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the views' drag listeners' reports told by the driver, no drag started
 Canvas.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Canvas.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -73,6 +75,7 @@ Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Capsule.area: ✅
+Capsule.dismissed: ✅
 Capsule.dragEnded: ✓ dragAndDrop on Capsule: the views' drag listeners' reports told by the driver, no drag started
 Capsule.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Capsule.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -109,6 +112,7 @@ Capsule.tapped: ✅
 Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 CheckBox.area: ✅
+CheckBox.dismissed: ✅
 CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the views' drag listeners' reports told by the driver, no drag started
 CheckBox.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 CheckBox.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -145,6 +149,7 @@ CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
 ColorPicker.allowsDrop: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.area: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dismissed: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.dragEnded: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.dragEntered: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.dragExited: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -181,6 +186,7 @@ ColorPicker.tapped: – Android has no color picker of its own: neither the plat
 ColorPicker.verticalAlignment: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.area: ✅
+DatePicker.dismissed: ✅
 DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -217,6 +223,7 @@ DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.area: ✅
+Ellipse.dismissed: ✅
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -253,6 +260,7 @@ Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
 Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Fill.area: ✅
+Fill.dismissed: ✅
 Fill.dragEnded: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
 Fill.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Fill.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -289,6 +297,7 @@ Fill.tapped: ✅
 Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Grid.area: ✅
+Grid.dismissed: ✅
 Grid.dragEnded: ✓ dragAndDrop on Grid: the views' drag listeners' reports told by the driver, no drag started
 Grid.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Grid.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -325,6 +334,7 @@ Grid.tapped: ✅
 Grid.verticalAlignment: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 HStack.area: ✅
+HStack.dismissed: ✅
 HStack.dragEnded: ✓ dragAndDrop on HStack: the views' drag listeners' reports told by the driver, no drag started
 HStack.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 HStack.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -361,6 +371,7 @@ HStack.tapped: ✅
 HStack.verticalAlignment: ✅
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Image.area: ✅
+Image.dismissed: ✅
 Image.dragEnded: ✓ dragAndDrop on Image: the views' drag listeners' reports told by the driver, no drag started
 Image.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Image.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -397,6 +408,7 @@ Image.tapped: ✅
 Image.verticalAlignment: ✅
 ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ItemsView.area: ✅
+ItemsView.dismissed: ✅
 ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the views' drag listeners' reports told by the driver, no drag started
 ItemsView.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ItemsView.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -433,6 +445,7 @@ ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Line.area: ✅
+Line.dismissed: ✅
 Line.dragEnded: ✓ dragAndDrop on Line: the views' drag listeners' reports told by the driver, no drag started
 Line.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Line.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -469,6 +482,7 @@ Line.tapped: ✅
 Line.verticalAlignment: ✅
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Link.area: ✅
+Link.dismissed: ✅
 Link.dragEnded: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
 Link.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Link.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -505,6 +519,7 @@ Link.tapped: ✅
 Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
+Map.dismissed: 🧩
 Map.dragEnded: 🧩
 Map.dragEntered: 🧩
 Map.dragExited: 🧩
@@ -541,6 +556,7 @@ Map.tapped: 🧩
 Map.verticalAlignment: 🧩
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 MotionLayout.area: ✅
+MotionLayout.dismissed: ✅
 MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
 MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -577,6 +593,7 @@ MotionLayout.tapped: ✅
 MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Path.area: ✅
+Path.dismissed: ✅
 Path.dragEnded: ✓ dragAndDrop on Path: the views' drag listeners' reports told by the driver, no drag started
 Path.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Path.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -613,6 +630,7 @@ Path.tapped: ✅
 Path.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Picker.area: ✅
+Picker.dismissed: ✅
 Picker.dragEnded: ✓ dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started
 Picker.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Picker.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -649,6 +667,7 @@ Picker.tapped: ✅
 Picker.verticalAlignment: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Polygon.area: ✅
+Polygon.dismissed: ✅
 Polygon.dragEnded: ✓ dragAndDrop on Polygon: the views' drag listeners' reports told by the driver, no drag started
 Polygon.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Polygon.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -685,6 +704,7 @@ Polygon.tapped: ✅
 Polygon.verticalAlignment: ✅
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Polyline.area: ✅
+Polyline.dismissed: ✅
 Polyline.dragEnded: ✓ dragAndDrop on Polyline: the views' drag listeners' reports told by the driver, no drag started
 Polyline.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Polyline.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -721,6 +741,7 @@ Polyline.tapped: ✅
 Polyline.verticalAlignment: ✅
 ProgressBar.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ProgressBar.area: ✅
+ProgressBar.dismissed: ✅
 ProgressBar.dragEnded: ✓ dragAndDrop on ProgressBar: the views' drag listeners' reports told by the driver, no drag started
 ProgressBar.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ProgressBar.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -757,6 +778,7 @@ ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.area: ✅
+Rectangle.dismissed: ✅
 Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -793,6 +815,7 @@ Rectangle.tapped: ✅
 Rectangle.verticalAlignment: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ScrollView.area: ✅
+ScrollView.dismissed: ✅
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the views' drag listeners' reports told by the driver, no drag started
 ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -829,6 +852,7 @@ ScrollView.tapped: ✅
 ScrollView.verticalAlignment: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 SearchField.area: ✅
+SearchField.dismissed: ✅
 SearchField.dragEnded: ✓ dragAndDrop on SearchField: the views' drag listeners' reports told by the driver, no drag started
 SearchField.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 SearchField.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -865,6 +889,7 @@ SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Separator.area: ✅
+Separator.dismissed: ✅
 Separator.dragEnded: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
 Separator.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Separator.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -901,6 +926,7 @@ Separator.tapped: ✅
 Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Slider.area: ✅
+Slider.dismissed: ✅
 Slider.dragEnded: ✓ dragAndDrop on Slider: the views' drag listeners' reports told by the driver, no drag started
 Slider.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Slider.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -937,6 +963,7 @@ Slider.tapped: ✅
 Slider.verticalAlignment: ✅
 Space.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Space.area: ✅
+Space.dismissed: ✅
 Space.dragEnded: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
 Space.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Space.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -973,6 +1000,7 @@ Space.tapped: ✅
 Space.verticalAlignment: ✅
 Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Spinner.area: ✅
+Spinner.dismissed: ✅
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
 Spinner.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Spinner.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -1009,6 +1037,7 @@ Spinner.tapped: ✅
 Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Stepper.area: ✅
+Stepper.dismissed: ✅
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started
 Stepper.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Stepper.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -1045,6 +1074,7 @@ Stepper.tapped: ✅
 Stepper.verticalAlignment: ✅
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Switch.area: ✅
+Switch.dismissed: ✅
 Switch.dragEnded: ✓ dragAndDrop on Switch: the views' drag listeners' reports told by the driver, no drag started
 Switch.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Switch.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -1081,6 +1111,7 @@ Switch.tapped: ✅
 Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Text.area: ✅
+Text.dismissed: ✅
 Text.dragEnded: ✓ dragAndDrop on Text: the views' drag listeners' reports told by the driver, no drag started
 Text.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Text.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -1117,6 +1148,7 @@ Text.tapped: ✅
 Text.verticalAlignment: ✅
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TextEditor.area: ✅
+TextEditor.dismissed: ✅
 TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the views' drag listeners' reports told by the driver, no drag started
 TextEditor.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TextEditor.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -1153,6 +1185,7 @@ TextEditor.tapped: ✅
 TextEditor.verticalAlignment: ✅
 TextField.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TextField.area: ✅
+TextField.dismissed: ✅
 TextField.dragEnded: ✓ dragAndDrop on TextField: the views' drag listeners' reports told by the driver, no drag started
 TextField.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TextField.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -1189,6 +1222,7 @@ TextField.tapped: ✅
 TextField.verticalAlignment: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TimePicker.area: ✅
+TimePicker.dismissed: ✅
 TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the views' drag listeners' reports told by the driver, no drag started
 TimePicker.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TimePicker.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -1225,6 +1259,7 @@ TimePicker.tapped: ✅
 TimePicker.verticalAlignment: ✅
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 VStack.area: ✅
+VStack.dismissed: ✅
 VStack.dragEnded: ✓ dragAndDrop on VStack: the views' drag listeners' reports told by the driver, no drag started
 VStack.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 VStack.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -1261,6 +1296,7 @@ VStack.tapped: ✅
 VStack.verticalAlignment: ✅
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 WebView.area: ✅
+WebView.dismissed: ✅
 WebView.dragEnded: ✓ dragAndDrop on WebView: the views' drag listeners' reports told by the driver, no drag started
 WebView.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 WebView.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -1297,6 +1333,7 @@ WebView.tapped: ✅
 WebView.verticalAlignment: ✅
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ZStack.area: ✅
+ZStack.dismissed: ✅
 ZStack.dragEnded: ✓ dragAndDrop on ZStack: the views' drag listeners' reports told by the driver, no drag started
 ZStack.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ZStack.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started

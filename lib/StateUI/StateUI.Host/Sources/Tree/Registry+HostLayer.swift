@@ -91,6 +91,7 @@ extension Registry {
         everyElementRaises(ViewContract.longPressed)
         everyElementRealizes(ViewContract.longPressDuration)
         everyElementRuns(ViewContract.interaction)
+        everyElementRaises(ViewContract.dismissed)
         everyElementRealizes(ViewContract.panTouchCount)
         everyElementRealizes(ViewContract.swipeDirections)
         everyElementRealizes(ViewContract.swipeThreshold)

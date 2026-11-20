@@ -10,19 +10,38 @@
     public var values: [HostInteractionValue]
 
     /// The view's own press; nil for none.
-    public var press: HostPress?
+    public var press: HostPress? {
+        get { own.first?.press }
+        set { own = Self.kept(Own(press: newValue, drag: drag)) }
+    }
 
     /// The view's own drag; nil for none.
-    public var drag: HostDrag?
+    public var drag: HostDrag? {
+        get { own.first?.drag }
+        set { own = Self.kept(Own(press: press, drag: newValue)) }
+    }
+
+    // The press and the drag stand out of line, none or one: a patch carries the program, and the mount copies a
+    // patch at every level of the tree it goes down.
+    // Design: docs/design/host/runtime.md#the-mounts-stack
+    private var own: [Own]
+
+    private struct Own: Equatable, Sendable {
+        var press: HostPress?
+        var drag: HostDrag?
+    }
+
+    private static func kept(_ own: Own) -> [Own] {
+        own.press == nil && own.drag == nil ? [] : [own]
+    }
 
     /// Whether the hand does nothing on the element.
-    public var isEmpty: Bool { values.isEmpty && press == nil && drag == nil }
+    public var isEmpty: Bool { values.isEmpty && own.isEmpty }
 
     /// A program moving `values`, the view answering `press` and taken by `drag`.
     public init(press: HostPress? = nil, drag: HostDrag? = nil, values: [HostInteractionValue]) {
         self.values = values
-        self.press = press
-        self.drag = drag
+        own = Self.kept(Own(press: press, drag: drag))
     }
 }
 
@@ -73,10 +92,34 @@
     /// When it takes it.
     public var begins: DragStart
 
-    /// A drag along `axes` beginning as `begins` says.
-    public init(axes: DragAxes, begins: DragStart) {
+    /// How letting the view go dismisses it; nil where it never does.
+    public var dismissal: HostDismissal?
+
+    /// A drag along `axes` beginning as `begins` says, dismissing its view as `dismissal` says.
+    public init(axes: DragAxes, begins: DragStart, dismissal: HostDismissal? = nil) {
         self.axes = axes
         self.begins = begins
+        self.dismissal = dismissal
+    }
+}
+
+/// How a drag dismisses its view as the host meets it: the ways out, how far the view must go or be thrown, and
+/// the law that carries a throw and paces the way out.
+@_spi(Host) public struct HostDismissal: Equatable, Sendable {
+    /// Which ways a throw dismisses the view.
+    public var directions: SwipeDirections
+
+    /// How far the view must go one of those ways, or be thrown, in points.
+    public var threshold: Double
+
+    /// The law a throw is carried by, and the pace of the way out.
+    public var motion: Motion
+
+    /// A dismissal `directions`' ways past `threshold` under `motion`.
+    public init(directions: SwipeDirections, threshold: Double, motion: Motion) {
+        self.directions = directions
+        self.threshold = threshold
+        self.motion = motion
     }
 }
 

@@ -84,8 +84,8 @@
 
     /// Raises a native event's handler, then a turn; one raised while a patch applies, or inside the user's
     /// transaction, waits for it.
-    public func dispatch(_ handler: Int32, payload: [HostValue] = []) {
-        if HostProbe.timed(.events, { handlers.raise(handler, payload: payload) }) { turn() }
+    public func dispatch(_ handler: Int32, payload: [HostValue] = [], ended: (@MainActor () -> Void)? = nil) {
+        if HostProbe.timed(.events, { handlers.raise(handler, payload: payload, ended: ended) }) { turn() }
     }
 
     /// Runs `body` as the user's transaction: the handlers it raises run in order once it is over, and one turn

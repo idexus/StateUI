@@ -557,13 +557,16 @@ traveling off from under the hand, never answers a second time and swings
 the order back. An application reorders by the item it is over and never
 works its own arithmetic backwards to a slot.
 
-With `.onItemDismissed`, a view the hand took far enough one of its ways -
-or threw far enough, as a throw of the input would carry it - is the run's
-from the lift: it answers where the view flies (`HostLayoutView.held`), at
-the hand's speed and no slower than the room's length a motion's length,
-and its item is told once it has left the room; the application removes the
-item then. Every dismissal written is a way out: the view leaves when it
-passed one, and each one it passed is told, in the order written. The
-handler runs after the frame, as a job of the UI thread, never inside the
-cycle.
+A view thrown away is the view's own to say too - its drag's
+`.dismissal(directions:threshold:motion:)` - and its host's to fly out of
+the layout's room ([a view thrown away](../host/interaction.md#a-view-thrown-away)).
+The run holds nothing of it: it answers the view's place as it does every
+view's, and the place stands while the view is out. With `.onItemDismissed`
+the layout hears `itemDismissed` - which of its views, by its place - once
+the view has left the room, and tells its item to every handler written, in
+the order written, each through its own gate. The event's run ends when the
+handlers' runs have (`Run.dismissed(child:)`), which is what the host waits
+for: a view whose item no handler removed comes back to its place, and one
+whose item was removed has left with it, the views beside it closing the
+gap.
 

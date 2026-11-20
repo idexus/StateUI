@@ -6,7 +6,7 @@
 
 extension Renderer {
     /// Runs what an id refers to - an element's handlers, or a waiting continuation when negative; false if unknown.
-    func dispatch(_ handlerId: Int) -> Bool {
+    func dispatch(_ handlerId: Int, ended: (@MainActor () -> Void)? = nil) -> Bool {
         if handlerId < 0 {
             // Removed before it runs: what it resumes may book or answer another.
             let taken = completions.removeValue(forKey: handlerId)
@@ -22,17 +22,31 @@ extension Renderer {
         guard let registration = differ.handler(handlerId) else { return false }
 
         differ.heard(handlerId)
-        start(registration)
+        start(registration, ended: ended)
         return true
+    }
+
+    /// Starts a dispatched event's handlers and says `ended` once every run it started has: one that awaits when
+    /// it does, one its gate let go at once.
+    /// Design: docs/design/core/runs.md#an-event-that-says-when-its-runs-ended
+    func start(_ registration: EventRegistration, ended: (@MainActor () -> Void)?) {
+        let runs = start(registration)
+        guard let ended else { return }
+
+        Task { @MainActor in
+            for run in runs { await run.value }
+            ended()
+        }
     }
 
     /// Starts a dispatched event's handlers, each through its gate - the road a test exercises too - outside
     /// every run: whatever task the host reported it from, its runs descend from none.
     /// Design: docs/design/core/runs.md#the-runs-of-a-handler
-    func start(_ registration: EventRegistration) {
+    @discardableResult
+    func start(_ registration: EventRegistration) -> [Task<Void, Never>] {
         // Read now: a handler that suspends keeps the payload it started with.
         let payload = EventBuffer.current
-        HostTeardown.$current.withValue(nil) {
+        return HostTeardown.$current.withValue(nil) {
             HandlerRun.$current.withValue(nil) { registration.start(payload: payload) }
         }
     }

@@ -45,6 +45,10 @@ public enum ViewContract: Tier {
     /// A drag that started on the view ended, wherever it ended.
     public static let dragEnded = ElementEvent<Self, Void>("dragEnded", layer: .native)
 
+    /// The user threw the view away and it has left the room that holds it: the way it went, and how fast the
+    /// hand let it go, in points a second.
+    public static let dismissed = ElementEvent<Self, (SwipeDirection, Point)>("dismissed", layer: .stateUI)
+
     /// The view's layout gave it another place: eight numbers - x, y, width, height, the
     /// window's x and y, and the safe area's x and y - of where it is put, whether or not it has come there.
     public static let layoutFrameChanged = ElementEvent<Self, [Double]>("layoutFrameChanged", layer: .native)
@@ -142,5 +146,5 @@ public enum ViewContract: Tier {
         "verticalAlignment", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, filesDropped, layoutFrameChanged, presentationFrameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, longPressed, longPressDuration, horizontalAlignment, interaction, isDraggable, margin, panTouchCount, panUpdated, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, verticalAlignment]
+    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, dismissed, filesDropped, layoutFrameChanged, presentationFrameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, longPressed, longPressDuration, horizontalAlignment, interaction, isDraggable, margin, panTouchCount, panUpdated, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, verticalAlignment]
 }

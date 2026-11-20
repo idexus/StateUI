@@ -240,3 +240,25 @@ A declaration that does not stand moves nothing and is said (`complain`,
 - coming round with no range of some length to come round over;
 - a swipe given no snaps - it goes a snap a hand, and has none to go to;
 - the ends of a range to rest at (`.endpoints`), and no range.
+
+## A view thrown away
+
+A drag may let its view go as a dismissal:
+`.drag(_:begins:).dismissal(directions:threshold:motion:)` says which ways a
+throw dismisses the view, how far it must go one of them - or be thrown, by
+`motion`'s law - and the pace of its way out. It is a configuration of the
+drag and of nothing else: said of a value, a press or several at once it is
+refused, as is one naming no direction or a threshold that is not above
+nought, and the drag stands without it. The host is handed the rule as data
+beside the drag's axes (`HostDismissal`), so a view described again is the
+same program.
+
+`onDismissed` hears `ViewContract.dismissed` - the way the view left and the
+hand's speed, a `Dismissal` - once the view has left the room that holds it.
+Its handler removes what the view shows; a view no handler removes comes
+back, once every handler it started has ended - an awaiting one keeps the
+view out of the room while it runs. A motion layout hears the same of its
+views with `onItemDismissed`, by the item. How the view leaves, is caught
+and comes back is the host layer's
+([a view thrown away](../host/interaction.md#a-view-thrown-away)).
+

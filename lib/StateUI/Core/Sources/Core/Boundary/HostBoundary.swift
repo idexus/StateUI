@@ -336,6 +336,18 @@
         return Renderer.shared.dispatch(Int(handler))
     }
 
+    /// Reports a native event as `dispatch(_:payload:)` does, and says once every run it started has ended -
+    /// a handler that awaits when it does, one its gate let go at once: what a host waits for where the
+    /// application's answer decides what it shows next. False for an unknown id, which says nothing.
+    /// Design: docs/design/core/runs.md#an-event-that-says-when-its-runs-ended
+    @discardableResult
+    public static func dispatch(
+        _ handler: Int32, payload: [HostValue] = [], ended: @escaping @MainActor () -> Void
+    ) -> Bool {
+        EventBuffer.current = payload
+        return Renderer.shared.dispatch(Int(handler), ended: ended)
+    }
+
     /// Raises an event of the application's - one no control raises - with
     /// the values its contract declares, as the platform reported them, from
     /// any thread: every `HostEvents.on` subscription to the member hears them

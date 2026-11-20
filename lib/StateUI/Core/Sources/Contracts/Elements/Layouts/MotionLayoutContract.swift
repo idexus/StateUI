@@ -24,6 +24,11 @@ public enum MotionLayoutContract: ElementContract {
     public static let itemDragUpdated = ElementEvent<Self, (GesturePhase, Point, Point, Double, Int)>(
         "itemDragUpdated", layer: .native)
 
+    /// One of the layout's views was thrown away and has left the layout's room: which view - its place among
+    /// the layout's views - the way it went, and how fast the hand let it go, in points a second.
+    public static let itemDismissed = ElementEvent<Self, (Int, SwipeDirection, Point)>(
+        "itemDismissed", layer: .stateUI)
+
     /// The layout's arithmetic: the host says the room the element stands in, and reads where each child stands
     /// whenever the arithmetic was worked out again.
     public static let layout = ElementProgram<Self, LayoutProgramDefinition>("layout", layer: .stateUI)
@@ -35,6 +40,6 @@ public enum MotionLayoutContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        itemDragUpdated, layout, mirrorsRightToLeft, parameters,
+        itemDismissed, itemDragUpdated, layout, mirrorsRightToLeft, parameters,
     ]
 }

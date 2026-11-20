@@ -38,7 +38,7 @@
             element.paced(now: now, in: runtime)
             if !element.handReading.wantsFrames, element.handOutbox.isEmpty, element.pinchOutbox.isEmpty,
                !element.wheelPinch.isOpen, !element.buttonPress.isWaiting, element.pressReading.waiting == nil,
-               !element.localFollow.moves {
+               !element.localFollow.moves, element.flight == nil {
                 open[mount] = nil
             }
         }

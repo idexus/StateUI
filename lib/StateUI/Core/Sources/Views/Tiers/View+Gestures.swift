@@ -278,6 +278,37 @@ extension View {
         }
     }
 
+    // MARK: A view thrown away
+
+    /// Runs once the user has thrown the view away and it has left the room that holds it - a view whose drag
+    /// says a dismissal:
+    ///
+    ///     Card(card)
+    ///         .interaction(.drag(.vertical, begins: .directional).dismissal(directions: .up, threshold: 120))
+    ///         .onDismissed { _ in cards.removeAll { $0.id == card.id } }
+    ///
+    /// The view stands where it left until the handler removes it; one it leaves comes back to its place.
+    public func onDismissed(_ handler: @escaping @MainActor (Dismissal) throws -> Void) -> Modified {
+        onEvent(ViewContract.dismissed) { direction, velocity in
+            try handler(Dismissal(direction: direction, velocity: velocity))
+        }
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
+    /// again while a run is under way. The view comes back only once the run has ended and left it.
+    public func onDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Dismissal>) -> Modified {
+        onEvent(ViewContract.dismissed, policy: policy) { direction, velocity in
+            try await handler(Dismissal(direction: direction, velocity: velocity))
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<Dismissal>) -> Modified {
+        onEvent(ViewContract.dismissed, gate: gate) { direction, velocity in
+            try await handler(Dismissal(direction: direction, velocity: velocity))
+        }
+    }
+
     // MARK: Pointer
 
     /// Runs when a pointer enters the view.

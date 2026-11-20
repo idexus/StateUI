@@ -293,6 +293,7 @@ extension NodeType {
     static let destroying = WindowContract.destroying.token
     static let disappearing = PageContract.disappearing.token
     static let dragEntered = ViewContract.dragEntered.token
+    static let dismissed = ViewContract.dismissed.token
     static let dragExited = ViewContract.dragExited.token
     static let dragStarting = ViewContract.dragStarting.token
     static let dropped = ViewContract.dropped.token
@@ -302,6 +303,7 @@ extension NodeType {
     static let presentationFrameChanged = ViewContract.presentationFrameChanged.token
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
     static let isPresentedChanged = PresentedElementContract.isPresentedChanged.token
+    static let itemDismissed = MotionLayoutContract.itemDismissed.token
     static let itemDragUpdated = MotionLayoutContract.itemDragUpdated.token
     static let keyPressed = KeyboardElementContract.keyPressed.token
     static let linkOpened = OpenedLinkElementContract.linkOpened.token

@@ -19,7 +19,7 @@
         Specimens.wearing(ViewContract.self).flatMap { element in
             [
                 margined(element), drawn(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
-                tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), swiped(element), pinched(element), rotated(element), pointed(element),
+                tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), thrown(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
         } + [
@@ -793,6 +793,51 @@
             s.frames(of: clock, until: clock.now + 48)
             s.settle { drawn.values.last.map(FrameReport.place) == [0, 0, 100, 100] }
             s.expect(drawn.values.last.map(FrameReport.place), [0, 0, 100, 100], "let go: where its layout puts it")
+        }
+    }
+
+    /// A view whose drag says a dismissal, thrown past its threshold, flies on out of the room that holds it and is
+    /// told once it has left - the way it went - and, nobody removing it, stands where its layout puts it again.
+    @MainActor
+    static func thrown(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aViewThrownAwayIsToldAndComesBackWhereNobodyRemovesIt", proves: [
+            Covered(ViewContract.dismissed, on: element),
+        ], needs: [
+            Covered(ViewContract.interaction, on: element), Covered(ViewContract.presentationFrameChanged, on: element),
+        ]) { s in
+            let (clock, drawn, told) = (TestClock(), Received<[Double]>(), Received<String>())
+            s.start(clock: clock) {
+                VStack {
+                    Opened.thrown(Specimens.view(element, [
+                        Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
+                        Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
+                        HearTwo(ViewContract.dismissed) { direction, _ in told.values.append("\(direction)") },
+                    ]))
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.settle { drawn.values.last.map(FrameReport.place) == [0, 0, 100, 100] }
+            let view = try s.element("specimen")
+
+            // Forty points up, past its thirty: let go, it flies on until none of it is left in the room.
+            try s.perform(.pressDown(at: Point(x: 50, y: 50)), on: view)
+            try s.perform(.drag(to: Point(x: 50, y: 10)), on: view)
+            s.frames(of: clock, until: clock.now + 48)
+            s.turn()
+            s.expect(told.values, [], "under the hand: nothing told")
+            try s.perform(.lift(at: Point(x: 50, y: 10)), on: view)
+            s.frames(of: clock, until: clock.now + 1_000)
+            s.settle { told.values == ["up"] }
+            s.expect(told.values, ["up"], "told once it has left the room, the way it went")
+
+            // Its handler ended out of any frame: the frames after it show the view back.
+            s.settle {
+                clock.now += 16
+                s.frame()
+                return drawn.values.last.map(FrameReport.place) == [0, 0, 100, 100]
+            }
+            s.expect(drawn.values.last.map(FrameReport.place), [0, 0, 100, 100], "nobody removed it: at its place again")
         }
     }
 

@@ -18,6 +18,7 @@ extension Interaction {
     struct Drag: Equatable {
         let axes: DragAxes
         let begins: DragStart
+        var dismissal: HostDismissal?
     }
 
     /// The view drawn as `effect` says while a press stands on it, and where its layout puts it again once the
@@ -94,6 +95,35 @@ extension Interaction {
     /// - Returns: the interaction.
     public static func drag(_ axes: DragAxes, begins: DragStart = .immediately) -> Interaction {
         Interaction(leaves: [], isSet: false, drag: Drag(axes: axes, begins: begins))
+    }
+
+    /// The drag letting its view go as a dismissal where the hand took it far enough one of `directions`, or threw
+    /// it that far: the view flies on out of the room that holds it, and `onDismissed` is told once it has left.
+    /// A view nobody removes then comes back to its place.
+    ///
+    ///     Card(card)
+    ///         .interaction(.drag(.vertical, begins: .directional).dismissal(directions: .up, threshold: 120))
+    ///         .onDismissed { _ in cards.removeAll { $0.id == card.id } }
+    ///
+    /// - Parameters:
+    ///   - directions: which ways a throw dismisses the view; at least one.
+    ///   - threshold: how far the view must go that way, or be thrown, in points; above nought.
+    ///   - motion: the law a throw is carried by, and the pace of the view's way out; a spring unless said.
+    /// - Returns: the interaction; one saying no drag, no direction or no such threshold refuses the dismissal.
+    public func dismissal(directions: SwipeDirections, threshold: Double, motion: Motion = .spring()) -> Interaction {
+        var copy = self
+        guard copy.drag != nil, leaves.isEmpty, press == nil else {
+            copy.refused.append("A dismissal is said of a drag - `.drag(...).dismissal(...)` - and was said of "
+                + "something else. Its view is dismissed no way.")
+            return copy
+        }
+        guard !directions.isEmpty, threshold.isFinite, threshold > 0 else {
+            copy.refused.append("A dismissal names at least one direction and a threshold above nought: "
+                + "\(directions) and \(threshold) were said. Its view is dismissed no way.")
+            return copy
+        }
+        copy.drag?.dismissal = HostDismissal(directions: directions, threshold: threshold, motion: motion)
+        return copy
     }
 
     /// Takes the press and the drag of `interactions`: one of each stands, and two of either are refused together -

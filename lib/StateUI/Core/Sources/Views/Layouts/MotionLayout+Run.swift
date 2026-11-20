@@ -69,7 +69,7 @@ extension MotionLayout {
         let activated: [ValueHandler<ID>]
         let named: ((Parameters) -> Void)?
         let dragged: [ValueHandler<ItemDrag<ID>>]
-        let dismissals: [LayoutDismissal<ID>]
+        let dismissals: [ValueHandler<ID>]
 
         /// The parameters the element wears: the author's, or the layout's own.
         let parameters: Binding<Parameters>
@@ -113,10 +113,6 @@ extension MotionLayout {
         /// The axis in focus, and whether a hand moves it across.
         var axis: WritableKeyPath<Parameters, Double>? { focus?.axis }
         var across: Bool { focus?.way != .vertical }
-
-        /// How a throw of the axis in focus goes on - its release's, where it throws: what a view the hand lets go
-        /// of is carried by.
-        var throwing: Motion { focus?.release.throwing ?? .eased(.milliseconds(400)) }
 
         // MARK: - The parameters
 
@@ -164,11 +160,10 @@ extension MotionLayout {
             let from = setOut(at: parameters)
             let (memory, discrete) = changed(from: from)
             let poses = pose(in: Rect(x: 0, y: 0, width: room.width, height: room.height), at: parameters, from: from)
-            let holding = show(
-                poses, after: memory, discrete: discrete, at: now, parameters: parameters, from: from, room: room)
+            show(poses, after: memory, discrete: discrete, parameters: parameters, from: from, room: room)
             // The views the host still moves onto their places are no rest either: it says when they stand.
-            notice(resting: !holding && !states.slot.bodiesMove, at: parameters)
-            return holding ? .again : .wait
+            notice(resting: !states.slot.bodiesMove, at: parameters)
+            return .wait
         }
 
         /// Tells whoever keeps a value of its own by the parameters where they are going, once that changed since

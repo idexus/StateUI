@@ -32,6 +32,7 @@ How each of them realizes these members is on its own page.
 | `onDropped` (`dropped`) | event | `String` | native |
 | `droppedFileTypes` | property | `[FileType]` | native |
 | `onDragEnded` (`dragEnded`) | event |  | native |
+| `onDismissed` (`dismissed`) | event | `(SwipeDirection, Point)` | stateUI |
 | `onDropped` (`filesDropped`) | event | `[ChosenFile]` | native |
 | `layoutFrameChanged` | event | `[Double]` | native |
 | `presentationFrameChanged` | event | `[Double]` | native |

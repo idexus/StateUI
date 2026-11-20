@@ -231,3 +231,18 @@ leaving cancels them all as it orphans its runs - so a view hears what the
 host raises exactly while it stands, and nothing is cancelled by hand. The
 handler reads the raise as `HostEvents.on` does: one decoding of the values
 for both (`HostEvents.heard`).
+
+## An event that says when its runs ended
+
+A host that reports an event may ask to be told once every run the event
+started has ended (`HostBoundary.dispatch(_:payload:ended:)`): the tasks the
+gates hand back are awaited in the order the handlers are written, and `ended`
+is said after the last, on the UI thread. A handler that returns has ended by
+then; one that awaits ends when it does, however long; one its gate let go -
+`ignoreWhileRunning` with a run under way - never started and is waited for
+no time. An event with no handler is an unknown id, and says nothing.
+
+It is what a dismissed view waits on: its host shows it out of the room until
+the application's handlers have had their say, and puts it back where they
+left it standing ([a view thrown away](../views/interaction.md#a-view-thrown-away)).
+

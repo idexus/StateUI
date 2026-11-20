@@ -315,9 +315,39 @@ struct Shelf: View {
 }
 ```
 
+`.dismissal(directions:threshold:motion:)` on a drag lets the view go for
+good. Let go past `threshold` points one of its `directions` - or thrown
+that far, as `motion` carries a throw, a spring unless said - it flies on out
+of the room that holds it, and `.onDismissed` runs once it has left, given a
+`Dismissal`: the way it went and the hand's speed. The handler removes what
+the view shows, and the views beside it close up. A view no handler removes
+comes back to its place - after a handler that awaits has ended, so
+`.onDismissed(policy:)` may ask before it removes. A press on a view on its
+way out catches it.
+
+```swift
+struct Reminders: View {
+    @State private var notes = ["Milk", "Call Ada", "Tickets"]
+
+    var body: some View {
+        VStack {
+            ForEach(notes) { note in
+                Text(note)
+                    .padding(16)
+                    // Thrown eighty points to either side, the note leaves the stack.
+                    .interaction(.drag(.horizontal).dismissal(directions: [.left, .right], threshold: 80))
+                    .onDismissed { _ in notes.removeAll { $0 == note } }
+            }
+        }
+        .spacing(8)
+    }
+}
+```
+
 A press, a drag and values stand together in one
 `Interaction.simultaneous(_:)`. In [a motion layout](layout.md#a-motion-layout)
-a view taken by its drag is what `.onItemDragged` tells of.
+a view taken by its drag is what `.onItemDragged` tells of, and one thrown
+away what `.onItemDismissed` does.
 
 ### Pointer
 

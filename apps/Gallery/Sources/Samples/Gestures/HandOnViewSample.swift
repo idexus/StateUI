@@ -1,10 +1,14 @@
 import StateUI
 
-/// The hand on a view itself: a card that answers a press, and a chip the hand takes.
+/// The hand on a view itself: a card that answers a press, a chip the hand takes, and a ticket thrown away.
 struct HandOnViewSample: SampleContent, ExampleContent {
+    // listing: HandOnViewSample
+    @State private var thrown = 0
+    // listing: end
+
     static let id = "handOnView"
     static let title = "The hand on a view"
-    static let summary = "A view answers a press and is taken by the hand - with no state, no handler."
+    static let summary = "A view answers a press, is taken by the hand and is thrown away - each said by the view."
 
     // The chip is dragged, so the example is not put in a scroller: the page's would claim the drag first - see
     // SampleContent.scrolls.
@@ -13,7 +17,7 @@ struct HandOnViewSample: SampleContent, ExampleContent {
     // listing: HandOnViewSample
     var body: some View {
         VStack {
-            // The hand builds no view: the label says so.
+            // The hand builds no view - only a ticket thrown away does, to count it: the label says so.
             DebugInfoLabel()
 
             // A PRESS GROWS THE CARD A LITTLE, PULLS IT TOWARD ITSELF AND STRETCHES IT THE WAY IT PULLS - on a
@@ -50,6 +54,24 @@ struct HandOnViewSample: SampleContent, ExampleContent {
             .interaction(.drag(.both))
             .layoutBody(.onChange(response: .milliseconds(320), damping: 0.7))
             .accessibilityIdentifier("dragged")
+
+            // THROWN UP FAR ENOUGH, THE TICKET FLIES ON OUT OF THE STACK, AND `onDismissed` IS TOLD ONCE IT IS OUT.
+            // Nothing removes it here, so it comes back where the stack puts it.
+            ZStack {
+                Rectangle()
+                    .fill(Palette.raised)
+                    .cornerRadius(12)
+                Text("Throw me up - \(thrown)")
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
+            }
+            .width(180)
+            .height(56)
+            .horizontalAlignment(.center)
+            .interaction(.drag(.vertical).dismissal(directions: .up, threshold: 80))
+            .onDismissed { _ in thrown += 1 }
+            .layoutBody(.onChange(response: .milliseconds(320), damping: 0.8))
+            .accessibilityIdentifier("thrown")
         }
         .spacing(28)
     }
@@ -59,7 +81,8 @@ struct HandOnViewSample: SampleContent, ExampleContent {
         Text("Press the card and move over it: it grows, leans toward the press and stretches the way it is "
             + "pulled. Drag the chip anywhere and let go: it comes back. Neither moves a state - "
             + "`.interaction(.elasticPress())` and `.interaction(.drag(.both))` are the whole of it; the chip's "
-            + "`.layoutBody` is the spring it comes back on.")
+            + "`.layoutBody` is the spring it comes back on. Throw the ticket up: past eighty points, or thrown "
+            + "that far, it leaves the stack and is counted - and, removed by nobody, comes back.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

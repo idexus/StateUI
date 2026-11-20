@@ -181,7 +181,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// How the hand takes one view by itself, what it is told as it moves it, and which way letting it go far enough
     /// dismisses it.
     private var dragged: [ValueHandler<ItemDrag<ID>>] = []
-    private var dismissals: [LayoutDismissal<ID>] = []
+    private var dismissals: [ValueHandler<ID>] = []
 
     /// What is told once the run comes to rest.
     private var settled: [ValueHandler<Parameters>] = []
@@ -573,48 +573,35 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         return copy
     }
 
-    /// A view the hand lets go of past `threshold` device units `directions` from where it took it - or thrown far
-    /// enough that way - flies on out of the room, and `handler` runs with its item's identity once it has left: the
-    /// application removes the item then. Let go short of it, the view goes back to its place. Written again, each
-    /// one the view passed runs, in the order written.
+    /// Runs `handler` with its item's identity once one of the layout's views was thrown away and has left the
+    /// room: the application removes the item then, and the views beside it close the gap. Which throw dismisses
+    /// a view is the view's own to say - `.interaction(.drag(...).dismissal(directions:threshold:))`. A view no
+    /// handler removes comes back to its place. Written again, each runs, in the order written.
     ///
-    ///     .onItemDismissed(directions: .up, threshold: 120) { id in cards.removeAll { $0.id == id } }
+    ///     .onItemDismissed { id in cards.removeAll { $0.id == id } }
     ///
-    /// - Parameters:
-    ///   - directions: the ways a view is dismissed.
-    ///   - threshold: how far the hand takes it, in device units, before letting go dismisses it.
-    ///   - handler: what to run, given the item's identity, once its view has left the room.
-    /// - Returns: the layout, dismissing a view let go far enough.
-    public func onItemDismissed(
-        directions: SwipeDirections, threshold: Double, _ handler: @escaping @MainActor (ID) throws -> Void
-    ) -> Self {
+    /// - Parameter handler: what to run, given the item's identity, once its view has left the room.
+    /// - Returns: the layout, telling of the views thrown away.
+    public func onItemDismissed(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
         var copy = self
-        copy.dismissals.append(LayoutDismissal(directions: directions, threshold: threshold, handler: ValueHandler(step: handler)))
+        copy.dismissals.append(ValueHandler(step: handler))
         return copy
     }
 
     /// The same, with a handler that awaits - an archive does: its `policy` says what another view dismissed does
-    /// while a run is under way.
+    /// while a run is under way. The view stays out of the room until the run has ended.
     ///
-    ///     .onItemDismissed(directions: .up, threshold: 120, policy: .cancelPrevious) { id in try await archive(id) }
-    public func onItemDismissed(
-        directions: SwipeDirections, threshold: Double, policy: GatePolicy,
-        _ handler: @escaping ValueEventHandler<ID>
-    ) -> Self {
+    ///     .onItemDismissed(policy: .cancelPrevious) { id in try await archive(id) }
+    public func onItemDismissed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.dismissals.append(LayoutDismissal(
-            directions: directions, threshold: threshold, handler: ValueHandler(run: handler, gate: .own(policy))))
+        copy.dismissals.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onItemDismissed(
-        directions: SwipeDirections, threshold: Double, gate: Gate,
-        _ handler: @escaping ValueEventHandler<ID>
-    ) -> Self {
+    public func onItemDismissed(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.dismissals.append(LayoutDismissal(
-            directions: directions, threshold: threshold, handler: ValueHandler(run: handler, gate: .shared(gate))))
+        copy.dismissals.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -659,12 +646,18 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             // The hand is heard on the element itself, over every view, which still answers a tap: what it moves is
             // the host's to hold, by the program every view has for it.
             element.setProgram(ViewContract.interaction, definition: moving)
-            // A view the hand takes by itself is its holder's drag, which the host tells the layout of: heard
-            // where something asks to be told of it, or a view let go may be dismissed.
-            if !run.dragged.isEmpty || !run.dismissals.isEmpty {
+            // A view the hand takes by itself is its own drag, which the host tells the layout of: heard where
+            // something asks to be told of it.
+            if !run.dragged.isEmpty {
                 element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still, child in
                     run.item(
                         gesture, child: child, at: at.told, velocity: velocity.told, still: still.isFinite ? still : 0)
+                }
+            }
+            // A view thrown away and out of the room: the host waits for this run, which ends with the handlers'.
+            if !run.dismissals.isEmpty {
+                element.addHandler(MotionLayoutContract.itemDismissed, policy: .runConcurrently) { child, _, _ in
+                    await run.dismissed(child: child)
                 }
             }
         }

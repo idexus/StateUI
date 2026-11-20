@@ -124,10 +124,8 @@ struct ProgramPresentation {
         var held: [Int] = []
         var shown = answer.views.enumerated().map { index, view -> HostPlacement in
             let target = local(at: index).pressed.applied(to: view.target)
-            var placement = view.held
-                ?? bodies[view.key].map { LayoutShift(lanes: $0.lanes).applied(to: target) }
-                ?? target
-            if view.held == nil, let moved = local(at: index).held {
+            var placement = bodies[view.key].map { LayoutShift(lanes: $0.lanes).applied(to: target) } ?? target
+            if let moved = local(at: index).held {
                 // Taken as it was last shown, and pinned to the hand from there whatever its place does meanwhile.
                 let from = taken[view.key] ?? stood[view.key]?.shown ?? target
                 taken[view.key] = from

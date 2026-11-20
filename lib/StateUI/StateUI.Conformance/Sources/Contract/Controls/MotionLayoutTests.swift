@@ -504,12 +504,16 @@
                 s.expect(phase.wrappedValue, 0, "the run stands")
             },
             ConformanceCase("aViewLetGoFarEnoughIsDismissed", proves: [
+                Covered(MotionLayoutContract.itemDismissed),
+            ], needs: [
+                Covered(ViewContract.interaction, on: RectangleContract.self),
                 Covered(MotionLayoutContract.itemDragUpdated),
-            ], needs: [Covered(ViewContract.interaction, on: RectangleContract.self)]) { s in
+            ]) { s in
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
                 let view = try itemLayout(
-                    s, clock: clock, phase: phase, drag: .drag(.vertical, begins: .directional), told: told,
-                    dismissing: true)
+                    s, clock: clock, phase: phase,
+                    drag: .drag(.vertical, begins: .directional).dismissal(directions: .down, threshold: 10),
+                    told: told, dismissing: true)
 
                 try s.perform(.pressDown(at: Point(x: 10, y: 5)), on: view)
                 try s.perform(.drag(to: Point(x: 10, y: 28)), on: view)
@@ -525,7 +529,7 @@
 }
 
 /// A layout of three views a hand moves across, each taken by itself as its own `drag` says - told to `told` with
-/// where the hand is, and one let go twenty points down dismissed where `dismissing` - its run on `clock`: the
+/// where the hand is, and one thrown away told where `dismissing` - its run on `clock`: the
 /// middle view's element, once the room is told.
 @MainActor
 private func itemLayout(
@@ -549,7 +553,7 @@ private func itemLayout(
                     .release(.projected(.eased(.milliseconds(400)))))
             .onItemDragged { told.values.append("\($0.id) at \(Int($0.at.x)),\(Int($0.at.y))") }
             if dismissing {
-                layout.onItemDismissed(directions: .down, threshold: 10) { told.values.append("\($0) dismissed") }
+                layout.onItemDismissed { told.values.append("\($0) dismissed") }
                     .width(100).height(40)
             } else {
                 layout.width(100).height(40)

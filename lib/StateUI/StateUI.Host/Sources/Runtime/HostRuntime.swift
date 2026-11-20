@@ -138,8 +138,8 @@
 
     /// Reports a native event and runs its handler, then a turn; one raised while a patch applies, or inside a
     /// user's transaction, waits for it.
-    public func dispatch(_ handler: Int32, payload: [HostValue] = []) {
-        pump.dispatch(handler, payload: payload)
+    public func dispatch(_ handler: Int32, payload: [HostValue] = [], ended: (@MainActor () -> Void)? = nil) {
+        pump.dispatch(handler, payload: payload, ended: ended)
     }
 
     /// Runs `body` as one of the user's transactions: the handlers it raises run in order once it ends, and one

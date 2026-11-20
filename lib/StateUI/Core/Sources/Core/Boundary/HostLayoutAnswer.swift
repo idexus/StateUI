@@ -37,19 +37,14 @@
     /// way is measured to. Nil for a child the change moves nowhere.
     public var discrete: HostPlacement?
 
-    /// Where a child the hand dismissed flies, which is shown exactly there; nil for any other.
-    public var held: HostPlacement?
-
     /// The child `key` at `target`.
     public init(
-        key: Int, target: HostPlacement, body: LayoutBody? = nil, discrete: HostPlacement? = nil,
-        held: HostPlacement? = nil
+        key: Int, target: HostPlacement, body: LayoutBody? = nil, discrete: HostPlacement? = nil
     ) {
         self.key = key
         self.target = target
         self.body = body
         self.discrete = discrete
-        self.held = held
     }
 }
 

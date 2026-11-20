@@ -1,6 +1,7 @@
-# revision 33.1
+# revision 34.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
+Button.dismissed: ✅
 Button.dragEnded: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -37,6 +38,7 @@ Button.tapped: ✅
 Button.verticalAlignment: ✅
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Canvas.area: ✅
+Canvas.dismissed: ✅
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the DOM's drag events dispatched by the driver, no drag the browser began
 Canvas.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Canvas.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -73,6 +75,7 @@ Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Capsule.area: ✅
+Capsule.dismissed: ✅
 Capsule.dragEnded: ✓ dragAndDrop on Capsule: the DOM's drag events dispatched by the driver, no drag the browser began
 Capsule.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Capsule.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -109,6 +112,7 @@ Capsule.tapped: ✅
 Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 CheckBox.area: ✅
+CheckBox.dismissed: ✅
 CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the DOM's drag events dispatched by the driver, no drag the browser began
 CheckBox.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 CheckBox.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -145,6 +149,7 @@ CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ColorPicker.area: ✅
+ColorPicker.dismissed: ✅
 ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
 ColorPicker.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ColorPicker.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -181,6 +186,7 @@ ColorPicker.tapped: ✅
 ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 DatePicker.area: ✅
+DatePicker.dismissed: ✅
 DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the DOM's drag events dispatched by the driver, no drag the browser began
 DatePicker.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 DatePicker.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -217,6 +223,7 @@ DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Ellipse.area: ✅
+Ellipse.dismissed: ✅
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the DOM's drag events dispatched by the driver, no drag the browser began
 Ellipse.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Ellipse.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -253,6 +260,7 @@ Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
 Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Fill.area: ✅
+Fill.dismissed: ✅
 Fill.dragEnded: ✓ dragAndDrop on Fill: the DOM's drag events dispatched by the driver, no drag the browser began
 Fill.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Fill.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -289,6 +297,7 @@ Fill.tapped: ✅
 Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Grid.area: ✅
+Grid.dismissed: ✅
 Grid.dragEnded: ✓ dragAndDrop on Grid: the DOM's drag events dispatched by the driver, no drag the browser began
 Grid.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Grid.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -325,6 +334,7 @@ Grid.tapped: ✅
 Grid.verticalAlignment: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 HStack.area: ✅
+HStack.dismissed: ✅
 HStack.dragEnded: ✓ dragAndDrop on HStack: the DOM's drag events dispatched by the driver, no drag the browser began
 HStack.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 HStack.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -361,6 +371,7 @@ HStack.tapped: ✅
 HStack.verticalAlignment: ✅
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Image.area: ✅
+Image.dismissed: ✅
 Image.dragEnded: ✓ dragAndDrop on Image: the DOM's drag events dispatched by the driver, no drag the browser began
 Image.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Image.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -397,6 +408,7 @@ Image.tapped: ✅
 Image.verticalAlignment: ✅
 ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ItemsView.area: ✅
+ItemsView.dismissed: ✅
 ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the DOM's drag events dispatched by the driver, no drag the browser began
 ItemsView.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ItemsView.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -433,6 +445,7 @@ ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.area: ✅
+Line.dismissed: ✅
 Line.dragEnded: ✓ dragAndDrop on Line: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -469,6 +482,7 @@ Line.tapped: ✅
 Line.verticalAlignment: ✅
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Link.area: ✅
+Link.dismissed: ✅
 Link.dragEnded: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
 Link.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Link.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -505,6 +519,7 @@ Link.tapped: ✅
 Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
+Map.dismissed: 🧩
 Map.dragEnded: 🧩
 Map.dragEntered: 🧩
 Map.dragExited: 🧩
@@ -541,6 +556,7 @@ Map.tapped: 🧩
 Map.verticalAlignment: 🧩
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 MotionLayout.area: ✅
+MotionLayout.dismissed: ✅
 MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the DOM's drag events dispatched by the driver, no drag the browser began
 MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -577,6 +593,7 @@ MotionLayout.tapped: ✅
 MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Path.area: ✅
+Path.dismissed: ✅
 Path.dragEnded: ✓ dragAndDrop on Path: the DOM's drag events dispatched by the driver, no drag the browser began
 Path.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Path.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -613,6 +630,7 @@ Path.tapped: ✅
 Path.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.area: ✅
+Picker.dismissed: waits on Picker.interaction
 Picker.dragEnded: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -649,6 +667,7 @@ Picker.tapped: – The browser's select opens its list at the user's press, and 
 Picker.verticalAlignment: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polygon.area: ✅
+Polygon.dismissed: ✅
 Polygon.dragEnded: ✓ dragAndDrop on Polygon: the DOM's drag events dispatched by the driver, no drag the browser began
 Polygon.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polygon.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -685,6 +704,7 @@ Polygon.tapped: ✅
 Polygon.verticalAlignment: ✅
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polyline.area: ✅
+Polyline.dismissed: ✅
 Polyline.dragEnded: ✓ dragAndDrop on Polyline: the DOM's drag events dispatched by the driver, no drag the browser began
 Polyline.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polyline.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -721,6 +741,7 @@ Polyline.tapped: ✅
 Polyline.verticalAlignment: ✅
 ProgressBar.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ProgressBar.area: ✅
+ProgressBar.dismissed: ✅
 ProgressBar.dragEnded: ✓ dragAndDrop on ProgressBar: the DOM's drag events dispatched by the driver, no drag the browser began
 ProgressBar.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ProgressBar.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -757,6 +778,7 @@ ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Rectangle.area: ✅
+Rectangle.dismissed: ✅
 Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Rectangle.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Rectangle.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -793,6 +815,7 @@ Rectangle.tapped: ✅
 Rectangle.verticalAlignment: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ScrollView.area: ✅
+ScrollView.dismissed: ✅
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the DOM's drag events dispatched by the driver, no drag the browser began
 ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -829,6 +852,7 @@ ScrollView.tapped: ✅
 ScrollView.verticalAlignment: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 SearchField.area: ✅
+SearchField.dismissed: ✅
 SearchField.dragEnded: ✓ dragAndDrop on SearchField: the DOM's drag events dispatched by the driver, no drag the browser began
 SearchField.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 SearchField.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -865,6 +889,7 @@ SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Separator.area: ✅
+Separator.dismissed: ✅
 Separator.dragEnded: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
 Separator.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Separator.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -901,6 +926,7 @@ Separator.tapped: ✅
 Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Slider.area: ✅
+Slider.dismissed: ✅
 Slider.dragEnded: ✓ dragAndDrop on Slider: the DOM's drag events dispatched by the driver, no drag the browser began
 Slider.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Slider.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -937,6 +963,7 @@ Slider.tapped: ✅
 Slider.verticalAlignment: ✅
 Space.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Space.area: ✅
+Space.dismissed: ✅
 Space.dragEnded: ✓ dragAndDrop on Space: the DOM's drag events dispatched by the driver, no drag the browser began
 Space.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Space.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -973,6 +1000,7 @@ Space.tapped: ✅
 Space.verticalAlignment: ✅
 Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Spinner.area: ✅
+Spinner.dismissed: ✅
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
 Spinner.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Spinner.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -1009,6 +1037,7 @@ Spinner.tapped: ✅
 Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Stepper.area: ✅
+Stepper.dismissed: ✅
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the DOM's drag events dispatched by the driver, no drag the browser began
 Stepper.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Stepper.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -1045,6 +1074,7 @@ Stepper.tapped: ✅
 Stepper.verticalAlignment: ✅
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Switch.area: ✅
+Switch.dismissed: ✅
 Switch.dragEnded: ✓ dragAndDrop on Switch: the DOM's drag events dispatched by the driver, no drag the browser began
 Switch.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Switch.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -1081,6 +1111,7 @@ Switch.tapped: ✅
 Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Text.area: ✅
+Text.dismissed: ✅
 Text.dragEnded: ✓ dragAndDrop on Text: the DOM's drag events dispatched by the driver, no drag the browser began
 Text.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Text.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -1117,6 +1148,7 @@ Text.tapped: ✅
 Text.verticalAlignment: ✅
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextEditor.area: ✅
+TextEditor.dismissed: ✅
 TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the DOM's drag events dispatched by the driver, no drag the browser began
 TextEditor.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextEditor.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -1153,6 +1185,7 @@ TextEditor.tapped: ✅
 TextEditor.verticalAlignment: ✅
 TextField.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextField.area: ✅
+TextField.dismissed: ✅
 TextField.dragEnded: ✓ dragAndDrop on TextField: the DOM's drag events dispatched by the driver, no drag the browser began
 TextField.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextField.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -1189,6 +1222,7 @@ TextField.tapped: ✅
 TextField.verticalAlignment: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TimePicker.area: ✅
+TimePicker.dismissed: ✅
 TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the DOM's drag events dispatched by the driver, no drag the browser began
 TimePicker.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TimePicker.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -1225,6 +1259,7 @@ TimePicker.tapped: ✅
 TimePicker.verticalAlignment: ✅
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 VStack.area: ✅
+VStack.dismissed: ✅
 VStack.dragEnded: ✓ dragAndDrop on VStack: the DOM's drag events dispatched by the driver, no drag the browser began
 VStack.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 VStack.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -1261,6 +1296,7 @@ VStack.tapped: ✅
 VStack.verticalAlignment: ✅
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 WebView.area: ✅
+WebView.dismissed: ✅
 WebView.dragEnded: ✓ dragAndDrop on WebView: the DOM's drag events dispatched by the driver, no drag the browser began
 WebView.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 WebView.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -1297,6 +1333,7 @@ WebView.tapped: ✅
 WebView.verticalAlignment: ✅
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ZStack.area: ✅
+ZStack.dismissed: ✅
 ZStack.dragEnded: ✓ dragAndDrop on ZStack: the DOM's drag events dispatched by the driver, no drag the browser began
 ZStack.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ZStack.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began

@@ -72,7 +72,7 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                 // it follows the hand; let go high or fast, it flies off and
                 // the app closes - the others close up, the card in front
                 // staying in front.
-                .onItemDismissed(directions: .up, threshold: 120) { name in close(name) }
+                .onItemDismissed { name in close(name) }
             }
             .gridRow(0)
             .clipsContent(true)
@@ -178,8 +178,9 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                 $named.journey.snap(to: min(max(1 + (Double(index) - shown) / 0.6, 0), 1))
             }
             // THE HAND TAKES THE CARD ITSELF where its first move goes up or
-            // down; a first move sideways is the run's.
-            .interaction(.drag(.vertical, begins: .directional))
+            // down; a first move sideways is the run's. Thrown 120 points
+            // up - or as far as a throw would carry it - it is dismissed.
+            .interaction(.drag(.vertical, begins: .directional).dismissal(directions: .up, threshold: 120))
         }
     }
     // listing: end

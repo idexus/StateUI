@@ -98,6 +98,17 @@
         HostBoundary.dispatch(handler, payload: payload)
     }
 
+    /// Reports a native event and says `ended` once every run its handler started has - at once where nobody
+    /// handles it.
+    @discardableResult
+    public func dispatch(_ handler: Int32, payload: [HostValue], ended: (@MainActor () -> Void)?) -> Bool {
+        guard let ended else { return dispatch(handler, payload: payload) }
+
+        let known = HostBoundary.dispatch(handler, payload: payload, ended: ended)
+        if !known { ended() }
+        return known
+    }
+
     /// Claims the calling thread as the UI thread, whose jobs are `MainActor`'s - the host's start, before anything.
     public nonisolated func claimUIThread() { HostBoundary.claimUIThread() }
 

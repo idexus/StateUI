@@ -77,8 +77,10 @@
     var saidACornerWorkedOut = false
     var frameReportDue = false
 
-    /// The room the toolkit last laid the element out in; nil before it said.
+    /// The room the toolkit last laid the element out in, and where it put it in what holds it; nil before it
+    /// said.
     var laidOutRoom: (width: Double, height: Double)?
+    var laidOutCorner: Point?
 
     /// Where the layout program last put the children, as the element presents them.
     private(set) var programPlaces: [HostPlacement] = []
@@ -121,6 +123,39 @@
     var localFollow = LocalFollow()
     var dragFrom = Point.zero
     var dragOrigin = Rect.zero
+
+    /// The view's way out once the user threw it away, what its handlers are told when it is out, and how many
+    /// of the runs they started have not ended yet.
+    /// Design: docs/design/host/interaction.md#a-view-thrown-away
+    var flight: PresentationOperation?
+    var flownFrom: Rect?
+    var dismissing: (way: SwipeDirection, speed: Point)?
+    var awaitedDismissals = 0
+
+    /// How far from its place a press caught the view on its way out; nil once a hand moved it or let it go.
+    var caught: Point?
+
+    /// Whether the element has left the tree for good.
+    private(set) var hasLeft = false
+
+    /// Whether a view standing in the element may be thrown out of it: the room it leaves is this element's.
+    private(set) var holdsDismissing = false
+
+    /// A view standing in the element says a dismissal it did not, or says one no more. Kept out of the mount's
+    /// own frame, which every level of the tree stacks.
+    @inline(never)
+    func dismissingChanged() {
+        holdsDismissing = children.contains { $0.interactionProgram?.drag?.dismissal != nil }
+    }
+
+    /// The element's program came after `before`: where it says a dismissal it did not, or says one no more, what
+    /// holds the element is told.
+    @inline(never)
+    private func dismissalDeclared(after before: HostInteractionProgram?) {
+        if (before?.drag?.dismissal != nil) != (interactionProgram?.drag?.dismissal != nil) {
+            parent?.dismissingChanged()
+        }
+    }
 
     /// Where the element last showed the child at `place` of its program's places; nil where it shows none there.
     func programPlace(at place: Int) -> HostPlacement? {
@@ -424,6 +459,7 @@
             if case .replace(let program) = update { interactionProgram = program } else { interactionProgram = nil }
             tree.interactionChanged(self, before)
             localInteractionChanged(in: tree)
+            dismissalDeclared(after: before)
         }
         wear(driven)
         // A journey followed with no property has no view to read it: its channel opens here.
@@ -581,6 +617,7 @@
         }
         self.children = children
         self.slots = slots
+        dismissingChanged()
         leave(before)
         if described { arrangedByRender(from: before) }
     }
@@ -687,6 +724,8 @@
         }
         layoutProgram = nil
         interactionProgram = nil
+        flight = nil
+        hasLeft = true
         wornStates = []
         presentedStates = []
         isLeaving = false

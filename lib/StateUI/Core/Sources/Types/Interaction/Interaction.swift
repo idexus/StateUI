@@ -272,7 +272,7 @@ extension Interaction {
                 })
             }
         }
-        let drag = drag.map { HostDrag(axes: $0.axes, begins: $0.begins) }
+        let drag = drag.map { HostDrag(axes: $0.axes, begins: $0.begins, dismissal: $0.dismissal) }
         return HostInteractionProgram(press: press, drag: drag, values: leaves.compactMap { leaf in
             guard let lane = leaf.lane, let image = leaf.image() else { return nil }
 

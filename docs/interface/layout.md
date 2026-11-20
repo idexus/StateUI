@@ -1152,15 +1152,17 @@ struct Board: View {
 }
 ```
 
-`.onItemDismissed(directions: .up, threshold: 120) { id in … }` lets a view go for good:
-let go past 120 points up - or thrown far enough that way - it flies on out
-of the room, and the handler runs once it has left, where the application
-removes the item it names. Short of it, the view goes back. A handler that
-awaits takes a policy, as an event's does - `.onItemDismissed(directions: .up, threshold: 120,
-policy: .ignoreWhileRunning) { id in try await archive(id) }` - and what it runs
-ends with the layout. Written more than once - `.up` to archive, `.down` to
-delete - a view let go runs every one whose way and distance it passed, in the
-order written.
+A view thrown away says so itself too - its drag's
+`.dismissal(directions: .up, threshold: 120)`
+([the hand on a view itself](interaction-and-actions.md#the-hand-on-a-view-itself)) -
+and `.onItemDismissed { id in … }` hears it for the layout: once the view
+has left the room the handler runs with its item's identity, where the
+application removes the item, and the others close the gap. A view whose
+item no handler removed comes back to its place. A handler that awaits takes
+a policy, as an event's does -
+`.onItemDismissed(policy: .ignoreWhileRunning) { id in try await archive(id) }` -
+the view staying out of the room until it has ended; what it runs ends with
+the layout. Written more than once, each runs, in the order written.
 
 A run with no ends comes round: `periodic: true` makes one turn of the range
 bring the layout back where it was - its upper end is its lower one a turn

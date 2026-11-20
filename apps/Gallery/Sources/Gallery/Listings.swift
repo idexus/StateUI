@@ -882,7 +882,7 @@ enum Listings {
                     // it follows the hand; let go high or fast, it flies off and
                     // the app closes - the others close up, the card in front
                     // staying in front.
-                    .onItemDismissed(directions: .up, threshold: 120) { name in close(name) }
+                    .onItemDismissed { name in close(name) }
                 }
                 .gridRow(0)
                 .clipsContent(true)
@@ -981,8 +981,9 @@ enum Listings {
                     $named.journey.snap(to: min(max(1 + (Double(index) - shown) / 0.6, 0), 1))
                 }
                 // THE HAND TAKES THE CARD ITSELF where its first move goes up or
-                // down; a first move sideways is the run's.
-                .interaction(.drag(.vertical, begins: .directional))
+                // down; a first move sideways is the run's. Thrown 120 points
+                // up - or as far as a throw would carry it - it is dismissed.
+                .interaction(.drag(.vertical, begins: .directional).dismissal(directions: .up, threshold: 120))
             }
         }
         """#,
@@ -2121,7 +2122,7 @@ enum Listings {
             // A CARD PULLED UP is the hand's alone - each face says its own drag:
             // let go far enough, it flies out of the deck and leaves it; short
             // of that, it goes back.
-            .onItemDismissed(directions: .up, threshold: 120) { name in remove(name) }
+            .onItemDismissed { name in remove(name) }
             // THE TURN'S OWN MOTION, `@State(motion:)`, DRIVES MOVING BETWEEN CARDS;
             // `.layoutBodies` THE CARDS reaching their new places after a card
             // joins, leaves or the order changes.
@@ -2200,8 +2201,9 @@ enum Listings {
                 .verticalAlignment(.center)
             }
             // THE HAND TAKES THE CARD ITSELF where its first move goes up or down;
-            // a first move sideways turns the deck.
-            .interaction(.drag(.vertical, begins: .directional))
+            // a first move sideways turns the deck. Thrown 120 points up, the
+            // card is dismissed: the deck is told, and removes it.
+            .interaction(.drag(.vertical, begins: .directional).dismissal(directions: .up, threshold: 120))
         }
         """#,
         "CheckBoxSample": #"""
@@ -5201,9 +5203,11 @@ enum Listings {
         """#,
         "HandOnViewSample": #"""
         // Sources/Samples/Gestures/HandOnViewSample.swift
+        @State private var thrown = 0
+
         var body: some View {
             VStack {
-                // The hand builds no view: the label says so.
+                // The hand builds no view - only a ticket thrown away does, to count it: the label says so.
                 DebugInfoLabel()
 
                 // A PRESS GROWS THE CARD A LITTLE, PULLS IT TOWARD ITSELF AND STRETCHES IT THE WAY IT PULLS - on a
@@ -5235,6 +5239,22 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .interaction(.drag(.both))
                 .layoutBody(.onChange(response: .milliseconds(320), damping: 0.7))
+
+                // THROWN UP FAR ENOUGH, THE TICKET FLIES ON OUT OF THE STACK, AND `onDismissed` IS TOLD ONCE IT IS OUT.
+                // Nothing removes it here, so it comes back where the stack puts it.
+                ZStack {
+                    Rectangle()
+                        .fill(Palette.raised)
+                    Text("Throw me up - \(thrown)")
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
+                }
+                .width(180)
+                .height(56)
+                .horizontalAlignment(.center)
+                .interaction(.drag(.vertical).dismissal(directions: .up, threshold: 80))
+                .onDismissed { _ in thrown += 1 }
+                .layoutBody(.onChange(response: .milliseconds(320), damping: 0.8))
             }
         }
         """#,

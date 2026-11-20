@@ -27,6 +27,11 @@ enum Opened {
         view.interaction(.drag(.both))
     }
 
+    /// `view`, taken by the hand any way and dismissed thrown thirty points up.
+    static func thrown<V: View>(_ view: V) -> some View {
+        view.interaction(.drag(.both).dismissal(directions: .up, threshold: 30))
+    }
+
     /// `view`, aimed at by `focus`.
     static func aimed<V: View>(_ view: V, by focus: FocusAim) -> some View {
         let aim = Aim(V.self)

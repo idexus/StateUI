@@ -63,6 +63,7 @@ extension MountedElement {
     /// for its place. What is laid over the view comes after that on the press's own spring, where it has one.
     /// Design: docs/design/host/interaction.md#a-press-with-a-spring-of-its-own
     func pacedLocally(in runtime: HostRuntime) {
+        flown(in: runtime)
         let now = runtime.clock.now()
         if let press = pressReading.taken() {
             let ends = press.phase == .ended || press.phase == .cancelled
@@ -76,7 +77,7 @@ extension MountedElement {
 
     /// The spring a view no layout program places comes back on once the hand lets it go: the body it says
     /// itself, else its layout's for every child; nil for a view that is at its place at once.
-    private var bodyOfItsOwn: HostLayoutBody? {
+    var bodyOfItsOwn: HostLayoutBody? {
         let own = value(ViewContract.layoutBody.token).flatMap(LayoutBody.init(propValue:))
         let layouts = parent?.value(LayoutContract.layoutBodies.token).flatMap(LayoutBody.init(propValue:))
         return (own ?? layouts)?.host
@@ -96,11 +97,24 @@ extension MountedElement {
         var moved = local
         switch report.phase {
         case .began:
-            dragFrom = report.at
-            moved.held = .zero
+            // A hand taking a view on its way out takes it where it stands: its flight ends, and nothing is told.
+            let flown = interruptFlight() ?? caught
+            caught = nil
+            dragFrom = Point(x: report.at.x - (flown?.x ?? 0) * turn, y: report.at.y - (flown?.y ?? 0))
+            moved.held = flown ?? .zero
         case .changed:
             moved.held = along(Point(x: report.at.x - dragFrom.x, y: report.at.y - dragFrom.y))
         case .ended:
+            // Along the drag's axes as the user sees them: what a dismissal is measured by, and told.
+            func seen(_ move: Point) -> Point {
+                Point(x: drag.axes == .vertical ? 0 : move.x, y: drag.axes == .horizontal ? 0 : move.y)
+            }
+            let gone = seen(Point(x: report.at.x - dragFrom.x, y: report.at.y - dragFrom.y))
+            if let rule = drag.dismissal, let way = Self.dismissed(by: rule, gone: gone, speed: seen(report.speed)) {
+                tellLayout(of: report, in: runtime)
+                return dismiss(
+                    way, from: local.held ?? .zero, speed: along(report.speed), told: seen(report.speed), in: runtime)
+            }
             moved.held = nil
             moved.letGo = along(report.speed)
         case .cancelled:
@@ -156,7 +170,11 @@ extension MountedElement {
             localFollow.stop()
             kept.pressed = .identity
         }
-        if interactionProgram?.drag == nil { kept.held = nil }
+        if interactionProgram?.drag == nil {
+            kept.held = nil
+            flight = nil
+            dismissing = nil
+        }
         guard kept != local else { return }
 
         local = kept

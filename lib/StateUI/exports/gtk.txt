@@ -414,6 +414,7 @@ ZStack
   verticalAlignment
   width
   zIndex
+  dismissed()
   dragEnded()
   dragEntered()
   dragExited()

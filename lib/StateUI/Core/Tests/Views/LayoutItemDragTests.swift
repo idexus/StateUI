@@ -42,12 +42,12 @@ final class LayoutItemDragTests: XCTestCase {
         .layoutBodies(.onChange(response: .milliseconds(160)))
         if awaiting {
             // A dismissal that awaits, past any test's end: another while it runs is ignored.
-            return layout.onItemDismissed(directions: .up, threshold: 50, policy: .ignoreWhileRunning) { name in
+            return layout.onItemDismissed(policy: .ignoreWhileRunning) { name in
                 told.dismissed.append(name)
                 try await Task.sleep(for: .seconds(60))
             }.node
         }
-        return (dismissing ? layout.onItemDismissed(directions: .up, threshold: 50) { told.dismissed.append($0) } : layout).node
+        return (dismissing ? layout.onItemDismissed { told.dismissed.append($0) } : layout).node
     }
 
     /// The run shown now.
@@ -55,37 +55,25 @@ final class LayoutItemDragTests: XCTestCase {
         bench.shown(renders.renderFromScratch(tree()))
     }
 
-    /// LET GO FAR ENOUGH, THE VIEW FLIES ON OUT OF THE ROOM, and its item is told once it has left; short of it, it
-    /// comes back and nothing is told.
-    func testLetGoFarEnoughTheViewFliesOutAndItsItemIsTold() async {
+    /// A VIEW THROWN AWAY TELLS ITS ITEM, AND THE EVENT ENDS WITH THE LAYOUT'S HANDLERS: the host says which view
+    /// has left the room; the layout tells the item it shows, and what the host waits for ends once they have run.
+    /// Where the view flies meanwhile is the host's - the layout answers a place for it, as for every view.
+    func testAViewThrownAwayTellsItsItemAndEndsWithItsHandlers() async {
         let told = Told()
         let renders = Renders()
         func tree() -> Node { cards(told, dismissing: true) }
         _ = bench.laid(renders, tree)
+        var ended = false
 
-        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
-        bench.item(renders, tree, .changed, at: Point(x: 75, y: 20))
-        bench.item(renders, tree, .ended, at: Point(x: 75, y: 20))
-        for _ in 0..<40 { bench.cycle() }
-        _ = await settle()
-        XCTAssertEqual(told.dismissed, [], "short of the dismissal")
-        XCTAssertEqual(shown(renders, tree)[1].bounds.y, 0, accuracy: 0.001, "back at its place")
-
-        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
-        bench.item(renders, tree, .changed, at: Point(x: 75, y: -10))
-        bench.item(renders, tree, .ended, at: Point(x: 75, y: -10))
-        bench.cycle()
-        let flying = shown(renders, tree)[1].bounds.y
-        for _ in 0..<40 { bench.cycle() }
+        XCTAssertTrue(bench.dismissed(renders, tree, child: 1) { ended = true })
         _ = await settle()
 
-        XCTAssertLessThan(flying, -60, "on its way up")
-        XCTAssertLessThanOrEqual(shown(renders, tree)[1].bounds.y, -100, "out of the room")
-        XCTAssertEqual(told.dismissed, ["B"], "told once")
+        XCTAssertEqual(told.dismissed, ["B"], "the item of the view at that place")
+        XCTAssertTrue(ended, "every run the layout started has ended")
+        XCTAssertEqual(shown(renders, tree)[1].bounds.y, 0, accuracy: 0.001, "the layout's place for it stands")
     }
 
-    /// EVERY HANDLER OF THE HAND RUNS, in the order written: each drag's, and each dismissal's whose way and distance
-    /// the view passed - not one written for another way.
+    /// EVERY HANDLER OF THE HAND RUNS, in the order written: each drag's, and each dismissal's.
     func testEveryHandlerOfTheHandRunsInWritingOrder() async {
         let told = Told()
         let renders = Renders()
@@ -95,9 +83,9 @@ final class LayoutItemDragTests: XCTestCase {
             }
             .onItemDragged { told.drags.append($0) }
             .onItemDragged { told.drags.append($0) }
-            .onItemDismissed(directions: .up, threshold: 50) { told.dismissed.append("up \($0)") }
-            .onItemDismissed(directions: .down, threshold: 50) { told.dismissed.append("down \($0)") }
-            .onItemDismissed(directions: .up, threshold: 20, policy: .runConcurrently) { told.dismissed.append("up again \($0)") }
+            .onItemDismissed { told.dismissed.append("first \($0)") }
+            .onItemDismissed { told.dismissed.append("second \($0)") }
+            .onItemDismissed(policy: .runConcurrently) { told.dismissed.append("third \($0)") }
             .node
         }
         _ = bench.laid(renders, tree)
@@ -106,10 +94,10 @@ final class LayoutItemDragTests: XCTestCase {
         XCTAssertEqual(told.drags.map(\.id), ["B", "B"], "both hear the hand take it")
         bench.item(renders, tree, .changed, at: Point(x: 75, y: -10))
         bench.item(renders, tree, .ended, at: Point(x: 75, y: -10))
-        for _ in 0..<40 { bench.cycle() }
+        bench.dismissed(renders, tree, child: 1)
         _ = await settle()
 
-        XCTAssertEqual(told.dismissed, ["up B", "up again B"])
+        XCTAssertEqual(told.dismissed, ["first B", "second B", "third B"])
     }
 
     /// A DRAG THAT AWAITS GOES THROUGH ITS GATE: under `.ignoreWhileRunning` the moves while its first run awaits are
@@ -148,19 +136,16 @@ final class LayoutItemDragTests: XCTestCase {
             MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
                 [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
-            .onItemDismissed(directions: .up, threshold: 50, policy: .ignoreWhileRunning) { _ in
+            .onItemDismissed(policy: .ignoreWhileRunning) { _ in
                 heard.append(1)
                 try await Task.sleep(for: .seconds(60))
             }
-            .onItemDismissed(directions: .up, threshold: 20, policy: .ignoreWhileRunning) { _ in heard.append(2) }
+            .onItemDismissed(policy: .ignoreWhileRunning) { _ in heard.append(2) }
             .node
         }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
-        bench.item(renders, tree, .changed, at: Point(x: 75, y: -10))
-        bench.item(renders, tree, .ended, at: Point(x: 75, y: -10))
-        for _ in 0..<40 { bench.cycle() }
+        bench.dismissed(renders, tree, child: 1)
         _ = await settle()
 
         XCTAssertEqual(heard, [1, 2])
@@ -178,15 +163,12 @@ final class LayoutItemDragTests: XCTestCase {
                 [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
             return (hears.wrappedValue
-                ? layout.onItemDismissed(directions: .up, threshold: 50, gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
+                ? layout.onItemDismissed(gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
                 : layout).node
         }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
-        bench.item(renders, tree, .changed, at: Point(x: 75, y: -10))
-        bench.item(renders, tree, .ended, at: Point(x: 75, y: -10))
-        for _ in 0..<40 { bench.cycle() }
+        bench.dismissed(renders, tree, child: 1)
         _ = await settle()
         XCTAssertTrue(gate.isBusy, "the handler runs")
 
@@ -199,53 +181,24 @@ final class LayoutItemDragTests: XCTestCase {
         await gate.endEveryRun()
     }
 
-    /// A DISMISSAL TOLD AFTER ITS LAYOUT LEFT STARTS NOTHING: the layout gone before the told dismissal runs.
-    func testADismissalToldAfterItsLayoutLeftStartsNothing() async {
-        let renders = Renders()
-        let gate = Gate(.ignoreWhileRunning)
-        var heard = 0
-        func tree() -> Node {
-            MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
-                [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
-            }
-            .onItemDismissed(directions: .up, threshold: 50, gate: gate) { _ in
-                heard += 1
-                try await Task.sleep(for: .seconds(60))
-            }
-            .node
-        }
-        _ = bench.laid(renders, tree)
-
-        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
-        bench.item(renders, tree, .changed, at: Point(x: 75, y: -10))
-        bench.item(renders, tree, .ended, at: Point(x: 75, y: -10))
-        for _ in 0..<40 { bench.cycle() }
-        // The dismissal is told after the frame; the layout leaves before it is.
-        _ = renders.render(VStack {}.node)
-        _ = await settle()
-
-        XCTAssertEqual(heard, 0, "the layout left before the dismissal was told")
-        XCTAssertFalse(gate.isBusy)
-        await gate.endEveryRun()
-    }
-
     /// A DISMISSAL THAT AWAITS GOES THROUGH ITS GATE: while the first runs, a second view dismissed under
-    /// `.ignoreWhileRunning` flies out and its item is not told.
+    /// `.ignoreWhileRunning` is not told - and its event ends at once, the first's still under way.
     func testADismissalThatAwaitsGoesThroughItsGate() async {
         let told = Told()
         let renders = Renders()
         func tree() -> Node { cards(told, awaiting: true) }
         _ = bench.laid(renders, tree)
+        var ended: [Int] = []
 
-        for start in [Point(x: 75, y: 50), Point(x: 25, y: 50)] {
-            bench.item(renders, tree, .began, at: start)
-            bench.item(renders, tree, .changed, at: Point(x: start.x, y: -10))
-            bench.item(renders, tree, .ended, at: Point(x: start.x, y: -10))
-            for _ in 0..<40 { bench.cycle() }
-            _ = await settle()
-        }
+        bench.dismissed(renders, tree, child: 1) { ended.append(1) }
+        _ = await settle()
+        bench.dismissed(renders, tree, child: 0) { ended.append(0) }
+        _ = await settle()
 
         XCTAssertEqual(told.dismissed, ["B"], "the second ignored while the first runs")
+        XCTAssertEqual(ended, [0], "let go by the gate, it ends at once; the first still runs")
+        _ = renders.render(VStack {}.node)
+        _ = await settle()
     }
 
     /// A HAND STANDING STILL IS TOLD HOW LONG it has stood.
@@ -313,20 +266,23 @@ final class LayoutItemDragTests: XCTestCase {
         XCTAssertEqual(order.wrappedValue, ["B", "A", "C"])
     }
 
-    /// THE LAYOUT HEARS A VIEW'S DRAG WHERE SOMETHING ASKS TO BE TOLD OF IT - a drag's handler, or a dismissal - and
-    /// one that asks nothing hears none: the view is still its host's to hold.
+    /// THE LAYOUT HEARS A VIEW'S DRAG WHERE SOMETHING ASKS TO BE TOLD OF IT, AND A VIEW THROWN AWAY WHERE SOMETHING
+    /// ASKS FOR THAT: one that asks nothing hears neither - the view is still its host's to hold and to throw.
     func testTheLayoutHearsItsViewsDragWhereSomethingAsks() {
         let asking = Renders().render(cards(Told())).first(.motionLayout)
         let dismissing = Renders().render(
             MotionLayout(["A"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [Placement(.zero)] }
-                .onItemDismissed(directions: .up, threshold: 50) { _ in }
+                .onItemDismissed { _ in }
                 .node)
             .first(.motionLayout)
         let plain = Renders().render(MotionLayout(["A"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [Placement(.zero)] }.node)
             .first(.motionLayout)
 
         XCTAssertNotNil(asking?.events?[.itemDragUpdated])
-        XCTAssertNotNil(dismissing?.events?[.itemDragUpdated])
+        XCTAssertNil(asking?.events?[.itemDismissed])
+        XCTAssertNotNil(dismissing?.events?[.itemDismissed])
+        XCTAssertNil(dismissing?.events?[.itemDragUpdated], "a dismissal alone asks for no drag")
         XCTAssertNil(plain?.events?[.itemDragUpdated])
+        XCTAssertNil(plain?.events?[.itemDismissed])
     }
 }

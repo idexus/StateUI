@@ -183,6 +183,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   layout that scrolls sideways is `.interaction(.drag(.vertical, begins: .directional))`; `.onItemDragged` and
   `.onItemDismissed` are told as before. Said inside the view's own body, the drag leaves the layout building no
   view again as its order changes.
+- **A view says its own dismissal.** `MotionLayout.onItemDismissed(directions:threshold:_:)` is
+  `.onItemDismissed(_:)`, with its `policy:` and `gate:` forms: which throw dismisses a view is the view's to say -
+  `.interaction(.drag(.vertical, begins: .directional).dismissal(directions: .up, threshold: 120))` in its own body.
+  A view whose item no handler removes now comes back to its place, once every handler has ended.
 - **A press held is a long press.** `.onHeld(minimum:_:)` is `.onLongPressed(minimum:_:)`, with its `policy:` and
   `gate:` forms; a button's menu a held press opens is `.menu(.longPress)` (`ButtonMenuKind.held` is gone). An
   extension reads `ViewContract.longPressed` and `ViewContract.longPressDuration` for `held` and `holdDuration`,
@@ -190,6 +194,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### New
 
+- **A view thrown away.** A drag's `.dismissal(directions:threshold:motion:)` lets the hand throw the view out of
+  the room that holds it; `.onDismissed` hears a `Dismissal` - the way it went, the hand's speed - once it is out,
+  on any view. A press catches a view on its way out, and a view nobody removes comes back.
 - **A view answers the hand itself.** `.interaction(.press(values:_:))` draws a view by the `PresentationOffset`
   its effect answers for a `PressInput` while a press stands on it - moved, turned and scaled about its middle,
   only the `PresentationValues` it names. `.elasticPress()` is the press most views want: the view grown a

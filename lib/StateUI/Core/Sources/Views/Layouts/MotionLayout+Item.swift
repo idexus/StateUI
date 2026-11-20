@@ -1,16 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// One view of a motion layout taken by the hand by itself: found under the press, kept to the hand over the others,
-// let go back to its place under the layout's motion or, past a dismissal, flown on out of the room.
+// One view of a motion layout taken by the hand by itself: what the layout tells the application of it - the view
+// held, what it is over, and the view thrown away. Where the view is drawn meanwhile is its host's.
 // Design: docs/design/views/motion-layout.md#one-view-in-the-hand
-
-/// Which ways letting a view go dismisses it, how far the hand must take it first, and what is told of its item.
-struct LayoutDismissal<Item> {
-    let directions: SwipeDirections
-    let threshold: Double
-    let handler: ValueHandler<Item>
-}
 
 extension MotionLayout.Run {
     /// The hand holding the view at `child` among the layout's views by itself, at `point` in the room, letting go
@@ -20,30 +13,25 @@ extension MotionLayout.Run {
     func item(_ gesture: GesturePhase, child: Int, at point: Point, velocity: Point, still: Double) {
         switch gesture {
         case .began:
-            guard states.item.wrappedValue?.velocity != nil || states.item.wrappedValue == nil,
-                  slots.indices.contains(child),
-                  let placement = states.shown.wrappedValue.poses[slots[child].identity]
-            else { return }
+            guard states.item.wrappedValue == nil, slots.indices.contains(child) else { return }
 
-            let hand = LayoutItemHand(identity: slots[child].identity, taken: placement, from: point, at: point)
+            let hand = LayoutItemHand(identity: slots[child].identity, from: point, at: point)
             states.item.wrappedValue = hand
             tell(hand, gesture, still: still, velocity: Point(x: 0, y: 0))
 
         case .changed:
-            guard var hand = states.item.wrappedValue, hand.velocity == nil else { return }
+            guard var hand = states.item.wrappedValue else { return }
 
             hand.at = point
             states.item.wrappedValue = hand
             tell(hand, gesture, still: still, velocity: velocity)
 
         case .ended, .cancelled:
-            guard var hand = states.item.wrappedValue, hand.velocity == nil else { return }
+            guard var hand = states.item.wrappedValue else { return }
 
             hand.at = point
-            hand.velocity = gesture == .ended ? velocity : Point(x: 0, y: 0)
-            hand.dismissed = gesture == .ended && dismisses(hand)
-            states.item.wrappedValue = hand
-            tell(hand, gesture, still: 0, velocity: hand.velocity ?? Point(x: 0, y: 0))
+            states.item.wrappedValue = nil
+            tell(hand, gesture, still: 0, velocity: gesture == .ended ? velocity : Point(x: 0, y: 0))
         }
     }
 
@@ -101,90 +89,14 @@ extension MotionLayout.Run {
         return Dictionary(zip(slots.map(\.identity), poses), uniquingKeysWith: { first, _ in first })
     }
 
-    /// Whether letting `hand` go dismisses its view: it passes one of the dismissals.
-    func dismisses(_ hand: LayoutItemHand) -> Bool {
-        !passed(by: hand).isEmpty
-    }
+    /// The view at `child` among the layout's views was thrown away and has left the room: every `onItemDismissed`
+    /// is told its item, each through its own gate, and this returns once every run they started has ended - what
+    /// the host waits for before it puts a view nobody removed back.
+    /// Design: docs/design/views/motion-layout.md#one-view-in-the-hand
+    func dismissed(child: Int) async {
+        guard slots.indices.contains(child) else { return }
 
-    /// The places, in the order written, of the dismissals `hand`'s view passes: where the hand took it, and where
-    /// a throw at its speed would carry it, stands past the dismissal one of its ways.
-    private func passed(by hand: LayoutItemHand) -> Set<Int> {
-        guard let velocity = hand.velocity else { return [] }
-
-        // A throw is timed by its own law, the inherited one 400 milliseconds on `cubicOut`.
-        let timing: Motion = throwing.kind == .inherited ? .eased(.milliseconds(400)) : throwing
-        let across = hand.at.x - hand.from.x + HostMotionLaw.carried(velocity.x, under: timing)
-        let down = hand.at.y - hand.from.y + HostMotionLaw.carried(velocity.y, under: timing)
-        let ways: [(SwipeDirection, Double)] = [(.up, -down), (.down, down), (.left, -across), (.right, across)]
-        return Set(dismissals.indices.filter { place in
-            ways.contains { dismissals[place].directions.contains($0.0) && $0.1 > dismissals[place].threshold }
-        })
-    }
-
-    /// What a view let go and dismissed does to the run this frame: where it flies, and whether its flight goes on.
-    struct Hold {
-        var held: (index: Int, placement: Placement)?
-        var goesOn = false
-    }
-
-    /// The view the hand dismissed over `poses` - worked out at `now` in `room`: it flies on from where the hand
-    /// let it go, and its item is told once it has left the room. A view the hand holds, and one let go back to its
-    /// place, are its host's to show. A run standing at the highest rank is ranked anew for the view to fly over.
-    func hold(over poses: inout [Placement], at now: Double, room: Rect) -> Hold {
-        guard var hand = states.item.wrappedValue, hand.velocity != nil else { return Hold() }
-        guard hand.dismissed, let index = slots.firstIndex(where: { $0.identity == hand.identity }) else {
-            states.item.wrappedValue = nil
-            return Hold()
-        }
-
-        // A run standing at the highest rank an integer holds is ranked anew, its order kept, so the held view
-        // can stand over it.
-        if poses.contains(where: { $0.zIndex == .max }) {
-            for (place, rank) in Placement.drawingOrder(of: poses).enumerated() { poses[place].zIndex = rank }
-        }
-        var placement = hand.held(poses[index], over: poses)
-        let flew = hand.flew ?? now
-        let flying = flight(of: hand, in: room)
-        placement.bounds.x += flying.x * (now - flew) / 1_000
-        placement.bounds.y += flying.y * (now - flew) / 1_000
-        hand.flew = flew
-        if !hand.gone, Self.outside(placement, room) {
-            hand.gone = true
-            dismissed(hand)
-        }
-        if hand != states.item.wrappedValue { states.item.wrappedValue = hand }
-        return Hold(held: (index, placement), goesOn: !hand.gone)
-    }
-
-    /// How fast a dismissed view flies on, per second: the hand's speed, and its way out no slower than the room's
-    /// length a response of the layout's bodies' spring.
-    func flight(of hand: LayoutItemHand, in room: Rect) -> Point {
-        var velocity = hand.velocity ?? Point(x: 0, y: 0)
-        let length = max(viewsBody.spring?.response ?? 0, 1) / 1_000
-        let across = hand.at.x - hand.from.x, down = hand.at.y - hand.from.y
-        if abs(down) >= abs(across) {
-            velocity.y = down < 0 ? min(velocity.y, -room.height / length) : max(velocity.y, room.height / length)
-        } else {
-            velocity.x = across < 0 ? min(velocity.x, -room.width / length) : max(velocity.x, room.width / length)
-        }
-        return velocity
-    }
-
-    /// Whether `placement` stands wholly outside `room`.
-    static func outside(_ placement: Placement, _ room: Rect) -> Bool {
-        let bounds = placement.bounds
-        return bounds.x + bounds.width <= 0 || bounds.y + bounds.height <= 0
-            || bounds.x >= room.width || bounds.y >= room.height
-    }
-
-    /// Tells the application, through every dismissal `hand`'s view passed - each through its own gate - that its
-    /// item has been dismissed, after the frame.
-    func dismissed(_ hand: LayoutItemHand) {
-        let passed = passed(by: hand)
-        guard !passed.isEmpty, let slot = slots.first(where: { $0.identity == hand.identity }) else { return }
-
-        let id = slot.item[keyPath: path]
-        let start = states.dismissals.starting(dismissals.map { $0.handler.given(id) }) { passed.contains($0) }
-        libraryTask { start() }
+        let id = slots[child].item[keyPath: path]
+        for run in states.dismissals.started(dismissals.map { $0.given(id) }) { await run.value }
     }
 }

@@ -108,6 +108,7 @@ enum UIKitRealization {
         .partial(BackgroundElementContract.background, on: FillContract.self, missing: Self.ovalGlass),
         .partial(BackgroundElementContract.background, on: SpaceContract.self, missing: Self.ovalGlass),
         .partial(BackgroundElementContract.background, on: MotionLayoutContract.self, missing: Self.ovalGlass),
+        .complete(MotionLayoutContract.itemDismissed),
         .complete(MotionLayoutContract.itemDragUpdated),
         .partial(EnabledElementContract.isEnabled, on: MenuContract.self, missing: "UIKit holds no menu out of reach itself: each of its entries is."),
         .complete(LayoutContract.ignoresSafeArea),

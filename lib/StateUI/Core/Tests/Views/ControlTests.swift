@@ -373,7 +373,7 @@ final class ControlTests: XCTestCase {
                 .mirrorsRightToLeft(true)
                 .onItemActivated { _ in }
                 .onItemDragged { _ in }
-                .onItemDismissed(directions: .up, threshold: 80) { _ in }
+                .onItemDismissed { _ in }
                 .node.built),
 
             // A pan and two fingers over the motion layout: a rotation and a magnification, each driving its axis.
