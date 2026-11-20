@@ -172,8 +172,9 @@ while it works, one line of each stage that ran: its milliseconds in that
 second, its runs and its longest. The stages lie side by side, none inside
 another: a native event's handlers (`events`), the core's jobs, a `render`,
 its patch applied (`apply`), the windows and pages shown after it
-(`windows`), the `animations`, the core's `cycle` - engines, a layout's run
-- and what moved presented to the natives (`present`). The Web page shows
+(`windows`), the `animations`, the core's `cycle` - its engines - the
+layout programs asked and their views stepped (`layouts`), and what moved
+presented to the natives (`present`). The Web page shows
 the line over itself beside its own counts (platforms/web/runtime.md,
 probes). Unprobed, a stage costs one test of a static.
 

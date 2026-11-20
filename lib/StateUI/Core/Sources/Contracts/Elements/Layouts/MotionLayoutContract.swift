@@ -38,8 +38,12 @@ public enum MotionLayoutContract: ElementContract {
     public static let mirrorsRightToLeft = ElementProperty<Self, Bool>(
         "mirrorsRightToLeft", layer: .stateUI, travels: false)
 
+    /// The layout came to rest - no hand on its parameters, the parameters where they are going, every view at
+    /// its place: the parameters' numbers, in their axes' order.
+    public static let settled = ElementEvent<Self, [Double]>("settled", layer: .stateUI)
+
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        itemDismissed, itemDragUpdated, layout, mirrorsRightToLeft, parameters,
+        itemDismissed, itemDragUpdated, layout, mirrorsRightToLeft, parameters, settled,
     ]
 }

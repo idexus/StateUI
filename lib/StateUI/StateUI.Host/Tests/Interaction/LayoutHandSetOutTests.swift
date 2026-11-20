@@ -135,16 +135,17 @@ final class LayoutHandSetOutTests: XCTestCase {
                 .node
         }
         bench.laid(tree)
-        let stood = bench.answer
+        let (stood, before) = (bench.answer, bench.change)
 
         bench.hand(.began)
         bench.hand(.changed, moved: Point(x: -120, y: 0))
         bench.cycle()
 
+        let view = bench.answer.views[0]
         XCTAssertEqual(stood.views[0].target.bounds.x, 100, accuracy: 0.001, "where it stood")
-        XCTAssertEqual(bench.answer.views[0].target.bounds.x, 200, accuracy: 0.001, "where it sets out from now")
-        XCTAssertEqual(try XCTUnwrap(bench.answer.views[0].discrete).bounds.x, 200, accuracy: 0.001)
-        XCTAssertNotEqual(bench.answer.change, stood.change)
+        XCTAssertEqual(view.target.bounds.x, 200, accuracy: 0.001, "where it sets out from now")
+        XCTAssertEqual(try XCTUnwrap(bench.change.places[view.key]).bounds.x, 200, accuracy: 0.001)
+        XCTAssertNotEqual(bench.change.number, before.number)
     }
 
     /// WHERE THE MOTION SET OUT ASKS AGAIN ONLY AN ARITHMETIC HANDED IT: the hand passing a segment's start sets the

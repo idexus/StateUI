@@ -343,8 +343,9 @@ on every host:
   that comes after the toolkit laid the element out is told the room that
   stands (`laidOutRoom`). Nothing is worked out inside the toolkit's layout
   pass: the room asks for a turn, and the cycle answers.
-- After each cycle the display's frame takes every slot the cycle worked
-  out, finds its element (`MountedTree.mount(ofLayout:)`), and presents its
+- After each cycle the display's frame takes every slot the cycle stirred,
+  finds its element (`MountedTree.mount(ofLayout:)`), asks its program
+  ([asked in the host's frame](#asked-in-the-hosts-frame)) and presents its
   `area` only where the places changed (`takeProgramPlaces`) - a layout at
   rest costs a frame nothing.
 - `placement` is what the element presents: where the element shows each
@@ -361,6 +362,61 @@ on every host:
 
 A hand over a mirrored layout is turned about the room laid out, not about
 a frame some reader was told.
+
+## Asked in the host's frame
+
+The element asks its program where the children stand
+(`MountedElement.askProgram`, `HostLayoutProgram.place`) with three things
+of its own: the numbers its parameters stand at this frame, where its
+motion set out, and the room its toolkit laid it out in.
+
+```text
+  samples  where the parameters' channel shows them; no channel: where they are written
+  from     where the motion set out - kept while something moves the parameters
+  room     the room laid out
+```
+
+It asks in two places of the display's frame. After the cycle, for every
+slot the cycle stirred: the room, a new build, a state the arithmetic
+follows, the parameters written. And after the frame's channels were
+walked, for every layout whose parameters' state one of them moved
+(`MountedTree.layouts(movedBy:)`): that frame of the way is no cycle of
+the core, and the children stand where the sample the frame shows puts
+them, not a frame behind. A program that places by no numbers, a layout
+whose parameters have no channel yet and one with no room are read at no
+parameters (`answered`).
+
+Where the motion set out is kept on the element (`ProgramAsking.from`,
+`programSetOut`). While nothing moves the parameters - no hand holds one
+of their numbers, and their channel shows them where they are going - it
+is where they stand. While something does it stands, until an axis passes
+one of the marks its program names (`HostLayoutAxis.passed`): then the
+motion sets out from that mark, either way
+([where a motion set out](../views/motion-layout.md#where-a-motion-set-out)).
+
+A change of the layout is measured as the element asks (`ProgramAsking`).
+It keeps what it last asked - the build, the samples, the place set out
+from, the room - and each child's place by key. Handed a program of
+another build, or another place the motion set out from, it first asks
+where the last frame stood - those samples, that room:
+
+```text
+  a key answered elsewhere than it was   the change's: the place its way is measured to
+  a key never answered                   the change's: it joins there
+  a key answered as it was               not the change's
+  no key the change's                    no change: the one before it stands
+```
+
+A change that moved a child has a number of its own (`ProgramChange`),
+which the presentation sets out once ([bodies](#bodies)). Then the frame's
+own places are asked, so the arithmetic is asked last where the parameters
+stand. The parameters moving and a new room are asked once and are no
+change: the layout follows both at once.
+
+The trap is measuring a change against where the children are shown. A
+child on its way is shown between two places, so every frame would be a
+change; the measure is place against place, and where a child is shown is
+the body's alone.
 
 ## Bodies
 
@@ -384,9 +440,9 @@ is a shift and how fast each lane goes, pulled onto nought on its spring.
 - A child is the body it says itself (`HostLayoutView.body`), else its
   layout's for every child (`LayoutContract.layoutBodies`, read off the
   element), else a spring answering a change.
-- A change the element has not set out yet (`HostLayoutAnswer.change`)
-  sets each child it names out: its shift is where the element showed it
-  against the place the change measures to (`discrete`) - a child never
+- A change the element has not set out yet (`ProgramChange.number`) sets
+  each child it names out: its shift is where the element showed it against
+  the place the change measures to (`ProgramChange.places`) - a child never
   shown joins from nothing, its opacity from nought - at the speed its body
   had, or the hand's.
 - A child that follows its place is carried: the place having moved under
@@ -408,8 +464,32 @@ While a child is on its way the tree keeps the element among those it
 steps (`MountedTree.stepLayoutBodies`): the display's frame steps them
 after the cycle's stirred slots, presents the `area` of each whose children
 stand somewhere new, and holds its clock (`layoutBodiesMove`). No cycle of
-the core runs for such a frame. Once the last child stands the element
-says so (`bodiesMove(false)`), and the layout tells its rest.
+the core runs for such a frame.
+
+## At rest
+
+A layout rests where nothing moves it, and the element running its
+program sees all of that (`MountedElement.cameToRest`):
+
+```text
+  no hand holds a number of its parameters   the state's channel says none held
+  the parameters stand where they are going  the channel's value is its destination
+  no child is on its way                     the presentation has no body
+  no hand holds a view of its own            no child is held in its place
+```
+
+After each frame is presented the tree asks every layout whether that
+changed since it was last asked (`MountedTree.takeRestedLayouts`). One
+that came to rest is told once, with the numbers its parameters rest at
+(`MotionLayoutContract.settled`), through the handler its layout wrote
+where something listens (`onSettled`); one set moving tells nothing, and
+one laid out at rest was at rest already. Whatever moved it - the
+program's write, the hand's throw, a change, a view let go - the rest is
+one event, told after the frame that shows it.
+
+The trap is a rest the core works out. It would need the host's word for
+each of the four - a hand, the bodies - and a cycle to notice; the host
+layer has them all in the frame that brings the layout there.
 
 ## A placed child
 

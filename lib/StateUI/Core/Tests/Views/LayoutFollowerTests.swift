@@ -41,7 +41,8 @@ final class LayoutFollowerTests: XCTestCase {
     }
 
     /// A VIEW'S BODY FOLLOWS THE STATE ITS VIEW READS: a switch the views' own closure reads turns their bodies on,
-    /// the layout described again for that alone - nothing around it built.
+    /// the view built again for that alone - with its layout, or by itself in the holder a shaded layout keeps it
+    /// in - and nothing around the layout built.
     func testAViewsBodyFollowsTheStateItsViewReads() throws {
         try bodyFollowsTheStateItsViewReads(shaded: false)
         try bodyFollowsTheStateItsViewReads(shaded: true)
@@ -75,7 +76,8 @@ final class LayoutFollowerTests: XCTestCase {
         XCTAssertNil(body(), "no body of its own yet (shaded \(shaded))")
 
         sways.wrappedValue = true
-        renders.revisit(changed: Renderer.shared.pendingChanges)
+        // Built again with its layout, the host is handed that build's program; alone in its holder, none.
+        bench.takes(renders.revisit(changed: Renderer.shared.pendingChanges))
         moved(worn, to: [2, 2, 0], mask: 0b111)
         bench.cycle()
         XCTAssertEqual(

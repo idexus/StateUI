@@ -1,7 +1,8 @@
-# revision 25.2
+# revision 26.2
 MotionLayout: ✅
 MotionLayout.itemDismissed: ✅
 MotionLayout.itemDragUpdated: ✅
 MotionLayout.layout: ✅
 MotionLayout.mirrorsRightToLeft: ✅
 MotionLayout.parameters: ✅
+MotionLayout.settled: ✅

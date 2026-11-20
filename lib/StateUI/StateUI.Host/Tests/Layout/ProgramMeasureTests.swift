@@ -87,6 +87,7 @@ final class ProgramMeasureTests: XCTestCase {
             Rect(x: 0, y: 0, width: 10, height: 20), Rect(x: 18, y: 0, width: 30, height: 20), Rect(x: 56, y: 0, width: 20, height: 20),
         ])
 
+        layout.laidOutRoom = (50, 100)
         layout.layoutProgram?.layOut(50, 100)
         bench.settle()
 
@@ -129,6 +130,7 @@ final class ProgramMeasureTests: XCTestCase {
         XCTAssertEqual(layout.programSize(nil), LayoutSize(width: 76, height: 20))
         native.measuredAgain = 0
 
+        layout.laidOutRoom = (320, 100)
         layout.layoutProgram?.layOut(320, 100)
         bench.settle()
         XCTAssertEqual(native.measuredAgain, 0, "another room, the same size of its own")
@@ -211,6 +213,7 @@ private final class MeasuringBench {
     /// The page's motion layout, told its room and worked out.
     func laidOut(_ width: Double, _ height: Double) throws -> MountedElement {
         let layout = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
+        layout.laidOutRoom = (width, height)
         try XCTUnwrap(layout.layoutProgram).layOut(width, height)
         settle()
         return layout

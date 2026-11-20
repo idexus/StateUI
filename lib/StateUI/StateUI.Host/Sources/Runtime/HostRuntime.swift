@@ -364,6 +364,8 @@ extension HostRuntime: FramePresenter {
 
     func stepLayoutBodies() -> [UInt64] { tree.stepLayoutBodies() }
     func takeLocalMoves() -> [UInt64] { tree.takeLocalMoves() }
+    func layouts(movedBy states: Set<Int32>) -> [UInt64] { tree.layouts(movedBy: states) }
+    func takeRestedLayouts() -> [(handler: Int32, parameters: [Double])] { tree.takeRestedLayouts() }
 
     var layoutBodiesMove: Bool { tree.layoutBodiesMove }
 }

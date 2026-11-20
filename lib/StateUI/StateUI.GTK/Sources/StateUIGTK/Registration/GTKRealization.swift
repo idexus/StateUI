@@ -141,6 +141,7 @@ enum GTKRealization {
         .complete(BackgroundElementContract.background, on: MotionLayoutContract.self),
         .complete(MotionLayoutContract.itemDismissed),
         .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.settled),
         .partial(DatePickerContract.format,
             missing: "GTK writes the long and the short day in the user's own way, and the medium as the short."),
         .partial(DatePickerContract.maximum,

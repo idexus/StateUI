@@ -41,15 +41,12 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// The view the hand holds by itself, while it does, and on its way out once dismissed.
     @State private var item: LayoutItemHand?
 
-    /// The layout's slot: its number, the room the host said last and where the run last put every child.
+    /// The layout's slot: its number, and what its views measure as.
     /// Design: docs/design/core/layout-program.md#the-program
     @State private var slot = LayoutProgramSlot()
 
-    /// What the run last showed and the changes on their way to its poses.
-    @State private var shown = LayoutShown<Parameters>()
-
-    /// The parameters the run stood at when its motion set out, kept until it rests again.
-    @State private var from: Parameters?
+    /// Where the parameters were going when whoever keeps a value by them was last told.
+    @State private var lastNamed: Parameters?
 
     /// The room the host laid the layout out in, as its program was last told.
     @State private var room = Rect.zero
@@ -654,6 +651,11 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
                         gesture, child: child, at: at.told, velocity: velocity.told, still: still.isFinite ? still : 0)
                 }
             }
+            // The layout came to rest, as its host sees it - no hand, the parameters where they are going, every
+            // view at its place: every `onSettled` is told where the parameters stand.
+            if !run.settled.isEmpty {
+                element.addHandler(MotionLayoutContract.settled) { lanes in run.rested(at: lanes) }
+            }
             // A view thrown away and out of the room: the host waits for this run, which ends with the handlers'.
             if !run.dismissals.isEmpty {
                 element.addHandler(MotionLayoutContract.itemDismissed, policy: .runConcurrently) { child, _, _ in
@@ -662,15 +664,14 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             }
         }
         .setValue(MotionLayoutContract.parameters.token, on: run.parameters, mode: .inOut, kind: .property)
-        // The program is worked out on the cycle whenever what it works from was written - the room the host said,
-        // the parameters and their frames, a view in the hand - and the host reads the slots worked out.
+        // The host is told to ask the program again whenever what it works from was written - the room the host
+        // said, the parameters, a state the arithmetic follows. A frame of the parameters' way wakes nothing here:
+        // the host asks the program where they stand in its own frame.
         // Design: docs/design/core/layout-program.md#what-runs-it-again
-        .engine([slot, run.parameters.followed, run.parameters.storage.presentation, $item.followed] + followed,
-                consuming: consumed, priority: 0) { [slot] cycle in
-            slot.measuring.begin()
-            let answer = run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)
+        .engine([slot, run.parameters.followed] + followed, consuming: consumed, priority: 0) { [slot] _ in
+            run.tellNamed()
             Renderer.shared.board.stirred.append(slot.number)
-            return answer
+            return .wait
         }
     }
 
@@ -716,10 +717,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         /// Where every view goes, given the room and the views, the parameters and where its motion set out.
         let arithmetic: @MainActor (LayoutContext<ID>, Parameters, Parameters) -> [Placement]
 
-        /// Which description this is: the next number at each, never one again - an object's address is, once it
-        /// is let go.
-        let number: Int
-
         /// Whether the arithmetic is handed where the motion set out, and the poses it answered at keyframes, kept
         /// while this description stands.
         let readsFrom: Bool
@@ -741,12 +738,10 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             self.holder = holder
             self.arithmetic = arithmetic
             self.readsFrom = readsFrom
-            descriptionsMade += 1
-            number = descriptionsMade
         }
     }
 
-    /// What the engine and the handlers are handed: the layout as locals, the hand along it in focus.
+    /// What the program and the handlers are handed: the layout as locals, the hand along it in focus.
     var run: Run {
         let items = Array(source.items)
         let path = source.path
@@ -781,7 +776,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             readsFrom: source.readsFrom,
             kept: source.kept,
             followed: followed,
-            description: source.number,
             mask: mask,
             path: path,
             activated: activated,
@@ -790,7 +784,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             dismissals: dismissals,
             parameters: parameters,
             states: States(
-                slot: slot, room: _room, shown: _shown, from: _from, item: _item, dismissals: dismissalRuns,
+                slot: slot, room: _room, lastNamed: _lastNamed, item: _item, dismissals: dismissalRuns,
                 settles: settledRuns, drags: dragRuns),
             hands: hands,
             focus: hands.first { $0.way != nil },
@@ -817,8 +811,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     struct States {
         let slot: LayoutProgramSlot
         let room: State<Rect>
-        let shown: State<LayoutShown<Parameters>>
-        let from: State<Parameters?>
+        let lastNamed: State<Parameters?>
         let item: State<LayoutItemHand?>
         let dismissals: EventRegistration
         let settles: EventRegistration
@@ -852,7 +845,7 @@ extension MotionLayout: WalkedView {
     var walkedParts: [(label: String, value: Any)] {
         [
             ("_item", _item),
-            ("_slot", _slot), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
+            ("_slot", _slot), ("_lastNamed", _lastNamed), ("_room", _room), ("_numbers", _numbers),
             ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns), ("_dragRuns", _dragRuns),
             ("source", source), ("parameters", parameters), ("mappings", mappings), ("declared", declared as Any), ("curve", curve as Any),
             ("followed", followed), ("consumed", consumed), ("mask", mask as Any), ("activated", activated),
@@ -862,26 +855,6 @@ extension MotionLayout: WalkedView {
             ("named", named as Any), ("written", written),
         ]
     }
-}
-
-/// How many descriptions of motion layouts have been made.
-@MainActor private var descriptionsMade = 0
-
-/// What a layout last showed - the description it came from, at what parameters, set out from where and in what room,
-/// each view's pose and where it was shown, by identity - and the changes on their way to the poses: what a new
-/// description is measured against.
-struct LayoutShown<Parameters: LayoutParameters>: Equatable {
-    var description: Int?
-    var parameters: Parameters?
-    var from: Parameters?
-    var room = Rect.zero
-    var poses: [Int: Placement] = [:]
-
-    /// Where the parameters were going when whoever keeps a value by them was last told; nil before the first frame.
-    var named: Parameters?
-
-    /// Whether the run stood at rest the last frame.
-    var resting = true
 }
 
 private extension Point {

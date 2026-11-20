@@ -72,12 +72,13 @@ built again when the state moves, while everything around it is carried.
 
 ## Reads an engine makes are recorded nowhere
 
-An engine runs on the host's frames, outside any render, so a state it reads
-makes nothing a reader. A value that decides what a view looks like must be
-read in the body and handed to the engine's arithmetic. `GalleryView` reads its
-shape and whether its cards are animating in its body for this reason: read
-only inside the engine, a change of shape would move nothing, arm no engine,
-and leave the cards in the shape they were last placed in.
+An engine runs on the host's frames, outside any render, and a layout's
+arithmetic is asked there too: a state either reads makes nothing a reader.
+A value that decides what a view looks like must be read in the body and
+handed to the arithmetic. `GalleryView` reads its shape and whether its
+cards are animating in its body for this reason: read only inside the
+arithmetic, a change of shape would move nothing, ask nothing again, and
+leave the cards in the shape they were last placed in.
 
 ## A watcher is a view of its own
 

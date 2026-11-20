@@ -82,11 +82,18 @@ extension MotionLayout.Run {
     /// Where each view rests by this description, at the parameters the run last showed: the arithmetic asked again, so
     /// an order the application changed a moment ago stands in it.
     private func places() -> [Int: Placement] {
-        let memory = states.shown.wrappedValue
-        guard let parameters = memory.parameters else { return memory.poses }
+        let (room, parameters) = (states.room.wrappedValue, live())
+        guard room.width > 0, room.height > 0 else { return [:] }
 
-        let poses = pose(in: Rect(x: 0, y: 0, width: memory.room.width, height: memory.room.height), at: parameters, from: memory.from ?? parameters)
+        let poses = pose(in: Rect(x: 0, y: 0, width: room.width, height: room.height), at: parameters, from: parameters)
         return Dictionary(zip(slots.map(\.identity), poses), uniquingKeysWith: { first, _ in first })
+    }
+
+    /// The layout came to rest with its parameters at `lanes`, as its host says: every `onSettled` is told where
+    /// they stand, each through its own gate.
+    /// Design: docs/design/views/motion-layout.md#at-rest
+    func rested(at lanes: [Double]) {
+        _ = states.settles.started(settled.map { $0.given(standing(at: lanes)) })
     }
 
     /// The view at `child` among the layout's views was thrown away and has left the room: every `onItemDismissed`

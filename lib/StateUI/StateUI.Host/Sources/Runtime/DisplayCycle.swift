@@ -31,10 +31,19 @@
     /// The elements the hand moved by themselves since the last frame, where no layout program places them, by
     /// mount.
     func takeLocalMoves() -> [UInt64]
+
+    /// The layouts whose parameters one of `states` moved this frame, asked where they stand now: those whose
+    /// children stand somewhere new, by mount.
+    func layouts(movedBy states: Set<Int32>) -> [UInt64]
+
+    /// The layouts that came to rest since they were last asked: what hears each, and where its parameters stand.
+    func takeRestedLayouts() -> [(handler: Int32, parameters: [Double])]
 }
 
 extension FramePresenter {
     func takeLocalMoves() -> [UInt64] { [] }
+    func layouts(movedBy states: Set<Int32>) -> [UInt64] { [] }
+    func takeRestedLayouts() -> [(handler: Int32, parameters: [Double])] { [] }
 }
 
 /// One frame of the display's clock, in the order every runtime keeps.
@@ -121,21 +130,36 @@ extension FramePresenter {
             states[change.state] = change.value
             stateChannels.receive(change, now: now, reducesMotion: reducesMotion)
         }
-        // A layout whose program was worked out presents where its children stand now.
-        // Design: docs/design/host/layout.md#a-layout-program
-        for slot in cycle.stirred {
-            if let mount = presenter?.mount(ofLayout: slot) { properties[mount, default: []].insert(.area) }
+        HostProbe.timed(.layouts) {
+            // A layout the cycle stirred is asked where its children stand now.
+            // Design: docs/design/host/layout.md#a-layout-program
+            for slot in cycle.stirred {
+                if let mount = presenter?.mount(ofLayout: slot) { properties[mount, default: []].insert(.area) }
+            }
+            // And the children still on their way to their places take this frame's step.
+            // Design: docs/design/host/layout.md#bodies
+            for mount in presenter?.stepLayoutBodies() ?? [] { properties[mount, default: []].insert(.area) }
         }
-        // And the children still on their way to their places take this frame's step.
-        // Design: docs/design/host/layout.md#bodies
-        for mount in presenter?.stepLayoutBodies() ?? [] { properties[mount, default: []].insert(.area) }
         // And a view the hand moved by itself is drawn by its own transform.
         // Design: docs/design/host/interaction.md#a-views-own-press-and-drag
         for mount in presenter?.takeLocalMoves() ?? [] { properties[mount, default: []].insert(.translationX) }
-        tellFrameReaders()
 
         collectStateChannels()
+        // A layout whose parameters moved this frame is asked where they stand, in this frame - before whoever
+        // reads a frame is told what the frame moved.
+        // Design: docs/design/host/layout.md#asked-in-the-hosts-frame
+        HostProbe.timed(.layouts) {
+            for mount in presenter?.layouts(movedBy: Set(states.keys)) ?? [] {
+                properties[mount, default: []].insert(.area)
+            }
+        }
+        tellFrameReaders()
         present()
+        // And one that came to rest - no hand, its parameters where they are going, every child at its place -
+        // says so once the frame that brought it there is shown.
+        for rested in presenter?.takeRestedLayouts() ?? [] {
+            runtime?.dispatch(rested.handler, payload: [.numbers(rested.parameters)])
+        }
 
         // What an engine of the application finished is answered once its last frame is shown.
         for finished in cycle.finished {

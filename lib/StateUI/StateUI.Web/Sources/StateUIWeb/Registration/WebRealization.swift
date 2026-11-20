@@ -178,6 +178,7 @@ enum WebRealization {
         .complete(LayoutContract.ignoresSafeArea),
         .complete(MotionLayoutContract.itemDismissed),
         .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.settled),
         .partial(BackgroundElementContract.background, on: WindowContract.self,
             missing: "A page draws its window opaque: a blur or glass shows its color."),
         .notPlanned(WindowContract.maximumHeight, reason: "A page bounds no browser window: the user sizes it."),

@@ -10,29 +10,35 @@
     /// Which layout's program this is: the same number while the layout stands.
     public let slot: UInt64
 
-    /// Which description of the layout made it: another at every build of the layout.
+    /// Which build of the layout made it: another at every one, so a host is handed the program of each.
     public let revision: UInt64
 
     /// Says the room the host laid the layout out in, `width` by `height` points: a room that changed is worked out
     /// in the next cycle.
     public let layOut: @MainActor (_ width: Double, _ height: Double) -> Void
 
-    /// What the program last worked out: where the layout puts each child, in the children's order, and what the
-    /// host needs to bring it there; no view while the room is not measured.
+    /// Where the layout puts each child as its parameters stand, in the children's order, and what the host needs
+    /// to bring it there; no view while the room is not measured. What a host reads where it asks at no
+    /// parameters of its own.
     public let answered: @MainActor () -> HostLayoutAnswer
 
-    /// Says whether the host still moves a child onto its place: a layout is at rest only once none is.
-    public let bodiesMove: @MainActor (Bool) -> Void
-
-    /// Says whether a hand holds a number of the layout's parameters: a layout is at rest only once none does, and
-    /// where its motion set out stands while one does.
-    public let handHolds: @MainActor (Bool) -> Void
-
     /// How far the view drawn in front goes for one unit of the parameters' number `lane` standing at `value`,
-    /// along the hand's way - `across` or down - in points: as the layout stands now, or - `atRest` - as it would
-    /// rest there. Nil where the room is not measured yet, or the layout measures none.
+    /// along the hand's way - `across` or down - in points: its motion having set out from `from`, or - nil - as
+    /// it would rest there. Nil where the room is not measured yet, or the layout measures none.
     /// Design: docs/design/views/interaction.md#the-unit
-    public let frontItemUnit: (@MainActor (_ lane: Int, _ value: Double, _ across: Bool, _ atRest: Bool) -> Double?)?
+    public let frontItemUnit: (@MainActor (_ lane: Int, _ value: Double, _ across: Bool, _ from: [Double]?) -> Double?)?
+
+    /// Where the layout puts every child at `parameters` - its numbers, in its axes' order - its motion having set
+    /// out from `from`, in a room `width` by `height` points: worked out now, with nothing written, so a host
+    /// asks it in its own frame. Nil for a layout whose places no numbers move.
+    /// Design: docs/design/core/layout-program.md#the-places-at-any-parameters
+    public let place: (@MainActor (
+        _ parameters: [Double], _ from: [Double], _ width: Double, _ height: Double
+    ) -> HostLayoutAnswer)?
+
+    /// The axes of the layout's parameters whose segments say where its motion set out: what the host keeps that
+    /// place by. None for a layout no numbers move.
+    public let axes: [HostLayoutAxis]
 
     /// Says how the host measures a child of the layout, and - said again - that a child may measure otherwise than
     /// it did: a layout whose arithmetic measured a child is worked out again in the next cycle.
@@ -42,8 +48,8 @@
     /// none and takes the room it is given.
     public let measure: (@MainActor (_ width: Double?, _ height: Double?) -> LayoutSize)?
 
-    /// Where the layout puts its children - a view the hand holds where it holds it - as the layout wrote it: what
-    /// the core's own tests read.
+    /// Where the layout puts its children as its parameters stand, as the layout's own values: what the core's own
+    /// tests read.
     let run: (@MainActor () -> PlacedRun)?
 
     /// A program of the layout `slot` names, made by its description numbered `revision`, which puts each child
@@ -57,16 +63,15 @@
             answered: {
                 HostLayoutAnswer(views: placed().enumerated().map { HostLayoutView(key: $0.offset, target: $0.element) })
             },
-            bodiesMove: { _ in }, handHolds: { _ in }, frontItemUnit: nil, measuredBy: { _ in }, measure: nil,
-            run: nil)
+            frontItemUnit: nil, place: nil, axes: [], measuredBy: { _ in }, measure: nil, run: nil)
     }
 
     /// A program whose answer is made of `run`, measuring through what `measuredBy` is told.
     init(
         slot: UInt64, revision: UInt64, layOut: @escaping @MainActor (Double, Double) -> Void,
-        answered: @escaping @MainActor () -> HostLayoutAnswer, bodiesMove: @escaping @MainActor (Bool) -> Void,
-        handHolds: @escaping @MainActor (Bool) -> Void,
-        frontItemUnit: (@MainActor (Int, Double, Bool, Bool) -> Double?)?,
+        answered: @escaping @MainActor () -> HostLayoutAnswer,
+        frontItemUnit: (@MainActor (Int, Double, Bool, [Double]?) -> Double?)?,
+        place: (@MainActor ([Double], [Double], Double, Double) -> HostLayoutAnswer)?, axes: [HostLayoutAxis],
         measuredBy: @escaping @MainActor (@escaping HostChildMeasure) -> Void,
         measure: (@MainActor (Double?, Double?) -> LayoutSize)?, run: (@MainActor () -> PlacedRun)?
     ) {
@@ -74,9 +79,9 @@
         self.revision = revision
         self.layOut = layOut
         self.answered = answered
-        self.bodiesMove = bodiesMove
-        self.handHolds = handHolds
         self.frontItemUnit = frontItemUnit
+        self.place = place
+        self.axes = axes
         self.measuredBy = measuredBy
         self.measure = measure
         self.run = run

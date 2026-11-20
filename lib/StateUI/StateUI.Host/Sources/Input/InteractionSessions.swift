@@ -202,12 +202,11 @@ import StateUIFoundation
         if axis.swipes {
             let target = axis.nearest(hold.value)
             let unit = axis.unit == .frontItem
-                ? element.layoutProgram?.frontItemUnit?(lane.lane, target, axis.across, true)
+                ? element.layoutProgram?.frontItemUnit?(lane.lane, target, axis.across, nil)
                 : self.unit(of: axis, at: target, on: element)
             hold.grip = (target, unit)
         }
         held[lane] = hold
-        element.layoutProgram?.handHolds(true)
         return hold.value
     }
 
@@ -249,7 +248,8 @@ import StateUIFoundation
             return axis.across ? room.width : room.height
         case .frontItem?:
             if axis.swipes, let grip = mine(axis, on: element)?.grip { return grip.unit }
-            return element.layoutProgram?.frontItemUnit?(axis.value.lane, value, axis.across, false)
+            return element.layoutProgram?.frontItemUnit?(
+                axis.value.lane, value, axis.across, element.programAsking.from ?? element.programSamples ?? [])
         case nil:
             return nil
         }
@@ -284,7 +284,6 @@ import StateUIFoundation
             let law = (goings.first { $0.thrown } ?? goings.max { abs($0.left) < abs($1.left) })?.law
             channels.release(state, released, under: law, now: now(), reducesMotion: reducesMotion())
         }
-        if !holds(element) { element.layoutProgram?.handHolds(false) }
     }
 
     /// The numbers held at `lanes` go onto where their channels say they are going, with no speed, under their
@@ -315,11 +314,9 @@ import StateUIFoundation
         let written = Set(lanes.map { Lane(state: state, lane: $0) })
         let mounts = Set(written.compactMap { held[$0]?.mount })
         for mount in mounts.sorted() {
-            let element = held.values.first { $0.mount == mount }?.element
             lost[mount] = [.hand, .fingers]
             for lane in written where held[lane]?.mount == mount { held[lane] = nil }
             cancel(held.filter { $0.value.mount == mount }.map(\.key))
-            element?.layoutProgram?.handHolds(false)
         }
     }
 
@@ -337,7 +334,6 @@ import StateUIFoundation
         guard !gone.isEmpty else { return }
 
         cancel(gone)
-        if !holds(element) { element.layoutProgram?.handHolds(false) }
     }
 
     /// The element mounted as `mount` left the tree: what its hand held is let go, as a hand taken away.

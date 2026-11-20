@@ -376,6 +376,47 @@
                 s.expect(handed.values.last, 4, "where the program sent it")
                 s.expect(arrived.values, [.reached(.animated)], "and a move of it awaited until it arrived")
             },
+            ConformanceCase("aRunSentOnTellsItsRestOnceWhereItStands", proves: [
+                Covered(MotionLayoutContract.settled),
+            ], needs: [
+                Covered(MotionLayoutContract.parameters),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
+            ]) { s in
+                let clock = TestClock()
+                let phase = State(wrappedValue: 0.0, motion: .eased(.milliseconds(200), curve: .linear))
+                let rested = Received<Double>()
+                s.start(clock: clock) {
+                    VStack {
+                        MotionLayout([0], parameters: phase.projectedValue) { _ in
+                            Rectangle()
+                                .fill(.red)
+                        } placements: { _, phase in
+                            [Placement(Rect(x: phase * 10, y: 0, width: 20, height: 20))]
+                        }
+                        .onSettled { rested.values.append($0) }
+                        .width(100).height(40)
+                        Button("Go").onClicked { phase.wrappedValue = 4 }
+                            .id("go")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                s.frames(of: clock, until: 64)
+                s.turn()
+                s.expect(rested.values, [], "laid out at rest, it tells nothing")
+
+                try s.perform(.activate, on: s.element("go"))
+                s.settle { phase.wrappedValue == 4 }
+                s.frames(of: clock, until: clock.now + 96)
+                s.turn()
+                s.expect(rested.values, [], "on its way, no rest")
+
+                s.frames(of: clock, until: clock.now + 600)
+                s.settle { rested.values == [4] }
+                s.frames(of: clock, until: clock.now + 200)
+                s.turn()
+                s.expect(rested.values, [4], "told once, where its parameters rest")
+            },
             ConformanceCase("eachAxisOfThePhaseTravelsOnItsOwn", proves: [
                 Covered(MotionLayoutContract.parameters),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in

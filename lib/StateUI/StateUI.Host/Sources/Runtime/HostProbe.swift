@@ -10,10 +10,10 @@
 @MainActor
 final class HostProbe {
     /// The stages of a runtime's work, none inside another: a native event's handlers, the core's jobs, a render,
-    /// its patch applied, the windows and pages shown after it, the animations, the core's cycle, and what moved
-    /// presented to the natives.
+    /// its patch applied, the windows and pages shown after it, the animations, the core's cycle, the layout
+    /// programs asked and their views stepped, and what moved presented to the natives.
     enum Stage: CaseIterable, Sendable {
-        case events, jobs, render, apply, chrome, animations, cycle, present
+        case events, jobs, render, apply, chrome, animations, cycle, layouts, present
 
         /// The stage as the line names it.
         var name: String {
@@ -25,6 +25,7 @@ final class HostProbe {
             case .chrome: "windows"
             case .animations: "animations"
             case .cycle: "cycle"
+            case .layouts: "layouts"
             case .present: "present"
             }
         }

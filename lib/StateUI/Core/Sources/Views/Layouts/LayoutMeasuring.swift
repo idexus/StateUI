@@ -16,7 +16,7 @@ final class LayoutMeasuring {
 
     private var answered: [Asked: HostChildMeasured] = [:]
 
-    /// A new working-out: what was measured before is asked again.
+    /// A new working-out - the arithmetic asked where its views stand: what was measured before is asked again.
     func begin() {
         answered.removeAll(keepingCapacity: true)
     }

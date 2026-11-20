@@ -47,6 +47,76 @@ final class LayoutProgramTests: XCTestCase {
         XCTAssertNil(program.measure, "a layout that measures nothing says no size of its own")
     }
 
+    /// THE PROGRAM ANSWERS THE PLACES AT ANY PARAMETERS, WITH NOTHING WRITTEN: what the run answered where it
+    /// stands, and the places anywhere else - asked by a host in its own frame, which moves no state of the
+    /// layout and leaves what the run answered as it was.
+    func testTheProgramAnswersThePlacesAtAnyParametersWithNothingWritten() throws {
+        let (renders, bench, turn) = (Renders(), LayoutBench(), State(wrappedValue: 0.0))
+        func tree() -> Node {
+            MotionLayout([0, 1, 2], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, at in
+                (0..<3).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 100, height: 50)) }
+            }
+            .node
+        }
+        _ = bench.laid(renders, tree)
+        let place = try XCTUnwrap(bench.program?.place)
+        let answered = bench.answer
+
+        XCTAssertEqual(place([0], [0], 300, 200).views.map(\.target), answered.views.map(\.target), "where it stands")
+        XCTAssertEqual(place([0], [0], 300, 200).views.map(\.key), answered.views.map(\.key), "the same views")
+        XCTAssertEqual(place([1.5], [0], 300, 200).views.map(\.target.bounds.x), [-150, -50, 50], "and anywhere else")
+        XCTAssertEqual(place([1.5], [0], 0, 0).views.count, 0, "no room, no place")
+
+        XCTAssertEqual(turn.wrappedValue, 0, "no state of the layout moved")
+        XCTAssertEqual(bench.answer.views.map(\.target), answered.views.map(\.target), "what the run answered stands")
+    }
+
+    /// THE ARITHMETIC IS HANDED WHERE THE MOTION SET OUT AS THE HOST SAYS IT, and - asked at no parameters -
+    /// where the layout stands.
+    func testTheArithmeticIsHandedWhereTheHostSaysTheMotionSetOut() throws {
+        let (renders, bench, turn) = (Renders(), LayoutBench(), State(wrappedValue: 2.0))
+        func tree() -> Node {
+            MotionLayout([0], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, at, from in
+                [Placement(Rect(x: from * 100, y: at * 10, width: 10, height: 10))]
+            }
+            .axis(range: 0...6, segments: .every(1))
+            .node
+        }
+        _ = bench.laid(renders, tree)
+        let place = try XCTUnwrap(bench.program?.place)
+
+        XCTAssertEqual(bench.answer.views[0].target.bounds, Rect(x: 200, y: 20, width: 10, height: 10), "at rest: there")
+        XCTAssertEqual(
+            place([2.5], [1], 300, 200).views[0].target.bounds, Rect(x: 100, y: 25, width: 10, height: 10),
+            "on its way: from where the host says")
+    }
+
+    /// THE PROGRAM SAYS ITS AXES' MARKS, AND AN AXIS SAYS THE LAST IT PASSED: what the host keeps where a motion
+    /// set out by - going up the last mark at or under where it stands, going down the last at or over it, none
+    /// between two marks, and round a turn where the axis comes round.
+    func testTheProgramSaysItsAxesMarksAndTheLastPassed() throws {
+        let (renders, bench, turn) = (Renders(), LayoutBench(), State(wrappedValue: 0.0))
+        func tree() -> Node {
+            MotionLayout([0, 1, 2, 3], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, at in
+                (0..<4).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 100, height: 50)) }
+            }
+            .axis(range: 0...3, segments: .every(1))
+            .node
+        }
+        _ = bench.laid(renders, tree)
+        let axis = try XCTUnwrap(bench.program?.axes.first)
+
+        XCTAssertEqual(axis, HostLayoutAxis(lane: 0, segments: [0, 1, 2, 3]))
+        XCTAssertEqual(axis.passed(from: 0.2, to: 2.4), 2, "the last passed going up")
+        XCTAssertEqual(axis.passed(from: 2.4, to: 0.2), 1, "and going down")
+        XCTAssertEqual(axis.passed(from: 0.2, to: 2), 2, "standing on a mark has passed it")
+        XCTAssertNil(axis.passed(from: 0.2, to: 0.8), "none between two marks")
+
+        let round = HostLayoutAxis(lane: 0, segments: [0, 1, 2], turn: (low: 0, period: 3))
+        XCTAssertEqual(round.passed(from: 2.5, to: 3.4), 3, "round the turn")
+        XCTAssertEqual(round.passed(from: 0.4, to: -0.5), 0)
+    }
+
     /// THE SLOT STANDS WHILE THE LAYOUT STANDS; the description is another at every build of it.
     func testTheSlotStandsAndTheRevisionMoves() throws {
         let renders = Renders()
@@ -63,7 +133,7 @@ final class LayoutProgramTests: XCTestCase {
     func testTheRoomTheHostSaysIsWorkedOutOnce() throws {
         let runs = Runs()
         let renders = Renders()
-        let program = try XCTUnwrap(renders.render(layout(runs)).first(.motionLayout)?.program)
+        let program = try XCTUnwrap(bench.takes(renders.render(layout(runs))))
         bench.cycle()
         XCTAssertEqual(program.answered().views.count, 0, "no room, no places")
 
@@ -87,7 +157,7 @@ final class LayoutProgramTests: XCTestCase {
         for measures in [true, false] {
             let runs = Runs()
             let renders = Renders()
-            let program = try XCTUnwrap(renders.render(layout(runs, measures: measures)).first(.motionLayout)?.program)
+            let program = try XCTUnwrap(bench.takes(renders.render(layout(runs, measures: measures))))
             program.layOut(300, 200)
             bench.cycle()
             let ran = runs.count

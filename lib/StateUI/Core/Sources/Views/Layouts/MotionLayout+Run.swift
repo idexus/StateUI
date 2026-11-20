@@ -27,15 +27,6 @@ extension MotionLayout {
         let knots: [Double]?
         let span: Span?
         let segments: [Double]
-
-        /// Where the axis's segments begin as they come round near `value`: the turn it stands in and one either
-        /// side.
-        func marks(near value: Double) -> [Double] {
-            guard let span, let period = span.period else { return segments }
-
-            let turn = ((value - span.low) / period).rounded(.down)
-            return [turn - 1, turn, turn + 1].flatMap { turn in segments.map { $0 + turn * period } }
-        }
     }
 
     /// One view being placed: its identity, its index and its item.
@@ -62,8 +53,6 @@ extension MotionLayout {
         let kept: LayoutPoses
         let followed: [any FollowedState]
 
-        /// Which description of the layout the run is: a render that describes it again makes another.
-        let description: Int
         let mask: Node?
         let path: KeyPath<Items.Element, ID>
         let activated: [ValueHandler<ID>]
@@ -95,14 +84,6 @@ extension MotionLayout {
         /// The layout's own size in a room offered, at given parameters, where it says one.
         let sized: (@MainActor (Double?, Double?, Parameters) -> LayoutSize)?
 
-        /// The law the run moves under: the parameters' state's own (`@State(motion:)`), or - `.inherited` - the
-        /// application's, as a host's channel answers it, so the hand letting go and a program's write of the
-        /// parameters travel alike.
-        /// Design: docs/design/views/motion-layout.md#the-parameters
-        var resolvedLaw: Motion {
-            parameters.storage.law.resolved(against: StandardEnvironment.application.motion)
-        }
-
         /// The run working on `hand`'s axis.
         func on(_ hand: Hand) -> Run {
             var run = self
@@ -115,11 +96,6 @@ extension MotionLayout {
         var across: Bool { focus?.way != .vertical }
 
         // MARK: - The parameters
-
-        /// Where `parameters` stands on the hand's axis.
-        func onAxis(_ parameters: Parameters) -> Double {
-            axis.map { parameters[keyPath: $0] } ?? 0
-        }
 
         /// `parameters` with the hand's axis at `value`, the other axes as they are.
         func placing(_ value: Double, in parameters: Parameters) -> Parameters {
@@ -137,34 +113,7 @@ extension MotionLayout {
             parameters.journey.walked
         }
 
-        // MARK: - On the host's frames
-
-        /// Places every view where the arithmetic says - a change of the description on its way from where each view
-        /// was shown - again next frame while it goes on.
-        /// Design: docs/design/views/motion-layout.md#the-run
-        func place(at now: Double, reducesMotion: Bool) -> EngineAnswer {
-            let room = states.room.wrappedValue
-
-            tellNamed()
-
-            // A room not yet measured places nothing: every view stands in the whole of it until it is.
-            guard room.width > 0, room.height > 0 else {
-                states.slot.placed = PlacedRun()
-                states.slot.answer = HostLayoutAnswer(change: states.slot.changes)
-                return .wait
-            }
-
-            // A change of the description or of where the motion set out is measured before the run is worked
-            // out where it stands now.
-            let parameters = live()
-            let from = setOut(at: parameters)
-            let (memory, discrete) = changed(from: from)
-            let poses = pose(in: Rect(x: 0, y: 0, width: room.width, height: room.height), at: parameters, from: from)
-            show(poses, after: memory, discrete: discrete, parameters: parameters, from: from, room: room)
-            // The views the host still moves onto their places are no rest either: it says when they stand.
-            notice(resting: !states.slot.bodiesMove, at: parameters)
-            return .wait
-        }
+        // MARK: - On the cycle
 
         /// Tells whoever keeps a value of its own by the parameters where they are going, once that changed since
         /// the last frame - the hand naming a snap, or the program writing them: nothing of the way there.
@@ -173,63 +122,12 @@ extension MotionLayout {
             guard let named else { return }
 
             let going = parameters.journey.going
-            let told = states.shown.wrappedValue.named
+            let told = states.lastNamed.wrappedValue
             guard told != going else { return }
 
-            states.shown.wrappedValue.named = going
+            states.lastNamed.wrappedValue = going
             // The first frame learns where the parameters stand: nobody is told what nobody changed.
             if told != nil { named(going) }
-        }
-
-        /// The run at `parameters` this frame, its views `still` or not: coming to rest - no hand holding it, the
-        /// parameters' journey at its destination and every view at its place - it tells `settled` once.
-        /// Design: docs/design/views/motion-layout.md#at-rest
-        func notice(resting still: Bool, at parameters: Parameters) {
-            let journey = self.parameters.journey
-            let rests = still && !states.slot.handHolds && states.item.wrappedValue == nil
-                && journey.walked == journey.going
-            guard rests != states.shown.wrappedValue.resting else { return }
-
-            states.shown.wrappedValue.resting = rests
-            guard rests, !settled.isEmpty else { return }
-
-            let start = states.settles.starting(settled.map { $0.given(parameters) })
-            libraryTask { start() }
-        }
-
-        /// Where the run's motion set out, the run standing at `parameters`: there, where nothing moves it - no hand,
-        /// no throw, the parameters where it is going - and kept while something does, until it passes a target on the
-        /// hand's axis: the motion sets out from the last it passed, either way.
-        /// Design: docs/design/views/motion-layout.md#where-a-motion-set-out
-        func setOut(at parameters: Parameters) -> Parameters {
-            let journey = self.parameters.journey
-            let resting = !states.slot.handHolds && journey.walked == journey.going
-            var from = states.from.wrappedValue ?? parameters
-            if resting {
-                from = parameters
-            } else {
-                for hand in hands {
-                    let run = on(hand)
-                    guard let passed = run.passed(from: run.onAxis(from), to: run.onAxis(parameters)) else { continue }
-                    from = run.placing(passed, in: from)
-                }
-            }
-
-            if states.from.wrappedValue != from { states.from.wrappedValue = from }
-            return from
-        }
-
-        /// Of the targets on the hand's axis beyond `start` up to `value`, the one nearest `value`: the last the run
-        /// passed going from one to the other; nil where it passed none.
-        func passed(from start: Double, to value: Double) -> Double? {
-            let marks = focus?.marks(near: value) ?? []
-            let beyond = marks.filter { value > start ? $0 > start && $0 <= value : $0 < start && $0 >= value }
-            return value > start ? beyond.max() : beyond.min()
-        }
-
-        /// Whether two places on the hand's axis are one, a logarithm's rounding apart.
-        static func same(_ one: Double, _ other: Double) -> Bool {
-            one == other || abs(one - other) <= 1e-9 * max(abs(one), abs(other), 1)
         }
 
         /// One view inside the holder the run places, so the author's own properties on the view are never

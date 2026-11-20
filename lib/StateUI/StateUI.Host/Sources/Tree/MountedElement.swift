@@ -112,6 +112,11 @@
     /// What the element shows of its program's answers: the children's bodies on their way.
     private var programPresentation = ProgramPresentation()
 
+    /// What the element keeps to ask its layout program in its own frame, and whether the layout stood at rest
+    /// when it was last asked.
+    var programAsking = ProgramAsking()
+    var programRested = true
+
     /// What the user's hand does to the element's own presentation, and whether a child's changed since the
     /// element last stepped its program's places.
     /// Design: docs/design/host/interaction.md#a-views-own-press-and-drag
@@ -174,22 +179,19 @@
         // the layout says none.
         let bodies = value(LayoutContract.layoutBodies.token).flatMap(LayoutBody.init(propValue:)) ?? .onChange()
         childrenMovedLocally = false
+        let answer = askProgram(program) ?? program.answered()
         let placed = programPresentation.take(
-            program.answered(), layoutBodies: bodies, locals: children.map(\.placedLocal), at: now,
-            reducesMotion: reducesMotion)
-        // The layout is at rest only once the element moves none of its children: it hears either way.
-        program.bodiesMove(programPresentation.moves)
+            answer, change: programAsking.change, layoutBodies: bodies, locals: children.map(\.placedLocal),
+            at: now, reducesMotion: reducesMotion)
         return presents(placed)
     }
 
     /// Steps the children on their way to `now`; whether that changed what the element presents.
     func stepProgramPlaces(to now: Double) -> Bool {
-        guard let program = layoutProgram, programPresentation.moves || childrenMovedLocally else { return false }
+        guard layoutProgram != nil, programPresentation.moves || childrenMovedLocally else { return false }
 
         childrenMovedLocally = false
         let placed = programPresentation.step(to: now, locals: children.map(\.placedLocal))
-        program.bodiesMove(programPresentation.moves)
-        if !programPresentation.moves { program.bodiesMove(false) }
         return presents(placed)
     }
 

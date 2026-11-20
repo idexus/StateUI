@@ -39,17 +39,17 @@ struct ProgramPresentation {
     var moves: Bool { !bodies.isEmpty }
 
     /// Takes `answer` at `now` and says where each child is shown, in the children's order. A child is the body it
-    /// says itself, else `layoutBodies`, its layout's for every child. A change the element has not set out yet sets each
-    /// child it names out from where it was shown - one never shown, from nothing - at the speed it had, or the
-    /// hand's; a child following its place is carried by its place's move; less motion, and a child of no body,
-    /// stand at their places.
+    /// says itself, else `layoutBodies`, its layout's for every child. A `change` the element has not set out yet
+    /// sets each child it names out from where it was shown - one never shown, from nothing - at the speed it had,
+    /// or the hand's; a child following its place is carried by its place's move; less motion, and a child of no
+    /// body, stand at their places.
     mutating func take(
-        _ answer: HostLayoutAnswer, layoutBodies: LayoutBody = .onChange(), locals: [LocalPresentation] = [],
-        at now: Double, reducesMotion: Bool
+        _ answer: HostLayoutAnswer, change: ProgramChange = ProgramChange(), layoutBodies: LayoutBody = .onChange(),
+        locals: [LocalPresentation] = [], at now: Double, reducesMotion: Bool
     ) -> [HostPlacement] {
         // The first answer shows the layout as it stands: nothing was shown for a change to set out from.
-        let sets = applied != nil && applied != answer.change
-        applied = answer.change
+        let sets = applied != nil && applied != change.number
+        applied = change.number
         self.layoutBodies = layoutBodies
         self.reducesMotion = reducesMotion
 
@@ -59,7 +59,7 @@ struct ProgramPresentation {
 
             bodied.insert(view.key)
             var last = stood[view.key]?.target
-            if sets, let discrete = view.discrete {
+            if sets, let discrete = change.places[view.key] {
                 let shift = stood[view.key].map { LayoutShift(from: $0.shown, to: discrete) } ?? .joining(discrete)
                 let going = bodies[view.key]
                 if shift != .none || going != nil {

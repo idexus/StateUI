@@ -154,6 +154,33 @@ final class LayoutMeasurementTests: XCTestCase {
         XCTAssertEqual(measure(90, nil), LayoutSize(width: 90, height: 20), "the width offered")
     }
 
+    /// A SIZE MEASURED BEFORE ITS VIEWS COULD BE IS MEASURED ANEW ONCE THE HOST ASKS THE PLACES, WHATEVER THE
+    /// ROOM: a layout as tall as its views stands in a room of no height while they measure nought, and nothing
+    /// it measured then outlives that asking.
+    func testASizeMeasuredTooEarlyIsMeasuredAnewInARoomOfNoHeight() throws {
+        final class Sized { var height = 0.0 }
+        let (renders, sized) = (Renders(), Sized())
+        let program = try XCTUnwrap(bench.takes(renders.render(
+            MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in
+                [Placement(.zero)]
+            }
+            .measure { context, _ in context.subviews[0].sizeThatFits() }
+            .node)))
+        let measure = try XCTUnwrap(program.measure)
+        program.measuredBy { _, _, _ in
+            HostChildMeasured(size: LayoutSize(width: 40, height: sized.height), firstBaseline: nil)
+        }
+        bench.cycle()
+        XCTAssertEqual(measure(nil, nil).height, 0, "its view measures nought yet")
+
+        // The toolkit lays the view out, and the layout in the room its size gave it: one of no height.
+        sized.height = 30
+        program.layOut(300, 0)
+        bench.cycle()
+
+        XCTAssertEqual(measure(nil, nil), LayoutSize(width: 40, height: 30), "measured anew, by the size that stands")
+    }
+
     /// A SIZE THAT IS NONE IS NOUGHT ALONG THAT SIDE, and said.
     func testAMeasuredSizeThatIsNoneIsNought() throws {
         _ = bench.laid(Renders(), {

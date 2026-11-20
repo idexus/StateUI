@@ -1,38 +1,14 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A layout's slot, the same while the layout stands: the number its program crosses under, the stamp a new room
-/// moves, and where the run last put every child.
+/// A layout's slot, the same while the layout stands: the number its program crosses under, and the stamp a new
+/// room or a measure said again moves.
 /// Design: docs/design/core/layout-program.md#the-program
 @MainActor
 final class LayoutProgramSlot: FollowedState {
     let number: UInt64
 
-    /// Where the run last put every child, in the children's order: its place, or where the hand holds it.
-    var placed = PlacedRun()
-
-    /// What the host is answered: the places, and what brings each child onto its own.
-    var answer = HostLayoutAnswer()
-
-    /// The last change of the layout: its number, and where it measures each view's way to, by the view's
-    /// identity. Kept until the next, so a host that reads late still hears it.
-    private(set) var changes: UInt64 = 0
-    private(set) var discrete: [Int: Placement] = [:]
-
-    /// Whether a child is still on its way to its place: the layout's own word at a change, the host's from then.
-    private(set) var bodiesMove = false
-
-    /// Whether a hand holds a number of the layout's parameters, as the host says.
-    private(set) var handHolds = false
-
-    /// A change of the layout: `discrete` is its own, and its views are on their way until the host says they rest.
-    func changed(_ discrete: [Int: Placement]) {
-        changes &+= 1
-        self.discrete = discrete
-        bodiesMove = true
-    }
-
-    /// What measures the layout's views for its arithmetic.
+    /// What the layout's views measure as, kept while its arithmetic asked.
     let measuring = LayoutMeasuring()
 
     /// How many rooms the host has said: what the run follows to be worked out again.
@@ -40,6 +16,9 @@ final class LayoutProgramSlot: FollowedState {
 
     /// The room the host said last.
     private var said: (width: Double, height: Double)?
+
+    /// How many programs the slot handed: each build of the layout its own.
+    private var built: UInt64 = 0
 
     var reports: Int { 0 }
 
@@ -50,16 +29,20 @@ final class LayoutProgramSlot: FollowedState {
         number = Self.made
     }
 
-    /// The program the host is handed for the description numbered `revision`: `keep` takes the room it says, a
-    /// room that changed - or a measure said again to a layout that measured - asks for a cycle, and `measure`
+    /// The program the host is handed for one build of the layout, numbered anew: `keep` takes the room it says,
+    /// a room that changed - or a measure said again to a layout that measured - asks for a cycle, and `measure`
     /// answers the layout's own size.
     func program(
-        revision: UInt64, measure: (@MainActor (Double?, Double?) -> LayoutSize)?,
-        frontItemUnit: (@MainActor (Int, Double, Bool, Bool) -> Double?)? = nil,
-        keep: @escaping @MainActor (Double, Double) -> Void
+        measure: (@MainActor (Double?, Double?) -> LayoutSize)?,
+        frontItemUnit: (@MainActor (Int, Double, Bool, [Double]?) -> Double?)? = nil,
+        answered: @escaping @MainActor () -> HostLayoutAnswer = { HostLayoutAnswer() },
+        run: (@MainActor () -> PlacedRun)? = nil,
+        place: (@MainActor ([Double], [Double], Double, Double) -> HostLayoutAnswer)? = nil,
+        axes: [HostLayoutAxis] = [], keep: @escaping @MainActor (Double, Double) -> Void
     ) -> HostLayoutProgram {
-        HostLayoutProgram(
-            slot: number, revision: revision,
+        built &+= 1
+        return HostLayoutProgram(
+            slot: number, revision: built,
             layOut: { [self] width, height in
                 guard said?.width != width || said?.height != height else { return }
                 said = (width, height)
@@ -67,20 +50,10 @@ final class LayoutProgramSlot: FollowedState {
                 stamp &+= 1
                 UIThreadExecutor.shared.askForTurn()
             },
-            answered: { [self] in answer },
-            bodiesMove: { [self] moving in
-                guard moving != bodiesMove else { return }
-                bodiesMove = moving
-                stamp &+= 1
-                UIThreadExecutor.shared.askForTurn()
-            },
-            handHolds: { [self] holding in
-                guard holding != handHolds else { return }
-                handHolds = holding
-                stamp &+= 1
-                UIThreadExecutor.shared.askForTurn()
-            },
+            answered: answered,
             frontItemUnit: frontItemUnit,
+            place: place,
+            axes: axes,
             measuredBy: { [self] measure in
                 measuring.measure = measure
                 // A layout that measured no view stands as it stood, however its views measure.
@@ -88,7 +61,6 @@ final class LayoutProgramSlot: FollowedState {
                 stamp &+= 1
                 UIThreadExecutor.shared.askForTurn()
             },
-            measure: measure,
-            run: { [self] in placed })
+            measure: measure, run: run)
     }
 }

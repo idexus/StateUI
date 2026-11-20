@@ -159,6 +159,36 @@
         return moved ? mount : nil
     }
 
+    /// The layouts whose parameters one of `states` moved this frame, asked where they stand now: those whose
+    /// children stand somewhere new, by mount, in order.
+    /// Design: docs/design/host/layout.md#asked-in-the-hosts-frame
+    public func layouts(movedBy states: Set<Int32>) -> [UInt64] {
+        guard !states.isEmpty else { return [] }
+
+        var moved: [UInt64] = []
+        for mount in layouts.values.sorted() {
+            guard let element = byMount[mount]?.element, element.layoutProgram?.place != nil,
+                  let state = element.driven[.parameters]?.state, states.contains(state)
+            else { continue }
+
+            if element.takeProgramPlaces(at: now(), reducesMotion: reducesMotion()) { moved.append(mount) }
+            if element.programBodiesMove { movingLayouts.insert(mount) } else { movingLayouts.remove(mount) }
+        }
+        return moved
+    }
+
+    /// The layouts that came to rest since they were last asked - no hand on their parameters, the parameters
+    /// where they are going, every child at its place: what hears each, and where its parameters stand.
+    /// Design: docs/design/host/layout.md#at-rest
+    public func takeRestedLayouts() -> [(handler: Int32, parameters: [Double])] {
+        var rested: [(handler: Int32, parameters: [Double])] = []
+        for mount in layouts.values.sorted() {
+            guard let element = byMount[mount]?.element, let samples = element.cameToRest() else { continue }
+            if let handler = element.handler(.settled) { rested.append((handler, samples)) }
+        }
+        return rested
+    }
+
     /// The elements whose children are on their way to the places a layout program gave them, by mount.
     private var movingLayouts: Set<UInt64> = []
 

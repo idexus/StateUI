@@ -26,6 +26,27 @@ final class LayoutBench {
         turned += 16
         if walks, let worn { walk(worn, setOut: before) }
         _ = Renderer.shared.board.cycle(now: turned, reducesMotion: reducesMotion)
+        ask()
+    }
+
+    /// Where the parameters stood when the bench last asked the program.
+    private var asked: [Double]?
+
+    /// Asks the program where its views stand, as a host does in its own frame: where the cycle said the layout is
+    /// to be asked again - its room, its description, a state its arithmetic follows - or the parameters' sample
+    /// moved. A frame that moved nothing asks nothing.
+    private func ask() {
+        guard let program else { return }
+
+        let stirred = Renderer.shared.board.stirred.contains(program.slot)
+        Renderer.shared.board.stirred.removeAll { $0 == program.slot }
+        // Where the parameters stand: what the bench walked, or - a test saying itself what the host reports -
+        // what the channel stands at.
+        let sample = worn.flatMap { HostAnimatorReport.standing($0)?.1.value } ?? reported?.value
+        guard stirred || sample != asked else { return }
+
+        asked = sample
+        _ = program.answered()
     }
 
     /// The program of the layout last laid or shown, which a patch names only when its description made another.
@@ -33,8 +54,18 @@ final class LayoutBench {
 
     /// Where the layout of `patch` shows its views, in the items' order, as the host reads the run.
     func shown(_ patch: HostPatch) -> [Placement] {
-        if let described = patch.first(.motionLayout)?.program { program = described }
+        takes(patch)
         return placed
+    }
+
+    /// The program `patch` hands the host, which the bench asks from then on as the host does; nil where the
+    /// patch describes no layout anew.
+    @discardableResult
+    func takes(_ patch: HostPatch) -> HostLayoutProgram? {
+        guard let described = patch.first(.motionLayout)?.program else { return nil }
+
+        program = described
+        return described
     }
 
     /// Where the layout last laid or shown puts its views now - a view the hand holds where it holds it - no tree
@@ -44,10 +75,6 @@ final class LayoutBench {
     /// What the layout last answered its host: each view's place, its body, and where a change measures its way to.
     var answer: HostLayoutAnswer { program?.answered() ?? HostLayoutAnswer() }
 
-    /// The host's word that every view it moved stands at its place.
-    func rest() {
-        program?.bodiesMove(false)
-    }
 
     /// Says the layout its room, as the host does when its toolkit lays it out anew.
     func room(_ width: Double, _ height: Double) {
@@ -125,6 +152,18 @@ final class LayoutBench {
 
     /// The view the hand took last, by its place among the layout's views.
     private var taken = 0
+
+    /// The layout `tree` describes came to rest with its parameters at `lanes`, as its host says once nothing
+    /// moves it - and a cycle after it. Whether the layout hears it.
+    @discardableResult
+    func rested(_ renders: Renders, _ tree: () -> Node, at lanes: [Double]) -> Bool {
+        let patch = renders.renderFromScratch(tree())
+        guard let heard = patch.first(.motionLayout)?.events?[.settled] else { return false }
+
+        let fired = renders.fire(heard, with: MemberValues.encode(lanes))
+        cycle()
+        return fired
+    }
 
     /// A view of the layout `tree` describes thrown away and out of the room, as the host layer says it once the
     /// view has left - its place among the layout's views, the way it went and the hand's speed - and a cycle

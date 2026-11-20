@@ -172,6 +172,7 @@ enum WinUIRealization {
             + "its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch."),
         .complete(MotionLayoutContract.itemDismissed),
         .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.settled),
         .complete(EnabledElementContract.isEnabled, on: MenuContract.self),
         .complete(TextElementContract.text, on: MenuContract.self),
         .complete(MenuBarContract.order),

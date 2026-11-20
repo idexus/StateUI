@@ -20,19 +20,24 @@ final class ProgramPresentationTests: XCTestCase {
             scaleY: 1, opacity: opacity, zIndex: 0, shade: HostPlacement.unshaded)
     }
 
-    /// An answer of the children `views` names, of the change numbered `change`.
-    private func answer(_ views: [HostLayoutView], change: UInt64 = 0) -> HostLayoutAnswer {
-        HostLayoutAnswer(views: views, change: change)
+    /// An answer of the children `views` names.
+    private func answer(_ views: [HostLayoutView]) -> HostLayoutAnswer {
+        HostLayoutAnswer(views: views)
+    }
+
+    /// The change numbered `number`, which measures the way of each child it moves to `places`, by key.
+    private func change(_ number: UInt64, _ places: [Int: HostPlacement] = [:]) -> ProgramChange {
+        ProgramChange(number: number, places: places)
     }
 
     /// THE FIRST ANSWER SHOWS THE LAYOUT AS IT STANDS: nothing was shown for a change to set out from, whatever
-    /// change the answer names.
+    /// change is taken with it.
     func testTheFirstAnswerSetsNothingOut() {
         var shown = ProgramPresentation()
 
         let placed = shown.take(
-            answer([HostLayoutView(key: 1, target: place(0), body: spring, discrete: place(50))], change: 7), at: 0,
-            reducesMotion: false)
+            answer([HostLayoutView(key: 1, target: place(0), body: spring)]), change: change(7, [1: place(50)]),
+            at: 0, reducesMotion: false)
 
         XCTAssertEqual(placed, [place(0)])
         XCTAssertFalse(shown.moves)
@@ -44,8 +49,9 @@ final class ProgramPresentationTests: XCTestCase {
         var shown = ProgramPresentation()
         _ = shown.take(answer([HostLayoutView(key: 1, target: place(100), body: spring)]), at: 0, reducesMotion: false)
 
-        let changed = answer([HostLayoutView(key: 1, target: place(0), body: spring, discrete: place(0))], change: 1)
-        XCTAssertEqual(shown.take(changed, at: 16, reducesMotion: false)[0].bounds.x, 100, accuracy: 0.001)
+        let changed = answer([HostLayoutView(key: 1, target: place(0), body: spring)])
+        let placed = shown.take(changed, change: change(1, [1: place(0)]), at: 16, reducesMotion: false)
+        XCTAssertEqual(placed[0].bounds.x, 100, accuracy: 0.001)
         XCTAssertTrue(shown.moves)
 
         let going = shown.step(to: 96)[0].bounds.x
@@ -65,11 +71,11 @@ final class ProgramPresentationTests: XCTestCase {
     func testAChangeReadTwiceSetsOutOnce() {
         var shown = ProgramPresentation()
         _ = shown.take(answer([HostLayoutView(key: 1, target: place(100), body: spring)]), at: 0, reducesMotion: false)
-        let changed = answer([HostLayoutView(key: 1, target: place(0), body: spring, discrete: place(0))], change: 1)
-        _ = shown.take(changed, at: 16, reducesMotion: false)
+        let changed = answer([HostLayoutView(key: 1, target: place(0), body: spring)])
+        _ = shown.take(changed, change: change(1, [1: place(0)]), at: 16, reducesMotion: false)
         let going = shown.step(to: 96)[0].bounds.x
 
-        let again = shown.take(changed, at: 96, reducesMotion: false)[0].bounds.x
+        let again = shown.take(changed, change: change(1, [1: place(0)]), at: 96, reducesMotion: false)[0].bounds.x
 
         XCTAssertEqual(again, going, accuracy: 0.001, "where it had got to, not where it set out")
     }
@@ -81,9 +87,10 @@ final class ProgramPresentationTests: XCTestCase {
 
         let joined = answer([
             HostLayoutView(key: 1, target: place(0), body: spring),
-            HostLayoutView(key: 2, target: place(100, opacity: 0.8), body: spring, discrete: place(100, opacity: 0.8)),
-        ], change: 1)
-        let placed = shown.take(joined, at: 16, reducesMotion: false)
+            HostLayoutView(key: 2, target: place(100, opacity: 0.8), body: spring),
+        ])
+        let placed = shown.take(
+            joined, change: change(1, [2: place(100, opacity: 0.8)]), at: 16, reducesMotion: false)
 
         XCTAssertEqual(placed[1].bounds.x, 100, "where its layout puts it")
         XCTAssertEqual(placed[1].opacity, 0, accuracy: 0.001, "from nothing")
@@ -99,8 +106,9 @@ final class ProgramPresentationTests: XCTestCase {
             _ = shown.take(
                 answer([HostLayoutView(key: 1, target: place(100), body: own)]), layoutBodies: bodies, at: 0,
                 reducesMotion: false)
-            let changed = answer([HostLayoutView(key: 1, target: place(0), body: own, discrete: place(0))], change: 1)
-            return shown.take(changed, layoutBodies: bodies, at: 16, reducesMotion: false)[0].bounds.x
+            let changed = answer([HostLayoutView(key: 1, target: place(0), body: own)])
+            return shown.take(
+                changed, change: change(1, [1: place(0)]), layoutBodies: bodies, at: 16, reducesMotion: false)[0].bounds.x
         }
 
         XCTAssertEqual(firstFrame(nil, layout: nil), 100, "nothing said: a body answering the change")
@@ -114,15 +122,19 @@ final class ProgramPresentationTests: XCTestCase {
         var shown = ProgramPresentation()
         let none = LayoutBody.none
         _ = shown.take(answer([HostLayoutView(key: 1, target: place(100), body: none)]), at: 0, reducesMotion: false)
-        let bare = answer([HostLayoutView(key: 1, target: place(0), body: none, discrete: place(0))], change: 1)
-        XCTAssertEqual(shown.take(bare, at: 16, reducesMotion: false), [place(0)], "no body")
+        let bare = answer([HostLayoutView(key: 1, target: place(0), body: none)])
+        XCTAssertEqual(
+            shown.take(bare, change: change(1, [1: place(0)]), at: 16, reducesMotion: false), [place(0)], "no body")
 
         var reduced = ProgramPresentation()
         _ = reduced.take(answer([HostLayoutView(key: 1, target: place(100), body: spring)]), at: 0, reducesMotion: false)
-        let changed = answer([HostLayoutView(key: 1, target: place(0), body: spring, discrete: place(0))], change: 1)
-        _ = reduced.take(changed, at: 16, reducesMotion: false)
+        let changed = answer([HostLayoutView(key: 1, target: place(0), body: spring)])
+        let moved = change(1, [1: place(0)])
+        _ = reduced.take(changed, change: moved, at: 16, reducesMotion: false)
         XCTAssertTrue(reduced.moves)
-        XCTAssertEqual(reduced.take(changed, at: 32, reducesMotion: true), [place(0)], "less motion asked for on its way")
+        XCTAssertEqual(
+            reduced.take(changed, change: moved, at: 32, reducesMotion: true), [place(0)],
+            "less motion asked for on its way")
         XCTAssertFalse(reduced.moves)
     }
 
@@ -223,11 +235,11 @@ final class ProgramPresentationTests: XCTestCase {
     func testAChildGoneIsForgotten() {
         var shown = ProgramPresentation()
         _ = shown.take(answer([HostLayoutView(key: 1, target: place(0), body: spring)]), at: 0, reducesMotion: false)
-        _ = shown.take(answer([], change: 1), at: 16, reducesMotion: false)
+        _ = shown.take(answer([]), change: change(1), at: 16, reducesMotion: false)
 
         let back = shown.take(
-            answer([HostLayoutView(key: 1, target: place(0), body: spring, discrete: place(0))], change: 2), at: 32,
-            reducesMotion: false)
+            answer([HostLayoutView(key: 1, target: place(0), body: spring)]), change: change(2, [1: place(0)]),
+            at: 32, reducesMotion: false)
 
         XCTAssertEqual(back[0].opacity, 0, accuracy: 0.001)
     }

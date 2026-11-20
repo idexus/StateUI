@@ -304,6 +304,7 @@ extension NodeType {
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
     static let isPresentedChanged = PresentedElementContract.isPresentedChanged.token
     static let itemDismissed = MotionLayoutContract.itemDismissed.token
+    static let settled = MotionLayoutContract.settled.token
     static let itemDragUpdated = MotionLayoutContract.itemDragUpdated.token
     static let keyPressed = KeyboardElementContract.keyPressed.token
     static let linkOpened = OpenedLinkElementContract.linkOpened.token

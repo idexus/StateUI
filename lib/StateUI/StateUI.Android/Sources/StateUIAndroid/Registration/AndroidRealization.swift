@@ -203,6 +203,7 @@ enum AndroidRealization {
         .complete(LayoutContract.ignoresSafeArea),
         .complete(MotionLayoutContract.itemDismissed),
         .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.settled),
     ] + windowRoom + wordsInTheirLanguage + HostRecord.motionLayout + HostRecord.layoutBodies
         + BarItemLook.notPlanned(reason: "A toolbar's actions stand in Android's own look.")
 

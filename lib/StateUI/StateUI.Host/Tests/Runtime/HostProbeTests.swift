@@ -26,11 +26,13 @@ final class HostProbeTests: XCTestCase {
         XCTAssertEqual(HostProbe.timed(.render) { 7 }, 7)
         HostProbe.timed(.render) {}
         HostProbe.timed(.cycle) {}
+        HostProbe.timed(.layouts) {}
 
         let line = try XCTUnwrap(HostProbe.running?.line)
         XCTAssertTrue(line.hasPrefix("StateUI stages: render "), line)
         XCTAssertTrue(line.contains("(2x, most "), line)
         XCTAssertTrue(line.contains(" · cycle "), line)
+        XCTAssertTrue(line.contains(" · layouts "), line)
         XCTAssertFalse(line.contains("present"), line)
         XCTAssertTrue(line.hasSuffix("\n"))
     }

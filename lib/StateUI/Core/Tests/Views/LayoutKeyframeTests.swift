@@ -184,7 +184,7 @@ final class LayoutKeyframeTests: XCTestCase {
 
         stand(worn, at: 0.5)
         let before = asked.phases.count
-        _ = renders.render(built())
+        XCTAssertNotNil(bench.takes(renders.render(built())), "another program, the host's from now on")
         bench.cycle()
         XCTAssertEqual(Set(asked.phases.dropFirst(before)), [0, 1])
     }

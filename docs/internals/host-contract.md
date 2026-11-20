@@ -120,8 +120,9 @@ A host applies one generation as one transaction:
    subscriptions only when their optional update is present - a followed
    state is a consumer of its channel as a driven one is
    ([state channels](../design/host/motion.md#state-channels)), and a layout
-   program is told the room the element stands in and read after each cycle
-   that worked it out ([a layout program](../design/host/layout.md#a-layout-program));
+   program is told the room the element stands in and asked after each
+   cycle that stirred it and at each frame its parameters moved
+   ([a layout program](../design/host/layout.md#a-layout-program));
 6. apply the changed layout-motion rule;
 7. reconcile children according to `changed` or `arranged`;
 8. tell the native half the element's changes with its children in place:

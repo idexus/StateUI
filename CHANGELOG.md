@@ -115,7 +115,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   what its toolkit tells to `MountedElement.hear` and reading `hearing` and `handWay`; the host layer registers
   the program for every element (`everyElementRuns`), and a realization records `ViewContract.interaction` only
   where its toolkit tells less of the hand. `HostPatch.interaction` carries the program, and a layout program
-  says `handHolds` and answers `frontItemUnit`.
+  answers `frontItemUnit`.
 - **`panX(_:)` and `panY(_:)` are an interaction.** `.panX($x)` is `.interaction(.value($x, input:
   .translation(.horizontal)).release(.stay))`, and down alike with `.vertical`; both on one view are
   `Interaction.simultaneous([...])`. The state is carried as a journey now, so a write of the program travels on
@@ -159,15 +159,17 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   ended come in `HostCycle.finished`. A state followed by an engine or a reading with no property showing it reaches
   the host in `HostPatch.followed`. The host layer does all of it; a host built on `StateUIHost` changes nothing.
 - **For a host: a motion layout runs a layout program.** Its room and its views' places cross typed in
-  `HostPatch.layout` (`HostLayoutProgram`), and `HostCycle.stirred` names the layouts a cycle worked out; the host
-  layer says the room, reads the places and tells the program how a view is measured. A host's `NativeElement`
-  answers `measured(width:height:)` - its view's own size and first baseline in a room offered - and its ZStack
-  hands `ZStackArithmetic.size(of:padding:width:motionLayout:program:)` the element's `programSize`. `LayoutSize`
-  is declared in `StateUI`: a source naming it imports `StateUI` beside `StateUIHost`. The program answers where the
-  layout puts each child and what brings it there (`answered`, a `HostLayoutAnswer`: a view's key, target, body,
-  the place a change measures its way to, the hand's hold); the host layer keeps each child's way and steps it on
-  the display's frames, so a child coming onto its place costs no cycle of the core. A host built on `StateUIHost`
-  changes nothing for it.
+  `HostPatch.layout` (`HostLayoutProgram`), and `HostCycle.stirred` names the layouts to ask again; the host layer
+  says the room, asks the places and tells the program how a view is measured. A host's `NativeElement` answers
+  `measured(width:height:)` - its view's own size and first baseline in a room offered - and its ZStack hands
+  `ZStackArithmetic.size(of:padding:width:motionLayout:program:)` the element's `programSize`. `LayoutSize` is
+  declared in `StateUI`: a source naming it imports `StateUI` beside `StateUIHost`. The program answers where the
+  layout puts each child at the parameters the host names (`place`, a `HostLayoutAnswer`: a view's key, target and
+  body) and writes nothing, so the host layer asks it in its own frame, at the sample its channel walked: a frame
+  of the parameters' way costs no cycle of the core, and the views stand where that frame's sample puts them. The
+  host layer keeps where a motion set out, by the marks the program's axes name (`HostLayoutAxis`), measures what
+  a layout built again moved, keeps each child's way and steps it on the display's frames, and tells the layout
+  once it rests (`MotionLayoutContract.settled`). A host built on `StateUIHost` changes nothing for it.
 - **A platform's own icon as a picture is `.platform(_:)`.** `ImageSource.icon(_:)` is `ImageSource.platform(_:)`,
   so a button's icon no longer says the word twice: `.icon(.icon(.share))` is `.icon(.platform(.share))`, and
   `Image(.icon(.star))` is `Image(.platform(.star))`.

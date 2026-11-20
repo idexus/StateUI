@@ -5,8 +5,9 @@ application's arithmetic that places them on the host's frames, the parameters t
 arithmetic is worked out from, and the hand that moves the parameters. A ring, a
 fan, a wheel of cards, a timeline and a gallery are one layout with different
 arithmetic; `GalleryView` is one with the arithmetic of four shapes written.
-Its run and its bodies are a movement worked out on the core's side, beside
-the three owners every other moving value has
+Its run is arithmetic of the application's, asked by the host frame by
+frame, and its bodies are the host layer's: a movement beside the three
+owners every other moving value has
 ([architecture](../architecture.md#a-moving-value-has-three-owners)).
 
 ```text
@@ -14,7 +15,7 @@ the three owners every other moving value has
    │             and saying what the hand moves of them (interaction)        and holds it under the hand
    ├── holder ── the author's view [ + the shade, second ]   ◀─┐
    └── …                                                       ├─ one run of placements,
-         engine(following: room, parameters, followed…)        ┘  written by the engine
+         program: place(parameters, from, room)                ┘  asked by the host in its frame
 ```
 
 ## The element
@@ -62,15 +63,17 @@ author's own carousel says.
 
 ## The run
 
-The arithmetic runs on the host's frames, never in a render: whenever the
-host says a new room, the parameters - written by the program or walked by the
-host - where the hand holds the run, a throw going on, or a state named in
-`following(_:)` is written, and once in the turn of every render that
-describes the layout, before the views it puts in are drawn (host/runtime.md,
-one turn). It is
-handed a context (`LayoutContext`) - the room at the layout's own origin, as
-`bounds`, and the views - and the parameters as they stand this
-frame, and answers one placement a view. An answer of another length is
+The arithmetic runs where the host asks it, in the host's own frames, never
+in a render ([the program](../core/layout-program.md#what-runs-it-again)):
+after a cycle that says its room, its build or a state named in
+`following(_:)` moved or its parameters were written, at each frame the
+parameters' sample moved - walked by the host, or under the hand - and
+once in the turn of every render that describes the layout, before the
+views it puts in are drawn (host/runtime.md, one turn). It is handed a
+context (`LayoutContext`) - the room at the layout's own origin, as
+`bounds`, and the views - and the parameters as they stand this frame, and
+answers one placement a view. It writes nothing, and keeps nothing between
+two askings. An answer of another length is
 said once and made to fit, a missing view standing at the top left.
 
 A run lands as written (placement.md, a run lands as written): what travels
@@ -87,9 +90,9 @@ A value read in the body is a change of the description, the layout built
 again and its arithmetic with it - and the change travels ([a change where the
 parameters stand](#a-change-where-the-parameters-stand)); a state the arithmetic reads
 that moves on the host's frames - a finger's - is named in `following(_:)`
-instead, or its writes run nothing. `following($x)` runs the arithmetic at a
-write of where the state is going; `following($x.journey)` at every frame of
-the way there, the layout a consumer of the state's channel so
+instead, or its writes ask nothing. `following($x)` has the arithmetic asked
+at a write of where the state is going; `following($x.journey)` at every
+frame of the way there, the layout a consumer of the state's channel so
 `$x.journey.sample` answers in the arithmetic.
 
 ## Measuring a view
@@ -200,20 +203,23 @@ arithmetic turns parameters into poses, and a body per identity - its shift
 (`LayoutShift`) and how fast it goes, kept by the host layer - turns a pose
 into what is shown.
 
-A description is told apart by a number each gets as it is made
-(an object's address would not do: one let go is soon another's). On the first frame of
-a new one, the engine works its arithmetic out where the last frame stood -
-those parameters, that room - and compares it identity by identity with the last
-frame's poses: a view whose pose is the same goes on as it was, so a render
-that changes nothing changes no way, and parameters traveling meanwhile is no
-change; a view whose pose differs is answered that pose as the place its way
-is measured to. The host layer shifts it from where it last showed it, a
-view new to the run from nothing - it fades in. A view leaving
+A build of the layout is told apart by the number of its program
+(`HostLayoutProgram.revision`), and a view by its item's key in the
+program's answer. Handed the program of another build, the element running
+it asks the new arithmetic where the last frame stood - those parameters,
+that room - and compares it key by key with the places it was last
+answered ([asked in the host's frame](../host/layout.md#asked-in-the-hosts-frame)):
+a view whose place is the same goes on as it was, so a render that changes
+nothing changes no way, and parameters traveling meanwhile is no change; a
+view whose place differs has that place as the one its way is measured to.
+The host layer shifts it from where it last showed it, a view new to the
+run from nothing - it fades in. A view leaving
 goes at once, and the others close up. The shift is a body's, going on at
 the speed the body had, so a change changed again does not jump; the poses
 then stand as the new description puts them at the last frame's parameters, so a
 body following its place is carried by the parameters' move alone. The
-display's frames step a body on its way; the engine runs for none of them.
+display's frames step a body on its way; no cycle of the core runs for
+them.
 Less motion, or a view with no body, shows a change at once, and a new room
 never travels: the layout follows the window.
 
@@ -245,10 +251,12 @@ layout of bodies lands. The layout answers the host each view's own body
 alone; which body a view is, the host layer resolves as it does for every
 layout ([a child that is a body](../host/motion.md#a-child-that-is-a-body)).
 A view's own is read off each item's view
-the first time a frame asks, and again once that view is built again - a
-state the view reads, a switch turning its body on, builds the view without
-the layout or its holder, so the layout forgets that view's body as it
-builds it, shade or none.
+the first time the program is asked, and again once that view is built
+again - a state the view reads, a switch turning its body on. A view the
+layout keeps in a holder of its own making - under a shade, or a tap - is
+built alone, and the run forgets its body as it builds it; a view standing
+in its own holder is built with its layout, whose new build reads every
+body anew.
 
 The layout answers each view's place and its body; the host layer brings
 the view there ([the answer](../core/layout-program.md#the-answer),
@@ -286,16 +294,19 @@ spring's two numbers and nothing else.
 
 ## At rest
 
-The run is at rest where no hand holds it - the host's word
-(`LayoutProgramSlot.handHolds`) - the parameters' channel shows them at their
-destination and no body of the world is on its way - whatever moved it: the
-program's journey, the hand's throw, a change, a view let go. Each frame the
-engine runs, it notes whether the run rests (`LayoutShown.resting`); coming
-to rest after it moved, it tells `.onSettled` once, with the parameters it rests
-at, after the frame (as a dismissal is told), its runs owned by the layout
-and orphaned as it leaves. Laid out at rest, it tells nothing. One event of
-rest stands for every way the run moves: there is no rest of the parameters apart
-from the bodies' (the journey's own `MotionRun` waits for the parameters alone).
+The run is at rest where no hand holds a number of its parameters or a view
+of its own, the parameters' channel shows them at their destination and no
+body is on its way - whatever moved it: the program's journey, the hand's
+throw, a change, a view let go. The host layer sees all of it, so it is the
+one that says so ([at rest](../host/layout.md#at-rest)): coming to rest
+after it moved, the element tells the layout once
+(`MotionLayoutContract.settled`), with the numbers its parameters rest at,
+after the frame that shows it. The layout hears it only where an
+`.onSettled` is written, and tells each, its runs owned by the layout and
+orphaned as it leaves (`Run.rested`). Laid out at rest, it tells nothing.
+One event of rest stands for every way the run moves: there is no rest of
+the parameters apart from the bodies' (the journey's own `MotionRun` waits
+for the parameters alone).
 
 ## The parameters
 
@@ -313,8 +324,9 @@ state the host carries (core/journeys.md#conversions), its destination walked as
 any state's. The layout gives them no motion of its own: a shared channel
 travels under its state's motion, whichever control shows it, and a layout
 is one such control. A hand let go short of a rest comes onto it under the
-same motion. The engine follows the parameters themselves, so a new one wakes the arithmetic and
-builds nothing; a change of room moves no parameters.
+same motion. The layout's entry on the cycle follows the parameters' state,
+so a write of them has the host ask the arithmetic again and builds
+nothing; a change of room moves no parameters.
 
 ## Where a motion set out
 
@@ -325,7 +337,10 @@ pose drawn from the parameters alone cannot tell which card set out - parameters
 1.3 are the first card going on or the second coming back - and the parameters'
 side of `from` is the way the run goes.
 
-It is kept, not worked out from the direction of the last frame: a hand
+It is kept - by the element running the layout's program
+([asked in the host's frame](../host/layout.md#asked-in-the-hosts-frame)),
+by the marks the program's axes name (`HostLayoutAxis`) - not worked out
+from the direction of the last frame: a hand
 going on and turning back past `from` hands the same `from`, and at `from`
 itself every view stands at the whole step it stood at, where a pose for
 leaving and one for staying agree - nothing drawn jumps as the way turns. A
@@ -418,8 +433,7 @@ hand moves through them:
 ```
 
 - ONE ARITHMETIC. There is no second closure: the keyframes only say where
-  the engine asks the one it has. With none, it is asked every frame, as
-  always.
+  the one it has is asked. With none, it is asked every frame, as always.
 - A REST IS THE AUTHOR'S TO KEYFRAME. The ends of the mapping's range are
   always keyframes; where the hand rests is the interaction's, another
   declaration, so a layout that should show the arithmetic's own answer
@@ -509,9 +523,10 @@ layout: a ring that grows with its window turns as far under the finger as
 on a phone. A view standing still over the run - a dot, a caption - is no
 front; with nothing moving, a room's length is a unit. A swipe asks it as
 the run would rest on the snap it was taken at, a scroll where the run
-stands at each move. The other is where a motion set out
-([where a motion set out](#where-a-motion-set-out)), which stands while a
-hand holds the run: the host says so (`HostLayoutProgram.handHolds`).
+stands at each move. The other is the marks along an axis
+(`HostLayoutProgram.axes`), by which the host keeps where a motion set out
+([where a motion set out](#where-a-motion-set-out)) while a hand holds the
+run.
 
 ## A target named
 

@@ -291,6 +291,7 @@ enum AppKitRealization {
         .complete(VisualElementContract.ignoresInput, on: MotionLayoutContract.self),
         .complete(MotionLayoutContract.itemDismissed),
         .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.settled),
         .notPlanned(TintElementContract.tint, on: SpinnerContract.self, reason: accentColored),
         .notPlanned(TintElementContract.tint, on: ProgressBarContract.self, reason: accentColored),
         .notPlanned(TintElementContract.tint, on: SwitchContract.self, reason: accentColored),

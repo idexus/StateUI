@@ -13517,6 +13517,7 @@ swift.type.property MotionLayoutContract.layout: static let layout: ElementProgr
 swift.type.property MotionLayoutContract.mirrorsRightToLeft: static let mirrorsRightToLeft: ElementProperty<MotionLayoutContract, Bool>
 swift.type.property MotionLayoutContract.name: static var name: String { get }
 swift.type.property MotionLayoutContract.parameters: static let parameters: ElementProperty<MotionLayoutContract, [Double]>
+swift.type.property MotionLayoutContract.settled: static let settled: ElementEvent<MotionLayoutContract, [Double]>
 swift.type.property MotionValues.all: static let all: MotionValues
 swift.type.property MotionValues.color: static let color: MotionValues
 swift.type.property MotionValues.height: static let height: MotionValues

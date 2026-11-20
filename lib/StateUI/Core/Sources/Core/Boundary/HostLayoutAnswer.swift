@@ -3,20 +3,14 @@
 
 // Design: docs/design/core/layout-program.md#the-answer
 
-/// What a layout's program answers its host: where the layout puts each child, and what the host needs to bring the
-/// child there.
+/// What a layout's program answers its host: where the layout puts each child, and how the child comes there.
 @_spi(Host) public struct HostLayoutAnswer: Equatable, Sendable {
     /// One view a child, in the children's order.
     public var views: [HostLayoutView]
 
-    /// Which change of the layout the views' `discrete` places belong to: another number at each, so a host
-    /// reading an answer again sets no view out twice.
-    public var change: UInt64
-
-    /// An answer of `views`, their discrete places those of the change numbered `change`.
-    public init(views: [HostLayoutView] = [], change: UInt64 = 0) {
+    /// An answer of `views`.
+    public init(views: [HostLayoutView] = []) {
         self.views = views
-        self.change = change
     }
 }
 
@@ -26,25 +20,18 @@
     /// children.
     public var key: Int
 
-    /// Where the layout puts the child now.
+    /// Where the layout puts the child at the parameters asked.
     public var target: HostPlacement
 
     /// How the child says it comes onto its place; nil for a child that says nothing, which its layout's bodies
     /// decide (`LayoutContract.layoutBodies`).
     public var body: LayoutBody?
 
-    /// At a change of the layout, where the new arithmetic puts the child where the last frame stood: the place its
-    /// way is measured to. Nil for a child the change moves nowhere.
-    public var discrete: HostPlacement?
-
     /// The child `key` at `target`.
-    public init(
-        key: Int, target: HostPlacement, body: LayoutBody? = nil, discrete: HostPlacement? = nil
-    ) {
+    public init(key: Int, target: HostPlacement, body: LayoutBody? = nil) {
         self.key = key
         self.target = target
         self.body = body
-        self.discrete = discrete
     }
 }
 

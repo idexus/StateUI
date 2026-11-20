@@ -45,6 +45,7 @@ final class ContractPayloadTests: XCTestCase {
         check(ViewContract.swiped, [.enumeration(1)])
         check(ViewContract.dismissed, [.enumeration(4), .numbers([0, -900])])
         check(MotionLayoutContract.itemDismissed, [.number(1), .enumeration(4), .numbers([0, -900])])
+        check(MotionLayoutContract.settled, [.numbers([1.5, 0])])
         check(KeyboardElementContract.keyPressed, [Key.escape.propValue, KeyModifiers.shift.propValue])
         check(VisualElementContract.accessibilityActionPerformed, [.string("Clear")])
         check(VisualElementContract.accessibilityAdjusted, [AccessibilityAdjustment.decrement.propValue])

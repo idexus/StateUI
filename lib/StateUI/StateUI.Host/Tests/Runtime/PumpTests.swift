@@ -154,6 +154,8 @@ final class PumpTests: XCTestCase {
         let runtime = TurnRuntime(DealingApplication())
         runtime.pump.turn()
         let layout = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
+        // The room as a host's frame report says it: kept by the element, and told the program.
+        layout.laidOutRoom = (300, 200)
         try XCTUnwrap(layout.layoutProgram).layOut(300, 200)
         runtime.frame()
         XCTAssertEqual(layout.placement?.placements.count, 2)
@@ -205,6 +207,8 @@ final class PumpTests: XCTestCase {
         let runtime = TurnRuntime(DealingApplication())
         runtime.pump.turn()
         let layout = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
+        // The room as a host's frame report says it: kept by the element, and told the program.
+        layout.laidOutRoom = (300, 200)
         try XCTUnwrap(layout.layoutProgram).layOut(300, 200)
         runtime.frame()
         runtime.time += 16

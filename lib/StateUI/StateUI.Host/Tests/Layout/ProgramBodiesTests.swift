@@ -78,7 +78,7 @@ final class ProgramBodiesTests: XCTestCase {
             runtime.connectWindow()
             runtime.pump.turn()
             layout = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
-            try XCTUnwrap(layout.layoutProgram).layOut(300, 200)
+            layout.reportFrame([0, 0, 300, 200, 0, 0, 0, 0], in: runtime)
             frames(2)
         }
 

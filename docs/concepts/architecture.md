@@ -199,8 +199,9 @@ control's property, and a state only a body reads is never animated at all.
 Two movements are worked out beside the state instead: a state declared
 `@State(animatedBy: .engine)`, whose every frame an engine of the application
 writes ([Custom engines](#custom-engines)), and a
-[motion layout](../interface/layout.md#a-motion-layout), whose run under the
-hand and whose bodies the core works out on the host's frames.
+[motion layout](../interface/layout.md#a-motion-layout), whose places its own
+arithmetic answers as the host asks it frame by frame, where the parameters
+stand, and whose views the host brings onto those places.
 
 ### How a value flows
 

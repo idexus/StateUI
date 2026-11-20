@@ -19,7 +19,7 @@ final class LayoutBench {
     func laid(
         _ tree: @escaping () -> Node, room: Rect? = Rect(x: 10, y: 20, width: 300, height: 200),
         file: StaticString = #filePath, line: UInt = #line
-    ) -> [Placement] {
+    ) -> [HostPlacement] {
         mounted(tree)
         guard let runtime, let layout else {
             XCTFail("no layout was mounted", file: file, line: line)
@@ -108,11 +108,17 @@ final class LayoutBench {
         }
     }
 
-    /// Where the layout puts its views now, in the items' order, as its run wrote it.
-    var placed: [Placement] { layout?.layoutProgram?.run?().placements ?? [] }
+    /// Where the layout puts its views now, in the items' order: its program's places where its parameters stand.
+    var placed: [HostPlacement] { answer.views.map(\.target) }
 
-    /// What the layout last answered its host.
-    var answer: HostLayoutAnswer { layout?.layoutProgram?.answered() ?? HostLayoutAnswer() }
+    /// What the layout's program answers its element now, asked as the element asks it in its frame.
+    var answer: HostLayoutAnswer {
+        guard let layout, let program = layout.layoutProgram else { return HostLayoutAnswer() }
+        return layout.askProgram(program) ?? program.answered()
+    }
+
+    /// The last change of the layout's description its element measured.
+    var change: ProgramChange { layout?.programAsking.change ?? ProgramChange() }
 
     /// Says the layout another room, as a toolkit laying it out anew does.
     func room(_ width: Double, _ height: Double) {
