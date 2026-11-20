@@ -116,11 +116,11 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                 }
                 // A BOARD A KEYFRAME: the arithmetic is asked at whole boards,
                 // and the icons are blended between them.
-                .axis(\.self, range: 0...Double(boards - 1), keyframes: .every(1))
+                .axis(range: 0...Double(boards - 1), keyframes: .every(1))
                 // A PAGE A HAND: the room's width turns one board, the next
                 // at most, however far or fast the hand goes.
                 .interaction(
-                    .value($board, axis: \.self, input: .swipe(.horizontal, unit: .containerLength))
+                    .value($board, input: .swipe(.horizontal, unit: .containerLength))
                         .reversed(true)
                         .range(0...Double(boards - 1))
                         .snaps(.every(1))

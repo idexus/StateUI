@@ -68,7 +68,7 @@ final class LayoutKeyframeTests: XCTestCase {
     /// to its pose at the next: half way down by the curve's ends, not by the arithmetic's square.
     func testTheArithmeticIsAskedAtTheKeyframesAlone() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
-        let built = tree(phase, asked) { $0.axis(\.self, range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
+        let built = tree(phase, asked) { $0.axis(range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
         let worn = try worn(bench.laid(renders, built).patch)
 
         for value in [0.25, 0.5, 1.5, 1.75] { stand(worn, at: value) }
@@ -84,7 +84,7 @@ final class LayoutKeyframeTests: XCTestCase {
     /// arithmetic is asked and the poses between them are blended, and the host hears no hand for it.
     func testAnAxisOfKeyframesAloneMovesByTheProgram() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
-        let built = tree(phase, asked) { $0.axis(\.self, range: 0...2, keyframes: .every(1)) }
+        let built = tree(phase, asked) { $0.axis(range: 0...2, keyframes: .every(1)) }
         let laid = bench.laid(renders, built).patch
         let worn = try worn(laid)
         let layout = try XCTUnwrap(laid.first(.motionLayout))
@@ -100,7 +100,7 @@ final class LayoutKeyframeTests: XCTestCase {
     /// EACH POSE IS ASKED ONCE while what it was worked out with stands: frames to and fro ask nothing again.
     func testEachPoseIsAskedOnce() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
-        let built = tree(phase, asked) { $0.axis(\.self, range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
+        let built = tree(phase, asked) { $0.axis(range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
         let worn = try worn(bench.laid(renders, built).patch)
 
         for value in [0.2, 0.4, 1.2, 0.6, 1.8, 0.1] { stand(worn, at: value) }
@@ -111,7 +111,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testAtAKeyframeThePoseIsTheArithmeticsOwn() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
         let built = tree(phase, asked) {
-            $0.axis(\.self, range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))).interpolation(.catmullRom)
+            $0.axis(range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))).interpolation(.catmullRom)
         }
         let worn = try worn(bench.laid(renders, built).patch)
 
@@ -123,7 +123,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testTheSnapsAndTheEndsAreKeyframes() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
         let built = tree(phase, asked) {
-            $0.axis(\.self, range: 0...2, keyframes: [1.5]).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps([1.5]).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            $0.axis(range: 0...2, keyframes: [1.5]).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps([1.5]).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         let worn = try worn(bench.laid(renders, built).patch)
 
@@ -136,7 +136,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testTheCurveIsTheLayouts() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
         let built = tree(phase, asked) {
-            $0.axis(\.self, range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))).interpolation(.catmullRom)
+            $0.axis(range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))).interpolation(.catmullRom)
         }
         let worn = try worn(bench.laid(renders, built).patch)
 
@@ -149,7 +149,7 @@ final class LayoutKeyframeTests: XCTestCase {
     /// A NEW ROOM ASKS AGAIN: the poses were worked out in the old one.
     func testANewRoomAsksAgain() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
-        let built = tree(phase, asked) { $0.axis(\.self, range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
+        let built = tree(phase, asked) { $0.axis(range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
         let patch = bench.laid(renders, built).patch
         let worn = try worn(patch)
 
@@ -164,7 +164,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testAFollowedStateAsksAgain() throws {
         let (phase, gap, asked, renders) = (State(wrappedValue: 0.0), State(wrappedValue: 10.0), Asked(), Renders())
         let built = tree(phase, asked, gap: gap) {
-            $0.axis(\.self, range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            $0.axis(range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         let worn = try worn(bench.laid(renders, built).patch)
 
@@ -179,7 +179,7 @@ final class LayoutKeyframeTests: XCTestCase {
     /// A NEW DESCRIPTION ASKS AGAIN: its arithmetic is another.
     func testANewDescriptionAsksAgain() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
-        let built = tree(phase, asked) { $0.axis(\.self, range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
+        let built = tree(phase, asked) { $0.axis(range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
         let worn = try worn(bench.laid(renders, built).patch)
 
         stand(worn, at: 0.5)
@@ -195,7 +195,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testPastAnEndTheEndsLineGoesOn() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
         let built = tree(phase, asked) {
-            $0.axis(\.self, range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))).interpolation(.catmullRom)
+            $0.axis(range: 0...2, keyframes: .every(1)).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))).interpolation(.catmullRom)
         }
         let worn = try worn(bench.laid(renders, built).patch)
 
@@ -210,7 +210,7 @@ final class LayoutKeyframeTests: XCTestCase {
     /// past its one place still moves the views.
     func testAnAxisOfNoLengthIsAskedWhereItStands() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
-        let built = tree(phase, asked) { $0.axis(\.self, range: 0...0, keyframes: .every(1)).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...0).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
+        let built = tree(phase, asked) { $0.axis(range: 0...0, keyframes: .every(1)).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...0).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
         let worn = try worn(bench.laid(renders, built).patch)
 
         stand(worn, at: -0.25)
@@ -222,7 +222,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testAnAxisThatComesRoundBlendsAcrossItsSeam() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
         let built = tree(phase, asked) {
-            $0.axis(\.self, range: 0...3, keyframes: .every(1), periodic: true).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...3).periodic(true).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            $0.axis(range: 0...3, keyframes: .every(1), periodic: true).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...3).periodic(true).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         let worn = try worn(bench.laid(renders, built).patch)
 
@@ -295,7 +295,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testAnInterpolationWithNoKeyframesIsSaid() {
         let (phase, asked) = (State(wrappedValue: 0.0), Asked())
         _ = Renders().render(tree(phase, asked) {
-            $0.interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))).interpolation(.catmullRom)
+            $0.interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))).interpolation(.catmullRom)
         }())
 
         XCTAssertTrue(hasComplained("an interpolation and no axis with keyframes"))
@@ -305,7 +305,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testAWrappingAxisWithKeyframesAtItsEndsAloneIsSaid() {
         let (phase, asked) = (State(wrappedValue: 0.0), Asked())
         _ = Renders().render(tree(phase, asked) {
-            $0.axis(\.self, range: 0...2, keyframes: .endpoints, periodic: true).interaction(.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).periodic(true).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            $0.axis(range: 0...2, keyframes: .endpoints, periodic: true).interaction(.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).periodic(true).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }())
 
         XCTAssertTrue(hasComplained("keyframes at its ends alone"))

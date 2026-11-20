@@ -29,7 +29,7 @@ final class UIKitHandTests: XCTestCase {
                 (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 80, 80)) }
             }
             .interaction(
-                .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                .value(turn.projectedValue, input: .translation(.horizontal, unit: .frontItem))
                     .reversed(true).range(0...2).snaps(.every(1)))
             .itemDrag(begins: .longPress)
             .onItemDragged { told.items.append($0.id) }

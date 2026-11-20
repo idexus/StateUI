@@ -148,12 +148,11 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         }
         // A SEGMENT A CARD: a card setting out is told which card the run
         // set out from.
-        .axis(\.self, range: 0...Double(max(count - 1, 0)), segments: .every(1))
+        .axis(range: 0...Double(max(count - 1, 0)), segments: .every(1))
         // The pile is swiped a card at a time, the fan moved through.
         .interaction(
             .value(
-                $turn, axis: \.self,
-                input: fanned ? .translation(.horizontal, unit: .frontItem) : .swipe(.horizontal, unit: .frontItem))
+                $turn, input: fanned ? .translation(.horizontal, unit: .frontItem) : .swipe(.horizontal, unit: .frontItem))
                 .reversed(true)
                 .range(0...Double(max(count - 1, 0)))
                 .snaps(.every(1))

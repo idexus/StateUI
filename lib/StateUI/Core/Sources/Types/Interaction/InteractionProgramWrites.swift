@@ -3,7 +3,7 @@
 
 /// What a write of the program does to a value the user's hand holds.
 ///
-///     .value($page, axis: \.self, input: .swipe(.horizontal, unit: .containerLength))
+///     .value($page, input: .swipe(.horizontal, unit: .containerLength))
 ///         .range(0...4).snaps(.every(1))
 ///         .programWrites(.deferLatest)      // a timer turning the pages waits for the hand
 ///

@@ -5,9 +5,9 @@
 /// under the user's hand (`Interaction.snaps(_:)`), where a motion layout's arithmetic is asked (`keyframes:`) and
 /// where its segments begin (`segments:`). This library's own.
 ///
-///     .value($x, axis: \.self, input: hand).range(0...3).snaps([1, 2])        // 0, 1, 2, 3
-///     .value($x, axis: \.self, input: hand).range(0...3).snaps(.endpoints)    // 0, 3
-///     .value($x, axis: \.self, input: hand).range(0...3).snaps(.every(1))     // 0, 1, 2, 3
+///     .value($x, input: hand).range(0...3).snaps([1, 2])        // 0, 1, 2, 3
+///     .value($x, input: hand).range(0...3).snaps(.endpoints)    // 0, 3
+///     .value($x, input: hand).range(0...3).snaps(.every(1))     // 0, 1, 2, 3
 ///
 /// A value given no snaps rests wherever its throw ends inside its range.
 /// Design: docs/design/views/motion-layout.md#an-axis
@@ -35,7 +35,7 @@ public struct AxisValues: Equatable, Sendable, ExpressibleByArrayLiteral {
 
     /// The places `values` lists, and the ends of the range: a list worked out, which a literal cannot take.
     ///
-    ///     .axis(\.self, range: 0...10, segments: .at(chapters.map(\.start)))
+    ///     .axis(range: 0...10, segments: .at(chapters.map(\.start)))
     ///
     /// - Parameter values: the places inside the range; those outside it are left out.
     /// - Returns: the places.

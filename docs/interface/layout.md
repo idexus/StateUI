@@ -799,7 +799,7 @@ struct Carousel: View {
                 }
             }
             .interaction(
-                .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                .value($turn, input: .translation(.horizontal, unit: .frontItem))
                     .reversed(true).range(0...Double(names.count - 1)).snaps(.every(1)))
             .height(200)
 
@@ -850,7 +850,7 @@ struct Drawer: View {
         }
         // Pulled up, it opens; let go, it is open or closed.
         .interaction(
-            .value($open, axis: \.self, input: .translation(.vertical, unit: .points(200)))
+            .value($open, input: .translation(.vertical, unit: .points(200)))
                 .reversed(true).range(0...1).snaps(.endpoints))
         .height(300)
     }
@@ -912,7 +912,7 @@ struct TurningCards: View {
             }
         }
         .interaction(
-            .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+            .value($turn, input: .translation(.horizontal, unit: .frontItem))
                 .reversed(true).range(0...Double(names.count - 1)).snaps(.every(1))
                 // The next card comes by itself, and waits for a hand that holds the cards.
                 .programWrites(.deferLatest))
@@ -1000,7 +1000,7 @@ struct Swaying: View {
             }
         }
         .interaction(
-            .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+            .value($turn, input: .translation(.horizontal, unit: .frontItem))
                 .reversed(true).range(0...3).snaps(.every(1)))
         .onSettled { turn in print("at rest on \(turn)") }
         .height(160)
@@ -1041,9 +1041,9 @@ struct Pile: View {
                     zIndex: leaving && abs(step) > 0.5 ? -100 : -Int(behind * 10))
             }
         }
-        .axis(\.self, range: 0...Double(names.count - 1), segments: .every(1))
+        .axis(range: 0...Double(names.count - 1), segments: .every(1))
         .interaction(
-            .value($turn, axis: \.self, input: .swipe(.horizontal, unit: .frontItem))
+            .value($turn, input: .swipe(.horizontal, unit: .frontItem))
                 .reversed(true).range(0...Double(names.count - 1)).snaps(.every(1)))
         .height(220)
     }
@@ -1088,7 +1088,7 @@ struct Boards: View {
                 }
             }
             .interaction(
-                .value($board, axis: \.self, input: .swipe(.horizontal, unit: .containerLength))
+                .value($board, input: .swipe(.horizontal, unit: .containerLength))
                     .reversed(true).range(0...1).snaps(.every(1)))
             .height(80)
 
@@ -1185,7 +1185,7 @@ struct Ring: View {
             }
         }
         .interaction(
-            .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+            .value($turn, input: .translation(.horizontal, unit: .frontItem))
                 .reversed(true).range(0...Double(names.count)).periodic(true).snaps(.every(1))
                 .release(.projected(.spring(response: .milliseconds(400), damping: 0.8))))
         .height(200)
@@ -1241,7 +1241,8 @@ move several axes, each by its own unit and range, resting its own way - a
 hand that turns the cards and, slower, the sky behind them - but no two move
 the same axis. One `.interaction(_:)` says the whole of it: said again, it
 takes the other's place, and an axis it names none goes on as the program
-sends it. A `Double` is the parameters of one axis, `\.self`.
+sends it. `Double` parameters are one axis, which `.axis(range:)` and
+`.value(_:input:)` name by themselves.
 
 Two fingers are inputs of their own: `.magnification` multiplies an axis
 by how far they spread - on a touch screen, or a trackpad's pinch - and
@@ -1371,9 +1372,9 @@ struct Arrangements: View {
             // Asked at 0, 1 and 2 alone: a row, a column, a pile.
             [row(in: context.bounds), column(in: context.bounds), pile(in: context.bounds)][Int(arrangement)]
         }
-        .axis(\.self, range: 0...2, keyframes: .every(1))
+        .axis(range: 0...2, keyframes: .every(1))
         .interaction(
-            .value($arrangement, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+            .value($arrangement, input: .translation(.horizontal, unit: .frontItem))
                 .reversed(true).range(0...2).snaps(.every(1)))
         .interpolation(.catmullRom)
         .height(300)
@@ -1421,7 +1422,7 @@ struct Rearranged: View {
                         : Placement(Rect(context.bounds.width / 2 - 30, Double(index) * 48, 60, 40))
                 }
             }
-            .axis(\.self, range: 0...1, keyframes: .every(1))
+            .axis(range: 0...1, keyframes: .every(1))
             .height(300)
 
             HStack {

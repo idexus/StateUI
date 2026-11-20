@@ -66,7 +66,7 @@ final class LayoutHandTests: XCTestCase {
                 ]
             }
             .interaction(
-                Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
+                Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
                     .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .node
         }
@@ -87,7 +87,7 @@ final class LayoutHandTests: XCTestCase {
                 (0..<3).map { Placement(Rect((Double($0) - at) * context.bounds.width / 2, 0, 10, 10)) }
             }
             .interaction(
-                Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
+                Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
                     .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .node
         }
@@ -183,7 +183,7 @@ final class LayoutHandTests: XCTestCase {
             func tree() -> Node {
                 MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                     .interaction(
-                        Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...6).snaps(.every(1))
+                        Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...6).snaps(.every(1))
                             .release(.projected(throwing)))
                     .node
             }
@@ -257,7 +257,7 @@ final class LayoutHandTests: XCTestCase {
                 return [Placement(Rect(0, 0, 10, 10))]
             }
             .interaction(
-                Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...7).snaps(.every(1)).periodic(true)
+                Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...7).snaps(.every(1)).periodic(true)
                     .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .node
         }
@@ -282,7 +282,7 @@ final class LayoutHandTests: XCTestCase {
             return [Placement(Rect(0, 0, 10, 10))]
         }
         .interaction(
-            Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)
+            Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)
                 .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         .node
     }
@@ -317,7 +317,7 @@ final class LayoutHandTests: XCTestCase {
         func tree() -> Node {
             MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                 .interaction(
-                    Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1)).periodic(true)
+                    Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1)).periodic(true)
                         .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                 .node
         }

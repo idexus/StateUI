@@ -144,7 +144,7 @@ extension View {
     ///     Rectangle()
     ///         .translationX($offset)
     ///         .interaction(
-    ///             .value($offset, axis: \.self, input: .translation(.horizontal))
+    ///             .value($offset, input: .translation(.horizontal))
     ///                 .range(0...240)
     ///                 .snaps([0, 120, 240]))
     ///

@@ -5,7 +5,7 @@
 /// number at a time: each view's place, size, turn, opacity and shade.
 ///
 ///     MotionLayout(cards, id: \.name, parameters: $arrangement) { … } placements: { context, parameters in … }
-///         .axis(\.self, range: 0...2, keyframes: .every(1))
+///         .axis(range: 0...2, keyframes: .every(1))
 ///         .interpolation(.catmullRom)
 ///
 /// The library's curves are `.linear`, `.catmullRom` and `.monotone`; a curve of your own is a type conforming to

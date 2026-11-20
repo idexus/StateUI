@@ -31,7 +31,7 @@ final class LayoutShownTests: XCTestCase {
                 (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
             .interaction(
-                Interaction.value(phase.traveling(.eased(.milliseconds(160), curve: .linear)), axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))
+                Interaction.value(phase.traveling(.eased(.milliseconds(160), curve: .linear)), input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))
                     .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
 
             Rectangle()

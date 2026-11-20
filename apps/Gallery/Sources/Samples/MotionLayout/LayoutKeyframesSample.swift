@@ -91,11 +91,11 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
         }
         // THREE LAYOUTS, A KEYFRAME EACH: the arithmetic is asked at 0, 1
         // and 2 alone, whoever moves the number.
-        .axis(\.self, range: 0...2, keyframes: .every(1))
+        .axis(range: 0...2, keyframes: .every(1))
         // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
         // interaction, the buttons alone move it.
         .interaction(byHand
-            ? .value($arrangement, axis: \.self, input: .translation(.horizontal, unit: .points(260)))
+            ? .value($arrangement, input: .translation(.horizontal, unit: .points(260)))
                 .reversed(true)
                 .range(0...2)
                 .snaps(.every(1))

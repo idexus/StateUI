@@ -25,7 +25,7 @@
 ///         }
 ///     }
 ///     .interaction(
-///         .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+///         .value($turn, input: .translation(.horizontal, unit: .frontItem))
 ///             .reversed(true).range(0...Double(planets.count - 1)).snaps(.every(1)))
 ///
 /// The parameters are a state of yours, two-way: written by the program, the run travels there; under the user's hand
@@ -283,7 +283,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
 
     /// How the layout maps one axis of the parameters: where its arithmetic is asked, and where its segments begin.
     ///
-    ///     .axis(\.self, range: 0...2, keyframes: .every(1))
     ///     .axis(\.turn, range: 0...7, segments: .every(1), periodic: true)
     ///
     /// Given keyframes, the arithmetic is asked only there and at the range's ends, and the layout is blended
@@ -297,7 +296,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// `interaction(_:)`'s, and the program writes the axis anywhere. An axis declared again takes the other's place.
     ///
     /// - Parameters:
-    ///   - axis: the axis, one of the parameters' `axes`; `\.self` for `Double` parameters.
+    ///   - axis: the axis, one of the parameters' `axes`.
     ///   - range: how far the mapping runs.
     ///   - keyframes: where the arithmetic is asked beside the ends of the range; every frame unless said.
     ///   - segments: where a segment begins beside the ends of the range; none unless said.
@@ -317,10 +316,27 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         return copy
     }
 
+    /// How the layout maps parameters that are one number, as `axis(_:range:keyframes:segments:periodic:)` maps one
+    /// axis of several.
+    ///
+    ///     .axis(range: 0...2, keyframes: .every(1))
+    ///
+    /// - Parameters:
+    ///   - range: how far the mapping runs.
+    ///   - keyframes: where the arithmetic is asked beside the ends of the range; every frame unless said.
+    ///   - segments: where a segment begins beside the ends of the range; none unless said.
+    ///   - periodic: whether the range's end meets its start, the range one turn.
+    /// - Returns: the layout, its parameters mapped so.
+    public func axis(
+        range: ClosedRange<Double>, keyframes: AxisValues? = nil, segments: AxisValues? = nil, periodic: Bool = false
+    ) -> Self where Parameters == Double {
+        axis(\.self, range: range, keyframes: keyframes, segments: segments, periodic: periodic)
+    }
+
     /// What the user's hand and fingers move of the layout's parameters, and how.
     ///
     ///     .interaction(
-    ///         .value($turn, axis: \.self, input: .swipe(.horizontal, unit: .frontItem))
+    ///         .value($turn, input: .swipe(.horizontal, unit: .frontItem))
     ///             .reversed(true)
     ///             .range(0...Double(cards.count - 1))
     ///             .snaps(.every(1)))
@@ -343,7 +359,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// The curve every view follows between the poses the arithmetic answers at the axes' keyframes: straight
     /// unless said.
     ///
-    ///     .axis(\.self, range: 0...2, keyframes: .every(1))
+    ///     .axis(range: 0...2, keyframes: .every(1))
     ///     .interpolation(.catmullRom)
     ///
     /// Each view goes from its pose at one keyframe to its pose at the next by its identity: its place and size,

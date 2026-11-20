@@ -31,9 +31,9 @@ final class LayoutHandSetOutTests: XCTestCase {
             handed.froms.append(from)
             return [Placement(Rect(0, 0, 10, 10))]
         }
-        .axis(\.self, range: 0...6, segments: .every(1))
+        .axis(range: 0...6, segments: .every(1))
         .interaction(
-            Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...6).snaps(.every(1))
+            Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...6).snaps(.every(1))
                 .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         .node
     }
@@ -127,9 +127,9 @@ final class LayoutHandSetOutTests: XCTestCase {
         let phase = State(wrappedValue: 1.0)
         func tree() -> Node {
             MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
-                .axis(\.self, range: 0...3, segments: .every(1))
+                .axis(range: 0...3, segments: .every(1))
                 .interaction(
-                    Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
+                    Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
                         .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                 .layoutBodies(.onChange(response: .milliseconds(160)))
                 .node
@@ -168,9 +168,9 @@ final class LayoutHandSetOutTests: XCTestCase {
                         return poses(at)
                     }
                 return layout
-                    .axis(\.self, range: 0...2, keyframes: .every(1), segments: .every(1))
+                    .axis(range: 0...2, keyframes: .every(1), segments: .every(1))
                     .interaction(
-                        Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100)))
+                        Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100)))
                             .reversed(true).range(0...2).snaps(.every(1))
                             .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                     .node

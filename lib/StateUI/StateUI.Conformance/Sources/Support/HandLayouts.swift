@@ -23,7 +23,7 @@ enum HandLayouts {
                     (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
                 }
                 .interaction(
-                    Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...5).snaps(.every(1))
+                    Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...5).snaps(.every(1))
                         .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                 .mirrorsRightToLeft(mirrored)
                 .width(100).height(40)
@@ -90,7 +90,7 @@ enum HandLayouts {
                     (0..<3).map { Placement(Rect(Double($0) * 80 + 20, 60, 40 * at, 40)) }
                 }
                 .interaction(
-                    Interaction.value(phase.projectedValue, axis: \.self, input: input).range(0.5...2).snaps([1])
+                    Interaction.value(phase.projectedValue, input: input).range(0.5...2).snaps([1])
                         .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                 .width(300).height(240)
             }

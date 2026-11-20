@@ -78,8 +78,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   var turn = 0.0`, and change it later with `try $turn.journey.setMotion(_:)`. A hand let go short of a rest comes
   onto it under the same motion.
 - **What the hand moves is one declaration, `.interaction(_:)`.** A motion layout's `.axis(_:input:range:keyframes:
-  snaps:periodic:)` no longer says the hand: an `Interaction` names the state, the axis and the input, and says the
-  rest - `.interaction(.value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+  snaps:periodic:)` no longer says the hand: an `Interaction` names the state and the input - for parameters of
+  several axes, the axis too (`.value($orbit, axis: \.turn, input: ...)`) - and says the
+  rest - `.interaction(.value($turn, input: .translation(.horizontal, unit: .frontItem))
   .reversed(true).range(0...6).snaps(.every(1)))`. Several axes moved at once are `Interaction.simultaneous([...])`;
   an interaction said again takes the other's place, and two values moving one axis are refused together.
   `LayoutInput` is `InteractionInput`: `.scroll(way)` is `.translation(way, unit: .frontItem)`, `lengthPerUnit: n`
@@ -91,7 +92,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   on several at once, every one of them - and on a `GalleryView`, `.release(_:)`. Unless said a value is thrown on
   as a glide of 800 ms at the longest, where a layout threw by 400 ms of `cubicOut`: say
   `.release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))` to keep the throw it had.
-- **An axis maps, and names its segments.** `.axis(_:range:keyframes:segments:periodic:)` says where the
+- **An axis maps, and names its segments.** `.axis(_:range:keyframes:segments:periodic:)` - `.axis(range:...)`
+  for parameters that are one number - says where the
   arithmetic is asked and where a segment begins, for the hand and the program alike. A layout whose arithmetic
   takes where the motion set out says `segments:` where it said `snaps:`; keyframes no longer take the hand's
   snaps in - name them among the keyframes where the layout should rest on the arithmetic's own answer. The
@@ -114,7 +116,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the program for every element (`everyElementRuns`), and a realization records `ViewContract.interaction` only
   where its toolkit tells less of the hand. `HostPatch.interaction` carries the program, and a layout program
   says `handHolds` and answers `frontItemUnit`.
-- **`panX(_:)` and `panY(_:)` are an interaction.** `.panX($x)` is `.interaction(.value($x, axis: \.self, input:
+- **`panX(_:)` and `panY(_:)` are an interaction.** `.panX($x)` is `.interaction(.value($x, input:
   .translation(.horizontal)).release(.stay))`, and down alike with `.vertical`; both on one view are
   `Interaction.simultaneous([...])`. The state is carried as a journey now, so a write of the program travels on
   the same value. `ViewContract.panXChannel` and `panYChannel` are gone, with `HostRuntime.takeGestureValue`.
@@ -186,7 +188,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   no end. `.release(.nearest(_:))` comes onto the nearest rest with no throw, and `.release(.stay)` leaves the
   value where the hand left it.
 - **The hand moves a state on any view.** `.interaction(_:)` is every view's: a rectangle moved by
-  `.translationX($offset)` and given `.interaction(.value($offset, axis: \.self, input:
+  `.translationX($offset)` and given `.interaction(.value($offset, input:
   .translation(.horizontal)).range(0...240).snaps([120]))` is dragged between three places with no handler and no
   view built, and a button writing `offset` sends it on the same value. A state nothing draws is carried for the
   hand alone. `.containerLength` is the view's own length; `.frontItem` is a motion layout's, and is refused
@@ -1230,7 +1232,7 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `.onClicked { count += 1 }`; one that awaits names what a second event does while it runs -
   `.onClicked(gate: .ignoreWhileRunning) { try await save() }`.
 - **A layout engine's axis is one declaration.** `.input(_:)`, `.snapTargets(_:)` and `.wraps` are gone:
-  `.axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))`, with `keyframes:` and `wraps:`
+  `.axis(input: .scroll(.horizontal), range: 0...2, snaps: .every(1))`, with `keyframes:` and `wraps:`
   where the axis has them.
 - **`move(to:_:)` takes a law, never an optional one.** `$x.journey.move(to: 0)` moves under the value's own law
   and `$x.journey.move(to: 0, .none)` under no motion - which an optional law read as "none given", and animated.

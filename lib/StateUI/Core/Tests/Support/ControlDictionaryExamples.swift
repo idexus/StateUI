@@ -634,7 +634,7 @@ extension ControlDictionary {
                 }
             }
             .interaction(
-                Interaction.value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
+                Interaction.value($turn, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
                     .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .height(160)
             """#),

@@ -115,7 +115,7 @@ final class AppKitGestureTests: XCTestCase {
                 [Placement(Rect(0, 0, 10 * at, 10)), Placement(Rect(20, 0, 10, 10))]
             }
             .interaction(
-                Interaction.value(zoom.projectedValue, axis: \.self, input: .magnification).range(1...3).snaps([2])
+                Interaction.value(zoom.projectedValue, input: .magnification).range(1...3).snaps([2])
                     .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         defer { renderer.finish() }

@@ -23,7 +23,7 @@ final class WebHandTests: XCTestCase {
                 (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, context.bounds.height)) }
             }
             .interaction(
-                .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                .value(turn.projectedValue, input: .translation(.horizontal, unit: .frontItem))
                     .reversed(true).range(0...2).snaps(.every(1)))
             .width(300)
             .height(200)
@@ -46,7 +46,7 @@ final class WebHandTests: XCTestCase {
                 (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, context.bounds.height)) }
             }
             .interaction(
-                .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                .value(turn.projectedValue, input: .translation(.horizontal, unit: .frontItem))
                     .reversed(true).range(0...2).snaps(.every(1)))
             .itemDrag(begins: .longPress)
             .width(300)
@@ -85,7 +85,7 @@ final class WebHandTests: XCTestCase {
                 (0..<3).map { Placement(Rect(Double($0) * 100, 0, 100 * at, context.bounds.height)) }
             }
             .interaction(
-                Interaction.value(zoom.projectedValue, axis: \.self, input: .magnification).range(1...3).snaps([2])
+                Interaction.value(zoom.projectedValue, input: .magnification).range(1...3).snaps([2])
                     .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .width(300)
             .height(200)

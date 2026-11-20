@@ -209,7 +209,7 @@ final class InteractionSessionsTests: XCTestCase {
             .height(80)
             .translationX(offset.projectedValue)
             .interaction(
-                .value(offset.projectedValue, axis: \.self, input: .translation(.horizontal))
+                .value(offset.projectedValue, input: .translation(.horizontal))
                     .range(0...240).snaps([120]).release(release))
             .node
     }
@@ -267,7 +267,7 @@ final class InteractionSessionsTests: XCTestCase {
         let moved = State(wrappedValue: 10.0)
         bench.mounted {
             Rectangle()
-                .interaction(.value(moved.projectedValue, axis: \.self, input: .translation(.horizontal)).release(.stay))
+                .interaction(.value(moved.projectedValue, input: .translation(.horizontal)).release(.stay))
                 .node
         }
         let pad = try XCTUnwrap(bench.element(.rectangle))
@@ -288,7 +288,7 @@ final class InteractionSessionsTests: XCTestCase {
         bench.mounted {
             Rectangle()
                 .interaction(
-                    .value(page.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .containerLength))
+                    .value(page.projectedValue, input: .translation(.horizontal, unit: .containerLength))
                         .reversed(true).range(0...3).release(.stay))
                 .node
         }

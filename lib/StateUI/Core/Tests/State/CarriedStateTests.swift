@@ -864,7 +864,7 @@ final class CarriedStateTests: XCTestCase {
         let patch = Renders().render(
             Rectangle()
                 .fill(Color(hex: 0x000000))
-                .interaction(.value(across.projectedValue, axis: \.self, input: .translation(.horizontal)).release(.stay))
+                .interaction(.value(across.projectedValue, input: .translation(.horizontal)).release(.stay))
                 .id("moved")
                 .node)
 
@@ -885,7 +885,7 @@ final class CarriedStateTests: XCTestCase {
             var body: some View { VStack { Text("card") } }
         }
         let across = State(wrappedValue: 0.0)
-        let hand = Interaction.value(across.projectedValue, axis: \.self, input: .translation(.horizontal))
+        let hand = Interaction.value(across.projectedValue, input: .translation(.horizontal))
 
         let composed = Renders().render(Card().interaction(hand).id("card").node)
         XCTAssertEqual(composed.first(.vStack)?.moved.count, 1, "on the stack the card builds")
@@ -901,7 +901,7 @@ final class CarriedStateTests: XCTestCase {
         let patch = Renders().render(
             Rectangle()
                 .translationX(across.projectedValue)
-                .interaction(.value(across.projectedValue, axis: \.self, input: .translation(.horizontal)))
+                .interaction(.value(across.projectedValue, input: .translation(.horizontal)))
                 .id("moved")
                 .node)
 
@@ -916,7 +916,7 @@ final class CarriedStateTests: XCTestCase {
 
         let patch = Renders().render(
             Rectangle()
-                .interaction(.value(across.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)))
+                .interaction(.value(across.projectedValue, input: .translation(.horizontal, unit: .frontItem)))
                 .id("moved")
                 .node)
 

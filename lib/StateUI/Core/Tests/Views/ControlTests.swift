@@ -362,7 +362,7 @@ final class ControlTests: XCTestCase {
                     [Placement(Rect(phase, 0, context.bounds.width / 2, context.bounds.height)), Placement(Rect(context.bounds.width / 2, 0, 10, 10))]
                 }
                 .interaction(
-                    Interaction.value(turn.traveling(.spring(response: .milliseconds(240))), axis: \.self, input: .translation(.horizontal, unit: .points(90))).reversed(true).range(0...1).snaps(.every(1))
+                    Interaction.value(turn.traveling(.spring(response: .milliseconds(240))), input: .translation(.horizontal, unit: .points(90))).reversed(true).range(0...1).snaps(.every(1))
                         .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                 .following(chosen.projectedValue)
                 .shade {

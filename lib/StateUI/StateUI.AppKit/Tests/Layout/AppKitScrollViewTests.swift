@@ -378,7 +378,7 @@ final class AppKitScrollViewTests: XCTestCase {
                 .fill(.red)
                 .width(200)
                 .height(100)
-                .interaction(.value(moved.projectedValue, axis: \.self, input: .translation(.horizontal)).release(.stay))
+                .interaction(.value(moved.projectedValue, input: .translation(.horizontal)).release(.stay))
         }
         defer { renderer.finish() }
         let deadline = Date(timeIntervalSinceNow: 2)

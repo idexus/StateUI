@@ -114,8 +114,9 @@ already wears the state as a property, which is its consumer - so a hand
 moves a state nothing draws, and an engine following its journey reads the
 hand's place frame by frame.
 
-A state has numbers the hand can name where it is a `Double` (`\.self`) or a
-`LayoutParameters`, whose `axes` list them. `.containerLength` is the view's
+A state has numbers the hand can name where it is a `Double`, the one number
+`value(_:input:)` moves, or a `LayoutParameters`, whose `axes` list them for
+`value(_:axis:input:)`. `.containerLength` is the view's
 own length along the hand's way, read off where it stands, so the view says
 its frame to the host as a layout does. `.frontItem` is a layout's alone.
 

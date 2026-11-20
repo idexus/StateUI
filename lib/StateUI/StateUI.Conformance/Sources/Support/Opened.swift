@@ -14,7 +14,7 @@ enum Opened {
 
     /// `view`, the hand moving `x` across it a point a point, left where the hand leaves it.
     static func moved<V: View>(_ view: V, across x: Binding<Double>) -> some View {
-        view.interaction(.value(x, axis: \.self, input: .translation(.horizontal)).release(.stay))
+        view.interaction(.value(x, input: .translation(.horizontal)).release(.stay))
     }
 
     /// `view`, aimed at by `focus`.

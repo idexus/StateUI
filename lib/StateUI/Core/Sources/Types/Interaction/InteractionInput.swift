@@ -3,7 +3,7 @@
 
 /// What of the user's hand moves a value: a hand one way, two fingers spreading, or two fingers turning.
 ///
-///     .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+///     .value($turn, input: .translation(.horizontal, unit: .frontItem))
 ///     .value($table, axis: \.zoom, input: .magnification)
 ///     .value($table, axis: \.turn, input: .rotation(degreesPerUnit: 45))
 ///

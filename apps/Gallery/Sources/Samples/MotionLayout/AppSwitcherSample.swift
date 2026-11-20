@@ -63,7 +63,7 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                 // home turns its cards: a spring that carries the hand on
                 // and settles on a card.
                 .interaction(
-                    .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                    .value($turn, input: .translation(.horizontal, unit: .frontItem))
                         .reversed(true)
                         .range(0...Double(max(count - 1, 0)))
                         .snaps(.every(1))

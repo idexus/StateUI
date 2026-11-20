@@ -30,9 +30,9 @@ final class LayoutSetOutTests: XCTestCase {
             handed.froms.append(from)
             return [Placement(Rect(0, 0, 10, 10))]
         }
-        .axis(\.self, range: 0...6, segments: .every(1))
+        .axis(range: 0...6, segments: .every(1))
         .interaction(
-            Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...6).snaps(.every(1))
+            Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...6).snaps(.every(1))
                 .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         .node
     }

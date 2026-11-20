@@ -348,7 +348,9 @@ carried, so one state is one channel however many axes it has.
 An axis the hand moves is moved alone: the arithmetic is handed the parameters
 as their channel shows them, each axis a hand holds where it holds it, a snap
 passed is named on that axis, and another axis traveling under the program
-goes on beside the hand. The one axis of `Double` parameters is `\.self`.
+goes on beside the hand. `Double` parameters have one axis, `\.self`, which
+`axis(range:keyframes:segments:periodic:)` and `Interaction.value(_:input:)`
+name by themselves: an author writes the key path for parameters of several.
 
 The type is inferred from the parameters lent, `parameters: $orbit`, which stands in
 the same initializer as the arithmetic: every layout is lent its parameters, a

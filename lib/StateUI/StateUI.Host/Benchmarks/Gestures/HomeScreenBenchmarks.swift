@@ -51,9 +51,9 @@ private struct HomeBoard: View {
         } placements: { context, board in
             (0..<count).map { Self.place($0, board, context.bounds) }
         }
-        .axis(\.self, range: 0...2, keyframes: .every(1))
+        .axis(range: 0...2, keyframes: .every(1))
         .interaction(
-            Interaction.value($board, axis: \.self, input: .swipe(.horizontal, unit: .containerLength)).reversed(true).range(0...2).snaps(.every(1))
+            Interaction.value($board, input: .swipe(.horizontal, unit: .containerLength)).reversed(true).range(0...2).snaps(.every(1))
                 .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         .itemDrag(begins: .longPress)
         .onItemDragged { drag in

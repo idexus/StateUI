@@ -417,14 +417,14 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
         // A segment a card: a card setting out is told where the run set out from.
         let cards = 0...Double(max(count - 1, 0))
-        layout = layout.axis(\.self, range: cards, segments: .every(1))
+        layout = layout.axis(range: cards, segments: .every(1))
 
         // The hand carries the card in front, however big the room draws it; a deck is swiped a card at a time.
         if swipes {
             let input: InteractionInput = shape == .deck
                 ? .swipe(.horizontal, unit: .frontItem) : .translation(.horizontal, unit: .frontItem)
             layout = layout.interaction(
-                Interaction.value(turns.projectedValue, axis: \.self, input: input)
+                Interaction.value(turns.projectedValue, input: input)
                     .reversed(true)
                     .range(cards)
                     .snaps(.every(1))

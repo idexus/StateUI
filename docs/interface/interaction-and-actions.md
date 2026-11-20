@@ -208,7 +208,7 @@ struct Panel: View {
                 .height(80)
                 .translationX($offset)
                 .interaction(
-                    .value($offset, axis: \.self, input: .translation(.horizontal))
+                    .value($offset, input: .translation(.horizontal))
                         .range(0...240)
                         .snaps([120])
                         .release(.projected(.spring())))
@@ -220,8 +220,9 @@ struct Panel: View {
 }
 ```
 
-An `Interaction` names the state, the number of it (`\.self` for a `Double`)
-and the input; `.range(_:)` says how far the hand may take it - less and less
+An `Interaction` names the state and the input - and, for a state of several
+numbers, which of them (`.value($table, axis: \.zoom, input: .magnification)`);
+`.range(_:)` says how far the hand may take it - less and less
 past an end - `.snaps(_:)` where it may rest, the ends of its range among
 them, and `.release(_:)` how it goes on let go: thrown on to the snap nearest
 where the throw would end (`.projected(_:)`), onto the nearest
@@ -235,7 +236,7 @@ holds takes it from the hand, unless the interaction says
 takes the same declaration for its parameters, and measures the view in front
 for the hand's unit (`.frontItem`).
 
-The state need not be drawn: `.interaction(.value($turn, axis: \.self, input:
+The state need not be drawn: `.interaction(.value($turn, input:
 .translation(.horizontal)).release(.stay))` moves a state an engine follows,
 left where the hand leaves it.
 

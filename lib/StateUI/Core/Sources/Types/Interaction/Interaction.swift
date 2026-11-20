@@ -4,7 +4,7 @@
 /// What the user's hand moves on a view, and how: a declaration the view reads where it is written.
 ///
 ///     .interaction(
-///         .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+///         .value($turn, input: .translation(.horizontal, unit: .frontItem))
 ///             .reversed(true)
 ///             .range(0...6)
 ///             .snaps(.every(1))
@@ -44,14 +44,27 @@ public struct Interaction {
     /// What was written on it that does not stand, as the author is told it.
     var refused: [String] = []
 
-    /// The hand moving one number of a state: the state's value follows the hand while it holds it, and goes on as
-    /// `release(_:)` says once it lets go.
+    /// The hand moving a state that is one number: the state's value follows the hand while it holds it, and goes on
+    /// as `release(_:)` says once it lets go.
+    ///
+    ///     .value($offset, input: .translation(.horizontal)).range(0...240)
+    ///
+    /// - Parameters:
+    ///   - state: the state moved.
+    ///   - input: what of the hand moves it.
+    /// - Returns: the interaction.
+    public static func value(_ state: Binding<Double>, input: InteractionInput) -> Interaction {
+        value(state, axis: \.self, input: input)
+    }
+
+    /// The hand moving one number of a state of several: that number follows the hand while it holds it, and goes
+    /// on as `release(_:)` says once it lets go.
     ///
     ///     .value($table, axis: \.zoom, input: .magnification).range(0.5...2)
     ///
     /// - Parameters:
-    ///   - state: the state moved - a `Double`, or a `LayoutParameters` of several numbers.
-    ///   - axis: the number of it the input moves, one of its `axes`; `\.self` for a `Double`.
+    ///   - state: the state moved, a `LayoutParameters` of several numbers.
+    ///   - axis: the number of it the input moves, one of its `axes`.
     ///   - input: what of the hand moves it.
     /// - Returns: the interaction.
     public static func value<Parameters: LayoutParameters>(

@@ -32,7 +32,7 @@ final class MotionLayoutTests: XCTestCase {
         let turn = State(wrappedValue: 0.0)
         let layout = MotionLayout([1, 2], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in [] }
             .interaction(
-                .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).range(0...1))
+                .value(turn.projectedValue, input: .translation(.horizontal, unit: .frontItem)).range(0...1))
 
         XCTAssertEqual(layout.walkedParts.map(\.label), Mirror(reflecting: layout).children.map { $0.label ?? "" })
     }
@@ -110,7 +110,7 @@ final class MotionLayoutTests: XCTestCase {
                 [Placement(Rect(0, 0, 10, 10), zIndex: 5), Placement(Rect(20, 0, 10, 10))]
             }
             .interaction(
-                .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100)))
+                .value(turn.projectedValue, input: .translation(.horizontal, unit: .points(100)))
                     .reversed(true).range(0...1).snaps(.every(1)))
             .node
         })
@@ -125,7 +125,7 @@ final class MotionLayoutTests: XCTestCase {
         let patch = Renders().render(
             MotionLayout([1], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                 .interaction(
-                    .value(turn.projectedValue, axis: \.self, input: .translation(.vertical, unit: .points(100)))
+                    .value(turn.projectedValue, input: .translation(.vertical, unit: .points(100)))
                         .reversed(true).range(0...1).snaps(.every(1)))
                 .node)
         let layout = try XCTUnwrap(patch.first(.motionLayout))
@@ -239,7 +239,7 @@ final class MotionLayoutTests: XCTestCase {
             return [Placement(Rect(0, 0, 10, 10))]
         }
         .interaction(
-            Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)
+            Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)
                 .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         .node
     }
@@ -254,7 +254,7 @@ final class MotionLayoutTests: XCTestCase {
         let patch = renders.render(
             MotionLayout([7, 8], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in [] }
                 .interaction(
-                    .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100)))
+                    .value(turn.projectedValue, input: .translation(.horizontal, unit: .points(100)))
                         .reversed(true).range(0...1).snaps(.every(1)))
                 .onItemActivated { heard.append($0) }
                 .node)

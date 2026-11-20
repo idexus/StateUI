@@ -35,7 +35,7 @@ struct HandMovesStateSample: SampleContent, ExampleContent {
                     // WHAT GIVES IT TO THE HAND: dragged, the value follows the hand a point a point, less and
                     // less past an end; let go, it is thrown on to the place nearest where the throw would end.
                     .interaction(
-                        .value($offset, axis: \.self, input: .translation(.horizontal))
+                        .value($offset, input: .translation(.horizontal))
                             .range(0...240)
                             .snaps([120])
                             .release(.projected(.spring())))
@@ -63,7 +63,7 @@ struct HandMovesStateSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         Text("Drag the panel: it rests at the start, the middle or the end, and a quick drag throws it on. The "
             + "buttons send it by writing the same state - catch it on its way. `.interaction(.value($offset, "
-            + "axis: \\.self, input: .translation(.horizontal)).range(0...240).snaps([120]))` gives the state to "
+            + "input: .translation(.horizontal)).range(0...240).snaps([120]))` gives the state to "
             + "the hand; no handler runs and no view is built.")
             .fontSize(12)
             .textColor(Palette.subtle)

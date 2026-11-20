@@ -249,7 +249,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
         // between two - and comes round, a turn of the range bringing every
         // card back.
         .interaction(
-            .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+            .value($turn, input: .translation(.horizontal, unit: .frontItem))
                 // A growing turn moves the cards left.
                 .reversed(true)
                 .range(0...Double(Self.cards.count))
@@ -440,7 +440,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 + "end: past the last card is the first again. `Back` and `Next` send it "
                 + "there without the hand - the parameters themselves travel, under their state's own "
                 + "motion, `@State(motion:)`. The parameters, `parameters: $turn`, are the card at the front; "
-                + "`.interaction(.value($turn, axis: \\.self, input: .translation(…)).range(…).periodic(true)"
+                + "`.interaction(.value($turn, input: .translation(…)).range(…).periodic(true)"
                 + ".snaps(.every(1)))` gives it to the hand, resting on a card and coming round. The picker changes "
                 + "how a throw goes on - `.release(.projected(_:))` takes any motion: eased, its length says how far a "
                 + "throw carries and its curve how it slows; a spring settles as springs do. `Turns by itself` has "

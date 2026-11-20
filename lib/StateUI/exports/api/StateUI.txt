@@ -6646,6 +6646,7 @@ swift.method MotionLayout.accessibilityValue(_:): @MainActor func accessibilityV
 swift.method MotionLayout.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
 swift.method MotionLayout.area(_:): @MainActor func area(_ value: Area) -> Self.Modified
 swift.method MotionLayout.axis(_:range:keyframes:segments:periodic:): @MainActor func axis(_ axis: WritableKeyPath<Parameters, Double>, range: ClosedRange<Double>, keyframes: AxisValues? = nil, segments: AxisValues? = nil, periodic: Bool = false) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.axis(range:keyframes:segments:periodic:): @MainActor func axis(range: ClosedRange<Double>, keyframes: AxisValues? = nil, segments: AxisValues? = nil, periodic: Bool = false) -> MotionLayout<Items, ID, Parameters> where Parameters == Double
 swift.method MotionLayout.backButtonTitle(_:): @MainActor func backButtonTitle(_ state: Binding<String>) -> Self.Modified
 swift.method MotionLayout.backButtonTitle(_:): @MainActor func backButtonTitle(_ value: String) -> Self.Modified
 swift.method MotionLayout.background(_:): @MainActor func background(_ state: Binding<Color>) -> Self.Modified
@@ -12993,6 +12994,7 @@ swift.type.method GridTracks.proportional(_:count:): static func proportional(_ 
 swift.type.method ImageSource.icon(_:): static func icon(_ icon: Icon) -> ImageSource
 swift.type.method Interaction.simultaneous(_:): @MainActor static func simultaneous(_ interactions: [Interaction]) -> Interaction
 swift.type.method Interaction.value(_:axis:input:): @MainActor static func value<Parameters>(_ state: Binding<Parameters>, axis: WritableKeyPath<Parameters, Double>, input: InteractionInput) -> Interaction where Parameters : LayoutParameters
+swift.type.method Interaction.value(_:input:): @MainActor static func value(_ state: Binding<Double>, input: InteractionInput) -> Interaction
 swift.type.method InteractionInput.rotation(degreesPerUnit:): static func rotation(degreesPerUnit: Double = 360) -> InteractionInput
 swift.type.method InteractionInput.swipe(_:unit:): static func swipe(_ orientation: Orientation, unit: InteractionUnit = .points(1)) -> InteractionInput
 swift.type.method InteractionInput.translation(_:unit:): static func translation(_ orientation: Orientation, unit: InteractionUnit = .points(1)) -> InteractionInput

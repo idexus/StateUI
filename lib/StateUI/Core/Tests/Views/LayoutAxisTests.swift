@@ -239,7 +239,7 @@ final class LayoutAxisTests: XCTestCase {
         let patch = Renders().render(tree(table, handed) {
             $0.interaction(.simultaneous([
                 .value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .frontItem)).range(0...3),
-                .value(other.projectedValue, axis: \.self, input: .translation(.vertical)),
+                .value(other.projectedValue, input: .translation(.vertical)),
             ]))
         }())
         let layout = try XCTUnwrap(patch.first(.motionLayout))

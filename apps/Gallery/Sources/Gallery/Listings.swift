@@ -873,7 +873,7 @@ enum Listings {
                     // home turns its cards: a spring that carries the hand on
                     // and settles on a card.
                     .interaction(
-                        .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                        .value($turn, input: .translation(.horizontal, unit: .frontItem))
                             .reversed(true)
                             .range(0...Double(max(count - 1, 0)))
                             .snaps(.every(1))
@@ -2106,12 +2106,11 @@ enum Listings {
             }
             // A SEGMENT A CARD: a card setting out is told which card the run
             // set out from.
-            .axis(\.self, range: 0...Double(max(count - 1, 0)), segments: .every(1))
+            .axis(range: 0...Double(max(count - 1, 0)), segments: .every(1))
             // The pile is swiped a card at a time, the fan moved through.
             .interaction(
                 .value(
-                    $turn, axis: \.self,
-                    input: fanned ? .translation(.horizontal, unit: .frontItem) : .swipe(.horizontal, unit: .frontItem))
+                    $turn, input: fanned ? .translation(.horizontal, unit: .frontItem) : .swipe(.horizontal, unit: .frontItem))
                     .reversed(true)
                     .range(0...Double(max(count - 1, 0)))
                     .snaps(.every(1))
@@ -5173,7 +5172,7 @@ enum Listings {
                         // WHAT GIVES IT TO THE HAND: dragged, the value follows the hand a point a point, less and
                         // less past an end; let go, it is thrown on to the place nearest where the throw would end.
                         .interaction(
-                            .value($offset, axis: \.self, input: .translation(.horizontal))
+                            .value($offset, input: .translation(.horizontal))
                                 .range(0...240)
                                 .snaps([120])
                                 .release(.projected(.spring())))
@@ -5328,11 +5327,11 @@ enum Listings {
                     }
                     // A BOARD A KEYFRAME: the arithmetic is asked at whole boards,
                     // and the icons are blended between them.
-                    .axis(\.self, range: 0...Double(boards - 1), keyframes: .every(1))
+                    .axis(range: 0...Double(boards - 1), keyframes: .every(1))
                     // A PAGE A HAND: the room's width turns one board, the next
                     // at most, however far or fast the hand goes.
                     .interaction(
-                        .value($board, axis: \.self, input: .swipe(.horizontal, unit: .containerLength))
+                        .value($board, input: .swipe(.horizontal, unit: .containerLength))
                             .reversed(true)
                             .range(0...Double(boards - 1))
                             .snaps(.every(1))
@@ -6510,11 +6509,11 @@ enum Listings {
             }
             // THREE LAYOUTS, A KEYFRAME EACH: the arithmetic is asked at 0, 1
             // and 2 alone, whoever moves the number.
-            .axis(\.self, range: 0...2, keyframes: .every(1))
+            .axis(range: 0...2, keyframes: .every(1))
             // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
             // interaction, the buttons alone move it.
             .interaction(byHand
-                ? .value($arrangement, axis: \.self, input: .translation(.horizontal, unit: .points(260)))
+                ? .value($arrangement, input: .translation(.horizontal, unit: .points(260)))
                     .reversed(true)
                     .range(0...2)
                     .snaps(.every(1))
@@ -8326,7 +8325,7 @@ enum Listings {
             // between two - and comes round, a turn of the range bringing every
             // card back.
             .interaction(
-                .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                .value($turn, input: .translation(.horizontal, unit: .frontItem))
                     // A growing turn moves the cards left.
                     .reversed(true)
                     .range(0...Double(Self.cards.count))
