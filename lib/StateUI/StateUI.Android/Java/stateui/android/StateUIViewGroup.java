@@ -113,6 +113,7 @@ class StateUIViewGroup extends ViewGroup {
      */
     void watch(StateUIListener listener, boolean beforeChildren) {
         watch.watch(beforeChildren ? listener : null);
+        listener.seesBefore(beforeChildren ? this : null);
         ownListener = beforeChildren ? null : listener;
         setOnTouchListener(ownListener);
         setOnHoverListener(beforeChildren ? null : listener);

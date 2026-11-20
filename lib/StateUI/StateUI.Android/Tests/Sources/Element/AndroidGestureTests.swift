@@ -18,6 +18,7 @@ final class AndroidGestureTests: XCTestCase {
             ("testThePointerPressesMovesReleasesAndHovers", testThePointerPressesMovesReleasesAndHovers),
             ("testAPressOnAViewInFrontIsNotHeardBehindIt", testAPressOnAViewInFrontIsNotHeardBehindIt),
             ("testAHandOnACardThatAnswersATapMovesTheRun", testAHandOnACardThatAnswersATapMovesTheRun),
+            ("testAHandOnAScrollerStaysTakenAsItMoves", testAHandOnAScrollerStaysTakenAsItMoves),
         ]
     }
 
@@ -221,6 +222,39 @@ final class AndroidGestureTests: XCTestCase {
             layout.touch(1, x: -200, y: 100, at: 140)
             host.runtime.pump.turn()
             XCTAssertEqual(tapped.values, [], "a hand is no tap")
+        }
+    }
+
+    /// A HAND ON A SCROLLER STAYS TAKEN AS IT MOVES: the scroller's own views carry its listener too, for the
+    /// finger's hold, and a touch the gestures saw before them is not shown the gestures again - the touch
+    /// called off in the scroller's parts as the hand takes it is no end of the hand.
+    func testAHandOnAScrollerStaysTakenAsItMoves() throws {
+        try onMainActor {
+            let offset = State(wrappedValue: 0.0, motion: .none)
+            let host = AndroidRenderer.running {
+                ScrollView {
+                    Rectangle()
+                        .fill(.red)
+                        .height(400)
+                }
+                .interaction(.value(offset.projectedValue, input: .translation(.horizontal)).range(0...200).release(.stay))
+                .width(100)
+                .height(100)
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            host.layOut()
+            let scroller = try XCTUnwrap(host.views(AndroidScrollView.self).first)
+
+            // 80 points to the right, in four steps of 40 pixels.
+            scroller.touch(0, x: 20, y: 100, at: 0)
+            for step in 1...4 { scroller.touch(2, x: 20 + Float(step) * 40, y: 100, at: Int64(step) * 20) }
+            host.frame()
+            host.settle { offset.wrappedValue >= 60 }
+
+            XCTAssertGreaterThanOrEqual(offset.wrappedValue, 60, "the state went with the finger past its first step")
+            scroller.touch(1, x: 180, y: 100, at: 100)
+            host.runtime.pump.turn()
         }
     }
 

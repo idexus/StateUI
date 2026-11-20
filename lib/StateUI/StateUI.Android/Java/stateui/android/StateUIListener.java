@@ -35,6 +35,9 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
     /** The gestures the view's element listens for; none before it first listens for one. */
     private StateUIGestures gestures;
 
+    /** The view whose touches the listener sees before its parts get them; none where it sees what they leave. */
+    private View seenBefore;
+
     StateUIListener(long view) {
         this.view = view;
     }
@@ -122,6 +125,11 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
         touched.setOnGenericMotionListener(hand ? this : null);
     }
 
+    /** Says the listener sees `whole`'s touches before its parts get them; null where it sees those they leave. */
+    void seesBefore(View whole) {
+        seenBefore = whole;
+    }
+
     /** Whether a gesture under way takes the rest of the touch from the view's own handling. */
     boolean takesTouch() {
         return gestures != null && gestures.taking();
@@ -138,6 +146,8 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
      */
     @Override
     public boolean onTouch(View touched, MotionEvent event) {
+        // A touch seen before the parts comes again from a part carrying the listener: that one is the part's own.
+        if (seenBefore != null && touched != seenBefore) return false;
         int action = event.getActionMasked();
         boolean ends = action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL;
         if (action == MotionEvent.ACTION_DOWN) downX = event.getX();

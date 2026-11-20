@@ -33,6 +33,12 @@ scroller takes it. At the lift the tracker's speed goes with it. A wheel's notch
 axes count them, a part of one for a fine wheel - are told as notches
 (`notched`), each a step of the run to the next target.
 
+A scroller's own views carry its listener as well, for the finger's hold on
+them. Where the listener sees the touches first, a touch coming again from
+such a part is the part's own (`StateUIListener.seesBefore`): shown the
+gestures twice, the touch called off in the parts as the hand takes it would
+end the hand it began.
+
 ## A disabled view
 
 Every view takes the enablement `presented(_:)` gives it with Android's own
