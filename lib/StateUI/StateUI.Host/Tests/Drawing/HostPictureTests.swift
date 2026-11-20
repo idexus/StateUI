@@ -10,9 +10,9 @@ import XCTest
 final class HostPictureTests: XCTestCase {
     func testAPictureIsAFileAnIconOrBytes() {
         XCTAssertEqual(HostPicture(ImageSource("dot.png").propValue), .file("dot.png"))
-        XCTAssertEqual(HostPicture(ImageSource.icon(.share).propValue), .icon(.share))
+        XCTAssertEqual(HostPicture(ImageSource.platform(.share).propValue), .icon(.share))
         XCTAssertEqual(HostPicture(ImageSource(bytes: [137, 80, 78, 71]).propValue), .bytes([137, 80, 78, 71]))
-        for source in [ImageSource("dot.png"), .icon(.share), ImageSource(bytes: [1, 2])] {
+        for source in [ImageSource("dot.png"), .platform(.share), ImageSource(bytes: [1, 2])] {
             XCTAssertEqual(HostPicture(source.propValue)?.value, source.propValue, "a picture names itself again")
         }
     }
@@ -29,7 +29,7 @@ final class HostPictureTests: XCTestCase {
         let themed = ImageSource(light: "sun.png", dark: "moon.png")
         XCTAssertEqual(HostPicture(themed, dark: false), .file("sun.png"))
         XCTAssertEqual(HostPicture(themed, dark: true), .file("moon.png"))
-        XCTAssertEqual(HostPicture(.icon(.star), dark: true), .icon(.star))
+        XCTAssertEqual(HostPicture(.platform(.star), dark: true), .icon(.star))
 
         XCTAssertEqual(HostPicture.bytes([1, 2]).identity, HostPicture.bytes([1, 2]).identity)
         XCTAssertNotEqual(HostPicture.bytes([1, 2]).identity, HostPicture.bytes([2, 1]).identity)

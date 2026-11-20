@@ -1819,7 +1819,7 @@ enum Listings {
 
                 HStack {
                     Button("More")
-                        .icon(.icon(.more))
+                        .icon(.platform(.more))
                         .showsText(false)
                         .style(look)
                         .menu {
@@ -2180,7 +2180,7 @@ enum Listings {
                             .fill(.white)
                             .opacity(0.3)
 
-                        Image(.icon(card.icon))
+                        Image(.platform(card.icon))
                             .width(disc * 0.55)
                             .height(disc * 0.55)
                             .horizontalAlignment(.center)
@@ -5461,7 +5461,7 @@ enum Listings {
                             .horizontalAlignment(.center)
                             .verticalAlignment(.center)
 
-                        Image(.icon(icon.glyph))
+                        Image(.platform(icon.glyph))
                             .width(26)
                             .height(26)
                             .horizontalAlignment(.center)
@@ -5651,7 +5651,7 @@ enum Listings {
                 Grid {
                     ForEach(Array(Icon.allCases.enumerated()), id: \.offset) { place, icon in
                         VStack {
-                            Image(.icon(icon))
+                            Image(.platform(icon))
                                 .width(24)
                                 .height(24)
                                 .horizontalAlignment(.center)
@@ -5670,14 +5670,14 @@ enum Listings {
 
                 HStack {
                     Button("Share")
-                        .icon(.icon(.share))
+                        .icon(.platform(.share))
 
                     Button("Delete")
-                        .icon(.icon(.delete))
+                        .icon(.platform(.delete))
                         .role(.destructive)
 
                     Button("Settings")
-                        .icon(.icon(.settings))
+                        .icon(.platform(.settings))
                         .showsText(false)
                 }
 
@@ -6585,7 +6585,7 @@ enum Listings {
                             .fill(.white)
                             .opacity(0.3)
 
-                        Image(.icon(card.icon))
+                        Image(.platform(card.icon))
                             .width(24)
                             .height(24)
                             .horizontalAlignment(.center)
@@ -6710,7 +6710,7 @@ enum Listings {
                             .fill(.white)
                             .opacity(0.3)
 
-                        Image(.icon(card.icon))
+                        Image(.platform(card.icon))
                             .width(31)
                             .height(31)
                             .horizontalAlignment(.center)

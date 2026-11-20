@@ -12991,7 +12991,7 @@ swift.type.method GridTracks.automatic(count:): static func automatic(count: Int
 swift.type.method GridTracks.fill(count:): static func fill(count: Int) -> GridTracks
 swift.type.method GridTracks.fixed(_:count:): static func fixed(_ length: Double, count: Int = 1) -> GridTracks
 swift.type.method GridTracks.proportional(_:count:): static func proportional(_ share: Double, count: Int = 1) -> GridTracks
-swift.type.method ImageSource.icon(_:): static func icon(_ icon: Icon) -> ImageSource
+swift.type.method ImageSource.platform(_:): static func platform(_ icon: Icon) -> ImageSource
 swift.type.method Interaction.simultaneous(_:): @MainActor static func simultaneous(_ interactions: [Interaction]) -> Interaction
 swift.type.method Interaction.value(_:axis:input:): @MainActor static func value<Parameters>(_ state: Binding<Parameters>, axis: WritableKeyPath<Parameters, Double>, input: InteractionInput) -> Interaction where Parameters : LayoutParameters
 swift.type.method Interaction.value(_:input:): @MainActor static func value(_ state: Binding<Double>, input: InteractionInput) -> Interaction

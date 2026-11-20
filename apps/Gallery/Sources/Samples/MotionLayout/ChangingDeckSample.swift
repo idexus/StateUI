@@ -224,7 +224,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
                         .cornerRadius(disc / 2)
                         .opacity(0.3)
 
-                    Image(.icon(card.icon))
+                    Image(.platform(card.icon))
                         .width(disc * 0.55)
                         .height(disc * 0.55)
                         .horizontalAlignment(.center)

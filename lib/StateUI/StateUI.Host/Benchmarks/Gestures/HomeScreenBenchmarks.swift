@@ -106,7 +106,7 @@ private struct HomeTile: View {
                     .opacity(0.3)
                     .width(42)
                     .height(42)
-                Image(.icon(.star))
+                Image(.platform(.star))
                     .width(26)
                     .height(26)
             }

@@ -277,7 +277,7 @@ final class AndroidButtonViewTests: XCTestCase {
             let host = AndroidRenderer.running(reducesMotion: true) {
                 HStack {
                     Button("Share").menu { MenuItem("Mail") }.padding(horizontal: 16, vertical: 8)
-                    Button().icon(.icon(.more)).menu { MenuItem("Mail") }.padding(horizontal: 16, vertical: 8)
+                    Button().icon(.platform(.more)).menu { MenuItem("Mail") }.padding(horizontal: 16, vertical: 8)
                 }
                 .horizontalAlignment(.start)
             }
@@ -408,7 +408,7 @@ final class AndroidButtonViewTests: XCTestCase {
     func testAnIconIsDrawnInItsWordsColor() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Button("Add").icon(.icon(.add)).textColor(Color(hex: 0xFF0000))
+                Button("Add").icon(.platform(.add)).textColor(Color(hex: 0xFF0000))
             }
             host.layOut()
 
@@ -426,7 +426,7 @@ final class AndroidButtonViewTests: XCTestCase {
     func testAnIconAloneIsDrawnInTheWordsColor() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Button().icon(.icon(.settings)).textColor(Color(hex: 0xFF0000))
+                Button().icon(.platform(.settings)).textColor(Color(hex: 0xFF0000))
                     .horizontalAlignment(.start).verticalAlignment(.start)
             }
             host.layOut()

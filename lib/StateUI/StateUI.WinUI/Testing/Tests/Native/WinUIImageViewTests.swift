@@ -163,7 +163,7 @@ extension WinUIImageViewTests {
             let icon = State(wrappedValue: true)
             let host = WinUIRenderer.running {
                 VStack {
-                    Image(icon.wrappedValue ? .icon(.add) : ImageSource("test_dot.png")).accessibilityLabel("Add")
+                    Image(icon.wrappedValue ? .platform(.add) : ImageSource("test_dot.png")).accessibilityLabel("Add")
                     Button("Flip").onClicked { icon.wrappedValue.toggle() }
                 }
             }
@@ -191,7 +191,7 @@ extension WinUIImageViewTests {
             let (other, filled) = (State(wrappedValue: false), State(wrappedValue: false))
             let host = WinUIRenderer.running {
                 VStack {
-                    Image(other.wrappedValue ? .icon(.share) : .icon(.add))
+                    Image(other.wrappedValue ? .platform(.share) : .platform(.add))
                         .contentMode(filled.wrappedValue ? .fill : .fit)
                         .accessibilityLabel("Add")
                     Button("Other").onClicked { other.wrappedValue.toggle() }
@@ -220,7 +220,7 @@ extension WinUIImageViewTests {
             let (other, filled) = (State(wrappedValue: false), State(wrappedValue: false))
             let host = WinUIRenderer.running {
                 VStack {
-                    Image(other.wrappedValue ? .icon(.share) : .icon(.add))
+                    Image(other.wrappedValue ? .platform(.share) : .platform(.add))
                         .contentMode(filled.wrappedValue ? .fill : .fit)
                         .accessibilityLabel("Add")
                         .accessibilityHint("Adds a row")

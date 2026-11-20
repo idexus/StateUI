@@ -10,7 +10,7 @@
 ///     Image("tab_list.png")
 ///     ToolbarButton("Media").icon("tab_list.png")
 ///     Image(ImageSource(light: "tab_list.png", dark: "tab_list_dark.png"))
-///     Image(.icon(.share))
+///     Image(.platform(.share))
 ///     Image(ImageSource(bytes: downloaded))
 ///
 /// A file is in the application's `Resources/Images`, by name. An SVG is asked
@@ -63,8 +63,8 @@ public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral, Host
     /// The platform's own icon for `icon`, drawn in the color of the words
     /// around it where the platform tints its icons.
     ///
-    ///     Button("Share").icon(.icon(.share))
-    public static func icon(_ icon: Icon) -> ImageSource {
+    ///     Button("Share").icon(.platform(.share))
+    public static func platform(_ icon: Icon) -> ImageSource {
         ImageSource(.icon(icon))
     }
 

@@ -38,7 +38,7 @@ final class UIKitImageViewTests: XCTestCase {
     func testAnIconIsDrawnInTheWordsColor() {
         let host = UIKitRenderer.running {
             VStack {
-                Image(.icon(.add))
+                Image(.platform(.add))
                 Image("test_dot.png")
             }
         }
@@ -55,9 +55,9 @@ final class UIKitImageViewTests: XCTestCase {
     func testAButtonsIconTakesItsWordsColor() throws {
         let host = UIKitRenderer.running {
             VStack {
-                Button("Share").icon(.icon(.share)).textColor(Color(hex: 0xFF0000))
-                Button().icon(.icon(.settings)).textColor(Color(hex: 0xFF0000))
-                Button("Plain").icon(.icon(.add))
+                Button("Share").icon(.platform(.share)).textColor(Color(hex: 0xFF0000))
+                Button().icon(.platform(.settings)).textColor(Color(hex: 0xFF0000))
+                Button("Plain").icon(.platform(.add))
             }
         }
         defer { host.finish() }

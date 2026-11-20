@@ -18,11 +18,11 @@ BottomBarSample.swift cacd9f70509e0781
 BoundPropertiesSample.swift 402926dee36da563
 BrushSample.swift d2d891c981a4703d
 BuilderSample.swift 0275d3a2df5a10da
-ButtonMenuSample.swift cee5bf33f56e8bb7
+ButtonMenuSample.swift 47796ae5e7e354c5
 ButtonRoleSample.swift 3e904d0aa8e02d9c
 ButtonSample.swift 4bf410b3eb5f6336
 CanvasSample.swift b31634f0ee2057b2
-ChangingDeckSample.swift fbbec82793a72813
+ChangingDeckSample.swift 755a6b68320ca64d
 CheckBoxSample.swift 59e11010b2651d72
 ChoosingItemsSample.swift 85105c1d71a4884c
 ClipboardSample.swift a210a3c26540a05e
@@ -55,10 +55,10 @@ GridSample.swift 9c95bd0181e0d392
 HTTPRequestSample.swift bf26141a6d52f7d9
 HandMovesStateSample.swift 7b5ef0a4304c1b44
 HoldSample.swift 3179a83bed36f2d7
-HomeScreenSample.swift 65cd053b8c399892
+HomeScreenSample.swift c705acbe5e5a23a0
 HostTimeSample.swift 4b22843b9326dbb5
 IconButtonSample.swift a4ebe7201bac278c
-IconSample.swift b1a186070a9f38de
+IconSample.swift 086e9eaca0e7c97a
 IdentitySample.swift 1027b1b9006f8239
 ImageSample.swift 2b5a694263608f07
 InteropActsSample.swift 96a2a2cf63ecb6dc
@@ -70,8 +70,8 @@ KeyPressSample.swift ad88b26f05db34d4
 KeyboardSample.swift d5346970f434eb08
 LayoutAxesSample.swift 7b6087152d9a3c57
 LayoutDirectionSample.swift 39109bcddac88519
-LayoutKeyframesSample.swift edc64a0cb8172245
-LayoutParametersSample.swift 5e7a847e410897ca
+LayoutKeyframesSample.swift fedc3449b4234b9b
+LayoutParametersSample.swift bac4f0ba48db2b84
 LifecycleSample.swift 200bd806c526531f
 LifetimeSample.swift 388647e356facd79
 LightTableSample.swift 722b23a21ef73e1a

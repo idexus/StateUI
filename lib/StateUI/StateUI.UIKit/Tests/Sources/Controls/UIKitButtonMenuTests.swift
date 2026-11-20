@@ -81,7 +81,7 @@ final class UIKitButtonMenuTests: XCTestCase {
         let host = UIKitRenderer.running {
             VStack {
                 Button("Save").onClicked {}.menu(.held) { MenuItem("Save as") }
-                Button().icon(.icon(.more)).menu { MenuItem("Mail") }.showsMenuArrow(false)
+                Button().icon(.platform(.more)).menu { MenuItem("Mail") }.showsMenuArrow(false)
             }
         }
         defer { host.finish() }
@@ -99,9 +99,9 @@ final class UIKitButtonMenuTests: XCTestCase {
         let shows = State(wrappedValue: true)
         let host = UIKitRenderer.running {
             HStack {
-                Button().icon(.icon(.more)).menu { MenuItem("Mail") }.showsMenuArrow(shows.wrappedValue)
+                Button().icon(.platform(.more)).menu { MenuItem("Mail") }.showsMenuArrow(shows.wrappedValue)
                     .background(Color(hex: 0x8E6BF0)).shape(.capsule).padding(horizontal: 16, vertical: 11)
-                Button().icon(.icon(.more)).menu { MenuItem("Mail") }.showsMenuArrow(false)
+                Button().icon(.platform(.more)).menu { MenuItem("Mail") }.showsMenuArrow(false)
                     .background(Color(hex: 0x8E6BF0)).shape(.capsule).padding(horizontal: 16, vertical: 11)
                 Switch(shows.projectedValue)
             }

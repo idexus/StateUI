@@ -49,7 +49,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("More")
-                    .icon(.icon(.more))
+                    .icon(.platform(.more))
                     .showsText(false)
                     .style(look)
                     .menu {

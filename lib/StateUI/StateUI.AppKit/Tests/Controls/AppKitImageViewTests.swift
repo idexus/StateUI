@@ -367,7 +367,7 @@ final class AppKitImageViewTests: XCTestCase {
     func testAnIconIsDrawnInTheWordsColor() throws {
         let renderer = AppKitRenderer.running {
             HStack {
-                Image(.icon(.share)).width(24).height(24)
+                Image(.platform(.share)).width(24).height(24)
                 Text("Share")
             }
             .horizontalAlignment(.start)

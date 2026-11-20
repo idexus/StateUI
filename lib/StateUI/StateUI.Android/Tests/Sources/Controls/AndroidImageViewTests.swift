@@ -146,7 +146,7 @@ final class AndroidImageViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 HStack {
-                    Image(.icon(.add))
+                    Image(.platform(.add))
                     Text("Add")
                 }
                 .horizontalAlignment(.start)

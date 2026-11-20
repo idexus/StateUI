@@ -60,8 +60,8 @@ private struct PastCountsPage: View {
             Text("Spaced").tracking(1e300).fontSize(1e300)
             Text("Padded").padding(Insets(1e300))
             Text("Lines").maximumLines(3_000_000_000)
-            Button("Share").icon(.icon(.share)).iconSpacing(1e300)
-            Image(.icon(.add)).width(1e300).height(1e300)
+            Button("Share").icon(.platform(.share)).iconSpacing(1e300)
+            Image(.platform(.add)).width(1e300).height(1e300)
         }
         .onCreated {
             window.width = 1e300

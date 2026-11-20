@@ -929,7 +929,7 @@ extension ControlDictionary {
 
         (IconElementContract.self, #"""
             Button("Share")
-                .icon(.icon(.share))
+                .icon(.platform(.share))
             """#),
 
         (FocusElementContract.self, #"""

@@ -166,6 +166,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the place a change measures its way to, the hand's hold); the host layer keeps each child's way and steps it on
   the display's frames, so a child coming onto its place costs no cycle of the core. A host built on `StateUIHost`
   changes nothing for it.
+- **A platform's own icon as a picture is `.platform(_:)`.** `ImageSource.icon(_:)` is `ImageSource.platform(_:)`,
+  so a button's icon no longer says the word twice: `.icon(.icon(.share))` is `.icon(.platform(.share))`, and
+  `Image(.icon(.star))` is `Image(.platform(.star))`.
 
 ### New
 

@@ -158,7 +158,7 @@ final class GTKImageViewTests: XCTestCase {
     func testAnIconIsDrawnInTheWordsColor() throws {
         try onUIThread {
             let host = GTKRenderer.running {
-                VStack { Image(.icon(.add)).width(32).height(32) }
+                VStack { Image(.platform(.add)).width(32).height(32) }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
             }
@@ -186,8 +186,8 @@ final class GTKImageViewTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    Button("Share").icon(.icon(.share)).textColor(Color(hex: 0xFF0000))
-                    Button().icon(.icon(.settings)).textColor(Color(hex: 0xFF0000))
+                    Button("Share").icon(.platform(.share)).textColor(Color(hex: 0xFF0000))
+                    Button().icon(.platform(.settings)).textColor(Color(hex: 0xFF0000))
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)

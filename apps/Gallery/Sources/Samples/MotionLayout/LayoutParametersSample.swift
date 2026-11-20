@@ -125,7 +125,7 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
                         .cornerRadius(28)
                         .opacity(0.3)
 
-                    Image(.icon(card.icon))
+                    Image(.platform(card.icon))
                         .width(31)
                         .height(31)
                         .horizontalAlignment(.center)

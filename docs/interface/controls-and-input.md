@@ -545,12 +545,12 @@ made - shown at one pixel a point:
 ```swift
 let downloaded: [UInt8] = []
 
-Image(.icon(.star))
+Image(.platform(.star))
     .width(24)
     .height(24)
 
 Button("Share")
-    .icon(.icon(.share))
+    .icon(.platform(.share))
 
 Image(ImageSource(bytes: downloaded))
 ```

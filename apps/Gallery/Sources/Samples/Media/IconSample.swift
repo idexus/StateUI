@@ -15,7 +15,7 @@ struct IconSample: SampleContent, ExampleContent {
             Grid {
                 ForEach(Array(Icon.allCases.enumerated()), id: \.offset) { place, icon in
                     VStack {
-                        Image(.icon(icon))
+                        Image(.platform(icon))
                             .width(24)
                             .height(24)
                             .horizontalAlignment(.center)
@@ -37,14 +37,14 @@ struct IconSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Share")
-                    .icon(.icon(.share))
+                    .icon(.platform(.share))
 
                 Button("Delete")
-                    .icon(.icon(.delete))
+                    .icon(.platform(.delete))
                     .role(.destructive)
 
                 Button("Settings")
-                    .icon(.icon(.settings))
+                    .icon(.platform(.settings))
                     .showsText(false)
             }
             .spacing(12)

@@ -254,7 +254,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
 
-                    Image(.icon(icon.glyph))
+                    Image(.platform(icon.glyph))
                         .width(26)
                         .height(26)
                         .horizontalAlignment(.center)

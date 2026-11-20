@@ -6,7 +6,7 @@ The picture an element shows beside or for its words: a button's, a toolbar labe
 
 ```swift
 Button("Share")
-    .icon(.icon(.share))
+    .icon(.platform(.share))
 ```
 
 Worn by: [Button](../Button.md) · [MenuItem](../MenuItem.md) · [MenuToggle](../MenuToggle.md) · [NavigationStack](../NavigationStack.md) · [Page](../Page.md) · [TabView](../TabView.md) · [ToolbarButton](../ToolbarButton.md) · [ToolbarLabel](../ToolbarLabel.md) · [ToolbarToggle](../ToolbarToggle.md)

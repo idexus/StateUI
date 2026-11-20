@@ -169,7 +169,7 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
                         .cornerRadius(22)
                         .opacity(0.3)
 
-                    Image(.icon(card.icon))
+                    Image(.platform(card.icon))
                         .width(24)
                         .height(24)
                         .horizontalAlignment(.center)

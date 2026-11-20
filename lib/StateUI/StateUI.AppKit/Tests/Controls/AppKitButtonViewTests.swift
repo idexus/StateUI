@@ -519,7 +519,7 @@ final class AppKitButtonViewTests: XCTestCase {
     @MainActor
     func testAnIconAloneIsNeverDrawnLarger() throws {
         let renderer = AppKitRenderer.running {
-            HStack { Button().icon(.icon(.settings)).accessibilityLabel("Settings") }
+            HStack { Button().icon(.platform(.settings)).accessibilityLabel("Settings") }
         }
         defer { renderer.finish() }
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
@@ -535,9 +535,9 @@ final class AppKitButtonViewTests: XCTestCase {
     func testAButtonsIconIsDrawnInItsWordsColor() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                Button("Share").icon(.icon(.share))
-                Button("Delete").icon(.icon(.delete)).role(.destructive)
-                Button("Mail").icon(.icon(.mail)).textColor(.blue)
+                Button("Share").icon(.platform(.share))
+                Button("Delete").icon(.platform(.delete)).role(.destructive)
+                Button("Mail").icon(.platform(.mail)).textColor(.blue)
             }
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
@@ -560,7 +560,7 @@ final class AppKitButtonViewTests: XCTestCase {
     @MainActor
     func testAnIconBesideWordsIsNeverDrawnLarger() throws {
         let renderer = AppKitRenderer.running {
-            HStack { Button("Share").icon(.icon(.share)) }
+            HStack { Button("Share").icon(.platform(.share)) }
         }
         defer { renderer.finish() }
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)

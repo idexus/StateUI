@@ -7,8 +7,8 @@
 /// A picture from the platform's own icons: each platform draws its own for each - SF Symbols on Apple platforms,
 /// Segoe Fluent Icons on Windows, the icon theme on GNOME, Android's own drawables, and StateUI's on the Web.
 ///
-///     Image(.icon(.share))
-///     Button("Delete").icon(.icon(.delete))
+///     Image(.platform(.share))
+///     Button("Delete").icon(.platform(.delete))
 ///
 /// An icon a platform has none of shows nothing there, as its platform's marks say.
 public enum Icon: Int32, Sendable, CaseIterable {

@@ -39,7 +39,7 @@
                 Covered(ImageContract.source),
             ]) { s in
                 s.start {
-                    VStack { Image(.icon(.add)).contentMode(.fit).width(32).height(32).id("image") }
+                    VStack { Image(.platform(.add)).contentMode(.fit).width(32).height(32).id("image") }
                         .horizontalAlignment(.start)
                         .verticalAlignment(.start)
                 }
