@@ -214,18 +214,22 @@ flowchart TD
     H --> P["A control's property"]
     H --> E["Engines and readings following a journey"]
     E -->|"write a state"| S
-    H --> L["Motion layout: its parameters and its room"]
-    L --> G["Each child's place"]
+    H --> L["A layout: its parameters, its room, its views' measures"]
+    L --> G["Each child's place: where it goes"]
+    G --> B["The child's body, or the layout's motion: how it comes there"]
     P --> V["The native view"]
-    G --> V
+    B --> V
+    V -->|"a frame read: where the layout puts it, where it is drawn"| S
 ```
 
 A write goes down: from the state, through a conversion where one stands
 between, to the channel, and from the channel to whatever shows the value -
-a property, a layout's parameters. Only two things come back up, and both
-are writes of a state like any other: what the user did to a control, and
-what an engine or a reading following a journey chose to write. A frame of an
-animation never comes back as a write.
+a property, a layout's parameters. A layout says where each child goes, and
+the child's body, or the layout's motion, how it comes there. Three things
+come back up, each a write of a state like any other: what the user did to a
+control, what an engine or a reading following a journey chose to write, and
+where a view stands, into a state its frame feeds. A frame of a state's
+animation never comes back as a write of that state.
 
 ### What always holds
 
@@ -239,6 +243,7 @@ them:
 | Nothing starts by being named | Making a binding, taking `$x.journey` or declaring a conversion starts no channel and no clock. A channel lives while something shows or follows the state. |
 | Destinations in, a destination out | A conversion reads where its sources are going and nothing else: never where they stand, how fast they go, or their motion. |
 | Watching changes nothing | Reading where a value stands - an engine following a journey, a reading, a body reading the sample - is said outright and never alters the movement it watches. Reading where a view stands is the same: a frame read at either [stage](../interface/layout.md#frame-readings) changes no motion of the view or of the views around it. |
+| One way onto a place | A layout says where a view goes; the view's [body](../interface/layout.md#how-children-come-onto-their-places), or the layout's motion, says how it comes there. Nothing else moves that place: no second animation runs beside a body. |
 | One result | Every movement ends exactly once, with one result, and a movement begun earlier never answers for one begun later. |
 | One clock | Every movement runs on the display's one clock, under one rule for a user who asks for less motion. |
 

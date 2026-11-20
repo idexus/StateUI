@@ -144,6 +144,13 @@ lives, each by tests of its own:
                          writes no transition, lane or arrangement: the host
                          layer makes both rectangles of the host's one report
                          (MotionTests, GeometryStageTests)
+  one way onto a         A place has one animation (AnimationTarget.placed):
+  place                  a body's spring is that animation, and an element
+                         running a layout program moves its children by its
+                         own presentation alone - a motion layout's view is
+                         no body a second time inside its holder
+                         (LayoutMotionTests, ProgramBodiesTests,
+                         MountedTreeTests)
   one result             MotionRun ends once; a channel's generation and a
                          run's number keep an old one from a new
                          (MotionRunTests, EngineMotionTests)
