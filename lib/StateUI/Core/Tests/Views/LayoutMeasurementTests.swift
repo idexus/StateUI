@@ -63,11 +63,11 @@ final class LayoutMeasurementTests: XCTestCase {
     func testAViewNothingMeasuresIsNought() {
         let view = LayoutSubviews([1], measuring: nil)[0]
 
-        XCTAssertEqual(view.sizeThatFits(LayoutProposal(width: 100)), .zero)
-        XCTAssertNil(view.firstBaseline(LayoutProposal()))
+        XCTAssertEqual(view.sizeThatFits(width: 100), .zero)
+        XCTAssertNil(view.firstBaseline())
 
         let unsaid = LayoutSubviews([1], measuring: LayoutMeasuring())[0]
-        XCTAssertEqual(unsaid.sizeThatFits(LayoutProposal()), .zero, "before a host said its measure")
+        XCTAssertEqual(unsaid.sizeThatFits(), .zero, "before a host said its measure")
     }
 
     // MARK: - The host's measure
@@ -79,8 +79,8 @@ final class LayoutMeasurementTests: XCTestCase {
         let (_, _) = bench.laid(Renders(), {
             MotionLayout(["a", "b"], id: \.self, parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { context, _ in
                 context.subviews.map { view in
-                    let size = view.sizeThatFits(LayoutProposal(width: 120, height: 40))
-                    return Placement(Rect(0, 0, size.width, view.firstBaseline(LayoutProposal(width: 120, height: 40)) ?? 0))
+                    let size = view.sizeThatFits(width: 120, height: 40)
+                    return Placement(Rect(0, 0, size.width, view.firstBaseline(width: 120, height: 40) ?? 0))
                 }
             }
             .node
@@ -100,16 +100,16 @@ final class LayoutMeasurementTests: XCTestCase {
         let view = LayoutSubviews([1], measuring: measuring)[0]
 
         measuring.begin()
-        _ = view.sizeThatFits(LayoutProposal(width: 50))
-        _ = view.sizeThatFits(LayoutProposal(width: 50))
-        _ = view.firstBaseline(LayoutProposal(width: 50))
+        _ = view.sizeThatFits(width: 50)
+        _ = view.sizeThatFits(width: 50)
+        _ = view.firstBaseline(width: 50)
         XCTAssertEqual(asked.rooms.count, 1)
 
-        _ = view.sizeThatFits(LayoutProposal(width: 50, height: 10))
+        _ = view.sizeThatFits(width: 50, height: 10)
         XCTAssertEqual(asked.rooms.count, 2, "another room is another measure, by either side")
 
         measuring.begin()
-        _ = view.sizeThatFits(LayoutProposal(width: 50))
+        _ = view.sizeThatFits(width: 50)
         XCTAssertEqual(asked.rooms.count, 3, "asked again in the next working-out")
     }
 
@@ -119,7 +119,7 @@ final class LayoutMeasurementTests: XCTestCase {
         measuring.measure = { _, _, _ in HostChildMeasured(size: LayoutSize(width: .nan, height: -5), firstBaseline: 3) }
         measuring.begin()
 
-        XCTAssertEqual(LayoutSubviews([1], measuring: measuring)[0].sizeThatFits(LayoutProposal()), .zero)
+        XCTAssertEqual(LayoutSubviews([1], measuring: measuring)[0].sizeThatFits(), .zero)
         XCTAssertTrue(hasComplained("A view measured for a layout answered a size that is none"))
     }
 
@@ -142,7 +142,7 @@ final class LayoutMeasurementTests: XCTestCase {
         _ = bench.laid(Renders(), {
             MotionLayout(["a", "b"], id: \.self, parameters: dial.projectedValue) { Text($0) } placements: { _, _ in [] }
                 .measure { context, dial in
-                    let widest = context.subviews.map { $0.sizeThatFits(LayoutProposal()).width }.max() ?? 0
+                    let widest = context.subviews.map { $0.sizeThatFits().width }.max() ?? 0
                     return LayoutSize(width: context.proposal.width ?? widest, height: dial * 10)
                 }
                 .node

@@ -168,8 +168,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 ### New
 
 - **A layout measures its views.** Each of `context.subviews` answers how large its view is in a room offered:
-  `view.sizeThatFits(LayoutProposal())` the size it takes by itself, `LayoutProposal(width: 200)` the size its words
-  take wrapped to 200 points, as a `LayoutSize`; `firstBaseline(_:)` where its first line rests. A view is found by
+  `view.sizeThatFits()` the size it takes by itself, `view.sizeThatFits(width: 200)` the size its words
+  take wrapped to 200 points, as a `LayoutSize`; `firstBaseline(width:height:)` where its first line rests. A view is found by
   its place or by its item's identity (`context.subviews[id: item.id]`). A layout that measures is worked out again
   when a view of it is sized anew.
 - **A motion layout says its own size.** `.measure { context, parameters in ... }` answers the layout's `LayoutSize`

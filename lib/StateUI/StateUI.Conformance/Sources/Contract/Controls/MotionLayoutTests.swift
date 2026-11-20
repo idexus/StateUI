@@ -138,7 +138,7 @@
                             // Side by side, six points apart, each at the size it measures.
                             var across = 0.0
                             return context.subviews.map { view in
-                                let size = view.sizeThatFits(LayoutProposal())
+                                let size = view.sizeThatFits()
                                 defer { across += size.width + 6 }
                                 return Placement(Rect(across, 0, size.width, size.height))
                             }
@@ -181,7 +181,7 @@
                                 .onEvent(ViewContract.layoutFrameChanged) { measured.values.append($0) }
                         } placements: { context, _ in
                             context.subviews.map { view in
-                                let size = view.sizeThatFits(LayoutProposal())
+                                let size = view.sizeThatFits()
                                 return Placement(Rect(0, 0, size.width, size.height))
                             }
                         }
@@ -223,13 +223,13 @@
                                 .height(height.projectedValue)
                         } placements: { context, _ in
                             context.subviews.map { view in
-                                let size = view.sizeThatFits(LayoutProposal())
+                                let size = view.sizeThatFits()
                                 return Placement(Rect(0, 0, size.width, size.height))
                             }
                         }
                         // As large as its tallest view.
                         .measure { context, _ in
-                            let sizes = context.subviews.map { $0.sizeThatFits(LayoutProposal()) }
+                            let sizes = context.subviews.map { $0.sizeThatFits() }
                             return LayoutSize(
                                 width: sizes.map(\.width).max() ?? 0, height: sizes.map(\.height).max() ?? 0)
                         }
@@ -275,7 +275,7 @@
                                 .id(index == 0 ? "name" : "city")
                         } placements: { context, _ in
                             // Side by side while the fields' own widths fit the room, else one under the other.
-                            let sizes = context.subviews.map { $0.sizeThatFits(LayoutProposal()) }
+                            let sizes = context.subviews.map { $0.sizeThatFits() }
                             let stacked = sizes.reduce(10) { $0 + $1.width } > context.bounds.width
                             rows.values.append(stacked ? 2 : 1)
                             var (across, down) = (0.0, 0.0)

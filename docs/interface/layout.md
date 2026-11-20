@@ -1462,17 +1462,18 @@ settles.
 Each of `context.subviews`, a `LayoutSubviews`, is a `LayoutSubview`: a
 handle to one view, in the items' order, found by its place or by its
 item's identity (`context.subviews[id: 1]`).
-`sizeThatFits(_:)` asks how large the view is in a room offered, a
-`LayoutProposal`: `LayoutProposal()` offers nothing and answers the size the
-view takes by itself, `LayoutProposal(width: 200)` the size its words take
-wrapped to 200 points. `firstBaseline(_:)` answers where its first line of
-words rests. The answer is a `LayoutSize` with the view's stated sizes and
+`sizeThatFits(width:height:)` asks how large the view is in a room offered:
+`sizeThatFits()` offers nothing and answers the size the view takes by
+itself, `sizeThatFits(width: 200)` the size its words take wrapped to 200
+points. `firstBaseline(width:height:)` answers where its first line of words
+rests. The answer is a `LayoutSize` with the view's stated sizes and
 bounds in it; measuring writes nothing, and a placement's own bounds stay
 the size the view is drawn at.
 
 `.measure(_:)` gives the layout a size of its own from the same views: its
 closure is handed a `LayoutMeasurementContext` - the room offered as
-`context.proposal`, and `context.subviews` - with the parameters, and
+`context.proposal`, a `LayoutProposal`, and `context.subviews` - with the
+parameters, and
 answers a `LayoutSize`. Here two fields stand side by side while their own
 widths fit, one under the other where they do not, and the layout is as
 tall as that makes it:
@@ -1498,7 +1499,7 @@ struct Fields: View {
     static func plan(
         _ proposal: LayoutProposal, _ fields: LayoutSubviews<Int>
     ) -> (size: LayoutSize, placements: [Placement]) {
-        let own = fields.map { $0.sizeThatFits(LayoutProposal()) }
+        let own = fields.map { $0.sizeThatFits() }
         let row = own.reduce(0) { $0 + $1.width } + 12 * Double(max(own.count - 1, 0))
         let width = proposal.width ?? row
         let sideBySide = row <= width
@@ -1506,7 +1507,7 @@ struct Fields: View {
         var placements: [Placement] = []
         var (across, down, height) = (0.0, 0.0, 0.0)
         for (field, own) in zip(fields, own) {
-            let size = sideBySide ? own : field.sizeThatFits(LayoutProposal(width: width))
+            let size = sideBySide ? own : field.sizeThatFits(width: width)
             placements.append(Placement(Rect(across, down, size.width, size.height)))
             height = max(height, down + size.height)
             if sideBySide { across += size.width + 12 } else { down += size.height + 12 }

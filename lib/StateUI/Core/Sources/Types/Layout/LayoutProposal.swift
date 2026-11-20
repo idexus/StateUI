@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The room a layout offers a view it measures: a width, a height, either or neither.
+/// The room a layout is offered as it measures itself: a width, a height, either or neither.
 ///
-///     let natural = subview.sizeThatFits(LayoutProposal())
-///     let wrapped = subview.sizeThatFits(LayoutProposal(width: 200))
+///     .measure { context, _ in
+///         LayoutSize(width: context.proposal.width ?? 320, height: 48)
+///     }
 ///
-/// A side left out offers nothing: the view answers the size it takes by itself along it.
+/// A side left out offers nothing: what is measured answers the size it takes by itself along it.
 /// Design: docs/design/views/motion-layout.md#measuring-a-view
 public struct LayoutProposal: Hashable, Sendable {
     /// The width offered; nil for none.

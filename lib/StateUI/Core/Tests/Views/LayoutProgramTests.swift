@@ -29,7 +29,7 @@ final class LayoutProgramTests: XCTestCase {
             runs.count += 1
             runs.rooms.append(context.bounds)
             return context.subviews.map { view in
-                Placement(Rect(0, 0, measures ? view.sizeThatFits(LayoutProposal()).width : 10, 10))
+                Placement(Rect(0, 0, measures ? view.sizeThatFits().width : 10, 10))
             }
         }
         .node

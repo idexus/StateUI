@@ -5790,8 +5790,8 @@ swift.method LayoutProperties.clipsContent(_:): @MainActor func clipsContent(_ v
 swift.method LayoutProperties.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ edges: SafeAreaEdges) -> Self.Modified
 swift.method LayoutProperties.layoutBodies(_:): @MainActor func layoutBodies(_ body: LayoutBody) -> Self.Modified
 swift.method LayoutProperties.letsInputThrough(_:): @MainActor func letsInputThrough(_ value: Bool) -> Self.Modified
-swift.method LayoutSubview.firstBaseline(_:): @MainActor func firstBaseline(_ proposal: LayoutProposal) -> Double?
-swift.method LayoutSubview.sizeThatFits(_:): @MainActor func sizeThatFits(_ proposal: LayoutProposal) -> LayoutSize
+swift.method LayoutSubview.firstBaseline(width:height:): @MainActor func firstBaseline(width: Double? = nil, height: Double? = nil) -> Double?
+swift.method LayoutSubview.sizeThatFits(width:height:): @MainActor func sizeThatFits(width: Double? = nil, height: Double? = nil) -> LayoutSize
 swift.method LayoutSubviews.distance(from:to:): func distance(from start: Int, to end: Int) -> Int
 swift.method LayoutSubviews.index(_:offsetBy:): func index(_ index: Int, offsetBy distance: Int) -> Int
 swift.method LayoutSubviews.index(after:): func index(after index: Int) -> Int

@@ -172,8 +172,8 @@ private struct RowPage: View {
             rowRuns += 1
             guard measures else { return context.subviews.map { _ in Placement(Rect(0, 0, 10, 10)) } }
             let sizes = context.subviews.map { view in
-                if asksTwice { _ = view.sizeThatFits(LayoutProposal(width: offers)) }
-                return view.sizeThatFits(LayoutProposal(width: offers))
+                if asksTwice { _ = view.sizeThatFits(width: offers) }
+                return view.sizeThatFits(width: offers)
             }
             // One under the other where the views side by side are wider than the room, and the row wraps.
             let row = sizes.reduce(0) { $0 + $1.width } + 8 * Double(max(0, sizes.count - 1))
@@ -188,7 +188,7 @@ private struct RowPage: View {
 
     /// The row's own size: its views side by side, no wider than the room offered.
     private static let rowSize: @MainActor (LayoutMeasurementContext<Int>, Double) -> LayoutSize = { context, _ in
-        let sizes = context.subviews.map { $0.sizeThatFits(LayoutProposal()) }
+        let sizes = context.subviews.map { $0.sizeThatFits() }
         let width = sizes.reduce(0) { $0 + $1.width } + 8 * Double(max(0, sizes.count - 1))
         return LayoutSize(
             width: min(width, context.proposal.width ?? width), height: sizes.map(\.height).max() ?? 0)

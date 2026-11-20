@@ -6,7 +6,7 @@
 ///     placements: { context, _ in
 ///         var across = 0.0
 ///         return context.subviews.map { view in
-///             let size = view.sizeThatFits(LayoutProposal(height: context.bounds.height))
+///             let size = view.sizeThatFits(height: context.bounds.height)
 ///             defer { across += size.width + 8 }
 ///             return Placement(Rect(across, 0, size.width, size.height))
 ///         }
@@ -24,21 +24,31 @@ public struct LayoutSubview<ID: Hashable> {
     /// What measures the view; nil where nothing does.
     let measuring: LayoutMeasuring?
 
-    /// The size the view takes in the room `proposal` offers: its own size along a side left out, its words wrapped
+    /// The size the view takes in a room `width` by `height`: its own size along a side left out, its words wrapped
     /// to a width offered. Its stated sizes and bounds are in the answer; its margin is not.
     ///
     /// Nought where nothing measures the view: before its layout stands in a window, and in a test's window with
     /// no toolkit.
+    ///
+    /// - Parameters:
+    ///   - width: the width offered; none where left out. Below nought it is nought.
+    ///   - height: the height offered; none where left out. Below nought it is nought.
+    /// - Returns: the size the view takes.
     @MainActor
-    public func sizeThatFits(_ proposal: LayoutProposal) -> LayoutSize {
-        measuring?.measured(index, proposal).size ?? .zero
+    public func sizeThatFits(width: Double? = nil, height: Double? = nil) -> LayoutSize {
+        measuring?.measured(index, LayoutProposal(width: width, height: height)).size ?? .zero
     }
 
-    /// How far below its top the view's first line of words rests in the room `proposal` offers; nil for a view
+    /// How far below its top the view's first line of words rests in a room `width` by `height`; nil for a view
     /// with no words.
+    ///
+    /// - Parameters:
+    ///   - width: the width offered; none where left out.
+    ///   - height: the height offered; none where left out.
+    /// - Returns: the baseline's distance from the view's top.
     @MainActor
-    public func firstBaseline(_ proposal: LayoutProposal) -> Double? {
-        measuring?.measured(index, proposal).firstBaseline
+    public func firstBaseline(width: Double? = nil, height: Double? = nil) -> Double? {
+        measuring?.measured(index, LayoutProposal(width: width, height: height)).firstBaseline
     }
 }
 

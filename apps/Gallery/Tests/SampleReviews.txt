@@ -2,7 +2,7 @@
 # notes were last read against them. SampleReviewTests compares; only after the reading,
 # STATEUI_UPDATE_SAMPLES=1 records.
 AccessibilitySettingsSample.swift b3a4338417a32f56
-AdaptiveFieldsSample.swift c0c3c713957c61ea
+AdaptiveFieldsSample.swift f25773d5e5a061a4
 AimSample.swift 0573ea43c1770f6a
 AnalogClockSample.swift 71226e7ebccdb18e
 AnimatedInputSample.swift 9016ebc3c99d1482

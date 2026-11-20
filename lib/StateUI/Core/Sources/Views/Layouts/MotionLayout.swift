@@ -403,7 +403,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// stand - a strip as tall as its tallest card, a board as wide as its columns.
     ///
     ///     .measure { context, _ in
-    ///         let tallest = context.subviews.map { $0.sizeThatFits(LayoutProposal()).height }.max() ?? 0
+    ///         let tallest = context.subviews.map { $0.sizeThatFits().height }.max() ?? 0
     ///         return LayoutSize(width: context.proposal.width ?? 0, height: tallest)
     ///     }
     ///

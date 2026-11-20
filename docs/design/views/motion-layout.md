@@ -96,13 +96,14 @@ the way there, the layout a consumer of the state's channel so
 
 The views the arithmetic is handed (`context.subviews`, a `LayoutSubviews`)
 are handles in the items' order, found by place or by an item's identity.
-A handle holds no view: `sizeThatFits(_:)` asks the host how large the view
-is in a room offered (`LayoutProposal`), and `firstBaseline(_:)` where its
-first line of words rests.
+A handle holds no view: `sizeThatFits(width:height:)` asks the host how large
+the view is in a room offered, and `firstBaseline(width:height:)` where its
+first line of words rests. The two sides are a `LayoutProposal` within, the
+type a layout's own `measure` is handed its room as.
 
 ```text
-  LayoutProposal()             the size the view takes by itself
-  LayoutProposal(width: 200)   its words wrapped to 200 points, as tall as that makes it
+  sizeThatFits()             the size the view takes by itself
+  sizeThatFits(width: 200)   its words wrapped to 200 points, as tall as that makes it
 ```
 
 A side left out offers nothing along it; a side below nought is nought, and

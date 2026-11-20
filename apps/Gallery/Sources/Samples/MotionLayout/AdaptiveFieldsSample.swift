@@ -59,7 +59,7 @@ struct AdaptiveFieldsSample: SampleContent, ExampleContent {
     static func plan(_ proposal: LayoutProposal, _ fields: LayoutSubviews<Int>) -> Plan {
         let gap = 12.0
         // WHAT EACH FIELD TAKES BY ITSELF: nothing offered.
-        let own = fields.map { $0.sizeThatFits(LayoutProposal()) }
+        let own = fields.map { $0.sizeThatFits() }
         let row = own.reduce(0) { $0 + $1.width } + gap * Double(max(own.count - 1, 0))
         let width = proposal.width ?? row
         let sideBySide = row <= width
@@ -69,7 +69,7 @@ struct AdaptiveFieldsSample: SampleContent, ExampleContent {
         for field in fields {
             let share = sideBySide ? (width - gap * Double(own.count - 1)) / Double(own.count) : width
             // A FIELD OFFERED A WIDTH says how tall it stands in it.
-            let height = field.sizeThatFits(LayoutProposal(width: share)).height
+            let height = field.sizeThatFits(width: share).height
             plan.placements.append(Placement(Rect(across, down, share, height)))
             plan.size.height = max(plan.size.height, down + height)
             if sideBySide { across += share + gap } else { down += height + gap }
