@@ -15,7 +15,6 @@ extension Differ {
         of previous: RenderedNode?,
         node: Node,
         into patch: inout HostPatch,
-        sizesArrive: Bool,
         pagePlacer: NodeType? = nil
     ) -> [RenderedNode] {
         let matching = ChildMatching(previous?.children ?? [])
@@ -27,8 +26,7 @@ extension Differ {
         for index in node.children.indices {
             let next = identified(node.children[index], at: index, by: matching)
             describesPagePlacer = placer
-            let (child, childPatch) = element(
-                id: next.id, rendered: next.match, node: next.node, sizesArrive: sizesArrive)
+            let (child, childPatch) = element(id: next.id, rendered: next.match, node: next.node)
 
             // An arrangement where no page stands, and a toolbar on a stack or tabs, is left out
             // (Differ+Arrangements.swift).

@@ -265,7 +265,7 @@ final class DeterminismTests: XCTestCase {
         ]
 
         let events: [Event] = [
-            .tapped, .isFocusedChanged, .clicked, .pointerEntered, .frameChanged,
+            .tapped, .isFocusedChanged, .clicked, .pointerEntered, .layoutFrameChanged,
         ]
 
         // A button wears every one of them: a member its contract does not wear would be left out unordered.

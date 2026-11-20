@@ -19,6 +19,13 @@ views can follow a finger with no view built.
 because a frame is where a view sits in its parent's coordinates; bounds would
 say the view's own.
 
+A handler says which of the view's two rectangles it hears (`GeometryStage`):
+where the layout puts the view, unless said, or the rectangle around what is
+drawn. Each is an event of its own, so a view is subscribed to the stage
+something reads and a handler of one hears nothing of the other; how a host's
+one report becomes both is the host layer's
+([two rectangles](../host/runtime.md#two-rectangles)).
+
 One report carries every space. The host sends eight numbers - `x, y, width,
 height, windowX, windowY, safeX, safeY`: the frame in the parent, the same
 origin converted to the window, and the origin measured from where content can
@@ -45,9 +52,11 @@ parent-space listener hears nothing of a scroll. A handler's memory starts
 afresh when the view is rebuilt, which costs one repeated report that the
 handler's own state write absorbs.
 
-Translation, rotation and scale are drawing transforms, not layout: an
-animated translation reports nothing, while an animated width reports every
-step of the layout it causes.
+Translation, rotation and scale are drawing transforms, not layout. At the
+layout's stage an animated translation reports nothing, and a view traveling
+to a new place reports where it is going, once; at the presentation's each
+reports every step. An animated width reports every step of the layout it
+causes, at both.
 
 ## Frame reader
 
@@ -68,23 +77,28 @@ standing short under it.
 arithmetic that lays views out has it, and no view is built for it - the
 difference from `GeometryReader`, whose answer is a value the tree can show. Only
 the host writes it; nothing this side writes reaches the platform, a view's
-frame being the layout's answer.
+frame being the layout's answer. It feeds the stage it names
+(`frame(into:stage:)`), each stage a feed of its own, so one view feeds both
+its rectangles into two states.
 
-## Sizes worked out from a measurement arrive
+## Sizes worked out from a measurement
 
-A size worked out from a measurement does not animate. Carried through a
-motion it would crawl after every change of the measurement, and every step of
-an animated size is a layout pass of the whole page, which starves the frame
+A size worked out from a measurement says `.motion(.none)`. It is a value
+like any other, and travels as its view's motion says: carried through a
+motion it crawls after every change of the measurement, and every step of an
+animated size is a layout pass of the whole page, which starves the frame
 clock every other animation runs on.
 
-A layout whose frame, or a frame under it, is read - through `onFrameChanged`
-or a frame feed - places every child at once, its size and its place alike:
-each frame of an animation would hand the reader a room nobody chose. A
-size worked out from a room elsewhere wants `.motion(.none)`. A place worked
-out from a measurement is written with no motion too: the room arrives over
-several passes, and a place left to animate to its answer sets off from
-whatever the first pass made of it - and where nothing else on the page moves
-there are no frames to carry it the rest of the way.
+Nothing says it for the author. What reads a frame changes no motion - a
+layout whose frame is read moves its children as any other does, and a size
+in it travels - so a reader added to a view changes nothing about how the
+views around it move. A layout whose rows are worked out from its own room
+says `.motion(.none)` for where it puts them, and each row for its size.
+
+A place worked out from a measurement is written with no motion too: the
+room arrives over several passes, and a place left to animate to its answer
+sets off from whatever the first pass made of it - and where nothing else on
+the page moves there are no frames to carry it the rest of the way.
 
 ## Motion layout
 

@@ -79,11 +79,13 @@ extension Registry {
         everyElementRealizes(VisualElementContract.tooltip)
     }
 
-    /// Where a view stands, said as the tree reads it (`MountedElement.reportFrame`), and what the user does to it
-    /// with a finger, a pen or the mouse (`MountedElement.hear`).
+    /// Where a view stands and where it is drawn, said as the tree reads them (`MountedElement.reportFrame`), and
+    /// what the user does to it with a finger, a pen or the mouse (`MountedElement.hear`).
     public func everyElementHearsTheUser() {
-        everyElementRealizes(VisualElementContract.frame)
-        everyElementRaises(ViewContract.frameChanged)
+        everyElementRealizes(VisualElementContract.layoutFrame)
+        everyElementRealizes(VisualElementContract.presentationFrame)
+        everyElementRaises(ViewContract.layoutFrameChanged)
+        everyElementRaises(ViewContract.presentationFrameChanged)
         everyElementRaises(ViewContract.tapped)
         everyElementRealizes(ViewContract.tapCount)
         everyElementRaises(ViewContract.held)

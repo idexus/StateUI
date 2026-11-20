@@ -8,7 +8,6 @@ final class ElementPass {
     let id: ElementID
     let rendered: RenderedNode?
     let forced: Bool
-    let sizesArrive: Bool
 
     let start: Int
     var builtFrom: Int
@@ -74,7 +73,7 @@ final class ElementPass {
     var menuKey: MenuKeys.Key?
 
     init(
-        id: ElementID, rendered: RenderedNode?, node: Node, forced: Bool, sizesArrive: Bool, atPageRoot: Bool,
+        id: ElementID, rendered: RenderedNode?, node: Node, forced: Bool, atPageRoot: Bool,
         pagePlacer: NodeType?, outerScene: SceneRecord?, start: Int
     ) {
         self.id = id
@@ -82,7 +81,6 @@ final class ElementPass {
         self.forced = forced
         self.start = start
         builtFrom = start
-        self.sizesArrive = sizesArrive
         self.atPageRoot = atPageRoot
         self.pagePlacer = pagePlacer
         self.outerScene = outerScene

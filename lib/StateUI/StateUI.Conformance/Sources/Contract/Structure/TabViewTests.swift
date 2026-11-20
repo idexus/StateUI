@@ -13,11 +13,11 @@
         [
             ConformanceCase("standsAloneShowingItsFirstTab", proves: [
                 Covered(TabViewContract.self),
-            ], needs: [Covered(ViewContract.frameChanged, on: "Text")]) { s in
+            ], needs: [Covered(ViewContract.layoutFrameChanged, on: "Text")]) { s in
                 let frames = Received<[Double]>()
                 s.start {
                     TabView([0, 1]) { tab in
-                        tab == 0 ? Text("Tab 0").onEvent(ViewContract.frameChanged) { frames.values.append($0) } : Text("Tab 1")
+                        tab == 0 ? Text("Tab 0").onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) } : Text("Tab 1")
                     }
                 }
                 s.settle { Aspects.laidOut(frames) }

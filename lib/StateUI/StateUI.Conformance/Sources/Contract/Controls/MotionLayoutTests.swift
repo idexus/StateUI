@@ -24,7 +24,7 @@
                         MotionLayout([0, 1], parameters: State(wrappedValue: 0.0).projectedValue) { index in
                             Rectangle()
                                 .fill(index == 0 ? .red : .blue)
-                                .onEvent(ViewContract.frameChanged) { (index == 0 ? first : second).values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { (index == 0 ? first : second).values.append($0) }
                         } placements: { _, _ in
                             [Placement(Rect(0, 0, 20, 10)), Placement(Rect(30, 10, 20, 20))]
                         }
@@ -81,7 +81,7 @@
                             .fill(.blue)
                             .width(20)
                             .height(10)
-                            .onEvent(ViewContract.frameChanged) { above.values.append($0) }
+                            .onEvent(ViewContract.layoutFrameChanged) { above.values.append($0) }
                         MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                             Rectangle()
                                 .fill(.red)
@@ -94,7 +94,7 @@
                             .fill(.green)
                             .width(20)
                             .height(10)
-                            .onEvent(ViewContract.frameChanged) { below.values.append($0) }
+                            .onEvent(ViewContract.layoutFrameChanged) { below.values.append($0) }
                     }
                     .spacing(0)
                     .horizontalAlignment(.start)
@@ -125,13 +125,13 @@
                                     .fill(.red)
                                     .width(width.projectedValue)
                                     .height(20)
-                                    .onEvent(ViewContract.frameChanged) { first.values.append($0) }
+                                    .onEvent(ViewContract.layoutFrameChanged) { first.values.append($0) }
                             } else {
                                 Rectangle()
                                     .fill(.blue)
                                     .width(24)
                                     .height(30)
-                                    .onEvent(ViewContract.frameChanged) { second.values.append($0) }
+                                    .onEvent(ViewContract.layoutFrameChanged) { second.values.append($0) }
                             }
                         } placements: { context, _ in
                             // Side by side, six points apart, each at the size it measures.
@@ -174,10 +174,10 @@
                     VStack {
                         Text("Measured words")
                             .horizontalAlignment(.start)
-                            .onEvent(ViewContract.frameChanged) { alone.values.append($0) }
+                            .onEvent(ViewContract.layoutFrameChanged) { alone.values.append($0) }
                         MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                             Text("Measured words")
-                                .onEvent(ViewContract.frameChanged) { measured.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { measured.values.append($0) }
                         } placements: { context, _ in
                             context.subviews.map { view in
                                 let size = view.sizeThatFits(LayoutProposal())
@@ -214,7 +214,7 @@
                             .fill(.blue)
                             .width(20)
                             .height(10)
-                            .onEvent(ViewContract.frameChanged) { above.values.append($0) }
+                            .onEvent(ViewContract.layoutFrameChanged) { above.values.append($0) }
                         MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                             Rectangle()
                                 .fill(.red)
@@ -236,7 +236,7 @@
                             .fill(.green)
                             .width(20)
                             .height(10)
-                            .onEvent(ViewContract.frameChanged) { below.values.append($0) }
+                            .onEvent(ViewContract.layoutFrameChanged) { below.values.append($0) }
                     }
                     .spacing(0)
                     .horizontalAlignment(.start)
@@ -314,7 +314,7 @@
                         MotionLayout([0, 1], parameters: State(wrappedValue: 0.0).projectedValue) { index in
                             Rectangle()
                                 .fill(index == 0 ? .red : .blue)
-                                .onEvent(ViewContract.frameChanged) { (index == 0 ? first : second).values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { (index == 0 ? first : second).values.append($0) }
                         } placements: { _, _ in
                             [Placement(Rect(0, 0, 20, 10)), Placement(Rect(30, 10, 20, 20))]
                         }

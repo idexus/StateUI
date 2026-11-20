@@ -51,13 +51,13 @@
     static var takesTheRoomOffered: ConformanceCase {
         ConformanceCase("aFillTakesTheRoomAZStackOffers", proves: [
             Covered(FillContract.self),
-        ], needs: [Covered(ViewContract.frameChanged, on: "Fill")]) { s in
+        ], needs: [Covered(ViewContract.layoutFrameChanged, on: "Fill")]) { s in
             let frames = Received<[Double]>()
             s.start {
                 VStack {
                     ZStack {
                         Fill(.blue)
-                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                            .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }
                     }
                     .width(120)
                     .height(80)
@@ -76,7 +76,7 @@
     static func takesNoRoomAlong(_ stack: String) -> ConformanceCase {
         ConformanceCase("\(stack).aFillTakesNoRoomAlongItsStack", proves: [
             Covered(FillContract.self),
-        ], needs: [Covered(ViewContract.frameChanged, on: "Rectangle")]) { s in
+        ], needs: [Covered(ViewContract.layoutFrameChanged, on: "Rectangle")]) { s in
             let last = Received<[Double]>()
             s.start {
                 VStack {
@@ -87,7 +87,7 @@
                                 .fill(.red)
                                 .width(20)
                                 .height(20)
-                                .onEvent(ViewContract.frameChanged) { last.values.append($0) },
+                                .onEvent(ViewContract.layoutFrameChanged) { last.values.append($0) },
                         ]
                     }
                     .width(stack == "HStack" ? 200 : 40)

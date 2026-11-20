@@ -347,7 +347,7 @@ private final class Renders {
             var untold: [Int32] = []
 
             func walk(_ node: HostPatch) {
-                if let id = node.events?[.frameChanged], !told.contains(id) { untold.append(id) }
+                if let id = node.events?[.layoutFrameChanged], !told.contains(id) { untold.append(id) }
                 node.children.forEach(walk)
             }
 
@@ -1563,7 +1563,7 @@ final class CatalogTests: XCTestCase {
 
         func walk(_ node: RenderedNode) {
             if node.driven[VisualElementContract.height.token] != nil { heights.append(node.type.name) }
-            if node.driven[.frame] != nil { rooms.append(node.type.name) }
+            if node.driven[.layoutFrame] != nil { rooms.append(node.type.name) }
             if node.layout != nil { programs.append(node.type.name) }
             if node.driven[.opacity] != nil { fades.append(node.type.name) }
 

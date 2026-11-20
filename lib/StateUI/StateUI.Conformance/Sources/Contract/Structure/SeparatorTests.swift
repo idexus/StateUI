@@ -13,7 +13,7 @@
             Aspects.standsAlone("Separator"),
             ConformanceCase("aLineStandsAcrossItsStack", proves: [
                 Covered(SeparatorContract.self),
-            ], needs: [Covered(ViewContract.frameChanged, on: "Separator")]) { s in
+            ], needs: [Covered(ViewContract.layoutFrameChanged, on: "Separator")]) { s in
                 let line = Received<[Double]>()
                 let below = Received<[Double]>()
                 s.start {
@@ -23,12 +23,12 @@
                                 .fill(.red)
                                 .width(40)
                                 .height(20)
-                            Separator().onEvent(ViewContract.frameChanged) { line.values.append($0) }
+                            Separator().onEvent(ViewContract.layoutFrameChanged) { line.values.append($0) }
                             Rectangle()
                                 .fill(.blue)
                                 .width(40)
                                 .height(20)
-                                .onEvent(ViewContract.frameChanged) { below.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { below.values.append($0) }
                         }
                         .spacing(0)
                         .width(200)

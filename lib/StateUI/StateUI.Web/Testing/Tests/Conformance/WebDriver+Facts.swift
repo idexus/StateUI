@@ -13,12 +13,12 @@
 /// Design: docs/design/host/conformance.md#the-driver
 extension WebDriver {
     func focused(_ element: MountedElement) throws -> Bool {
-        let view = try self.view(of: element, reading: .frame)
+        let view = try self.view(of: element, reading: .layoutFrame)
         return try WebBrowser.truth("e.contains(document.activeElement)", on: view.node)
     }
 
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
-        let view = try self.view(of: element, reading: .frame)
+        let view = try self.view(of: element, reading: .layoutFrame)
         // The point is of the element's laid-out rectangle, no transform in it.
         guard let corner = (element.native as? WebElement)?.windowCorner else { return false }
         let (x, y) = (corner.x + point.x, corner.y + point.y)
@@ -45,7 +45,7 @@ extension WebDriver {
     }
 
     func place(of element: MountedElement) throws -> Rect {
-        let view = try self.view(of: element, reading: .frame)
+        let view = try self.view(of: element, reading: .layoutFrame)
         let numbers = try numbers("stateui.box(e)", on: view.node)
         guard numbers.count == 4 else { throw DriverCannot("read where \(element.type.name) stands") }
         let laid = Rect(x: numbers[0], y: numbers[1], width: numbers[2], height: numbers[3])

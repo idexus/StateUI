@@ -20,6 +20,10 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
     static let title = "Measuring a frame"
     static let summary = "GeometryReader builds from its measured frame; `.onFrameChanged` reports any view's."
 
+    var examples: [Example] {
+        [Example(self), Example(FrameStages())]
+    }
+
     // listing: GeometryReaderSample
     var body: some View {
         VStack {
@@ -148,5 +152,69 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
         }
         .spacing(8)
+    }
+}
+
+/// A view's two rectangles: where its layout puts it, and the rectangle
+/// around what is drawn of it.
+struct FrameStages: ExampleContent {
+    // listing: FrameStages
+    @State private var placed = Rect(0, 0, 0, 0)
+    @State private var drawn = Rect(0, 0, 0, 0)
+
+    @State private var larger = false
+    @State private var far = false
+
+    var body: some View {
+        VStack {
+            VStack {
+                Rectangle()
+                    .fill(Palette.accent)
+                    .cornerRadius(8)
+                    .width(80)
+                    .height(48)
+                    // A TRANSFORM: it moves what is drawn, never the layout.
+                    .scale(larger ? 1.4 : 1)
+                    // THE LAYOUT'S OWN: the stack carries the card across.
+                    .horizontalAlignment(far ? .end : .start)
+                    // ONE VIEW, TWO RECTANGLES, a state each: where its layout
+                    // puts it, and the rectangle around what is drawn of it.
+                    .frame(into: $placed)
+                    .frame(into: $drawn, stage: .presentation)
+                    .accessibilityIdentifier("stages.card")
+            }
+            // Slow enough to read the numbers on the way.
+            .motion(.eased(.milliseconds(1200)))
+            .padding(24)
+            .background(Palette.selected)
+
+            SwitchRow("Larger", $larger)
+            SwitchRow("At the far end", $far)
+
+            Text("layout · \(Self.words(placed))")
+                .accessibilityIdentifier("stages.layout")
+                .fontSize(13)
+                .horizontalTextAlignment(.center)
+
+            Text("drawn · \(Self.words(drawn))")
+                .accessibilityIdentifier("stages.drawn")
+                .fontSize(13)
+                .textColor(Palette.brand)
+                .horizontalTextAlignment(.center)
+        }
+        .spacing(12)
+    }
+
+    /// A rectangle in whole points: its corner, then its size.
+    static func words(_ rect: Rect) -> String {
+        "\(Int(rect.x.rounded())), \(Int(rect.y.rounded())) · \(Int(rect.width.rounded())) × \(Int(rect.height.rounded()))"
+    }
+    // listing: end
+
+    var notes: (any View)? {
+        Text("Turn Larger on: the card grows and `drawn` grows with it, while `layout` stands. Turn At the far "
+            + "end on: `layout` says the far end at once, and `drawn` counts the way there.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

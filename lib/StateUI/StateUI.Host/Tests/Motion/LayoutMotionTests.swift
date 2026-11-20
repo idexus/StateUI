@@ -5,8 +5,8 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
-/// A layout's children traveling to their places: what a patch said travels, what the room or a read frame gave
-/// arrives, and a child on its way bends, keeps its way, or stops as it leaves.
+/// A layout's children traveling to their places: what a patch said travels, what the room gave arrives, and a
+/// child on its way bends, keeps its way, or stops as it leaves.
 @MainActor
 final class LayoutMotionTests: XCTestCase {
     /// A child a patch moves starts from where it stood, travels on the layout's law, and lands exactly on its new
@@ -167,20 +167,6 @@ final class LayoutMotionTests: XCTestCase {
         layout.arrange([(moved, 1, Self.row(0, x: 150))], width: 200)
         XCTAssertEqual(moved.placedFrame, Self.row(0, x: 150), "its width is its parent's to say, patch or not")
         XCTAssertFalse(layout.animator.isMoving, "a resize starts no animation")
-    }
-
-    /// Where a frame under a layout is read, every child arrives: each frame of an animation would hand what reads
-    /// the frame a room nobody chose.
-    func testALayoutWhoseFramesAreReadPlacesItsChildrenAtOnce() {
-        let layout = HandWoundLayout()
-        layout.places.framesRead = true
-        let moved = Placed()
-        layout.arrange([(moved, 1, Self.row(1))])
-
-        layout.arrange([(moved, 1, Self.row(0))])
-
-        XCTAssertEqual(moved.placedFrame, Self.row(0))
-        XCTAssertFalse(layout.animator.isMoving)
     }
 
     /// A size a child states for itself arrives at once - it is either still or moving on its own - while the

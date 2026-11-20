@@ -66,9 +66,9 @@
     public static func standsAlone(_ element: String) -> ConformanceCase {
         ConformanceCase("standsAloneOnAPage", proves: [
             Covered(member: nil, element: element, tier: nil),
-        ], needs: [Covered(ViewContract.frameChanged, on: element)]) { s in
+        ], needs: [Covered(ViewContract.layoutFrameChanged, on: element)]) { s in
             let frames = Received<[Double]>()
-            s.start { Specimens.view(element, [Hear(ViewContract.frameChanged) { frames.values.append($0) }]) }
+            s.start { Specimens.view(element, [Hear(ViewContract.layoutFrameChanged) { frames.values.append($0) }]) }
             s.settle { laidOut(frames) }
             s.expect(laidOut(frames), true, "laid out in the window, at a size")
         }

@@ -238,7 +238,7 @@ them:
 | One sample | A state has one channel, and every control showing the state draws the same sample of it. |
 | Nothing starts by being named | Making a binding, taking `$x.journey` or declaring a conversion starts no channel and no clock. A channel lives while something shows or follows the state. |
 | Destinations in, a destination out | A conversion reads where its sources are going and nothing else: never where they stand, how fast they go, or their motion. |
-| Watching changes nothing | Reading where a value stands - an engine following a journey, a reading, a body reading the sample - is said outright and never alters the movement it watches. |
+| Watching changes nothing | Reading where a value stands - an engine following a journey, a reading, a body reading the sample - is said outright and never alters the movement it watches. Reading where a view stands is the same: a frame read at either [stage](../interface/layout.md#frame-readings) changes no motion of the view or of the views around it. |
 | One result | Every movement ends exactly once, with one result, and a movement begun earlier never answers for one begun later. |
 | One clock | Every movement runs on the display's one clock, under one rule for a user who asks for less motion. |
 

@@ -111,7 +111,7 @@ extension WebDriver {
             }
             node = shown.node
         } else {
-            node = try self.view(of: element, reading: .frame).node
+            node = try self.view(of: element, reading: .layoutFrame).node
         }
         if button, ButtonMenu.opening(of: element) == .arrow {
             try click(node, part: ".stateui-split-arrow")

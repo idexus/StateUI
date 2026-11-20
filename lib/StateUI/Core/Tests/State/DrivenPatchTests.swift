@@ -303,7 +303,7 @@ final class DrivenPatchTests: XCTestCase {
 
         XCTAssertNotNil(layout.program, "the run and its room go through the layout's program")
         XCTAssertNil(ties[.area])
-        XCTAssertNil(ties[.frame])
+        XCTAssertNil(ties[.layoutFrame])
         XCTAssertEqual(ties[.parameters]?.kind, .property, "the phase worn, so the host walks it")
         XCTAssertEqual(ties[.parameters]?.mode, .inOut)
         XCTAssertEqual(layout.children.map(\.type), [.grid, .grid], "each face wrapped")

@@ -14,7 +14,6 @@ extension AndroidElement {
 
         layout.places.layoutMotion = host?.runtime.layoutMotion
         layout.places.motion = element.motion
-        layout.places.framesRead = element.framesRead
         layout.places.patchArrived()
     }
 

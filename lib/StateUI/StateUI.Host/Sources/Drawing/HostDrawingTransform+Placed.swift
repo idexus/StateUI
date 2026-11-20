@@ -23,4 +23,23 @@ extension HostDrawingTransform {
         drawn.pivotY = 0.5
         return drawn
     }
+
+    /// The rectangle around `place` as this transform draws it: scaled and turned about its pivot, then moved. A
+    /// tilt out of the page is left out: it draws inside what the flat view covers.
+    /// Design: docs/design/host/runtime.md#two-rectangles
+    public func bounds(of place: Rect) -> Rect {
+        guard translationX != 0 || translationY != 0 || rotation != 0 || scaleX != 1 || scaleY != 1 else {
+            return place
+        }
+        let angle = rotation * .pi / 180
+        let (pivotAcross, pivotDown) = (place.width * pivotX, place.height * pivotY)
+        var (left, top, right, bottom) = (Double.infinity, Double.infinity, -Double.infinity, -Double.infinity)
+        for corner in [(0.0, 0.0), (place.width, 0), (0, place.height), (place.width, place.height)] {
+            let (across, down) = ((corner.0 - pivotAcross) * scaleX, (corner.1 - pivotDown) * scaleY)
+            let x = across * cos(angle) - down * sin(angle) + pivotAcross + translationX
+            let y = across * sin(angle) + down * cos(angle) + pivotDown + translationY
+            (left, top, right, bottom) = (min(left, x), min(top, y), max(right, x), max(bottom, y))
+        }
+        return Rect(x: place.x + left, y: place.y + top, width: right - left, height: bottom - top)
+    }
 }

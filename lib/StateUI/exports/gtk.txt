@@ -375,7 +375,6 @@ ZStack
   background
   dragText
   droppedFileTypes
-  frame
   gridColumn
   gridColumnSpan
   gridRow
@@ -388,6 +387,7 @@ ZStack
   isEnabled
   isVisible
   keysTaken
+  layoutFrame
   margin
   maximumHeight
   maximumWidth
@@ -399,6 +399,7 @@ ZStack
   panYChannel
   pivotX
   pivotY
+  presentationFrame
   rotation
   rotationX
   rotationY
@@ -420,10 +421,10 @@ ZStack
   dragStarting()
   dropped()
   filesDropped()
-  frameChanged()
   held()
   isFocusedChanged()
   keyPressed()
+  layoutFrameChanged()
   panUpdated()
   pinchUpdated()
   pointerEntered()
@@ -431,6 +432,7 @@ ZStack
   pointerMoved()
   pointerPressed()
   pointerReleased()
+  presentationFrameChanged()
   rotationUpdated()
   swiped()
   tapped()

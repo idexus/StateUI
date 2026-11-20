@@ -34,7 +34,7 @@ final class PlacedRunTests: XCTestCase {
 
         XCTAssertNotNil(placed.program, "the layout runs a program")
         XCTAssertNil(placed.driven?[.area], "no state carries the run")
-        XCTAssertNil(placed.driven?[.frame], "nor the room")
+        XCTAssertNil(placed.driven?[.layoutFrame], "nor the room")
         XCTAssertEqual(placed.children.count, 2, "two views")
 
         for wrapper in placed.children.prefix(2) {
@@ -89,8 +89,28 @@ final class PlacedRunTests: XCTestCase {
         let patch = renders.render(Rectangle().frame(into: room.projectedValue).id("box").node)
 
         XCTAssertEqual(
-            patch.driven?[.frame],
+            patch.driven?[.layoutFrame],
             HostStateBinding(state: room.number, mode: .in, kind: .feed, laneKind: .number))
+    }
+
+    /// EACH STAGE IS A FEED OF ITS OWN: where the layout puts a view and where it is drawn are two states the host
+    /// writes, and a view read at one stage names that member alone.
+    func testEachStageOfAFrameIsItsOwnFeed() {
+        let room = State(wrappedValue: Rect(0, 0, 0, 0))
+        let drawn = State(wrappedValue: Rect(0, 0, 0, 0))
+        let renders = Renders()
+
+        let both = renders.render(
+            Rectangle().frame(into: room.projectedValue).frame(into: drawn.projectedValue, stage: .presentation).id("box").node)
+        XCTAssertEqual(
+            both.driven?[.layoutFrame],
+            HostStateBinding(state: room.number, mode: .in, kind: .feed, laneKind: .number))
+        XCTAssertEqual(
+            both.driven?[.presentationFrame],
+            HostStateBinding(state: drawn.number, mode: .in, kind: .feed, laneKind: .number))
+
+        let one = Renders().render(Rectangle().frame(into: drawn.projectedValue, stage: .presentation).id("box").node)
+        XCTAssertNil(one.driven?[.layoutFrame], "the stage it does not read is not asked")
     }
 
     /// A DRAWING ORDER IS WRITTEN AS AN ORDER, never as the number the

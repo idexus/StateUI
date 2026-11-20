@@ -55,7 +55,7 @@ final class GalleryViewTests: XCTestCase {
         var found: [Int] = []
 
         func walk(_ node: HostPatch) {
-            if let id = node.events?[.frameChanged] { found.append(id) }
+            if let id = node.events?[.layoutFrameChanged] { found.append(id) }
             node.children.forEach(walk)
         }
 
@@ -938,7 +938,7 @@ final class GalleryViewTests: XCTestCase {
 
         XCTAssertNotNil(program, "the layout runs a program")
         XCTAssertNil(placer.driven?[.area])
-        XCTAssertNil(placer.driven?[.frame])
+        XCTAssertNil(placer.driven?[.layoutFrame])
 
         let run = placements(showing)
 

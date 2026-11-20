@@ -1,78 +1,79 @@
-# revision 31.4
-Button.accessibilityPresence: ✅
-Canvas.ignoresInput: ✅
-Canvas.rotationX: ✓ read rotationX of Canvas: the host's own tip, checked against the projection it laid on the element
-Capsule.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-Capsule.translationY: ✅
-CheckBox.accessibilityPresence: ✅
-ColorPicker.ignoresInput: ✅
-ColorPicker.rotationX: ✓ read rotationX of ColorPicker: the host's own tip, checked against the projection it laid on the element
-DatePicker.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-DatePicker.translationY: ✅
-Ellipse.accessibilityPresence: ✅
-Fill.ignoresInput: ✅
-Fill.rotationX: ✓ read rotationX of Fill: the host's own tip, checked against the projection it laid on the element
-Grid.accessibilityRole: ✅
-Grid.translationY: ✅
-HStack.accessibilityHeading: ✅
-Image.maximumHeight: ✅
-Image.maximumWidth: ✅
-Image.minimumHeight: ✅
-Image.minimumWidth: ✅
-Image.pivotY: ✅
-ItemsView.accessibilityLabel: ✅
-ItemsView.scaleY: ✅
-Line.accessibilityHeading: ✅
-Line.scaleX: ✅
-Link.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Map.height: 🧩
+# revision 32.4
+Button.tooltip: ✅
+Canvas.maximumHeight: ✅
+Canvas.maximumWidth: ✅
+Canvas.minimumHeight: ✅
+Canvas.minimumWidth: ✅
+Canvas.pivotX: ✅
+Capsule.scale: ✅
+Capsule.zIndex: ✅
+CheckBox.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+ColorPicker.accessibilityPresence: ✅
+ColorPicker.isVisible: ✅
+DatePicker.ignoresInput: ✅
+DatePicker.rotation: ✅
+Ellipse.accessibilityLabel: ✅
+Ellipse.scaleY: ✅
+Fill.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Grid.height: ✅
+Grid.layoutDirection: ✓ read layoutDirection of Grid: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Grid.width: ✅
+HStack.layoutFrame: ✅
+HStack.rotationX: ✓ read rotationX of HStack: the host's own tip, checked against the projection it laid on the element
+Image.accessibilityLabel: ✅
+Image.scaleY: ✅
+ItemsView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Line.accessibilityHint: ✅
+Line.translationX: ✅
+Link.tooltip: ✅
+Map.maximumHeight: 🧩
+Map.maximumWidth: 🧩
+Map.minimumHeight: 🧩
+Map.minimumWidth: 🧩
 Map.pivotX: 🧩
-Map.width: 🧩
-MotionLayout.maximumHeight: ✅
-MotionLayout.maximumWidth: ✅
-MotionLayout.minimumHeight: ✅
-MotionLayout.minimumWidth: ✅
-MotionLayout.pivotY: ✅
-Path.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Picker.height: ✅
-Picker.pivotX: ✅
-Picker.width: ✅
-Polygon.accessibilityHeading: ✅
-Polygon.scaleX: ✅
-Polyline.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-ProgressBar.height: ✅
-ProgressBar.pivotX: ✅
-ProgressBar.width: ✅
-Rectangle.accessibilityHeading: ✅
-Rectangle.scaleX: ✅
-ScrollView.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-ScrollView.translationY: ✅
-SearchField.accessibilityHeading: ✅
-Separator.accessibilityHeading: ✅
-Separator.scaleX: ✅
-Slider.maximumHeight: ✅
-Slider.maximumWidth: ✅
-Slider.rotation: ✅
-Space.accessibilityHint: ✅
-Space.translationX: ✅
-Spinner.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-Spinner.translationY: ✅
-Stepper.accessibilityHeading: ✅
-Switch.maximumHeight: ✅
-Switch.maximumWidth: ✅
-Switch.rotation: ✅
-Text.tooltip: ✅
-TextEditor.accessibilityHint: ✅
-TextEditor.translationX: ✅
-TextField.accessibilityHeading: ✅
-TimePicker.maximumHeight: ✅
-TimePicker.maximumWidth: ✅
-TimePicker.rotation: ✅
-VStack.accessibilityHint: ✅
-VStack.translationX: ✅
+MotionLayout.presentationFrame: ✅
+MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own tip, checked against the projection it laid on the element
+Path.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+Picker.accessibilityPresence: ✅
+Picker.isVisible: ✅
+Polygon.ignoresInput: ✅
+Polygon.rotation: ✅
+Polyline.accessibilityLabel: ✅
+Polyline.scaleY: ✅
+ProgressBar.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Rectangle.height: ✅
+Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Rectangle.width: ✅
+ScrollView.maximumHeight: ✅
+ScrollView.maximumWidth: ✅
+ScrollView.pivotY: ✅
+SearchField.scale: ✅
+SearchField.zIndex: ✅
+Separator.scale: ✅
+Separator.zIndex: ✅
+Slider.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+Space.accessibilityPresence: ✅
+Space.isVisible: ✅
+Spinner.accessibilityHint: ✅
+Spinner.translationX: ✅
+Stepper.ignoresInput: ✅
+Stepper.rotation: ✅
+Switch.accessibilityLabel: ✅
+Switch.scaleY: ✅
+Text.height: ✅
+Text.layoutDirection: ✅
+Text.width: ✅
+TextEditor.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+TextField.height: ✅
+TextField.layoutDirection: ✅
+TextField.width: ✅
+TimePicker.presentationFrame: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
+VStack.accessibilityRole: ✅
+VStack.translationY: ✅
 WebView.tooltip: ✅
 ZStack.maximumHeight: ✅
 ZStack.maximumWidth: ✅
 ZStack.minimumHeight: ✅
 ZStack.minimumWidth: ✅
-ZStack.pivotY: ✅
+ZStack.pivotX: ✅

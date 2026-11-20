@@ -33,7 +33,8 @@ How each of them realizes these members is on its own page.
 | `droppedFileTypes` | property | `[FileType]` | native |
 | `onDragEnded` (`dragEnded`) | event |  | native |
 | `onDropped` (`filesDropped`) | event | `[ChosenFile]` | native |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |
+| `layoutFrameChanged` | event | `[Double]` | native |
+| `presentationFrameChanged` | event | `[Double]` | native |
 | `gridColumn` | property | `Int` | stateUI |
 | `gridColumnSpan` | property | `Int` | stateUI |
 | `gridRow` | property | `Int` | stateUI |

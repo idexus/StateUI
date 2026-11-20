@@ -17,12 +17,12 @@
     public static var cases: [ConformanceCase] {
         Specimens.wearing(ViewContract.self).flatMap { element in
             [
-                margined(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
+                margined(element), drawn(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
                 tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
         } + [
-            scrolledInItsWindow, scrolledInAList, atItsPagesCorner, onAFirstBaseline, showsItsPress,
+            scrolledInItsWindow, scrolledInAList, atItsPagesCorner, carriedToItsPlace, onAFirstBaseline, showsItsPress,
             pressedByAScreenReader,
         ]
     }
@@ -91,7 +91,7 @@
     @MainActor
     static var scrolledInItsWindow: ConformanceCase {
         ConformanceCase("aScrollMovesWhereAViewStandsInItsWindow", proves: [
-            Covered(ViewContract.frameChanged, on: "Rectangle"),
+            Covered(ViewContract.layoutFrameChanged, on: "Rectangle"),
         ], needs: [Covered(ScrollViewContract.self)]) { s in
             let clock = TestClock()
             let frames = Received<[Double]>()
@@ -103,7 +103,7 @@
                                 .fill(.red)
                                 .width(120)
                                 .height(60)
-                                .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }
                             Rectangle()
                                 .fill(.blue)
                                 .width(120)
@@ -135,7 +135,7 @@
     @MainActor
     static var scrolledInAList: ConformanceCase {
         ConformanceCase("aScrollMovesWhereAnItemStandsInItsWindow", proves: [
-            Covered(ViewContract.frameChanged, on: "Rectangle"),
+            Covered(ViewContract.layoutFrameChanged, on: "Rectangle"),
         ], needs: [Covered(ItemsViewContract.self)]) { s in
             let clock = TestClock()
             let frames = Received<[Double]>()
@@ -146,7 +146,7 @@
                             .fill(item == 2 ? .red : .blue)
                             .width(120)
                             .height(60)
-                            .onEvent(ViewContract.frameChanged) { if item == 2 { frames.values.append($0) } }
+                            .onEvent(ViewContract.layoutFrameChanged) { if item == 2 { frames.values.append($0) } }
                     }
                     .width(200).height(300).id("list")
                 }
@@ -173,7 +173,7 @@
     @MainActor
     static var atItsPagesCorner: ConformanceCase {
         ConformanceCase("aViewAtItsPagesCornerStandsAtTheSafeAreasCorner", proves: [
-            Covered(ViewContract.frameChanged, on: "Rectangle"),
+            Covered(ViewContract.layoutFrameChanged, on: "Rectangle"),
         ], needs: [Covered(NavigationStackContract.self)]) { s in
             let frames = Received<[Double]>()
             s.start {
@@ -183,7 +183,7 @@
                             .fill(.red)
                             .width(120)
                             .height(60)
-                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                            .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }
                     }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
@@ -286,7 +286,7 @@
     @MainActor
     static func margined(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInsideItsMargin", proves: [
-            Covered(ViewContract.margin, on: element), Covered(ViewContract.frameChanged, on: element),
+            Covered(ViewContract.margin, on: element), Covered(ViewContract.layoutFrameChanged, on: element),
         ]) { s in
             let frames = Received<[Double]>()
             s.start {
@@ -305,12 +305,93 @@
         }
     }
 
+    /// A view's two rectangles: a transform of its own moves the one around what is drawn, its corner in the
+    /// window with it, and leaves where its layout puts it.
+    @MainActor
+    static func drawn(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).itsDrawnFrameFollowsItsTransform", proves: [
+            Covered(ViewContract.presentationFrameChanged, on: element),
+        ], needs: [Covered(ViewContract.layoutFrameChanged, on: element)]) { s in
+            let placed = Received<[Double]>()
+            let drawn = Received<[Double]>()
+            s.start {
+                VStack {
+                    reporting(element, placed, [
+                        Write(VisualElementContract.width, 120), Write(VisualElementContract.height, 40),
+                        Write(ViewContract.margin, Insets(start: 80, top: 40, end: 0, bottom: 0)),
+                        Write(VisualElementContract.scale, 1.5), Write(VisualElementContract.translationX, 10),
+                        Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
+                    ])
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+
+            s.settle {
+                drawn.values.last.map(FrameReport.place) == [60, 30, 180, 60]
+                    && placed.values.last.map(FrameReport.place) == [80, 40, 120, 40]
+            }
+            s.expect(
+                drawn.values.last.map(FrameReport.place), [60, 30, 180, 60],
+                "half as large again about its middle, ten across")
+            s.expect(placed.values.last.map(FrameReport.place), [80, 40, 120, 40], "where its layout puts it")
+            let corner = placed.values.last.map(FrameReport.inWindow) ?? []
+            s.expect(
+                drawn.values.last.map(FrameReport.inWindow), corner.count == 2 ? [corner[0] - 20, corner[1] - 10] : [],
+                "its corner in the window with it")
+        }
+    }
+
+    /// A view its layout's motion carries to a new place: the layout's stage hears where it is going, alone and
+    /// before the view is there; the presentation's hears the way.
+    @MainActor
+    static var carriedToItsPlace: ConformanceCase {
+        ConformanceCase("aViewCarriedToItsPlaceSaysItsWayToThePresentationAlone", proves: [
+            Covered(ViewContract.layoutFrameChanged, on: "Rectangle"),
+            Covered(ViewContract.presentationFrameChanged, on: "Rectangle"),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+            let clock = TestClock()
+            let far = State(wrappedValue: false)
+            let placed = Received<[Double]>()
+            let drawn = Received<[Double]>()
+            s.start(clock: clock) {
+                VStack {
+                    Carried(far: far.projectedValue, placed: placed, drawn: drawn)
+                    Button("Move").onClicked { far.wrappedValue = true }.id("move")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.settle { placed.values.last.map(FrameReport.place) == [0, 0, 40, 40] }
+            s.frames(of: clock, until: 200)
+            let (heard, seen) = (placed.values.count, drawn.values.count)
+
+            // The clock stands: the change is rendered, and the view cannot have moved.
+            try s.perform(.activate, on: s.element("move"))
+            s.settle { placed.values.last.map(FrameReport.place) == [160, 0, 40, 40] }
+            let early = try s.place(of: s.element("specimen"))
+            s.expect(placed.values.last.map(FrameReport.place), [160, 0, 40, 40], "where it is going, said")
+            s.expect(early.x < 150, true, "before it is there: \(early.x)")
+
+            s.frames(of: clock, until: 1_400)
+            s.settle { drawn.values.last.map(FrameReport.place) == [160, 0, 40, 40] }
+            let places = Set(placed.values.dropFirst(heard).map(FrameReport.place))
+            let way = drawn.values.dropFirst(seen).map { $0.first ?? 0 }
+            s.expect(places, [[160, 0, 40, 40]], "the layout's stage hears its destination alone")
+            s.expect(
+                way.filter { $0 > 1 && $0 < 159 }.count >= 3, true,
+                "the presentation's hears the way: \(way.count) heard, \(way.prefix(6).map { ($0 * 10).rounded() / 10 })")
+            s.expect(way == way.sorted(), true, "each place further than the last")
+            s.expect(drawn.values.last.map(FrameReport.place), [160, 0, 40, 40], "and where it came to")
+        }
+    }
+
     /// A view stands where its alignment puts it in the room its parent gives it.
     @MainActor
     static func aligned(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsWhereItsAlignmentPutsIt", proves: [
             Covered(ViewContract.horizontalAlignment, on: element), Covered(ViewContract.verticalAlignment, on: element),
-            Covered(ViewContract.frameChanged, on: element),
+            Covered(ViewContract.layoutFrameChanged, on: element),
         ]) { s in
             let across = Received<[Double]>()
             let down = Received<[Double]>()
@@ -349,7 +430,7 @@
     @MainActor
     static func inArea(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsArea", proves: [
-            Covered(ViewContract.area, on: element), Covered(ViewContract.frameChanged, on: element),
+            Covered(ViewContract.area, on: element), Covered(ViewContract.layoutFrameChanged, on: element),
         ], needs: [
             Covered(ClickElementContract.clicked, on: ButtonContract.self),
             Covered(ViewContract.horizontalAlignment, on: element), Covered(ViewContract.verticalAlignment, on: element),
@@ -411,7 +492,7 @@
     static func inCell(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsCell", proves: [
             Covered(ViewContract.gridColumn, on: element), Covered(ViewContract.gridRow, on: element),
-            Covered(ViewContract.frameChanged, on: element),
+            Covered(ViewContract.layoutFrameChanged, on: element),
         ], needs: [Covered(ViewContract.horizontalAlignment, on: element)]) { s in
             let frames = Received<[Double]>()
             s.start {
@@ -439,7 +520,7 @@
     static func acrossCells(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsAcrossTheCellsItSpans", proves: [
             Covered(ViewContract.gridColumnSpan, on: element), Covered(ViewContract.gridRowSpan, on: element),
-            Covered(ViewContract.frameChanged, on: element),
+            Covered(ViewContract.layoutFrameChanged, on: element),
         ], needs: [Covered(ViewContract.horizontalAlignment, on: element)]) { s in
             let frames = Received<[Double]>()
             s.start {
@@ -877,6 +958,32 @@
     static func reporting(
         _ element: String, _ frames: Received<[Double]>, _ worn: [any Worn], id: String = "specimen"
     ) -> AnyView {
-        Specimens.view(element, worn + [Hear(ViewContract.frameChanged) { numbers in frames.values.append(numbers) }], id: id)
+        Specimens.view(element, worn + [Hear(ViewContract.layoutFrameChanged) { numbers in frames.values.append(numbers) }], id: id)
+    }
+}
+
+/// A stack two hundred points across moving its children over six tenths of a second, holding one view of forty at
+/// its start - or, once `far`, at its end: a change that moves the view a hundred and sixty points. The view says
+/// where its layout puts it to `placed`, and the rectangle around what is drawn of it to `drawn`.
+private struct Carried: View {
+    let far: Binding<Bool>
+    let placed: Received<[Double]>
+    let drawn: Received<[Double]>
+
+    var body: some View {
+        VStack {
+            Rectangle()
+                .fill(.red)
+                .width(40)
+                .height(40)
+                .horizontalAlignment(far.wrappedValue ? .end : .start)
+                .onEvent(ViewContract.layoutFrameChanged) { placed.values.append($0) }
+                .onEvent(ViewContract.presentationFrameChanged) { drawn.values.append($0) }
+                .id("specimen")
+        }
+        .width(200)
+        .height(40)
+        .horizontalAlignment(.start)
+        .motion(.eased(.milliseconds(600), curve: .linear))
     }
 }

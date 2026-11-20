@@ -22,7 +22,7 @@ final class WebFrameReportTests: XCTestCase {
         let frames = Received<[Double]>()
         let host = WebRenderer.running {
             TabView([0, 1]) { tab in
-                tab == 0 ? Text("Tab 0").onEvent(ViewContract.frameChanged) { frames.values.append($0) } : Text("Tab 1")
+                tab == 0 ? Text("Tab 0").onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) } : Text("Tab 1")
             }
         }
         host.settle { Aspects.laidOut(frames) }
@@ -44,7 +44,7 @@ final class WebFrameReportTests: XCTestCase {
         let host = WebRenderer.running {
             VStack {
                 Image("test_dot.png").contentMode(.fill).width(60).height(40)
-                    .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                    .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }
             }
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
@@ -65,7 +65,7 @@ final class WebFrameReportTests: XCTestCase {
                     Rectangle()
                         .fill(.red)
                         .height(20)
-                        .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                        .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }
                 }
                 .width(wide.wrappedValue ? 160 : 80)
                 Button("Wider").onClicked { wide.wrappedValue = true }
@@ -99,7 +99,7 @@ final class WebFrameReportTests: XCTestCase {
                         .width(20)
                         .height(20)
                         .horizontalAlignment(.start)
-                        .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                        .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }
                 }
                 .padding(wide.wrappedValue ? Insets(start: 20, top: 12, end: 0, bottom: 0) : Insets(start: 10, top: 6, end: 0, bottom: 0))
                 Button("Wider").onClicked { wide.wrappedValue = true }

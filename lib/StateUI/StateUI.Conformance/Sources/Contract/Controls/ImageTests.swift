@@ -22,7 +22,7 @@
                 s.start {
                     VStack {
                         Image(ImageSource(bytes: Self.redPixels))
-                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("image")
+                            .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }.id("image")
                     }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
@@ -53,7 +53,7 @@
             ]) { s in
                 let frames = Received<[Double]>()
                 s.start {
-                    VStack { Image("test_dot.png").onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("image") }
+                    VStack { Image("test_dot.png").onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }.id("image") }
                         .horizontalAlignment(.start)
                         .verticalAlignment(.start)
                 }
@@ -67,7 +67,7 @@
             ]) { s in
                 let frames = Received<[Double]>()
                 s.start {
-                    VStack { Image("test_wide.png").onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("image") }
+                    VStack { Image("test_wide.png").onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }.id("image") }
                         .horizontalAlignment(.start)
                         .verticalAlignment(.start)
                 }
@@ -84,7 +84,7 @@
                     VStack {
                         Image(wide.wrappedValue ? "test_wide.svg" : "test_dot.png")
                             .horizontalAlignment(.start)
-                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("image")
+                            .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }.id("image")
                         Button("Wide").onClicked { wide.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)
@@ -102,7 +102,7 @@
             ]) { s in
                 let frames = Received<[Double]>()
                 s.start {
-                    VStack { Image("nowhere.png").onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("image") }
+                    VStack { Image("nowhere.png").onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }.id("image") }
                         .horizontalAlignment(.start)
                         .verticalAlignment(.start)
                 }
@@ -120,7 +120,7 @@
                     VStack {
                         Image(gone.wrappedValue ? "nowhere.png" : "test_dot.png")
                             .horizontalAlignment(.start)
-                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("image")
+                            .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }.id("image")
                         Button("Gone").onClicked { gone.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)

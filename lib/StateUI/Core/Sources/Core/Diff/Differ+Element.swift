@@ -11,20 +11,19 @@ extension Differ {
     /// gets the host there: a composed view carried whole, an element replaced, an
     /// element changed, or one unchanged whose empty patch its parent drops.
     ///
-    /// `sizesArrive` says the layout it stands in is measured. The walk goes down the tree through this frame,
-    /// kept small: the element's work is done in steps that return before its children are walked.
+    /// The walk goes down the tree through this frame, kept small: the element's work is done in steps that
+    /// return before its children are walked.
     /// Design: docs/design/core/identity-and-diffing.md#the-walks-stack
     func element(
         id: ElementID,
         rendered: RenderedNode?,
         node: Node,
         forced: Bool = false,
-        sizesArrive: Bool = false,
         pagePlacer: NodeType?? = nil,
         from start: Int = 0
     ) -> (node: RenderedNode, patch: HostPatch) {
         let pass = ElementPass(
-            id: id, rendered: rendered, node: node, forced: forced, sizesArrive: sizesArrive,
+            id: id, rendered: rendered, node: node, forced: forced,
             atPageRoot: describesPageRoot, pagePlacer: pagePlacer ?? describesPagePlacer,
             outerScene: sceneRecord, start: start)
         (describesPageRoot, describesPagePlacer) = (false, nil)
@@ -55,8 +54,7 @@ extension Differ {
             // Design: docs/design/core/identity-and-diffing.md#a-views-anchor
             describesPageRoot = pass.atPageRoot && pass.node.type == .anchor
             children = reconcileChildren(
-                of: pass.previous, node: pass.node, into: &pass.patch, sizesArrive: pass.node.childSizesArrive,
-                pagePlacer: pass.pagePlacer)
+                of: pass.previous, node: pass.node, into: &pass.patch, pagePlacer: pass.pagePlacer)
             describesPageRoot = false
         }
         return finish(pass, children: children)
@@ -382,8 +380,7 @@ extension Differ {
         let reshaped = rendered.map { $0.type != pass.node.type || !Self.sameKinds($0.views, pass.views) } ?? false
         var holder = HostPatch(id: pass.id, type: pass.node.type)
         describesPageRoot = true
-        let children = reconcileChildren(
-            of: reshaped ? nil : rendered, node: pass.node, into: &holder, sizesArrive: pass.node.childSizesArrive)
+        let children = reconcileChildren(of: reshaped ? nil : rendered, node: pass.node, into: &holder)
         describesPageRoot = false
 
         if let root = children.first {

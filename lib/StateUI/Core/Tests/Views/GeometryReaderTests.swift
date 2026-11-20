@@ -34,7 +34,7 @@ final class GeometryReaderTests: XCTestCase {
             .onFrameChanged(in: space) { heard.frames.append($0) }
             .node)
 
-        renders.fire(patch.events?["frameChanged"] ?? -1, with: payload)
+        renders.fire(patch.events?[.layoutFrameChanged] ?? -1, with: payload)
         return heard.frames.last
     }
 
@@ -59,7 +59,7 @@ final class GeometryReaderTests: XCTestCase {
                 .onFrameChanged { heard.frames.append($0) }
                 .node)
 
-        renders.fire(patch.events?["frameChanged"] ?? -1, with: payload)
+        renders.fire(patch.events?[.layoutFrameChanged] ?? -1, with: payload)
 
         XCTAssertEqual(heard.frames.last, Rect(10, 20, 300, 400))
     }
@@ -76,7 +76,7 @@ final class GeometryReaderTests: XCTestCase {
                 .onFrameChanged(in: .global) { heard.frames.append($0) }
                 .node)
 
-        renders.fire(patch.events?["frameChanged"] ?? -1, with: payload)
+        renders.fire(patch.events?[.layoutFrameChanged] ?? -1, with: payload)
 
         XCTAssertEqual(heard.frames, [Rect(10, 20, 300, 400), Rect(110, 220, 300, 400)])
     }
@@ -95,7 +95,7 @@ final class GeometryReaderTests: XCTestCase {
                 .onFrameChanged(in: .global) { windows.frames.append($0) }
                 .node)
 
-        let id = patch.events?["frameChanged"] ?? -1
+        let id = patch.events?[.layoutFrameChanged] ?? -1
 
         renders.fire(id, with: [.numbers([10, 20, 300, 400, 110, 220, 110, 176])])
 
@@ -105,6 +105,41 @@ final class GeometryReaderTests: XCTestCase {
         XCTAssertEqual(parents.frames, [Rect(10, 20, 300, 400)],
             "the parent-space handler heard a scroll that never changed its answer")
         XCTAssertEqual(windows.frames, [Rect(110, 220, 300, 400), Rect(110, 470, 300, 400)])
+    }
+
+    // MARK: - The stage
+
+    /// EACH STAGE IS AN EVENT OF ITS OWN: a handler at the layout stage hears where the layout puts the view and
+    /// never where it is drawn, and a handler at the presentation stage the other way round.
+    func testEachStageHearsItsOwnEvent() {
+        let renders = Renders()
+        let placed = Heard()
+        let drawn = Heard()
+
+        let patch = renders.render(
+            VStack {}
+                .onFrameChanged { placed.frames.append($0) }
+                .onFrameChanged(stage: .presentation) { drawn.frames.append($0) }
+                .node)
+
+        renders.fire(patch.events?[.layoutFrameChanged] ?? -1, with: payload)
+        XCTAssertEqual(placed.frames, [Rect(10, 20, 300, 400)])
+        XCTAssertTrue(drawn.frames.isEmpty, "the layout's frame reached the presentation's handler")
+
+        renders.fire(patch.events?[.presentationFrameChanged] ?? -1, with: [.numbers([14, 20, 300, 400, 114, 220, 114, 176])])
+        XCTAssertEqual(drawn.frames, [Rect(14, 20, 300, 400)])
+        XCTAssertEqual(placed.frames.count, 1, "a step of the way is no frame of the layout's")
+    }
+
+    /// A STAGE NOBODY READS IS NOT ASKED OF THE HOST: the view names the event of the stage it reads, alone.
+    func testAStageNotReadIsNotAsked() {
+        let drawn = Renders().render(VStack {}.onFrameChanged(stage: .presentation) { _ in }.node)
+        XCTAssertNotNil(drawn.events?[.presentationFrameChanged])
+        XCTAssertNil(drawn.events?[.layoutFrameChanged])
+
+        let placed = Renders().render(VStack {}.onFrameChanged { _ in }.node)
+        XCTAssertNotNil(placed.events?[.layoutFrameChanged], "the layout's stage unless said")
+        XCTAssertNil(placed.events?[.presentationFrameChanged])
     }
 
     /// The gesture payloads' rule, kept here too: a report this side cannot
@@ -120,7 +155,7 @@ final class GeometryReaderTests: XCTestCase {
                 .onFrameChanged { heard.frames.append($0) }
                 .node)
 
-        let id = patch.events?["frameChanged"] ?? -1
+        let id = patch.events?[.layoutFrameChanged] ?? -1
 
         renders.fire(id, with: [])
         renders.fire(id, with: [.numbers([10, 20, 300, 400])])
@@ -143,7 +178,7 @@ final class GeometryReaderTests: XCTestCase {
                 .node)
 
         Renderer.shared.clearInvalidation()
-        renders.fire(patch.events?["frameChanged"] ?? -1, with: payload)
+        renders.fire(patch.events?[.layoutFrameChanged] ?? -1, with: payload)
 
         XCTAssertEqual(width.wrappedValue, 300)
         XCTAssertFalse(Renderer.shared.pendingChanges.isEmpty,
@@ -178,7 +213,7 @@ final class GeometryReaderTests: XCTestCase {
         XCTAssertEqual(grid?.children.count, 0, "content built before its frame was known")
 
         Renderer.shared.clearInvalidation()
-        renders.fire(grid?.events?["frameChanged"] ?? -1, with: payload)
+        renders.fire(grid?.events?[.layoutFrameChanged] ?? -1, with: payload)
 
         // The report wrote the reader's @State; the next render builds the
         // content from the measured frame.
@@ -213,7 +248,7 @@ final class GeometryReaderTests: XCTestCase {
         let grid = first.children.first?.children.first
 
         Renderer.shared.clearInvalidation()
-        renders.fire(grid?.events?["frameChanged"] ?? -1, with: payload)
+        renders.fire(grid?.events?[.layoutFrameChanged] ?? -1, with: payload)
 
         // The tracked path, exactly what the host takes after the handler's
         // write: only the views whose recorded reads moved are built again.
@@ -248,7 +283,7 @@ final class GeometryReaderTests: XCTestCase {
         }
 
         let grid = renders.render(tree()).children.first?.children.first
-        let id = grid?.events?["frameChanged"] ?? -1
+        let id = grid?.events?[.layoutFrameChanged] ?? -1
 
         Renderer.shared.clearInvalidation()
         renders.fire(id, with: payload)

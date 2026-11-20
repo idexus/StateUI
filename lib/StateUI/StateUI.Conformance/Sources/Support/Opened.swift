@@ -7,9 +7,9 @@
 /// pan carries, an aim - put on whatever kind the specimen is.
 @MainActor
 enum Opened {
-    /// `view`, its frame landing in `room`.
-    static func framed<V: View>(_ view: V, into room: Binding<Rect>) -> some View {
-        view.frame(into: room)
+    /// `view`, its frame at `stage` landing in `room`.
+    static func framed<V: View>(_ view: V, into room: Binding<Rect>, stage: GeometryStage = .layout) -> some View {
+        view.frame(into: room, stage: stage)
     }
 
     /// `view`, a pan across it carrying `x`.

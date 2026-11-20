@@ -141,7 +141,7 @@ final class AndroidScrollViewTests: XCTestCase {
                     Text("read")
                         .height(20)
                         .frame(into: room.projectedValue)
-                        .onEvent(ViewContract.frameChanged) { numbers in reports.values.append(numbers) }
+                        .onEvent(ViewContract.layoutFrameChanged) { numbers in reports.values.append(numbers) }
                 }
                 .padding(10)
             }

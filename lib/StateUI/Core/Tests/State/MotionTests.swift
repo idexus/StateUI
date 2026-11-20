@@ -437,88 +437,48 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(patch.lanes, .place, "the corner travels; the sides arrive")
     }
 
-    // ---- A size somebody measures arrives ------------------------------------
+    // ---- A frame read changes nothing ----------------------------------------
 
-    /// A layout whose frame is watched reports how big its room is, and a size
-    /// worked out from that report is the LAYOUT's answer: traveling through
-    /// it would lay the page out at sizes nobody chose, growing from nothing.
-    /// So a child's size arrives there, where the same change travels in a
-    /// room nobody measures.
-    func testASizeInsideAMeasuredLayoutArrives() {
-        let renders = Renders()
+    /// WHAT READS A FRAME DECIDES NOTHING ABOUT MOTION: a size in a layout whose frame is read - by a handler or a
+    /// feed, at either stage, on the layout, on the view itself or on a view beside it - travels as the same
+    /// change does where nothing is read.
+    func testAFrameReadChangesNoMotion() {
+        let fed = State(wrappedValue: Rect(0, 0, 0, 0))
+        let rooms: [(String, (Double) -> Node)] = [
+            ("nothing read", { width in
+                VStack { ZStack { Text("x") }.width(width).id("held") }.id("room").node
+            }),
+            ("the layout's frame heard", { width in
+                VStack { ZStack { Text("x") }.width(width).id("held") }.onFrameChanged { _ in }.id("room").node
+            }),
+            ("the layout's frame fed", { width in
+                VStack { ZStack { Text("x") }.width(width).id("held") }.frame(into: fed.projectedValue).id("room").node
+            }),
+            ("the view's own frame heard", { width in
+                VStack { ZStack { Text("x") }.width(width).onFrameChanged { _ in }.id("held") }.id("room").node
+            }),
+            ("the view's own drawn frame heard", { width in
+                VStack { ZStack { Text("x") }.width(width).onFrameChanged(stage: .presentation) { _ in }.id("held") }
+                    .id("room").node
+            }),
+            ("a view beside it heard", { width in
+                VStack {
+                    Text("measured").onFrameChanged { _ in }
+                    ZStack { Text("x") }.width(width).id("held")
+                }
+                .id("room").node
+            }),
+        ]
 
-        func room(_ width: Double) -> Node {
-            VStack { ZStack { Text("x") }.width(width).id("held") }
-                .onFrameChanged { _ in }
-                .id("room")
-                .node
+        for (name, room) in rooms {
+            let renders = Renders()
+            let first = renders.render(room(100))
+            let patch = renders.render(room(300))
+
+            XCTAssertEqual(patch.child("held")?.props["VisualElement.width"], .number(300), name)
+            XCTAssertEqual(patch.child("held")?.transitions["VisualElement.width"]?.motion, .standard, name)
+            XCTAssertEqual(first.lanes, .all, "\(name): every part of a child's place travels")
         }
-
-        renders.render(room(0))
-        let patch = renders.render(room(300))
-
-        XCTAssertEqual(patch.child("held")?.props["VisualElement.width"], .number(300))
-        XCTAssertNil(patch.child("held")?.transitions["VisualElement.width"], "the measured room's child takes its size at once")
-    }
-
-    func testASizeInARoomNobodyMeasuresStillTravels() {
-        let renders = Renders()
-
-        func room(_ width: Double) -> Node {
-            VStack { ZStack { Text("x") }.width(width).id("held") }.id("room").node
-        }
-
-        renders.render(room(0))
-        let patch = renders.render(room(300))
-
-        XCTAssertEqual(patch.child("held")?.transitions["VisualElement.width"]?.motion, .standard)
-    }
-
-    /// A view that reports its own frame takes a new size at once: what it
-    /// reports is what it holds, arranged in that size.
-    func testAViewWhoseOwnFrameIsWatchedTakesItsSizeAtOnce() {
-        let renders = Renders()
-
-        func panel(_ height: Double) -> Node {
-            ZStack { Text("x") }.height(height).onFrameChanged { _ in }.id("p").node
-        }
-
-        renders.render(panel(40))
-        let patch = renders.render(panel(80))
-
-        XCTAssertEqual(patch.props["VisualElement.height"], .number(80))
-        XCTAssertNil(patch.transitions["VisualElement.height"])
-    }
-
-    /// Where ANY child of a layout is measured, none of that layout's children
-    /// is carried through a size: what the measured one reports is what the
-    /// views beside it leave it.
-    func testAMeasuredChildMakesItsSiblingsSizesArrive() {
-        let renders = Renders()
-
-        func room(_ width: Double) -> Node {
-            VStack {
-                Text("measured").onFrameChanged { _ in }
-                ZStack { Text("x") }.width(width).id("beside")
-            }
-            .id("room")
-            .node
-        }
-
-        renders.render(room(100))
-        let patch = renders.render(room(200))
-
-        XCTAssertNil(patch.child("beside")?.transitions["VisualElement.width"])
-    }
-
-    /// And such a layout says so for the places it works out: its children's
-    /// corners travel, their sides arrive.
-    func testAMeasuredLayoutsChildrenTravelOnlyByTheirPlace() {
-        let renders = Renders()
-
-        let patch = renders.render(VStack { Text("x") }.onFrameChanged { _ in }.id("s").node)
-
-        XCTAssertEqual(patch.lanes, .place)
     }
 
     /// A gradient is the same picture in different colors, so it crosses -

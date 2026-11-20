@@ -231,6 +231,14 @@ padding, a spacing or a track on its way moves a child without resizing it,
 which no observer of the page tells - so every frame that wrote something
 counts as laid out.
 
+A view whose place travels says where the place stands now
+(`WebElement.placeStanding`), not its slot: the browser lays it out where it
+is going all the while and the host draws it moved
+([places that travel](#places-that-travel)), so the slot alone would say a
+place already come to beside a corner still on its way. The host layer makes
+the two rectangles of a place and a corner read at one moment
+([two rectangles](../../host/runtime.md#two-rectangles)).
+
 A view observes its size once (`WebDOMView.followSize`): its box drawn again
 where a gradient is in it, its drawing - a shape's, a canvas's - and its
 frame read all follow that one observer, for the page keeps one an element,

@@ -327,7 +327,7 @@ enum Holding {
             Write(LayoutContract.clipsContent, clips), Write(LayoutContract.letsInputThrough, through),
             Write(LayoutContract.ignoresSafeArea, ignores),
         ]
-        if let heard { worn.append(Hear(ViewContract.frameChanged, heard)) }
+        if let heard { worn.append(Hear(ViewContract.layoutFrameChanged, heard)) }
         if let width {
             worn += [Write(VisualElementContract.width, width), Write(ViewContract.horizontalAlignment, Alignment.start)]
         }

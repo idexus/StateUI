@@ -1,4 +1,4 @@
-# revision 31.1
+# revision 32.1
 Button.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Button.accessibilityActions: – ARIA offers no action of an application's own words.
 Button.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
@@ -8,11 +8,11 @@ Button.accessibilityLabel: ✅
 Button.accessibilityPresence: ✅
 Button.accessibilityRole: ✅
 Button.accessibilityValue: ✅
-Button.frame: ✅
 Button.height: ✅
 Button.ignoresInput: ✅
 Button.isVisible: ✅
 Button.layoutDirection: ✅
+Button.layoutFrame: ✅
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
 Button.minimumHeight: ✅
@@ -20,6 +20,7 @@ Button.minimumWidth: ✅
 Button.opacity: ✅
 Button.pivotX: ✓ read pivotX of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.pivotY: ✓ read pivotY of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Button.presentationFrame: ✅
 Button.rotation: ✓ read rotation of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.rotationX: ✓ read rotationX of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.rotationY: ✓ read rotationY of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -40,11 +41,11 @@ Canvas.accessibilityLabel: ✅
 Canvas.accessibilityPresence: ✅
 Canvas.accessibilityRole: ✅
 Canvas.accessibilityValue: ✅
-Canvas.frame: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: ✅
 Canvas.isVisible: ✅
 Canvas.layoutDirection: ✅
+Canvas.layoutFrame: ✅
 Canvas.maximumHeight: ✅
 Canvas.maximumWidth: ✅
 Canvas.minimumHeight: ✅
@@ -52,6 +53,7 @@ Canvas.minimumWidth: ✅
 Canvas.opacity: ✅
 Canvas.pivotX: ✓ read pivotX of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.pivotY: ✓ read pivotY of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Canvas.presentationFrame: ✅
 Canvas.rotation: ✓ read rotation of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.rotationX: ✓ read rotationX of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -72,11 +74,11 @@ Capsule.accessibilityLabel: ✅
 Capsule.accessibilityPresence: ✅
 Capsule.accessibilityRole: ✅
 Capsule.accessibilityValue: ✅
-Capsule.frame: ✅
 Capsule.height: ✅
 Capsule.ignoresInput: ✅
 Capsule.isVisible: ✅
 Capsule.layoutDirection: ✅
+Capsule.layoutFrame: ✅
 Capsule.maximumHeight: ✅
 Capsule.maximumWidth: ✅
 Capsule.minimumHeight: ✅
@@ -84,6 +86,7 @@ Capsule.minimumWidth: ✅
 Capsule.opacity: ✅
 Capsule.pivotX: ✓ read pivotX of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Capsule.pivotY: ✓ read pivotY of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Capsule.presentationFrame: ✅
 Capsule.rotation: ✓ read rotation of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Capsule.rotationX: ✓ read rotationX of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Capsule.rotationY: ✓ read rotationY of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -104,11 +107,11 @@ CheckBox.accessibilityLabel: ✅
 CheckBox.accessibilityPresence: ✅
 CheckBox.accessibilityRole: ✅
 CheckBox.accessibilityValue: ✅
-CheckBox.frame: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: ✅
 CheckBox.isVisible: ✅
 CheckBox.layoutDirection: ✅
+CheckBox.layoutFrame: ✅
 CheckBox.maximumHeight: ✅
 CheckBox.maximumWidth: ✅
 CheckBox.minimumHeight: ✅
@@ -116,6 +119,7 @@ CheckBox.minimumWidth: ✅
 CheckBox.opacity: ✅
 CheckBox.pivotX: ✓ read pivotX of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.pivotY: ✓ read pivotY of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+CheckBox.presentationFrame: ✅
 CheckBox.rotation: ✓ read rotation of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -136,11 +140,11 @@ ColorPicker.accessibilityLabel: ✅
 ColorPicker.accessibilityPresence: ✅
 ColorPicker.accessibilityRole: ✅
 ColorPicker.accessibilityValue: ✅
-ColorPicker.frame: ✅
 ColorPicker.height: ✅
 ColorPicker.ignoresInput: ✅
 ColorPicker.isVisible: ✅
 ColorPicker.layoutDirection: ✅
+ColorPicker.layoutFrame: ✅
 ColorPicker.maximumHeight: ✅
 ColorPicker.maximumWidth: ✅
 ColorPicker.minimumHeight: ✅
@@ -148,6 +152,7 @@ ColorPicker.minimumWidth: ✅
 ColorPicker.opacity: ✅
 ColorPicker.pivotX: ✓ read pivotX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ColorPicker.pivotY: ✓ read pivotY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.presentationFrame: ✅
 ColorPicker.rotation: ✓ read rotation of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ColorPicker.rotationX: ✓ read rotationX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ColorPicker.rotationY: ✓ read rotationY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -168,11 +173,11 @@ DatePicker.accessibilityLabel: ✅
 DatePicker.accessibilityPresence: ✅
 DatePicker.accessibilityRole: ✅
 DatePicker.accessibilityValue: ✅
-DatePicker.frame: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: ✅
 DatePicker.isVisible: ✅
 DatePicker.layoutDirection: – The browser lays a day's and a time's field out left to right in every direction, over any the page gives it.
+DatePicker.layoutFrame: ✅
 DatePicker.maximumHeight: ✅
 DatePicker.maximumWidth: ✅
 DatePicker.minimumHeight: ✅
@@ -180,6 +185,7 @@ DatePicker.minimumWidth: ✅
 DatePicker.opacity: ✅
 DatePicker.pivotX: ✓ read pivotX of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.pivotY: ✓ read pivotY of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+DatePicker.presentationFrame: ✅
 DatePicker.rotation: ✓ read rotation of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -200,11 +206,11 @@ Ellipse.accessibilityLabel: ✅
 Ellipse.accessibilityPresence: ✅
 Ellipse.accessibilityRole: ✅
 Ellipse.accessibilityValue: ✅
-Ellipse.frame: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: ✅
 Ellipse.isVisible: ✅
 Ellipse.layoutDirection: ✅
+Ellipse.layoutFrame: ✅
 Ellipse.maximumHeight: ✅
 Ellipse.maximumWidth: ✅
 Ellipse.minimumHeight: ✅
@@ -212,6 +218,7 @@ Ellipse.minimumWidth: ✅
 Ellipse.opacity: ✅
 Ellipse.pivotX: ✓ read pivotX of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.pivotY: ✓ read pivotY of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Ellipse.presentationFrame: ✅
 Ellipse.rotation: ✓ read rotation of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.rotationX: ✓ read rotationX of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -232,11 +239,11 @@ Fill.accessibilityLabel: ✅
 Fill.accessibilityPresence: ✅
 Fill.accessibilityRole: ✅
 Fill.accessibilityValue: ✅
-Fill.frame: ✅
 Fill.height: ✅
 Fill.ignoresInput: ✅
 Fill.isVisible: ✅
 Fill.layoutDirection: ✅
+Fill.layoutFrame: ✅
 Fill.maximumHeight: ✅
 Fill.maximumWidth: ✅
 Fill.minimumHeight: ✅
@@ -244,6 +251,7 @@ Fill.minimumWidth: ✅
 Fill.opacity: ✅
 Fill.pivotX: ✓ read pivotX of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Fill.pivotY: ✓ read pivotY of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Fill.presentationFrame: ✅
 Fill.rotation: ✓ read rotation of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Fill.rotationX: ✓ read rotationX of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Fill.rotationY: ✓ read rotationY of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -264,11 +272,11 @@ Grid.accessibilityLabel: ✅
 Grid.accessibilityPresence: ✅
 Grid.accessibilityRole: ✅
 Grid.accessibilityValue: ✅
-Grid.frame: ✅
 Grid.height: ✅
 Grid.ignoresInput: ✅
 Grid.isVisible: ✅
 Grid.layoutDirection: ✅
+Grid.layoutFrame: ✅
 Grid.maximumHeight: ✅
 Grid.maximumWidth: ✅
 Grid.minimumHeight: ✅
@@ -276,6 +284,7 @@ Grid.minimumWidth: ✅
 Grid.opacity: ✅
 Grid.pivotX: ✓ read pivotX of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.pivotY: ✓ read pivotY of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Grid.presentationFrame: ✅
 Grid.rotation: ✓ read rotation of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.rotationX: ✓ read rotationX of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.rotationY: ✓ read rotationY of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -296,11 +305,11 @@ HStack.accessibilityLabel: ✅
 HStack.accessibilityPresence: ✅
 HStack.accessibilityRole: ✅
 HStack.accessibilityValue: ✅
-HStack.frame: ✅
 HStack.height: ✅
 HStack.ignoresInput: ✅
 HStack.isVisible: ✅
 HStack.layoutDirection: ✅
+HStack.layoutFrame: ✅
 HStack.maximumHeight: ✅
 HStack.maximumWidth: ✅
 HStack.minimumHeight: ✅
@@ -308,6 +317,7 @@ HStack.minimumWidth: ✅
 HStack.opacity: ✅
 HStack.pivotX: ✓ read pivotX of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.pivotY: ✓ read pivotY of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+HStack.presentationFrame: ✅
 HStack.rotation: ✓ read rotation of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.rotationX: ✓ read rotationX of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.rotationY: ✓ read rotationY of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -328,11 +338,11 @@ Image.accessibilityLabel: ✅
 Image.accessibilityPresence: ✅
 Image.accessibilityRole: ✅
 Image.accessibilityValue: ✅
-Image.frame: ✅
 Image.height: ✅
 Image.ignoresInput: ✅
 Image.isVisible: ✅
 Image.layoutDirection: ✅
+Image.layoutFrame: ✅
 Image.maximumHeight: ✅
 Image.maximumWidth: ✅
 Image.minimumHeight: ✅
@@ -340,6 +350,7 @@ Image.minimumWidth: ✅
 Image.opacity: ✅
 Image.pivotX: ✓ read pivotX of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.pivotY: ✓ read pivotY of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Image.presentationFrame: ✅
 Image.rotation: ✓ read rotation of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.rotationX: ✓ read rotationX of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.rotationY: ✓ read rotationY of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -360,11 +371,11 @@ ItemsView.accessibilityLabel: ✅
 ItemsView.accessibilityPresence: ✅
 ItemsView.accessibilityRole: ✅
 ItemsView.accessibilityValue: ✅
-ItemsView.frame: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: ✅
 ItemsView.isVisible: ✅
 ItemsView.layoutDirection: ✅
+ItemsView.layoutFrame: ✅
 ItemsView.maximumHeight: ✅
 ItemsView.maximumWidth: ✅
 ItemsView.minimumHeight: ✅
@@ -372,6 +383,7 @@ ItemsView.minimumWidth: ✅
 ItemsView.opacity: ✅
 ItemsView.pivotX: ✓ read pivotX of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.pivotY: ✓ read pivotY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ItemsView.presentationFrame: ✅
 ItemsView.rotation: ✓ read rotation of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -392,11 +404,11 @@ Line.accessibilityLabel: ✅
 Line.accessibilityPresence: ✅
 Line.accessibilityRole: ✅
 Line.accessibilityValue: ✅
-Line.frame: ✅
 Line.height: ✅
 Line.ignoresInput: ✅
 Line.isVisible: ✅
 Line.layoutDirection: ✅
+Line.layoutFrame: ✅
 Line.maximumHeight: ✅
 Line.maximumWidth: ✅
 Line.minimumHeight: ✅
@@ -404,6 +416,7 @@ Line.minimumWidth: ✅
 Line.opacity: ✅
 Line.pivotX: ✓ read pivotX of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.pivotY: ✓ read pivotY of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Line.presentationFrame: ✅
 Line.rotation: ✓ read rotation of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.rotationX: ✓ read rotationX of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.rotationY: ✓ read rotationY of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -424,11 +437,11 @@ Link.accessibilityLabel: ✅
 Link.accessibilityPresence: ✅
 Link.accessibilityRole: ✅
 Link.accessibilityValue: ✅
-Link.frame: ✅
 Link.height: ✅
 Link.ignoresInput: ✅
 Link.isVisible: ✅
 Link.layoutDirection: ✅
+Link.layoutFrame: ✅
 Link.maximumHeight: ✅
 Link.maximumWidth: ✅
 Link.minimumHeight: ✅
@@ -436,6 +449,7 @@ Link.minimumWidth: ✅
 Link.opacity: ✅
 Link.pivotX: ✓ read pivotX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Link.pivotY: ✓ read pivotY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.presentationFrame: ✅
 Link.rotation: ✓ read rotation of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Link.rotationX: ✓ read rotationX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Link.rotationY: ✓ read rotationY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -456,11 +470,11 @@ Map.accessibilityLabel: 🧩
 Map.accessibilityPresence: 🧩
 Map.accessibilityRole: 🧩
 Map.accessibilityValue: 🧩
-Map.frame: 🧩
 Map.height: 🧩
 Map.ignoresInput: 🧩
 Map.isVisible: 🧩
 Map.layoutDirection: 🧩
+Map.layoutFrame: 🧩
 Map.maximumHeight: 🧩
 Map.maximumWidth: 🧩
 Map.minimumHeight: 🧩
@@ -468,6 +482,7 @@ Map.minimumWidth: 🧩
 Map.opacity: 🧩
 Map.pivotX: 🧩
 Map.pivotY: 🧩
+Map.presentationFrame: 🧩
 Map.rotation: 🧩
 Map.rotationX: 🧩
 Map.rotationY: 🧩
@@ -488,11 +503,11 @@ MotionLayout.accessibilityLabel: ✅
 MotionLayout.accessibilityPresence: ✅
 MotionLayout.accessibilityRole: ✅
 MotionLayout.accessibilityValue: ✅
-MotionLayout.frame: ✅
 MotionLayout.height: ✅
 MotionLayout.ignoresInput: ✅
 MotionLayout.isVisible: ✅
 MotionLayout.layoutDirection: ✅
+MotionLayout.layoutFrame: ✅
 MotionLayout.maximumHeight: ✅
 MotionLayout.maximumWidth: ✅
 MotionLayout.minimumHeight: ✅
@@ -500,6 +515,7 @@ MotionLayout.minimumWidth: ✅
 MotionLayout.opacity: ✅
 MotionLayout.pivotX: ✓ read pivotX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 MotionLayout.pivotY: ✓ read pivotY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.presentationFrame: ✅
 MotionLayout.rotation: ✓ read rotation of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 MotionLayout.rotationX: ✓ read rotationX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -520,11 +536,11 @@ Path.accessibilityLabel: ✅
 Path.accessibilityPresence: ✅
 Path.accessibilityRole: ✅
 Path.accessibilityValue: ✅
-Path.frame: ✅
 Path.height: ✅
 Path.ignoresInput: ✅
 Path.isVisible: ✅
 Path.layoutDirection: ✅
+Path.layoutFrame: ✅
 Path.maximumHeight: ✅
 Path.maximumWidth: ✅
 Path.minimumHeight: ✅
@@ -532,6 +548,7 @@ Path.minimumWidth: ✅
 Path.opacity: ✅
 Path.pivotX: ✓ read pivotX of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.pivotY: ✓ read pivotY of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Path.presentationFrame: ✅
 Path.rotation: ✓ read rotation of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.rotationX: ✓ read rotationX of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.rotationY: ✓ read rotationY of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -552,11 +569,11 @@ Picker.accessibilityLabel: ✅
 Picker.accessibilityPresence: ✅
 Picker.accessibilityRole: ✅
 Picker.accessibilityValue: ✅
-Picker.frame: ✅
 Picker.height: ✅
 Picker.ignoresInput: ✅
 Picker.isVisible: ✅
 Picker.layoutDirection: ✅
+Picker.layoutFrame: ✅
 Picker.maximumHeight: ✅
 Picker.maximumWidth: ✅
 Picker.minimumHeight: ✅
@@ -564,6 +581,7 @@ Picker.minimumWidth: ✅
 Picker.opacity: ✅
 Picker.pivotX: ✓ read pivotX of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.pivotY: ✓ read pivotY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Picker.presentationFrame: ✅
 Picker.rotation: ✓ read rotation of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.rotationX: ✓ read rotationX of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.rotationY: ✓ read rotationY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -584,11 +602,11 @@ Polygon.accessibilityLabel: ✅
 Polygon.accessibilityPresence: ✅
 Polygon.accessibilityRole: ✅
 Polygon.accessibilityValue: ✅
-Polygon.frame: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: ✅
 Polygon.isVisible: ✅
 Polygon.layoutDirection: ✅
+Polygon.layoutFrame: ✅
 Polygon.maximumHeight: ✅
 Polygon.maximumWidth: ✅
 Polygon.minimumHeight: ✅
@@ -596,6 +614,7 @@ Polygon.minimumWidth: ✅
 Polygon.opacity: ✅
 Polygon.pivotX: ✓ read pivotX of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.pivotY: ✓ read pivotY of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Polygon.presentationFrame: ✅
 Polygon.rotation: ✓ read rotation of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.rotationX: ✓ read rotationX of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -616,11 +635,11 @@ Polyline.accessibilityLabel: ✅
 Polyline.accessibilityPresence: ✅
 Polyline.accessibilityRole: ✅
 Polyline.accessibilityValue: ✅
-Polyline.frame: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: ✅
 Polyline.isVisible: ✅
 Polyline.layoutDirection: ✅
+Polyline.layoutFrame: ✅
 Polyline.maximumHeight: ✅
 Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅
@@ -628,6 +647,7 @@ Polyline.minimumWidth: ✅
 Polyline.opacity: ✅
 Polyline.pivotX: ✓ read pivotX of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.pivotY: ✓ read pivotY of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Polyline.presentationFrame: ✅
 Polyline.rotation: ✓ read rotation of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.rotationX: ✓ read rotationX of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.rotationY: ✓ read rotationY of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -648,11 +668,11 @@ ProgressBar.accessibilityLabel: ✅
 ProgressBar.accessibilityPresence: ✅
 ProgressBar.accessibilityRole: ✅
 ProgressBar.accessibilityValue: ✅
-ProgressBar.frame: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: ✅
 ProgressBar.isVisible: ✅
 ProgressBar.layoutDirection: ✅
+ProgressBar.layoutFrame: ✅
 ProgressBar.maximumHeight: ✅
 ProgressBar.maximumWidth: ✅
 ProgressBar.minimumHeight: ✅
@@ -660,6 +680,7 @@ ProgressBar.minimumWidth: ✅
 ProgressBar.opacity: ✅
 ProgressBar.pivotX: ✓ read pivotX of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.pivotY: ✓ read pivotY of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ProgressBar.presentationFrame: ✅
 ProgressBar.rotation: ✓ read rotation of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -680,11 +701,11 @@ Rectangle.accessibilityLabel: ✅
 Rectangle.accessibilityPresence: ✅
 Rectangle.accessibilityRole: ✅
 Rectangle.accessibilityValue: ✅
-Rectangle.frame: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: ✅
 Rectangle.isVisible: ✅
 Rectangle.layoutDirection: ✅
+Rectangle.layoutFrame: ✅
 Rectangle.maximumHeight: ✅
 Rectangle.maximumWidth: ✅
 Rectangle.minimumHeight: ✅
@@ -692,6 +713,7 @@ Rectangle.minimumWidth: ✅
 Rectangle.opacity: ✅
 Rectangle.pivotX: ✓ read pivotX of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.pivotY: ✓ read pivotY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Rectangle.presentationFrame: ✅
 Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -712,11 +734,11 @@ ScrollView.accessibilityLabel: ✅
 ScrollView.accessibilityPresence: ✅
 ScrollView.accessibilityRole: ✅
 ScrollView.accessibilityValue: ✅
-ScrollView.frame: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: ✅
 ScrollView.isVisible: ✅
 ScrollView.layoutDirection: ✅
+ScrollView.layoutFrame: ✅
 ScrollView.maximumHeight: ✅
 ScrollView.maximumWidth: ✅
 ScrollView.minimumHeight: ✅
@@ -724,6 +746,7 @@ ScrollView.minimumWidth: ✅
 ScrollView.opacity: ✅
 ScrollView.pivotX: ✓ read pivotX of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.pivotY: ✓ read pivotY of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ScrollView.presentationFrame: ✅
 ScrollView.rotation: ✓ read rotation of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -744,11 +767,11 @@ SearchField.accessibilityLabel: ✅
 SearchField.accessibilityPresence: ✅
 SearchField.accessibilityRole: ✅
 SearchField.accessibilityValue: ✅
-SearchField.frame: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: ✅
 SearchField.isVisible: ✅
 SearchField.layoutDirection: ✅
+SearchField.layoutFrame: ✅
 SearchField.maximumHeight: ✅
 SearchField.maximumWidth: ✅
 SearchField.minimumHeight: ✅
@@ -756,6 +779,7 @@ SearchField.minimumWidth: ✅
 SearchField.opacity: ✅
 SearchField.pivotX: ✓ read pivotX of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+SearchField.presentationFrame: ✅
 SearchField.rotation: ✓ read rotation of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.rotationX: ✓ read rotationX of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.rotationY: ✓ read rotationY of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -776,11 +800,11 @@ Separator.accessibilityLabel: ✅
 Separator.accessibilityPresence: ✅
 Separator.accessibilityRole: ✅
 Separator.accessibilityValue: ✅
-Separator.frame: ✅
 Separator.height: ✅
 Separator.ignoresInput: ✅
 Separator.isVisible: ✅
 Separator.layoutDirection: ✅
+Separator.layoutFrame: ✅
 Separator.maximumHeight: ✅
 Separator.maximumWidth: ✅
 Separator.minimumHeight: ✅
@@ -788,6 +812,7 @@ Separator.minimumWidth: ✅
 Separator.opacity: ✅
 Separator.pivotX: ✓ read pivotX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Separator.pivotY: ✓ read pivotY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.presentationFrame: ✅
 Separator.rotation: ✓ read rotation of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Separator.rotationX: ✓ read rotationX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Separator.rotationY: ✓ read rotationY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -808,11 +833,11 @@ Slider.accessibilityLabel: ✅
 Slider.accessibilityPresence: ✅
 Slider.accessibilityRole: ✅
 Slider.accessibilityValue: ✅
-Slider.frame: ✅
 Slider.height: ✅
 Slider.ignoresInput: ✅
 Slider.isVisible: ✅
 Slider.layoutDirection: ✅
+Slider.layoutFrame: ✅
 Slider.maximumHeight: ✅
 Slider.maximumWidth: ✅
 Slider.minimumHeight: ✅
@@ -820,6 +845,7 @@ Slider.minimumWidth: ✅
 Slider.opacity: ✅
 Slider.pivotX: ✓ read pivotX of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.pivotY: ✓ read pivotY of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Slider.presentationFrame: ✅
 Slider.rotation: ✓ read rotation of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.rotationX: ✓ read rotationX of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.rotationY: ✓ read rotationY of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -840,11 +866,11 @@ Space.accessibilityLabel: ✅
 Space.accessibilityPresence: ✅
 Space.accessibilityRole: ✅
 Space.accessibilityValue: ✅
-Space.frame: ✅
 Space.height: ✅
 Space.ignoresInput: ✅
 Space.isVisible: ✅
 Space.layoutDirection: ✅
+Space.layoutFrame: ✅
 Space.maximumHeight: ✅
 Space.maximumWidth: ✅
 Space.minimumHeight: ✅
@@ -852,6 +878,7 @@ Space.minimumWidth: ✅
 Space.opacity: ✅
 Space.pivotX: ✓ read pivotX of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Space.pivotY: ✓ read pivotY of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Space.presentationFrame: ✅
 Space.rotation: ✓ read rotation of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Space.rotationX: ✓ read rotationX of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Space.rotationY: ✓ read rotationY of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -872,11 +899,11 @@ Spinner.accessibilityLabel: ✅
 Spinner.accessibilityPresence: ✅
 Spinner.accessibilityRole: ✅
 Spinner.accessibilityValue: ✅
-Spinner.frame: ✅
 Spinner.height: ✅
 Spinner.ignoresInput: ✅
 Spinner.isVisible: ✅
 Spinner.layoutDirection: ✅
+Spinner.layoutFrame: ✅
 Spinner.maximumHeight: ✅
 Spinner.maximumWidth: ✅
 Spinner.minimumHeight: ✅
@@ -884,6 +911,7 @@ Spinner.minimumWidth: ✅
 Spinner.opacity: ✅
 Spinner.pivotX: ✓ read pivotX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Spinner.pivotY: ✓ read pivotY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.presentationFrame: ✅
 Spinner.rotation: ✓ read rotation of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Spinner.rotationX: ✓ read rotationX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Spinner.rotationY: ✓ read rotationY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -904,11 +932,11 @@ Stepper.accessibilityLabel: ✅
 Stepper.accessibilityPresence: ✅
 Stepper.accessibilityRole: ✅
 Stepper.accessibilityValue: ✅
-Stepper.frame: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: ✅
 Stepper.isVisible: ✅
 Stepper.layoutDirection: ✅
+Stepper.layoutFrame: ✅
 Stepper.maximumHeight: ✅
 Stepper.maximumWidth: ✅
 Stepper.minimumHeight: ✅
@@ -916,6 +944,7 @@ Stepper.minimumWidth: ✅
 Stepper.opacity: ✅
 Stepper.pivotX: ✓ read pivotX of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Stepper.presentationFrame: ✅
 Stepper.rotation: ✓ read rotation of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.rotationX: ✓ read rotationX of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -936,11 +965,11 @@ Switch.accessibilityLabel: ✅
 Switch.accessibilityPresence: ✅
 Switch.accessibilityRole: ✅
 Switch.accessibilityValue: ✅
-Switch.frame: ✅
 Switch.height: ✅
 Switch.ignoresInput: ✅
 Switch.isVisible: ✅
 Switch.layoutDirection: ✅
+Switch.layoutFrame: ✅
 Switch.maximumHeight: ✅
 Switch.maximumWidth: ✅
 Switch.minimumHeight: ✅
@@ -948,6 +977,7 @@ Switch.minimumWidth: ✅
 Switch.opacity: ✅
 Switch.pivotX: ✓ read pivotX of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.pivotY: ✓ read pivotY of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Switch.presentationFrame: ✅
 Switch.rotation: ✓ read rotation of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.rotationX: ✓ read rotationX of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.rotationY: ✓ read rotationY of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -968,11 +998,11 @@ Text.accessibilityLabel: ✅
 Text.accessibilityPresence: ✅
 Text.accessibilityRole: ✅
 Text.accessibilityValue: ✅
-Text.frame: ✅
 Text.height: ✅
 Text.ignoresInput: ✅
 Text.isVisible: ✅
 Text.layoutDirection: ✅
+Text.layoutFrame: ✅
 Text.maximumHeight: ✅
 Text.maximumWidth: ✅
 Text.minimumHeight: ✅
@@ -980,6 +1010,7 @@ Text.minimumWidth: ✅
 Text.opacity: ✅
 Text.pivotX: ✓ read pivotX of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.pivotY: ✓ read pivotY of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Text.presentationFrame: ✅
 Text.rotation: ✓ read rotation of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.rotationX: ✓ read rotationX of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.rotationY: ✓ read rotationY of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1000,11 +1031,11 @@ TextEditor.accessibilityLabel: ✅
 TextEditor.accessibilityPresence: ✅
 TextEditor.accessibilityRole: ✅
 TextEditor.accessibilityValue: ✅
-TextEditor.frame: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: ✅
 TextEditor.isVisible: ✅
 TextEditor.layoutDirection: ✅
+TextEditor.layoutFrame: ✅
 TextEditor.maximumHeight: ✅
 TextEditor.maximumWidth: ✅
 TextEditor.minimumHeight: ✅
@@ -1012,6 +1043,7 @@ TextEditor.minimumWidth: ✅
 TextEditor.opacity: ✅
 TextEditor.pivotX: ✓ read pivotX of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.pivotY: ✓ read pivotY of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+TextEditor.presentationFrame: ✅
 TextEditor.rotation: ✓ read rotation of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1032,11 +1064,11 @@ TextField.accessibilityLabel: ✅
 TextField.accessibilityPresence: ✅
 TextField.accessibilityRole: ✅
 TextField.accessibilityValue: ✅
-TextField.frame: ✅
 TextField.height: ✅
 TextField.ignoresInput: ✅
 TextField.isVisible: ✅
 TextField.layoutDirection: ✅
+TextField.layoutFrame: ✅
 TextField.maximumHeight: ✅
 TextField.maximumWidth: ✅
 TextField.minimumHeight: ✅
@@ -1044,6 +1076,7 @@ TextField.minimumWidth: ✅
 TextField.opacity: ✅
 TextField.pivotX: ✓ read pivotX of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.pivotY: ✓ read pivotY of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+TextField.presentationFrame: ✅
 TextField.rotation: ✓ read rotation of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.rotationX: ✓ read rotationX of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.rotationY: ✓ read rotationY of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1064,11 +1097,11 @@ TimePicker.accessibilityLabel: ✅
 TimePicker.accessibilityPresence: ✅
 TimePicker.accessibilityRole: ✅
 TimePicker.accessibilityValue: ✅
-TimePicker.frame: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: ✅
 TimePicker.isVisible: ✅
 TimePicker.layoutDirection: – The browser lays a day's and a time's field out left to right in every direction, over any the page gives it.
+TimePicker.layoutFrame: ✅
 TimePicker.maximumHeight: ✅
 TimePicker.maximumWidth: ✅
 TimePicker.minimumHeight: ✅
@@ -1076,6 +1109,7 @@ TimePicker.minimumWidth: ✅
 TimePicker.opacity: ✅
 TimePicker.pivotX: ✓ read pivotX of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.pivotY: ✓ read pivotY of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+TimePicker.presentationFrame: ✅
 TimePicker.rotation: ✓ read rotation of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1096,11 +1130,11 @@ VStack.accessibilityLabel: ✅
 VStack.accessibilityPresence: ✅
 VStack.accessibilityRole: ✅
 VStack.accessibilityValue: ✅
-VStack.frame: ✅
 VStack.height: ✅
 VStack.ignoresInput: ✅
 VStack.isVisible: ✅
 VStack.layoutDirection: ✅
+VStack.layoutFrame: ✅
 VStack.maximumHeight: ✅
 VStack.maximumWidth: ✅
 VStack.minimumHeight: ✅
@@ -1108,6 +1142,7 @@ VStack.minimumWidth: ✅
 VStack.opacity: ✅
 VStack.pivotX: ✓ read pivotX of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.pivotY: ✓ read pivotY of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+VStack.presentationFrame: ✅
 VStack.rotation: ✓ read rotation of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.rotationX: ✓ read rotationX of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.rotationY: ✓ read rotationY of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1128,11 +1163,11 @@ WebView.accessibilityLabel: ✅
 WebView.accessibilityPresence: ✅
 WebView.accessibilityRole: ✅
 WebView.accessibilityValue: ✅
-WebView.frame: ✅
 WebView.height: ✅
 WebView.ignoresInput: ✅
 WebView.isVisible: ✅
 WebView.layoutDirection: ✅
+WebView.layoutFrame: ✅
 WebView.maximumHeight: ✅
 WebView.maximumWidth: ✅
 WebView.minimumHeight: ✅
@@ -1140,6 +1175,7 @@ WebView.minimumWidth: ✅
 WebView.opacity: ✅
 WebView.pivotX: ✓ read pivotX of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.pivotY: ✓ read pivotY of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+WebView.presentationFrame: ✅
 WebView.rotation: ✓ read rotation of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.rotationX: ✓ read rotationX of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.rotationY: ✓ read rotationY of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1160,11 +1196,11 @@ ZStack.accessibilityLabel: ✅
 ZStack.accessibilityPresence: ✅
 ZStack.accessibilityRole: ✅
 ZStack.accessibilityValue: ✅
-ZStack.frame: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: ✅
 ZStack.isVisible: ✅
 ZStack.layoutDirection: ✅
+ZStack.layoutFrame: ✅
 ZStack.maximumHeight: ✅
 ZStack.maximumWidth: ✅
 ZStack.minimumHeight: ✅
@@ -1172,6 +1208,7 @@ ZStack.minimumWidth: ✅
 ZStack.opacity: ✅
 ZStack.pivotX: ✓ read pivotX of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ZStack.pivotY: ✓ read pivotY of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ZStack.presentationFrame: ✅
 ZStack.rotation: ✓ read rotation of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ZStack.rotationX: ✓ read rotationX of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ZStack.rotationY: ✓ read rotationY of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart

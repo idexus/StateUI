@@ -14,9 +14,6 @@
     /// The layout's own motion, as its patches said it; nil while it says nothing of its own.
     public var motion: HostLayoutMotion?
 
-    /// Whether this layout's frame, or any frame under it, is read.
-    public var framesRead = false
-
     /// Whether a patch reached the layout since its last arrangement.
     private(set) var patched = false
 
@@ -38,7 +35,7 @@
     }
 
     /// Starts an arrangement `width` wide, deciding once for every child how it is placed: what a patch said
-    /// travels, what a new width gave arrives - as does everything while a frame under it is read.
+    /// travels, what a new width gave arrives.
     public func begin(width: Double) {
         said = patched && arrangedWidth != nil
         resized = arrangedWidth.map { abs($0 - width) > 0.5 } ?? false
@@ -46,7 +43,7 @@
         arrangedWidth = width
 
         arrangement = layoutMotion?.arrangement(
-            said: said, resized: resized, motion: motion, framesRead: framesRead) ?? Arrangement()
+            said: said, resized: resized, motion: motion) ?? Arrangement()
     }
 
     /// Stands `view`, the mounted element `mount`'s, at `place`, or on its way there; its `values` say which sides
@@ -66,8 +63,7 @@
         if values.height != nil { stated.insert(.height) }
         // A child that is a body - its own, or its layout's for every child - comes onto its place as its body says.
         let arrangement = values.body.map {
-            layoutMotion.arrangement(
-                of: $0, said: said, resized: resized, framesRead: framesRead, among: arrangement)
+            layoutMotion.arrangement(of: $0, said: said, resized: resized, among: arrangement)
         } ?? arrangement
         layoutMotion.place(
             view, mount: mount, at: place, stated: stated, words: values.words, natural: natural,

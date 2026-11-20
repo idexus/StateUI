@@ -26,7 +26,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
             var box = HostPatch(id: .manual(name), type: .rectangle)
             box.properties[VisualElementContract.width.token] = .number(100)
             box.properties[VisualElementContract.height.token] = .number(heights[name] ?? 40)
-            if name == watched { box.events = .replace([.frameChanged: 7]) }
+            if name == watched { box.events = .replace([.layoutFrameChanged: 7]) }
             return box
         })
         return stack

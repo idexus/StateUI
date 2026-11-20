@@ -45,9 +45,14 @@ public enum ViewContract: Tier {
     /// A drag that started on the view ended, wherever it ended.
     public static let dragEnded = ElementEvent<Self, Void>("dragEnded", layer: .native)
 
-    /// The view settled on a frame: eight numbers - x, y, width, height, the
-    /// window's x and y, and the safe area's x and y.
-    public static let frameChanged = ElementEvent<Self, [Double]>("frameChanged", layer: .native)
+    /// The view's layout gave it another place: eight numbers - x, y, width, height, the
+    /// window's x and y, and the safe area's x and y - of where it is put, whether or not it has come there.
+    public static let layoutFrameChanged = ElementEvent<Self, [Double]>("layoutFrameChanged", layer: .native)
+
+    /// The view is drawn elsewhere: the same eight numbers of the rectangle around what is drawn of it - on its
+    /// way to its place, and under its own transform.
+    public static let presentationFrameChanged = ElementEvent<Self, [Double]>(
+        "presentationFrameChanged", layer: .native)
 
     /// Which column of a Grid the view sits in.
     public static let gridColumn = ElementProperty<Self, Int>("gridColumn", layer: .stateUI, travels: false)
@@ -141,5 +146,5 @@ public enum ViewContract: Tier {
         "verticalAlignment", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, isDraggable, margin, panTouchCount, panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, verticalAlignment]
+    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, filesDropped, layoutFrameChanged, presentationFrameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, isDraggable, margin, panTouchCount, panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, verticalAlignment]
 }

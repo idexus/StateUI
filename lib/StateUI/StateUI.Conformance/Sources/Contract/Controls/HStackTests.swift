@@ -32,7 +32,7 @@
                                 .fill(.blue)
                                 .width(40)
                                 .height(20)
-                                .onEvent(ViewContract.frameChanged) { second.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { second.values.append($0) }
                                 .id("second")
                         }
                         Button("Take").onClicked { both.wrappedValue = false }.id("change")
@@ -54,12 +54,12 @@
                         HStack {
                             Text("Words far longer than the row they stand in has room for")
                                 .maximumLines(1)
-                                .onEvent(ViewContract.frameChanged) { words.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { words.values.append($0) }
                             Rectangle()
                                 .fill(.blue)
                                 .width(60)
                                 .height(20)
-                                .onEvent(ViewContract.frameChanged) { box.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { box.values.append($0) }
                         }
                         .spacing(0)
                         .width(200)
@@ -87,7 +87,7 @@
                                     .fill(.blue)
                                     .width(60)
                                     .height(20)
-                                    .onEvent(ViewContract.frameChanged) { if index == 2 { third.values.append($0) } }
+                                    .onEvent(ViewContract.layoutFrameChanged) { if index == 2 { third.values.append($0) } }
                             }
                         }
                         .wraps(step.wrappedValue < 2)
@@ -124,7 +124,7 @@
                                     .fill(.blue)
                                     .width(60)
                                     .height(20)
-                                    .onEvent(ViewContract.frameChanged) { if index == 2 { third.values.append($0) } }
+                                    .onEvent(ViewContract.layoutFrameChanged) { if index == 2 { third.values.append($0) } }
                             }
                         }
                         .wraps(true)

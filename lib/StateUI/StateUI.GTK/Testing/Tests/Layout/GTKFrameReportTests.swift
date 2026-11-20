@@ -76,7 +76,7 @@ final class GTKFrameReportTests: XCTestCase {
                         .fill(.steelBlue)
                         .width(wide.wrappedValue ? 200 : 120)
                         .height(60)
-                        .onEvent(ViewContract.frameChanged) { heard.values.append($0[2]) }
+                        .onEvent(ViewContract.layoutFrameChanged) { heard.values.append($0[2]) }
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
@@ -121,7 +121,7 @@ final class GTKFrameReportTests: XCTestCase {
                         .fill(.steelBlue)
                         .width(120)
                         .height(60)
-                        .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                        .onEvent(ViewContract.layoutFrameChanged) { heard.values.append($0) }
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)

@@ -93,6 +93,8 @@ final class ControlTests: XCTestCase {
         let refreshing = State(false)
         let hasBack = State(false)
         let hasForward = State(false)
+        let placed = State(wrappedValue: Rect(0, 0, 0, 0))
+        let drawn = State(wrappedValue: Rect(0, 0, 0, 0))
         let chosen = State<String?>(wrappedValue: "two")
         let turn = State(wrappedValue: 0.0)
         let dial = State(wrappedValue: ControlDial())
@@ -612,6 +614,9 @@ final class ControlTests: XCTestCase {
                 .pivotX(0.25)
                 .pivotY(0.75)
                 .zIndex(3)
+                // Where the layout puts the view and where it is drawn: a feed each.
+                .frame(into: placed.projectedValue)
+                .frame(into: drawn.projectedValue, stage: .presentation)
                 // Every gesture StateUI has, on one view - which is legal, and the
                 // only way to check that each recognizer is asked for on its
                 // own terms.

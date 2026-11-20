@@ -50,13 +50,17 @@ extension VisualElement {
     ///
     /// For arithmetic that lays views out; `GeometryReader` is for content built
     /// from the frame. Writing the state moves nothing: the frame is the
-    /// layout's answer. A layout whose frame, or a frame under it, is read
-    /// places every child at once, size and place alike, and a size worked out
-    /// from the frame elsewhere wants `.motion(.none)`.
+    /// layout's answer. Reading a frame changes nothing of how a view moves:
+    /// `.layout` is where its layout puts it, at once, and `.presentation` the
+    /// rectangle around what is drawn of it on the way there and under its own
+    /// transform. A size worked out from a frame elsewhere wants the layout's.
     ///
-    /// - Parameter state: the state the frame is written into.
+    /// - Parameters:
+    ///   - state: the state the frame is written into.
+    ///   - stage: which rectangle - the layout's unless said.
     /// - Returns: the element, reporting its frame there.
-    public func frame(into state: Binding<Rect>) -> Modified {
-        setValue(VisualElementContract.frame, on: state, as: .feed)
+    public func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Modified {
+        let feed = stage == .layout ? VisualElementContract.layoutFrame : VisualElementContract.presentationFrame
+        return setValue(feed, on: state, as: .feed)
     }
 }

@@ -35,7 +35,7 @@
                                 .fill(.blue)
                                 .width(20)
                                 .height(20)
-                                .onEvent(ViewContract.frameChanged) { second.values.append($0) },
+                                .onEvent(ViewContract.layoutFrameChanged) { second.values.append($0) },
                         ]
                     }
                     Button("Wider").onClicked { wide.wrappedValue = true }.id("change")

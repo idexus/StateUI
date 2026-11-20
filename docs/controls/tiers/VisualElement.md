@@ -33,7 +33,8 @@ How each of them realizes these members is on its own page.
 | `accessibilityPresence` | property | `AccessibilityPresence` | native |
 | `accessibilityRole` | property | `AccessibilityRole` | native |
 | `accessibilityValue` | property | `String` | native |
-| `frame` | property | `Rect` | structure |
+| `layoutFrame` | property | `Rect` | structure |
+| `presentationFrame` | property | `Rect` | structure |
 | `height` | property | `Double` | native |
 | `ignoresInput` | property | `Bool` | native |
 | `isVisible` | property | `Bool` | native |

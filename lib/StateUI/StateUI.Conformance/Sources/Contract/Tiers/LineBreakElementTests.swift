@@ -19,7 +19,7 @@
                 s.start {
                     VStack {
                         Text(TextTests.long).lineBreak(wraps.wrappedValue ? .wordWrap : .noWrap).width(100)
-                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("label")
+                            .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }.id("label")
                         Button("Wrap").onClicked { wraps.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)
@@ -40,7 +40,7 @@
                 s.start {
                     VStack {
                         Button(TextTests.long).lineBreak(wraps.wrappedValue ? .wordWrap : .noWrap).width(100)
-                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("caption")
+                            .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }.id("caption")
                         Button("Wrap").onClicked { wraps.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)

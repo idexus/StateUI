@@ -45,9 +45,9 @@
                 s.start {
                     VStack {
                         TextEditor(words.projectedValue).growsWithText(true).width(200)
-                            .onEvent(ViewContract.frameChanged) { growing.values.append($0) }.id("growing")
+                            .onEvent(ViewContract.layoutFrameChanged) { growing.values.append($0) }.id("growing")
                         TextEditor(words.projectedValue).growsWithText(false).width(200)
-                            .onEvent(ViewContract.frameChanged) { fixed.values.append($0) }.id("fixed")
+                            .onEvent(ViewContract.layoutFrameChanged) { fixed.values.append($0) }.id("fixed")
                         Button("More").onClicked { words.wrappedValue = "one\ntwo\nthree\nfour\nfive" }.id("change")
                     }
                     .horizontalAlignment(.start)

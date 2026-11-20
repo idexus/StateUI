@@ -50,8 +50,13 @@ public enum VisualElementContract: Tier {
     public static let accessibilityPresence = ElementProperty<Self, AccessibilityPresence>(
         "accessibilityPresence", layer: .native)
 
-    /// The frame the element settled on, fed by the host into a state.
-    public static let frame = ElementProperty<Self, Rect>("frame", layer: .structure)
+    /// Where the element's layout puts it, fed by the host into a state: its destination, whether or not it has
+    /// come there.
+    public static let layoutFrame = ElementProperty<Self, Rect>("layoutFrame", layer: .structure)
+
+    /// The rectangle around what is drawn of the element, fed by the host into a state: on its way to its place,
+    /// and under its own transform.
+    public static let presentationFrame = ElementProperty<Self, Rect>("presentationFrame", layer: .structure)
 
     /// The height the element asks for.
     public static let height = ElementProperty<Self, Double>(
@@ -138,5 +143,5 @@ public enum VisualElementContract: Tier {
     public static let zIndex = ElementProperty<Self, Int>("zIndex", layer: .native, travels: false)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted, accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityPresence, accessibilityRole, accessibilityValue, frame, height, ignoresInput, isVisible, layoutDirection, maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY, rotation, rotationX, rotationY, scale, scaleX, scaleY, tooltip, translationX, translationY, width, zIndex]
+    public static let members: [any ContractMember] = [accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted, accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityPresence, accessibilityRole, accessibilityValue, layoutFrame, presentationFrame, height, ignoresInput, isVisible, layoutDirection, maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY, rotation, rotationX, rotationY, scale, scaleX, scaleY, tooltip, translationX, translationY, width, zIndex]
 }

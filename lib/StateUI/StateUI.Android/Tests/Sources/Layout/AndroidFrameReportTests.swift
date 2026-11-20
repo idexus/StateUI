@@ -46,7 +46,7 @@ final class AndroidFrameReportTests: XCTestCase {
                         .fill(.steelBlue)
                         .width(120)
                         .height(60)
-                        .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                        .onEvent(ViewContract.layoutFrameChanged) { heard.values.append($0) }
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
@@ -76,7 +76,7 @@ final class AndroidFrameReportTests: XCTestCase {
                             .fill(.steelBlue)
                             .width(120)
                             .height(60)
-                            .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                            .onEvent(ViewContract.layoutFrameChanged) { heard.values.append($0) }
                     }
                 }
                 .horizontalAlignment(.start)
@@ -110,7 +110,7 @@ final class AndroidFrameReportTests: XCTestCase {
                             .fill(item == 2 ? .firebrick : .steelBlue)
                             .width(120)
                             .height(60)
-                            .onEvent(ViewContract.frameChanged) { if item == 2 { heard.values.append($0) } }
+                            .onEvent(ViewContract.layoutFrameChanged) { if item == 2 { heard.values.append($0) } }
                     }
                     .width(200).height(300)
                 }

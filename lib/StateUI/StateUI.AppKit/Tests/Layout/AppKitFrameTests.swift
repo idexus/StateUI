@@ -33,7 +33,7 @@ final class AppKitFrameTests: XCTestCase {
                     .fill(.steelBlue)
                     .width(120)
                     .height(60)
-                    .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                    .onEvent(ViewContract.layoutFrameChanged) { heard.values.append($0) }
             }
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
@@ -58,7 +58,7 @@ final class AppKitFrameTests: XCTestCase {
                         .fill(.steelBlue)
                         .width(120)
                         .height(60)
-                        .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                        .onEvent(ViewContract.layoutFrameChanged) { heard.values.append($0) }
                 }
             }
             .horizontalAlignment(.start)
@@ -84,7 +84,7 @@ final class AppKitFrameTests: XCTestCase {
                         .fill(.steelBlue)
                         .width(120)
                         .height(60)
-                        .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                        .onEvent(ViewContract.layoutFrameChanged) { heard.values.append($0) }
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
@@ -111,7 +111,7 @@ final class AppKitFrameTests: XCTestCase {
                         .fill(item == 2 ? .firebrick : .steelBlue)
                         .width(120)
                         .height(60)
-                        .onEvent(ViewContract.frameChanged) { if item == 2 { heard.values.append($0) } }
+                        .onEvent(ViewContract.layoutFrameChanged) { if item == 2 { heard.values.append($0) } }
                 }
                 .width(200).height(300)
             }
@@ -145,7 +145,7 @@ final class AppKitFrameTests: XCTestCase {
             } detail: {
                 Rectangle()
                     .fill(.steelBlue)
-                    .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                    .onEvent(ViewContract.layoutFrameChanged) { heard.values.append($0) }
             }
             .showsSidebar(shown.projectedValue)
         }
@@ -169,7 +169,7 @@ final class AppKitFrameTests: XCTestCase {
 
         var patch = HostPatch(id: .manual("measured"), type: .text)
         patch.properties = [.text: .string("Measured")]
-        patch.events = .replace([.frameChanged: 50])
+        patch.events = .replace([.layoutFrameChanged: 50])
         renderer.applyForTesting(patch)
         let node = try XCTUnwrap(renderer.rootElementForTesting)
         let measured = try XCTUnwrap(node.view)
@@ -195,7 +195,7 @@ final class AppKitFrameTests: XCTestCase {
         defer { renderer.finish() }
 
         var patch = HostPatch(id: .manual("measured"), type: .text)
-        patch.events = .replace([.frameChanged: 51])
+        patch.events = .replace([.layoutFrameChanged: 51])
         renderer.applyForTesting(patch)
         let node = try XCTUnwrap(renderer.rootElementForTesting)
         let measured = try XCTUnwrap(node.view)

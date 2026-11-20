@@ -140,7 +140,10 @@ lives, each by tests of its own:
                          ConversionCycleTests)
   watching changes       PresentationWatch is a reader set of its own; a
   nothing                reading is booked on the frame's time
-                         (PresentationEngineTests, StateTests)
+                         (PresentationEngineTests, StateTests). A frame read
+                         writes no transition, lane or arrangement: the host
+                         layer makes both rectangles of the host's one report
+                         (MotionTests, GeometryStageTests)
   one result             MotionRun ends once; a channel's generation and a
                          run's number keep an old one from a new
                          (MotionRunTests, EngineMotionTests)
@@ -152,9 +155,11 @@ lives, each by tests of its own:
 Two movements stand on the core's side. A state declared
 `@State(animatedBy: .engine)` is animated by an engine of the application,
 which writes each frame's value and speed, and the host wears them as they
-come ([journeys](core/journeys.md#who-animates-it)). A motion layout's run and
-its bodies are worked out by the layout's own engine on the host's frames
-([motion layout](views/motion-layout.md#the-run)).
+come ([journeys](core/journeys.md#who-animates-it)). A motion layout's run is
+worked out in the core's cycle on the host's frames
+([motion layout](views/motion-layout.md#the-run)); how its views come onto
+the places it answers is the host layer's
+([bodies](host/layout.md#bodies)).
 
 ## Threads
 

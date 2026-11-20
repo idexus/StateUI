@@ -153,7 +153,8 @@ extension NodeType {
     static let isFontAutoScalingEnabled = FontElementContract.isFontAutoScalingEnabled.token
     static let fontFamily = FontElementContract.fontFamily.token
     static let fontSize = FontElementContract.fontSize.token
-    static let frame = VisualElementContract.frame.token
+    static let layoutFrame = VisualElementContract.layoutFrame.token
+    static let presentationFrame = VisualElementContract.presentationFrame.token
     static let from = LineContract.from.token
     static let gridColumn = ViewContract.gridColumn.token
     static let gridColumnSpan = ViewContract.gridColumnSpan.token
@@ -304,7 +305,8 @@ extension NodeType {
     static let dropped = ViewContract.dropped.token
     static let filesDropped = ViewContract.filesDropped.token
     static let dragEnded = ViewContract.dragEnded.token
-    static let frameChanged = ViewContract.frameChanged.token
+    static let layoutFrameChanged = ViewContract.layoutFrameChanged.token
+    static let presentationFrameChanged = ViewContract.presentationFrameChanged.token
     static let translationUpdated = MotionLayoutContract.translationUpdated.token
     static let wheelStepped = MotionLayoutContract.wheelStepped.token
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token

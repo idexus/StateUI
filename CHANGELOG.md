@@ -86,6 +86,15 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   motion where the parameters are declared, `@State(motion: .spring(Spring(response: .milliseconds(240)))) private
   var turn = 0.0`, and change it later with `try $turn.journey.setMotion(_:)`. A hand let go short of a rest comes
   onto it under the same motion.
+- **Reading a frame changes no motion.** A layout whose frame, or a frame under it, was read stood every child at
+  its place at once, and a stated size in it changed with no travel. A reader changes nothing now: children travel
+  under their layout's `.motion(_:)` and a size under its view's, read or not. A size or a place worked out from a
+  measurement says `.motion(.none)` itself - on the view for its size, on the layout for where it puts its
+  children. A host built on `StateUIHost` no longer sets `TravelingPlaces.framesRead`.
+- **A frame is read where the layout puts the view.** `.onFrameChanged` and `.frame(into:)` report the layout's
+  rectangle: a view traveling to a new place reports where it is going, once, where it reported every step of the
+  way. The steps are the presentation's (`stage: .presentation`, below). In the contracts
+  `VisualElementContract.frame` is `layoutFrame` and `ViewContract.frameChanged` is `layoutFrameChanged`.
 - **A hand's speed is no longer written into a journey.** `$x.journey.velocity = update.velocity.x` is gone with the
   setter. A throw is a movement of its own: a cubic-out journey sets out three times as fast as it averages, so one
   to `update.total.x + update.velocity.x * seconds / 3` over `seconds` goes on at the hand's speed and slows to rest.
@@ -140,6 +149,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   layout, `.followsLayout(Spring(...))` also when the place moves on a frame, `.none` at once - and
   `.layoutBody(_:)` says it for one child, which wins. A layout that says neither moves its children under its
   `.motion(_:)`, as before.
+- **A view's two rectangles.** `.frame(into:stage:)` and `.onFrameChanged(in:stage:)` take a `GeometryStage`:
+  `.layout`, unless said, is where the view's layout puts it, and `.presentation` the rectangle around what is
+  drawn of it - every step of its way to a new place, and its own `.scale`, `.rotation` and move. One view feeds
+  both into two states: `.frame(into: $placed).frame(into: $drawn, stage: .presentation)`.
 - **A motion layout follows a journey.** `.following($tilt.journey)` runs the arithmetic on every frame the value
   moves, where it reads `$tilt.journey.sample`; `.following($tilt)` runs it at a write of where the state is going,
   as before.

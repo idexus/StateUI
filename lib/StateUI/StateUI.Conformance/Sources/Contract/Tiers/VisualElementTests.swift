@@ -19,7 +19,7 @@
         Specimens.wearing(VisualElementContract.self).flatMap { element -> [ConformanceCase] in
             let held: [ConformanceCase] = [
                 shown(element), opacity(element), enabled(element), sized(element), bounded(element), toItsMost(element),
-                reachable(element), framed(element), styled(element), layered(element),
+                reachable(element), framed(element), drawnFramed(element), styled(element), layered(element),
                 headed(element),
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
                 Aspects.holds(VisualElementContract.accessibilityHint, on: element, "Saves the form", then: "Saves it all"),
@@ -63,23 +63,23 @@
         ConformanceCase("Rectangle.aTransformMovesWhatIsDrawnNotItsFrame", proves: [
             Covered(VisualElementContract.translationX, on: "Rectangle"),
             Covered(VisualElementContract.scale, on: "Rectangle"),
-        ], needs: [Covered(ViewContract.frameChanged, on: "Rectangle")]) { s in
+        ], needs: [Covered(ViewContract.layoutFrameChanged, on: "Rectangle")]) { s in
             let outer = Received<[Double]>(), moved = Received<[Double]>()
             let held = Received<[Double]>(), inner = Received<[Double]>()
             s.start {
                 VStack {
                     Rectangle().fill(.red).width(40).height(20).translationX(50).scale(2)
-                        .onEvent(ViewContract.frameChanged) { moved.values.append($0) }
+                        .onEvent(ViewContract.layoutFrameChanged) { moved.values.append($0) }
                     VStack {
                         Rectangle().fill(.blue).width(40).height(20)
-                            .onEvent(ViewContract.frameChanged) { inner.values.append($0) }
+                            .onEvent(ViewContract.layoutFrameChanged) { inner.values.append($0) }
                     }
                     .translationX(30)
-                    .onEvent(ViewContract.frameChanged) { held.values.append($0) }
+                    .onEvent(ViewContract.layoutFrameChanged) { held.values.append($0) }
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
-                .onEvent(ViewContract.frameChanged) { outer.values.append($0) }
+                .onEvent(ViewContract.layoutFrameChanged) { outer.values.append($0) }
             }
             s.settle { [outer, moved, held, inner].allSatisfy { !$0.values.isEmpty } }
             s.turn()
@@ -418,7 +418,7 @@
     static func directingItsChild(_ layout: String) -> ConformanceCase {
         ConformanceCase("\(layout).placesItsChildInItsDirection", proves: [
             Covered(VisualElementContract.layoutDirection, on: layout),
-        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(VisualElementContract.frame, on: "Rectangle")]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(VisualElementContract.layoutFrame, on: "Rectangle")]) { s in
             let room = State(wrappedValue: Rect(x: -1, y: 0, width: 0, height: 0))
             let direction = State(wrappedValue: LayoutDirection.leftToRight)
             s.start {
@@ -486,7 +486,7 @@
     static func sized(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsAtItsStatedSize", proves: [
             Covered(VisualElementContract.width, on: element), Covered(VisualElementContract.height, on: element),
-        ], needs: [Covered(ViewContract.frameChanged, on: element)]) { s in
+        ], needs: [Covered(ViewContract.layoutFrameChanged, on: element)]) { s in
             let frames = Received<[Double]>()
             s.start {
                 VStack {
@@ -511,7 +511,7 @@
             Covered(VisualElementContract.minimumWidth, on: element),
             Covered(VisualElementContract.maximumHeight, on: element),
             Covered(VisualElementContract.minimumHeight, on: element),
-        ], needs: [Covered(ViewContract.frameChanged, on: element)]) { s in
+        ], needs: [Covered(ViewContract.layoutFrameChanged, on: element)]) { s in
             let narrowed = Received<[Double]>()
             let widened = Received<[Double]>()
             s.start {
@@ -545,7 +545,7 @@
             Covered(VisualElementContract.maximumWidth, on: element),
             Covered(VisualElementContract.maximumHeight, on: element),
         ], needs: [
-            Covered(ViewContract.frameChanged, on: element), Covered(ViewContract.horizontalAlignment, on: element),
+            Covered(ViewContract.layoutFrameChanged, on: element), Covered(ViewContract.horizontalAlignment, on: element),
             Covered(ViewContract.verticalAlignment, on: element),
         ]) { s in
             let across = Received<[Double]>()
@@ -645,15 +645,17 @@
         }
     }
 
-    /// A view's frame lands in the state the tree gives it, and again as the tree widens it.
+    /// A view's frame lands in the state the tree gives it, and again as the tree widens it: where its width,
+    /// on its way under the application's motion, comes to.
     @MainActor
     static func framed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).itsFrameLandsInItsState", proves: [
-            Covered(VisualElementContract.frame, on: element),
+            Covered(VisualElementContract.layoutFrame, on: element),
         ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+            let clock = TestClock()
             let room = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
             let wide = State(wrappedValue: false)
-            s.start {
+            s.start(clock: clock) {
                 VStack {
                     Opened.framed(Specimens.view(element, [
                         Write(VisualElementContract.width, wide.wrappedValue ? 90 : 60), Write(VisualElementContract.height, 30),
@@ -668,8 +670,42 @@
             s.settle { room.wrappedValue.width == 60 }
             s.expect(room.wrappedValue, Rect(x: 0, y: 0, width: 60, height: 30))
             try s.perform(.activate, on: s.element("change"))
-            s.settle { room.wrappedValue.width == 90 }
+            // The width travels: a frame of the clock a step, until it has come.
+            s.settle {
+                clock.now += 16
+                s.frame()
+                return room.wrappedValue.width == 90
+            }
             s.expect(room.wrappedValue, Rect(x: 0, y: 0, width: 90, height: 30), "again where the tree moved it")
+        }
+    }
+
+    /// The rectangle around what is drawn of a view lands in the state the tree gives it, apart from where its
+    /// layout puts it.
+    @MainActor
+    static func drawnFramed(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).itsDrawnFrameLandsInItsState", proves: [
+            Covered(VisualElementContract.presentationFrame, on: element),
+        ], needs: [Covered(VisualElementContract.layoutFrame, on: element)]) { s in
+            let placed = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
+            let drawn = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
+            s.start {
+                VStack {
+                    Opened.framed(
+                        Opened.framed(Specimens.view(element, [
+                            Write(VisualElementContract.width, 60), Write(VisualElementContract.height, 30),
+                            Write(ViewContract.horizontalAlignment, Alignment.start),
+                            Write(VisualElementContract.scale, 2),
+                        ]), into: placed.projectedValue),
+                        into: drawn.projectedValue, stage: .presentation)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+
+            s.settle { drawn.wrappedValue.width == 120 && placed.wrappedValue.width == 60 }
+            s.expect(drawn.wrappedValue, Rect(x: -30, y: -15, width: 120, height: 60), "twice as large about its middle")
+            s.expect(placed.wrappedValue, Rect(x: 0, y: 0, width: 60, height: 30), "where its layout puts it")
         }
     }
 

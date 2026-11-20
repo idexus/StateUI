@@ -53,9 +53,6 @@
     /// How this element's children animate, as its patches said; nil while it says nothing.
     public private(set) var motion: HostLayoutMotion?
 
-    /// Whether this element's frame, or any frame under it, is read.
-    public private(set) var framesRead = false
-
     /// Whether this page tree is shown, as its phases last told.
     public internal(set) var isPagePresented = false
 
@@ -71,6 +68,9 @@
     /// The frame report this element last said, which a report the same says again to nobody - but to a reader
     /// come since, which hears where the element stands once (`frameReportDue`).
     var reportedFrame: [Double] = []
+    var reportedPresentation: [Double] = []
+    /// Whether the corner of the layout's frame last said was worked out while a place traveled.
+    var saidACornerWorkedOut = false
     var frameReportDue = false
 
     /// The room the toolkit last laid the element out in; nil before it said.
@@ -131,6 +131,13 @@
         let placed = programPresentation.step(to: now)
         if !programPresentation.moves { program.bodiesMove(false) }
         return presents(placed)
+    }
+
+    /// Where `child`, one of the views the program places, is shown and where the program puts it, while the two
+    /// differ.
+    func programTravel(of child: MountedElement) -> (standing: Rect, destination: Rect)? {
+        guard layoutProgram != nil, let place = writingOrder[child.id] else { return nil }
+        return programPresentation.travel(at: place)
     }
 
     private func presents(_ placed: [HostPlacement]) -> Bool {
@@ -508,8 +515,6 @@
         } else if !described {
             native.directionChanged()
         }
-        framesRead = driven[.frame] != nil || events[.frameChanged] != nil
-            || held.contains { $0.framesRead }
         // Made in a disabled branch, it presents an `isEnabled` it never wrote; a page made under an arrangement's
         // ground, a `background` it never wrote; untouched, it presents nothing.
         var presenting = changed

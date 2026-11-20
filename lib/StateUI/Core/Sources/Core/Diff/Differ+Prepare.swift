@@ -59,7 +59,7 @@ extension Differ {
         if let identity = pass.identity, [.menu, .menuItem, .menuToggle].contains(pass.node.type) {
             pass.menuKey = menuKeys.key(for: identity)
         }
-        let (id, rendered, sizesArrive) = (pass.id, pass.rendered, pass.sizesArrive)
+        let (id, rendered) = (pass.id, pass.rendered)
         var node = pass.node
         defer { pass.node = node }
 
@@ -244,9 +244,6 @@ extension Differ {
             if travel(.width).kind == .none { lanes.subtract(.width) }
             if travel(.height).kind == .none { lanes.subtract(.height) }
 
-            // A measured layout's children take their sizes at once.
-            if node.childSizesArrive { lanes.subtract([.width, .height]) }
-
             let stood = describeAll ? MotionLanes.all : (previous?.lanes ?? .all)
 
             if was != mine || stood != lanes {
@@ -309,19 +306,14 @@ extension Differ {
         }
         #endif
 
-        // A property that changed on a continuing element animates to its new value; a
-        // measured size arrives at once.
+        // A property that changed on a continuing element animates to its new value.
         // Design: docs/design/core/identity-and-diffing.md#transitions
-        let measured = sizesArrive || node.reportsFrame
-
         if !describeAll, !replace, previous != nil, plan != nil || travels.kind != .none {
             // A value taken away travels by the value it was, back to where its host rests it.
             let taken = patch.clearedProperties.compactMap { property in rendered?.props[property].map { (property, $0) } }
             for (property, value) in patch.properties.map({ ($0.key, $0.value) }) + taken
             where value.moves && property.facts.travels
                 && patch.transitions[property] == nil {
-                if measured, !property.facts.moves.isDisjoint(with: [.width, .height]) { continue }
-
                 let moves = travel(value.kind.union(property.facts.moves))
 
                 if moves.kind == .none { continue }

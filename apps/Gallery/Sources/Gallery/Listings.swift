@@ -3934,6 +3934,47 @@ enum Listings {
             return "GMT\(sign)\(pad(h)):\(pad(m))"
         }
         """#,
+        "FrameStages": #"""
+        // Sources/Samples/Layout/GeometryReaderSample.swift
+        @State private var placed = Rect(0, 0, 0, 0)
+        @State private var drawn = Rect(0, 0, 0, 0)
+
+        @State private var larger = false
+        @State private var far = false
+
+        var body: some View {
+            VStack {
+                VStack {
+                    Rectangle()
+                        .fill(Palette.accent)
+                        .width(80)
+                        .height(48)
+                        // A TRANSFORM: it moves what is drawn, never the layout.
+                        .scale(larger ? 1.4 : 1)
+                        // THE LAYOUT'S OWN: the stack carries the card across.
+                        .horizontalAlignment(far ? .end : .start)
+                        // ONE VIEW, TWO RECTANGLES, a state each: where its layout
+                        // puts it, and the rectangle around what is drawn of it.
+                        .frame(into: $placed)
+                        .frame(into: $drawn, stage: .presentation)
+                }
+                // Slow enough to read the numbers on the way.
+                .motion(.eased(.milliseconds(1200)))
+
+                SwitchRow("Larger", $larger)
+                SwitchRow("At the far end", $far)
+
+                Text("layout · \(Self.words(placed))")
+
+                Text("drawn · \(Self.words(drawn))")
+            }
+        }
+
+        /// A rectangle in whole points: its corner, then its size.
+        static func words(_ rect: Rect) -> String {
+            "\(Int(rect.x.rounded())), \(Int(rect.y.rounded())) · \(Int(rect.width.rounded())) × \(Int(rect.height.rounded()))"
+        }
+        """#,
         "Gallery.Looks": #"""
         // Sources/Gallery/Looks.swift
         /// What one surface of the gallery is made of - its bars, its window, its

@@ -121,6 +121,7 @@
         // And the children still on their way to their places take this frame's step.
         // Design: docs/design/host/layout.md#bodies
         for mount in presenter?.stepLayoutBodies() ?? [] { properties[mount, default: []].insert(.area) }
+        tellFrameReaders()
 
         collectStateChannels()
         present()
@@ -139,6 +140,7 @@
         let now = onward(now)
         sidebarSlide.pace(now: now)
         follow(animator.advance(to: now, reducesMotion: reducesMotion), reducedMotion: reducesMotion)
+        tellFrameReaders()
         present()
         hold()
     }
@@ -177,10 +179,26 @@
             || presenter?.layoutBodiesMove == true
     }
 
+    /// Has whoever reads a frame say it again where this frame draws a view elsewhere than the last did with no
+    /// toolkit laying anything out: a place its layout's run moved, a transform presented.
+    /// Design: docs/design/host/runtime.md#two-rectangles
+    private func tellFrameReaders() {
+        let moved = properties.values.contains { !$0.isDisjoint(with: Self.presentedGeometry) }
+        if moved || placesTraveled { runtime?.frames.laidOut() }
+        placesTraveled = false
+    }
+
+    /// What a frame presents that moves where a view is drawn.
+    private static let presentedGeometry = MountedElement.transformProperties.union([.area])
+
+    /// Whether the animator moved a child's place on this frame.
+    private var placesTraveled = false
+
     private func follow(_ steps: [AnimationStep], reducedMotion: Bool) {
         stateChannels.follow(steps, reducedMotion: reducedMotion)
         describedMotion.follow(steps)
         layoutMotion.follow(steps)
+        if steps.contains(where: { if case .placed = $0.target { true } else { false } }) { placesTraveled = true }
         sidebarSlide.follow(steps)
         collectStateChannels()
 

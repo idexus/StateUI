@@ -48,7 +48,7 @@
         ConformanceCase("\(element).standsAsWideAsItsWords", proves: [
             Covered(PlaceholderElementContract.placeholder, on: element),
         ], needs: [
-            Covered(ViewContract.frameChanged, on: element), Covered(ViewContract.frameChanged, on: "Text"),
+            Covered(ViewContract.layoutFrameChanged, on: element), Covered(ViewContract.layoutFrameChanged, on: "Text"),
         ]) { s in
             for words in ["Search every note, folder and tag", nil] {
                 let field = Received<[Double]>(), measure = Received<[Double]>()

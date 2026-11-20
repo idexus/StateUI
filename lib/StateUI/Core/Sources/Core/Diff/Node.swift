@@ -332,17 +332,6 @@ public struct Node {
     /// records instead of a value (StateAttachment.swift).
     var driven: [Prop: StateRegistration] = [:]
 
-    /// Whether this element reports its own frame, so its own size never animates.
-    var reportsFrame: Bool {
-        events[.frameChanged] != nil || driven[.frame] != nil
-    }
-
-    /// Whether this layout's children take their sizes at once: it or one of them is
-    /// measured.
-    var childSizesArrive: Bool {
-        reportsFrame || children.contains(where: \.reportsFrame)
-    }
-
     /// How this element's values animate - what `.motion(_:)` wrote - or nil for the
     /// application's. Per node, never inherited (MotionPlan.swift).
     var motion: MotionPlan?

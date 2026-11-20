@@ -26,7 +26,7 @@ extension WebElement: FrameReporter {
         let box = view.frame(laidOut: laid) ?? laid
         let content = host.contentBox
         let numbers = MountedElement.frameNumbers(
-            place: placeInLayout ?? placeAsDrawn(box), corner: windowCorner ?? Point(x: box.x, y: box.y),
+            place: placeStanding ?? placeAsDrawn(box), corner: windowCorner ?? Point(x: box.x, y: box.y),
             content: Point(x: content.x, y: content.y))
         element.reportFrame(numbers, in: host.runtime)
         if let split = view as? WebSplitView { element.reportSidebarOverlays(split.overlays, in: host.runtime) }
@@ -37,8 +37,15 @@ extension WebElement: FrameReporter {
     var windowCorner: Point? {
         element.cornerInWindow(
             toolkit: { ($0.native as? WebElement)?.cornerAsDrawn },
-            place: { ($0.native as? WebElement)?.placeInLayout.map { Point(x: $0.x, y: $0.y) } },
+            place: { ($0.native as? WebElement)?.placeStanding.map { Point(x: $0.x, y: $0.y) } },
             scrolled: { ($0.native as? WebElement)?.view.map { WebRelay.scroll(of: $0.node) } ?? .zero })
+    }
+
+    /// Where the view's place stands now in the layout placing it: on its way where it travels - the browser lays
+    /// it out at its slot all the while, and draws it moved - else as that layout laid it out.
+    /// Design: docs/design/platforms/web/layout.md#where-a-view-stands
+    var placeStanding: Rect? {
+        view?.traveling ?? placeInLayout
     }
 
     /// Where the view stands in the layout placing it, as that layout laid it out - no transform in it, and its place

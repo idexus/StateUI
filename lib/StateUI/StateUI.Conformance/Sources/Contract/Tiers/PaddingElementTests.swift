@@ -39,7 +39,7 @@
                             .height(20)
                             .horizontalAlignment(.start)
                             .verticalAlignment(.start)
-                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                            .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }
                     }
                     Button("Wider").onClicked { wide.wrappedValue = true }.id("change")
                 }

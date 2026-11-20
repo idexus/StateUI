@@ -329,6 +329,9 @@ swift.conformance GatePolicy: Swift.Sendable
 swift.conformance GeometryReader: StateUI.View
 swift.conformance GeometryReader: StateUI.Views
 swift.conformance GeometryReader: Swift.Sendable
+swift.conformance GeometryStage: Swift.Equatable
+swift.conformance GeometryStage: Swift.Hashable
+swift.conformance GeometryStage: Swift.Sendable
 swift.conformance GesturePhase: Swift.Equatable
 swift.conformance GesturePhase: Swift.Hashable
 swift.conformance GesturePhase: Swift.RawRepresentable
@@ -1103,6 +1106,7 @@ swift.enum FontElementContract: enum FontElementContract
 swift.enum FontWeight: enum FontWeight
 swift.enum FormFactor: enum FormFactor
 swift.enum GalleryArrangement: enum GalleryArrangement
+swift.enum GeometryStage: enum GeometryStage
 swift.enum GesturePhase: enum GesturePhase
 swift.enum Glass.Clarity: enum Clarity
 swift.enum GridContract: enum GridContract
@@ -1366,6 +1370,8 @@ swift.enum.case GalleryArrangement.deck: case deck
 swift.enum.case GalleryArrangement.fan: case fan
 swift.enum.case GalleryArrangement.row: case row
 swift.enum.case GalleryArrangement.wheel: case wheel
+swift.enum.case GeometryStage.layout: case layout
+swift.enum.case GeometryStage.presentation: case presentation
 swift.enum.case GesturePhase.began: case began
 swift.enum.case GesturePhase.cancelled: case cancelled
 swift.enum.case GesturePhase.changed: case changed
@@ -1795,7 +1801,7 @@ swift.method @SwiftNever.engine(tracking:_:priority:_:): @MainActor func engine<
 swift.method @SwiftNever.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method @SwiftNever.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method @SwiftNever.environment(_:): @MainActor func environment<Value>(_ object: Value) -> some Scene where Value : AnyObject
-swift.method @SwiftNever.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method @SwiftNever.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method @SwiftNever.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method @SwiftNever.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method @SwiftNever.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -1855,9 +1861,9 @@ swift.method @SwiftNever.onDropped(files:gate:_:): @MainActor func onDropped(fil
 swift.method @SwiftNever.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method @SwiftNever.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method @SwiftNever.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method @SwiftNever.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method @SwiftNever.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method @SwiftNever.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method @SwiftNever.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method @SwiftNever.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method @SwiftNever.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method @SwiftNever.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method @SwiftNever.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -1984,7 +1990,7 @@ swift.method AnyView.engine(following:_:priority:_:): @MainActor func engine<Fir
 swift.method AnyView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method AnyView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method AnyView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method AnyView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method AnyView.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method AnyView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method AnyView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method AnyView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -2044,9 +2050,9 @@ swift.method AnyView.onDropped(files:gate:_:): @MainActor func onDropped(files t
 swift.method AnyView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method AnyView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method AnyView.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method AnyView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method AnyView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method AnyView.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method AnyView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method AnyView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method AnyView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method AnyView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method AnyView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method AnyView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2204,7 +2210,7 @@ swift.method Button.fontAttributes(_:): @MainActor func fontAttributes(_ state: 
 swift.method Button.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method Button.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method Button.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Button.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Button.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Button.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Button.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -2276,9 +2282,9 @@ swift.method Button.onDropped(files:gate:_:): @MainActor func onDropped(files ty
 swift.method Button.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Button.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Button.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Button.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Button.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Button.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Button.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Button.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Button.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Button.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Button.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2428,7 +2434,7 @@ swift.method Canvas.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method Canvas.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Canvas.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Canvas.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Canvas.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Canvas.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Canvas.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Canvas.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Canvas.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -2488,9 +2494,9 @@ swift.method Canvas.onDropped(files:gate:_:): @MainActor func onDropped(files ty
 swift.method Canvas.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Canvas.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Canvas.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Canvas.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Canvas.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Canvas.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Canvas.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Canvas.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Canvas.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Canvas.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Canvas.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2622,7 +2628,7 @@ swift.method Capsule.fill(_:): @MainActor func fill(_ state: Binding<Material>) 
 swift.method Capsule.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Capsule.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Capsule.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
-swift.method Capsule.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Capsule.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Capsule.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Capsule.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Capsule.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -2685,9 +2691,9 @@ swift.method Capsule.onDropped(files:gate:_:): @MainActor func onDropped(files t
 swift.method Capsule.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Capsule.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Capsule.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Capsule.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Capsule.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Capsule.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Capsule.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Capsule.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Capsule.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Capsule.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Capsule.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2812,7 +2818,7 @@ swift.method CheckBox.engine(following:_:priority:_:): @MainActor func engine<Fi
 swift.method CheckBox.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method CheckBox.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method CheckBox.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method CheckBox.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method CheckBox.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method CheckBox.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method CheckBox.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method CheckBox.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -2873,9 +2879,9 @@ swift.method CheckBox.onDropped(files:gate:_:): @MainActor func onDropped(files 
 swift.method CheckBox.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method CheckBox.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method CheckBox.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method CheckBox.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method CheckBox.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method CheckBox.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method CheckBox.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method CheckBox.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method CheckBox.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method CheckBox.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method CheckBox.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method CheckBox.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3018,7 +3024,7 @@ swift.method ColorPicker.engine(following:_:priority:_:): @MainActor func engine
 swift.method ColorPicker.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ColorPicker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ColorPicker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method ColorPicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method ColorPicker.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method ColorPicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ColorPicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ColorPicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -3082,9 +3088,9 @@ swift.method ColorPicker.onDropped(files:gate:_:): @MainActor func onDropped(fil
 swift.method ColorPicker.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method ColorPicker.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ColorPicker.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method ColorPicker.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method ColorPicker.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ColorPicker.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ColorPicker.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method ColorPicker.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ColorPicker.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ColorPicker.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ColorPicker.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ColorPicker.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3223,7 +3229,7 @@ swift.method DatePicker.fontFamily(_:): @MainActor func fontFamily(_ value: Stri
 swift.method DatePicker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
 swift.method DatePicker.format(_:): @MainActor func format(_ state: Binding<DateFormat>) -> DatePicker.Modified
-swift.method DatePicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method DatePicker.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method DatePicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method DatePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method DatePicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -3295,9 +3301,9 @@ swift.method DatePicker.onDropped(files:gate:_:): @MainActor func onDropped(file
 swift.method DatePicker.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method DatePicker.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method DatePicker.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method DatePicker.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method DatePicker.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method DatePicker.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method DatePicker.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method DatePicker.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method DatePicker.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method DatePicker.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DatePicker.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3432,7 +3438,7 @@ swift.method DebugInspector.engine(following:_:priority:_:): @MainActor func eng
 swift.method DebugInspector.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method DebugInspector.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method DebugInspector.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method DebugInspector.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method DebugInspector.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method DebugInspector.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspector.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspector.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -3492,9 +3498,9 @@ swift.method DebugInspector.onDropped(files:gate:_:): @MainActor func onDropped(
 swift.method DebugInspector.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method DebugInspector.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method DebugInspector.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method DebugInspector.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method DebugInspector.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method DebugInspector.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method DebugInspector.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method DebugInspector.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method DebugInspector.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method DebugInspector.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspector.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspector.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3612,7 +3618,7 @@ swift.method DebugInspectorButton.engine(following:_:priority:_:): @MainActor fu
 swift.method DebugInspectorButton.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method DebugInspectorButton.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method DebugInspectorButton.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method DebugInspectorButton.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method DebugInspectorButton.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method DebugInspectorButton.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspectorButton.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspectorButton.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -3672,9 +3678,9 @@ swift.method DebugInspectorButton.onDropped(files:gate:_:): @MainActor func onDr
 swift.method DebugInspectorButton.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method DebugInspectorButton.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method DebugInspectorButton.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method DebugInspectorButton.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method DebugInspectorButton.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method DebugInspectorButton.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method DebugInspectorButton.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method DebugInspectorButton.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method DebugInspectorButton.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspectorButton.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspectorButton.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3806,7 +3812,7 @@ swift.method Either.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method Either.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Either.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Either.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Either.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Either.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Either.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Either.gridColumn(_:): @MainActor func gridColumn(_ value: Int) -> Self.Modified
 swift.method Either.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -3881,9 +3887,9 @@ swift.method Either.onDropped(files:gate:_:): @MainActor func onDropped(files ty
 swift.method Either.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Either.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Either.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Either.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Either.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Either.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Either.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Either.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Either.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Either.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Either.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Either.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4025,7 +4031,7 @@ swift.method Ellipse.fill(_:): @MainActor func fill(_ state: Binding<Material>) 
 swift.method Ellipse.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Ellipse.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Ellipse.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
-swift.method Ellipse.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Ellipse.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Ellipse.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Ellipse.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Ellipse.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -4088,9 +4094,9 @@ swift.method Ellipse.onDropped(files:gate:_:): @MainActor func onDropped(files t
 swift.method Ellipse.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Ellipse.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Ellipse.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Ellipse.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Ellipse.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Ellipse.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Ellipse.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Ellipse.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Ellipse.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Ellipse.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Ellipse.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Ellipse.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4217,7 +4223,7 @@ swift.method Fill.engine(following:_:priority:_:): @MainActor func engine<First,
 swift.method Fill.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Fill.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Fill.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Fill.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Fill.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Fill.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Fill.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Fill.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -4278,9 +4284,9 @@ swift.method Fill.onDropped(files:gate:_:): @MainActor func onDropped(files type
 swift.method Fill.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Fill.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Fill.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Fill.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Fill.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Fill.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Fill.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Fill.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Fill.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Fill.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Fill.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4426,7 +4432,7 @@ swift.method GalleryView.engine(tracking:_:priority:_:): @MainActor func engine<
 swift.method GalleryView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method GalleryView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method GalleryView.fade(_:): @MainActor func fade(_ amount: Double) -> GalleryView<Items, ID>
-swift.method GalleryView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method GalleryView.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method GalleryView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method GalleryView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method GalleryView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -4489,9 +4495,9 @@ swift.method GalleryView.onDropped(files:gate:_:): @MainActor func onDropped(fil
 swift.method GalleryView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method GalleryView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method GalleryView.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method GalleryView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method GalleryView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method GalleryView.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method GalleryView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method GalleryView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method GalleryView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method GalleryView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GalleryView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GalleryView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4618,7 +4624,7 @@ swift.method GeometryReader.engine(following:_:priority:_:): @MainActor func eng
 swift.method GeometryReader.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method GeometryReader.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method GeometryReader.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method GeometryReader.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method GeometryReader.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method GeometryReader.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method GeometryReader.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method GeometryReader.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -4678,9 +4684,9 @@ swift.method GeometryReader.onDropped(files:gate:_:): @MainActor func onDropped(
 swift.method GeometryReader.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method GeometryReader.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method GeometryReader.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method GeometryReader.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method GeometryReader.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method GeometryReader.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method GeometryReader.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method GeometryReader.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method GeometryReader.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method GeometryReader.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GeometryReader.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GeometryReader.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4803,7 +4809,7 @@ swift.method Grid.engine(following:_:priority:_:): @MainActor func engine<First,
 swift.method Grid.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Grid.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Grid.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Grid.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Grid.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Grid.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Grid.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Grid.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -4867,9 +4873,9 @@ swift.method Grid.onDropped(files:gate:_:): @MainActor func onDropped(files type
 swift.method Grid.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Grid.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Grid.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Grid.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Grid.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Grid.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Grid.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Grid.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Grid.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Grid.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Grid.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Grid.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5007,7 +5013,7 @@ swift.method Group.engine(following:_:priority:_:): @MainActor func engine<First
 swift.method Group.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Group.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Group.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Group.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Group.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Group.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Group.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Group.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -5067,9 +5073,9 @@ swift.method Group.onDropped(files:gate:_:): @MainActor func onDropped(files typ
 swift.method Group.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Group.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Group.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Group.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Group.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Group.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Group.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Group.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Group.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Group.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Group.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Group.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5188,7 +5194,7 @@ swift.method HStack.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method HStack.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method HStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method HStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method HStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method HStack.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method HStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method HStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method HStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -5253,9 +5259,9 @@ swift.method HStack.onDropped(files:gate:_:): @MainActor func onDropped(files ty
 swift.method HStack.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method HStack.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method HStack.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method HStack.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method HStack.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method HStack.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method HStack.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method HStack.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method HStack.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method HStack.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method HStack.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method HStack.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5395,7 +5401,7 @@ swift.method Image.engine(following:_:priority:_:): @MainActor func engine<First
 swift.method Image.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Image.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Image.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Image.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Image.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Image.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Image.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Image.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -5456,9 +5462,9 @@ swift.method Image.onDropped(files:gate:_:): @MainActor func onDropped(files typ
 swift.method Image.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Image.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Image.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Image.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Image.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Image.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Image.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Image.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Image.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Image.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Image.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Image.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5585,7 +5591,7 @@ swift.method ItemsView.engine(tracking:_:priority:_:): @MainActor func engine<Fi
 swift.method ItemsView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ItemsView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ItemsView.footer(_:): @MainActor func footer<Content>(@ViewBuilder _ content: () -> Content) -> ItemsView<ID> where Content : View
-swift.method ItemsView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method ItemsView.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method ItemsView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ItemsView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ItemsView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -5654,9 +5660,9 @@ swift.method ItemsView.onDropped(policy:_:): @MainActor func onDropped(policy: G
 swift.method ItemsView.onEndReached(within:_:): @MainActor func onEndReached(within: Int = 0, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> ItemsView<ID>
 swift.method ItemsView.onEndReached(within:gate:_:): @MainActor func onEndReached(within: Int = 0, gate: Gate, _ handler: @escaping EventHandler) -> ItemsView<ID>
 swift.method ItemsView.onEndReached(within:policy:_:): @MainActor func onEndReached(within: Int = 0, policy: GatePolicy, _ handler: @escaping EventHandler) -> ItemsView<ID>
-swift.method ItemsView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method ItemsView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ItemsView.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ItemsView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method ItemsView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ItemsView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ItemsView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ItemsView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5821,7 +5827,7 @@ swift.method Line.engine(following:_:priority:_:): @MainActor func engine<First,
 swift.method Line.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Line.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Line.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Line.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Line.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Line.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Line.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Line.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -5884,9 +5890,9 @@ swift.method Line.onDropped(files:gate:_:): @MainActor func onDropped(files type
 swift.method Line.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Line.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Line.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Line.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Line.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Line.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Line.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Line.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Line.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Line.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Line.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6015,7 +6021,7 @@ swift.method Link.engine(following:_:priority:_:): @MainActor func engine<First,
 swift.method Link.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Link.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Link.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Link.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Link.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Link.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Link.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Link.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -6079,9 +6085,9 @@ swift.method Link.onDropped(files:gate:_:): @MainActor func onDropped(files type
 swift.method Link.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Link.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Link.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Link.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Link.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Link.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Link.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Link.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Link.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Link.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Link.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6220,7 +6226,7 @@ swift.method Map.engine(following:_:priority:_:): @MainActor func engine<First, 
 swift.method Map.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Map.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Map.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Map.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Map.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Map.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Map.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Map.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -6284,9 +6290,9 @@ swift.method Map.onDropped(files:gate:_:): @MainActor func onDropped(files types
 swift.method Map.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Map.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Map.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Map.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Map.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Map.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Map.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Map.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Map.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Map.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Map.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6479,7 +6485,7 @@ swift.method ModifiedContent.engine(following:_:priority:_:): @MainActor func en
 swift.method ModifiedContent.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ModifiedContent.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ModifiedContent.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method ModifiedContent.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method ModifiedContent.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method ModifiedContent.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ModifiedContent.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ModifiedContent.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -6539,9 +6545,9 @@ swift.method ModifiedContent.onDropped(files:gate:_:): @MainActor func onDropped
 swift.method ModifiedContent.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method ModifiedContent.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ModifiedContent.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method ModifiedContent.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method ModifiedContent.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ModifiedContent.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ModifiedContent.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method ModifiedContent.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ModifiedContent.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ModifiedContent.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ModifiedContent.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6662,7 +6668,7 @@ swift.method MotionLayout.engine(tracking:priority:_:): @MainActor func engine<e
 swift.method MotionLayout.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method MotionLayout.following(_:): @MainActor func following<each Value>(_ states: repeat Binding<each Value>) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.following(_:_:): @MainActor func following<First, each More>(_ first: Journey<First>, _ more: repeat Journey<each More>) -> MotionLayout<Items, ID, Parameters> where First : Walked, repeat each More : Walked
-swift.method MotionLayout.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method MotionLayout.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method MotionLayout.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method MotionLayout.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method MotionLayout.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -6727,9 +6733,9 @@ swift.method MotionLayout.onDropped(files:gate:_:): @MainActor func onDropped(fi
 swift.method MotionLayout.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method MotionLayout.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method MotionLayout.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method MotionLayout.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method MotionLayout.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method MotionLayout.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method MotionLayout.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method MotionLayout.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method MotionLayout.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method MotionLayout.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method MotionLayout.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6887,7 +6893,7 @@ swift.method NavigationStack.engine(following:_:priority:_:): @MainActor func en
 swift.method NavigationStack.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method NavigationStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method NavigationStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method NavigationStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method NavigationStack.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method NavigationStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method NavigationStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method NavigationStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -6947,9 +6953,9 @@ swift.method NavigationStack.onDropped(files:gate:_:): @MainActor func onDropped
 swift.method NavigationStack.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method NavigationStack.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method NavigationStack.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method NavigationStack.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method NavigationStack.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method NavigationStack.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method NavigationStack.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method NavigationStack.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method NavigationStack.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method NavigationStack.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method NavigationStack.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method NavigationStack.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7083,7 +7089,7 @@ swift.method Path.fill(_:): @MainActor func fill(_ state: Binding<Material>) -> 
 swift.method Path.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Path.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Path.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
-swift.method Path.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Path.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Path.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Path.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Path.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -7148,9 +7154,9 @@ swift.method Path.onDropped(files:gate:_:): @MainActor func onDropped(files type
 swift.method Path.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Path.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Path.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Path.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Path.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Path.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Path.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Path.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Path.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Path.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Path.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Path.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7279,7 +7285,7 @@ swift.method Picker.fontAttributes(_:): @MainActor func fontAttributes(_ state: 
 swift.method Picker.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method Picker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method Picker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Picker.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Picker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Picker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Picker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -7347,9 +7353,9 @@ swift.method Picker.onDropped(files:gate:_:): @MainActor func onDropped(files ty
 swift.method Picker.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Picker.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Picker.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Picker.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Picker.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Picker.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Picker.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Picker.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Picker.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Picker.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Picker.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7500,7 +7506,7 @@ swift.method Polygon.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modi
 swift.method Polygon.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Polygon.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
 swift.method Polygon.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Self.Modified
-swift.method Polygon.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Polygon.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Polygon.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Polygon.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Polygon.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -7565,9 +7571,9 @@ swift.method Polygon.onDropped(files:gate:_:): @MainActor func onDropped(files t
 swift.method Polygon.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Polygon.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Polygon.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Polygon.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Polygon.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Polygon.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Polygon.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Polygon.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Polygon.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Polygon.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polygon.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7701,7 +7707,7 @@ swift.method Polyline.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Mod
 swift.method Polyline.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Polyline.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
 swift.method Polyline.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Self.Modified
-swift.method Polyline.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Polyline.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Polyline.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Polyline.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Polyline.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -7766,9 +7772,9 @@ swift.method Polyline.onDropped(files:gate:_:): @MainActor func onDropped(files 
 swift.method Polyline.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Polyline.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Polyline.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Polyline.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Polyline.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Polyline.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Polyline.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Polyline.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Polyline.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Polyline.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polyline.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7911,7 +7917,7 @@ swift.method PositionDots.engine(following:_:priority:_:): @MainActor func engin
 swift.method PositionDots.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method PositionDots.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method PositionDots.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method PositionDots.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method PositionDots.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method PositionDots.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method PositionDots.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method PositionDots.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -7975,9 +7981,9 @@ swift.method PositionDots.onDropped(files:gate:_:): @MainActor func onDropped(fi
 swift.method PositionDots.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method PositionDots.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method PositionDots.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method PositionDots.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method PositionDots.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method PositionDots.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method PositionDots.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method PositionDots.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method PositionDots.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method PositionDots.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method PositionDots.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8103,7 +8109,7 @@ swift.method ProgressBar.engine(following:_:priority:_:): @MainActor func engine
 swift.method ProgressBar.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ProgressBar.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ProgressBar.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method ProgressBar.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method ProgressBar.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method ProgressBar.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ProgressBar.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ProgressBar.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -8163,9 +8169,9 @@ swift.method ProgressBar.onDropped(files:gate:_:): @MainActor func onDropped(fil
 swift.method ProgressBar.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method ProgressBar.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ProgressBar.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method ProgressBar.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method ProgressBar.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ProgressBar.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ProgressBar.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method ProgressBar.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ProgressBar.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ProgressBar.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ProgressBar.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8307,7 +8313,7 @@ swift.method Rectangle.fill(_:): @MainActor func fill(_ state: Binding<Material>
 swift.method Rectangle.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Rectangle.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Rectangle.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
-swift.method Rectangle.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Rectangle.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Rectangle.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Rectangle.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Rectangle.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -8372,9 +8378,9 @@ swift.method Rectangle.onDropped(files:gate:_:): @MainActor func onDropped(files
 swift.method Rectangle.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Rectangle.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Rectangle.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Rectangle.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Rectangle.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Rectangle.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Rectangle.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Rectangle.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Rectangle.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Rectangle.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Rectangle.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8511,7 +8517,7 @@ swift.method ScrollView.engine(following:_:priority:_:): @MainActor func engine<
 swift.method ScrollView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ScrollView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ScrollView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method ScrollView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method ScrollView.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method ScrollView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ScrollView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ScrollView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -8577,9 +8583,9 @@ swift.method ScrollView.onDropped(files:gate:_:): @MainActor func onDropped(file
 swift.method ScrollView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method ScrollView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ScrollView.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method ScrollView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method ScrollView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ScrollView.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ScrollView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method ScrollView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ScrollView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ScrollView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ScrollView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ScrollView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8728,7 +8734,7 @@ swift.method SearchField.fontAttributes(_:): @MainActor func fontAttributes(_ st
 swift.method SearchField.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method SearchField.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method SearchField.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method SearchField.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method SearchField.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method SearchField.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method SearchField.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -8797,9 +8803,9 @@ swift.method SearchField.onDropped(files:gate:_:): @MainActor func onDropped(fil
 swift.method SearchField.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method SearchField.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method SearchField.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method SearchField.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method SearchField.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method SearchField.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method SearchField.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method SearchField.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method SearchField.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method SearchField.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SearchField.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SearchField.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8945,7 +8951,7 @@ swift.method Separator.engine(following:_:priority:_:): @MainActor func engine<F
 swift.method Separator.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Separator.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Separator.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Separator.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Separator.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Separator.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Separator.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Separator.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -9005,9 +9011,9 @@ swift.method Separator.onDropped(files:gate:_:): @MainActor func onDropped(files
 swift.method Separator.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Separator.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Separator.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Separator.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Separator.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Separator.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Separator.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Separator.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Separator.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Separator.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Separator.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Separator.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9143,7 +9149,7 @@ swift.method Slider.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method Slider.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Slider.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Slider.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Slider.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Slider.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Slider.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Slider.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Slider.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -9206,9 +9212,9 @@ swift.method Slider.onDropped(files:gate:_:): @MainActor func onDropped(files ty
 swift.method Slider.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Slider.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Slider.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Slider.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Slider.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Slider.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Slider.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Slider.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Slider.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Slider.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Slider.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9345,7 +9351,7 @@ swift.method Space.engine(following:_:priority:_:): @MainActor func engine<First
 swift.method Space.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Space.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Space.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Space.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Space.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Space.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Space.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Space.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -9406,9 +9412,9 @@ swift.method Space.onDropped(files:gate:_:): @MainActor func onDropped(files typ
 swift.method Space.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Space.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Space.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Space.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Space.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Space.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Space.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Space.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Space.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Space.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Space.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9534,7 +9540,7 @@ swift.method Spinner.engine(following:_:priority:_:): @MainActor func engine<Fir
 swift.method Spinner.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Spinner.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Spinner.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Spinner.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Spinner.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Spinner.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Spinner.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Spinner.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -9594,9 +9600,9 @@ swift.method Spinner.onDropped(files:gate:_:): @MainActor func onDropped(files t
 swift.method Spinner.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Spinner.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Spinner.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Spinner.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Spinner.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Spinner.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Spinner.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Spinner.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Spinner.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Spinner.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Spinner.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Spinner.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9730,7 +9736,7 @@ swift.method SplitView.engine(following:_:priority:_:): @MainActor func engine<F
 swift.method SplitView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method SplitView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method SplitView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method SplitView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method SplitView.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method SplitView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method SplitView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method SplitView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -9790,9 +9796,9 @@ swift.method SplitView.onDropped(files:gate:_:): @MainActor func onDropped(files
 swift.method SplitView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method SplitView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method SplitView.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method SplitView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method SplitView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method SplitView.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method SplitView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method SplitView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method SplitView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method SplitView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SplitView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SplitView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9932,7 +9938,7 @@ swift.method Stepper.engine(following:_:priority:_:): @MainActor func engine<Fir
 swift.method Stepper.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Stepper.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Stepper.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Stepper.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Stepper.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Stepper.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Stepper.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Stepper.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -9995,9 +10001,9 @@ swift.method Stepper.onDropped(files:gate:_:): @MainActor func onDropped(files t
 swift.method Stepper.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Stepper.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Stepper.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Stepper.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Stepper.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Stepper.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Stepper.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Stepper.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Stepper.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Stepper.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Stepper.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Stepper.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10270,7 +10276,7 @@ swift.method Switch.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method Switch.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method Switch.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Switch.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Switch.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Switch.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Switch.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Switch.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Switch.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -10331,9 +10337,9 @@ swift.method Switch.onDropped(files:gate:_:): @MainActor func onDropped(files ty
 swift.method Switch.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Switch.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Switch.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Switch.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Switch.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Switch.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Switch.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Switch.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Switch.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Switch.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Switch.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Switch.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10475,7 +10481,7 @@ swift.method TabView.engine(following:_:priority:_:): @MainActor func engine<Fir
 swift.method TabView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method TabView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TabView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method TabView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method TabView.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method TabView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TabView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TabView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -10535,9 +10541,9 @@ swift.method TabView.onDropped(files:gate:_:): @MainActor func onDropped(files t
 swift.method TabView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method TabView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TabView.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method TabView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method TabView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method TabView.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method TabView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method TabView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method TabView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TabView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TabView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TabView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10664,7 +10670,7 @@ swift.method Text.fontAttributes(_:): @MainActor func fontAttributes(_ state: Bi
 swift.method Text.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method Text.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method Text.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method Text.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method Text.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Text.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Text.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -10730,9 +10736,9 @@ swift.method Text.onDropped(files:gate:_:): @MainActor func onDropped(files type
 swift.method Text.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method Text.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Text.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Text.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method Text.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Text.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Text.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method Text.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method Text.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Text.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Text.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Text.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10878,7 +10884,7 @@ swift.method TextEditor.fontAttributes(_:): @MainActor func fontAttributes(_ sta
 swift.method TextEditor.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method TextEditor.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method TextEditor.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method TextEditor.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method TextEditor.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TextEditor.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TextEditor.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -10948,9 +10954,9 @@ swift.method TextEditor.onDropped(files:gate:_:): @MainActor func onDropped(file
 swift.method TextEditor.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method TextEditor.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TextEditor.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method TextEditor.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method TextEditor.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method TextEditor.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method TextEditor.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method TextEditor.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method TextEditor.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TextEditor.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextEditor.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextEditor.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11096,7 +11102,7 @@ swift.method TextField.fontAttributes(_:): @MainActor func fontAttributes(_ stat
 swift.method TextField.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method TextField.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method TextField.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method TextField.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method TextField.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TextField.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TextField.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -11166,9 +11172,9 @@ swift.method TextField.onDropped(files:gate:_:): @MainActor func onDropped(files
 swift.method TextField.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method TextField.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TextField.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method TextField.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method TextField.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method TextField.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method TextField.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method TextField.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method TextField.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TextField.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextField.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextField.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11372,7 +11378,7 @@ swift.method TimePicker.fontFamily(_:): @MainActor func fontFamily(_ value: Stri
 swift.method TimePicker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
 swift.method TimePicker.format(_:): @MainActor func format(_ state: Binding<TimeFormat>) -> TimePicker.Modified
-swift.method TimePicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method TimePicker.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method TimePicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -11439,9 +11445,9 @@ swift.method TimePicker.onDropped(files:gate:_:): @MainActor func onDropped(file
 swift.method TimePicker.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method TimePicker.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TimePicker.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method TimePicker.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method TimePicker.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method TimePicker.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method TimePicker.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method TimePicker.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method TimePicker.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TimePicker.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TimePicker.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11686,7 +11692,7 @@ swift.method VStack.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method VStack.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method VStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method VStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method VStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method VStack.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method VStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method VStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method VStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -11750,9 +11756,9 @@ swift.method VStack.onDropped(files:gate:_:): @MainActor func onDropped(files ty
 swift.method VStack.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method VStack.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method VStack.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method VStack.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method VStack.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method VStack.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method VStack.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method VStack.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method VStack.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method VStack.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method VStack.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11894,9 +11900,9 @@ swift.method View.onDropped(files:gate:_:): @MainActor func onDropped(files type
 swift.method View.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method View.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method View.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method View.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method View.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method View.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method View.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method View.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method View.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method View.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method View.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method View.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12001,7 +12007,7 @@ swift.method VisualElement.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Sel
 swift.method VisualElement.background(_:): @MainActor func background(_ state: Binding<Color>) -> Self.Modified
 swift.method VisualElement.background(_:): @MainActor func background(_ state: Binding<Material>) -> Self.Modified
 swift.method VisualElement.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method VisualElement.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method VisualElement.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method VisualElement.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method VisualElement.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -12100,7 +12106,7 @@ swift.method WebView.engine(following:_:priority:_:): @MainActor func engine<Fir
 swift.method WebView.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method WebView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method WebView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method WebView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method WebView.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method WebView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method WebView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method WebView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -12161,9 +12167,9 @@ swift.method WebView.onDropped(files:gate:_:): @MainActor func onDropped(files t
 swift.method WebView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method WebView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method WebView.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method WebView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method WebView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method WebView.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method WebView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method WebView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method WebView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method WebView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method WebView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method WebView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12323,7 +12329,7 @@ swift.method ZStack.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method ZStack.engine(tracking:_:priority:_:): @MainActor func engine<First, each More>(tracking first: Journey<First>, _ more: repeat Journey<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified where First : Walked, repeat each More : Walked
 swift.method ZStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ZStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method ZStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method ZStack.frame(into:stage:): @MainActor func frame(into state: Binding<Rect>, stage: GeometryStage = .layout) -> Self.Modified
 swift.method ZStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ZStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ZStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -12387,9 +12393,9 @@ swift.method ZStack.onDropped(files:gate:_:): @MainActor func onDropped(files ty
 swift.method ZStack.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
 swift.method ZStack.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ZStack.onDropped(policy:_:): @MainActor func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method ZStack.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method ZStack.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ZStack.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ZStack.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method ZStack.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method ZStack.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ZStack.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ZStack.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ZStack.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -13559,7 +13565,6 @@ swift.type.property ViewContract.dragText: static let dragText: ElementProperty<
 swift.type.property ViewContract.dropped: static let dropped: ElementEvent<ViewContract, String>
 swift.type.property ViewContract.droppedFileTypes: static let droppedFileTypes: ElementProperty<ViewContract, [FileType]>
 swift.type.property ViewContract.filesDropped: static let filesDropped: ElementEvent<ViewContract, [ChosenFile]>
-swift.type.property ViewContract.frameChanged: static let frameChanged: ElementEvent<ViewContract, [Double]>
 swift.type.property ViewContract.gridColumn: static let gridColumn: ElementProperty<ViewContract, Int>
 swift.type.property ViewContract.gridColumnSpan: static let gridColumnSpan: ElementProperty<ViewContract, Int>
 swift.type.property ViewContract.gridRow: static let gridRow: ElementProperty<ViewContract, Int>
@@ -13569,6 +13574,7 @@ swift.type.property ViewContract.holdDuration: static let holdDuration: ElementP
 swift.type.property ViewContract.horizontalAlignment: static let horizontalAlignment: ElementProperty<ViewContract, Alignment>
 swift.type.property ViewContract.isDraggable: static let isDraggable: ElementProperty<ViewContract, Bool>
 swift.type.property ViewContract.layoutBody: static let layoutBody: ElementProperty<ViewContract, LayoutBody>
+swift.type.property ViewContract.layoutFrameChanged: static let layoutFrameChanged: ElementEvent<ViewContract, [Double]>
 swift.type.property ViewContract.margin: static let margin: ElementProperty<ViewContract, Insets>
 swift.type.property ViewContract.name: static let name: String
 swift.type.property ViewContract.panTouchCount: static let panTouchCount: ElementProperty<ViewContract, Int>
@@ -13579,6 +13585,7 @@ swift.type.property ViewContract.pinchUpdated: static let pinchUpdated: ElementE
 swift.type.property ViewContract.pointerMoved: static let pointerMoved: ElementEvent<ViewContract, Point?>
 swift.type.property ViewContract.pointerPressed: static let pointerPressed: ElementEvent<ViewContract, Point?>
 swift.type.property ViewContract.pointerReleased: static let pointerReleased: ElementEvent<ViewContract, Point?>
+swift.type.property ViewContract.presentationFrameChanged: static let presentationFrameChanged: ElementEvent<ViewContract, [Double]>
 swift.type.property ViewContract.rotationUpdated: static let rotationUpdated: ElementEvent<ViewContract, (GesturePhase, Double, Double)>
 swift.type.property ViewContract.swipeDirections: static let swipeDirections: ElementProperty<ViewContract, SwipeDirections>
 swift.type.property ViewContract.swipeThreshold: static let swipeThreshold: ElementProperty<ViewContract, Double>
@@ -13596,11 +13603,11 @@ swift.type.property VisualElementContract.accessibilityLabel: static let accessi
 swift.type.property VisualElementContract.accessibilityPresence: static let accessibilityPresence: ElementProperty<VisualElementContract, AccessibilityPresence>
 swift.type.property VisualElementContract.accessibilityRole: static let accessibilityRole: ElementProperty<VisualElementContract, AccessibilityRole>
 swift.type.property VisualElementContract.accessibilityValue: static let accessibilityValue: ElementProperty<VisualElementContract, String>
-swift.type.property VisualElementContract.frame: static let frame: ElementProperty<VisualElementContract, Rect>
 swift.type.property VisualElementContract.height: static let height: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.ignoresInput: static let ignoresInput: ElementProperty<VisualElementContract, Bool>
 swift.type.property VisualElementContract.isVisible: static let isVisible: ElementProperty<VisualElementContract, Bool>
 swift.type.property VisualElementContract.layoutDirection: static let layoutDirection: ElementProperty<VisualElementContract, LayoutDirection>
+swift.type.property VisualElementContract.layoutFrame: static let layoutFrame: ElementProperty<VisualElementContract, Rect>
 swift.type.property VisualElementContract.maximumHeight: static let maximumHeight: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.maximumWidth: static let maximumWidth: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.minimumHeight: static let minimumHeight: ElementProperty<VisualElementContract, Double>
@@ -13609,6 +13616,7 @@ swift.type.property VisualElementContract.name: static let name: String
 swift.type.property VisualElementContract.opacity: static let opacity: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.pivotX: static let pivotX: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.pivotY: static let pivotY: ElementProperty<VisualElementContract, Double>
+swift.type.property VisualElementContract.presentationFrame: static let presentationFrame: ElementProperty<VisualElementContract, Rect>
 swift.type.property VisualElementContract.rotation: static let rotation: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.rotationX: static let rotationX: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.rotationY: static let rotationY: ElementProperty<VisualElementContract, Double>

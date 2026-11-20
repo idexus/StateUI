@@ -55,7 +55,7 @@
                 s.start {
                     VStack {
                         Text(Self.long).lineBreak(.wordWrap).maximumLines(lines.wrappedValue).width(100)
-                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("label")
+                            .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }.id("label")
                         Button("More").onClicked { lines.wrappedValue = 3 }.id("change")
                         Button("Fewer").onClicked { lines.wrappedValue = 1 }.id("fewer")
                     }

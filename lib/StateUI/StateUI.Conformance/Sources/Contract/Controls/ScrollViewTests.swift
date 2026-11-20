@@ -23,7 +23,7 @@
                             Rectangle()
                                 .fill(.red)
                                 .height(2000)
-                                .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }
                         }
                         .axes(.vertical)
                         .width(200).height(100)
@@ -46,7 +46,7 @@
                                 .fill(.red)
                                 .width(3000)
                                 .height(40)
-                                .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }
                         }
                         .axes(.horizontal)
                         .width(200).height(100)

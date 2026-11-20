@@ -19,14 +19,14 @@
                         ZStack {
                             Rectangle()
                                 .fill(.red)
-                                .onEvent(ViewContract.frameChanged) { back.values.append($0) }.id("back")
+                                .onEvent(ViewContract.layoutFrameChanged) { back.values.append($0) }.id("back")
                             Rectangle()
                                 .fill(.blue)
                                 .width(20)
                                 .height(20)
                                 .horizontalAlignment(.start)
                                 .verticalAlignment(.start)
-                                .onEvent(ViewContract.frameChanged) { front.values.append($0) }.id("front")
+                                .onEvent(ViewContract.layoutFrameChanged) { front.values.append($0) }.id("front")
                         }
                         .width(60).height(40)
                     }
@@ -74,7 +74,7 @@
                         ZStack {
                             let child = Rectangle().fill(.blue)
                             (placed.wrappedValue ? child.area(.absolute(Rect(10, 20, 30, 15))) : child)
-                                .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("child")
+                                .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }.id("child")
                         }
                         .width(60).height(40)
                         .horizontalAlignment(.start)

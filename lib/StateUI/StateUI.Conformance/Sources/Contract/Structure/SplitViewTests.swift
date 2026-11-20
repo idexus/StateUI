@@ -14,12 +14,12 @@
         [
             ConformanceCase("standsAloneShowingItsDetail", proves: [
                 Covered(SplitViewContract.self),
-            ], needs: [Covered(ViewContract.frameChanged, on: "Text")]) { s in
+            ], needs: [Covered(ViewContract.layoutFrameChanged, on: "Text")]) { s in
                 let frames = Received<[Double]>()
                 s.start {
                     SplitView {
                         Text("Sidebar")
-                    } detail: { WideDetail(Text("Detail").onEvent(ViewContract.frameChanged) { frames.values.append($0) }) }
+                    } detail: { WideDetail(Text("Detail").onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }) }
                     .showsSidebar(State(wrappedValue: true).projectedValue)
                 }
                 s.settle { Aspects.laidOut(frames) }

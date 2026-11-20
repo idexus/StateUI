@@ -87,26 +87,26 @@ extension PlacedView {
         self.reducesMotion = reducesMotion
     }
 
-    /// How an arrangement places a layout's children: `said` when a patch reached the layout,
-    /// `resized` when its own width changed, `framesRead` when a frame under it is read.
-    public func arrangement(said: Bool, resized: Bool, motion: HostLayoutMotion?, framesRead: Bool) -> Arrangement {
+    /// How an arrangement places a layout's children: `said` when a patch reached the layout, `resized` when its
+    /// own width changed. Whether a frame is read changes nothing: a reader of the layout stage is told the
+    /// destination, one of the presentation stage each place on the way.
+    public func arrangement(said: Bool, resized: Bool, motion: HostLayoutMotion?) -> Arrangement {
         let lanes = motion?.lanes ?? .all
 
         guard said, !lanes.isEmpty, let law = law(of: motion) else { return Arrangement() }
 
-        return Arrangement(law: law, lanes: resized || framesRead ? [] : lanes, fades: true)
+        return Arrangement(law: law, lanes: resized ? [] : lanes, fades: true)
     }
 
     /// How a child that is a body is placed in an arrangement whose other children are placed as `arrangement`
     /// says: a body of none arrives; one answering a change travels on its spring where a patch `said` the
     /// arrangement and the layout's own width stands, whatever the layout's own motion; one following its place
-    /// travels on its spring whenever its place moves. Under less motion, and while a frame under the layout is
-    /// read, it arrives.
+    /// travels on its spring whenever its place moves. Under less motion it arrives.
     /// Design: docs/design/host/motion.md#a-child-that-is-a-body
     public func arrangement(
-        of body: LayoutBody, said: Bool, resized: Bool, framesRead: Bool, among arrangement: Arrangement
+        of body: LayoutBody, said: Bool, resized: Bool, among arrangement: Arrangement
     ) -> Arrangement {
-        guard let spring = body.host, !reducesMotion(), !framesRead, spring.follows || (said && !resized)
+        guard let spring = body.host, !reducesMotion(), spring.follows || (said && !resized)
         else { return Arrangement() }
 
         let law = Motion.spring(
@@ -215,6 +215,12 @@ extension PlacedView {
             }
             seats[mount]?.view?.placedFrame = seats[mount]?.frame(standing) ?? standing
         }
+    }
+
+    /// Where the child `mount` stands on its way and the place it travels to; nil for one standing at its place.
+    public func travel(of mount: UInt64) -> (standing: Rect, destination: Rect)? {
+        guard let seat = seats[mount], let standing = seat.standing else { return nil }
+        return (seat.frame(standing), seat.destination)
     }
 
     /// Forgets the place of an element that leaves the tree.

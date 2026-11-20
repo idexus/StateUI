@@ -332,7 +332,6 @@ WebView
   area
   dragText
   droppedFileTypes
-  frame
   gridColumn
   gridColumnSpan
   gridRow
@@ -345,6 +344,7 @@ WebView
   isEnabled
   isVisible
   keysTaken
+  layoutFrame
   letsInputThrough
   margin
   maximumHeight
@@ -357,6 +357,7 @@ WebView
   panYChannel
   pivotX
   pivotY
+  presentationFrame
   rotation
   rotationX
   rotationY
@@ -380,10 +381,10 @@ WebView
   dragStarting()
   dropped()
   filesDropped()
-  frameChanged()
   held()
   isFocusedChanged()
   keyPressed()
+  layoutFrameChanged()
   panUpdated()
   pinchUpdated()
   pointerEntered()
@@ -391,6 +392,7 @@ WebView
   pointerMoved()
   pointerPressed()
   pointerReleased()
+  presentationFrameChanged()
   rotationUpdated()
   swiped()
   tapped()

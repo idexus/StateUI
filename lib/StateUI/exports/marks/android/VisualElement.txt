@@ -1,4 +1,4 @@
-# revision 31.1
+# revision 32.1
 Button.accessibilityActionPerformed: ✅
 Button.accessibilityActions: ✅
 Button.accessibilityAdjusted: ✅
@@ -8,11 +8,11 @@ Button.accessibilityLabel: ✅
 Button.accessibilityPresence: ✅
 Button.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Button.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Button.frame: ✅
 Button.height: ✅
 Button.ignoresInput: not realized
 Button.isVisible: ✅
 Button.layoutDirection: ✅
+Button.layoutFrame: ✅
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
 Button.minimumHeight: ✅
@@ -20,6 +20,7 @@ Button.minimumWidth: ✅
 Button.opacity: ✅
 Button.pivotX: ✅
 Button.pivotY: ✅
+Button.presentationFrame: ✅
 Button.rotation: ✅
 Button.rotationX: ✅
 Button.rotationY: ✅
@@ -40,11 +41,11 @@ Canvas.accessibilityLabel: ✅
 Canvas.accessibilityPresence: ✅
 Canvas.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Canvas.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Canvas.frame: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: not realized
 Canvas.isVisible: ✅
 Canvas.layoutDirection: ✅
+Canvas.layoutFrame: ✅
 Canvas.maximumHeight: ✅
 Canvas.maximumWidth: ✅
 Canvas.minimumHeight: ✅
@@ -52,6 +53,7 @@ Canvas.minimumWidth: ✅
 Canvas.opacity: ✅
 Canvas.pivotX: ✅
 Canvas.pivotY: ✅
+Canvas.presentationFrame: ✅
 Canvas.rotation: ✅
 Canvas.rotationX: ✅
 Canvas.rotationY: ✅
@@ -72,11 +74,11 @@ Capsule.accessibilityLabel: ✅
 Capsule.accessibilityPresence: ✅
 Capsule.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Capsule.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Capsule.frame: ✅
 Capsule.height: ✅
 Capsule.ignoresInput: not realized
 Capsule.isVisible: ✅
 Capsule.layoutDirection: ✅
+Capsule.layoutFrame: ✅
 Capsule.maximumHeight: ✅
 Capsule.maximumWidth: ✅
 Capsule.minimumHeight: ✅
@@ -84,6 +86,7 @@ Capsule.minimumWidth: ✅
 Capsule.opacity: ✅
 Capsule.pivotX: ✅
 Capsule.pivotY: ✅
+Capsule.presentationFrame: ✅
 Capsule.rotation: ✅
 Capsule.rotationX: ✅
 Capsule.rotationY: ✅
@@ -104,11 +107,11 @@ CheckBox.accessibilityLabel: ✅
 CheckBox.accessibilityPresence: ✅
 CheckBox.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 CheckBox.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-CheckBox.frame: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: not realized
 CheckBox.isVisible: ✅
 CheckBox.layoutDirection: ✅
+CheckBox.layoutFrame: ✅
 CheckBox.maximumHeight: ✅
 CheckBox.maximumWidth: ✅
 CheckBox.minimumHeight: ✅
@@ -116,6 +119,7 @@ CheckBox.minimumWidth: ✅
 CheckBox.opacity: ✅
 CheckBox.pivotX: ✅
 CheckBox.pivotY: ✅
+CheckBox.presentationFrame: ✅
 CheckBox.rotation: ✅
 CheckBox.rotationX: ✅
 CheckBox.rotationY: ✅
@@ -136,11 +140,11 @@ ColorPicker.accessibilityLabel: – Android has no color picker of its own: neit
 ColorPicker.accessibilityPresence: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.accessibilityRole: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.accessibilityValue: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
-ColorPicker.frame: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.height: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.ignoresInput: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.isVisible: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.layoutDirection: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.layoutFrame: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.maximumHeight: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.maximumWidth: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.minimumHeight: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -148,6 +152,7 @@ ColorPicker.minimumWidth: – Android has no color picker of its own: neither th
 ColorPicker.opacity: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.pivotX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.pivotY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.presentationFrame: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.rotation: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.rotationX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.rotationY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -168,11 +173,11 @@ DatePicker.accessibilityLabel: ✅
 DatePicker.accessibilityPresence: ✅
 DatePicker.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 DatePicker.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-DatePicker.frame: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: not realized
 DatePicker.isVisible: ✅
 DatePicker.layoutDirection: ✅
+DatePicker.layoutFrame: ✅
 DatePicker.maximumHeight: ✅
 DatePicker.maximumWidth: ✅
 DatePicker.minimumHeight: ✅
@@ -180,6 +185,7 @@ DatePicker.minimumWidth: ✅
 DatePicker.opacity: ✅
 DatePicker.pivotX: ✅
 DatePicker.pivotY: ✅
+DatePicker.presentationFrame: ✅
 DatePicker.rotation: ✅
 DatePicker.rotationX: ✅
 DatePicker.rotationY: ✅
@@ -200,11 +206,11 @@ Ellipse.accessibilityLabel: ✅
 Ellipse.accessibilityPresence: ✅
 Ellipse.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Ellipse.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Ellipse.frame: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: not realized
 Ellipse.isVisible: ✅
 Ellipse.layoutDirection: ✅
+Ellipse.layoutFrame: ✅
 Ellipse.maximumHeight: ✅
 Ellipse.maximumWidth: ✅
 Ellipse.minimumHeight: ✅
@@ -212,6 +218,7 @@ Ellipse.minimumWidth: ✅
 Ellipse.opacity: ✅
 Ellipse.pivotX: ✅
 Ellipse.pivotY: ✅
+Ellipse.presentationFrame: ✅
 Ellipse.rotation: ✅
 Ellipse.rotationX: ✅
 Ellipse.rotationY: ✅
@@ -232,11 +239,11 @@ Fill.accessibilityLabel: ✅
 Fill.accessibilityPresence: ✅
 Fill.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Fill.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Fill.frame: ✅
 Fill.height: ✅
 Fill.ignoresInput: ✅
 Fill.isVisible: ✅
 Fill.layoutDirection: ✅
+Fill.layoutFrame: ✅
 Fill.maximumHeight: ✅
 Fill.maximumWidth: ✅
 Fill.minimumHeight: ✅
@@ -244,6 +251,7 @@ Fill.minimumWidth: ✅
 Fill.opacity: ✅
 Fill.pivotX: ✅
 Fill.pivotY: ✅
+Fill.presentationFrame: ✅
 Fill.rotation: ✅
 Fill.rotationX: ✅
 Fill.rotationY: ✅
@@ -264,11 +272,11 @@ Grid.accessibilityLabel: ✅
 Grid.accessibilityPresence: ✅
 Grid.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Grid.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Grid.frame: ✅
 Grid.height: ✅
 Grid.ignoresInput: ✅
 Grid.isVisible: ✅
 Grid.layoutDirection: ✅
+Grid.layoutFrame: ✅
 Grid.maximumHeight: ✅
 Grid.maximumWidth: ✅
 Grid.minimumHeight: ✅
@@ -276,6 +284,7 @@ Grid.minimumWidth: ✅
 Grid.opacity: ✅
 Grid.pivotX: ✅
 Grid.pivotY: ✅
+Grid.presentationFrame: ✅
 Grid.rotation: ✅
 Grid.rotationX: ✅
 Grid.rotationY: ✅
@@ -296,11 +305,11 @@ HStack.accessibilityLabel: ✅
 HStack.accessibilityPresence: ✅
 HStack.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 HStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-HStack.frame: ✅
 HStack.height: ✅
 HStack.ignoresInput: ✅
 HStack.isVisible: ✅
 HStack.layoutDirection: ✅
+HStack.layoutFrame: ✅
 HStack.maximumHeight: ✅
 HStack.maximumWidth: ✅
 HStack.minimumHeight: ✅
@@ -308,6 +317,7 @@ HStack.minimumWidth: ✅
 HStack.opacity: ✅
 HStack.pivotX: ✅
 HStack.pivotY: ✅
+HStack.presentationFrame: ✅
 HStack.rotation: ✅
 HStack.rotationX: ✅
 HStack.rotationY: ✅
@@ -328,11 +338,11 @@ Image.accessibilityLabel: ✅
 Image.accessibilityPresence: ✅
 Image.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Image.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Image.frame: ✅
 Image.height: ✅
 Image.ignoresInput: not realized
 Image.isVisible: ✅
 Image.layoutDirection: ✅
+Image.layoutFrame: ✅
 Image.maximumHeight: ✅
 Image.maximumWidth: ✅
 Image.minimumHeight: ✅
@@ -340,6 +350,7 @@ Image.minimumWidth: ✅
 Image.opacity: ✅
 Image.pivotX: ✅
 Image.pivotY: ✅
+Image.presentationFrame: ✅
 Image.rotation: ✅
 Image.rotationX: ✅
 Image.rotationY: ✅
@@ -360,11 +371,11 @@ ItemsView.accessibilityLabel: ✅
 ItemsView.accessibilityPresence: ✅
 ItemsView.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 ItemsView.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-ItemsView.frame: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: not realized
 ItemsView.isVisible: ✅
 ItemsView.layoutDirection: ✅
+ItemsView.layoutFrame: ✅
 ItemsView.maximumHeight: ✅
 ItemsView.maximumWidth: ✅
 ItemsView.minimumHeight: ✅
@@ -372,6 +383,7 @@ ItemsView.minimumWidth: ✅
 ItemsView.opacity: ✅
 ItemsView.pivotX: ✅
 ItemsView.pivotY: ✅
+ItemsView.presentationFrame: ✅
 ItemsView.rotation: ✅
 ItemsView.rotationX: ✅
 ItemsView.rotationY: ✅
@@ -392,11 +404,11 @@ Line.accessibilityLabel: ✅
 Line.accessibilityPresence: ✅
 Line.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Line.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Line.frame: ✅
 Line.height: ✅
 Line.ignoresInput: not realized
 Line.isVisible: ✅
 Line.layoutDirection: ✅
+Line.layoutFrame: ✅
 Line.maximumHeight: ✅
 Line.maximumWidth: ✅
 Line.minimumHeight: ✅
@@ -404,6 +416,7 @@ Line.minimumWidth: ✅
 Line.opacity: ✅
 Line.pivotX: ✅
 Line.pivotY: ✅
+Line.presentationFrame: ✅
 Line.rotation: ✅
 Line.rotationX: ✅
 Line.rotationY: ✅
@@ -424,11 +437,11 @@ Link.accessibilityLabel: ✅
 Link.accessibilityPresence: ✅
 Link.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Link.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Link.frame: ✅
 Link.height: ✅
 Link.ignoresInput: not realized
 Link.isVisible: ✅
 Link.layoutDirection: ✅
+Link.layoutFrame: ✅
 Link.maximumHeight: ✅
 Link.maximumWidth: ✅
 Link.minimumHeight: ✅
@@ -436,6 +449,7 @@ Link.minimumWidth: ✅
 Link.opacity: ✅
 Link.pivotX: ✅
 Link.pivotY: ✅
+Link.presentationFrame: ✅
 Link.rotation: ✅
 Link.rotationX: ✅
 Link.rotationY: ✅
@@ -456,11 +470,11 @@ Map.accessibilityLabel: 🧩
 Map.accessibilityPresence: 🧩
 Map.accessibilityRole: 🧩
 Map.accessibilityValue: 🧩
-Map.frame: 🧩
 Map.height: 🧩
 Map.ignoresInput: 🧩
 Map.isVisible: 🧩
 Map.layoutDirection: 🧩
+Map.layoutFrame: 🧩
 Map.maximumHeight: 🧩
 Map.maximumWidth: 🧩
 Map.minimumHeight: 🧩
@@ -468,6 +482,7 @@ Map.minimumWidth: 🧩
 Map.opacity: 🧩
 Map.pivotX: 🧩
 Map.pivotY: 🧩
+Map.presentationFrame: 🧩
 Map.rotation: 🧩
 Map.rotationX: 🧩
 Map.rotationY: 🧩
@@ -488,11 +503,11 @@ MotionLayout.accessibilityLabel: ✅
 MotionLayout.accessibilityPresence: ✅
 MotionLayout.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 MotionLayout.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-MotionLayout.frame: ✅
 MotionLayout.height: ✅
 MotionLayout.ignoresInput: ✅
 MotionLayout.isVisible: ✅
 MotionLayout.layoutDirection: ✅
+MotionLayout.layoutFrame: ✅
 MotionLayout.maximumHeight: ✅
 MotionLayout.maximumWidth: ✅
 MotionLayout.minimumHeight: ✅
@@ -500,6 +515,7 @@ MotionLayout.minimumWidth: ✅
 MotionLayout.opacity: ✅
 MotionLayout.pivotX: ✅
 MotionLayout.pivotY: ✅
+MotionLayout.presentationFrame: ✅
 MotionLayout.rotation: ✅
 MotionLayout.rotationX: ✅
 MotionLayout.rotationY: ✅
@@ -520,11 +536,11 @@ Path.accessibilityLabel: ✅
 Path.accessibilityPresence: ✅
 Path.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Path.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Path.frame: ✅
 Path.height: ✅
 Path.ignoresInput: not realized
 Path.isVisible: ✅
 Path.layoutDirection: ✅
+Path.layoutFrame: ✅
 Path.maximumHeight: ✅
 Path.maximumWidth: ✅
 Path.minimumHeight: ✅
@@ -532,6 +548,7 @@ Path.minimumWidth: ✅
 Path.opacity: ✅
 Path.pivotX: ✅
 Path.pivotY: ✅
+Path.presentationFrame: ✅
 Path.rotation: ✅
 Path.rotationX: ✅
 Path.rotationY: ✅
@@ -552,11 +569,11 @@ Picker.accessibilityLabel: ✅
 Picker.accessibilityPresence: ✅
 Picker.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Picker.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Picker.frame: ✅
 Picker.height: ✅
 Picker.ignoresInput: not realized
 Picker.isVisible: ✅
 Picker.layoutDirection: ✅
+Picker.layoutFrame: ✅
 Picker.maximumHeight: ✅
 Picker.maximumWidth: ✅
 Picker.minimumHeight: ✅
@@ -564,6 +581,7 @@ Picker.minimumWidth: ✅
 Picker.opacity: ✅
 Picker.pivotX: ✅
 Picker.pivotY: ✅
+Picker.presentationFrame: ✅
 Picker.rotation: ✅
 Picker.rotationX: ✅
 Picker.rotationY: ✅
@@ -584,11 +602,11 @@ Polygon.accessibilityLabel: ✅
 Polygon.accessibilityPresence: ✅
 Polygon.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Polygon.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Polygon.frame: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: not realized
 Polygon.isVisible: ✅
 Polygon.layoutDirection: ✅
+Polygon.layoutFrame: ✅
 Polygon.maximumHeight: ✅
 Polygon.maximumWidth: ✅
 Polygon.minimumHeight: ✅
@@ -596,6 +614,7 @@ Polygon.minimumWidth: ✅
 Polygon.opacity: ✅
 Polygon.pivotX: ✅
 Polygon.pivotY: ✅
+Polygon.presentationFrame: ✅
 Polygon.rotation: ✅
 Polygon.rotationX: ✅
 Polygon.rotationY: ✅
@@ -616,11 +635,11 @@ Polyline.accessibilityLabel: ✅
 Polyline.accessibilityPresence: ✅
 Polyline.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Polyline.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Polyline.frame: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: not realized
 Polyline.isVisible: ✅
 Polyline.layoutDirection: ✅
+Polyline.layoutFrame: ✅
 Polyline.maximumHeight: ✅
 Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅
@@ -628,6 +647,7 @@ Polyline.minimumWidth: ✅
 Polyline.opacity: ✅
 Polyline.pivotX: ✅
 Polyline.pivotY: ✅
+Polyline.presentationFrame: ✅
 Polyline.rotation: ✅
 Polyline.rotationX: ✅
 Polyline.rotationY: ✅
@@ -648,11 +668,11 @@ ProgressBar.accessibilityLabel: ✅
 ProgressBar.accessibilityPresence: ✅
 ProgressBar.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 ProgressBar.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-ProgressBar.frame: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: not realized
 ProgressBar.isVisible: ✅
 ProgressBar.layoutDirection: ✅
+ProgressBar.layoutFrame: ✅
 ProgressBar.maximumHeight: ✅
 ProgressBar.maximumWidth: ✅
 ProgressBar.minimumHeight: ✅
@@ -660,6 +680,7 @@ ProgressBar.minimumWidth: ✅
 ProgressBar.opacity: ✅
 ProgressBar.pivotX: ✅
 ProgressBar.pivotY: ✅
+ProgressBar.presentationFrame: ✅
 ProgressBar.rotation: ✅
 ProgressBar.rotationX: ✅
 ProgressBar.rotationY: ✅
@@ -680,11 +701,11 @@ Rectangle.accessibilityLabel: ✅
 Rectangle.accessibilityPresence: ✅
 Rectangle.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Rectangle.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Rectangle.frame: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: not realized
 Rectangle.isVisible: ✅
 Rectangle.layoutDirection: ✅
+Rectangle.layoutFrame: ✅
 Rectangle.maximumHeight: ✅
 Rectangle.maximumWidth: ✅
 Rectangle.minimumHeight: ✅
@@ -692,6 +713,7 @@ Rectangle.minimumWidth: ✅
 Rectangle.opacity: ✅
 Rectangle.pivotX: ✅
 Rectangle.pivotY: ✅
+Rectangle.presentationFrame: ✅
 Rectangle.rotation: ✅
 Rectangle.rotationX: ✅
 Rectangle.rotationY: ✅
@@ -712,11 +734,11 @@ ScrollView.accessibilityLabel: ✅
 ScrollView.accessibilityPresence: ✅
 ScrollView.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 ScrollView.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-ScrollView.frame: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: not realized
 ScrollView.isVisible: ✅
 ScrollView.layoutDirection: ✅
+ScrollView.layoutFrame: ✅
 ScrollView.maximumHeight: ✅
 ScrollView.maximumWidth: ✅
 ScrollView.minimumHeight: ✅
@@ -724,6 +746,7 @@ ScrollView.minimumWidth: ✅
 ScrollView.opacity: ✅
 ScrollView.pivotX: ✅
 ScrollView.pivotY: ✅
+ScrollView.presentationFrame: ✅
 ScrollView.rotation: ✅
 ScrollView.rotationX: ✅
 ScrollView.rotationY: ✅
@@ -744,11 +767,11 @@ SearchField.accessibilityLabel: ✅
 SearchField.accessibilityPresence: ✅
 SearchField.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 SearchField.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-SearchField.frame: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: not realized
 SearchField.isVisible: ✅
 SearchField.layoutDirection: ✅
+SearchField.layoutFrame: ✅
 SearchField.maximumHeight: ✅
 SearchField.maximumWidth: ✅
 SearchField.minimumHeight: ✅
@@ -756,6 +779,7 @@ SearchField.minimumWidth: ✅
 SearchField.opacity: ✅
 SearchField.pivotX: ✅
 SearchField.pivotY: ✅
+SearchField.presentationFrame: ✅
 SearchField.rotation: ✅
 SearchField.rotationX: ✅
 SearchField.rotationY: ✅
@@ -776,11 +800,11 @@ Separator.accessibilityLabel: ✅
 Separator.accessibilityPresence: ✅
 Separator.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Separator.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Separator.frame: ✅
 Separator.height: ✅
 Separator.ignoresInput: not realized
 Separator.isVisible: ✅
 Separator.layoutDirection: ✅
+Separator.layoutFrame: ✅
 Separator.maximumHeight: ✅
 Separator.maximumWidth: ✅
 Separator.minimumHeight: ✅
@@ -788,6 +812,7 @@ Separator.minimumWidth: ✅
 Separator.opacity: ✅
 Separator.pivotX: ✅
 Separator.pivotY: ✅
+Separator.presentationFrame: ✅
 Separator.rotation: ✅
 Separator.rotationX: ✅
 Separator.rotationY: ✅
@@ -808,11 +833,11 @@ Slider.accessibilityLabel: ✅
 Slider.accessibilityPresence: ✅
 Slider.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Slider.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Slider.frame: ✅
 Slider.height: ✅
 Slider.ignoresInput: not realized
 Slider.isVisible: ✅
 Slider.layoutDirection: ✅
+Slider.layoutFrame: ✅
 Slider.maximumHeight: ✅
 Slider.maximumWidth: ✅
 Slider.minimumHeight: ✅
@@ -820,6 +845,7 @@ Slider.minimumWidth: ✅
 Slider.opacity: ✅
 Slider.pivotX: ✅
 Slider.pivotY: ✅
+Slider.presentationFrame: ✅
 Slider.rotation: ✅
 Slider.rotationX: ✅
 Slider.rotationY: ✅
@@ -840,11 +866,11 @@ Space.accessibilityLabel: ✅
 Space.accessibilityPresence: ✅
 Space.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Space.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Space.frame: ✅
 Space.height: ✅
 Space.ignoresInput: ✅
 Space.isVisible: ✅
 Space.layoutDirection: ✅
+Space.layoutFrame: ✅
 Space.maximumHeight: ✅
 Space.maximumWidth: ✅
 Space.minimumHeight: ✅
@@ -852,6 +878,7 @@ Space.minimumWidth: ✅
 Space.opacity: ✅
 Space.pivotX: ✅
 Space.pivotY: ✅
+Space.presentationFrame: ✅
 Space.rotation: ✅
 Space.rotationX: ✅
 Space.rotationY: ✅
@@ -872,11 +899,11 @@ Spinner.accessibilityLabel: ✅
 Spinner.accessibilityPresence: ✅
 Spinner.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Spinner.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Spinner.frame: ✅
 Spinner.height: ✅
 Spinner.ignoresInput: not realized
 Spinner.isVisible: ✅
 Spinner.layoutDirection: ✅
+Spinner.layoutFrame: ✅
 Spinner.maximumHeight: ✅
 Spinner.maximumWidth: ✅
 Spinner.minimumHeight: ✅
@@ -884,6 +911,7 @@ Spinner.minimumWidth: ✅
 Spinner.opacity: ✅
 Spinner.pivotX: ✅
 Spinner.pivotY: ✅
+Spinner.presentationFrame: ✅
 Spinner.rotation: ✅
 Spinner.rotationX: ✅
 Spinner.rotationY: ✅
@@ -904,11 +932,11 @@ Stepper.accessibilityLabel: ✅
 Stepper.accessibilityPresence: ✅
 Stepper.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Stepper.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Stepper.frame: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: not realized
 Stepper.isVisible: ✅
 Stepper.layoutDirection: ✅
+Stepper.layoutFrame: ✅
 Stepper.maximumHeight: ✅
 Stepper.maximumWidth: ✅
 Stepper.minimumHeight: ✅
@@ -916,6 +944,7 @@ Stepper.minimumWidth: ✅
 Stepper.opacity: ✅
 Stepper.pivotX: ✅
 Stepper.pivotY: ✅
+Stepper.presentationFrame: ✅
 Stepper.rotation: ✅
 Stepper.rotationX: ✅
 Stepper.rotationY: ✅
@@ -936,11 +965,11 @@ Switch.accessibilityLabel: ✅
 Switch.accessibilityPresence: ✅
 Switch.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Switch.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Switch.frame: ✅
 Switch.height: ✅
 Switch.ignoresInput: not realized
 Switch.isVisible: ✅
 Switch.layoutDirection: ✅
+Switch.layoutFrame: ✅
 Switch.maximumHeight: ✅
 Switch.maximumWidth: ✅
 Switch.minimumHeight: ✅
@@ -948,6 +977,7 @@ Switch.minimumWidth: ✅
 Switch.opacity: ✅
 Switch.pivotX: ✅
 Switch.pivotY: ✅
+Switch.presentationFrame: ✅
 Switch.rotation: ✅
 Switch.rotationX: ✅
 Switch.rotationY: ✅
@@ -968,11 +998,11 @@ Text.accessibilityLabel: ✅
 Text.accessibilityPresence: ✅
 Text.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Text.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Text.frame: ✅
 Text.height: ✅
 Text.ignoresInput: not realized
 Text.isVisible: ✅
 Text.layoutDirection: ✅
+Text.layoutFrame: ✅
 Text.maximumHeight: ✅
 Text.maximumWidth: ✅
 Text.minimumHeight: ✅
@@ -980,6 +1010,7 @@ Text.minimumWidth: ✅
 Text.opacity: ✅
 Text.pivotX: ✅
 Text.pivotY: ✅
+Text.presentationFrame: ✅
 Text.rotation: ✅
 Text.rotationX: ✅
 Text.rotationY: ✅
@@ -1000,11 +1031,11 @@ TextEditor.accessibilityLabel: ✅
 TextEditor.accessibilityPresence: ✅
 TextEditor.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 TextEditor.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-TextEditor.frame: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: not realized
 TextEditor.isVisible: ✅
 TextEditor.layoutDirection: ✅
+TextEditor.layoutFrame: ✅
 TextEditor.maximumHeight: ✅
 TextEditor.maximumWidth: ✅
 TextEditor.minimumHeight: ✅
@@ -1012,6 +1043,7 @@ TextEditor.minimumWidth: ✅
 TextEditor.opacity: ✅
 TextEditor.pivotX: ✅
 TextEditor.pivotY: ✅
+TextEditor.presentationFrame: ✅
 TextEditor.rotation: ✅
 TextEditor.rotationX: ✅
 TextEditor.rotationY: ✅
@@ -1032,11 +1064,11 @@ TextField.accessibilityLabel: ✅
 TextField.accessibilityPresence: ✅
 TextField.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 TextField.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-TextField.frame: ✅
 TextField.height: ✅
 TextField.ignoresInput: not realized
 TextField.isVisible: ✅
 TextField.layoutDirection: ✅
+TextField.layoutFrame: ✅
 TextField.maximumHeight: ✅
 TextField.maximumWidth: ✅
 TextField.minimumHeight: ✅
@@ -1044,6 +1076,7 @@ TextField.minimumWidth: ✅
 TextField.opacity: ✅
 TextField.pivotX: ✅
 TextField.pivotY: ✅
+TextField.presentationFrame: ✅
 TextField.rotation: ✅
 TextField.rotationX: ✅
 TextField.rotationY: ✅
@@ -1064,11 +1097,11 @@ TimePicker.accessibilityLabel: ✅
 TimePicker.accessibilityPresence: ✅
 TimePicker.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 TimePicker.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-TimePicker.frame: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: not realized
 TimePicker.isVisible: ✅
 TimePicker.layoutDirection: ✅
+TimePicker.layoutFrame: ✅
 TimePicker.maximumHeight: ✅
 TimePicker.maximumWidth: ✅
 TimePicker.minimumHeight: ✅
@@ -1076,6 +1109,7 @@ TimePicker.minimumWidth: ✅
 TimePicker.opacity: ✅
 TimePicker.pivotX: ✅
 TimePicker.pivotY: ✅
+TimePicker.presentationFrame: ✅
 TimePicker.rotation: ✅
 TimePicker.rotationX: ✅
 TimePicker.rotationY: ✅
@@ -1096,11 +1130,11 @@ VStack.accessibilityLabel: ✅
 VStack.accessibilityPresence: ✅
 VStack.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 VStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-VStack.frame: ✅
 VStack.height: ✅
 VStack.ignoresInput: ✅
 VStack.isVisible: ✅
 VStack.layoutDirection: ✅
+VStack.layoutFrame: ✅
 VStack.maximumHeight: ✅
 VStack.maximumWidth: ✅
 VStack.minimumHeight: ✅
@@ -1108,6 +1142,7 @@ VStack.minimumWidth: ✅
 VStack.opacity: ✅
 VStack.pivotX: ✅
 VStack.pivotY: ✅
+VStack.presentationFrame: ✅
 VStack.rotation: ✅
 VStack.rotationX: ✅
 VStack.rotationY: ✅
@@ -1128,11 +1163,11 @@ WebView.accessibilityLabel: ✅
 WebView.accessibilityPresence: ✅
 WebView.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 WebView.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-WebView.frame: ✅
 WebView.height: ✅
 WebView.ignoresInput: not realized
 WebView.isVisible: ✅
 WebView.layoutDirection: ✅
+WebView.layoutFrame: ✅
 WebView.maximumHeight: ✅
 WebView.maximumWidth: ✅
 WebView.minimumHeight: ✅
@@ -1140,6 +1175,7 @@ WebView.minimumWidth: ✅
 WebView.opacity: ✅
 WebView.pivotX: ✅
 WebView.pivotY: ✅
+WebView.presentationFrame: ✅
 WebView.rotation: ✅
 WebView.rotationX: ✅
 WebView.rotationY: ✅
@@ -1160,11 +1196,11 @@ ZStack.accessibilityLabel: ✅
 ZStack.accessibilityPresence: ✅
 ZStack.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 ZStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-ZStack.frame: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: ✅
 ZStack.isVisible: ✅
 ZStack.layoutDirection: ✅
+ZStack.layoutFrame: ✅
 ZStack.maximumHeight: ✅
 ZStack.maximumWidth: ✅
 ZStack.minimumHeight: ✅
@@ -1172,6 +1208,7 @@ ZStack.minimumWidth: ✅
 ZStack.opacity: ✅
 ZStack.pivotX: ✅
 ZStack.pivotY: ✅
+ZStack.presentationFrame: ✅
 ZStack.rotation: ✅
 ZStack.rotationX: ✅
 ZStack.rotationY: ✅

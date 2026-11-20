@@ -33,22 +33,27 @@ extension View {
     ///     .onFrameChanged { frame in height = frame.height }
     ///     .onFrameChanged(in: .global) { frame in anchor = frame }
     ///
-    /// Each handler hears only changes in its own space. A transform -
-    /// `.translationX`, `.rotation`, `.scale` - moves what is drawn and not the
-    /// frame, so it reports nothing; an animated `.width` reports every step.
+    /// Each handler hears only changes in its own space. At `.layout` it hears
+    /// where the view's layout puts it: a transform - `.translationX`,
+    /// `.rotation`, `.scale` - moves what is drawn and not that frame, and a view
+    /// travelling to a new place is reported there once. At `.presentation` it
+    /// hears the rectangle around what is drawn: every step of the way, and the
+    /// view's own transform.
     ///
     /// - Parameters:
     ///   - space: Which coordinates to answer in - the parent's unless said.
-    ///   - handler: What to run with each settled frame.
+    ///   - stage: Which rectangle - the layout's unless said.
+    ///   - handler: What to run with each frame.
     public func onFrameChanged(
         in space: CoordinateSpace = .parent,
+        stage: GeometryStage = .layout,
         _ handler: @escaping @MainActor (Rect) throws -> Void
     ) -> Modified {
         // One report serves every space; each handler stays quiet while its
         // own answer is unchanged.
         let last = LastFrame()
 
-        return onEvent(ViewContract.frameChanged) { numbers in
+        return onEvent(Self.frameEvent(of: stage)) { numbers in
             if let frame = last.changed(numbers, in: space) { try handler(frame) }
         }
     }
@@ -57,12 +62,13 @@ extension View {
     /// again while a run is under way.
     public func onFrameChanged(
         in space: CoordinateSpace = .parent,
+        stage: GeometryStage = .layout,
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<Rect>
     ) -> Modified {
         let last = LastFrame()
 
-        return onEvent(ViewContract.frameChanged, policy: policy) { numbers in
+        return onEvent(Self.frameEvent(of: stage), policy: policy) { numbers in
             if let frame = last.changed(numbers, in: space) { try await handler(frame) }
         }
     }
@@ -70,14 +76,20 @@ extension View {
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onFrameChanged(
         in space: CoordinateSpace = .parent,
+        stage: GeometryStage = .layout,
         gate: Gate,
         _ handler: @escaping ValueEventHandler<Rect>
     ) -> Modified {
         let last = LastFrame()
 
-        return onEvent(ViewContract.frameChanged, gate: gate) { numbers in
+        return onEvent(Self.frameEvent(of: stage), gate: gate) { numbers in
             if let frame = last.changed(numbers, in: space) { try await handler(frame) }
         }
+    }
+
+    /// The event of a view's frame at `stage`.
+    static func frameEvent(of stage: GeometryStage) -> ElementEvent<ViewContract, [Double]> {
+        stage == .layout ? ViewContract.layoutFrameChanged : ViewContract.presentationFrameChanged
     }
 }
 

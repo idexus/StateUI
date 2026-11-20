@@ -84,7 +84,6 @@ final class AppKitElement: NSObject, NativeElement {
     var events: [Event: Int32] { element.events }
     var driven: [Prop: HostStateBinding] { element.driven }
     var motion: HostLayoutMotion? { element.motion }
-    var framesRead: Bool { element.framesRead }
     func value(_ property: Prop) -> HostValue? { element.value(property) }
     func resolvedValue(_ property: Prop) -> HostValue? { element.resolvedValue(property) }
     func string(_ property: Prop) -> String? { element.string(property) }
@@ -210,7 +209,6 @@ final class AppKitElement: NSObject, NativeElement {
         guard let layout = view as? AppKitTravelingLayout else { return }
         layout.places.layoutMotion = host?.runtime.layoutMotion
         layout.places.motion = motion
-        layout.places.framesRead = framesRead
         layout.places.patchArrived()
     }
 

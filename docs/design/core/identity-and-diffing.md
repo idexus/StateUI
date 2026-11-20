@@ -510,10 +510,9 @@ stated - carries the same transition beside its clearing, by the value it was:
 the host knows where the property rests and travels it back there, as it
 traveled out from there ([standing values](../host/tree.md#standing-values)).
 
-A size somebody measures is never animated. Where an element reports its own
-frame, or the layout it stands in is measured, a size comes from a report, and
-animating it would lay the page out at sizes nobody chose, growing from
-nothing on the first report.
+A transition is the element's own: its motion, or the application's. What
+reads the element's frame, or a frame beside it, changes none
+([two rectangles](../host/runtime.md#two-rectangles)).
 
 ## Layout motion
 
@@ -527,7 +526,7 @@ layout that animates the way the application does says nothing on any message.
 What crosses is an override and its going away; the application always says
 its own motion once. The lanes say which parts of a child's place animate: a
 layout told `.motion(.none, .size)` moves children to new places but gives them
-new sizes at once, and a measured layout's children take their sizes at once.
+new sizes at once.
 
 ## Themes
 

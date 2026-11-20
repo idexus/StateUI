@@ -141,10 +141,6 @@ final class RenderedNode {
     /// live on the board.
     var engines: [Int] = []
 
-    /// Whether its sizes arrive at once because its layout is measured - kept for
-    /// the clean walk.
-    var sizesArrive = false
-
     /// What the view a page shows says of its page, for the page to take on every description of it.
     var pageValues: PageValues?
 

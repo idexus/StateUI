@@ -26,7 +26,7 @@
                                     .width(40)
                                     .height(name == "first" ? 20 : 30)
                                     .horizontalAlignment(.start)
-                                    .onEvent(ViewContract.frameChanged) {
+                                    .onEvent(ViewContract.layoutFrameChanged) {
                                         (name == "first" ? first : second).values.append($0)
                                     }
                                     .id(name)
@@ -51,8 +51,8 @@
                 s.start {
                     VStack {
                         VStack { Text(TextTests.long).lineBreak(.wordWrap) }.width(100)
-                            .onEvent(ViewContract.frameChanged) { stack.values.append($0) }.id("stack")
-                        Text("Words").onEvent(ViewContract.frameChanged) { line.values.append($0) }.id("line")
+                            .onEvent(ViewContract.layoutFrameChanged) { stack.values.append($0) }.id("stack")
+                        Text("Words").onEvent(ViewContract.layoutFrameChanged) { line.values.append($0) }.id("line")
                     }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
@@ -82,11 +82,11 @@
                                 if name == "a" {
                                     Opened.aimed(TextField(typed[name]!.projectedValue).placeholder(name), by: aim)
                                         .onEvent(FocusElementContract.isFocusedChanged) { heard.values.append($0) }
-                                        .onEvent(ViewContract.frameChanged) { tops.values.append((name, $0[1])) }
+                                        .onEvent(ViewContract.layoutFrameChanged) { tops.values.append((name, $0[1])) }
                                         .id(name)
                                 } else {
                                     TextField(typed[name]!.projectedValue).placeholder(name)
-                                        .onEvent(ViewContract.frameChanged) { tops.values.append((name, $0[1])) }
+                                        .onEvent(ViewContract.layoutFrameChanged) { tops.values.append((name, $0[1])) }
                                         .id(name)
                                 }
                             }

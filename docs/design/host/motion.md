@@ -113,9 +113,10 @@ child stands on the way. Why an arrangement happens decides everything:
 a width that moved by more than half a point is a new width.
 
 A size a child states for itself arrives while its place animates: a stated
-size is either still or already animating on its own. Where a frame under the
-layout is read, every child arrives, because each frame of an animation would
-hand the reader of that frame a room nobody chose. The same place asked for
+size is either still or already animating on its own. What reads a frame
+under the layout changes none of this: a reader of the layout's stage hears
+where a child is going, once
+([two rectangles](runtime.md#two-rectangles)). The same place asked for
 again keeps its running animation, and a new place bends a running one from
 where it has reached, at its speed. Layout motion holds each child's view
 weakly: a view the tree dropped is not kept alive for its place.
@@ -137,14 +138,14 @@ says one, the arrangement above stands.
   .followsLayout(s)   travels on the spring s          travels on the spring s
 ```
 
-`LayoutMotion.arrangement(of:said:resized:framesRead:among:)` is the rule.
+`LayoutMotion.arrangement(of:said:resized:among:)` is the rule.
 A body's spring is the child's law whatever the layout's own motion - a
 layout told to move nothing still brings a body onto its place - and the
 place travels by the one animation a place has (`AnimationTarget.placed`):
 a new place bends it from where it has reached, at its speed, which is all
 following a moving place is. A body answering a change arrives where its
 layout's own width changed, as every child does; one following its place
-travels then too. Less motion, and a frame read under the layout, arrive.
+travels then too. Less motion arrives.
 
 An element running a layout program resolves a child's body the same way -
 its own, its layout's, and a spring answering a change where the layout

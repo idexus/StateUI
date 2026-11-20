@@ -1,4 +1,4 @@
-# revision 28.1
+# revision 29.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Button.area: ✅
 Button.dragEnded: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
@@ -9,7 +9,6 @@ Button.dragText: ✓ dragAndDrop on Button: the views' drag listeners' reports t
 Button.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Button.droppedFileTypes: ✓ dropFiles on Button: the view's drag listener's report told the driver's documents, no drag started
 Button.filesDropped: ✓ dropFiles on Button: the view's drag listener's report told the driver's documents, no drag started
-Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridColumnSpan: ✅
 Button.gridRow: ✅
@@ -19,6 +18,7 @@ Button.holdDuration: – Android's long click comes after the system's long-pres
 Button.horizontalAlignment: ✅
 Button.isDraggable: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
 Button.layoutBody: ✅
+Button.layoutFrameChanged: ✅
 Button.margin: ✅
 Button.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Button.panUpdated: ✅
@@ -28,6 +28,7 @@ Button.pinchUpdated: ✅
 Button.pointerMoved: ✅
 Button.pointerPressed: ✅
 Button.pointerReleased: ✅
+Button.presentationFrameChanged: ✅
 Button.rotationUpdated: ✅
 Button.swipeDirections: ✅
 Button.swipeThreshold: ✅
@@ -45,7 +46,6 @@ Canvas.dragText: ✓ dragAndDrop on Canvas: the views' drag listeners' reports t
 Canvas.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Canvas.droppedFileTypes: ✓ dropFiles on Canvas: the view's drag listener's report told the driver's documents, no drag started
 Canvas.filesDropped: ✓ dropFiles on Canvas: the view's drag listener's report told the driver's documents, no drag started
-Canvas.frameChanged: ✅
 Canvas.gridColumn: ✅
 Canvas.gridColumnSpan: ✅
 Canvas.gridRow: ✅
@@ -55,6 +55,7 @@ Canvas.holdDuration: – Android's long click comes after the system's long-pres
 Canvas.horizontalAlignment: ✅
 Canvas.isDraggable: ✓ dragAndDrop on Canvas: the views' drag listeners' reports told by the driver, no drag started
 Canvas.layoutBody: ✅
+Canvas.layoutFrameChanged: ✅
 Canvas.margin: ✅
 Canvas.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Canvas.panUpdated: ✅
@@ -64,6 +65,7 @@ Canvas.pinchUpdated: ✅
 Canvas.pointerMoved: ✅
 Canvas.pointerPressed: ✅
 Canvas.pointerReleased: ✅
+Canvas.presentationFrameChanged: ✅
 Canvas.rotationUpdated: ✅
 Canvas.swipeDirections: ✅
 Canvas.swipeThreshold: ✅
@@ -81,7 +83,6 @@ Capsule.dragText: ✓ dragAndDrop on Capsule: the views' drag listeners' reports
 Capsule.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the view's drag listener's report told the driver's documents, no drag started
 Capsule.filesDropped: ✓ dropFiles on Capsule: the view's drag listener's report told the driver's documents, no drag started
-Capsule.frameChanged: ✅
 Capsule.gridColumn: ✅
 Capsule.gridColumnSpan: ✅
 Capsule.gridRow: ✅
@@ -91,6 +92,7 @@ Capsule.holdDuration: – Android's long click comes after the system's long-pre
 Capsule.horizontalAlignment: ✅
 Capsule.isDraggable: ✓ dragAndDrop on Capsule: the views' drag listeners' reports told by the driver, no drag started
 Capsule.layoutBody: ✅
+Capsule.layoutFrameChanged: ✅
 Capsule.margin: ✅
 Capsule.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Capsule.panUpdated: ✅
@@ -100,6 +102,7 @@ Capsule.pinchUpdated: ✅
 Capsule.pointerMoved: ✅
 Capsule.pointerPressed: ✅
 Capsule.pointerReleased: ✅
+Capsule.presentationFrameChanged: ✅
 Capsule.rotationUpdated: ✅
 Capsule.swipeDirections: ✅
 Capsule.swipeThreshold: ✅
@@ -117,7 +120,6 @@ CheckBox.dragText: ✓ dragAndDrop on CheckBox: the views' drag listeners' repor
 CheckBox.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the view's drag listener's report told the driver's documents, no drag started
 CheckBox.filesDropped: ✓ dropFiles on CheckBox: the view's drag listener's report told the driver's documents, no drag started
-CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRow: ✅
@@ -127,6 +129,7 @@ CheckBox.holdDuration: – Android's long click comes after the system's long-pr
 CheckBox.horizontalAlignment: ✅
 CheckBox.isDraggable: ✓ dragAndDrop on CheckBox: the views' drag listeners' reports told by the driver, no drag started
 CheckBox.layoutBody: ✅
+CheckBox.layoutFrameChanged: ✅
 CheckBox.margin: ✅
 CheckBox.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 CheckBox.panUpdated: ✅
@@ -136,6 +139,7 @@ CheckBox.pinchUpdated: ✅
 CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
+CheckBox.presentationFrameChanged: ✅
 CheckBox.rotationUpdated: ✅
 CheckBox.swipeDirections: ✅
 CheckBox.swipeThreshold: ✅
@@ -153,7 +157,6 @@ ColorPicker.dragText: – Android has no color picker of its own: neither the pl
 ColorPicker.dropped: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.droppedFileTypes: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.filesDropped: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
-ColorPicker.frameChanged: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.gridColumn: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.gridColumnSpan: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.gridRow: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -163,6 +166,7 @@ ColorPicker.holdDuration: – Android has no color picker of its own: neither th
 ColorPicker.horizontalAlignment: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.isDraggable: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.layoutBody: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.layoutFrameChanged: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.margin: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.panTouchCount: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.panUpdated: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -172,6 +176,7 @@ ColorPicker.pinchUpdated: – Android has no color picker of its own: neither th
 ColorPicker.pointerMoved: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.pointerPressed: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.pointerReleased: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.presentationFrameChanged: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.rotationUpdated: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.swipeDirections: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.swipeThreshold: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -189,7 +194,6 @@ DatePicker.dragText: ✓ dragAndDrop on DatePicker: the views' drag listeners' r
 DatePicker.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the view's drag listener's report told the driver's documents, no drag started
 DatePicker.filesDropped: ✓ dropFiles on DatePicker: the view's drag listener's report told the driver's documents, no drag started
-DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRow: ✅
@@ -199,6 +203,7 @@ DatePicker.holdDuration: – Android's long click comes after the system's long-
 DatePicker.horizontalAlignment: ✅
 DatePicker.isDraggable: ✓ dragAndDrop on DatePicker: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.layoutBody: ✅
+DatePicker.layoutFrameChanged: ✅
 DatePicker.margin: ✅
 DatePicker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 DatePicker.panUpdated: ✅
@@ -208,6 +213,7 @@ DatePicker.pinchUpdated: ✅
 DatePicker.pointerMoved: ✅
 DatePicker.pointerPressed: ✅
 DatePicker.pointerReleased: ✅
+DatePicker.presentationFrameChanged: ✅
 DatePicker.rotationUpdated: ✅
 DatePicker.swipeDirections: ✅
 DatePicker.swipeThreshold: ✅
@@ -225,7 +231,6 @@ Ellipse.dragText: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports
 Ellipse.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the view's drag listener's report told the driver's documents, no drag started
 Ellipse.filesDropped: ✓ dropFiles on Ellipse: the view's drag listener's report told the driver's documents, no drag started
-Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridColumnSpan: ✅
 Ellipse.gridRow: ✅
@@ -235,6 +240,7 @@ Ellipse.holdDuration: – Android's long click comes after the system's long-pre
 Ellipse.horizontalAlignment: ✅
 Ellipse.isDraggable: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.layoutBody: ✅
+Ellipse.layoutFrameChanged: ✅
 Ellipse.margin: ✅
 Ellipse.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Ellipse.panUpdated: ✅
@@ -244,6 +250,7 @@ Ellipse.pinchUpdated: ✅
 Ellipse.pointerMoved: ✅
 Ellipse.pointerPressed: ✅
 Ellipse.pointerReleased: ✅
+Ellipse.presentationFrameChanged: ✅
 Ellipse.rotationUpdated: ✅
 Ellipse.swipeDirections: ✅
 Ellipse.swipeThreshold: ✅
@@ -261,7 +268,6 @@ Fill.dragText: ✓ dragAndDrop on Fill: the views' drag listeners' reports told 
 Fill.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Fill.droppedFileTypes: ✓ dropFiles on Fill: the view's drag listener's report told the driver's documents, no drag started
 Fill.filesDropped: ✓ dropFiles on Fill: the view's drag listener's report told the driver's documents, no drag started
-Fill.frameChanged: ✅
 Fill.gridColumn: ✅
 Fill.gridColumnSpan: ✅
 Fill.gridRow: ✅
@@ -271,6 +277,7 @@ Fill.holdDuration: – Android's long click comes after the system's long-press 
 Fill.horizontalAlignment: ✅
 Fill.isDraggable: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
 Fill.layoutBody: ✅
+Fill.layoutFrameChanged: ✅
 Fill.margin: ✅
 Fill.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Fill.panUpdated: ✅
@@ -280,6 +287,7 @@ Fill.pinchUpdated: ✅
 Fill.pointerMoved: ✅
 Fill.pointerPressed: ✅
 Fill.pointerReleased: ✅
+Fill.presentationFrameChanged: ✅
 Fill.rotationUpdated: ✅
 Fill.swipeDirections: ✅
 Fill.swipeThreshold: ✅
@@ -297,7 +305,6 @@ Grid.dragText: ✓ dragAndDrop on Grid: the views' drag listeners' reports told 
 Grid.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Grid.droppedFileTypes: ✓ dropFiles on Grid: the view's drag listener's report told the driver's documents, no drag started
 Grid.filesDropped: ✓ dropFiles on Grid: the view's drag listener's report told the driver's documents, no drag started
-Grid.frameChanged: ✅
 Grid.gridColumn: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRow: ✅
@@ -307,6 +314,7 @@ Grid.holdDuration: – Android's long click comes after the system's long-press 
 Grid.horizontalAlignment: ✅
 Grid.isDraggable: ✓ dragAndDrop on Grid: the views' drag listeners' reports told by the driver, no drag started
 Grid.layoutBody: ✅
+Grid.layoutFrameChanged: ✅
 Grid.margin: ✅
 Grid.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Grid.panUpdated: ✅
@@ -316,6 +324,7 @@ Grid.pinchUpdated: ✅
 Grid.pointerMoved: ✅
 Grid.pointerPressed: ✅
 Grid.pointerReleased: ✅
+Grid.presentationFrameChanged: ✅
 Grid.rotationUpdated: ✅
 Grid.swipeDirections: ✅
 Grid.swipeThreshold: ✅
@@ -333,7 +342,6 @@ HStack.dragText: ✓ dragAndDrop on HStack: the views' drag listeners' reports t
 HStack.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 HStack.droppedFileTypes: ✓ dropFiles on HStack: the view's drag listener's report told the driver's documents, no drag started
 HStack.filesDropped: ✓ dropFiles on HStack: the view's drag listener's report told the driver's documents, no drag started
-HStack.frameChanged: ✅
 HStack.gridColumn: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRow: ✅
@@ -343,6 +351,7 @@ HStack.holdDuration: – Android's long click comes after the system's long-pres
 HStack.horizontalAlignment: ✅
 HStack.isDraggable: ✓ dragAndDrop on HStack: the views' drag listeners' reports told by the driver, no drag started
 HStack.layoutBody: ✅
+HStack.layoutFrameChanged: ✅
 HStack.margin: ✅
 HStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 HStack.panUpdated: ✅
@@ -352,6 +361,7 @@ HStack.pinchUpdated: ✅
 HStack.pointerMoved: ✅
 HStack.pointerPressed: ✅
 HStack.pointerReleased: ✅
+HStack.presentationFrameChanged: ✅
 HStack.rotationUpdated: ✅
 HStack.swipeDirections: ✅
 HStack.swipeThreshold: ✅
@@ -369,7 +379,6 @@ Image.dragText: ✓ dragAndDrop on Image: the views' drag listeners' reports tol
 Image.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Image.droppedFileTypes: ✓ dropFiles on Image: the view's drag listener's report told the driver's documents, no drag started
 Image.filesDropped: ✓ dropFiles on Image: the view's drag listener's report told the driver's documents, no drag started
-Image.frameChanged: ✅
 Image.gridColumn: ✅
 Image.gridColumnSpan: ✅
 Image.gridRow: ✅
@@ -379,6 +388,7 @@ Image.holdDuration: – Android's long click comes after the system's long-press
 Image.horizontalAlignment: ✅
 Image.isDraggable: ✓ dragAndDrop on Image: the views' drag listeners' reports told by the driver, no drag started
 Image.layoutBody: ✅
+Image.layoutFrameChanged: ✅
 Image.margin: ✅
 Image.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Image.panUpdated: ✅
@@ -388,6 +398,7 @@ Image.pinchUpdated: ✅
 Image.pointerMoved: ✅
 Image.pointerPressed: ✅
 Image.pointerReleased: ✅
+Image.presentationFrameChanged: ✅
 Image.rotationUpdated: ✅
 Image.swipeDirections: ✅
 Image.swipeThreshold: ✅
@@ -405,7 +416,6 @@ ItemsView.dragText: ✓ dragAndDrop on ItemsView: the views' drag listeners' rep
 ItemsView.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the view's drag listener's report told the driver's documents, no drag started
 ItemsView.filesDropped: ✓ dropFiles on ItemsView: the view's drag listener's report told the driver's documents, no drag started
-ItemsView.frameChanged: ✅
 ItemsView.gridColumn: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRow: ✅
@@ -415,6 +425,7 @@ ItemsView.holdDuration: – Android's long click comes after the system's long-p
 ItemsView.horizontalAlignment: ✅
 ItemsView.isDraggable: ✓ dragAndDrop on ItemsView: the views' drag listeners' reports told by the driver, no drag started
 ItemsView.layoutBody: ✅
+ItemsView.layoutFrameChanged: ✅
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ItemsView.panUpdated: ✅
@@ -424,6 +435,7 @@ ItemsView.pinchUpdated: ✅
 ItemsView.pointerMoved: ✅
 ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
+ItemsView.presentationFrameChanged: ✅
 ItemsView.rotationUpdated: ✅
 ItemsView.swipeDirections: ✅
 ItemsView.swipeThreshold: ✅
@@ -441,7 +453,6 @@ Line.dragText: ✓ dragAndDrop on Line: the views' drag listeners' reports told 
 Line.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Line.droppedFileTypes: ✓ dropFiles on Line: the view's drag listener's report told the driver's documents, no drag started
 Line.filesDropped: ✓ dropFiles on Line: the view's drag listener's report told the driver's documents, no drag started
-Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridColumnSpan: ✅
 Line.gridRow: ✅
@@ -451,6 +462,7 @@ Line.holdDuration: – Android's long click comes after the system's long-press 
 Line.horizontalAlignment: ✅
 Line.isDraggable: ✓ dragAndDrop on Line: the views' drag listeners' reports told by the driver, no drag started
 Line.layoutBody: ✅
+Line.layoutFrameChanged: ✅
 Line.margin: ✅
 Line.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Line.panUpdated: ✅
@@ -460,6 +472,7 @@ Line.pinchUpdated: ✅
 Line.pointerMoved: ✅
 Line.pointerPressed: ✅
 Line.pointerReleased: ✅
+Line.presentationFrameChanged: ✅
 Line.rotationUpdated: ✅
 Line.swipeDirections: ✅
 Line.swipeThreshold: ✅
@@ -477,7 +490,6 @@ Link.dragText: ✓ dragAndDrop on Link: the views' drag listeners' reports told 
 Link.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Link.droppedFileTypes: ✓ dropFiles on Link: the view's drag listener's report told the driver's documents, no drag started
 Link.filesDropped: ✓ dropFiles on Link: the view's drag listener's report told the driver's documents, no drag started
-Link.frameChanged: ✅
 Link.gridColumn: ✅
 Link.gridColumnSpan: ✅
 Link.gridRow: ✅
@@ -487,6 +499,7 @@ Link.holdDuration: – Android's long click comes after the system's long-press 
 Link.horizontalAlignment: ✅
 Link.isDraggable: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
 Link.layoutBody: ✅
+Link.layoutFrameChanged: ✅
 Link.margin: ✅
 Link.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Link.panUpdated: ✅
@@ -496,6 +509,7 @@ Link.pinchUpdated: ✅
 Link.pointerMoved: ✅
 Link.pointerPressed: ✅
 Link.pointerReleased: ✅
+Link.presentationFrameChanged: ✅
 Link.rotationUpdated: ✅
 Link.swipeDirections: ✅
 Link.swipeThreshold: ✅
@@ -513,7 +527,6 @@ Map.dragText: 🧩
 Map.dropped: 🧩
 Map.droppedFileTypes: 🧩
 Map.filesDropped: 🧩
-Map.frameChanged: 🧩
 Map.gridColumn: 🧩
 Map.gridColumnSpan: 🧩
 Map.gridRow: 🧩
@@ -523,6 +536,7 @@ Map.holdDuration: 🧩
 Map.horizontalAlignment: 🧩
 Map.isDraggable: 🧩
 Map.layoutBody: 🧩
+Map.layoutFrameChanged: 🧩
 Map.margin: 🧩
 Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
@@ -532,6 +546,7 @@ Map.pinchUpdated: 🧩
 Map.pointerMoved: 🧩
 Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
+Map.presentationFrameChanged: 🧩
 Map.rotationUpdated: 🧩
 Map.swipeDirections: 🧩
 Map.swipeThreshold: 🧩
@@ -549,7 +564,6 @@ MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the views' drag listener
 MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the view's drag listener's report told the driver's documents, no drag started
 MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the view's drag listener's report told the driver's documents, no drag started
-MotionLayout.frameChanged: ✅
 MotionLayout.gridColumn: ✅
 MotionLayout.gridColumnSpan: ✅
 MotionLayout.gridRow: ✅
@@ -559,6 +573,7 @@ MotionLayout.holdDuration: – Android's long click comes after the system's lon
 MotionLayout.horizontalAlignment: ✅
 MotionLayout.isDraggable: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
 MotionLayout.layoutBody: ✅
+MotionLayout.layoutFrameChanged: ✅
 MotionLayout.margin: ✅
 MotionLayout.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 MotionLayout.panUpdated: ✅
@@ -568,6 +583,7 @@ MotionLayout.pinchUpdated: ✅
 MotionLayout.pointerMoved: ✅
 MotionLayout.pointerPressed: ✅
 MotionLayout.pointerReleased: ✅
+MotionLayout.presentationFrameChanged: ✅
 MotionLayout.rotationUpdated: ✅
 MotionLayout.swipeDirections: ✅
 MotionLayout.swipeThreshold: ✅
@@ -585,7 +601,6 @@ Path.dragText: ✓ dragAndDrop on Path: the views' drag listeners' reports told 
 Path.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Path.droppedFileTypes: ✓ dropFiles on Path: the view's drag listener's report told the driver's documents, no drag started
 Path.filesDropped: ✓ dropFiles on Path: the view's drag listener's report told the driver's documents, no drag started
-Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridColumnSpan: ✅
 Path.gridRow: ✅
@@ -595,6 +610,7 @@ Path.holdDuration: – Android's long click comes after the system's long-press 
 Path.horizontalAlignment: ✅
 Path.isDraggable: ✓ dragAndDrop on Path: the views' drag listeners' reports told by the driver, no drag started
 Path.layoutBody: ✅
+Path.layoutFrameChanged: ✅
 Path.margin: ✅
 Path.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Path.panUpdated: ✅
@@ -604,6 +620,7 @@ Path.pinchUpdated: ✅
 Path.pointerMoved: ✅
 Path.pointerPressed: ✅
 Path.pointerReleased: ✅
+Path.presentationFrameChanged: ✅
 Path.rotationUpdated: ✅
 Path.swipeDirections: ✅
 Path.swipeThreshold: ✅
@@ -621,7 +638,6 @@ Picker.dragText: ✓ dragAndDrop on Picker: the views' drag listeners' reports t
 Picker.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the view's drag listener's report told the driver's documents, no drag started
 Picker.filesDropped: ✓ dropFiles on Picker: the view's drag listener's report told the driver's documents, no drag started
-Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRow: ✅
@@ -631,6 +647,7 @@ Picker.holdDuration: – Android's long click comes after the system's long-pres
 Picker.horizontalAlignment: ✅
 Picker.isDraggable: ✓ dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started
 Picker.layoutBody: ✅
+Picker.layoutFrameChanged: ✅
 Picker.margin: ✅
 Picker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Picker.panUpdated: ✅
@@ -640,6 +657,7 @@ Picker.pinchUpdated: ✅
 Picker.pointerMoved: ✅
 Picker.pointerPressed: ✅
 Picker.pointerReleased: ✅
+Picker.presentationFrameChanged: ✅
 Picker.rotationUpdated: ✅
 Picker.swipeDirections: ✅
 Picker.swipeThreshold: ✅
@@ -657,7 +675,6 @@ Polygon.dragText: ✓ dragAndDrop on Polygon: the views' drag listeners' reports
 Polygon.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Polygon.droppedFileTypes: ✓ dropFiles on Polygon: the view's drag listener's report told the driver's documents, no drag started
 Polygon.filesDropped: ✓ dropFiles on Polygon: the view's drag listener's report told the driver's documents, no drag started
-Polygon.frameChanged: ✅
 Polygon.gridColumn: ✅
 Polygon.gridColumnSpan: ✅
 Polygon.gridRow: ✅
@@ -667,6 +684,7 @@ Polygon.holdDuration: – Android's long click comes after the system's long-pre
 Polygon.horizontalAlignment: ✅
 Polygon.isDraggable: ✓ dragAndDrop on Polygon: the views' drag listeners' reports told by the driver, no drag started
 Polygon.layoutBody: ✅
+Polygon.layoutFrameChanged: ✅
 Polygon.margin: ✅
 Polygon.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Polygon.panUpdated: ✅
@@ -676,6 +694,7 @@ Polygon.pinchUpdated: ✅
 Polygon.pointerMoved: ✅
 Polygon.pointerPressed: ✅
 Polygon.pointerReleased: ✅
+Polygon.presentationFrameChanged: ✅
 Polygon.rotationUpdated: ✅
 Polygon.swipeDirections: ✅
 Polygon.swipeThreshold: ✅
@@ -693,7 +712,6 @@ Polyline.dragText: ✓ dragAndDrop on Polyline: the views' drag listeners' repor
 Polyline.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Polyline.droppedFileTypes: ✓ dropFiles on Polyline: the view's drag listener's report told the driver's documents, no drag started
 Polyline.filesDropped: ✓ dropFiles on Polyline: the view's drag listener's report told the driver's documents, no drag started
-Polyline.frameChanged: ✅
 Polyline.gridColumn: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRow: ✅
@@ -703,6 +721,7 @@ Polyline.holdDuration: – Android's long click comes after the system's long-pr
 Polyline.horizontalAlignment: ✅
 Polyline.isDraggable: ✓ dragAndDrop on Polyline: the views' drag listeners' reports told by the driver, no drag started
 Polyline.layoutBody: ✅
+Polyline.layoutFrameChanged: ✅
 Polyline.margin: ✅
 Polyline.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Polyline.panUpdated: ✅
@@ -712,6 +731,7 @@ Polyline.pinchUpdated: ✅
 Polyline.pointerMoved: ✅
 Polyline.pointerPressed: ✅
 Polyline.pointerReleased: ✅
+Polyline.presentationFrameChanged: ✅
 Polyline.rotationUpdated: ✅
 Polyline.swipeDirections: ✅
 Polyline.swipeThreshold: ✅
@@ -729,7 +749,6 @@ ProgressBar.dragText: ✓ dragAndDrop on ProgressBar: the views' drag listeners'
 ProgressBar.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ProgressBar.droppedFileTypes: ✓ dropFiles on ProgressBar: the view's drag listener's report told the driver's documents, no drag started
 ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the view's drag listener's report told the driver's documents, no drag started
-ProgressBar.frameChanged: ✅
 ProgressBar.gridColumn: ✅
 ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRow: ✅
@@ -739,6 +758,7 @@ ProgressBar.holdDuration: – Android's long click comes after the system's long
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.isDraggable: ✓ dragAndDrop on ProgressBar: the views' drag listeners' reports told by the driver, no drag started
 ProgressBar.layoutBody: ✅
+ProgressBar.layoutFrameChanged: ✅
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ProgressBar.panUpdated: ✅
@@ -748,6 +768,7 @@ ProgressBar.pinchUpdated: ✅
 ProgressBar.pointerMoved: ✅
 ProgressBar.pointerPressed: ✅
 ProgressBar.pointerReleased: ✅
+ProgressBar.presentationFrameChanged: ✅
 ProgressBar.rotationUpdated: ✅
 ProgressBar.swipeDirections: ✅
 ProgressBar.swipeThreshold: ✅
@@ -765,7 +786,6 @@ Rectangle.dragText: ✓ dragAndDrop on Rectangle: the views' drag listeners' rep
 Rectangle.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.droppedFileTypes: ✓ dropFiles on Rectangle: the view's drag listener's report told the driver's documents, no drag started
 Rectangle.filesDropped: ✓ dropFiles on Rectangle: the view's drag listener's report told the driver's documents, no drag started
-Rectangle.frameChanged: ✅
 Rectangle.gridColumn: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRow: ✅
@@ -775,6 +795,7 @@ Rectangle.holdDuration: – Android's long click comes after the system's long-p
 Rectangle.horizontalAlignment: ✅
 Rectangle.isDraggable: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.layoutBody: ✅
+Rectangle.layoutFrameChanged: ✅
 Rectangle.margin: ✅
 Rectangle.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Rectangle.panUpdated: ✅
@@ -784,6 +805,7 @@ Rectangle.pinchUpdated: ✅
 Rectangle.pointerMoved: ✅
 Rectangle.pointerPressed: ✅
 Rectangle.pointerReleased: ✅
+Rectangle.presentationFrameChanged: ✅
 Rectangle.rotationUpdated: ✅
 Rectangle.swipeDirections: ✅
 Rectangle.swipeThreshold: ✅
@@ -801,7 +823,6 @@ ScrollView.dragText: ✓ dragAndDrop on ScrollView: the views' drag listeners' r
 ScrollView.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ScrollView.droppedFileTypes: ✓ dropFiles on ScrollView: the view's drag listener's report told the driver's documents, no drag started
 ScrollView.filesDropped: ✓ dropFiles on ScrollView: the view's drag listener's report told the driver's documents, no drag started
-ScrollView.frameChanged: ✅
 ScrollView.gridColumn: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRow: ✅
@@ -811,6 +832,7 @@ ScrollView.holdDuration: – Android's long click comes after the system's long-
 ScrollView.horizontalAlignment: ✅
 ScrollView.isDraggable: ✓ dragAndDrop on ScrollView: the views' drag listeners' reports told by the driver, no drag started
 ScrollView.layoutBody: ✅
+ScrollView.layoutFrameChanged: ✅
 ScrollView.margin: ✅
 ScrollView.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ScrollView.panUpdated: ✅
@@ -820,6 +842,7 @@ ScrollView.pinchUpdated: ✅
 ScrollView.pointerMoved: ✅
 ScrollView.pointerPressed: ✅
 ScrollView.pointerReleased: ✅
+ScrollView.presentationFrameChanged: ✅
 ScrollView.rotationUpdated: ✅
 ScrollView.swipeDirections: ✅
 ScrollView.swipeThreshold: ✅
@@ -837,7 +860,6 @@ SearchField.dragText: ✓ dragAndDrop on SearchField: the views' drag listeners'
 SearchField.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the view's drag listener's report told the driver's documents, no drag started
 SearchField.filesDropped: ✓ dropFiles on SearchField: the view's drag listener's report told the driver's documents, no drag started
-SearchField.frameChanged: ✅
 SearchField.gridColumn: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRow: ✅
@@ -847,6 +869,7 @@ SearchField.holdDuration: – Android's long click comes after the system's long
 SearchField.horizontalAlignment: ✅
 SearchField.isDraggable: ✓ dragAndDrop on SearchField: the views' drag listeners' reports told by the driver, no drag started
 SearchField.layoutBody: ✅
+SearchField.layoutFrameChanged: ✅
 SearchField.margin: ✅
 SearchField.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 SearchField.panUpdated: ✅
@@ -856,6 +879,7 @@ SearchField.pinchUpdated: ✅
 SearchField.pointerMoved: ✅
 SearchField.pointerPressed: ✅
 SearchField.pointerReleased: ✅
+SearchField.presentationFrameChanged: ✅
 SearchField.rotationUpdated: ✅
 SearchField.swipeDirections: ✅
 SearchField.swipeThreshold: ✅
@@ -873,7 +897,6 @@ Separator.dragText: ✓ dragAndDrop on Separator: the views' drag listeners' rep
 Separator.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Separator.droppedFileTypes: ✓ dropFiles on Separator: the view's drag listener's report told the driver's documents, no drag started
 Separator.filesDropped: ✓ dropFiles on Separator: the view's drag listener's report told the driver's documents, no drag started
-Separator.frameChanged: ✅
 Separator.gridColumn: ✅
 Separator.gridColumnSpan: ✅
 Separator.gridRow: ✅
@@ -883,6 +906,7 @@ Separator.holdDuration: – Android's long click comes after the system's long-p
 Separator.horizontalAlignment: ✅
 Separator.isDraggable: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
 Separator.layoutBody: ✅
+Separator.layoutFrameChanged: ✅
 Separator.margin: ✅
 Separator.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Separator.panUpdated: ✅
@@ -892,6 +916,7 @@ Separator.pinchUpdated: ✅
 Separator.pointerMoved: ✅
 Separator.pointerPressed: ✅
 Separator.pointerReleased: ✅
+Separator.presentationFrameChanged: ✅
 Separator.rotationUpdated: ✅
 Separator.swipeDirections: ✅
 Separator.swipeThreshold: ✅
@@ -909,7 +934,6 @@ Slider.dragText: ✓ dragAndDrop on Slider: the views' drag listeners' reports t
 Slider.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Slider.droppedFileTypes: ✓ dropFiles on Slider: the view's drag listener's report told the driver's documents, no drag started
 Slider.filesDropped: ✓ dropFiles on Slider: the view's drag listener's report told the driver's documents, no drag started
-Slider.frameChanged: ✅
 Slider.gridColumn: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRow: ✅
@@ -919,6 +943,7 @@ Slider.holdDuration: – Android's long click comes after the system's long-pres
 Slider.horizontalAlignment: ✅
 Slider.isDraggable: ✓ dragAndDrop on Slider: the views' drag listeners' reports told by the driver, no drag started
 Slider.layoutBody: ✅
+Slider.layoutFrameChanged: ✅
 Slider.margin: ✅
 Slider.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Slider.panUpdated: ✅
@@ -928,6 +953,7 @@ Slider.pinchUpdated: ✅
 Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
+Slider.presentationFrameChanged: ✅
 Slider.rotationUpdated: ✅
 Slider.swipeDirections: ✅
 Slider.swipeThreshold: ✅
@@ -945,7 +971,6 @@ Space.dragText: ✓ dragAndDrop on Space: the views' drag listeners' reports tol
 Space.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Space.droppedFileTypes: ✓ dropFiles on Space: the view's drag listener's report told the driver's documents, no drag started
 Space.filesDropped: ✓ dropFiles on Space: the view's drag listener's report told the driver's documents, no drag started
-Space.frameChanged: ✅
 Space.gridColumn: ✅
 Space.gridColumnSpan: ✅
 Space.gridRow: ✅
@@ -955,6 +980,7 @@ Space.holdDuration: – Android's long click comes after the system's long-press
 Space.horizontalAlignment: ✅
 Space.isDraggable: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
 Space.layoutBody: ✅
+Space.layoutFrameChanged: ✅
 Space.margin: ✅
 Space.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Space.panUpdated: ✅
@@ -964,6 +990,7 @@ Space.pinchUpdated: ✅
 Space.pointerMoved: ✅
 Space.pointerPressed: ✅
 Space.pointerReleased: ✅
+Space.presentationFrameChanged: ✅
 Space.rotationUpdated: ✅
 Space.swipeDirections: ✅
 Space.swipeThreshold: ✅
@@ -981,7 +1008,6 @@ Spinner.dragText: ✓ dragAndDrop on Spinner: the views' drag listeners' reports
 Spinner.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the view's drag listener's report told the driver's documents, no drag started
 Spinner.filesDropped: ✓ dropFiles on Spinner: the view's drag listener's report told the driver's documents, no drag started
-Spinner.frameChanged: ✅
 Spinner.gridColumn: ✅
 Spinner.gridColumnSpan: ✅
 Spinner.gridRow: ✅
@@ -991,6 +1017,7 @@ Spinner.holdDuration: – Android's long click comes after the system's long-pre
 Spinner.horizontalAlignment: ✅
 Spinner.isDraggable: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
 Spinner.layoutBody: ✅
+Spinner.layoutFrameChanged: ✅
 Spinner.margin: ✅
 Spinner.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Spinner.panUpdated: ✅
@@ -1000,6 +1027,7 @@ Spinner.pinchUpdated: ✅
 Spinner.pointerMoved: ✅
 Spinner.pointerPressed: ✅
 Spinner.pointerReleased: ✅
+Spinner.presentationFrameChanged: ✅
 Spinner.rotationUpdated: ✅
 Spinner.swipeDirections: ✅
 Spinner.swipeThreshold: ✅
@@ -1017,7 +1045,6 @@ Stepper.dragText: ✓ dragAndDrop on Stepper: the views' drag listeners' reports
 Stepper.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the view's drag listener's report told the driver's documents, no drag started
 Stepper.filesDropped: ✓ dropFiles on Stepper: the view's drag listener's report told the driver's documents, no drag started
-Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRow: ✅
@@ -1027,6 +1054,7 @@ Stepper.holdDuration: – Android's long click comes after the system's long-pre
 Stepper.horizontalAlignment: ✅
 Stepper.isDraggable: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started
 Stepper.layoutBody: ✅
+Stepper.layoutFrameChanged: ✅
 Stepper.margin: ✅
 Stepper.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Stepper.panUpdated: ✅
@@ -1036,6 +1064,7 @@ Stepper.pinchUpdated: ✅
 Stepper.pointerMoved: ✅
 Stepper.pointerPressed: ✅
 Stepper.pointerReleased: ✅
+Stepper.presentationFrameChanged: ✅
 Stepper.rotationUpdated: ✅
 Stepper.swipeDirections: ✅
 Stepper.swipeThreshold: ✅
@@ -1053,7 +1082,6 @@ Switch.dragText: ✓ dragAndDrop on Switch: the views' drag listeners' reports t
 Switch.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Switch.droppedFileTypes: ✓ dropFiles on Switch: the view's drag listener's report told the driver's documents, no drag started
 Switch.filesDropped: ✓ dropFiles on Switch: the view's drag listener's report told the driver's documents, no drag started
-Switch.frameChanged: ✅
 Switch.gridColumn: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRow: ✅
@@ -1063,6 +1091,7 @@ Switch.holdDuration: – Android's long click comes after the system's long-pres
 Switch.horizontalAlignment: ✅
 Switch.isDraggable: ✓ dragAndDrop on Switch: the views' drag listeners' reports told by the driver, no drag started
 Switch.layoutBody: ✅
+Switch.layoutFrameChanged: ✅
 Switch.margin: ✅
 Switch.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Switch.panUpdated: ✅
@@ -1072,6 +1101,7 @@ Switch.pinchUpdated: ✅
 Switch.pointerMoved: ✅
 Switch.pointerPressed: ✅
 Switch.pointerReleased: ✅
+Switch.presentationFrameChanged: ✅
 Switch.rotationUpdated: ✅
 Switch.swipeDirections: ✅
 Switch.swipeThreshold: ✅
@@ -1089,7 +1119,6 @@ Text.dragText: ✓ dragAndDrop on Text: the views' drag listeners' reports told 
 Text.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Text.droppedFileTypes: ✓ dropFiles on Text: the view's drag listener's report told the driver's documents, no drag started
 Text.filesDropped: ✓ dropFiles on Text: the view's drag listener's report told the driver's documents, no drag started
-Text.frameChanged: ✅
 Text.gridColumn: ✅
 Text.gridColumnSpan: ✅
 Text.gridRow: ✅
@@ -1099,6 +1128,7 @@ Text.holdDuration: – Android's long click comes after the system's long-press 
 Text.horizontalAlignment: ✅
 Text.isDraggable: ✓ dragAndDrop on Text: the views' drag listeners' reports told by the driver, no drag started
 Text.layoutBody: ✅
+Text.layoutFrameChanged: ✅
 Text.margin: ✅
 Text.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Text.panUpdated: ✅
@@ -1108,6 +1138,7 @@ Text.pinchUpdated: ✅
 Text.pointerMoved: ✅
 Text.pointerPressed: ✅
 Text.pointerReleased: ✅
+Text.presentationFrameChanged: ✅
 Text.rotationUpdated: ✅
 Text.swipeDirections: ✅
 Text.swipeThreshold: ✅
@@ -1125,7 +1156,6 @@ TextEditor.dragText: ✓ dragAndDrop on TextEditor: the views' drag listeners' r
 TextEditor.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the view's drag listener's report told the driver's documents, no drag started
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the view's drag listener's report told the driver's documents, no drag started
-TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridColumnSpan: ✅
 TextEditor.gridRow: ✅
@@ -1135,6 +1165,7 @@ TextEditor.holdDuration: – Android's long click comes after the system's long-
 TextEditor.horizontalAlignment: ✅
 TextEditor.isDraggable: ✓ dragAndDrop on TextEditor: the views' drag listeners' reports told by the driver, no drag started
 TextEditor.layoutBody: ✅
+TextEditor.layoutFrameChanged: ✅
 TextEditor.margin: ✅
 TextEditor.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TextEditor.panUpdated: ✅
@@ -1144,6 +1175,7 @@ TextEditor.pinchUpdated: ✅
 TextEditor.pointerMoved: ✅
 TextEditor.pointerPressed: ✅
 TextEditor.pointerReleased: ✅
+TextEditor.presentationFrameChanged: ✅
 TextEditor.rotationUpdated: ✅
 TextEditor.swipeDirections: ✅
 TextEditor.swipeThreshold: ✅
@@ -1161,7 +1193,6 @@ TextField.dragText: ✓ dragAndDrop on TextField: the views' drag listeners' rep
 TextField.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TextField.droppedFileTypes: ✓ dropFiles on TextField: the view's drag listener's report told the driver's documents, no drag started
 TextField.filesDropped: ✓ dropFiles on TextField: the view's drag listener's report told the driver's documents, no drag started
-TextField.frameChanged: ✅
 TextField.gridColumn: ✅
 TextField.gridColumnSpan: ✅
 TextField.gridRow: ✅
@@ -1171,6 +1202,7 @@ TextField.holdDuration: – Android's long click comes after the system's long-p
 TextField.horizontalAlignment: ✅
 TextField.isDraggable: ✓ dragAndDrop on TextField: the views' drag listeners' reports told by the driver, no drag started
 TextField.layoutBody: ✅
+TextField.layoutFrameChanged: ✅
 TextField.margin: ✅
 TextField.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TextField.panUpdated: ✅
@@ -1180,6 +1212,7 @@ TextField.pinchUpdated: ✅
 TextField.pointerMoved: ✅
 TextField.pointerPressed: ✅
 TextField.pointerReleased: ✅
+TextField.presentationFrameChanged: ✅
 TextField.rotationUpdated: ✅
 TextField.swipeDirections: ✅
 TextField.swipeThreshold: ✅
@@ -1197,7 +1230,6 @@ TimePicker.dragText: ✓ dragAndDrop on TimePicker: the views' drag listeners' r
 TimePicker.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TimePicker.droppedFileTypes: ✓ dropFiles on TimePicker: the view's drag listener's report told the driver's documents, no drag started
 TimePicker.filesDropped: ✓ dropFiles on TimePicker: the view's drag listener's report told the driver's documents, no drag started
-TimePicker.frameChanged: ✅
 TimePicker.gridColumn: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRow: ✅
@@ -1207,6 +1239,7 @@ TimePicker.holdDuration: – Android's long click comes after the system's long-
 TimePicker.horizontalAlignment: ✅
 TimePicker.isDraggable: ✓ dragAndDrop on TimePicker: the views' drag listeners' reports told by the driver, no drag started
 TimePicker.layoutBody: ✅
+TimePicker.layoutFrameChanged: ✅
 TimePicker.margin: ✅
 TimePicker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TimePicker.panUpdated: ✅
@@ -1216,6 +1249,7 @@ TimePicker.pinchUpdated: ✅
 TimePicker.pointerMoved: ✅
 TimePicker.pointerPressed: ✅
 TimePicker.pointerReleased: ✅
+TimePicker.presentationFrameChanged: ✅
 TimePicker.rotationUpdated: ✅
 TimePicker.swipeDirections: ✅
 TimePicker.swipeThreshold: ✅
@@ -1233,7 +1267,6 @@ VStack.dragText: ✓ dragAndDrop on VStack: the views' drag listeners' reports t
 VStack.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 VStack.droppedFileTypes: ✓ dropFiles on VStack: the view's drag listener's report told the driver's documents, no drag started
 VStack.filesDropped: ✓ dropFiles on VStack: the view's drag listener's report told the driver's documents, no drag started
-VStack.frameChanged: ✅
 VStack.gridColumn: ✅
 VStack.gridColumnSpan: ✅
 VStack.gridRow: ✅
@@ -1243,6 +1276,7 @@ VStack.holdDuration: – Android's long click comes after the system's long-pres
 VStack.horizontalAlignment: ✅
 VStack.isDraggable: ✓ dragAndDrop on VStack: the views' drag listeners' reports told by the driver, no drag started
 VStack.layoutBody: ✅
+VStack.layoutFrameChanged: ✅
 VStack.margin: ✅
 VStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 VStack.panUpdated: ✅
@@ -1252,6 +1286,7 @@ VStack.pinchUpdated: ✅
 VStack.pointerMoved: ✅
 VStack.pointerPressed: ✅
 VStack.pointerReleased: ✅
+VStack.presentationFrameChanged: ✅
 VStack.rotationUpdated: ✅
 VStack.swipeDirections: ✅
 VStack.swipeThreshold: ✅
@@ -1269,7 +1304,6 @@ WebView.dragText: ✓ dragAndDrop on WebView: the views' drag listeners' reports
 WebView.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 WebView.droppedFileTypes: ✓ dropFiles on WebView: the view's drag listener's report told the driver's documents, no drag started
 WebView.filesDropped: ✓ dropFiles on WebView: the view's drag listener's report told the driver's documents, no drag started
-WebView.frameChanged: ✅
 WebView.gridColumn: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRow: ✅
@@ -1279,6 +1313,7 @@ WebView.holdDuration: – Android's long click comes after the system's long-pre
 WebView.horizontalAlignment: ✅
 WebView.isDraggable: ✓ dragAndDrop on WebView: the views' drag listeners' reports told by the driver, no drag started
 WebView.layoutBody: ✅
+WebView.layoutFrameChanged: ✅
 WebView.margin: ✅
 WebView.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 WebView.panUpdated: ✅
@@ -1288,6 +1323,7 @@ WebView.pinchUpdated: ✅
 WebView.pointerMoved: ✅
 WebView.pointerPressed: ✅
 WebView.pointerReleased: ✅
+WebView.presentationFrameChanged: ✅
 WebView.rotationUpdated: ✅
 WebView.swipeDirections: ✅
 WebView.swipeThreshold: ✅
@@ -1305,7 +1341,6 @@ ZStack.dragText: ✓ dragAndDrop on ZStack: the views' drag listeners' reports t
 ZStack.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the view's drag listener's report told the driver's documents, no drag started
 ZStack.filesDropped: ✓ dropFiles on ZStack: the view's drag listener's report told the driver's documents, no drag started
-ZStack.frameChanged: ✅
 ZStack.gridColumn: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRow: ✅
@@ -1315,6 +1350,7 @@ ZStack.holdDuration: – Android's long click comes after the system's long-pres
 ZStack.horizontalAlignment: ✅
 ZStack.isDraggable: ✓ dragAndDrop on ZStack: the views' drag listeners' reports told by the driver, no drag started
 ZStack.layoutBody: ✅
+ZStack.layoutFrameChanged: ✅
 ZStack.margin: ✅
 ZStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ZStack.panUpdated: ✅
@@ -1324,6 +1360,7 @@ ZStack.pinchUpdated: ✅
 ZStack.pointerMoved: ✅
 ZStack.pointerPressed: ✅
 ZStack.pointerReleased: ✅
+ZStack.presentationFrameChanged: ✅
 ZStack.rotationUpdated: ✅
 ZStack.swipeDirections: ✅
 ZStack.swipeThreshold: ✅

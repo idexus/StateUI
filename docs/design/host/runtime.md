@@ -421,12 +421,62 @@ narrow the page again within the pass, whose report would step it on again -
 the whole slide run out in one frame, the screen standing still until it
 rests.
 
+## Two rectangles
+
+A view has two rectangles, and a reader says which it reads
+(`GeometryStage`): where its layout puts it, and the rectangle around what
+is drawn. A view at rest under no transform has one. Each stage is a member
+of its own - a feed (`VisualElementContract.layoutFrame`,
+`presentationFrame`) and an event (`ViewContract.layoutFrameChanged`,
+`presentationFrameChanged`) - so a view asks its host for the stage
+something reads, and a reader of one hears nothing of the other.
+
+A host says one thing whichever is read: the numbers its toolkit holds now,
+the view's place with no transform in it. The host layer makes both
+rectangles of them (`MountedElement.reportFrame`), the same on every host:
+
+```text
+                  its place                           its corner in the window
+  .layout         where the layout puts the view:     moved by what is left of its own way
+                  where it is going, while it         and of the way of every layout
+                  travels                             above it
+  .presentation   the rectangle around the place      moved as that rectangle's corner is
+                  as it stands now, under the
+                  view's own transform
+```
+
+- A place travels where its layout's motion carries the child or a layout
+  brings a body onto it (`MountedElement.travel`). The layout stage says
+  where it is going, once, as the layout decides it; the presentation stage
+  says every step of the way.
+- A transform - a move, a turn, a scale about the pivot - moves the
+  presentation's rectangle alone (`HostDrawingTransform.bounds(of:)`). It
+  is the view's own: the transform of a layout above it is not in the
+  rectangle, and a tilt out of the page is left out, drawing inside what
+  the flat view covers.
+- A size on its way under its own motion is a layout every frame - a stated
+  size is the layout's input - and both stages say every step.
+
+Each stage is said where it differs from what that stage last said. A frame
+of the display cycle that draws a view elsewhere with no toolkit laying
+anything out - a place its layout's run moved, a transform presented - has
+the readers say again before it is presented
+(`DisplayCycle.tellFrameReaders`), so a reader of the presentation hears a
+rectangle in the frame that draws it.
+
+What reads a frame decides nothing about motion. A layout whose frame is
+read brings its children onto their places, and a size in it travels, as
+where nothing reads: the core writes the same transitions and the same
+lanes, and the host layer the same arrangement. A size or a place worked
+out from a measurement says its own motion
+([sizes worked out from a measurement](../views/measured-layouts.md#sizes-worked-out-from-a-measurement)).
 
 ## A corner in the window
 
-A frame report's corner in the window - `.global`, and `.safeArea` from it -
+The corner in the window a host says - `.global`, and `.safeArea` from it -
 is where the element's laid-out rectangle stands, no transform in it, as its
-place in its parent is: a transform moves what is drawn, never the frame. A
+place in its parent is: a transform moves what is drawn, which the
+presentation stage alone adds ([two rectangles](#two-rectangles)). A
 toolkit's conversion to the window carries the transforms of the view and of
 every view above it on most hosts, so the rule is the host layer's
 (`MountedElement.cornerInWindow`): where no transform stands on the element
@@ -437,6 +487,7 @@ transform. A host hands it its toolkit's corner, an element's place and a
 scroller's offset (`windowCorner`), and its driver reads a press's point from
 that corner (`HostDriver.reaches`). AppKit's conversion carries no layer
 transform, so its own corner is the rule's answer and AppKit reads it alone.
+
 ## A scroller's movement
 
 The scrolling is the platform's: a drag, a throw, a wheel and a key move a

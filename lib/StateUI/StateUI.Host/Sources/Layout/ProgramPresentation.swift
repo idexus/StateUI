@@ -69,6 +69,14 @@ struct ProgramPresentation {
         return step(to: now)
     }
 
+    /// Where the child at `index` of the answer is shown and where its layout puts it, while the two differ.
+    func travel(at index: Int) -> (standing: Rect, destination: Rect)? {
+        guard answer.views.indices.contains(index), let child = stood[answer.views[index].key],
+              child.shown.bounds != child.target.bounds
+        else { return nil }
+        return (child.shown.bounds, child.target.bounds)
+    }
+
     /// Steps the bodies to `now` and says where each child of the answer last taken is shown.
     mutating func step(to now: Double) -> [HostPlacement] {
         bodies.step(to: now)

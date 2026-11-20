@@ -26,12 +26,12 @@
                                 .width(50)
                                 .height(20)
                                 .horizontalAlignment(.start)
-                                .onEvent(ViewContract.frameChanged) { a.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { a.values.append($0) }
                             Rectangle()
                                 .fill(.green)
                                 .height(20)
                                 .gridColumn(1)
-                                .onEvent(ViewContract.frameChanged) { b.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { b.values.append($0) }
                             Rectangle()
                                 .fill(.blue)
                                 .width(30)
@@ -39,7 +39,7 @@
                                 .gridRow(1)
                                 .gridColumnSpan(2)
                                 .horizontalAlignment(.end)
-                                .onEvent(ViewContract.frameChanged) { c.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { c.values.append($0) }
                         }
                         .columns(.fixed(100), .fill)
                         .rows(.automatic, .automatic)
@@ -70,7 +70,7 @@
                             Rectangle()
                                 .fill(.green)
                                 .gridRow(1)
-                                .onEvent(ViewContract.frameChanged) { box.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { box.values.append($0) }
                             Rectangle()
                                 .fill(.blue)
                                 .height(20)
@@ -97,7 +97,7 @@
                             Rectangle()
                                 .fill(.red)
                                 .gridRowSpan(2)
-                                .onEvent(ViewContract.frameChanged) { box.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { box.values.append($0) }
                             Rectangle()
                                 .fill(.green)
                                 .height(20)
@@ -138,7 +138,7 @@
                                 .height(20)
                                 .gridColumn(1)
                                 .gridRow(1)
-                                .onEvent(ViewContract.frameChanged) { box.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { box.values.append($0) }
                         }
                         .columns(.fixed(20), .fixed(20))
                         .rows(.automatic, .automatic)
@@ -169,7 +169,7 @@
                                 .fill(.green)
                                 .gridColumn(1)
                                 .gridRow(1)
-                                .onEvent(ViewContract.frameChanged) { box.values.append($0) }
+                                .onEvent(ViewContract.layoutFrameChanged) { box.values.append($0) }
                         }
                         .columns(.fixed(wide.wrappedValue ? 60 : 30), .fixed(20))
                         .rows(.fixed(wide.wrappedValue ? 50 : 10), .fixed(20))

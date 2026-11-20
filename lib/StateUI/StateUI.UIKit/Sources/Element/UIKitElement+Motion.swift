@@ -15,7 +15,6 @@ extension UIKitElement {
         guard let layout = view as? UIKitLayoutView else { return }
         layout.places.layoutMotion = host?.runtime.layoutMotion
         layout.places.motion = element.motion
-        layout.places.framesRead = element.framesRead
         layout.places.patchArrived()
     }
 

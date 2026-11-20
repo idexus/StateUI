@@ -482,6 +482,40 @@ There are three readings of the same native measurement:
 | `.onFrameChanged(in:)` | a handler run after layout for one selected coordinate space |
 | `GeometryReader` | local content rebuilt from its last measured rectangle |
 
+A view has two rectangles, and a reading names the one it wants with
+`stage:`, a `GeometryStage`:
+
+| Stage | The rectangle |
+| --- | --- |
+| `.layout`, unless said | where the view's layout puts it |
+| `.presentation` | the rectangle around the view as it is drawn |
+
+```swift
+@State private var placed = Rect.zero
+@State private var drawn = Rect.zero
+@State private var lifted = false
+
+Text("Card")
+    .scale(lifted ? 1.2 : 1)
+    .frame(into: $placed)
+    .frame(into: $drawn, stage: .presentation)
+```
+
+At rest, under no transform, the two are one rectangle. They part in two
+cases:
+
+- A transform - `.translationX`, `.rotation`, `.scale` - moves what is drawn
+  and not the layout: `placed` stands still while `drawn` grows with the
+  card.
+- A view on its way to a new place - a row its stack moves, a
+  [body](#how-children-come-onto-their-places) coming onto its place - is,
+  for the layout, already where it is going: `placed` changes once, as the
+  layout decides, while `drawn` says every step of the way.
+
+The presentation's rectangle is the view's own: a transform on a layout
+above it is not in it, nor a tilt (`.rotationX`, `.rotationY`). Reading a
+frame, at either stage, changes nothing about how anything moves.
+
 The frame feed is useful when an engine or authored layout needs the native
 rectangle without making a body read it:
 
@@ -511,9 +545,10 @@ The coordinate spaces are:
 | `.safeArea` | window coordinates measured from the origin where this branch can safely place content |
 
 One host report carries the parent rectangle plus the same origin converted to
-global and safe-area coordinates. Every space reads where the layout placed
-the view: a transform - a move, a turn, a size, on the view or a layout above
-it - moves what is drawn, never the frame, in any space. Each modifier selects
+global and safe-area coordinates. At the layout's stage every space reads
+where the layout placed the view: a transform - a move, a turn, a size, on
+the view or a layout above it - moves what is drawn, never that frame, in
+any space. Each modifier selects
 its own space and deduplicates independently. Thus an ancestor scroll can notify a `.global`
 listener while a `.parent` listener on the same view remains quiet.
 
@@ -534,9 +569,10 @@ The handler runs as an ordinary StateUI event after layout. It may write state;
 such a write requests a later description. A handler that awaits names what a
 newer rectangle does while it runs: `.onFrameChanged(policy: .cancelPrevious) { frame
 in … }`. The
-report never changes layout by itself. A visual transform never reports,
-because it does not alter the layout rectangle; an animated layout property
-reports the rectangles that the host actually settles.
+report never changes layout by itself, nor any motion. At the layout's stage
+a visual transform never reports, because it does not alter the layout
+rectangle; an animated layout property - a width on its way - reports the
+rectangles that the host actually settles.
 
 `GeometryReader` owns the measured rectangle as its own state and rebuilds only
 its content from that value. A `CoordinateSpace` says what the rectangle is
@@ -553,9 +589,10 @@ GeometryReader { frame in
 Use a reader when layout-derived content belongs locally. Use
 `onFrameChanged` when another owner genuinely needs the measurement. Avoid
 feedback where a measurement directly changes the dimension being measured
-without a stable stopping condition. A size derived from measurement normally
-uses `.motion(.none)`: letting the measured size travel can feed intermediate
-measurements back into the same calculation.
+without a stable stopping condition. A size derived from measurement says
+`.motion(.none)` - nothing says it for the author: a measured size left to
+travel crawls after every change of the measurement, and can feed
+intermediate measurements back into the same calculation.
 
 ## A layout's own box
 

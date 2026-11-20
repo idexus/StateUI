@@ -1,84 +1,78 @@
-# revision 31.4
-Button.accessibilityLabel: ✅
-Button.scaleY: ✅
-Canvas.tooltip: ✅
-Capsule.maximumHeight: ✅
-Capsule.maximumWidth: ✅
-Capsule.minimumHeight: ✅
-Capsule.minimumWidth: ✅
-Capsule.pivotY: ✅
-CheckBox.accessibilityLabel: ✅
-CheckBox.scaleY: ✅
-ColorPicker.tooltip: ✅
-DatePicker.maximumHeight: ✅
-DatePicker.maximumWidth: ✅
-DatePicker.minimumHeight: ✅
-DatePicker.minimumWidth: ✅
-DatePicker.pivotY: ✅
-Ellipse.accessibilityLabel: ✅
-Ellipse.scaleY: ✅
-Fill.tooltip: ✅
-Grid.maximumHeight: ✅
-Grid.maximumWidth: ✅
-Grid.minimumHeight: ✅
-Grid.minimumWidth: ✅
-Grid.pivotY: ✅
-HStack.accessibilityHeading: ✅
-HStack.scaleX: ✅
-Image.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-Image.accessibilityActions: – UI Automation offers no action of an application's own words.
-ItemsView.layoutDirection: ✅
-ItemsView.opacity: ✅
-Line.accessibilityPresence: ✅
-Line.isVisible: ✅
-Link.frame: ✅
-Link.rotationY: ✓ read rotationY of Link: the host's own tip, checked against the projection it laid on the element
+# revision 32.4
+Button.scale: ✅
+Button.zIndex: ✅
+Canvas.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+Capsule.accessibilityPresence: ✅
+Capsule.isVisible: ✅
+CheckBox.ignoresInput: ✅
+CheckBox.rotation: ✅
+ColorPicker.accessibilityLabel: ✅
+ColorPicker.scaleY: ✅
+DatePicker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Ellipse.height: ✅
+Ellipse.layoutDirection: ✓ read layoutDirection of Ellipse: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Ellipse.width: ✅
+Fill.presentationFrame: ✅
+Fill.rotationY: ✓ read rotationY of Fill: the host's own tip, checked against the projection it laid on the element
+Grid.accessibilityRole: ✅
+Grid.translationY: ✅
+HStack.tooltip: ✅
+Image.height: ✅
+Image.layoutDirection: ✓ read layoutDirection of Image: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Image.width: ✅
+ItemsView.presentationFrame: ✅
+ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own tip, checked against the projection it laid on the element
+Line.maximumHeight: ✅
+Line.maximumWidth: ✅
+Line.minimumHeight: ✅
+Line.minimumWidth: ✅
+Line.pivotX: ✅
+Link.scale: ✅
+Link.zIndex: ✅
 Map.accessibilityValue: 🧩
-MotionLayout.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-MotionLayout.accessibilityActions: – UI Automation offers no action of an application's own words.
-Path.frame: ✅
-Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
-Picker.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-Polygon.accessibilityPresence: ✅
-Polygon.isVisible: ✅
-Polyline.frame: ✅
-Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
-ProgressBar.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-Rectangle.accessibilityPresence: ✅
-Rectangle.isVisible: ✅
-ScrollView.maximumHeight: ✅
-ScrollView.maximumWidth: ✅
-ScrollView.minimumHeight: ✅
-ScrollView.minimumWidth: ✅
-ScrollView.pivotY: ✅
-SearchField.accessibilityHeading: ✅
-SearchField.scaleX: ✅
+MotionLayout.accessibilityHeading: ✅
+Path.ignoresInput: ✅
+Path.rotation: ✅
+Picker.accessibilityLabel: ✅
+Picker.scaleY: ✅
+Polygon.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Polyline.height: ✅
+Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Polyline.width: ✅
+ProgressBar.presentationFrame: ✅
+ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own tip, checked against the projection it laid on the element
+Rectangle.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Rectangle.translationY: ✅
+ScrollView.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+ScrollView.accessibilityActions: – UI Automation offers no action of an application's own words.
+SearchField.accessibilityPresence: ☑️ Hidden with its contents, WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+SearchField.isVisible: ✅
 Separator.accessibilityPresence: ✅
 Separator.isVisible: ✅
-Slider.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Space.height: ✅
-Space.pivotX: ✅
-Space.width: ✅
+Slider.ignoresInput: ✅
+Slider.rotation: ✅
+Space.accessibilityLabel: ✅
+Space.scaleY: ✅
 Spinner.maximumHeight: ✅
 Spinner.maximumWidth: ✅
 Spinner.minimumHeight: ✅
 Spinner.minimumWidth: ✅
-Spinner.pivotY: ✅
-Stepper.accessibilityHeading: ✅
-Stepper.scaleX: ✅
-Switch.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Text.scale: ✅
-Text.zIndex: ✅
-TextEditor.height: ✅
-TextEditor.pivotX: ✅
-TextEditor.width: ✅
-TextField.accessibilityHeading: ✅
-TextField.scaleX: ✅
-TimePicker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-VStack.height: ✅
-VStack.pivotX: ✅
-VStack.width: ✅
+Spinner.pivotX: ✅
+Stepper.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Switch.height: ✅
+Switch.layoutDirection: ✅
+Switch.width: ✅
+Text.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Text.translationY: ✅
+TextEditor.presentationFrame: ✅
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextField.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+TextField.translationY: ✅
+TimePicker.accessibilityHeading: ✅
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.pivotY: ✅
 WebView.scale: ✅
 WebView.zIndex: ✅
-ZStack.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-ZStack.accessibilityActions: – UI Automation offers no action of an application's own words.
+ZStack.accessibilityValue: ✅
+ZStack.layoutDirection: ✅

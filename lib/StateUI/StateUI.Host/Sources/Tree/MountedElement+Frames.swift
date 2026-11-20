@@ -3,10 +3,23 @@
 
 @_spi(Host) import StateUI
 
-/// What reads where an element stands: the state its frame drives, and the handler of its changes.
-struct FrameReaders: Equatable {
+/// What reads one of an element's two rectangles: the state the frame drives, and the handler of its changes.
+struct FrameReader: Equatable {
     let state: HostStateBinding?
     let handler: Int32?
+
+    /// The reader of `state` and `handler`; nil where there is neither.
+    init?(state: HostStateBinding?, handler: Int32?) {
+        guard state != nil || handler != nil else { return nil }
+        self.state = state
+        self.handler = handler
+    }
+}
+
+/// What reads where an element stands, a stage each.
+struct FrameReaders: Equatable {
+    let layout: FrameReader?
+    let presentation: FrameReader?
 }
 
 /// Where an element stands, said to the tree that reads it, the same on every host.
@@ -19,15 +32,20 @@ extension MountedElement {
         frameReaders != nil || driven[.sidebarOverlays] != nil || layoutProgram != nil
     }
 
-    /// What reads this element's frame itself - a state it drives, a handler of its changes - or nil for nothing.
+    /// What reads this element's frame itself, a stage each - a state it drives, a handler of its changes - or nil
+    /// for nothing.
     var frameReaders: FrameReaders? {
-        let readers = FrameReaders(state: driven[.frame], handler: events[.frameChanged])
-        return readers.state == nil && readers.handler == nil ? nil : readers
+        let layout = FrameReader(state: driven[.layoutFrame], handler: events[.layoutFrameChanged])
+        let presentation = FrameReader(
+            state: driven[.presentationFrame], handler: events[.presentationFrameChanged])
+        return layout == nil && presentation == nil ? nil : FrameReaders(layout: layout, presentation: presentation)
     }
 
-    /// Says where the element stands - `numbers`, a frame report's eight - where that changed since it last said,
-    /// or a reader came since: its place in its parent onto the state its frame drives, and the whole report to its
-    /// handler.
+    /// Says where the element stands, as its host read it off the toolkit - `numbers`, a frame report's eight, the
+    /// view where it is now with no transform in them: to the layout stage's readers where its layout puts it, to
+    /// the presentation stage's the rectangle around what is drawn; each where that changed since it last said, or
+    /// a reader came since.
+    /// Design: docs/design/host/runtime.md#two-rectangles
     public func reportFrame(_ numbers: [Double], in runtime: HostRuntime) {
         // A layout's program works its children's places out of the room: it is told every room laid out.
         // Design: docs/design/host/layout.md#a-layout-program
@@ -35,15 +53,97 @@ extension MountedElement {
             laidOutRoom = (numbers[2], numbers[3])
             layoutProgram?.layOut(numbers[2], numbers[3])
         }
-        guard let readers = frameReaders, numbers != reportedFrame || frameReportDue else { return }
-        reportedFrame = numbers
+        guard let readers = frameReaders else { return }
+
+        let due = frameReportDue
         frameReportDue = false
-        if let binding = readers.state {
+        if let reader = readers.layout {
+            let (frame, carried) = layoutFrame(from: numbers)
+            if due || Self.isAnother(frame, than: reportedFrame, cornerWorkedOut: carried || saidACornerWorkedOut) {
+                reportedFrame = frame
+                saidACornerWorkedOut = carried
+                say(frame, to: reader, in: runtime)
+            }
+        }
+        if let reader = readers.presentation {
+            let frame = presentationFrame(from: numbers)
+            if due || frame != reportedPresentation {
+                reportedPresentation = frame
+                say(frame, to: reader, in: runtime)
+            }
+        }
+    }
+
+    /// Whether the layout stage's report is another than the one last said. A place - the first four numbers -
+    /// is another where any number of it is: the last step of a size coming to rest is said, however short. A
+    /// corner worked out while a place travels carries its arithmetic's last digits, which are no move: one
+    /// worked out, now or as it was said, is another only further than a millionth of a point.
+    static func isAnother(_ frame: [Double], than said: [Double], cornerWorkedOut: Bool) -> Bool {
+        guard said.count == frame.count, frame.count >= 4 else { return true }
+        if frame.prefix(4) != said.prefix(4) { return true }
+        guard cornerWorkedOut else { return frame != said }
+        return zip(frame.dropFirst(4), said.dropFirst(4)).contains { abs($0 - $1) > 1e-6 }
+    }
+
+    private func say(_ numbers: [Double], to reader: FrameReader, in runtime: HostRuntime) {
+        if let binding = reader.state {
             runtime.report(.lanes(Array(numbers.prefix(4))), through: binding, origin: .measurement)
         }
-        if let handler = readers.handler {
+        if let handler = reader.handler {
             runtime.dispatch(handler, payload: [.numbers(numbers)])
         }
+    }
+
+    /// Where the element's place stands now and where its layout puts it, while the two differ: a child its
+    /// layout's motion carries, or one a layout program's body brings onto its place.
+    var travel: (standing: Rect, destination: Rect)? {
+        tree?.layoutMotion.travel(of: mount) ?? parent?.programTravel(of: self)
+    }
+
+    /// The layout stage's report from the host's: the element where its layout puts it - at its destination where
+    /// its place travels - and its corners where they stand once it and every layout above it have come to theirs;
+    /// and whether a way, its own or a layout's above it, carried those corners.
+    func layoutFrame(from numbers: [Double]) -> (frame: [Double], carried: Bool) {
+        guard numbers.count >= 8 else { return (numbers, false) }
+
+        var frame = numbers
+        var (across, down) = (0.0, 0.0)
+        if let own = travel {
+            // What is left of its own way, from where the toolkit holds it now - the numbers its corner was read with.
+            across += own.destination.x - numbers[0]
+            down += own.destination.y - numbers[1]
+            frame.replaceSubrange(
+                0..<4, with: [own.destination.x, own.destination.y, own.destination.width, own.destination.height])
+        }
+        var above = parent
+        while let layout = above {
+            if let carried = layout.travel {
+                across += carried.destination.x - carried.standing.x
+                down += carried.destination.y - carried.standing.y
+            }
+            above = layout.parent
+        }
+        guard across != 0 || down != 0 else { return (frame, false) }
+        frame[4] += across
+        frame[5] += down
+        frame[6] += across
+        frame[7] += down
+        return (frame, true)
+    }
+
+    /// The presentation stage's report from the host's: the rectangle around the element as it is drawn where it
+    /// stands now, under its own transform - its move, its turn and its scales about its pivot.
+    func presentationFrame(from numbers: [Double]) -> [Double] {
+        guard numbers.count >= 8 else { return numbers }
+
+        let place = Rect(x: numbers[0], y: numbers[1], width: numbers[2], height: numbers[3])
+        let drawn = drawingTransform.bounds(of: place)
+        guard drawn != place else { return numbers }
+        let (across, down) = (drawn.x - place.x, drawn.y - place.y)
+        return [
+            drawn.x, drawn.y, drawn.width, drawn.height, numbers[4] + across, numbers[5] + down,
+            numbers[6] + across, numbers[7] + down,
+        ]
     }
 
     /// Whether a view may say where it stands: once a layout placed it - StateUI's (`placed`), or its toolkit's

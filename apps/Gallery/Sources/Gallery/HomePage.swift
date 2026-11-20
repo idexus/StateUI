@@ -369,16 +369,17 @@ struct HomePage: View {
         // hears instead. This one is quiet - it writes only where the
         // answer actually flips, which a user does by turning the device or
         // dragging the window past a threshold.
-        //
-        // A FRAME THE PAGE REPORTS - this watcher's, or the feed's above - is
-        // also what tells the arranger to place its rows at once, rather than
-        // travel them through the very measurement that decides them.
         .onFrameChanged { frame in
             let answer = Self.fitted(in: frame, at: ceiling, stepping: stepping).chrome
             guard answer != chrome else { return }
 
             chrome = answer
         }
+        // THE ROWS STAND WHERE THE ROOM PUTS THEM, AT ONCE: their places are
+        // worked out from the very measurement that decides them, and a row
+        // traveling there would lag the room it was measured in. Reading a
+        // frame says nothing of the kind by itself, so the grid says it.
+        .motion(.none)
         .opacity($shown)
         // No home button: this is it. The inspector stays, as it does on
         // every page - what each render cost is a question about any of them.

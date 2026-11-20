@@ -1,55 +1,61 @@
-# revision 31.1
-Button.accessibilityRole: ✅
-Canvas.ignoresInput: ✅
-Canvas.translationY: ✓ read translationY of Canvas: the host's own transform, checked against the layer it composed itself
-Capsule.rotationX: ✓ read rotationX of Capsule: the host's own transform, checked against the layer it composed itself
-CheckBox.accessibilityPresence: ✅
-ColorPicker.accessibilityRole: ✅
-DatePicker.ignoresInput: ✅
-DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform, checked against the layer it composed itself
-Ellipse.rotationX: ✓ read rotationX of Ellipse: the host's own transform, checked against the layer it composed itself
-Fill.accessibilityPresence: ✅
-Grid.accessibilityRole: ✅
-HStack.maximumHeight: ✅
-HStack.maximumWidth: ✅
-HStack.translationX: ✓ read translationX of HStack: the host's own transform, checked against the layer it composed itself
-Image.pivotY: ✓ read pivotY of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-Line.pivotX: ✓ read pivotX of Line: the host's own transform, checked against the layer it composed itself
-Link.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-Map.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-MotionLayout.maximumHeight: ✅
-MotionLayout.maximumWidth: ✅
-MotionLayout.minimumHeight: ✅
-MotionLayout.minimumWidth: ✅
-MotionLayout.scaleY: ✓ read scaleY of MotionLayout: the host's own transform, checked against the layer it composed itself
-Path.pivotX: ✓ read pivotX of Path: the host's own transform, checked against the layer it composed itself
-Picker.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-Polygon.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Polyline.height: ✅
-Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform, checked against the layer it composed itself
-Polyline.width: ✅
+# revision 32.1
+Button.accessibilityLabel: ✅
+Canvas.maximumHeight: ✅
+Canvas.maximumWidth: ✅
+Canvas.minimumHeight: ✅
+Canvas.minimumWidth: ✅
+Canvas.scaleX: ✓ read scaleX of Canvas: the host's own transform, checked against the layer it composed itself
+Capsule.layoutDirection: ✅
+CheckBox.accessibilityValue: ✅
+ColorPicker.layoutFrame: ✅
+ColorPicker.translationY: ✓ read translationY of ColorPicker: the host's own transform, checked against the layer it composed itself
+DatePicker.rotation: ✓ read rotation of DatePicker: the host's own transform, checked against the layer it composed itself
+Ellipse.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+Fill.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+Grid.height: ✅
+Grid.scale: ✓ read scale of Grid: the host's own transform, checked against the layer it composed itself
+Grid.width: ✅
+HStack.accessibilityPresence: ✅
+Image.accessibilityLabel: ✅
+ItemsView.maximumHeight: ✅
+ItemsView.maximumWidth: ✅
+ItemsView.minimumHeight: ✅
+ItemsView.minimumWidth: ✅
+ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself
+Line.ignoresInput: ✅
+Line.translationX: ✓ read translationX of Line: the host's own transform, checked against the layer it composed itself
+Link.pivotY: ✓ read pivotY of Link: the host's own transform, checked against the layer it composed itself
+Map.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
+MotionLayout.accessibilityValue: ✅
+Path.opacity: ✅
+Path.rotationY: ✓ read rotationY of Path: the host's own transform, checked against the layer it composed itself
+Picker.accessibilityPresence: ✅
+Polygon.accessibilityHint: ✅
+Polyline.maximumHeight: ✅
+Polyline.maximumWidth: ✅
+Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.pivotX: ✓ read pivotX of ProgressBar: the host's own transform, checked against the layer it composed itself
-Rectangle.accessibilityAdjusted: ✅
-ScrollView.ignoresInput: ✅
-ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.rotation: ✓ read rotation of SearchField: the host's own transform, checked against the layer it composed itself
-Separator.height: ✅
-Separator.scaleX: ✓ read scaleX of Separator: the host's own transform, checked against the layer it composed itself
-Separator.width: ✅
-Slider.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-Space.accessibilityHint: ✅
-Spinner.accessibilityPresence: ✅
-Stepper.maximumHeight: ✅
-Stepper.maximumWidth: ✅
-Stepper.translationX: ✓ read translationX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.rotation: ✓ read rotation of Switch: the host's own transform, checked against the layer it composed itself
-Text.accessibilityLabel: ✅
-TextEditor.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-TextField.accessibilityHint: ✅
-TimePicker.maximumHeight: ✅
-TimePicker.maximumWidth: ✅
-TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.rotation: ✓ read rotation of VStack: the host's own transform, checked against the layer it composed itself
-WebView.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-ZStack.accessibilityLabel: ✅
+Rectangle.accessibilityActionPerformed: ✅
+Rectangle.accessibilityActions: ✅
+ScrollView.maximumHeight: ✅
+ScrollView.maximumWidth: ✅
+ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.layoutDirection: ✅
+Separator.zIndex: ✅
+Slider.accessibilityValue: ✅
+Space.layoutFrame: ✅
+Space.translationY: ✓ read translationY of Space: the host's own transform, checked against the layer it composed itself
+Spinner.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+Stepper.rotation: ✓ read rotation of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+Text.layoutDirection: ✅
+TextEditor.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+TextField.height: ✅
+TextField.scale: ✓ read scale of TextField: the host's own transform, checked against the layer it composed itself
+TextField.width: ✅
+TimePicker.accessibilityPresence: ✅
+VStack.accessibilityRole: ✅
+WebView.maximumHeight: ✅
+WebView.maximumWidth: ✅
+WebView.scaleY: ✓ read scaleY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.pivotX: ✓ read pivotX of ZStack: the host's own transform, checked against the layer it composed itself

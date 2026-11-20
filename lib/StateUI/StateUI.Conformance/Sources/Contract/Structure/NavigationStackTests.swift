@@ -13,11 +13,11 @@
         [
             ConformanceCase("standsAloneShowingItsRoot", proves: [
                 Covered(NavigationStackContract.self),
-            ], needs: [Covered(ViewContract.frameChanged, on: "Text")]) { s in
+            ], needs: [Covered(ViewContract.layoutFrameChanged, on: "Text")]) { s in
                 let frames = Received<[Double]>()
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        Text("Root").onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                        Text("Root").onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }
                     } destination: { _ in Text("Pushed") }
                 }
                 s.settle { Aspects.laidOut(frames) }

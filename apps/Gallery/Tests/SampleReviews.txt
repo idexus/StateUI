@@ -50,7 +50,7 @@ FillSample.swift 0139e896092e6483
 FoundationProbeSample.swift fcf69f5bc9919555
 GalleryViewSample.swift 67c5cb1392de5d14
 GateSample.swift ff8b54aaadb027ca
-GeometryReaderSample.swift 435d057e3c9a0098
+GeometryReaderSample.swift 885bdbcf635157be
 GridSample.swift 9c95bd0181e0d392
 HTTPRequestSample.swift bf26141a6d52f7d9
 HoldSample.swift 3179a83bed36f2d7

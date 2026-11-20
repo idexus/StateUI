@@ -216,7 +216,6 @@ final class Differ {
                     rendered: rendered,
                     node: placeholder,
                     forced: true,
-                    sizesArrive: rendered.sizesArrive,
                     pagePlacer: rendered.pagePlacer,
                     from: from)
             }
