@@ -136,7 +136,7 @@ final class GTKGesturesTests: XCTestCase {
 
     /// GTK waits from half to twice its long-press time and refuses any other factor: a view's time beyond
     /// either stands at that end. A press held is no tap as it lets go; the next press taps again.
-    func testAHoldWaitsWithinGTKsRangeAndIsNoTap() throws {
+    func testALongPressWaitsWithinGTKsRangeAndIsNoTap() throws {
         try onUIThread {
             let host = GTKRenderer.running { LongPressPage() }
             let rows = Array(host.views(GTKStackView.self).dropFirst())

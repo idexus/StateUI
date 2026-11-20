@@ -178,7 +178,7 @@ final class AppKitDrawnInputTests: XCTestCase {
     }
 
     /// A press held on a view flattened under it before the long press's time is no long press; on a view drawn whole it is one.
-    func testAPressHeldOnAViewFlattenedUnderItIsNoHold() throws {
+    func testALongPressOnAViewFlattenedUnderItIsNone() throws {
         for flattened in [true, false] {
             let stage = ViewToFlatten()
             defer { stage.window.orderOut(nil) }

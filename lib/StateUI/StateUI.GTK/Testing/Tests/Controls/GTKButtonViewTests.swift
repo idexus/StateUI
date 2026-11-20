@@ -16,7 +16,7 @@ final class GTKButtonViewTests: XCTestCase {
 
     /// A button holding a menu opened as it is held lets the menu go as it leaves: its popover, its actions and its
     /// place in the menus shown - once, GTK saying nothing of a popover let go twice.
-    func testAHeldMenuLeavesWithItsButton() {
+    func testALongPressMenuLeavesWithItsButton() {
         Self.criticals = 0
         let heard = g_log_set_handler(
             "Gtk", GLogLevelFlags(rawValue: 1 << 3), { _, _, _, _ in GTKButtonViewTests.criticals += 1 },
@@ -43,7 +43,7 @@ final class GTKButtonViewTests: XCTestCase {
 
     /// A bar's button holding a menu opened as it is held lets the menu go as the bar lets the button go: the bar's
     /// buttons are no element's, and leave with no element's farewell.
-    func testABarsHeldMenuLeavesWithItsButton() {
+    func testABarsLongPressMenuLeavesWithItsButton() {
         onUIThread {
             let shown = State(wrappedValue: true)
             let host = GTKRenderer.running {

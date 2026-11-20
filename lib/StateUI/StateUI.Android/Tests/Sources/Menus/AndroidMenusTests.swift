@@ -12,7 +12,7 @@ final class AndroidMenusTests: XCTestCase {
         [
             ("testAContextMenuIsWrittenAsTheUserAsksAndItsItemsRun", testAContextMenuIsWrittenAsTheUserAsksAndItsItemsRun),
             ("testAViewWhoseMenuGoesOffersNone", testAViewWhoseMenuGoesOffersNone),
-            ("testAViewWhoseHoldAndMenuGoTakesNoLongPress", testAViewWhoseHoldAndMenuGoTakesNoLongPress),
+            ("testAViewWhoseLongPressAndMenuGoTakesNone", testAViewWhoseLongPressAndMenuGoTakesNone),
             ("testEveryRowOfAShownMenuShowsItsWords", testEveryRowOfAShownMenuShowsItsWords),
         ]
     }
@@ -68,7 +68,7 @@ final class AndroidMenusTests: XCTestCase {
     }
 
     /// A view held, then given a menu, then neither - whichever went first - takes no long press: it is a text again.
-    func testAViewWhoseHoldAndMenuGoTakesNoLongPress() throws {
+    func testAViewWhoseLongPressAndMenuGoTakesNone() throws {
         try onMainActor {
             let holds = State(wrappedValue: true)
             let offers = State(wrappedValue: false)

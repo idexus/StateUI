@@ -48,7 +48,7 @@ final class WebLongPressMenuTests: XCTestCase {
 
     /// A view let go of while the menu its held finger opened stands takes off what the menu hung on the page: the
     /// touch beside it and the Escape that would close it.
-    func testAViewLetGoOfUnderItsHeldMenuLeavesNothingOnThePage() throws {
+    func testAViewLetGoOfUnderItsLongPressMenuLeavesNothingOnThePage() throws {
         WebRenderer.shared?.finish()
         let shown = State(wrappedValue: true)
         let host = WebRenderer.running {

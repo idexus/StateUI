@@ -40,7 +40,7 @@ final class ButtonPressHearingTests: XCTestCase {
         XCTAssertEqual(states.last, "Normal")
     }
 
-    func testAHoldTakesThePress() throws {
+    func testALongPressTakesThePress() throws {
         let (runtime, row) = try running()
 
         row.hear(.press(.began, at: Point(x: 50, y: 20), size: size, byFinger: true), in: runtime)

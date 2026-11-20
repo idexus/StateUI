@@ -270,7 +270,7 @@ final class WebLookTests: XCTestCase {
 
     /// A held button selects no words: a finger held on a button - the page's, the bar's, a tab's - presses it, and
     /// the browser's selection never takes its words.
-    func testAHeldButtonSelectsNoWords() throws {
+    func testALongPressButtonSelectsNoWords() throws {
         let host = WebRenderer.running {
             TabView([0, 1]) { tab in
                 VStack { Button("Reset") }

@@ -494,7 +494,7 @@ final class AppKitButtonViewTests: XCTestCase {
 
     /// A held button's click is its own and it shows no arrow; assistive technology asking for its menu opens it.
     @MainActor
-    func testAHeldButtonsClickIsItsOwnItsMenuAsked() throws {
+    func testAButtonsClickIsItsOwnItsLongPressMenuAsked() throws {
         let heard = Received<String>()
         let renderer = AppKitRenderer.running {
             HStack {

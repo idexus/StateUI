@@ -77,7 +77,7 @@ final class UIKitButtonMenuTests: XCTestCase {
 
     /// A held button keeps its tap and offers its menu as UIKit opens a button's held, with no arrow; a button whose
     /// tap opens its menu may leave its arrow out.
-    func testAHeldButtonAndAButtonWithoutItsArrow() throws {
+    func testALongPressButtonAndAButtonWithoutItsArrow() throws {
         let host = UIKitRenderer.running {
             VStack {
                 Button("Save").onClicked {}.menu(.longPress) { MenuItem("Save as") }

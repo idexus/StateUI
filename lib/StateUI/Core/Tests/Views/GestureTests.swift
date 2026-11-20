@@ -188,9 +188,9 @@ final class GestureTests: XCTestCase {
         XCTAssertTrue(hasComplained("hears taps of one count"))
     }
 
-    /// A long press says how long it waits where it is asked to, and is heard as `held`; unsaid, the platform's own
+    /// A long press says how long it waits where it is asked to, and is heard as `longPressed`; unsaid, the platform's own
     /// time stands.
-    func testAHoldSaysItsTimeBesideWhatItDoes() {
+    func testALongPressSaysItsTimeBesideWhatItDoes() {
         let renders = Renders()
         var held = 0
 

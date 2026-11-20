@@ -301,7 +301,7 @@ final class HandReadingTests: XCTestCase {
 
     /// A PRESS STANDING STILL A HOLD HOLDS THE VIEW UNDER IT, where the layout's views are taken so - found by the
     /// frames, since nothing moves - and a move before it is the run's.
-    func testAPressStandingStillAHoldHoldsTheViewUnderIt() {
+    func testAPressStandingStillALongPressHoldsTheViewUnderIt() {
         var hand = HandReading()
 
         _ = hand.hand(.began, moved: .zero, speed: nil, at: 0, way: .horizontal, point: Point(x: 40, y: 40), drag: HostDrag(axes: .both, begins: .longPress))

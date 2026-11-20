@@ -1132,7 +1132,7 @@ final class AppKitPageTests: XCTestCase {
     /// A held menu on the bar at the page's foot is held as on the window's: no arrow and no split, its click its own,
     /// and assistive technology asking for its menu opens it.
     @MainActor
-    func testAHeldMenuOnTheFootBarKeepsItsClickItsOwn() throws {
+    func testALongPressMenuOnTheFootBarKeepsItsClickItsOwn() throws {
         let heard = Received<String>()
         let renderer = AppKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {

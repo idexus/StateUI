@@ -60,7 +60,7 @@ final class UIKitHandTests: XCTestCase {
     /// stood its time - its pan declining it, so no move of it is told after - lifts no view, however long it
     /// stays down.
     @MainActor
-    func testAFirstMoveLeftToThePageIsNoHold() throws {
+    func testAFirstMoveLeftToThePageIsNoLongPress() throws {
         let (clock, told, turn) = (TestClock(), Told(), State(wrappedValue: 0.0))
         let host = UIKitRenderer.running(clock: clock) {
             MotionLayout([0, 1, 2], parameters: turn.projectedValue) { _ in
