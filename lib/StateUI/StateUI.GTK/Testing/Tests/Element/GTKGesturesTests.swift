@@ -283,6 +283,42 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
+    /// A HAND GTK TAKES AWAY ENDS ONCE, AS CANCELLED: its gesture's `cancel` puts the view back where its layout
+    /// has it, and the drag's end GTK tells after a cancel says nothing more.
+    func testAHandGTKTakesAwayEndsOnceAsCancelled() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    Rectangle()
+                        .fill(.red)
+                        .width(100)
+                        .height(40)
+                        .interaction(.drag(.both))
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            host.layOut()
+            let box = try XCTUnwrap(host.views(GTKShapeView.self).first)
+            let drag = try XCTUnwrap(box.listening?.controllers[.hand]?.first)
+            let element = try XCTUnwrap(host.runtime.tree.root?.first(type: .rectangle))
+
+            GTKTestHost.emit(drag, "drag-begin", [10, 10])
+            GTKTestHost.emit(drag, "drag-update", [30, 0])
+            host.frame()
+            XCTAssertEqual(element.drawingTransform.translationX, 30, "under the hand")
+
+            GTKTestHost.emit(drag, "cancel")
+            host.frame()
+            XCTAssertFalse(element.holdsView, "taken away: the hand holds it no more")
+            XCTAssertEqual(element.drawingTransform.translationX, 0, "and it stands where its layout has it")
+
+            GTKTestHost.emit(drag, "drag-end", [30, 0])
+            host.frame()
+            XCTAssertEqual(element.drawingTransform.translationX, 0, "the end told after says nothing more")
+        }
+    }
+
     /// A pinch says its scale since it began and where it is - begun first where GTK told no beginning; the pointer
     /// says where it moved.
     func testAPinchAndThePointerSayWhereTheyAre() throws {

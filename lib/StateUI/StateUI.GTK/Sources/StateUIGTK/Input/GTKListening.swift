@@ -59,6 +59,9 @@ final class GTKListening {
     private var handPending = false
     private var handTaking = false
 
+    /// Whether a press of the hand's is down and told: its end is told once, by GTK's cancel or by the drag's end.
+    private var handDown = false
+
     /// The widget the hand's moves are measured in, which the hand itself does not move - the layout placing the
     /// view, else the widget above it - and where the press went down, in the view and there. A drag's offset is
     /// the widget's own, and a widget the hand takes comes after it.
@@ -410,6 +413,11 @@ final class GTKListening {
             nonisolated(unsafe) let gesture = gesture
             MainActor.assumeIsolated { GTKListening.find(number)?.handEnded(OpaquePointer(gesture)) }
         }
+        // GTK's own word that it took the press away, said before any end of the drag it may tell after.
+        connectSignal(UnsafeMutableRawPointer(drag), "cancel", number: number) { (_, _: UnsafeMutableRawPointer?, data) in
+            let number = viewNumber(data)
+            MainActor.assumeIsolated { GTKListening.find(number)?.handCancelled() }
+        }
 
         let scroll = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES)!
         connectSignal(UnsafeMutableRawPointer(scroll), "scroll-begin", number: number) { controller, data in
@@ -452,6 +460,7 @@ final class GTKListening {
             gtk_gesture_set_state(gesture, GTK_EVENT_SEQUENCE_DENIED)
             return
         }
+        handDown = true
         handPending = true
         handTaking = false
         handLast = Point(x: 0, y: 0)
@@ -482,7 +491,9 @@ final class GTKListening {
 
     /// The press let go or taken away: told whatever it moved - a press that held a view and never moved lets it go.
     private func handEnded(_ gesture: OpaquePointer?) {
+        guard handDown else { return }
         defer {
+            handDown = false
             handPending = false
             handTaking = false
         }
@@ -493,6 +504,16 @@ final class GTKListening {
             letGo = type == GDK_BUTTON_RELEASE || type == GDK_TOUCH_END
         }
         hand(letGo ? .ended : .cancelled, moved: .zero, at: Self.time(of: gesture))
+    }
+
+    /// GTK took the press away - a touch cancelled, a grab broken, its controller reset: the hand ends as
+    /// cancelled, and the end of the drag GTK may tell after says nothing more.
+    func handCancelled() {
+        guard handDown else { return }
+        handDown = false
+        handPending = false
+        handTaking = false
+        hand(.cancelled, moved: .zero)
     }
 
     /// A scroll step: a wheel's notches - parts of one for a fine wheel - or a touchpad's move of what is under the

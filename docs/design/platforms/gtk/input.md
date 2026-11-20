@@ -142,6 +142,16 @@ names for the hand (`handSpace`,
 [where the hand is measured](../../host/interaction.md#where-the-hand-is-measured)),
 `gtk_widget_compute_point` of where the press went down and of where it
 stands, and their difference is what the hand moved.
+
+A press GTK takes away is told by the gesture's own `cancel` - a touch
+cancelled, a grab broken, its controller reset - which ends the hand as
+cancelled (`handCancelled`), as a press's `cancel` ends the press; the end
+of the drag GTK tells after it says nothing more. A drag that ends by no
+release - one the host denied, for a scrolled window to take - is cancelled
+too, read off its last event. The trap is reading a taking off the last
+event alone: a cancel with no event behind it would be a lift, and the
+view would be let go as thrown.
+
 ## A drag between views
 
 A view's drags are GTK's own controllers. A view that can be dragged holds a
