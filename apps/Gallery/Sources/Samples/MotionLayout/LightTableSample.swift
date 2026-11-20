@@ -101,7 +101,7 @@ struct LightTableSample: SampleContent, ExampleContent {
                 .range(0...1).periodic(true).snaps(snaps ? .every(0.25) : nil),
         ])
         // LET GO, every number goes on by one law.
-        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+        .release(.projected(.eased(.milliseconds(400)))))
     }
 
     /// Where the photo at `index` lies: its square of the table, a photo's

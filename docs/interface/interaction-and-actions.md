@@ -180,7 +180,7 @@ Rectangle()
             $x.journey.snap(to: update.total.x)
         case .ended:
             let rest = update.total.x + update.velocity.x * 0.9 / 3
-            $x.journey.move(to: rest, .eased(.milliseconds(900), curve: .cubicOut))
+            $x.journey.move(to: rest, .eased(.milliseconds(900)))
         default:
             break
         }

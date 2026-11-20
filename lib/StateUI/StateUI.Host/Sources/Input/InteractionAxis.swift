@@ -61,7 +61,7 @@ import StateUIFoundation
     /// The motion a throw of it goes by.
     public var throwing: Motion {
         if case .projected(let motion) = value.release { return motion }
-        return .eased(.milliseconds(400), curve: .cubicOut)
+        return .eased(.milliseconds(400))
     }
 
     /// Whether letting it go throws it at all.

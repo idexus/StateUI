@@ -24,9 +24,9 @@ final class LayoutHandSettleTests: XCTestCase {
             (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
         .interaction(
-            Interaction.value(moved, input: .translation(.horizontal, unit: .points(100)))
+            .value(moved, input: .translation(.horizontal, unit: .points(100)))
                 .reversed(true).range(0...3).snaps(.every(1))
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .release(.projected(.eased(.milliseconds(400)))))
         .layoutBodies(.none)
         .onSettled { told.phases.append($0) }
         .node

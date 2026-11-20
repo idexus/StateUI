@@ -62,7 +62,7 @@ final class Catalog {
                 title: InteropHost.name + " interop",
                 summary: "Calling the host, hearing from it, and a control the app registers.",
                 icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
-                card: ImageSource("cat_interop.png"),
+                card: "cat_interop.png",
                 samples: [
                     Sample(InteropActsSample()),
                     Sample(InteropEventsSample()),
@@ -83,7 +83,7 @@ final class Catalog {
             summary: "One declaration, and the rule the whole library is written on: "
                 + "whoever reads a value is rebuilt when it changes.",
             icon: ImageSource(light: "nav_fundamentals.png", dark: "nav_fundamentals_dark.png"),
-            card: ImageSource("cat_fundamentals.png"),
+            card: "cat_fundamentals.png",
             samples: [
                 Sample(StateSample()),
                 Sample(RebuildSample()),
@@ -108,7 +108,7 @@ final class Catalog {
             summary: "The second layer: a value handed on with $ and carried by the "
                 + "host on its own frames, engines following it with nothing described.",
             icon: ImageSource(light: "nav_driven.png", dark: "nav_driven_dark.png"),
-            card: ImageSource("cat_driven.png"),
+            card: "cat_driven.png",
             samples: [
                 Sample(BindingReaderSample()),
                 Sample(BoundPropertiesSample()),
@@ -131,7 +131,7 @@ final class Catalog {
                 + "writes from many tasks at once, and what a press does while the "
                 + "last still runs.",
             icon: ImageSource(light: "nav_state.png", dark: "nav_state_dark.png"),
-            card: ImageSource("cat_state.png"),
+            card: "cat_state.png",
             samples: [
                 Sample(OnChangedSample()),
                 Sample(AimSample()),
@@ -156,7 +156,7 @@ final class Catalog {
             summary: "A value that changes travels to it - at a length, on a spring, "
                 + "or not at all - and journeys started, overlapped and awaited.",
             icon: ImageSource(light: "nav_animation.png", dark: "nav_animation_dark.png"),
-            card: ImageSource("cat_animation.png"),
+            card: "cat_animation.png",
             samples: [
                 Sample(MotionSample()),
                 Sample(AnimationSample()),
@@ -178,7 +178,7 @@ final class Catalog {
                 + "the spinner and the bar that show work, and what a "
                 + "control says about itself; text fields are under Text & typing.",
             icon: ImageSource(light: "nav_input.png", dark: "nav_input_dark.png"),
-            card: ImageSource("cat_basicinput.png"),
+            card: "cat_basicinput.png",
             samples: [
                 Sample(ButtonSample()),
                 Sample(ButtonRoleSample()),
@@ -220,7 +220,7 @@ final class Catalog {
                 + "TextEditor, SearchField on the page rather than in the navigation "
                 + "bar, and giving the keyboard back.",
             icon: ImageSource(light: "nav_text.png", dark: "nav_text_dark.png"),
-            card: ImageSource("cat_text.png"),
+            card: "cat_text.png",
             samples: [
                 Sample(TextSample()),
                 Sample(TextStyleSample()),
@@ -243,7 +243,7 @@ final class Catalog {
             title: "Layout",
             summary: "Stacks, grids, layers, scrolling, sizing and transforms.",
             icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"),
-            card: ImageSource("cat_layout.png"),
+            card: "cat_layout.png",
             samples: [
                 Sample(StackLayoutSample()),
                 Sample(FillSample()),
@@ -271,7 +271,7 @@ final class Catalog {
             summary: "Views placed by arithmetic of your own, worked out from parameters the hand or the "
                 + "program moves: a ring, a deck, pages of icons, a table panned, pinched and turned.",
             icon: ImageSource(light: "nav_motionlayout.png", dark: "nav_motionlayout_dark.png"),
-            card: ImageSource("cat_motionlayout.png"),
+            card: "cat_motionlayout.png",
             samples: [
                 Sample(MotionLayoutSample()),
                 Sample(LayoutParametersSample()),
@@ -298,7 +298,7 @@ final class Catalog {
                 + "answers light and dark, what a surface is made of, and the "
                 + "look the gallery wears.",
             icon: ImageSource(light: "nav_styles.png", dark: "nav_styles_dark.png"),
-            card: ImageSource("cat_styles.png"),
+            card: "cat_styles.png",
             samples: [
                 Sample(StyleSample()),
                 Sample(VisualStateSample()),
@@ -318,7 +318,7 @@ final class Catalog {
             summary: "Outlines, gradients and a canvas - seven shapes, brushes on any "
                 + "view at all, and drawing instructions the host carries out.",
             icon: ImageSource(light: "nav_shapes.png", dark: "nav_shapes_dark.png"),
-            card: ImageSource("cat_shapes.png"),
+            card: "cat_shapes.png",
             samples: [
                 Sample(ShapesSample()),
                 Sample(BrushSample()),
@@ -336,7 +336,7 @@ final class Catalog {
             summary: "The platform's own lists of items, cards swiped through one at a time, and the dots "
                 + "that say which one shows.",
             icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
-            card: ImageSource("cat_collections.png"),
+            card: "cat_collections.png",
             samples: [
                 Sample(ItemsViewSample()),
                 Sample(ChoosingItemsSample()),
@@ -358,7 +358,7 @@ final class Catalog {
             summary: "A gesture on any view that wants one - a tap, a hold, a drag, a state given to the hand, a "
                 + "swipe, a pinch, a pointer, and carrying something from one view to another.",
             icon: ImageSource(light: "nav_gestures.png", dark: "nav_gestures_dark.png"),
-            card: ImageSource("cat_gestures.png"),
+            card: "cat_gestures.png",
             samples: [
                 Sample(TapSample()),
                 Sample(HoldSample()),
@@ -383,7 +383,7 @@ final class Catalog {
             summary: "Pictures from the app's resources, the platform's icons, a page of "
                 + "the web, and the world on a map.",
             icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"),
-            card: ImageSource("cat_media.png"),
+            card: "cat_media.png",
             samples: [
                 Sample(ImageSample()),
                 Sample(IconSample()),
@@ -403,7 +403,7 @@ final class Catalog {
                 + "modal, an alert, a file dialog, the clipboard, sharing, a toolbar, a menu and a popover over them; "
                 + "and a search field in the navigation bar.",
             icon: ImageSource(light: "nav_shell.png", dark: "nav_shell_dark.png"),
-            card: ImageSource("cat_navigation.png"),
+            card: "cat_navigation.png",
             samples: [
                 Sample(NavigationSample(nav: nav)),
                 Sample(TabsSample(nav: nav)),
@@ -434,7 +434,7 @@ final class Catalog {
             summary: "A scene and the frame around its pages - its windows and their bar, what it lays over "
                 + "them, and what it says as the app comes and goes.",
             icon: ImageSource(light: "nav_windows.png", dark: "nav_windows_dark.png"),
-            card: ImageSource("cat_windows.png"),
+            card: "cat_windows.png",
             samples: Self.openingWindows([Sample(WindowSample())]) + [
                 Sample(WindowBarSample(bar: bar)),
             ] + Self.openingWindows([Sample(MultiWindowSample(style: style)), Sample(ScenesSample())]) + [
@@ -458,7 +458,7 @@ final class Catalog {
                 + "in its own language; the theme is under Styles, the scene's and the "
                 + "window's sessions under Scene.",
             icon: ImageSource(light: "nav_environment.png", dark: "nav_environment_dark.png"),
-            card: ImageSource("cat_environment.png"),
+            card: "cat_environment.png",
             samples: [
                 Sample(EnvironmentSample()),
                 Sample(DeviceInfoSample()),
@@ -485,7 +485,7 @@ final class Catalog {
                 + "clock and the zone, and three ways to repeat work on a timer "
                 + "without blocking anything - Ticker, Poll and Task.sleep.",
             icon: ImageSource(light: "nav_datetime.png", dark: "nav_datetime_dark.png"),
-            card: ImageSource("cat_datetime.png"),
+            card: "cat_datetime.png",
             samples: [
                 Sample(DatePickerSample()),
                 Sample(TimePickerSample()),

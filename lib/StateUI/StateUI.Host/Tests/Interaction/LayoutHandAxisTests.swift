@@ -57,7 +57,7 @@ final class LayoutHandAxisTests: XCTestCase {
     /// it: the state follows the hand as a slider's follows its thumb.
     func testAnAxisWithNoSnapsRestsWhereTheHandLeavesIt() {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
-        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
+        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400))))) }
         bench.laid(built)
 
         bench.hand(.began)
@@ -79,11 +79,11 @@ final class LayoutHandAxisTests: XCTestCase {
     /// LET GO MOVING, AN AXIS WITH NO SNAPS GOES ON AS THE HAND WENT: no frame after the lift carries it farther
     /// than a frame of the hand did - a springy layout motion or none - and it slows to where its throw ends.
     func testLetGoMovingAnAxisWithNoSnapsGoesOnAsTheHandWent() {
-        for motion in [Motion.spring(response: .milliseconds(420), damping: 0.82), .eased(.milliseconds(300), curve: .cubicOut)] {
+        for motion in [Motion.spring(response: .milliseconds(420), damping: 0.82), .eased(.milliseconds(300))] {
             Renderer.shared.clearStates()
             let (table, handed) = (State(wrappedValue: Table()), Handed())
             let built = tree(table, handed, motion: motion) {
-                $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400)))))
             }
             bench.laid(built)
 
@@ -116,7 +116,7 @@ final class LayoutHandAxisTests: XCTestCase {
                     .reversed(true).range(0...3),
                 .value(table.projectedValue, axis: \.turn, input: .translation(.vertical, unit: .points(100)))
                     .reversed(true).range(0...3),
-            ]).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            ]).release(.projected(.eased(.milliseconds(400)))))
         }
         bench.laid(built)
 
@@ -140,7 +140,7 @@ final class LayoutHandAxisTests: XCTestCase {
     /// PAST ITS END THE AXIS GIVES LESS AND LESS, and let go it comes back onto the end.
     func testPastItsEndTheAxisComesBackOntoTheEnd() {
         let (table, handed) = (State(wrappedValue: Table(x: 3)), Handed())
-        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
+        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400))))) }
         bench.laid(built)
 
         bench.hand(.began)
@@ -156,7 +156,7 @@ final class LayoutHandAxisTests: XCTestCase {
     /// A THROW GOES ON TO WHERE IT WOULD END, and no farther than the range's end.
     func testAThrowGoesOnToWhereItWouldEnd() {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
-        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
+        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400))))) }
         bench.laid(built)
 
         bench.hand(.began)
@@ -176,7 +176,7 @@ final class LayoutHandAxisTests: XCTestCase {
     func testAnAxisSnappingToItsLimitsRestsOnTheNearerEnd() {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
         let built = tree(table, handed) {
-            $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.endpoints).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.endpoints).release(.projected(.eased(.milliseconds(400)))))
         }
         bench.laid(built)
 
@@ -200,7 +200,7 @@ final class LayoutHandAxisTests: XCTestCase {
     func testAnAxisThatComesRoundHasNoEnd() {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
         let built = tree(table, handed) {
-            $0.interaction(.value(table.projectedValue, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...1).periodic(true).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            $0.interaction(.value(table.projectedValue, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...1).periodic(true).release(.projected(.eased(.milliseconds(400)))))
         }
         bench.laid(built)
 
@@ -218,7 +218,7 @@ final class LayoutHandAxisTests: XCTestCase {
     func testSnapsComeRoundATurnOn() {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
         let built = tree(table, handed) {
-            $0.interaction(.value(table.projectedValue, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...1).snaps(.every(0.25)).periodic(true).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            $0.interaction(.value(table.projectedValue, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...1).snaps(.every(0.25)).periodic(true).release(.projected(.eased(.milliseconds(400)))))
         }
         bench.laid(built)
 
@@ -241,7 +241,7 @@ final class LayoutHandAxisTests: XCTestCase {
                     .reversed(true).range(0...3).snaps(.every(1)),
                 .value(table.projectedValue, axis: \.sky, input: .translation(.horizontal, unit: .points(200)))
                     .reversed(true).range(0...3),
-            ]).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            ]).release(.projected(.eased(.milliseconds(400)))))
         }
         bench.laid(built)
         XCTAssertEqual(bench.layout?.handWay, .horizontal, "one way, however many numbers it moves")
@@ -260,7 +260,7 @@ final class LayoutHandAxisTests: XCTestCase {
     /// TWO FINGERS ON A MAGNIFICATION WITH NO SNAPS rest where they leave it, and past its end come back onto it.
     func testAMagnificationWithNoSnapsRestsWhereTheFingersLeaveIt() {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
-        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.zoom, input: .magnification).range(0.5...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
+        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.zoom, input: .magnification).range(0.5...2).release(.projected(.eased(.milliseconds(400))))) }
         bench.laid(built)
 
         bench.pinch(.began)

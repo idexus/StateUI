@@ -75,7 +75,7 @@ final class LayoutAxisTests: XCTestCase {
     func testAnAxisTheParametersDoNotListMovesNothing() throws {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
         let patch = Renders().render(tree(table, handed) {
-            $0.interaction(.value(table.projectedValue, axis: \.note, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...1).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            $0.interaction(.value(table.projectedValue, axis: \.note, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...1).release(.projected(.eased(.milliseconds(400)))))
         }())
 
         XCTAssertTrue(try XCTUnwrap(patch.first(.motionLayout)).moved.isEmpty)
@@ -115,7 +115,7 @@ final class LayoutAxisTests: XCTestCase {
     /// A MAGNIFICATION'S RANGE STANDS ABOVE NOUGHT: one reaching it moves nothing, and says why.
     func testAMagnificationReachingNoughtMovesNothing() throws {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
-        let patch = Renders().render(tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.zoom, input: .magnification).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }())
+        let patch = Renders().render(tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.zoom, input: .magnification).range(0...2).release(.projected(.eased(.milliseconds(400))))) }())
 
         XCTAssertTrue(try XCTUnwrap(patch.first(.motionLayout)).moved.isEmpty)
         XCTAssertTrue(hasComplained("a range reaching nought"))

@@ -133,7 +133,7 @@ private struct BoardPage: View {
             }
             Text(said).accessibilityIdentifier("board.said")
             Button("Far").accessibilityIdentifier("board.far").onClicked(policy: .cancelPrevious) {
-                $fade.journey.move(to: 0.2, .eased(.milliseconds(120), curve: .cubicOut))
+                $fade.journey.move(to: 0.2, .eased(.milliseconds(120)))
                 said = "\(try await $across.journey.move(to: 300, .eased(.milliseconds(250), curve: .cubicInOut)).result())"
             }
             Button("Near").accessibilityIdentifier("board.near").onClicked(policy: .cancelPrevious) {

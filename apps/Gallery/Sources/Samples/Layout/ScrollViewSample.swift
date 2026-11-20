@@ -265,7 +265,7 @@ private struct OffsetStrips: ExampleContent {
     /// - Parameter y: how far down each strip is sent.
     private func move(to y: Double) async throws {
         for strip in [$described, $paced, $driven] {
-            try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300), curve: .cubicOut)).result()
+            try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300))).result()
         }
     }
     // listing: end

@@ -77,7 +77,7 @@ final class LayoutMeasurementTests: XCTestCase {
     func testTheArithmeticMeasuresItsViewsThroughTheHost() {
         let asked = Asked()
         let (_, _) = bench.laid(Renders(), {
-            MotionLayout(["a", "b"], id: \.self, parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { context, _ in
+            MotionLayout(["a", "b"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { context, _ in
                 context.subviews.map { view in
                     let size = view.sizeThatFits(width: 120, height: 40)
                     return Placement(Rect(0, 0, size.width, view.firstBaseline(width: 120, height: 40) ?? 0))
@@ -140,7 +140,7 @@ final class LayoutMeasurementTests: XCTestCase {
         let asked = Asked()
         let dial = State(wrappedValue: 2.0)
         _ = bench.laid(Renders(), {
-            MotionLayout(["a", "b"], id: \.self, parameters: dial.projectedValue) { Text($0) } placements: { _, _ in [] }
+            MotionLayout(["a", "b"], parameters: dial.projectedValue) { Text($0) } placements: { _, _ in [] }
                 .measure { context, dial in
                     let widest = context.subviews.map { $0.sizeThatFits().width }.max() ?? 0
                     return LayoutSize(width: context.proposal.width ?? widest, height: dial * 10)

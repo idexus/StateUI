@@ -45,7 +45,7 @@ extension StyleTarget {
     ///     ZStack { Text("Open") }
     ///         .scale($lift)
     ///         .onVisualStateChanged([.pointerOver, .normal]) { state in
-    ///             $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(.milliseconds(120), curve: .cubicOut))
+    ///             $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(.milliseconds(120)))
     ///         }
     ///
     /// It runs after the render in which the control entered the state, never

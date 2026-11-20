@@ -46,15 +46,15 @@ private struct HomeBoard: View {
 
     var body: some View {
         let count = icons.count
-        return MotionLayout(icons, id: \.self, parameters: $board) { icon in
+        return MotionLayout(icons, parameters: $board) { icon in
             HomeTile(name: icon, lifted: lifted == icon)
         } placements: { context, board in
             (0..<count).map { Self.place($0, board, context.bounds) }
         }
         .axis(range: 0...2, keyframes: .every(1))
         .interaction(
-            Interaction.value($board, input: .swipe(.horizontal, unit: .containerLength)).reversed(true).range(0...2).snaps(.every(1))
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            .value($board, input: .swipe(.horizontal, unit: .containerLength)).reversed(true).range(0...2).snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400)))))
         .itemDrag(begins: .longPress)
         .onItemDragged { drag in
             switch drag.phase {

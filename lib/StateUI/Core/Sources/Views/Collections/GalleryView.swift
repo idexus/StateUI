@@ -424,11 +424,11 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             let input: InteractionInput = shape == .deck
                 ? .swipe(.horizontal, unit: .frontItem) : .translation(.horizontal, unit: .frontItem)
             layout = layout.interaction(
-                Interaction.value(turns.projectedValue, input: input)
+                .value(turns.projectedValue, input: input)
                     .reversed(true)
                     .range(cards)
                     .snaps(.every(1))
-                    .release(released ?? .projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                    .release(released ?? .projected(.eased(.milliseconds(400)))))
         }
 
         // The shade sits beside the press: the card that dips wears none.
@@ -483,7 +483,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private static var held: Int { 60 }
 
     /// How the press animates, down and back: short, as an answer to a finger.
-    private static var pressing: Motion { .eased(.milliseconds(50), curve: .cubicOut) }
+    private static var pressing: Motion { .eased(.milliseconds(50)) }
 
     /// How far a far card fades unless said: all of it, or a quarter where a
     /// shade does the rest.

@@ -85,8 +85,8 @@ final class WebHandTests: XCTestCase {
                 (0..<3).map { Placement(Rect(Double($0) * 100, 0, 100 * at, context.bounds.height)) }
             }
             .interaction(
-                Interaction.value(zoom.projectedValue, input: .magnification).range(1...3).snaps([2])
-                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .value(zoom.projectedValue, input: .magnification).range(1...3).snaps([2])
+                    .release(.projected(.eased(.milliseconds(400)))))
             .width(300)
             .height(200)
         }

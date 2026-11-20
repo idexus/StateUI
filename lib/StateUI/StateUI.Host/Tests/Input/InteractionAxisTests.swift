@@ -8,13 +8,13 @@ import XCTest
 /// One number a hand moves, as its arithmetic answers with no runtime: where it may rest - a list, every multiple
 /// of a step, anywhere in its range - which of two snaps as near it takes, and how a throw flies.
 final class InteractionAxisTests: XCTestCase {
-    private let cubicOut = Motion.eased(.milliseconds(400), curve: .cubicOut)
+    private let cubicOut = Motion.eased(.milliseconds(400))
 
     /// A number moved a point a unit by a hand across.
     private func axis(
         low: Double = -.infinity, high: Double = .infinity, snaps: HostInteractionSnaps? = nil,
         periodic: Bool = false, input: HostInteractionInput = .translation(.horizontal, unit: .points(1), swipes: false),
-        release: InteractionRelease = .projected(.eased(.milliseconds(400), curve: .cubicOut))
+        release: InteractionRelease = .projected(.eased(.milliseconds(400)))
     ) -> InteractionAxis {
         InteractionAxis(HostInteractionValue(
             state: 1, lane: 0, input: input, low: low, high: high, snaps: snaps, periodic: periodic, release: release))

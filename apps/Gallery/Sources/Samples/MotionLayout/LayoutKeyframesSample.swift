@@ -99,7 +99,7 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
                 .reversed(true)
                 .range(0...2)
                 .snaps(.every(1))
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))
+                .release(.projected(.eased(.milliseconds(400))))
             : nil)
         // BETWEEN THEM each card goes straight, or by a curve its neighbors
         // shape.

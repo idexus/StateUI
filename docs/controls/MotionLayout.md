@@ -15,8 +15,8 @@ MotionLayout(["Mural", "Nebula", "Ridge"], parameters: $turn) { name in
     }
 }
 .interaction(
-    Interaction.value($turn, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
-        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+    .value($turn, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
+        .release(.projected(.eased(.milliseconds(400)))))
 .height(160)
 ```
 

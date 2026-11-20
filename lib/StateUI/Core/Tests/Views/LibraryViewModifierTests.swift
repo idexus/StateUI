@@ -22,8 +22,8 @@ final class LibraryViewModifierTests: XCTestCase {
             ItemsView([1, 2]) { Text("\($0)") }.selection(chosen.projectedValue).margin(8).node,
         ]
         let galleries = [
-            GalleryView([1, 2], id: \.self) { Text("\($0)") }.margin(8).position(shown.projectedValue).node,
-            GalleryView([1, 2], id: \.self) { Text("\($0)") }.position(shown.projectedValue).margin(8).node,
+            GalleryView([1, 2]) { Text("\($0)") }.margin(8).position(shown.projectedValue).node,
+            GalleryView([1, 2]) { Text("\($0)") }.position(shown.projectedValue).margin(8).node,
         ]
         let layouts = [
             MotionLayout([1], parameters: turn.traveling(.none)) { Text("\($0)") } placements: { _, _ in [] }

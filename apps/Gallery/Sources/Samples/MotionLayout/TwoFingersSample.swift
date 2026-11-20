@@ -59,7 +59,7 @@ struct TwoFingersSample: SampleContent, ExampleContent {
                 .value($ring, axis: \.size, input: .magnification)
                     .range(0.6...1.5).snaps([1]),
             ])
-            .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            .release(.projected(.eased(.milliseconds(400)))))
         }
         .clipsContent(true)
     }

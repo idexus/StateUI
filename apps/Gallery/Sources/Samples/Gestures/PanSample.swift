@@ -83,8 +83,8 @@ struct PanSample: SampleContent, ExampleContent {
                             let seconds = 0.9
                             panX = min(max(panX + update.total.x + update.velocity.x * seconds / 3, -140), 140)
                             panY = min(max(panY + update.total.y + update.velocity.y * seconds / 3, -60), 60)
-                            $liveX.journey.move(to: panX, .eased(.seconds(seconds), curve: .cubicOut))
-                            $liveY.journey.move(to: panY, .eased(.seconds(seconds), curve: .cubicOut))
+                            $liveX.journey.move(to: panX, .eased(.seconds(seconds)))
+                            $liveY.journey.move(to: panY, .eased(.seconds(seconds)))
                         case .ended:
                             panX += update.total.x
                             panY += update.total.y

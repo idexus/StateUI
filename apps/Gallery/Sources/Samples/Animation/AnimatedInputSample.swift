@@ -125,7 +125,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.start)
 
                 button("Send the stepper to 12") {
-                    try await $count.journey.move(to: 12, .eased(.milliseconds(800), curve: .cubicOut)).result()
+                    try await $count.journey.move(to: 12, .eased(.milliseconds(800))).result()
                 }
             }
             .spacing(10)

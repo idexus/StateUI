@@ -286,7 +286,7 @@ private struct PicturesPage: View {
             if opens {
                 Button("Open").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(WindowKind("pictures.again")) }
             }
-            ForEach(Array(0..<17)) { index in
+            ForEach(0..<17) { index in
                 Image(index.isMultiple(of: 2) ? "test_wide.svg" : "test_halves.svg").width(177).height(248)
             }
         }

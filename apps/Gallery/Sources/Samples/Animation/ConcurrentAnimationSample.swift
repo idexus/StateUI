@@ -174,7 +174,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         var hopped = true
 
         for bar in bars {
-            let up = try await bar.journey.move(to: -26, .eased(.milliseconds(150), curve: .cubicOut)).result()
+            let up = try await bar.journey.move(to: -26, .eased(.milliseconds(150))).result()
             guard case .reached = up else { hopped = false; break }
 
             let down = try await bar.journey.move(to: 0, .eased(.milliseconds(150), curve: .cubicIn)).result()

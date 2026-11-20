@@ -13,7 +13,7 @@ private struct MailList: ExampleContent {
                 .textColor(Palette.accent)
                 .gridRow(0)
 
-            ItemsView(mail, id: \.self) { message in
+            ItemsView(mail) { message in
                 Text(message)
                     .fontSize(14)
                     .padding(horizontal: 14, vertical: 12)

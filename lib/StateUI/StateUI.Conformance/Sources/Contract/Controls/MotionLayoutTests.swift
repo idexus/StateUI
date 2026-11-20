@@ -537,8 +537,8 @@ private func itemLayout(
                 (0..<3).map { Placement(Rect((Double($0) - at) * 30, 10, 20, 20)) }
             }
             .interaction(
-                Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))
-                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400)))))
             .itemDrag(begins: begins)
             .onItemDragged { told.values.append("\($0.id) at \(Int($0.at.x)),\(Int($0.at.y))") }
             if dismissing {

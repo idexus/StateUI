@@ -397,7 +397,7 @@ private struct PicturesScene: Scene {
 private struct PicturesPage: View {
     var body: some View {
         VStack {
-            ForEach(Array(0..<17)) { _ in
+            ForEach(0..<17) { _ in
                 Image("test_wide.svg").width(177).height(248)
             }
         }

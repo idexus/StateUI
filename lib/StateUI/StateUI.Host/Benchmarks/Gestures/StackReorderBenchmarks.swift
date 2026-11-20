@@ -39,7 +39,7 @@ private struct RowsPage: View {
     var body: some View {
         VStack {
             Button("Turn").onClicked { rows.append(rows.removeFirst()) }.id("turn")
-            ForEach(rows, id: \.self) { number in
+            ForEach(rows) { number in
                 Row(number: number)
             }
         }

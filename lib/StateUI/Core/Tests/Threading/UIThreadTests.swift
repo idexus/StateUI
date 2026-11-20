@@ -235,7 +235,7 @@ final class UIThreadTests: XCTestCase {
         _ = Renderer.shared.dispatch(before)
 
         XCTAssertEqual(
-            asked { fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut)) }, 1,
+            asked { fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400))) }, 1,
             "the movement asked for no turn - the host would not start it until the next event")
 
         ReplyBuffer.current = .finished([.bool(true)])

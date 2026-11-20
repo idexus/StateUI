@@ -125,7 +125,7 @@ final class GalleryViewHandTests: XCTestCase {
     /// A THROW GOES ON AS `release` SAYS: the same swipe let go with speed, carried for three seconds' worth, comes
     /// to rest two cards on, where the light friction of a gallery that says nothing slides it back to the first.
     func testAThrowGoesOnAsItsReleaseSays() {
-        for (throwing, card) in [(Motion?.none, 0), (.eased(.seconds(3), curve: .cubicOut), 2)] {
+        for (throwing, card) in [(Motion?.none, 0), (.eased(.seconds(3)), 2)] {
             let shown = State(0)
             let bench = LayoutBench()
             bench.laid({

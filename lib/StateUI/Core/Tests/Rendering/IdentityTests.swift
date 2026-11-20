@@ -65,7 +65,7 @@ final class IdentityTests: XCTestCase {
             NavigationStack(path.projectedValue) {
                 VStack {
                     if shown { Text("then") } else { Text("else") }
-                    ForEach([Ticket(1), Ticket(2)], id: \.self) { ticket in Text("\(ticket.number)") }
+                    ForEach([Ticket(1), Ticket(2)]) { ticket in Text("\(ticket.number)") }
                     MotionLayout(["a", "b"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [] }
                     Converting()
                     Text("marked").id(Restless(number: 1))
@@ -86,7 +86,7 @@ final class IdentityTests: XCTestCase {
     func testAnIdentityWhoseDescriptionChangesKeepsItsElement() {
         let renders = Renders()
         func list() -> Node {
-            VStack { ForEach([Restless(number: 1), Restless(number: 2)], id: \.self) { Text("\($0.number)") } }.node
+            VStack { ForEach([Restless(number: 1), Restless(number: 2)]) { Text("\($0.number)") } }.node
         }
 
         let asked = Restless.asked
@@ -104,7 +104,7 @@ final class IdentityTests: XCTestCase {
         let renders = Renders()
 
         renders.render(VStack {
-            ForEach([7, 7], id: \.self) { number in Text("\(number)") }
+            ForEach([7, 7]) { number in Text("\(number)") }
         }.node)
 
         XCTAssertTrue(hasComplained("share the identity \"7\""))
@@ -115,7 +115,7 @@ final class IdentityTests: XCTestCase {
     func testTwoIdentitiesDescribedAlikeAreTwoElements() {
         let renders = Renders()
         func list(_ tickets: [Ticket]) -> Node {
-            VStack { ForEach(tickets, id: \.self) { ticket in Text("\(ticket.number)") } }.node
+            VStack { ForEach(tickets) { ticket in Text("\(ticket.number)") } }.node
         }
         let (one, two) = (Ticket(1), Ticket(2))
 
@@ -201,7 +201,7 @@ final class IdentityTests: XCTestCase {
         let renders = Renders()
 
         renders.render(VStack {
-            ForEach(["identityA", "identityB"], id: \.self) { name in Text(name) }
+            ForEach(["identityA", "identityB"]) { name in Text(name) }
         }.node)
 
         XCTAssertFalse(hasComplained("\"identityA\""))

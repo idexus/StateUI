@@ -157,7 +157,7 @@ final class WinUIPagesTests: XCTestCase {
                 SplitView {
                     Grid {
                         ScrollView {
-                            VStack { ForEach(0..<60, id: \.self) { Text("row \($0)") } }
+                            VStack { ForEach(0..<60) { Text("row \($0)") } }
                         }
                         Text("footer").gridRow(1)
                     }
@@ -187,7 +187,7 @@ final class WinUIPagesTests: XCTestCase {
                 SplitView {
                     Grid {
                         ScrollView {
-                            VStack { ForEach(0..<60, id: \.self) { Text("row \($0)") } }
+                            VStack { ForEach(0..<60) { Text("row \($0)") } }
                         }
                         Text("footer").gridRow(1)
                     }
@@ -729,7 +729,7 @@ final class WinUIPagesTests: XCTestCase {
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
                 SplitView {
                     ScrollView {
-                        VStack { ForEach(Array(0..<100), id: \.self) { number in Text("Row \(number)") } }
+                        VStack { ForEach(0..<100) { number in Text("Row \(number)") } }
                     }
                 } detail: {
                     Text("Detail")

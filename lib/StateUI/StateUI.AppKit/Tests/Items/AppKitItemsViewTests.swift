@@ -16,7 +16,7 @@ private struct ChoresPage: View {
     var body: some View {
         Grid {
             VStack { Text("A value and its event") }.gridRow(0)
-            ItemsView(["Dishes", "Laundry ✓"].indices, id: \.self) { index in
+            ItemsView(["Dishes", "Laundry ✓"].indices) { index in
                 Text(["Dishes", "Laundry ✓"][index]).padding(horizontal: 14, vertical: 10)
             }
             .selection($chosen)

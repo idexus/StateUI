@@ -117,7 +117,7 @@ extension MotionLayout {
 
         /// How a throw of the axis in focus goes on - its release's, where it throws: what a view the hand lets go
         /// of is carried by.
-        var throwing: Motion { focus?.release.throwing ?? .eased(.milliseconds(400), curve: .cubicOut) }
+        var throwing: Motion { focus?.release.throwing ?? .eased(.milliseconds(400)) }
 
         // MARK: - The parameters
 

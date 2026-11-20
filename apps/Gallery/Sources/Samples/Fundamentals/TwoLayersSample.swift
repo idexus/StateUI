@@ -183,9 +183,9 @@ private struct Described: View {
             let (shown, began) = (counter, ContinuousClock.now)
 
             // The leaves in rows of 25: a stack wraps nothing, so the rows do.
-            ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
+            ForEach(Array(stride(from: 0, to: leaves, by: 25))) { row in
                 HStack {
-                    ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
+                    ForEach(Array(row ..< min(row + 25, leaves))) { index in
                         Rectangle()
                             .fill(Palette.outline)
                             .width(7)
@@ -231,9 +231,9 @@ private struct Channelled: View {
             let began = ContinuousClock.now
 
             // The leaves in rows of 25: a stack wraps nothing, so the rows do.
-            ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
+            ForEach(Array(stride(from: 0, to: leaves, by: 25))) { row in
                 HStack {
-                    ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
+                    ForEach(Array(row ..< min(row + 25, leaves))) { index in
                         Rectangle()
                             .fill(Palette.outline)
                             .width(7)

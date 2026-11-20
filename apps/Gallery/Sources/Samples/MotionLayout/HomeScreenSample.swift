@@ -124,7 +124,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                         .reversed(true)
                         .range(0...Double(boards - 1))
                         .snaps(.every(1))
-                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                        .release(.projected(.eased(.milliseconds(400)))))
                 // HELD, AN ICON LEAVES ITS BOARD for the hand: each move
                 // gives it the slot under the hand, and the others travel to
                 // make room; held still at an edge, the boards turn under it.

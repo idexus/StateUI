@@ -362,8 +362,8 @@ final class ControlTests: XCTestCase {
                     [Placement(Rect(phase, 0, context.bounds.width / 2, context.bounds.height)), Placement(Rect(context.bounds.width / 2, 0, 10, 10))]
                 }
                 .interaction(
-                    Interaction.value(turn.traveling(.spring(response: .milliseconds(240))), input: .translation(.horizontal, unit: .points(90))).reversed(true).range(0...1).snaps(.every(1))
-                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                    .value(turn.traveling(.spring(response: .milliseconds(240))), input: .translation(.horizontal, unit: .points(90))).reversed(true).range(0...1).snaps(.every(1))
+                        .release(.projected(.eased(.milliseconds(400)))))
                 .following(chosen.projectedValue)
                 .shade {
                     Rectangle()
@@ -389,7 +389,7 @@ final class ControlTests: XCTestCase {
                         Interaction.value(dial.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(90))).reversed(true).range(0...1).snaps(.endpoints),
                         Interaction.value(dial.projectedValue, axis: \.y, input: .translation(.vertical, unit: .points(90))).reversed(true).range(0...1).snaps(.endpoints),
                     ])
-                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                        .release(.projected(.eased(.milliseconds(400)))))
                 .node.built),
 
             // Both halves of a map: the control, and the markers on it. A Marker is

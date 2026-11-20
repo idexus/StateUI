@@ -335,7 +335,7 @@ final class ItemsViewTests: XCTestCase {
     /// The same item twice is told apart, as two repeated `.id()`s are, and said.
     func testTheSameItemTwiceIsToldApartAndSaid() throws {
         let renders = Renders()
-        let list = try list(in: renders.render(ItemsView(["a", "b", "a"], id: \.self) { Text($0) }.node))
+        let list = try list(in: renders.render(ItemsView(["a", "b", "a"]) { Text($0) }.node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
         XCTAssertEqual(entries.sections[0].items, ["a", "b", "a\u{1D}1"])

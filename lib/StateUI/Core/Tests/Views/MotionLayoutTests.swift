@@ -54,7 +54,7 @@ final class MotionLayoutTests: XCTestCase {
     /// stands, a new one takes a number never given, and naming one spells nothing.
     func testASlotIsItsItemsOwnIdentity() {
         let tags = [Tag(1), Tag(2)]
-        let layout = MotionLayout(tags, id: \.self, parameters: State(wrappedValue: 0.0).projectedValue) { _ in
+        let layout = MotionLayout(tags, parameters: State(wrappedValue: 0.0).projectedValue) { _ in
             Rectangle()
                 .fill(.red)
         } placements: { _, _ in [] }
@@ -239,8 +239,8 @@ final class MotionLayoutTests: XCTestCase {
             return [Placement(Rect(0, 0, 10, 10))]
         }
         .interaction(
-            Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)
+                .release(.projected(.eased(.milliseconds(400)))))
         .node
     }
 

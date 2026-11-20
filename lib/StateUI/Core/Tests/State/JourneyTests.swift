@@ -230,10 +230,10 @@ final class JourneyTests: XCTestCase {
 
         for image in [asked, stated] {
             image.door = .property
-            image.inherited = .eased(.milliseconds(200), curve: .cubicOut)
+            image.inherited = .eased(.milliseconds(200))
         }
 
-        XCTAssertEqual(law(crossing: asked), .eased(.milliseconds(200), curve: .cubicOut),
+        XCTAssertEqual(law(crossing: asked), .eased(.milliseconds(200)),
                        "`.inherited` is answered by the element's law")
         XCTAssertEqual(law(crossing: stated), .spring(),
                        "a law the value states is left alone")
@@ -251,10 +251,10 @@ final class JourneyTests: XCTestCase {
 
         for image in images {
             image.door = .property
-            image.inherited = .eased(.milliseconds(200), curve: .cubicOut)
+            image.inherited = .eased(.milliseconds(200))
         }
 
-        XCTAssertEqual(law(crossing: images[0]), .eased(.milliseconds(200), curve: .cubicOut),
+        XCTAssertEqual(law(crossing: images[0]), .eased(.milliseconds(200)),
                        "leaving it out means the element's")
         XCTAssertEqual(law(crossing: images[1]), .spring(),
                        "and a stated law is read before any cycle has run")

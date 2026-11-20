@@ -97,8 +97,8 @@ final class LayoutParametersTests: XCTestCase {
                 return [Placement(Rect(0, 0, 10, 10))]
             }
             .interaction(
-                Interaction.value(orbit.projectedValue, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)
-                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .value(orbit.projectedValue, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)
+                    .release(.projected(.eased(.milliseconds(400)))))
             .node
         }
     }

@@ -47,7 +47,7 @@ final class LayoutPanTests: XCTestCase {
         }
         .interaction(
             .simultaneous((downFirst ? [down, across] : [across, down]) + [zoom])
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .release(.projected(.eased(.milliseconds(400)))))
         .node
     }
 

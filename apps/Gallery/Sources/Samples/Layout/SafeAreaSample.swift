@@ -23,7 +23,7 @@ struct SafeAreaSample: SampleContent, ExampleContent {
                         ScrollView {
                             VStack {
                                 Switch("Under the bars", isOn: $under)
-                                ForEach(Array(1...40), id: \.self) { row in
+                                ForEach(1...40) { row in
                                     Text("Row \(row)")
                                 }
                             }

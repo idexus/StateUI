@@ -43,7 +43,7 @@ final class LayoutPinchTests: XCTestCase {
                 Interaction.value(dial.traveling(.eased(.milliseconds(160), curve: .linear)), axis: \.zoom, input: .magnification).range(0.5...2).snaps([1]),
                 Interaction.value(dial.traveling(.eased(.milliseconds(160), curve: .linear)), axis: \.turn, input: .rotation(degreesPerUnit: 90)).range(0...4).snaps(.every(1)).periodic(true),
             ])
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .release(.projected(.eased(.milliseconds(400)))))
         if itemDrag { layout = layout.itemDrag(begins: .longPress) }
         return layout.node
     }

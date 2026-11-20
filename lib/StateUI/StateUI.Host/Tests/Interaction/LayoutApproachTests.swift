@@ -33,8 +33,8 @@ final class LayoutApproachTests: XCTestCase {
             return [Placement(Rect(0, 0, 10, 10))]
         }
         .interaction(
-            Interaction.value(phase.traveling(motion), input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            .value(phase.traveling(motion), input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400)))))
         .node
     }
 

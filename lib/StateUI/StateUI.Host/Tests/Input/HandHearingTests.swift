@@ -214,8 +214,8 @@ private struct HandPage: View {
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
         .interaction(
-            Interaction.value($turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            .value($turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400)))))
     }
 }
 
@@ -232,8 +232,8 @@ private struct TappedHandPage: View {
             (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
         .interaction(
-            Interaction.value($turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            .value($turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400)))))
         .onItemActivated { _ in tapped += 1 }
     }
 }
@@ -253,8 +253,8 @@ private struct RightToLeftPage: View {
             return (0..<5).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
         }
         .interaction(
-            Interaction.value($turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            .value($turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400)))))
         .mirrorsRightToLeft(mirrors)
         .itemDrag(begins: .perpendicular)
         .onItemDragged { drag in dragged.append((drag.id, drag.at)) }

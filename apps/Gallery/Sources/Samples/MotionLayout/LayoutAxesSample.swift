@@ -85,7 +85,7 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
                     .snaps(.every(1)),
             ])
             // LET GO, the five go on together by one law.
-            .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            .release(.projected(.eased(.milliseconds(400)))))
         }
         .clipsContent(true)
     }

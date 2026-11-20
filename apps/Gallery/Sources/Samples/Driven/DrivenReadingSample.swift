@@ -73,7 +73,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             HStack {
                 Button("Grow")
                     .onClicked {
-                        $width.journey.move(to: 300, .eased(.milliseconds(1600), curve: .cubicOut))
+                        $width.journey.move(to: 300, .eased(.milliseconds(1600)))
                     }
 
                 Button("Shrink")

@@ -112,7 +112,7 @@ public struct Journey<Value: Walked> {
     /// Sends the value there under `motion` - now, before the next line runs - and
     /// answers the movement, whose `result()` waits for how it ends.
     ///
-    ///     try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut)).result()
+    ///     try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400))).result()
     ///
     ///     let fading = $fade.journey.move(to: 0)       // both start now, in this order
     ///     let sliding = $offset.journey.move(to: .zero)

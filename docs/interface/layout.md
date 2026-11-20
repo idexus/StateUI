@@ -152,7 +152,7 @@ struct Tags: View {
 
     var body: some View {
         HStack {
-            ForEach(tags, id: \.self) { tag in
+            ForEach(tags) { tag in
                 Text(tag)
                     .padding(horizontal: 10, vertical: 4)
                     .background(.lightGray)
@@ -251,7 +251,7 @@ struct Rows: View {
 
     var body: some View {
         VStack {
-            ForEach(rows, id: \.self) { row in
+            ForEach(rows) { row in
                 Text(row)
             }
             Button("Add").onClicked { rows.insert("New", at: 0) }
@@ -1486,7 +1486,7 @@ struct Fields: View {
     @State private var still = 0.0
 
     var body: some View {
-        MotionLayout([0, 1], id: \.self, parameters: $still) { index in
+        MotionLayout([0, 1], parameters: $still) { index in
             TextField(index == 0 ? $name : $city)
         } placements: { context, _ in
             Self.plan(LayoutProposal(width: context.bounds.width), context.subviews).placements

@@ -33,7 +33,7 @@
 ///
 ///         var body: some View {
 ///             VStack {
-///                 ForEach(Section.allCases, id: \.self) { which in
+///                 ForEach(Section.allCases) { which in
 ///                     Button("\(which)")
 ///                         .onClicked {
 ///                             section = which      // choose

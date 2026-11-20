@@ -12,7 +12,7 @@
 ///
 ///     VStack { … }.motion(.spring(response: .milliseconds(260)))
 ///
-///     $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut))
+///     $fade.journey.move(to: 0.1, .eased(.milliseconds(400)))
 ///
 /// `.none` applies a change at once. `.eased`, `.spring` and `.glide` name a
 /// timing law and its numbers. A state an engine of the application's animates
@@ -81,7 +81,7 @@ public struct Motion: Equatable, Sendable {
 
     /// An animation of a stated duration on a stated curve.
     ///
-    ///     .motion(.eased(.milliseconds(400), curve: .cubicOut))
+    ///     .motion(.eased(.milliseconds(400)))
     ///
     /// It takes the stated time whatever the distance: right for something
     /// whose distance is known, such as a fade, a page sliding in, or a card
@@ -144,7 +144,7 @@ public struct Motion: Equatable, Sendable {
 
     /// The default motion: 200 milliseconds on `.cubicOut`, for ordinary
     /// changes and a scroller's landing.
-    public static let standard = Motion.eased(.milliseconds(200), curve: .cubicOut)
+    public static let standard = Motion.eased(.milliseconds(200))
 
     /// A length in whole milliseconds, nought for one before none, rounded to the nearest.
     static func milliseconds(of length: Duration) -> UInt32 {

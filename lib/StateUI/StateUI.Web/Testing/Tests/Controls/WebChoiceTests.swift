@@ -83,7 +83,7 @@ private struct SummaryPage: View {
     var body: some View {
         Grid {
             HStack { Picker(Range.allCases, selection: $range) { $0.rawValue }.width(200) }
-            ItemsView(parcels, id: \.self) { Text("Parcel \($0)") }.gridRow(1)
+            ItemsView(parcels) { Text("Parcel \($0)") }.gridRow(1)
             Text("Parcels: \(parcels.count)").gridRow(2)
         }
         .rows(.automatic, .fill, .automatic)

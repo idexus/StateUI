@@ -29,8 +29,8 @@ final class LayoutSwipeTests: XCTestCase {
             return (0..<5).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
         .interaction(
-            Interaction.value(phase.projectedValue, input: .swipe(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            .value(phase.projectedValue, input: .swipe(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400)))))
         .node
     }
 
@@ -119,8 +119,8 @@ final class LayoutSwipeTests: XCTestCase {
                 return (0..<3).map { _ in Placement(Rect(0, 0, 10, 10)) }
             }
             .interaction(
-                Interaction.value(phase.projectedValue, input: .swipe(.horizontal, unit: .containerLength)).reversed(true).range(0...2).snaps(.every(1))
-                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .value(phase.projectedValue, input: .swipe(.horizontal, unit: .containerLength)).reversed(true).range(0...2).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400)))))
             .node
         }
         bench.laid(built)
@@ -147,8 +147,8 @@ final class LayoutSwipeTests: XCTestCase {
                 return [Placement(Rect(at > 1 ? -x : x, 0, 10, 10))]
             }
             .interaction(
-                Interaction.value(phase.projectedValue, input: .swipe(.horizontal, unit: .frontItem)).reversed(true).range(0...3).snaps(.every(1))
-                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .value(phase.projectedValue, input: .swipe(.horizontal, unit: .frontItem)).reversed(true).range(0...3).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400)))))
             .node
         }
         bench.laid(built)

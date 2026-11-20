@@ -10,7 +10,7 @@
 ///     …
 ///     VStack { … }.opacity($fade)
 ///     …
-///     $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut))
+///     $fade.journey.move(to: 0.1, .eased(.milliseconds(400)))
 ///
 /// `In` curves start slowly, `Out` curves end slowly, and `InOut` curves do
 /// both: `.cubicOut` suits something arriving on screen, `.cubicIn` something

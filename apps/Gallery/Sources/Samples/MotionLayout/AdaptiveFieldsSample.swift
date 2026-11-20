@@ -27,7 +27,7 @@ struct AdaptiveFieldsSample: SampleContent, ExampleContent {
 
     var body: some View {
         VStack {
-            MotionLayout([0, 1], id: \.self, parameters: $still) { index in
+            MotionLayout([0, 1], parameters: $still) { index in
                 TextField(index == 0 ? $name : $city)
                     .accessibilityIdentifier(index == 0 ? "adaptive.name" : "adaptive.city")
                     .minimumWidth(140)

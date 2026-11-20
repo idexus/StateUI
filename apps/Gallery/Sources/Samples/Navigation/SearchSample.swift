@@ -29,7 +29,7 @@ struct SearchSample: SampleContent, ExampleContent {
                 .fontSize(14)
 
             VStack {
-                ForEach(matches, id: \.self) { item in
+                ForEach(matches) { item in
                     // A row that opens a page: the chosen item rides as a VALUE
                     // of the route - `.item("Alpha")`.
                     MenuRow(item) { nav.push(.item(item)) }

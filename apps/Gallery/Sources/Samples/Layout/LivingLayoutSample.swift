@@ -46,14 +46,14 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 // left standing keep their controls.
                 DebugInfoLabel()
 
-                ForEach(rows, id: \.self) { number in
+                ForEach(rows) { number in
                     ZStack {
                         Text(Self.name(of: number))
                             .fontSize(15)
                             .verticalAlignment(.center)
                     }
                     .style(.card)
-                    .padding(Insets(start: 12, top: 8, end: 12, bottom: 8))
+                    .padding(horizontal: 12, vertical: 8)
                     .background(Palette.raised)
                     .lineWidth(0)
                     .height(40)

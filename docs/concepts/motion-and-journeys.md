@@ -174,7 +174,7 @@ once, answering a `MotionRun`, whose `result()` awaits how the movement ends:
 
 let result = try await $opacity.journey.move(
     to: 0.2,
-    .eased(.milliseconds(400), curve: .cubicOut)).result()
+    .eased(.milliseconds(400))).result()
 
 if case .reached = result {
     // The value stands at 0.2.
@@ -270,7 +270,7 @@ struct Strip: View {
                     let thrown = start + pan.total.x + pan.velocity.x * seconds / 3
                     // The nearest stop of every hundred points to where the throw would land.
                     let stop = (thrown / 100).rounded() * 100
-                    $offset.journey.move(to: stop, .eased(.seconds(seconds), curve: .cubicOut))
+                    $offset.journey.move(to: stop, .eased(.seconds(seconds)))
                 default:
                     break
                 }

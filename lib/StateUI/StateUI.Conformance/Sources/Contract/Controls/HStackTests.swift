@@ -82,7 +82,7 @@
                 s.start {
                     VStack {
                         HStack {
-                            ForEach(0..<4, id: \.self) { index in
+                            ForEach(0..<4) { index in
                                 Rectangle()
                                     .fill(.blue)
                                     .width(60)
@@ -119,7 +119,7 @@
                 s.start {
                     VStack {
                         HStack {
-                            ForEach(0..<3, id: \.self) { index in
+                            ForEach(0..<3) { index in
                                 Rectangle()
                                     .fill(.blue)
                                     .width(60)

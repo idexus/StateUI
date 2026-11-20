@@ -811,7 +811,7 @@ final class CarriedStateTests: XCTestCase {
     /// view is described next, and the movement says it had no receiver.
     func testAMoveOfAStateNothingShowsAnswersAtOnce() throws {
         let fade = State(wrappedValue: 1.0)
-        let run = fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut))
+        let run = fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400)))
 
         XCTAssertEqual(run.outcome, .notStarted(.noReceiver))
         XCTAssertEqual(fade.wrappedValue, 0.1, "the destination is written")
@@ -890,7 +890,7 @@ final class CarriedStateTests: XCTestCase {
         let composed = Renders().render(Card().interaction(hand).id("card").node)
         XCTAssertEqual(composed.first(.vStack)?.moved.count, 1, "on the stack the card builds")
 
-        let list = Renders().render(ItemsView([1, 2], id: \.self) { Text("\($0)") }.interaction(hand).id("list").node)
+        let list = Renders().render(ItemsView([1, 2]) { Text("\($0)") }.interaction(hand).id("list").node)
         XCTAssertEqual(list.first(.itemsView)?.moved.count, 1, "on the list's own element")
     }
 

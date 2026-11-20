@@ -100,7 +100,7 @@ enum Listings {
 
         var body: some View {
             VStack {
-                MotionLayout([0, 1], id: \.self, parameters: $still) { index in
+                MotionLayout([0, 1], parameters: $still) { index in
                     TextField(index == 0 ? $name : $city)
                         .minimumWidth(140)
                 } placements: { context, _ in
@@ -356,8 +356,8 @@ enum Listings {
                         let toHour = atHour + (hour - atHour).forwardTurn
 
                         let s = $sAngle.journey.move(to: toSecond, .eased(.milliseconds(260), curve: .backOut))
-                        let m = $mAngle.journey.move(to: toMinute, .eased(.milliseconds(300), curve: .cubicOut))
-                        let h = $hAngle.journey.move(to: toHour, .eased(.milliseconds(300), curve: .cubicOut))
+                        let m = $mAngle.journey.move(to: toMinute, .eased(.milliseconds(300)))
+                        let h = $hAngle.journey.move(to: toHour, .eased(.milliseconds(300)))
                         try await s.result()
                         try await m.result()
                         try await h.result()
@@ -516,7 +516,7 @@ enum Listings {
                         .horizontalAlignment(.start)
 
                     button("Send the stepper to 12") {
-                        try await $count.journey.move(to: 12, .eased(.milliseconds(800), curve: .cubicOut)).result()
+                        try await $count.journey.move(to: 12, .eased(.milliseconds(800))).result()
                     }
                 }
             }
@@ -578,15 +578,15 @@ enum Listings {
                     }
 
                     button("Padding") {
-                        try await $panelPadding.journey.move(to: Insets(48), .eased(.milliseconds(400))).result()
-                        try await $panelPadding.journey.move(to: Insets(16), .eased(.milliseconds(400))).result()
+                        try await $panelPadding.journey.move(to: 48, .eased(.milliseconds(400))).result()
+                        try await $panelPadding.journey.move(to: 16, .eased(.milliseconds(400))).result()
                     }
                 }
                 .horizontalAlignment(.center)
 
                 HStack {
                     button("Text size") {
-                        try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400), curve: .cubicOut)).result()
+                        try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400))).result()
                         try await $captionSize.journey.move(to: 17, .eased(.milliseconds(400), curve: .cubicIn)).result()
                     }
 
@@ -1384,7 +1384,7 @@ enum Listings {
             var body: some View {
                 VStack {
                     Slider($level)
-                        .motion(.eased(.milliseconds(600), curve: .cubicOut))
+                        .motion(.eased(.milliseconds(600)))
 
                     HStack {
                         Button("Full")
@@ -2002,7 +2002,7 @@ enum Listings {
         @State private var cards = Array(Self.all.prefix(4))
 
         /// Which card is at the front - handed on with `$`, never read in the body.
-        @State(motion: .eased(.milliseconds(400), curve: .cubicOut)) private var turn = 1.0
+        @State(motion: .eased(.milliseconds(400))) private var turn = 1.0
 
         /// Whether the cards fan out or stand in a pile: read in the body, so a
         /// change is a new description of the layout, and so is the hand's unit.
@@ -2058,7 +2058,7 @@ enum Listings {
                         // THE TURN'S LAW IS ITS STATE'S: set on the state, it moves the
                         // next turn that way.
                         .onChanged(slowTurn) {
-                            try $turn.journey.setMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
+                            try $turn.journey.setMotion(.eased(.milliseconds(slowTurn ? 1600 : 400)))
                         }
                     SwitchRow("Bouncy cards", $bouncy)
                 }
@@ -2114,7 +2114,7 @@ enum Listings {
                     .reversed(true)
                     .range(0...Double(max(count - 1, 0)))
                     .snaps(.every(1))
-                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                    .release(.projected(.eased(.milliseconds(400)))))
             // A CARD PULLED UP is the hand's alone: let go far enough, it flies
             // out of the deck and leaves it; short of that, it goes back.
             .itemDrag(begins: .perpendicular)
@@ -2448,7 +2448,7 @@ enum Listings {
             var hopped = true
 
             for bar in bars {
-                let up = try await bar.journey.move(to: -26, .eased(.milliseconds(150), curve: .cubicOut)).result()
+                let up = try await bar.journey.move(to: -26, .eased(.milliseconds(150))).result()
                 guard case .reached = up else { hopped = false; break }
 
                 let down = try await bar.journey.move(to: 0, .eased(.milliseconds(150), curve: .cubicIn)).result()
@@ -3260,7 +3260,7 @@ enum Listings {
                 HStack {
                     Button("Grow")
                         .onClicked {
-                            $width.journey.move(to: 300, .eased(.milliseconds(1600), curve: .cubicOut))
+                            $width.journey.move(to: 300, .eased(.milliseconds(1600)))
                         }
 
                     Button("Shrink")
@@ -5335,7 +5335,7 @@ enum Listings {
                             .reversed(true)
                             .range(0...Double(boards - 1))
                             .snaps(.every(1))
-                            .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                            .release(.projected(.eased(.milliseconds(400)))))
                     // HELD, AN ICON LEAVES ITS BOARD for the hand: each move
                     // gives it the slot under the hand, and the others travel to
                     // make room; held still at an edge, the boards turn under it.
@@ -5538,7 +5538,7 @@ enum Listings {
             // A day long before the zones: Warsaw's own mean time, as the zone
             // database keeps it for any year - the year 50 is the year 50.
             let ancient = try await clock.utcOffset(
-                of: TimeZoneName("Europe/Warsaw"), on: CalendarDate(year: 50, month: 7, day: 1))
+                of: "Europe/Warsaw", on: CalendarDate(year: 50, month: 7, day: 1))
 
             season = "Offset now \(offsetText(here)), on 15 January \(offsetText(winter)), "
                 + "in Warsaw on 1 July 50 \(offsetText(ancient))"
@@ -6098,9 +6098,9 @@ enum Listings {
                     let (shown, began) = (counter, ContinuousClock.now)
 
                     // The leaves in rows of 25: a stack wraps nothing, so the rows do.
-                    ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
+                    ForEach(Array(stride(from: 0, to: leaves, by: 25))) { row in
                         HStack {
-                            ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
+                            ForEach(Array(row ..< min(row + 25, leaves))) { index in
                                 Rectangle()
                                     .fill(Palette.outline)
                                     .width(7)
@@ -6137,9 +6137,9 @@ enum Listings {
                     let began = ContinuousClock.now
 
                     // The leaves in rows of 25: a stack wraps nothing, so the rows do.
-                    ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
+                    ForEach(Array(stride(from: 0, to: leaves, by: 25))) { row in
                         HStack {
-                            ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
+                            ForEach(Array(row ..< min(row + 25, leaves))) { index in
                                 Rectangle()
                                     .fill(Palette.outline)
                                     .width(7)
@@ -6358,7 +6358,7 @@ enum Listings {
                         .snaps(.every(1)),
                 ])
                 // LET GO, the five go on together by one law.
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .release(.projected(.eased(.milliseconds(400)))))
             }
             .clipsContent(true)
         }
@@ -6517,7 +6517,7 @@ enum Listings {
                     .reversed(true)
                     .range(0...2)
                     .snaps(.every(1))
-                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))
+                    .release(.projected(.eased(.milliseconds(400))))
                 : nil)
             // BETWEEN THEM each card goes straight, or by a curve its neighbors
             // shape.
@@ -6635,7 +6635,7 @@ enum Listings {
 
         /// Where the run stands on both axes - handed on with `$`, never read in
         /// the body.
-        @State(motion: .eased(.milliseconds(600), curve: .cubicOut)) private var deal = Deal()
+        @State(motion: .eased(.milliseconds(600))) private var deal = Deal()
 
         /// The switch's own value: what the body reads.
         @State private var fanned = false
@@ -6674,7 +6674,7 @@ enum Listings {
                     .reversed(true)
                     .range(0...Double(Self.cards.count - 1))
                     .snaps(.every(1))
-                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                    .release(.projected(.eased(.milliseconds(400)))))
         }
 
         /// Where one card stands: between a pile and an arc by the spread, the
@@ -6914,7 +6914,7 @@ enum Listings {
                     .range(0...1).periodic(true).snaps(snaps ? .every(0.25) : nil),
             ])
             // LET GO, every number goes on by one law.
-            .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            .release(.projected(.eased(.milliseconds(400)))))
         }
 
         /// Where the photo at `index` lies: its square of the table, a photo's
@@ -7026,7 +7026,7 @@ enum Listings {
                     // left standing keep their controls.
                     DebugInfoLabel()
 
-                    ForEach(rows, id: \.self) { number in
+                    ForEach(rows) { number in
                         ZStack {
                             Text(Self.name(of: number))
                                 .verticalAlignment(.center)
@@ -7413,7 +7413,7 @@ enum Listings {
                 Text("\(archived) archived")
                     .gridRow(0)
 
-                ItemsView(mail, id: \.self) { message in
+                ItemsView(mail) { message in
                     Text(message)
                         // The item's actions, written once: a swipe where the platform swipes a list's items.
                         .contextMenu {
@@ -8167,11 +8167,11 @@ enum Listings {
 
             var motion: Motion {
                 switch self {
-                case .easeOut: .eased(.milliseconds(400), curve: .cubicOut)
+                case .easeOut: .eased(.milliseconds(400))
                 case .glide: .eased(.milliseconds(300), curve: .sineOut)
                 case .spring: .spring(response: .milliseconds(400), damping: 0.8)
                 case .bounce: .eased(.milliseconds(600), curve: .backOut)
-                case .short: .eased(.milliseconds(200), curve: .cubicOut)
+                case .short: .eased(.milliseconds(200))
                 }
             }
 
@@ -8217,7 +8217,7 @@ enum Listings {
         /// hand names the card it passes and the one it comes to rest on. It
         /// starts on the middle card, and it has no end: a turn on, it is the same
         /// card again.
-        @State(motion: .eased(.milliseconds(300), curve: .cubicOut)) private var turn =
+        @State(motion: .eased(.milliseconds(300))) private var turn =
             Double(MotionLayoutSample.cards.count / 2)
 
         /// The device - a phone's cards carry their names alone, smaller.
@@ -9036,7 +9036,7 @@ enum Listings {
         /// - Parameter y: how far down each strip is sent.
         private func move(to y: Double) async throws {
             for strip in [$described, $paced, $driven] {
-                try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300), curve: .cubicOut)).result()
+                try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300))).result()
             }
         }
         """#,
@@ -9276,10 +9276,10 @@ enum Listings {
 
                 HStack {
                     Button("Fade")
-                        .onClicked { $fade.journey.move(to: 0.1, .eased(.milliseconds(2000), curve: .cubicOut)) }
+                        .onClicked { $fade.journey.move(to: 0.1, .eased(.milliseconds(2000))) }
 
                     Button("Back")
-                        .onClicked { $fade.journey.move(to: 1, .eased(.milliseconds(2000), curve: .cubicOut)) }
+                        .onClicked { $fade.journey.move(to: 1, .eased(.milliseconds(2000))) }
                 }
                 .horizontalAlignment(.center)
             }
@@ -9372,8 +9372,8 @@ enum Listings {
                                 let seconds = 0.9
                                 panX = min(max(panX + update.total.x + update.velocity.x * seconds / 3, -140), 140)
                                 panY = min(max(panY + update.total.y + update.velocity.y * seconds / 3, -60), 60)
-                                $liveX.journey.move(to: panX, .eased(.seconds(seconds), curve: .cubicOut))
-                                $liveY.journey.move(to: panY, .eased(.seconds(seconds), curve: .cubicOut))
+                                $liveX.journey.move(to: panX, .eased(.seconds(seconds)))
+                                $liveY.journey.move(to: panY, .eased(.seconds(seconds)))
                             case .ended:
                                 panX += update.total.x
                                 panY += update.total.y
@@ -10389,7 +10389,7 @@ enum Listings {
                 }
                 .gridRow(0)
 
-                ItemsView(items, id: \.self) { item in
+                ItemsView(items) { item in
                     Text(item)
                 }
                 // An empty list keeps its pull.
@@ -10432,7 +10432,7 @@ enum Listings {
                     // delete never rebuilds.
                     DebugInfoLabel()
 
-                    ForEach(Self.rows, id: \.self) { row in
+                    ForEach(Self.rows) { row in
                         Grid {
                             Text(row)
                                 .verticalAlignment(.center)
@@ -10545,7 +10545,7 @@ enum Listings {
                             ScrollView {
                                 VStack {
                                     Switch("Under the bars", isOn: $under)
-                                    ForEach(Array(1...40), id: \.self) { row in
+                                    ForEach(1...40) { row in
                                         Text("Row \(row)")
                                     }
                                 }
@@ -10854,7 +10854,7 @@ enum Listings {
                 Text("Type in the box on the navigation bar; these rows follow it.")
 
                 VStack {
-                    ForEach(matches, id: \.self) { item in
+                    ForEach(matches) { item in
                         // A row that opens a page: the chosen item rides as a VALUE
                         // of the route - `.item("Alpha")`.
                         MenuRow(item) { nav.push(.item(item)) }
@@ -11813,7 +11813,7 @@ enum Listings {
                 // A row that wraps goes on onto the next line where its room
                 // ends; on one line, its words share the room it has.
                 HStack {
-                    ForEach(Self.tags, id: \.self) { StackCell(text: $0) }
+                    ForEach(Self.tags) { StackCell(text: $0) }
                 }
                 .wraps(wraps)
                 .lineAlignment(lines)
@@ -13488,7 +13488,7 @@ enum Listings {
                     .value($ring, axis: \.size, input: .magnification)
                         .range(0.6...1.5).snaps([1]),
                 ])
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .release(.projected(.eased(.milliseconds(400)))))
             }
             .clipsContent(true)
         }

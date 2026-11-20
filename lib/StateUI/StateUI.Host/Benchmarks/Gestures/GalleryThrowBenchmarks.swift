@@ -42,7 +42,7 @@ private struct CardsPage: View {
     @State private var shown = 0
 
     var body: some View {
-        GalleryView((0..<12).map { "Card \($0)" }, id: \.self) { name in
+        GalleryView((0..<12).map { "Card \($0)" }) { name in
             ZStack {
                 Rectangle()
                     .fill(Color(hex: 0x0D9488))

@@ -31,7 +31,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
     @State private var cards = Array(Self.all.prefix(4))
 
     /// Which card is at the front - handed on with `$`, never read in the body.
-    @State(motion: .eased(.milliseconds(400), curve: .cubicOut)) private var turn = 1.0
+    @State(motion: .eased(.milliseconds(400))) private var turn = 1.0
 
     /// Whether the cards fan out or stand in a pile: read in the body, so a
     /// change is a new description of the layout, and so is the hand's unit.
@@ -98,7 +98,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
                     // THE TURN'S LAW IS ITS STATE'S: set on the state, it moves the
                     // next turn that way.
                     .onChanged(slowTurn) {
-                        try $turn.journey.setMotion(.eased(.milliseconds(slowTurn ? 1600 : 400), curve: .cubicOut))
+                        try $turn.journey.setMotion(.eased(.milliseconds(slowTurn ? 1600 : 400)))
                     }
                 SwitchRow("Bouncy cards", $bouncy)
             }
@@ -156,7 +156,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
                 .reversed(true)
                 .range(0...Double(max(count - 1, 0)))
                 .snaps(.every(1))
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .release(.projected(.eased(.milliseconds(400)))))
         // A CARD PULLED UP is the hand's alone: let go far enough, it flies
         // out of the deck and leaves it; short of that, it goes back.
         .itemDrag(begins: .perpendicular)

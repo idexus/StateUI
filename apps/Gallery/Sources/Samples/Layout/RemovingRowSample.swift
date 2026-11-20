@@ -27,7 +27,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
                 // delete never rebuilds.
                 DebugInfoLabel()
 
-                ForEach(Self.rows, id: \.self) { row in
+                ForEach(Self.rows) { row in
                     Grid {
                         Text(row)
                             .fontSize(15)

@@ -38,7 +38,7 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
 
     /// Where the run stands on both axes - handed on with `$`, never read in
     /// the body.
-    @State(motion: .eased(.milliseconds(600), curve: .cubicOut)) private var deal = Deal()
+    @State(motion: .eased(.milliseconds(600))) private var deal = Deal()
 
     /// The switch's own value: what the body reads.
     @State private var fanned = false
@@ -87,7 +87,7 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
                 .reversed(true)
                 .range(0...Double(Self.cards.count - 1))
                 .snaps(.every(1))
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                .release(.projected(.eased(.milliseconds(400)))))
     }
 
     /// Where one card stands: between a pile and an arc by the spread, the

@@ -20,7 +20,7 @@ final class StateChannelsTests: XCTestCase {
             value: [0],
             destination: [1],
             velocity: [0],
-            motion: .eased(.milliseconds(200), curve: .cubicOut),
+            motion: .eased(.milliseconds(200)),
             completion: nil,
             stopped: 0)
         let carried = HostBoundary.value(of: journey)
@@ -49,7 +49,7 @@ final class StateChannelsTests: XCTestCase {
             value: [0],
             destination: [1],
             velocity: [0],
-            motion: .eased(.milliseconds(200), curve: .cubicOut),
+            motion: .eased(.milliseconds(200)),
             completion: nil,
             stopped: 0)
         _ = channels.presentedValue(
@@ -161,7 +161,7 @@ final class StateChannelsTests: XCTestCase {
             value: [0],
             destination: [1],
             velocity: [0],
-            motion: .eased(.milliseconds(200), curve: .cubicOut),
+            motion: .eased(.milliseconds(200)),
             completion: -31,
             stopped: 0)
         _ = channels.presentedValue(

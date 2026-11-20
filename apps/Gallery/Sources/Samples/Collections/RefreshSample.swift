@@ -26,7 +26,7 @@ private struct RefreshingList: ExampleContent {
             .spacing(12)
             .gridRow(0)
 
-            ItemsView(items, id: \.self) { item in
+            ItemsView(items) { item in
                 Text(item)
                     .fontSize(14)
                     .padding(horizontal: 14, vertical: 10)

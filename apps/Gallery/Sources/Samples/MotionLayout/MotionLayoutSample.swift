@@ -70,11 +70,11 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
 
         var motion: Motion {
             switch self {
-            case .easeOut: .eased(.milliseconds(400), curve: .cubicOut)
+            case .easeOut: .eased(.milliseconds(400))
             case .glide: .eased(.milliseconds(300), curve: .sineOut)
             case .spring: .spring(response: .milliseconds(400), damping: 0.8)
             case .bounce: .eased(.milliseconds(600), curve: .backOut)
-            case .short: .eased(.milliseconds(200), curve: .cubicOut)
+            case .short: .eased(.milliseconds(200))
             }
         }
 
@@ -120,7 +120,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
     /// hand names the card it passes and the one it comes to rest on. It
     /// starts on the middle card, and it has no end: a turn on, it is the same
     /// card again.
-    @State(motion: .eased(.milliseconds(300), curve: .cubicOut)) private var turn =
+    @State(motion: .eased(.milliseconds(300))) private var turn =
         Double(MotionLayoutSample.cards.count / 2)
 
     /// The device - a phone's cards carry their names alone, smaller.

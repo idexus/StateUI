@@ -869,7 +869,7 @@ struct InboxPage: View {
     @State private var refreshing = false
 
     var body: some View {
-        ItemsView(mail, id: \.self) { Text($0).padding(12) }
+        ItemsView(mail) { Text($0).padding(12) }
             .isRefreshing($refreshing)
             .onRefreshRequested(policy: .ignoreWhileRunning) {
                 defer { refreshing = false }

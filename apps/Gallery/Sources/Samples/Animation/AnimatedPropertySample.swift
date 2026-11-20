@@ -59,8 +59,8 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                 }
 
                 button("Padding") {
-                    try await $panelPadding.journey.move(to: Insets(48), .eased(.milliseconds(400))).result()
-                    try await $panelPadding.journey.move(to: Insets(16), .eased(.milliseconds(400))).result()
+                    try await $panelPadding.journey.move(to: 48, .eased(.milliseconds(400))).result()
+                    try await $panelPadding.journey.move(to: 16, .eased(.milliseconds(400))).result()
                 }
             }
             .spacing(8)
@@ -68,7 +68,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
 
             HStack {
                 button("Text size") {
-                    try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400), curve: .cubicOut)).result()
+                    try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400))).result()
                     try await $captionSize.journey.move(to: 17, .eased(.milliseconds(400), curve: .cubicIn)).result()
                 }
 

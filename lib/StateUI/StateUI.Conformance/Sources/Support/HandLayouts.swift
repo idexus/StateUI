@@ -23,8 +23,8 @@ enum HandLayouts {
                     (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
                 }
                 .interaction(
-                    Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...5).snaps(.every(1))
-                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                    .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...5).snaps(.every(1))
+                        .release(.projected(.eased(.milliseconds(400)))))
                 .mirrorsRightToLeft(mirrored)
                 .width(100).height(40)
             }
@@ -63,7 +63,7 @@ enum HandLayouts {
                         Interaction.value(square.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1)),
                         Interaction.value(square.projectedValue, axis: \.y, input: .translation(.vertical, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1)),
                     ])
-                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                        .release(.projected(.eased(.milliseconds(400)))))
                 .width(200).height(160)
             }
             .horizontalAlignment(.start)
@@ -90,8 +90,8 @@ enum HandLayouts {
                     (0..<3).map { Placement(Rect(Double($0) * 80 + 20, 60, 40 * at, 40)) }
                 }
                 .interaction(
-                    Interaction.value(phase.projectedValue, input: input).range(0.5...2).snaps([1])
-                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                    .value(phase.projectedValue, input: input).range(0.5...2).snaps([1])
+                        .release(.projected(.eased(.milliseconds(400)))))
                 .width(300).height(240)
             }
             .horizontalAlignment(.start)

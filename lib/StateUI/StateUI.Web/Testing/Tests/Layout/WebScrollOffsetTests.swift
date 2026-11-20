@@ -18,7 +18,7 @@ final class WebScrollOffsetTests: XCTestCase {
     func testAnOffsetWrittenBeforeTheFirstLayoutIsMovedToAfterIt() throws {
         let offset = State(wrappedValue: Point(x: 0, y: 300))
         let host = WebRenderer.running {
-            ScrollView { VStack { ForEach(Array(0..<40)) { Text("Row \($0)").height(30) } } }
+            ScrollView { VStack { ForEach(0..<40) { Text("Row \($0)").height(30) } } }
                 .scrollOffset(offset.projectedValue)
                 .height(200)
         }
@@ -32,7 +32,7 @@ final class WebScrollOffsetTests: XCTestCase {
         let orientation = State(wrappedValue: ScrollAxes.vertical)
         let offset = State(wrappedValue: Point(x: 0, y: 100))
         let host = WebRenderer.running {
-            ScrollView { VStack { ForEach(Array(0..<40)) { Text("Row \($0)").height(30) } } }
+            ScrollView { VStack { ForEach(0..<40) { Text("Row \($0)").height(30) } } }
                 .axes(orientation.projectedValue)
                 .scrollOffset(offset.projectedValue)
                 .height(200)

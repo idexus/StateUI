@@ -10,7 +10,7 @@ extension HStackProperties {
     /// `rowSpacing` apart.
     ///
     ///     HStack {
-    ///         ForEach(["Swift", "Layout", "State", "Motion"], id: \.self) { Text($0) }
+    ///         ForEach(["Swift", "Layout", "State", "Motion"]) { Text($0) }
     ///     }
     ///     .wraps(true)
     ///     .spacing(8)

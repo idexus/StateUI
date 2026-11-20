@@ -112,7 +112,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             // A row that wraps goes on onto the next line where its room
             // ends; on one line, its words share the room it has.
             HStack {
-                ForEach(Self.tags, id: \.self) { StackCell(text: $0) }
+                ForEach(Self.tags) { StackCell(text: $0) }
             }
             .wraps(wraps)
             .lineAlignment(lines)

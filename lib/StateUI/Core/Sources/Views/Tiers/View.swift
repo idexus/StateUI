@@ -50,8 +50,8 @@ extension ViewProperties {
     /// The space kept outside the view, between it and its neighbors.
     /// Padding is the space inside.
     ///
-    ///     Text("Total").margin(16)                      // all four sides
-    ///     Text("Total").margin(Insets(start: 16, top: 0, end: 0, bottom: 0))  // the start only
+    ///     Text("Total").margin(16)                                   // all four sides
+    ///     Text("Total").margin(start: 16, top: 0, end: 0, bottom: 0)  // the start only
     public func margin(_ value: Insets) -> Modified { setValue(ViewContract.margin, value) }
 
     /// The same at the start and the end, and the same above and below.

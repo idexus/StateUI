@@ -12,9 +12,9 @@ import XCTest
 final class MotionLawTests: XCTestCase {
     func testAnEasedAnimationIsAFunctionOfElapsedTime() {
         let halfway = HostMotionLaw.sample(
-            .eased(.milliseconds(200), curve: .cubicOut), elapsed: 100, from: [0], destination: [1], velocity: [0])
+            .eased(.milliseconds(200)), elapsed: 100, from: [0], destination: [1], velocity: [0])
         let landed = HostMotionLaw.sample(
-            .eased(.milliseconds(200), curve: .cubicOut), elapsed: 200, from: [0], destination: [1], velocity: [0])
+            .eased(.milliseconds(200)), elapsed: 200, from: [0], destination: [1], velocity: [0])
 
         XCTAssertEqual(halfway.value[0], 0.875, accuracy: 0.000_001)
         XCTAssertFalse(halfway.rested)
@@ -22,7 +22,7 @@ final class MotionLawTests: XCTestCase {
     }
 
     func testAnAnimationThatBeganMovingStartsAtItsSpeedAndLandsStill() {
-        let motion = Motion.eased(.milliseconds(300), curve: .cubicOut)
+        let motion = Motion.eased(.milliseconds(300))
         let start = HostMotionLaw.sample(
             motion, elapsed: 0, from: [20], destination: [80], velocity: [300])
         let late = HostMotionLaw.sample(
@@ -223,7 +223,7 @@ final class MotionLawTests: XCTestCase {
         // An animation that began moving: the Hermite on a lane with speed, the
         // curve on a lane without.
         animations.append(Animation(
-            motion: .eased(.milliseconds(300), curve: .cubicOut),
+            motion: .eased(.milliseconds(300)),
             from: [20, -4], destination: [80, 10], velocity: [300, 0],
             instants: [0, 30, 75, 150, 225, 290, 300]))
         animations.append(Animation(

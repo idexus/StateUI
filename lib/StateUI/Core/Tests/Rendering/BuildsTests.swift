@@ -107,9 +107,9 @@ private struct Rows: View {
 
     var body: some View {
         VStack {
-            ForEach([0, 25], id: \.self) { row in
+            ForEach([0, 25]) { row in
                 HStack {
-                    ForEach(Array(row..<row + 25), id: \.self) { index in
+                    ForEach(row..<row + 25) { index in
                         let _ = leaves.built += 1
                         Rectangle().width(7).id(index)
                     }

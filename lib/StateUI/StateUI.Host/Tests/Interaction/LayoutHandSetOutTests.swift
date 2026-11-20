@@ -33,8 +33,8 @@ final class LayoutHandSetOutTests: XCTestCase {
         }
         .axis(range: 0...6, segments: .every(1))
         .interaction(
-            Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...6).snaps(.every(1))
-                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+            .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...6).snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400)))))
         .node
     }
 
@@ -129,8 +129,8 @@ final class LayoutHandSetOutTests: XCTestCase {
             MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
                 .axis(range: 0...3, segments: .every(1))
                 .interaction(
-                    Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
-                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                    .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
+                        .release(.projected(.eased(.milliseconds(400)))))
                 .layoutBodies(.onChange(response: .milliseconds(160)))
                 .node
         }
@@ -170,9 +170,9 @@ final class LayoutHandSetOutTests: XCTestCase {
                 return layout
                     .axis(range: 0...2, keyframes: .every(1), segments: .every(1))
                     .interaction(
-                        Interaction.value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100)))
+                        .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100)))
                             .reversed(true).range(0...2).snaps(.every(1))
-                            .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
+                            .release(.projected(.eased(.milliseconds(400)))))
                     .node
             }
             let bench = LayoutBench()

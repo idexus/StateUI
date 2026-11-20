@@ -22,7 +22,7 @@
 ///         guard pan.phase == .ended else { return }
 ///         // A third of the speed's way on, setting out at the hand's speed.
 ///         let rest = offsetX + pan.velocity.x * 0.9 / 3
-///         $offsetX.journey.move(to: rest, .eased(.milliseconds(900), curve: .cubicOut))
+///         $offsetX.journey.move(to: rest, .eased(.milliseconds(900)))
 ///     }
 public struct PanUpdate: Equatable, Sendable {
     /// How far along the pan is.
