@@ -42,8 +42,8 @@ struct HostSample: Equatable {
 
     /// The sample as a value's own type reads it on the frame at `time`, the display clock's milliseconds; nil
     /// where the lanes stand for none.
-    func typed<Value: Walked>(_: Value.Type, at time: Double, showing shown: Value? = nil) -> JourneySample<Value>? {
-        guard let value = shown ?? Value(carried: .lanes(value)),
+    func typed<Value: Walked>(_: Value.Type, at time: Double) -> JourneySample<Value>? {
+        guard let value = Value(carried: .lanes(value)),
               let destination = Value(carried: .lanes(destination)),
               let velocity = Value(carried: .lanes(velocity))
         else { return nil }

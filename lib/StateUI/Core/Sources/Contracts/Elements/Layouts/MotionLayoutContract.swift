@@ -18,21 +18,6 @@ public enum MotionLayoutContract: ElementContract {
     /// host walks them under the layout's motion and says where they stand every frame.
     public static let parameters = ElementProperty<Self, [Double]>("parameters", layer: .stateUI)
 
-    /// The orientation the hand moves the parameters in, horizontal or vertical, where a hand does: the host hears a
-    /// finger, a pointer, a trackpad and a wheel moving that way over the element, and leaves the other to whatever
-    /// holds it.
-    public static let translationOrientation = ElementProperty<Self, Orientation>(
-        "translationOrientation", layer: .structure, travels: false)
-
-    /// The hand moving over the element: its phase, how far it moved across and down since the last report, and -
-    /// as it lets go - how fast it was going, per second.
-    public static let translationUpdated = ElementEvent<Self, (GesturePhase, Point, Point)>(
-        "translationUpdated", layer: .native)
-
-    /// A wheel's notches over the element, as many as it turned, across and down, the way they move what is under
-    /// the hand: each a step of the run to the next target that way.
-    public static let wheelStepped = ElementEvent<Self, Point>("wheelStepped", layer: .native)
-
     /// How the hand takes one view by itself rather than moving the run, where it does: the host layer gives the
     /// hand to the view under the press by it.
     public static let itemDrag = ElementProperty<Self, ItemDragStart>("itemDrag", layer: .structure, travels: false)
@@ -46,23 +31,9 @@ public enum MotionLayoutContract: ElementContract {
     /// whenever the arithmetic was worked out again.
     public static let layout = ElementProgram<Self, LayoutProgramDefinition>("layout", layer: .stateUI)
 
-    /// Whether the hand moves the run every way, a pan: the host hears it across and down alike, and claims every
-    /// first move.
-    public static let pans = ElementProperty<Self, Bool>("pans", layer: .structure, travels: false)
-
-    /// Whether two fingers spreading move the run, where they do: the host hears a pinch over the element - on a
-    /// touch screen, or a trackpad's.
-    public static let magnifies = ElementProperty<Self, Bool>("magnifies", layer: .structure, travels: false)
-
-    /// Whether two fingers turning move the run, where they do: the host hears a rotation over the element - on a
-    /// touch screen, or a trackpad's.
-    public static let rotates = ElementProperty<Self, Bool>("rotates", layer: .structure, travels: false)
-
-    /// Two fingers over the element, a pinch and a rotation as one: its phase, how far they spread - a scale - and
-    /// turned, in degrees clockwise, since the last report, and as they lift, how fast, per second: the scale's
-    /// logarithm across, the degrees down.
-    public static let pinchRotationUpdated = ElementEvent<Self, (GesturePhase, Double, Double, Point)>(
-        "pinchRotationUpdated", layer: .native)
+    /// What the user's hand moves of the layout's parameters, and how: the host answers the hand by it - what it
+    /// hears, the hold, where a value rests let go.
+    public static let interaction = ElementProgram<Self, Interaction>("interaction", layer: .stateUI)
 
     /// Whether the layout turns about its middle where it lays out right to left: its views' places, their move
     /// along and their turn, and the hand over it.
@@ -71,7 +42,6 @@ public enum MotionLayoutContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        itemDrag, itemDragUpdated, layout, magnifies, mirrorsRightToLeft, pans, parameters, pinchRotationUpdated,
-        rotates, translationOrientation, translationUpdated, wheelStepped,
+        interaction, itemDrag, itemDragUpdated, layout, mirrorsRightToLeft, parameters,
     ]
 }

@@ -47,6 +47,10 @@
     /// Design: docs/design/host/layout.md#a-layout-program
     public private(set) var layoutProgram: HostLayoutProgram?
 
+    /// What the user's hand moves on the element: the numbers of states it holds, moves and lets go.
+    /// Design: docs/design/host/interaction.md#the-hold
+    public private(set) var interactionProgram: HostInteractionProgram?
+
     /// The handlers of the events the tree listens to, by event.
     public private(set) var events: [Event: Int32] = [:]
 
@@ -294,6 +298,7 @@
         if patch.driven == nil, !driven.isEmpty { whole.driven = .replace([:]) }
         if patch.followed == nil, !followed.isEmpty { whole.followed = .replace([]) }
         if patch.layout == nil, layoutProgram != nil { whole.layout = .clear }
+        if patch.interaction == nil, interactionProgram != nil { whole.interaction = .clear }
         return whole
     }
 
@@ -395,6 +400,11 @@
             programPresentation = ProgramPresentation()
         case nil:
             break
+        }
+        if let update = patch.interaction {
+            let before = interactionProgram
+            if case .replace(let program) = update { interactionProgram = program } else { interactionProgram = nil }
+            tree.interactionChanged(self, before)
         }
         wear(driven)
         // A journey followed with no property has no view to read it: its channel opens here.
@@ -657,6 +667,7 @@
             if let program = layoutProgram { tree.layoutLeft(program.slot) }
         }
         layoutProgram = nil
+        interactionProgram = nil
         wornStates = []
         presentedStates = []
         isLeaving = false

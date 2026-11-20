@@ -690,7 +690,7 @@ extension StateTests {
         XCTAssertEqual(fade.wrappedValue, 0.2, "and it reads where the value is going")
         XCTAssertEqual(fade.storage.journeyLanes?.motion, .eased(.milliseconds(400), curve: .linear), "on the move's own law")
         XCTAssertEqual(fade.projectedValue.journey.motion, .inherited, "the value's own standing")
-        XCTAssertEqual(fade.projectedValue.journey.standing, 1, "the value waits for the host to walk it")
+        XCTAssertEqual(fade.projectedValue.journey.walked, 1, "the value waits for the host to walk it")
     }
 
     /// A READING IS OF WHERE THE VALUE HAS GOT TO, never of where it is going.

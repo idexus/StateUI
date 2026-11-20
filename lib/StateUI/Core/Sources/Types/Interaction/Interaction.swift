@@ -16,17 +16,22 @@
 /// Design: docs/design/views/interaction.md#one-declaration
 @MainActor
 public struct Interaction {
-    /// One value an input moves: the state it is a number of, the number, what moves it, how far the hand may take
-    /// it, where it may rest, whether it comes round, which way it grows and how it goes on let go.
+    /// One value an input moves: the state it is a number of - its identity, and the image the host carries it
+    /// on - the number, by its key path and its place among the state's numbers, what moves it, how far the hand
+    /// may take it, where it may rest, whether it comes round, which way it grows, how it goes on let go and what
+    /// a write of the program does to it under the hand.
     struct Leaf {
         let state: ObjectIdentifier
+        let image: @MainActor () -> HostStorage?
         let axis: AnyKeyPath
+        let lane: Int?
         let input: InteractionInput
         var range: ClosedRange<Double>?
         var snaps: AxisValues?
         var periodic = false
         var reversed = false
         var release = InteractionRelease.standard
+        var programWrites = InteractionProgramWrites.interrupt
     }
 
     /// The values moved, in written order.
@@ -51,7 +56,10 @@ public struct Interaction {
     public static func value<Parameters: LayoutParameters>(
         _ state: Binding<Parameters>, axis: WritableKeyPath<Parameters, Double>, input: InteractionInput
     ) -> Interaction {
-        let leaf = Leaf(state: ObjectIdentifier(state.storage), axis: axis, input: input)
+        let storage = state.storage
+        let leaf = Leaf(
+            state: ObjectIdentifier(storage), image: { storage.carryAsJourney() }, axis: axis,
+            lane: Parameters.axes.firstIndex(of: axis), input: input)
         return Interaction(leaves: [leaf], isSet: false, refused: input.complaint.map { [$0] } ?? [])
     }
 
@@ -116,6 +124,18 @@ public struct Interaction {
         return copy
     }
 
+    /// What a write of the program does to the value while the hand holds it. Said of several at once, it is every
+    /// one's.
+    ///
+    /// - Parameter policy: `.interrupt`, the write taking the value from the hand, unless said; `.deferLatest`, the
+    ///   hand keeping it and the value going where the program sent it last once let go.
+    /// - Returns: the interaction, meeting a write so.
+    public func programWrites(_ policy: InteractionProgramWrites) -> Interaction {
+        var copy = self
+        for index in copy.leaves.indices { copy.leaves[index].programWrites = policy }
+        return copy
+    }
+
     /// The interaction with `change` made to its one value; said of several at once, `name` is refused - each value
     /// has its own.
     private func each(_ name: String, _ change: (inout Leaf) -> Void) -> Interaction {
@@ -128,5 +148,44 @@ public struct Interaction {
         }
         change(&copy.leaves[0])
         return copy
+    }
+}
+
+extension Interaction {
+    /// The interaction of `leaves` alone: what a view reading it found to stand.
+    init(standing leaves: [Leaf]) {
+        self.init(leaves: leaves, isSet: true)
+    }
+
+    /// The interaction as the host is handed it, each state by the number `numbered` gives its image: a value whose
+    /// state the host carries as no journey, or that is no number of its state, moves nothing.
+    /// Design: docs/design/views/interaction.md#what-the-host-is-handed
+    func program(numbered: (HostStorage) -> Int32) -> HostInteractionProgram {
+        HostInteractionProgram(values: leaves.compactMap { leaf in
+            guard let lane = leaf.lane, let image = leaf.image() else { return nil }
+
+            let input: HostInteractionInput
+            switch leaf.input.gesture {
+            case .hand(let way, let travel, let swipes):
+                let unit: InteractionUnit = switch travel {
+                case .length(let points): .points(points)
+                case .front: .frontItem
+                case .room: .containerLength
+                }
+                input = .translation(way, unit: unit, swipes: swipes)
+            case .magnification:
+                input = .magnification
+            case .rotation(let degrees):
+                input = .rotation(degreesPerUnit: degrees)
+            }
+            let snaps: HostInteractionSnaps? = leaf.snaps.flatMap { snaps in
+                leaf.range.map { .at(snaps.values(in: $0, periodic: leaf.periodic)) } ?? snaps.unbounded
+            }
+            return HostInteractionValue(
+                state: numbered(image), lane: lane, input: input,
+                low: leaf.range?.lowerBound ?? -.infinity, high: leaf.range?.upperBound ?? .infinity,
+                snaps: snaps, periodic: leaf.periodic, reversed: leaf.reversed, release: leaf.release,
+                programWrites: leaf.programWrites)
+        })
     }
 }

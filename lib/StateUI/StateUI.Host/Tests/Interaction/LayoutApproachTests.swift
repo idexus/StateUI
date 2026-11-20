@@ -4,6 +4,7 @@
 import XCTest
 
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 
 /// How a run let go comes onto the next target, as the host walks the journey it sends: never slower than the
 /// layout's motion moves a unit - let go still, or by a hand slower than that, it approaches the target under the
@@ -13,7 +14,6 @@ final class LayoutApproachTests: XCTestCase {
     override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
-        bench.walks = true
     }
 
     private let bench = LayoutBench()
@@ -51,13 +51,12 @@ final class LayoutApproachTests: XCTestCase {
     func testLetGoStillTheRunApproachesTheNextTargetAUnitAMotionsLength() {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
-        let renders = Renders()
         func built() -> Node { tree(phase, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-60, 0))
-        bench.hand(renders, built, .ended)
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-60, 0))
+        bench.hand(.ended)
         XCTAssertEqual(phase.wrappedValue, 1, "named at once")
 
         let flown = flight(handed)
@@ -72,12 +71,11 @@ final class LayoutApproachTests: XCTestCase {
         for far in [1e20, -1e300, Double.greatestFiniteMagnitude] {
             let phase = State(wrappedValue: far)
             let handed = Handed()
-            let renders = Renders()
             func built() -> Node { tree(phase, handed) }
-            _ = bench.laid(renders, built)
+            bench.laid(built)
 
-            bench.hand(renders, built, .began)
-            bench.hand(renders, built, .ended)
+            bench.hand(.began)
+            bench.hand(.ended)
 
             XCTAssertTrue((0...2).contains(phase.wrappedValue), "\(far): named \(phase.wrappedValue)")
             XCTAssertTrue(flight(handed).allSatisfy(\.isFinite), "\(far)")
@@ -89,13 +87,12 @@ final class LayoutApproachTests: XCTestCase {
     func testAHandSlowerThanTheMotionApproachesTheNextTargetAlike() {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
-        let renders = Renders()
         func built() -> Node { tree(phase, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-60, 0))
-        bench.hand(renders, built, .ended, velocity: Point(-60, 0))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-60, 0))
+        bench.hand(.ended, velocity: Point(-60, 0))
         XCTAssertEqual(phase.wrappedValue, 1)
 
         let flown = flight(handed)
@@ -107,13 +104,12 @@ final class LayoutApproachTests: XCTestCase {
     func testLetGoShortOfHalfwayTheRunApproachesWhereItCameFrom() {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
-        let renders = Renders()
         func built() -> Node { tree(phase, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-20, 0))
-        bench.hand(renders, built, .ended)
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-20, 0))
+        bench.hand(.ended)
         XCTAssertEqual(phase.wrappedValue, 0)
 
         let flown = flight(handed)
@@ -125,14 +121,13 @@ final class LayoutApproachTests: XCTestCase {
     func testAHandFasterThanTheMotionIsAThrow() {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
-        let renders = Renders()
         func built() -> Node { tree(phase, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-60, 0))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-60, 0))
         // 12 units a second carries the run 1.6 on: past 1 and 2 to the end, 1.4 of throw.
-        bench.hand(renders, built, .ended, velocity: Point(-1_200, 0))
+        bench.hand(.ended, velocity: Point(-1_200, 0))
         XCTAssertEqual(phase.wrappedValue, 2)
 
         let flown = flight(handed)
@@ -145,25 +140,24 @@ final class LayoutApproachTests: XCTestCase {
     func testWhileAThrowGoesOnItsJourneySaysWhereAndHowFast() {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
-        let renders = Renders()
         func built() -> Node { tree(phase, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-60, 0))
-        bench.hand(renders, built, .ended, velocity: Point(-1_200, 0))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-60, 0))
+        bench.hand(.ended, velocity: Point(-1_200, 0))
         let journey = phase.projectedValue.journey
-        XCTAssertEqual(journey.speed, 12, accuracy: 0.000_1, "setting out at the hand's speed")
-        XCTAssertEqual(journey.standing, 0.6, accuracy: 0.000_1, "from where it left it")
+        XCTAssertEqual(journey.sample?.velocity ?? 0, 12, accuracy: 0.000_1, "setting out at the hand's speed")
+        XCTAssertEqual(journey.sample?.value ?? 0, 0.6, accuracy: 0.000_1, "from where it left it")
 
         bench.cycle()
-        XCTAssertGreaterThan(journey.speed, 0, "going on")
-        XCTAssertLessThan(journey.speed, 12, "slowing")
-        XCTAssertEqual(journey.standing, handed.phases.last ?? 0, accuracy: 0.000_1, "where the run is shown")
+        XCTAssertGreaterThan(journey.sample?.velocity ?? 0, 0, "going on")
+        XCTAssertLessThan(journey.sample?.velocity ?? 12, 12, "slowing")
+        XCTAssertEqual(journey.sample?.value ?? 0, handed.phases.last ?? 0, accuracy: 0.000_1, "where the run is shown")
 
         for _ in 0..<60 { bench.cycle() }
-        XCTAssertEqual(journey.speed, 0, "at rest")
-        XCTAssertEqual(journey.standing, 2, "on its target")
+        XCTAssertEqual(journey.sample?.velocity, 0, "at rest")
+        XCTAssertEqual(journey.sample?.value, 2, "on its target")
     }
 
     /// A SPRING'S APPROACH settles as the spring does, its response cut to the way left: there long before the
@@ -171,13 +165,12 @@ final class LayoutApproachTests: XCTestCase {
     func testASpringsApproachIsCutToTheWayLeft() {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
-        let renders = Renders()
         func built() -> Node { tree(phase, handed, .spring(Spring(response: .milliseconds(800)))) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-90, 0))
-        bench.hand(renders, built, .ended)
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-90, 0))
+        bench.hand(.ended)
 
         let flown = flight(handed)
         XCTAssertEqual(flown[16], 1, accuracy: 0.002, "0.1 of 800 ms settles within 256 ms")
@@ -188,17 +181,16 @@ final class LayoutApproachTests: XCTestCase {
     func testAHandTakingTheRunOnItsWayTakesItWhereItIsShown() {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
-        let renders = Renders()
         func built() -> Node { tree(phase, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-60, 0))
-        bench.hand(renders, built, .ended, velocity: Point(-1_200, 0))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-60, 0))
+        bench.hand(.ended, velocity: Point(-1_200, 0))
         for _ in 0..<4 { bench.cycle() }
         let shown = handed.phases.last ?? 0
 
-        bench.hand(renders, built, .began)
+        bench.hand(.began)
         XCTAssertEqual(handed.phases.last ?? 0, shown, accuracy: 0.001)
     }
 }

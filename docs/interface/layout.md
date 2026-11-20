@@ -772,6 +772,7 @@ rest:
 | `.periodic(_:)` | whether it comes round, its range one turn |
 | `.reversed(_:)` | which way it grows: to the right or down unless reversed |
 | `.release(_:)` | how it goes on let go: `.projected(_:)`, `.nearest(_:)`, `.stay` |
+| `.programWrites(_:)` | what a write of the program does to it under the hand: `.interrupt` unless said, `.deferLatest` |
 
 A value grows as the hand moves right or down. A row of cards whose growing
 number moves them left - most carousels - says `.reversed(true)`:
@@ -831,8 +832,10 @@ and let go there, it comes back onto the end. Its snaps are where it may rest
 beside the range's ends, which it always may - its `AxisValues`: `[1, 2]` lists them,
 `.every(1)` puts one every unit from the lower end, `.at(stops)` takes a list
 worked out, and `.endpoints` leaves the ends alone - a drawer is open or closed,
-nothing between. Given no snaps, the axis rests wherever the hand leaves it
-or its throw ends, inside the range, and is named only once it rests:
+nothing between. A value given no range has no end: `.every(1)` is then every
+whole number, and a list stands as written. Given no snaps, the axis rests
+wherever the hand leaves it or its throw ends, inside the range, and is going
+where the hand holds it meanwhile, as a slider's value follows its thumb:
 
 ```swift
 struct Drawer: View {
@@ -855,7 +858,8 @@ struct Drawer: View {
 
 An `InteractionInput` says what of the hand moves the value -
 `.translation(_:unit:)`, `.swipe(_:unit:)`, `.magnification`,
-`.rotation(degreesPerUnit:)` - and its `unit:` how far the hand travels for
+`.rotation(degreesPerUnit:)` - the way a hand moves it an `Orientation`,
+`.horizontal` or `.vertical`, and its `unit:` how far the hand travels for
 one unit of the value, an `InteractionUnit`. `.frontItem` carries the view in front: the hand
 travels as far as the front view of those the parameters move goes for one
 unit, so a carousel that grows with its window turns as far under the finger
@@ -879,6 +883,47 @@ its length as the way left is of a unit - the last tenth of a card takes a
 tenth of the motion. A mouse's wheel turned notch by notch steps
 the run a snap a notch, under the parameters' motion, however far apart the snaps
 stand - an axis with none, a hundred points' worth of the hand.
+
+While the hand holds a value, the value stands under the hand: the state
+itself is the snap it is bound for, and `$turn.journey.sample` says where the
+hand has it. A write of the program meets the hand as the interaction's
+`.programWrites(_:)` says, an `InteractionProgramWrites`. `.interrupt`, unless
+said, takes the value from the hand: the gesture ends there and the value
+travels where the program sent it from under the hand. `.deferLatest` lets the
+hand keep it - a carousel turning by itself does not pull a card from under a
+finger: the state is going where the program sent it at once, and the value
+travels there once the hand lets go. Either way a write of another number of
+the same parameters leaves the hand its own:
+
+```swift
+struct TurningCards: View {
+    @State(motion: .spring(Spring(response: .milliseconds(360)))) private var turn = 0.0
+    @State private var turning = Ticker(every: .seconds(3))
+
+    let names = ["Mural", "Nebula", "Ridge", "Bloom"]
+
+    var body: some View {
+        MotionLayout(names, parameters: $turn) { name in
+            Text(name)
+        } placements: { context, turn in
+            names.indices.map { index in
+                Placement(Rect(context.bounds.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, 160))
+            }
+        }
+        .interaction(
+            .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                .reversed(true).range(0...Double(names.count - 1)).snaps(.every(1))
+                // The next card comes by itself, and waits for a hand that holds the cards.
+                .programWrites(.deferLatest))
+        .height(160)
+        .onCreated {
+            turning.onTick = { turn = turn < Double(names.count - 1) ? turn + 1 : 0 }
+            turning.start()
+        }
+        .onDestroying { turning.stop() }
+    }
+}
+```
 
 A change of the layout where its parameters stand travels too. A view
 joining fades in where the arithmetic puts it; one leaving goes at once and

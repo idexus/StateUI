@@ -10,11 +10,11 @@ the three owners every other moving value has
 ([architecture](../architecture.md#a-moving-value-has-three-owners)).
 
 ```text
-  MotionLayout - the element, a host's ZStack, wearing the parameters   ◀── the host walks it
-   │             and hearing the hand over it (translationUpdated, translationOrientation) ◀── a finger, a pointer,
-   ├── holder ── the author's view [ + the shade, second ]   ◀─┐      a trackpad, a wheel
+  MotionLayout - the element, a host's ZStack, wearing the parameters   ◀── the host walks it,
+   │             and saying what the hand moves of them (interaction)        and holds it under the hand
+   ├── holder ── the author's view [ + the shade, second ]   ◀─┐
    └── …                                                       ├─ one run of placements,
-         engine(following: room, parameters, held, followed…)        ┘  written by the engine
+         engine(following: room, parameters, followed…)        ┘  written by the engine
 ```
 
 ## The element
@@ -277,7 +277,8 @@ a `Spring` and nothing else.
 
 ## At rest
 
-The run is at rest where no hand holds it, the parameters' journey stands at its
+The run is at rest where no hand holds it - the host's word
+(`LayoutProgramSlot.handHolds`) - the parameters' channel shows them at their
 destination and no body of the world is on its way - whatever moved it: the
 program's journey, the hand's throw, a change, a view let go. Each frame the
 engine runs, it notes whether the run rests (`LayoutShown.resting`); coming
@@ -290,20 +291,20 @@ from the bodies' (the journey's own `MotionRun` waits for the parameters alone).
 ## The parameters
 
 The parameters are where the run rests or is going, two-way: the program writes them,
-the hand names it. It is the one thing that travels: a write is its
+the hand names the snap it is bound for. It is the one thing that travels: a write is its
 destination, which the host walks under the state's own motion
 (`@State(motion:)`, else the application's) and reports frame
 by frame, so `$parameters.journey.move(to:)` is awaited until the run arrives and
 the arithmetic is handed each frame where the parameters stand - never the
 destination at once, which would make a ring jump. Under the hand, the hand's
-axis is where the hand holds it.
+axis stands in the channel where the hand holds it.
 
 The parameters lent are a state, `$turn`, or a conversion of one - a second
 state the host carries (core/journeys.md#conversions), its destination walked as
 any state's. The layout gives them no motion of its own: a shared channel
 travels under its state's motion, whichever control shows it, and a layout
 is one such control. A hand let go short of a rest comes onto it under the
-same motion (`Run.resolvedLaw`). The engine follows the parameters themselves, so a new one wakes the arithmetic and
+same motion. The engine follows the parameters themselves, so a new one wakes the arithmetic and
 builds nothing; a change of room moves no parameters.
 
 ## Where a motion set out
@@ -331,7 +332,7 @@ throw across several targets, two quick swipes a wheel reads as one hand.
 Should an arithmetic draw a whole step otherwise for another `from`, the
 change travels as a change of the description does ([a change where the
 parameters stand](#a-change-where-the-parameters-stand)), each view from where it was
-shown. The run measuring the hand's unit is handed the `from` of the moment.
+shown. The run measuring the front view's unit is handed the `from` of the moment.
 
 ## Parameters of many axes
 
@@ -343,11 +344,10 @@ read one axis for several things. The element wears all its parameters, one
 lane an axis in the order `axes` names them: a part of a state is never
 carried, so one state is one channel however many axes it has.
 
-An axis the hand moves is declared whole ([an axis](#an-axis)) and moved
-alone: the arithmetic is handed the parameters walked by the host with each axis
-the hand holds where it holds it, a snap passed is named on that axis, and
-another axis traveling under the program goes on beside the hand. A
-The one axis of `Double` parameters is `\.self`.
+An axis the hand moves is moved alone: the arithmetic is handed the parameters
+as their channel shows them, each axis a hand holds where it holds it, a snap
+passed is named on that axis, and another axis traveling under the program
+goes on beside the hand. The one axis of `Double` parameters is `\.self`.
 
 The type is inferred from the parameters lent, `parameters: $orbit`, which stands in
 the same initializer as the arithmetic: every layout is lent its parameters, a
@@ -367,30 +367,26 @@ axis, how far, where it rests and how it goes on let go is the layout's one
 range is the hand's own and may be another than the mapping's. The run works
 on one record an axis (`Hand`), made of both: an axis the interaction moves,
 mapped or not, and an axis mapped alone, which the program moves - the
-arithmetic is asked at its keyframes, and the element says no hand for it
-(no `translationOrientation`, `pans`, `magnifies` or `rotates` from it). A
-mapping with neither keyframes nor segments declares nothing, and is said.
+arithmetic is asked at its keyframes, and the element's program hands the
+host no value for it. A mapping with neither keyframes nor segments declares
+nothing, and is said.
 
 - THE RANGE is the hand's, not the program's: the hand moves the axis freely
-  inside it and less and less past an end ([the hand](#the-hand)); the
-  program writes the axis anywhere. Wrapping, its length is the period and
-  its upper end the lower one a turn on.
+  inside it and less and less past an end
+  ([past an end](../host/interaction.md#past-an-end)); the program writes the
+  axis anywhere. Wrapping, its length is the period and its upper end the
+  lower one a turn on.
 - THE SNAPS are places beside the range's ends, which always are: listed
   (`[1, 2]`, `.at(_:)`), a step from the lower end (`.every(_:)`), or none
-  inside (`.endpoints`) - worked out once into the run's `stops`, lowest first,
-  the upper end left out where the axis is periodic. NO SNAPS is an axis of its
-  own kind: it rests wherever the hand or its throw leaves it, inside its
-  range, and is named nothing while the hand holds it - the parameters are where
-  the run rests or is going, and a held axis with no snaps is going nowhere
-  yet; one render a rest, none a frame.
-- ONE INPUT AN AXIS, by the type: an axis declared again takes the new
-  declaration. ONE INPUT MAY MOVE SEVERAL AXES: each is a hand of its own in
-  the run - its hold, its throw and a swipe's grip kept by the axis's place
-  in `axes` - so a hand moving two axes moves each by its own unit, and let
-  go, each rests its own way. Two axes the hand moves one across and one down
-  are a pan ([a pan](#a-pan)).
-- THE ELEMENT SAYS what the axes need: `translationOrientation` where the hand moves them
-  one way, `pans` where both, `magnifies` and `rotates` where two fingers do.
+  inside (`.endpoints`) - handed to the host lowest first, the upper end left
+  out where the axis is periodic. NO SNAPS is an axis of its own kind: it
+  rests wherever the hand or its throw leaves it, inside its range, and is
+  going where the hand holds it meanwhile.
+- ONE INPUT MAY MOVE SEVERAL AXES: each is a value of its own in the
+  element's program - its hold, its throw and a swipe's grip kept by its lane
+  - so a hand moving two axes moves each by its own unit, and let go, each
+  rests its own way. Two axes the hand moves one across and one down are a
+  pan: the host hears the hand every way and claims every first move.
 - WHAT CANNOT MOVE IS SAID (`complain`) and moves nothing: an axis the
   parameters' `axes` do not list, a range with no end, a magnification's range
   reaching nought or told to come round, a swipe given no snaps, and what
@@ -480,176 +476,40 @@ cross rather than at half way.
 
 ## The hand
 
-The hand is read directly, on the element itself: a finger or a pointer
-dragged, a trackpad's two fingers and a wheel are one hand, each host telling
-it as its toolkit does and the host layer making it one stream of the
-element's `translationUpdated` (host/runtime.md, the hand over a layout). No scroller
-lies over the views, so nothing bounds how far the hand goes: a run that
-comes round (`periodic: true`) turns for ever, and the views under the hand
-still answer a tap.
+What the hand moves of the parameters is declared with the layout
+(`interaction(_:)`, [interaction.md](interaction.md#on-a-motion-layout)) and
+handed to the host as the element's program
+(`MotionLayoutContract.interaction`); the hand itself is the host layer's -
+the hold, the move, the rest, the throw
+([the hand over a value](../host/interaction.md)). No scroller lies over the
+views, so nothing bounds how far the hand goes, and the views under it
+still answer a tap. The layout keeps no hand: its arithmetic is handed the
+parameters where their channel shows them (`Run.live`), which under the
+hand is where the hand holds them.
 
-- The hand takes the run where it is shown: a journey or a throw under way
-  stops there. While it moves, the hand's axis moves with it, its move over
-  the unit - the hand moving left moves the run on. Past an end of a run
-  that does not come round the run gives less and less, back as forth: half
-  as far as the hand at first, never three quarters of a unit past the end,
-  so no hand carries every view away. What the arithmetic is handed is
-  where the hand holds the run (`held`), and that is the parameters' journey
-  value for anything else following it (core/journeys.md, where a run shows
-  it); the parameters themselves are named only as the hand passes halfway between
-  two snaps, a reading of the hand (`journey.snap(_:to:)`) rather than a
-  journey: one render a snap, none a frame. An axis with no snaps is named
-  where it comes to rest.
-- Let go still, the run travels to the nearest snap as a journey of the
-  parameters, under the layout's motion - or, with none, stays where the hand
-  left it, back onto the end from past one.
-- Let go with speed, it is thrown ([a throw](#a-throw)).
+Two things of the hand stay the layout's, as its arithmetic alone knows
+them. One is the front view's unit (`.frontItem`): how far the view drawn in
+front goes for one unit of an axis where the run stands - of the views the
+parameters move, the highest, then the one nearest the middle - measured by
+the arithmetic a hundredth of a unit either side (`Run.measured`), which the
+host asks through the layout's program (`HostLayoutProgram.frontItemUnit`).
+The hand then carries that view with it, whatever size the room makes the
+layout: a ring that grows with its window turns as far under the finger as
+on a phone. A view standing still over the run - a dot, a caption - is no
+front; with nothing moving, a room's length is a unit. A swipe asks it as
+the run would rest on the snap it was taken at, a scroll where the run
+stands at each move. The other is where a motion set out
+([where a motion set out](#where-a-motion-set-out)), which stands while a
+hand holds the run: the host says so (`HostLayoutProgram.handHolds`).
 
-The unit is how far the hand travels for one unit of its axis - the input's
-`InteractionUnit`: so many points (`.points`), the room's length along the
-axis (`.containerLength`), or (`.frontItem`) how far the view drawn in front
-goes for one unit where the run stands - of the views the parameters move, the
-highest, then the one nearest the middle - measured by the arithmetic a
-hundredth of a unit either side. The hand then carries that view with it,
-whatever size the room makes the layout: a ring that grows with its window
-turns as far under the finger as on a phone. A view standing still over the
-run - a dot, a caption - is no front; with nothing moving, a room's length
-is a unit. A run whose front view hardly moves - a pile - gives the unit
-itself.
+## A target named
 
-The hand moves the axes declared for it alone; where they all go one way,
-the host leaves to whatever holds the layout a hand whose first move is more
-across that way than along it, a page's scroller.
-
-## Two fingers
-
-Two fingers spreading and turning are inputs of their own:
-`.magnification` and `.rotation(degreesPerUnit:)`. The two fingers move
-every axis either input moves at once, beside the hand they carry by their
-middle ([a pan](#a-pan)), from one stream of the element's `pinchRotationUpdated`
-(host/runtime.md, two fingers over a layout), each axis's place its own
-(`held` by the axis): the arithmetic is handed every axis where its
-hand holds it.
-
-A magnification is multiplied by how far the fingers spread: the hand works
-on the axis's logarithm, so a magnification is a scroll of its logarithm -
-the ends give less and less past them, a snap is nearest by the
-logarithm, a throw carries the logarithm on - and pinching in acts as
-spreading does. Its range stands above nought. A rotation moves a unit
-every `degreesPerUnit` the fingers turn, clockwise on. Let go, the axes go
-on together, each to where it would end as its release throws it - the
-snap nearest that - or onto the nearest as a hand let go still does; a unit of
-a magnification's logarithm counts as a hundred device units and a
-rotation's as its degrees, by which either is judged thrown or settled. A
-view held by itself keeps the hand, and the fingers move nothing.
-
-## A pan
-
-A pan is two axes the hand moves, one across (`.translation(.horizontal)`) and
-one down (`.translation(.vertical)`): each moves with its part of the hand's move,
-the unit each's own - so many points, else the view in front's along that
-axis. No input of its own: the ways the axes' inputs go make it. The element
-says `pans` and no `translationOrientation`, so a host hears the hand every way and the
-host layer claims every first move (host/runtime.md, the hand over a
-layout); a wheel's notches step each axis their way. Let go, every axis the
-hand moves is thrown with its part of the speed and comes to rest its own
-way, the run traveling to all of their rests as one set of parameters.
-
-## A swipe
-
-`.swipe(_:unit:)` is the hand of a deck or of pages: one hand moves the run one
-snap at most, either way from the snap nearest where it took it,
-however far it goes. A trackpad's quick flick is some 1500 points of the
-platform's own speeding up before the fingers lift, and a throw on top - a
-scroll of cards a few hundred points apart is through the deck in one flick;
-a swipe is one card, as a finger's flick on a phone is. Held past its reach,
-the run stands on the target there; let go thrown, it goes on to the next of
-its three targets the throw's way - the one beyond, or back to where it took
-it from beyond that - and let go still, to the nearest of them. A wheel's
-notches swipe alike: a notch moves the run one target from where it rests,
-and the notches that come while it goes wait for it - the rest of a burst, a
-spring passing its target, which would otherwise count as the next card
-reached. Its value needs snaps; given none, the interaction is refused and
-the hand moves nothing of it.
-
-Its unit is measured once, as the hand takes the run, as if the run stood on
-the target it took it at, and kept while the hand holds it: a view that goes
-out quickly and slows - a card swung aside and tucked under the next - would
-otherwise quicken the hand as it slows, and the moment the hand caught it on
-its way would decide how fast it moves. A scroll measures where the run
-stands at each move, a ring of views keeping to the finger all round.
-
-A swipe whose unit is `.containerLength` goes the room's length along its axis a unit: a
-board of icons is a screen, the boards side by side a room apart, and a hand
-across the room turns one. The room is read at each move, never kept, so a
-window grown or a phone turned under the hand keeps a board a screen; no
-front view is measured, since every icon of a board moves alike and the
-nearest to the middle may stand still between boards.
-
-## A throw
-
-A throw goes on to the target nearest where it would end: the speed the hand
-let go at, carried by the motion its release throws by
-(`InteractionRelease.projected`) - a motion like any other - says
-how much farther it would go (eased, the speed for its length over how
-steeply its curve sets out; a spring, for a third of its response; a glide of
-800 ms unless said, about a quarter of a second's worth of the speed), and
-the nearest target to that end - a turn on or back where
-the run comes round, never past the last of one that does not - is where it
-goes. The parameters are named that target at once: the state is where the run is
-going.
-
-The way there is a journey of the parameters the host walks on its channel, as
-every journey is: the hand lets go, the parameters' journey is set where the hand
-left it, at the hand's speed - by the axis's slope there, a magnification's by
-its scale - and moved to the target under the input's own motion going on: a
-spring settles there from the hand's speed, as springs do; an eased one
-glides (`Motion.glide`, [types/motion.md](../types/motion.md#a-glide)), its
-longest twice the motion's length, so it sets out at the hand's speed exactly
-and slows onto the target - a motion of fixed length would cover a long throw
-faster than the hand let go of it, and the run would speed up after the lift.
-So `$parameters.journey` says where the run is and how fast it goes while it goes
-on, a control wearing the parameters walks them alike, and the move answers a
-`MotionRun`. A throw too slow to carry the run past the target it stands nearest
-- that target at or behind where the hand let go - comes onto it as a run let
-go still does: a throw never goes back against the hand. A destination the
-program writes meanwhile ends the throw, as it ends any journey. The axes
-two fingers or a pan let go at once go on as one journey, each at its hand's
-speed, under the law of the first that goes on.
-
-## Coming onto a target
-
-A run let go comes onto the next target - the one it stands nearest, or the
-next a slow throw reaches, none between - no slower than the layout's motion
-moves a unit. Let go still, thrown back, or by a hand whose throw would reach
-that target later than the motion at a unit a length, the run approaches it
-under the layout's motion over as much of the motion's length as the way left
-is of a unit: 0.4 left of 300 ms is 120 ms on the motion's curve, setting out
-on the curve's own slope, never slower than the motion; a spring's response is
-cut alike and sets out at the hand's speed toward the target. A way left that
-is past what a motion's length holds - parameters written far off the axis -
-takes the longest a motion holds, and one that is no number none. A throw that gets
-there sooner sets out at the hand's speed, as above. The two meet where they
-take the same time, so a quicker hand never lands later.
-
-A whole motion for a short way would crawl - the last tenth of a card over
-300 ms - and a slow throw would drift onto it over twice the throw's length.
-A throw past several targets keeps its own motion: a long glide is what its
-input asked for, and only the landing on the next target is the motion's.
-
-AN AXIS WITH NO SNAPS has no target to come onto: where it rests is where
-its throw ends, so let go moving it is always thrown, setting out at the
-hand's speed and slowing onto that end. An approach there would be a short
-way under a motion cut to it - a spring's response a tenth of its own -
-leaping ahead of the hand in the first frame and back at the end, the more
-so the faster the hand. A hand slower than a throw is let go still: nothing
-carries it on, and it rests where it was let go.
-
-The approach is a journey of the parameters as a throw is, the parameters named the
-target at once; under less motion it lands at once, as every journey does on
-the host - a throw too. A hand taking the run on its way - a throw or an
-approach - takes it where it is shown, never where it is going: the journey
-stops there.
+A composed control keeping a value of its own by the parameters - a
+gallery's position - is told where they are going as that changes
+(`onNamed`, `Run.tellNamed`): the hand naming a snap, in the frame that
+names it, or the program writing them. It is told the destination alone,
+once a change, and nothing of the way there; the first frame learns where
+the parameters stand and tells nobody.
 
 ## One view in the hand
 
@@ -699,40 +559,3 @@ is a way out: the view leaves when it passed one, and each one it passed is
 told, in the order written. The handler runs after the frame, as a job of the
 UI thread, never inside the cycle.
 
-## A wheel's notch
-
-A wheel turned notch by notch is no hand: a notch moves the run no distance,
-but steps it to the next target the way it turned, from the target the run
-is going to - a journey's or a throw's - so notches turned faster than the
-run travels step on from there rather than from where it is shown. The run
-travels under the layout's motion; a run that comes round is stepped a turn
-on or back past its last target, one that does not is held to its ends. A
-notch is a step whatever a target's size - a run of large cards turns one a
-notch, as of small ones - which a distance cannot be: a mouse's notch is a
-few points, so one turned slowly would never carry the run past half a card,
-and the run would come back to where it stood after each. A hand holding the
-run keeps it. An axis with no snaps has no next place: a notch moves it as a
-hand going a hundred points does, inside its range. The host tells the
-notches (`wheelStepped`); the host layer adds a fine wheel's parts of a notch
-up to whole ones.
-
-## Coming to rest
-
-When the hand lets go the run goes on to where it comes to rest, from where
-the hand left it - a journey of the parameters, or a throw. Each axis rests on
-its own: on the snap nearest where its throw would end, or, with no snaps,
-there itself inside its range - and only its own hand moves it there, a
-settle of another leaving it where the program put it. The axes the hand or
-the fingers let go at once are each NAMED where they rest before any goes
-on, then go on together as one journey of the parameters on the host's
-channel (`letGo(together:)`): its value written first where the hands left
-the run, so no axis leaps back to where the host last had it, each axis
-setting out at its hand's speed, under one law - a throw's where one is
-thrown, else the approach of the longest way, which the others arrive within
-([coming onto a target](#coming-onto-a-target)).
-
-Under the hand only the hand's axes are named - each on the nearest of its
-snaps - so an axis the hand does not move never jumps as the hand passes.
-Where an axis comes round, its snaps repeat every turn and the nearest is
-taken a turn on or back: the axis has no end, so a write of one more always
-moves the run on.

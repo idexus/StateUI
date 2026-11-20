@@ -68,7 +68,8 @@ any number, the first trailing closure by any label.
   [doctor](tooling/doctor.md).
 - `host/`: the runtime every host shares - [the runtime](host/runtime.md),
   [the mounted tree](host/tree.md), [pages](host/pages.md), [layout](host/layout.md),
-  [motion](host/motion.md), [patches](host/patches.md), [items](host/items.md),
+  [motion](host/motion.md), [the hand over a value](host/interaction.md),
+  [patches](host/patches.md), [items](host/items.md),
   [maps](host/maps.md), [the web view](host/web.md), and
   [conformance](host/conformance.md), the suite every host runs.
 - `platforms/`: each platform's half of its runtime, one folder a platform.

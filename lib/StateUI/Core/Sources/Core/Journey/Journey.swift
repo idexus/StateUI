@@ -59,7 +59,7 @@ public struct Journey<Value: Walked> {
         if Renderer.shared.stateRead(watch) { watch.readAtBuild = true }
 
         return shownImage?.sample?.typed(
-            Value.self, at: Renderer.shared.board.frameTime, showing: storage.shown?.value)
+            Value.self, at: Renderer.shared.board.frameTime)
     }
 
     /// The motion this value animates under wherever it is shown -

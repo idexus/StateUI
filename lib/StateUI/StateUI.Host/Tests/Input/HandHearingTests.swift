@@ -16,6 +16,7 @@ final class HandHearingTests: XCTestCase {
         let ring = try ring(in: runtime)
 
         XCTAssertEqual(ring.hearing, [.hand])
+        XCTAssertEqual(ring.interactionProgram?.values.count, 1, "it answers the hand by its program")
 
         ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
         ring.hear(.hand(.changed, moved: Point(-140, 0), speed: nil), in: runtime)

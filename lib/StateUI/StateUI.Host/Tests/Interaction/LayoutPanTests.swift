@@ -7,6 +7,7 @@
 import XCTest
 
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 
 /// A board panned across and down, and how large it stands.
 private struct Board: LayoutParameters {
@@ -50,35 +51,31 @@ final class LayoutPanTests: XCTestCase {
         .node
     }
 
-    private func frames(_ count: Int = 30) {
-        for _ in 0..<count { bench.cycle() }
-    }
 
     /// A PAN IS HEARD EVERY WAY: the element says it pans, and no one way.
     func testAPanIsHeardEveryWay() throws {
         let (board, handed) = (State(wrappedValue: Board()), Handed())
-        let layout = try XCTUnwrap(bench.laid(Renders(), { tree(board, handed) }).patch.first(.motionLayout))
+        bench.laid { self.tree(board, handed) }
+        let layout = try XCTUnwrap(bench.layout)
 
-        XCTAssertEqual(layout.properties[.pans], .bool(true))
-        XCTAssertNil(layout.properties[.translationOrientation])
-        XCTAssertNotNil(layout.events?[.translationUpdated])
+        XCTAssertEqual(layout.handWay, .everyWay)
+        XCTAssertTrue(layout.hearing.contains(.hand))
     }
 
     /// THE HAND MOVES BOTH AXES, each with its own way - left and up both on - and let go still, the run rests on
     /// the nearest square.
     func testTheHandMovesBothAxesAndRestsOnTheNearestSquare() {
-        bench.walks = true
-        let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
+        let (board, handed) = (State(wrappedValue: Board()), Handed())
         func built() -> Node { tree(board, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-140, -60))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-140, -60))
         XCTAssertEqual(handed.boards.last?.x ?? 0, 1.4, accuracy: 0.001)
         XCTAssertEqual(handed.boards.last?.y ?? 0, 0.6, accuracy: 0.001)
 
-        bench.hand(renders, built, .ended)
-        frames()
+        bench.hand(.ended)
+        bench.frames()
         XCTAssertEqual(board.wrappedValue, Board(x: 1, y: 1))
         XCTAssertEqual(handed.boards.last?.x ?? 0, 1, accuracy: 0.000_1)
         XCTAssertEqual(handed.boards.last?.y ?? 0, 1, accuracy: 0.000_1)
@@ -86,16 +83,16 @@ final class LayoutPanTests: XCTestCase {
 
     /// A THROW GOES ON BOTH WAYS, each axis with its part of the speed, to the square nearest where it would end.
     func testAThrowGoesOnBothWays() {
-        let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
+        let (board, handed) = (State(wrappedValue: Board()), Handed())
         func built() -> Node { tree(board, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-20, -10))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-20, -10))
         // 600 points a second across is six units: half a second's light friction carries it to the far square; the
         // same throw down is not one.
-        bench.hand(renders, built, .ended, velocity: Point(-600, -10))
-        frames(60)
+        bench.hand(.ended, velocity: Point(-600, -10))
+        bench.frames(60)
         XCTAssertEqual(board.wrappedValue, Board(x: 1, y: 0), "across thrown on, down let go still")
     }
 
@@ -103,15 +100,14 @@ final class LayoutPanTests: XCTestCase {
     /// still, the parameters travel alike frame by frame.
     func testAxesLetGoTogetherGoOnByOneLawWhateverTheirOrder() {
         func journey(downFirst: Bool) -> [Board] {
-            bench.walks = true
-            let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
+            let (board, handed) = (State(wrappedValue: Board()), Handed())
             func built() -> Node { tree(board, handed, downFirst: downFirst) }
-            _ = bench.laid(renders, built)
-            bench.hand(renders, built, .began)
-            bench.hand(renders, built, .changed, moved: Point(-20, -30))
-            bench.hand(renders, built, .ended, velocity: Point(-600, 0))
+            bench.laid(built)
+            bench.hand(.began)
+            bench.hand(.changed, moved: Point(-20, -30))
+            bench.hand(.ended, velocity: Point(-600, 0))
             handed.boards.removeAll()
-            frames(8)
+            bench.frames(8)
             return handed.boards
         }
         let (acrossFirst, downFirst) = (journey(downFirst: false), journey(downFirst: true))
@@ -123,61 +119,55 @@ final class LayoutPanTests: XCTestCase {
 
     /// A WHEEL'S NOTCHES STEP EACH AXIS their way.
     func testAWheelsNotchesStepEachAxis() {
-        let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
+        let (board, handed) = (State(wrappedValue: Board()), Handed())
         func built() -> Node { tree(board, handed) }
-        let patch = bench.laid(renders, built).patch
+        bench.laid(built)
 
-        guard let stepped = patch.first(.motionLayout)?.events?[.wheelStepped] else {
-            return XCTFail("the layout hears no wheel")
-        }
-        XCTAssertTrue(renders.fire(stepped, with: MemberValues.encode(Point(-1, -2))))
-        frames()
+        bench.step(Point(-1, -2))
+        bench.frames()
         XCTAssertEqual(board.wrappedValue, Board(x: 1, y: 2))
     }
 
     /// A WHEEL THE HOST SAYS NO NOTCHES OF - not a number, endless - steps nothing and never stops the application.
     func testAWheelOfNoNumberStepsNothing() {
-        let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
+        let (board, handed) = (State(wrappedValue: Board()), Handed())
         func built() -> Node { tree(board, handed) }
-        let patch = bench.laid(renders, built).patch
+        bench.laid(built)
 
-        guard let stepped = patch.first(.motionLayout)?.events?[.wheelStepped] else {
-            return XCTFail("the layout hears no wheel")
-        }
-        XCTAssertTrue(renders.fire(stepped, with: MemberValues.encode(Point(.nan, .infinity))))
-        frames()
+        bench.step(Point(.nan, .infinity))
+        bench.frames()
         XCTAssertEqual(board.wrappedValue, Board())
     }
 
     /// TWO FINGERS THE HOST SAYS NO NUMBERS OF - a scale endless, degrees and a speed not a number - move nothing.
     func testTwoFingersOfNoNumberMoveNothing() {
-        let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
+        let (board, handed) = (State(wrappedValue: Board()), Handed())
         func built() -> Node { tree(board, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.pinch(renders, built, .began)
-        bench.pinch(renders, built, .changed, scale: .infinity, degrees: .nan)
-        bench.pinch(renders, built, .ended, velocity: Point(.nan, .infinity))
-        frames()
+        bench.pinch(.began)
+        bench.pinch(.changed, scale: .infinity, degrees: .nan)
+        bench.pinch(.ended, velocity: Point(.nan, .infinity))
+        bench.frames()
         XCTAssertEqual(board.wrappedValue, Board())
     }
 
     /// A PAN AND TWO FINGERS MOVE AT ONCE: the hand pans while the fingers spread, each its own axes.
     func testAPanAndTwoFingersMoveAtOnce() {
-        let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
+        let (board, handed) = (State(wrappedValue: Board()), Handed())
         func built() -> Node { tree(board, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.pinch(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-100, 0))
-        bench.pinch(renders, built, .changed, scale: 2)
+        bench.hand(.began)
+        bench.pinch(.began)
+        bench.hand(.changed, moved: Point(-100, 0))
+        bench.pinch(.changed, scale: 2)
         XCTAssertEqual(handed.boards.last?.x ?? 0, 1, accuracy: 0.001)
         XCTAssertEqual(handed.boards.last?.zoom ?? 0, 2, accuracy: 0.001)
 
-        bench.pinch(renders, built, .ended)
-        bench.hand(renders, built, .ended)
-        frames()
+        bench.pinch(.ended)
+        bench.hand(.ended)
+        bench.frames()
         XCTAssertEqual(board.wrappedValue, Board(x: 1, y: 0, zoom: 2))
     }
 
@@ -197,12 +187,11 @@ final class LayoutPanTests: XCTestCase {
             ]))
         }
 
-        let panned = try XCTUnwrap(Renders().settled(layout(down: .vertical).node).first(.motionLayout))
-        XCTAssertEqual(panned.properties[.pans], .bool(true))
-        XCTAssertNil(panned.properties[.translationOrientation])
+        bench.laid { layout(down: .vertical).node }
+        XCTAssertEqual(bench.layout?.handWay, .everyWay)
 
-        let scrolled = try XCTUnwrap(Renders().settled(layout(down: .horizontal).node).first(.motionLayout))
-        XCTAssertNil(scrolled.properties[.pans], "two axes, one way")
-        XCTAssertEqual(scrolled.properties[.translationOrientation], .enumeration(Orientation.horizontal.rawValue))
+        let scrolled = LayoutBench()
+        scrolled.laid { layout(down: .horizontal).node }
+        XCTAssertEqual(scrolled.layout?.handWay, .horizontal, "two axes, one way")
     }
 }

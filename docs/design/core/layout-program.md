@@ -22,6 +22,8 @@ serialized:
   layOut      the host says the room it laid the layout out in
   answered    the host reads where the layout puts each child, and what brings the child there
   bodiesMove  the host says whether it still moves a child onto its place
+  handHolds   the host says whether a hand holds a number of the parameters
+  frontItemUnit  the host asks how far the front view goes for a unit of an axis
   measuredBy  the host says how a child is measured, and again that one may measure otherwise
   measure     the layout's own size in a width offered; none where it takes its room
 ```
@@ -50,8 +52,9 @@ is anybody's state.
 The arithmetic runs on the cycle, in the board's own order, by the entry
 the layout declares beside its program: it follows the slot - whose stamp
 a room the host said moves, a measure said again to a layout that
-measured, and the host's word that its children came to rest - the
-parameters and where they are shown, the hand, and every
+measured, and the host's word that its children came to rest or that a hand
+took or let go of the parameters - the parameters and where they are shown, a
+view in the hand, and every
 state and journey named in `following(_:)`. A journey followed makes the
 layout a consumer of its channel while it stands
 ([a channel's life](journeys.md#a-channels-life)), so the arithmetic reads

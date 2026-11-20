@@ -139,7 +139,7 @@ extension VisualElement {
 
             $0.samples.append((source: JourneyConsumer(of: source), into: ObjectIdentifier(into), cadence: cadence, take: {
                 // Off the image, not the journey's own read: the element being built is no reader of it.
-                guard let now = from.image?.sample?.typed(Value.self, at: 0, showing: from.shown?.value)?.value,
+                guard let now = from.image?.sample?.typed(Value.self, at: 0)?.value,
                       StateImage.bytes(of: now.carried(in: .current))
                         != StateImage.bytes(of: into.value.carried(in: .current))
                 else { return }

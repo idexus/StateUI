@@ -407,6 +407,16 @@ extension Differ {
         } else if previous?.layout != nil, !describeAll {
             patch.layout = .clear
         }
+        // What the hand moves is told again where it changed; said no longer, it is cleared.
+        // Design: docs/design/views/interaction.md#what-the-host-is-handed
+        let moved = node.program(MotionLayoutContract.interaction)?
+            .program { Renderer.shared.number(for: $0) }
+        if let moved, !moved.values.isEmpty {
+            if describeAll || previous?.interaction != moved { patch.interaction = .replace(moved) }
+            pass.interaction = moved
+        } else if previous?.interaction != nil, !describeAll {
+            patch.interaction = .clear
+        }
         pass.driven = driven
         pass.patch = patch
     }

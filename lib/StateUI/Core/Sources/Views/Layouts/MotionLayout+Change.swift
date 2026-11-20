@@ -62,7 +62,8 @@ extension MotionLayout.Run {
 
         states.shown.wrappedValue = LayoutShown(
             description: description, parameters: parameters, from: from, room: room,
-            poses: Dictionary(zip(identities, poses), uniquingKeysWith: { first, _ in first }), resting: memory.resting)
+            poses: Dictionary(zip(identities, poses), uniquingKeysWith: { first, _ in first }),
+            named: states.shown.wrappedValue.named, resting: memory.resting)
         states.slot.answer = HostLayoutAnswer(views: views, change: states.slot.changes)
         states.slot.placed = PlacedRun(placed)
         return hand.goesOn

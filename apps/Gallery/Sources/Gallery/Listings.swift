@@ -8159,6 +8159,12 @@ enum Listings {
         /// weight on a string is - read by the arithmetic below, never the body.
         @State private var flungOut = true
 
+        /// Whether the ring turns by itself, a card every two seconds - a write of
+        /// the program - and whether such a write waits for a hand holding the ring.
+        @State private var turning = false
+        @State private var waits = true
+        @State private var beat = Ticker(every: .seconds(2))
+
         /// The card the ring last came to rest on - every card and the ring
         /// still - told once each rest.
         @State private var rested = MotionLayoutSample.cards.count / 2
@@ -8222,6 +8228,15 @@ enum Listings {
                     SwitchRow("Cards sway", $swaying)
 
                     SwitchRow("Flung outward", $flungOut)
+
+                    // THE PROGRAM TURNS THE RING TOO: hold it as a card is due.
+                    SwitchRow("Turns by itself", $turning)
+                        .onToggled { on in
+                            beat.onTick = { move(1) }
+                            if on { beat.start() } else { beat.stop() }
+                        }
+
+                    SwitchRow("Waits for the hand", $waits)
                 }
                 // On a narrow screen the switches go on onto further lines, each
                 // line in the middle.
@@ -8231,6 +8246,7 @@ enum Listings {
                 .gridRow(4)
             }
             .rows(.fill, .automatic, .automatic, .automatic, .automatic)
+            .onDestroying { beat.stop() }
         }
 
         /// The ring of cards and its dots, placed by the arithmetic below.
@@ -8272,7 +8288,11 @@ enum Listings {
                     .range(0...Double(Self.cards.count))
                     .periodic(true)
                     .snaps(.every(1))
-                    .release(.projected(throwing.motion)))
+                    .release(.projected(throwing.motion))
+                    // A CARD THE PROGRAM TURNS TO WHILE THE HAND HOLDS THE RING:
+                    // waiting, the ring stays under the hand and goes there once
+                    // let go; otherwise the write takes the ring from the hand.
+                    .programWrites(waits ? .deferLatest : .interrupt))
             // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
             // over every card, wearing the card's own corners - which is why it is
             // the application's to give and not the library's to draw.

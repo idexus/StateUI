@@ -94,9 +94,7 @@ final class LayoutKeyframeTests: XCTestCase {
         stand(worn, at: 0.5)
         XCTAssertEqual(bench.shown(renders.renderFromScratch(built()))[0].bounds.y, 5, accuracy: 1e-9, "blended")
 
-        XCTAssertNil(layout.props[.translationOrientation], "no hand moves it")
-        XCTAssertNil(layout.props[.pans])
-        XCTAssertNil(layout.events?[.translationUpdated], "no hand is heard")
+        XCTAssertTrue(layout.moved.isEmpty, "no hand moves it")
     }
 
     /// EACH POSE IS ASKED ONCE while what it was worked out with stands: frames to and fro ask nothing again.
@@ -189,47 +187,6 @@ final class LayoutKeyframeTests: XCTestCase {
         _ = renders.render(built())
         bench.cycle()
         XCTAssertEqual(Set(asked.phases.dropFirst(before)), [0, 1])
-    }
-
-    /// WHERE THE MOTION SET OUT ASKS AGAIN ONLY AN ARITHMETIC HANDED IT: the hand passing a segment's start sets the
-    /// motion out from there anew.
-    func testWhereTheMotionSetOutAsksAgainOnlyAnArithmeticHandedIt() {
-        for readsFrom in [false, true] {
-            Renderer.shared.clearStates()
-            let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
-            func built() -> Node {
-                let layout = readsFrom
-                    ? MotionLayout([0, 1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at, _ in
-                        asked.phases.append(at)
-                        return Self.poses(at)
-                    }
-                    : MotionLayout([0, 1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
-                        asked.phases.append(at)
-                        return Self.poses(at)
-                    }
-                return layout
-                    .axis(\.self, range: 0...2, keyframes: .every(1), segments: .every(1))
-                    .interaction(
-                        Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))
-                            .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
-                    .node
-            }
-            _ = bench.laid(renders, built)
-
-            // One description, as the hand moving builds none: the bench's own hand builds one a report.
-            guard let heard = renders.renderFromScratch(built()).first(.motionLayout)?.events?[.translationUpdated] else {
-                return XCTFail("the layout hears no hand")
-            }
-            func hand(_ gesture: GesturePhase, moved: Point = .zero) {
-                XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(gesture, moved, Point.zero)))
-                bench.cycle()
-            }
-            hand(.began)
-            for _ in 0..<8 { hand(.changed, moved: Point(-20, 0)) }
-
-            let counted = Dictionary(asked.phases.map { ($0, 1) }, uniquingKeysWith: +)
-            XCTAssertEqual(counted[1] ?? 0, readsFrom ? 2 : 1, "asked at 1 \(readsFrom ? "again" : "once")")
-        }
     }
 
     // MARK: - The ends and the seam

@@ -23,6 +23,9 @@ final class LayoutProgramSlot: FollowedState {
     /// Whether a child is still on its way to its place: the layout's own word at a change, the host's from then.
     private(set) var bodiesMove = false
 
+    /// Whether a hand holds a number of the layout's parameters, as the host says.
+    private(set) var handHolds = false
+
     /// A change of the layout: `discrete` and `released` are its own, and its views are on their way until the
     /// host says they rest.
     func changed(_ discrete: [Int: Placement], released: [Int: Point]) {
@@ -55,6 +58,7 @@ final class LayoutProgramSlot: FollowedState {
     /// answers the layout's own size.
     func program(
         revision: UInt64, measure: (@MainActor (Double?, Double?) -> LayoutSize)?,
+        frontItemUnit: (@MainActor (Int, Double, Bool, Bool) -> Double?)? = nil,
         keep: @escaping @MainActor (Double, Double) -> Void
     ) -> HostLayoutProgram {
         HostLayoutProgram(
@@ -73,6 +77,13 @@ final class LayoutProgramSlot: FollowedState {
                 stamp &+= 1
                 UIThreadExecutor.shared.askForTurn()
             },
+            handHolds: { [self] holding in
+                guard holding != handHolds else { return }
+                handHolds = holding
+                stamp &+= 1
+                UIThreadExecutor.shared.askForTurn()
+            },
+            frontItemUnit: frontItemUnit,
             measuredBy: { [self] measure in
                 measuring.measure = measure
                 // A layout that measured no view stands as it stood, however its views measure.

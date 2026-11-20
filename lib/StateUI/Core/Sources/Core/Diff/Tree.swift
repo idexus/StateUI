@@ -159,6 +159,9 @@ final class RenderedNode {
     /// The layout program the host was told it runs, by its slot and revision; nil for none.
     var layout: (slot: UInt64, revision: UInt64)?
 
+    /// What the host was told the hand moves on it; nil for nothing.
+    var interaction: HostInteractionProgram?
+
     /// The conversions whose derived states it wears, held: the graph keeps each up to date while it stands.
     /// Design: docs/design/core/journeys.md#the-graph-of-destinations
     var conversions: [Conversion] = []
@@ -298,6 +301,7 @@ extension HostPatch {
         merged.driven = later.driven ?? driven
         merged.followed = later.followed ?? followed
         merged.layout = later.layout ?? layout
+        merged.interaction = later.interaction ?? interaction
         merged.events = later.events ?? events
         merged.children = HostChildrenUpdate.merging(children, with: later.children)
 

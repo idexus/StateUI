@@ -279,5 +279,6 @@ every record, the hosts' included.
 - [Glossary](glossary.md): StateUI's words and the common term for each.
 - [The runtime](host/runtime.md): a host's elements, one frame, one turn and a
   user's change, drawn.
-- [Motion in the runtime](host/motion.md) and [patches in the
-  runtime](host/patches.md): the reasons behind the host layer's elements.
+- [Motion in the runtime](host/motion.md), [the hand over a
+  value](host/interaction.md) and [patches in the runtime](host/patches.md):
+  the reasons behind the host layer's elements.

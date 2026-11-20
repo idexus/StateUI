@@ -70,6 +70,17 @@ public struct AxisValues: Equatable, Sendable, ExpressibleByArrayLiteral {
         return Array(Set(ends + inside)).sorted()
     }
 
+    /// The places with no range to stand in: every multiple of a step, worked out and never listed; the places
+    /// listed, lowest first; nil for the ends alone, which are the ends of nothing.
+    var unbounded: HostInteractionSnaps? {
+        switch places {
+        case .every(let step): return .every(step)
+        case .listed(let values):
+            let listed = Array(Set(values.filter(\.isFinite))).sorted()
+            return listed.isEmpty ? nil : .at(listed)
+        }
+    }
+
     /// The most places a step makes.
     private static var most: Double { 10_000 }
 }

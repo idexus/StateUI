@@ -486,7 +486,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Line](controls/Line.md) | 86 | 46 ✅ · 3 ☑️ · 36 ✓ · 1 – | 46 ✅ · 3 ☑️ · 36 ✓ · 1 – | 68 ✅ · 5 ☑️ · 10 ✓ · 2 – | 48 ✅ · 1 ☑️ · 30 ✓ · 7 – | 53 ✅ · 4 ☑️ · 22 ✓ · 7 – | 61 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Link](controls/Link.md) | 87 | 45 ✅ · 3 ☑️ · 37 ✓ · 2 – | 40 ✅ · 3 ☑️ · 39 ✓ · 5 – | 63 ✅ · 6 ☑️ · 13 ✓ · 4 – | 50 ✅ · 2 ☑️ · 29 ✓ · 6 – | 51 ✅ · 4 ☑️ · 25 ✓ · 7 – | 61 ✅ · 1 ☑️ · 22 ✓ · 3 – |
 | [Map](controls/Map.md) | 85 | 43 ✅ · 3 ☑️ · 37 ✓ · 2 – | 43 ✅ · 3 ☑️ · 37 ✓ · 2 – | 85 🧩 | 85 🧩 | 85 🧩 | 85 🧩 |
-| [MotionLayout](controls/MotionLayout.md) | 99 | 46 ✅ · 2 ☑️ · 45 ✓ · 2 – | 45 ✅ · 3 ☑️ · 47 ✓ · 2 – | 72 ✅ · 5 ☑️ · 16 ✓ · 3 – | 51 ✅ · 2 ☑️ · 36 ✓ · 9 – | 52 ✅ · 3 ☑️ · 31 ✓ · 9 – | 68 ✅ · 2 ☑️ · 25 ✓ · 4 – |
+| [MotionLayout](controls/MotionLayout.md) | 93 | 46 ✅ · 2 ☑️ · 39 ✓ · 2 – | 45 ✅ · 3 ☑️ · 41 ✓ · 2 – | 70 ✅ · 5 ☑️ · 12 ✓ · 3 – | 51 ✅ · 3 ☑️ · 30 ✓ · 8 – | 53 ✅ · 3 ☑️ · 24 ✓ · 9 – | 66 ✅ · 2 ☑️ · 21 ✓ · 4 – |
 | [Path](controls/Path.md) | 88 | 48 ✅ · 3 ☑️ · 36 ✓ · 1 – | 47 ✅ · 4 ☑️ · 36 ✓ · 1 – | 69 ✅ · 6 ☑️ · 10 ✓ · 2 – | 49 ✅ · 2 ☑️ · 30 ✓ · 7 – | 54 ✅ · 5 ☑️ · 22 ✓ · 7 – | 62 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Picker](controls/Picker.md) | 99 | 53 ✅ · 3 ☑️ · 37 ✓ · 3 – | 46 ✅ · 4 ☑️ · 41 ✓ · 5 – | 70 ✅ · 6 ☑️ · 13 ✓ · 5 – | 63 ✅ · 2 ☑️ · 28 ✓ · 6 – | 58 ✅ · 4 ☑️ · 24 ✓ · 13 – | 54 ✅ · 1 ☑️ · 20 ✓ · 17 – |
 | [Polygon](controls/Polygon.md) | 89 | 49 ✅ · 3 ☑️ · 36 ✓ · 1 – | 48 ✅ · 4 ☑️ · 36 ✓ · 1 – | 70 ✅ · 6 ☑️ · 10 ✓ · 2 – | 50 ✅ · 2 ☑️ · 30 ✓ · 7 – | 55 ✅ · 5 ☑️ · 22 ✓ · 7 – | 63 ✅ · 2 ☑️ · 21 ✓ · 3 – |
@@ -508,10 +508,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 88 | 48 ✅ · 2 ☑️ · 36 ✓ · 1 – | 46 ✅ · 3 ☑️ · 37 ✓ · 1 – | 70 ✅ · 5 ☑️ · 11 ✓ · 2 – | 52 ✅ · 2 ☑️ · 28 ✓ · 5 – | 54 ✅ · 3 ☑️ · 23 ✓ · 8 – | 63 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 93 | 51 ✅ · 3 ☑️ · 37 ✓ · 2 – | 49 ✅ · 3 ☑️ · 39 ✓ · 2 – | 70 ✅ · 5 ☑️ · 12 ✓ · 5 – | 52 ✅ · 13 ✓ · 27 – | 58 ✅ · 4 ☑️ · 24 ✓ · 7 – | 62 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 87 | 47 ✅ · 2 ☑️ · 36 ✓ · 1 – | 44 ✅ · 3 ☑️ · 38 ✓ · 1 – | 68 ✅ · 5 ☑️ · 12 ✓ · 2 – | 51 ✅ · 2 ☑️ · 28 ✓ · 5 – | 52 ✅ · 3 ☑️ · 24 ✓ · 8 – | 62 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| ✅ |  | 1748 | 1690 | 2409 | 1869 | 1952 | 2282 |
-| ✓ |  | 1352 | 1395 | 402 | 1027 | 860 | 759 |
-| – |  | 93 | 106 | 189 | 250 | 273 | 145 |
-| **Met** | 3327 | **3193** | **3191** | **3000** | **3146** | **3085** | **3186** |
+| ✅ |  | 1748 | 1690 | 2407 | 1869 | 1953 | 2280 |
+| ✓ |  | 1346 | 1389 | 398 | 1021 | 853 | 755 |
+| – |  | 93 | 106 | 189 | 249 | 273 | 145 |
+| **Met** | 3321 | **3187** | **3185** | **2994** | **3139** | **3079** | **3180** |
 | 🧩 |  | 0 | 0 | 85 | 85 | 85 | 85 |
 
 ### Application structure
@@ -634,7 +634,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onLocationTapped` (`locationTapped`), `region`, `showsUserLocation`, `kind` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 | 7 🧩 |
 | [Marker](controls/Marker.md) | `onDetailsClicked` (`detailsClicked`), `kind`, `location`, `onSelected` (`selected`), `subtitle`, `title` | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [MotionLayout](controls/MotionLayout.md) | `itemDrag`, `itemDragUpdated`, `layout`, `magnifies`, `mirrorsRightToLeft`, `pans`, `parameters`, `pinchRotationUpdated`, `rotates`, `translationOrientation`, `translationUpdated`, `wheelStepped` | 12 | 3 ✅ · 9 ✓ | 3 ✅ · 9 ✓ | 8 ✅ · 4 ✓ | 3 ✅ · 8 ✓ · 1 – | 5 ✅ · 7 ✓ | 7 ✅ · 1 ☑️ · 4 ✓ |
+| [MotionLayout](controls/MotionLayout.md) | `interaction`, `itemDrag`, `itemDragUpdated`, `layout`, `mirrorsRightToLeft`, `parameters` | 6 | 3 ✅ · 3 ✓ | 3 ✅ · 3 ✓ | 6 ✅ | 3 ✅ · 1 ☑️ · 2 ✓ | 6 ✅ | 5 ✅ · 1 ☑️ |
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✓ | 1 ✅ | 1 ✅ |
 | [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 10 | 8 ✅ | 10 ✅ | 9 ✅ · 1 – | 9 ✅ · 1 – | 9 ✅ · 1 – | 9 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
@@ -706,27 +706,26 @@ realizes the element and each of its members.
 `itemsLayout`, `keyboardShortcut`, `keysTaken`, `kind`, `language`,
 `layoutBodies`, `layoutBody`, `layoutDirection`, `layoutFrame`,
 `letsInputThrough`, `lineAlignment`, `lineBreak`, `lineCap`, `lineHeight`,
-`lineJoin`, `lineWidth`, `location`, `magnifies`, `margin`, `maximum`,
-`maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`,
-`minimum`, `minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`, `miterLimit`,
-`onIcon`, `opacity`, `options`, `order`, `padding`, `pans`, `panTouchCount`,
-`panXChannel`, `panYChannel`, `parameters`, `part`, `pivotX`, `pivotY`,
-`placeholder`, `placeholderColor`, `points`, `position`, `presentation`,
-`presentationFrame`, `progress`, `region`, `role`, `rotates`, `rotation`,
-`rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
-`scrollEdge`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
-`selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
-`showsClearButton`, `showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`,
-`showsSidebar`, `showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,
+`lineJoin`, `lineWidth`, `location`, `margin`, `maximum`, `maximumHeight`,
+`maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`, `minimum`,
+`minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`, `miterLimit`, `onIcon`,
+`opacity`, `options`, `order`, `padding`, `panTouchCount`, `panXChannel`,
+`panYChannel`, `parameters`, `part`, `pivotX`, `pivotY`, `placeholder`,
+`placeholderColor`, `points`, `position`, `presentation`, `presentationFrame`,
+`progress`, `region`, `role`, `rotation`, `rotationX`, `rotationY`, `rows`,
+`rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollEdge`, `scrollOffset`,
+`selectedIndex`, `selectedItems`, `selectedTab`, `selectionLength`,
+`selectionMode`, `shape`, `showsBackButton`, `showsClearButton`,
+`showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`, `showsSidebar`,
+`showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,
 `showsUserLocation`, `sidebarBackground`, `sidebarOverlayBackground`,
 `sidebarOverlays`, `source`, `spacing`, `standsAlone`, `step`, `stroke`,
 `style`, `submitLabel`, `subtitle`, `swipeDirections`, `swipeThreshold`,
 `tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `textStyle`,
 `time`, `tint`, `title`, `to`, `toolbarSpacing`, `toolbarStyle`, `tooltip`,
-`tracking`, `translationOrientation`, `translationX`, `translationY`,
-`userAgent`, `value`, `verticalAlignment`, `verticalScrollIndicator`,
-`verticalTextAlignment`, `width`, `windowKind`, `windowValue`, `wraps`, `x`,
-`y`, `zIndex`.
+`tracking`, `translationX`, `translationY`, `userAgent`, `value`,
+`verticalAlignment`, `verticalScrollIndicator`, `verticalTextAlignment`,
+`width`, `windowKind`, `windowValue`, `wraps`, `x`, `y`, `zIndex`.
 
 ### Events
 
@@ -738,14 +737,13 @@ realizes the element and each of its members.
 `isFocusedChanged`, `isPresentedChanged`, `itemActivated`, `itemDragUpdated`,
 `keyPressed`, `layoutFrameChanged`, `linkOpened`, `locationTapped`, `navigated`,
 `navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`, `opened`,
-`panUpdated`, `pinchRotationUpdated`, `pinchUpdated`, `pointerEntered`,
-`pointerExited`, `pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`,
-`presentationFrameChanged`, `pressed`, `processTerminated`, `realizedChanged`,
-`refreshRequested`, `released`, `rotationUpdated`, `scrollStopped`, `selected`,
+`panUpdated`, `pinchUpdated`, `pointerEntered`, `pointerExited`, `pointerMoved`,
+`pointerPressed`, `pointerReleased`, `popped`, `presentationFrameChanged`,
+`pressed`, `processTerminated`, `realizedChanged`, `refreshRequested`,
+`released`, `rotationUpdated`, `scrollStopped`, `selected`,
 `selectedIndexChanged`, `selectedItemsChanged`, `selectedTabChanged`,
 `showsSidebarChanged`, `stopped`, `submitted`, `swiped`, `tapped`,
-`textChanged`, `timeChanged`, `toggled`, `translationUpdated`, `valueChanged`,
-`wheelStepped`, `windowClosed`.
+`textChanged`, `timeChanged`, `toggled`, `valueChanged`, `windowClosed`.
 
 ### Acts
 

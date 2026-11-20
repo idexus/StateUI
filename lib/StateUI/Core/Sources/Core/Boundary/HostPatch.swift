@@ -75,6 +75,11 @@
     /// Design: docs/design/core/layout-program.md#the-program
     public var layout: HostLayoutUpdate?
 
+    /// What the user's hand moves on the element, sent when it changed, and `.clear` when the hand moves nothing
+    /// any more. Nil means unchanged - nothing, in a complete message.
+    /// Design: docs/design/views/interaction.md#what-the-host-is-handed
+    public var interaction: HostInteractionUpdate?
+
     /// The complete event map, sent only when the set of handled events changed.
     /// Nil means unchanged - none, in a complete message; `.replace([:])` removes
     /// every handler.

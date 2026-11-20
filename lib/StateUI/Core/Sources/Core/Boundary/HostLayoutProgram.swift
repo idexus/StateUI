@@ -24,6 +24,16 @@
     /// Says whether the host still moves a child onto its place: a layout is at rest only once none is.
     public let bodiesMove: @MainActor (Bool) -> Void
 
+    /// Says whether a hand holds a number of the layout's parameters: a layout is at rest only once none does, and
+    /// where its motion set out stands while one does.
+    public let handHolds: @MainActor (Bool) -> Void
+
+    /// How far the view drawn in front goes for one unit of the parameters' number `lane` standing at `value`,
+    /// along the hand's way - `across` or down - in points: as the layout stands now, or - `atRest` - as it would
+    /// rest there. Nil where the room is not measured yet, or the layout measures none.
+    /// Design: docs/design/views/interaction.md#the-unit
+    public let frontItemUnit: (@MainActor (_ lane: Int, _ value: Double, _ across: Bool, _ atRest: Bool) -> Double?)?
+
     /// Says how the host measures a child of the layout, and - said again - that a child may measure otherwise than
     /// it did: a layout whose arithmetic measured a child is worked out again in the next cycle.
     public let measuredBy: @MainActor (@escaping HostChildMeasure) -> Void
@@ -47,13 +57,16 @@
             answered: {
                 HostLayoutAnswer(views: placed().enumerated().map { HostLayoutView(key: $0.offset, target: $0.element) })
             },
-            bodiesMove: { _ in }, measuredBy: { _ in }, measure: nil, run: nil)
+            bodiesMove: { _ in }, handHolds: { _ in }, frontItemUnit: nil, measuredBy: { _ in }, measure: nil,
+            run: nil)
     }
 
     /// A program whose answer is made of `run`, measuring through what `measuredBy` is told.
     init(
         slot: UInt64, revision: UInt64, layOut: @escaping @MainActor (Double, Double) -> Void,
         answered: @escaping @MainActor () -> HostLayoutAnswer, bodiesMove: @escaping @MainActor (Bool) -> Void,
+        handHolds: @escaping @MainActor (Bool) -> Void,
+        frontItemUnit: (@MainActor (Int, Double, Bool, Bool) -> Double?)?,
         measuredBy: @escaping @MainActor (@escaping HostChildMeasure) -> Void,
         measure: (@MainActor (Double?, Double?) -> LayoutSize)?, run: (@MainActor () -> PlacedRun)?
     ) {
@@ -62,6 +75,8 @@
         self.layOut = layOut
         self.answered = answered
         self.bodiesMove = bodiesMove
+        self.handHolds = handHolds
+        self.frontItemUnit = frontItemUnit
         self.measuredBy = measuredBy
         self.measure = measure
         self.run = run

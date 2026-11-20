@@ -420,7 +420,7 @@
                 s.expect(handed.values.last, Orbit(turn: 4, zoom: 2), "both where they were sent")
             },
             ConformanceCase("theHandMovesTheRunAndRestsItOnTheNearestTarget", proves: [
-                Covered(MotionLayoutContract.translationUpdated), Covered(MotionLayoutContract.translationOrientation),
+                Covered(MotionLayoutContract.interaction),
             ]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase)
@@ -431,9 +431,7 @@
 
                 s.expect(phase.wrappedValue, 1, "the target nearest where the hand let it go")
             },
-            ConformanceCase("aThrowGoesOnToTheTargetNearestWhereItWouldEnd", proves: [
-                Covered(MotionLayoutContract.translationUpdated),
-            ]) { s in
+            ConformanceCase("aThrowGoesOnToTheTargetNearestWhereItWouldEnd", proves: [Covered(MotionLayoutContract.interaction)]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase)
 
@@ -443,7 +441,7 @@
 
                 s.expect(phase.wrappedValue, 3, "not the nearest to where the hand let go, but to where the throw ends")
             },
-            ConformanceCase("aThrowGoesOnAsThePhasesJourney", proves: [Covered(MotionLayoutContract.translationUpdated)]) { s in
+            ConformanceCase("aThrowGoesOnAsThePhasesJourney", proves: [Covered(MotionLayoutContract.interaction)]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase)
                 let journey = phase.projectedValue.journey
@@ -464,9 +462,7 @@
                 s.expect(journey.sample?.value, 3, "on its target")
                 s.expect(journey.sample?.velocity, 0, "at rest")
             },
-            ConformanceCase("aWheelsNotchStepsTheRunToTheNextTarget", proves: [
-                Covered(MotionLayoutContract.wheelStepped),
-            ]) { s in
+            ConformanceCase("aWheelsNotchStepsTheRunToTheNextTarget", proves: [Covered(MotionLayoutContract.interaction)]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase)
 
@@ -479,9 +475,30 @@
                 frames(s, clock, until: 1_600)
                 s.expect(phase.wrappedValue, 3, "a target a notch")
             },
+            ConformanceCase("aProgramsWriteTakesTheRunFromTheHand", proves: [Covered(MotionLayoutContract.interaction)]) { s in
+                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
+                let layout = try handLayout(s, clock: clock, phase: phase)
+
+                // The hand takes the run and holds it 0.4 targets on, bound for the first.
+                try s.perform(.pressDown(at: Point(60, 10)), on: layout)
+                try s.perform(.drag(to: Point(20, 10)), on: layout)
+                frames(s, clock, until: clock.now + 48)
+                s.expect(phase.wrappedValue, 0, "under the hand, bound for the nearest target")
+
+                // The program sends it to the fifth: the hand's gesture ends there, whatever it says after.
+                phase.wrappedValue = 4
+                frames(s, clock, until: clock.now + 48)
+                try s.perform(.drag(to: Point(90, 10)), on: layout)
+                frames(s, clock, until: clock.now + 48)
+                try s.perform(.lift(at: Point(90, 10)), on: layout)
+                frames(s, clock, until: clock.now + 1_600)
+
+                s.expect(phase.wrappedValue, 4, "where the program sent it")
+                s.expect(phase.projectedValue.journey.sample?.value, 4, "and standing there")
+            },
             ConformanceCase("mirroredRightToLeftTheHandMovesTheRunTheOtherWay", proves: [
                 Covered(MotionLayoutContract.mirrorsRightToLeft),
-            ], needs: [Covered(MotionLayoutContract.translationUpdated), Covered(VisualElementContract.layoutDirection, on: "VStack")]) { s in
+            ], needs: [Covered(MotionLayoutContract.interaction), Covered(VisualElementContract.layoutDirection, on: "VStack")]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase, mirrored: true)
 
@@ -526,7 +543,7 @@
                 s.settle { handed.values.last == 1 }
                 s.expect(handed.values.last, 1, "the program moves it to its keyframe")
             },
-            ConformanceCase("aHandAcrossItsAxisLeavesTheRun", proves: [Covered(MotionLayoutContract.translationOrientation)]) { s in
+            ConformanceCase("aHandAcrossItsAxisLeavesTheRun", proves: [Covered(MotionLayoutContract.interaction)]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase)
 
@@ -570,7 +587,7 @@
                 s.expect(phase.wrappedValue, 0, "the run stands")
             },
             ConformanceCase("aPanMovesTheRunEveryWayAndRestsOnTheNearestSquare", proves: [
-                Covered(MotionLayoutContract.pans), Covered(MotionLayoutContract.translationUpdated),
+                Covered(MotionLayoutContract.interaction),
             ]) { s in
                 let (clock, square) = (TestClock(), State(wrappedValue: Square()))
                 let layout = try panLayout(s, clock: clock, square: square)
@@ -581,7 +598,7 @@
                 s.expect(square.wrappedValue, Square(x: 1, y: 1), "both axes on the square nearest")
             },
             ConformanceCase("twoFingersSpreadTheMagnification", proves: [
-                Covered(MotionLayoutContract.magnifies), Covered(MotionLayoutContract.pinchRotationUpdated),
+                Covered(MotionLayoutContract.interaction),
             ]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 1.0))
                 let layout = try fingersLayout(s, clock: clock, phase: phase, input: .magnification)
@@ -596,7 +613,7 @@
                 s.expect(phase.wrappedValue, 0.5, "and pinched in to a quarter: the smallest")
             },
             ConformanceCase("twoFingersTurnTheRotation", proves: [
-                Covered(MotionLayoutContract.rotates), Covered(MotionLayoutContract.pinchRotationUpdated),
+                Covered(MotionLayoutContract.interaction),
             ]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 1.0))
                 let layout = try fingersLayout(s, clock: clock, phase: phase, input: .rotation(degreesPerUnit: 90))

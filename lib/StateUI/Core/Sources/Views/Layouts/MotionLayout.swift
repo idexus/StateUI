@@ -38,13 +38,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     // State first: boxes are adopted by path, and the views stored below may carry boxes of their own.
     // Design: docs/design/views/composition.md#state-declared-first
 
-    /// Where the hand holds each axis it moves, by the axis's place in `axes`, while it does: what the arithmetic is
-    /// handed then, the parameters themselves named only as the hand passes a snap.
-    @State private var held: [Int: Double] = [:]
-
-    /// Where a swiping hand took each axis, and the unit it moves it by, while it holds it.
-    @State private var grip: [Int: LayoutGrip] = [:]
-
     /// The view the hand holds by itself, while it does, and on its way out once dismissed.
     @State private var item: LayoutItemHand?
 
@@ -135,7 +128,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// The axes as the run works on them - each the hand moves, and each mapped alone - with what is wrong with the
     /// declarations, as the author is told it.
     /// Design: docs/design/views/interaction.md#on-a-motion-layout
-    private var worked: (hands: [Hand], complaints: [String]) {
+    private var worked: (hands: [Hand], complaints: [String], moving: [Interaction.Leaf]) {
         var complaints = (declared?.refused ?? []) + mappings.compactMap { $0.complaint }
         if curve != nil, !mappings.contains(where: { $0.keyframes != nil }) {
             complaints.append("A MotionLayout was given an interpolation and no axis with keyframes: nothing is blended.")
@@ -161,6 +154,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         }
 
         var hands: [Hand] = []
+        var moving: [Interaction.Leaf] = []
         for (index, leaf) in moved where !twice.contains(index) {
             let mapping = mappings.last { $0.stands && Parameters.axes.firstIndex(of: $0.axis) == index }
             if let complaint = Self.complaint(of: leaf) {
@@ -168,13 +162,14 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
                 continue
             }
             hands.append(Self.hand(at: index, moved: leaf, mapped: mapping))
+            moving.append(leaf)
         }
         for mapping in mappings where mapping.stands {
             guard let index = Parameters.axes.firstIndex(of: mapping.axis), !hands.contains(where: { $0.index == index })
             else { continue }
             hands.append(Self.hand(at: index, moved: nil, mapped: mapping))
         }
-        return (hands, complaints)
+        return (hands, complaints, moving)
     }
 
     /// What is wrong with one value an interaction moves, if anything, as the author is told it.
@@ -201,23 +196,20 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             return "An interaction's swipe moves its value one snap a hand, and was given no snaps. The hand moves "
                 + "nothing of it."
         }
-        if leaf.snaps != nil, leaf.range == nil {
-            return "An interaction was given snaps and no range: its snaps stand between the ends of a range. The "
-                + "hand moves nothing of it."
+        if let snaps = leaf.snaps, leaf.range == nil, snaps.unbounded == nil {
+            return "An interaction was given the ends of a range, and no range, to rest at. The hand moves nothing "
+                + "of it."
         }
         return nil
     }
 
     /// The axis at `index` as the run works on it: moved as `leaf` says, mapped as `mapping` does.
     private static func hand(at index: Int, moved leaf: Interaction.Leaf?, mapped mapping: Mapping?) -> Hand {
-        let range = leaf?.range
-        let (low, high) = (range?.lowerBound ?? -.infinity, range?.upperBound ?? .infinity)
-        let period = leaf?.periodic == true ? high - low : nil
-        let stops = range.flatMap { range in leaf?.snaps?.values(in: range, periodic: period != nil) } ?? []
+        var way: Orientation?
+        if case .hand(let moved, _, _)? = leaf?.input.gesture { way = moved }
         let span = mapping.map { Hand.Span(low: $0.range.lowerBound, high: $0.range.upperBound, period: $0.period) }
         return Hand(
-            index: index, axis: Parameters.axes[index], gesture: leaf?.input.gesture, low: low, high: high,
-            stops: stops, period: period, reversed: leaf?.reversed ?? false, release: leaf?.release ?? .standard,
+            index: index, axis: Parameters.axes[index], way: way, release: leaf?.release ?? .standard,
             knots: mapping?.knots, span: span, segments: mapping?.marks ?? [])
     }
 
@@ -690,42 +682,24 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         if Parameters.axes.isEmpty {
             complain("A MotionLayout's parameters name no axes: `axes` lists the numbers the hand and the program move.")
         }
+        let worked = self.worked
         for complaint in worked.complaints { complain(complaint) }
         let definition = LayoutProgramDefinition(host: run.program())
+        let moving = worked.moving.isEmpty ? nil : Interaction(standing: worked.moving)
 
         return PlacedStack {
             ForEach(run.slots, identify: { $0.identity }) { slot in run.wrapped(slot) }
         }
         .modified { element in
-            // The hand is heard on the element itself, over every view, which still answers a tap.
-            element.describe(MotionLayoutContract.translationOrientation, run.ways.count == 1 ? run.ways.first : nil)
             element.describe(MotionLayoutContract.mirrorsRightToLeft, mirrors ? true : nil)
             // What a dismissal asked for ends with the layout.
             element.destroying.append { run.states.dismissals.orphan() }
             element.destroying.append { run.states.settles.orphan() }
             element.destroying.append { run.states.drags.orphan() }
-            if run.moves {
-                // What the host tells as no number moves nothing.
-                element.addHandler(MotionLayoutContract.translationUpdated) { gesture, moved, velocity in
-                    run.translationUpdated(gesture, moved: moved.told, velocity: velocity.told)
-                }
-                element.addHandler(MotionLayoutContract.wheelStepped) { notches in run.stepped(notches) }
-            }
-            // A pan is heard every way, a hand along the layout one way.
-            element.describe(MotionLayoutContract.pans, run.pans ? true : nil)
-            // Two fingers spreading and turning are heard as one, each moving its own axes.
-            let magnifies = run.hands.contains { $0.gesture == .magnification }
-            let rotates = run.hands.contains { if case .rotation? = $0.gesture { true } else { false } }
-            element.describe(MotionLayoutContract.magnifies, magnifies ? true : nil)
-            element.describe(MotionLayoutContract.rotates, rotates ? true : nil)
-            if magnifies || rotates {
-                element.addHandler(MotionLayoutContract.pinchRotationUpdated) { gesture, scale, degrees, velocity in
-                    run.pinch(
-                        gesture, scale: scale.isFinite && scale > 0 ? scale : 1, degrees: degrees.isFinite ? degrees : 0,
-                        velocity: velocity.told)
-                }
-            }
             element.setProgram(MotionLayoutContract.layout, definition: definition)
+            // The hand is heard on the element itself, over every view, which still answers a tap: what it moves is
+            // the host's to hold, by this program.
+            element.setProgram(MotionLayoutContract.interaction, definition: moving)
             element.describe(MotionLayoutContract.itemDrag, run.itemStart)
             if run.itemStart != nil {
                 element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still in
@@ -735,10 +709,9 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         }
         .setValue(MotionLayoutContract.parameters.token, on: run.parameters, mode: .inOut, kind: .property)
         // The program is worked out on the cycle whenever what it works from was written - the room the host said,
-        // the parameters and their frames, the hand - and the host reads the slots worked out.
+        // the parameters and their frames, a view in the hand - and the host reads the slots worked out.
         // Design: docs/design/core/layout-program.md#what-runs-it-again
-        .engine([slot, run.parameters.followed, run.parameters.storage.presentation, $held.followed, $item.followed]
-                    + followed,
+        .engine([slot, run.parameters.followed, run.parameters.storage.presentation, $item.followed] + followed,
                 consuming: consumed, priority: 0) { [slot] cycle in
             slot.measuring.begin()
             let answer = run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)
@@ -864,8 +837,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             dismissals: dismissals,
             parameters: parameters,
             states: States(
-                held: _held, slot: slot, room: _room, shown: _shown, from: _from,
-                grip: _grip, item: _item, dismissals: dismissalRuns, settles: settledRuns, drags: dragRuns),
+                slot: slot, room: _room, shown: _shown, from: _from, item: _item, dismissals: dismissalRuns,
+                settles: settledRuns, drags: dragRuns),
             hands: hands,
             focus: hands.first { $0.way != nil },
             viewsBody: written.value(LayoutContract.layoutBodies.token).flatMap(LayoutBody.init(propValue:)) ?? .onChange(),
@@ -889,12 +862,10 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
 
     /// The layout's states, handed on whole: what its engine and handlers read and write.
     struct States {
-        let held: State<[Int: Double]>
         let slot: LayoutProgramSlot
         let room: State<Rect>
         let shown: State<LayoutShown<Parameters>>
         let from: State<Parameters?>
-        let grip: State<[Int: LayoutGrip]>
         let item: State<LayoutItemHand?>
         let dismissals: EventRegistration
         let settles: EventRegistration
@@ -927,7 +898,7 @@ extension MotionLayout: WalkedView {
     /// (`MotionLayoutTests.testTheEngineNamesEveryPartAMirrorWould` holds the list to the fields).
     var walkedParts: [(label: String, value: Any)] {
         [
-            ("_held", _held), ("_grip", _grip), ("_item", _item),
+            ("_item", _item),
             ("_slot", _slot), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
             ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns), ("_dragRuns", _dragRuns),
             ("source", source), ("parameters", parameters), ("mappings", mappings), ("declared", declared as Any), ("curve", curve as Any),
@@ -943,13 +914,6 @@ extension MotionLayout: WalkedView {
 /// How many descriptions of motion layouts have been made.
 @MainActor private var descriptionsMade = 0
 
-/// Where a swiping hand took the run - the target nearest, one either side of which it moves it - and the unit it
-/// moves it by, measured there; nil for none the hand can measure.
-struct LayoutGrip: Equatable {
-    let target: Double
-    let unit: Double?
-}
-
 /// What a layout last showed - the description it came from, at what parameters, set out from where and in what room,
 /// each view's pose and where it was shown, by identity - and the changes on their way to the poses: what a new
 /// description is measured against.
@@ -959,6 +923,9 @@ struct LayoutShown<Parameters: LayoutParameters>: Equatable {
     var from: Parameters?
     var room = Rect.zero
     var poses: [Int: Placement] = [:]
+
+    /// Where the parameters were going when whoever keeps a value by them was last told; nil before the first frame.
+    var named: Parameters?
 
     /// Whether the run stood at rest the last frame.
     var resting = true

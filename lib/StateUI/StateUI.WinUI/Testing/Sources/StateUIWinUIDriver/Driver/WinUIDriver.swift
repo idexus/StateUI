@@ -26,6 +26,8 @@ final class WinUIDriver: HostDriver {
     let host = "WinUI 3"
     let cannot: [String: String] = [:]
     let platformHasNone = [
+        "notch on MotionLayout":
+            "A wheel reaches the layout as WinUI's own scroller takes it, its tracker's: the tracker tells no notch",
         "read submitLabel of TextField": WinUIDriver.noReturnWord,
         "read what the platform fills in of TextField": WinUIDriver.nothingFilledIn,
         "read what the platform fills in of SearchField": WinUIDriver.nothingFilledIn,

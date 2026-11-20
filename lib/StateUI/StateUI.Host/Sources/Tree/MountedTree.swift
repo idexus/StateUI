@@ -109,6 +109,9 @@
     /// sidebar slide, which stops where it stands.
     var left: (UInt64) -> Void = { _ in }
 
+    /// What an element whose interaction program changed tells, with the program it had.
+    var interactionChanged: (MountedElement, HostInteractionProgram?) -> Void = { _, _ in }
+
     /// The runtime's line to the core.
     public let core: CoreLink
 

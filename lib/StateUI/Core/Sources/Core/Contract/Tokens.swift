@@ -160,11 +160,7 @@ extension NodeType {
     static let gridColumnSpan = ViewContract.gridColumnSpan.token
     static let gridRow = ViewContract.gridRow.token
     static let gridRowSpan = ViewContract.gridRowSpan.token
-    static let translationOrientation = MotionLayoutContract.translationOrientation.token
-    static let magnifies = MotionLayoutContract.magnifies.token
     static let mirrorsRightToLeft = MotionLayoutContract.mirrorsRightToLeft.token
-    static let pans = MotionLayoutContract.pans.token
-    static let rotates = MotionLayoutContract.rotates.token
     static let horizontalAlignment = ViewContract.horizontalAlignment.token
     static let horizontalScrollIndicator = ScrollViewContract.horizontalScrollIndicator.token
     static let horizontalTextAlignment = TextAlignmentElementContract.horizontalTextAlignment.token
@@ -307,12 +303,9 @@ extension NodeType {
     static let dragEnded = ViewContract.dragEnded.token
     static let layoutFrameChanged = ViewContract.layoutFrameChanged.token
     static let presentationFrameChanged = ViewContract.presentationFrameChanged.token
-    static let translationUpdated = MotionLayoutContract.translationUpdated.token
-    static let wheelStepped = MotionLayoutContract.wheelStepped.token
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
     static let isPresentedChanged = PresentedElementContract.isPresentedChanged.token
     static let itemDragUpdated = MotionLayoutContract.itemDragUpdated.token
-    static let pinchRotationUpdated = MotionLayoutContract.pinchRotationUpdated.token
     static let keyPressed = KeyboardElementContract.keyPressed.token
     static let linkOpened = OpenedLinkElementContract.linkOpened.token
     static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token

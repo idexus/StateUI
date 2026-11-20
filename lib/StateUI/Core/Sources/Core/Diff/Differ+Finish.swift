@@ -30,6 +30,7 @@ extension Differ {
         )
         result.followed = pass.followed
         result.layout = pass.layout
+        result.interaction = pass.interaction
         result.conversions = pass.conversions
         result.contentAim = node.aim
         result.identity = pass.identity

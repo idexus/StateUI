@@ -106,6 +106,22 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   snaps in - name them among the keyframes where the layout should rest on the arithmetic's own answer. The
   mapping's range and the hand's are two: the hand's is the interaction's `.range(_:)`.
 - **A swipe given no snaps moves nothing,** and says so, where it swiped from end to end of its range.
+- **A value the hand holds stands under the hand.** While a hand moves a motion layout's parameters, their state's
+  channel shows them where the hand has them: `$turn.journey.sample` answers that place, bound for the snap the
+  state itself names, and every control wearing the same state follows the hand, where it stood on the snap last
+  passed. A value with no snaps is going where the hand holds it, written as the hand moves - it was written only
+  once it rested. Of two snaps as near, a value let go takes the one the hand was going toward.
+- **A write of the program takes a value from the hand.** Written while a hand held it, a value went where the
+  program sent it until the hand's next move took it back. The write ends the hand's gesture now: the value
+  travels where the program sent it from under the hand. Say `.programWrites(.deferLatest)` on the interaction for
+  a hand that keeps the value until it lets go.
+- **A motion layout's element says what the hand moves as one program.** `MotionLayoutContract.interaction` takes
+  the place of `translationOrientation`, `pans`, `magnifies`, `rotates`, `translationUpdated`, `wheelStepped` and
+  `pinchRotationUpdated`: the hand's hold, its move and its release are the host layer's
+  (`InteractionSessions`), on the state's own channel, and the core hears their reports. A host goes on handing
+  what its toolkit tells to `MountedElement.hear` and reading `hearing` and `handWay`; its realization records
+  `MotionLayoutContract.interaction` where it recorded the seven. `HostPatch.interaction` carries the program,
+  and a layout program says `handHolds` and answers `frontItemUnit`.
 - **Reading a frame changes no motion.** A layout whose frame, or a frame under it, was read stood every child at
   its place at once, and a stated size in it changed with no travel. A reader changes nothing now: children travel
   under their layout's `.motion(_:)` and a size under its view's, read or not. A size or a place worked out from a
@@ -173,6 +189,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   are values: nothing is recognized or timed until a view wearing one stands. A value given no `.range(_:)` has
   no end. `.release(.nearest(_:))` comes onto the nearest rest with no throw, and `.release(.stay)` leaves the
   value where the hand left it.
+- **A write of the program under the hand.** `Interaction.programWrites(_:)` takes an
+  `InteractionProgramWrites`: `.interrupt`, unless said, or `.deferLatest` - the state is going where the program
+  sent it at once, the value stays under the hand, and let go it travels where the program sent it last. A write
+  of another number of the same state leaves the hand its own either way.
+- **Snaps with no range.** `.snaps(.every(1))` on a value given no range is every whole number, worked out and
+  never listed, and a list stands as written; only `.endpoints` needs a range.
 - **A view's two rectangles.** `.frame(into:stage:)` and `.onFrameChanged(in:stage:)` take a `GeometryStage`:
   `.layout`, unless said, is where the view's layout puts it, and `.presentation` the rectangle around what is
   drawn of it - every step of its way to a new place, and its own `.scale`, `.rotation` and move. One view feeds

@@ -63,6 +63,26 @@ so narrowing changes no frame. A stop and a user's take end every run. A
 write of every lane is one run, as a whole value's write is, and the channel
 says itself once a frame however many runs moved.
 
+## A lane a hand holds
+
+A hand over a value holds a lane of its state's channel
+(`StateChannel.hold`, [the hand over a value](interaction.md)): the lane
+leaves the run it traveled in - which goes on with the lanes it keeps - and
+stands where the hand holds it, with no speed, bound for where it would rest.
+The channel says it as the user's: a frame where only the value moved, the
+whole position where the destination did, so the state is written a snap
+at a time and never a frame at a time. Let go (`release`), the lanes set
+out from where the hand left them, each at its speed, as one run under the
+law the release gives, said as the user's too; a lane let go with no hold
+before it - a wheel's notch - leaves its run there.
+
+A write of the program naming a held lane asks whoever holds it to let go
+first (`StateChannels.interrupts`), and then lands as on any lane, traveling
+from under the hand. A lane whose hand waits is kept instead: the channel
+holds where the program sent it (`deferred`) with that write's waiter, shows
+it as the destination, and sends the lane there under the state's own law
+once the hand lets go. A stop ends the runs of the lanes no hand holds.
+
 ## Described motion
 
 A patch can describe how a property of an element moves to its new value.

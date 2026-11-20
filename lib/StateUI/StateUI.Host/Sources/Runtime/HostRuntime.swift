@@ -30,6 +30,9 @@
     /// Split views' sidebars sliding in and out, where a host slides them itself.
     public let sidebarSlide: SidebarSlide
 
+    /// The hands holding numbers of states: one hand a number, across every view and window.
+    public let interactions: InteractionSessions
+
     /// The wheels open over layouts, which its frames let go.
     public let handPace = HandPace()
 
@@ -79,6 +82,7 @@
         self.reducesMotion = reducesMotion
         core.clockStarted()
         stateChannels = StateChannels(animator: animator)
+        interactions = InteractionSessions(channels: stateChannels, now: clock.now, reducesMotion: reducesMotion)
         describedMotion = DescribedMotion(animator: animator)
         layoutMotion = LayoutMotion(animator: animator, now: clock.now, reducesMotion: reducesMotion)
         sidebarSlide = SidebarSlide(animator: animator, now: clock.now, reducesMotion: reducesMotion)
@@ -101,6 +105,10 @@
         tree.left = { [weak self] mount in
             self?.frames.forget(mount)
             self?.sidebarSlide.forget(mount)
+            self?.interactions.left(mount)
+        }
+        tree.interactionChanged = { [weak self] element, before in
+            self?.interactions.programChanged(on: element, from: before)
         }
         clock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
         layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }

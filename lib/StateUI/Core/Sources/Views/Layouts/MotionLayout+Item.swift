@@ -116,8 +116,10 @@ extension MotionLayout.Run {
     private func passed(by hand: LayoutItemHand) -> Set<Int> {
         guard let velocity = hand.velocity else { return [] }
 
-        let across = hand.at.x - hand.from.x + Self.carried(velocity.x, by: throwing)
-        let down = hand.at.y - hand.from.y + Self.carried(velocity.y, by: throwing)
+        // A throw is timed by its own law, the inherited one 400 milliseconds on `cubicOut`.
+        let timing: Motion = throwing.kind == .inherited ? .eased(.milliseconds(400)) : throwing
+        let across = hand.at.x - hand.from.x + HostMotionLaw.carried(velocity.x, under: timing)
+        let down = hand.at.y - hand.from.y + HostMotionLaw.carried(velocity.y, under: timing)
         let ways: [(SwipeDirection, Double)] = [(.up, -down), (.down, down), (.left, -across), (.right, across)]
         return Set(dismissals.indices.filter { place in
             ways.contains { dismissals[place].directions.contains($0.0) && $0.1 > dismissals[place].threshold }

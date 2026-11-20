@@ -255,26 +255,15 @@ before left, and the samples they offer are published together once they have
 all run ([engine order](cycle.md#engine-order)): no animator reads another's
 half-made frame.
 
-## One part at once
+## What a run reads
 
-A motion layout names the target its hand passes on one axis of its parameters,
-which another hand or the program may be moving: `Journey.snap(_:to:)`, the
-library's own, puts one part of the value - a key path to one of its numbers -
-where it is at once. Its lanes of value, destination and speed are laid and no
-other, so the host takes that lane out of the run it traveled in and leaves the
-rest going.
-
-## Where a run shows it
-
-A motion layout's run moves its parameters under the hand, a throw or an
-approach in the core: the hand names each target it passes, and the state's
-own value stays that target. Where the run is shown meanwhile is told to the
-storage (`show(_:by:)`) each frame it moves, and let go once it rests; a
-sample read then answers that place for its value. Telling it moves the
-state's `PresentationWatch`, so an engine following the journey and a body
-reading the sample go with the hand, and the state's own readers are not
-asked. The run reads and lays the lanes through `Journey+Run.swift`, which
-nothing outside the library reaches.
+A motion layout's run reads two things of the journey its parameters travel
+on (`Journey+Run.swift`, which nothing outside the library reaches): where
+the host's channel shows them (`walked`) - the lanes' own value, under the
+hand where a hand holds them - and where they are going (`going`), the
+state's own. It writes neither: the hand's hold and its letting go are the
+host's, said as the channel's reports
+([a lane a hand holds](../host/motion.md#a-lane-a-hand-holds)).
 
 ## Readings
 

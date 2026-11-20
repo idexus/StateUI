@@ -641,12 +641,12 @@ view's tap and pan, a click the relay takes.
 
 ## The hand over a layout
 
-A motion layout a hand moves hears the hand itself (`Hearing.hand`, its
-`translationOrientation`): a press dragged - a finger or a pointer - a trackpad's two
-fingers and a wheel, each as the platform tells it, said as `HeardInput.hand`
-or `.wheel`. `HandReading` makes them one stream of the element's
-`translationUpdated` - a beginning, each move of what is under the hand, and a lift
-with its speed - alike on every host. Where the platform tells no speed at
+An element whose interaction program moves a value by a hand hears the hand
+itself (`Hearing.hand`; `handWay`, one way or - a pan - every way): a press
+dragged - a finger or a pointer - a trackpad's two fingers and a wheel, each
+as the platform tells it, said as `HeardInput.hand` or `.wheel`.
+`HandReading` makes them one stream - a beginning, each move of what is
+under the hand, and a lift with its speed - alike on every host. Where the platform tells no speed at
 the lift, the moves of its last tenth of a second say it. A wheel tells no
 beginning and no lift: its first notch opens a gesture, and a frame finding
 it still for 150 ms lets it go with no throw (the runtime's frames pace every
@@ -664,7 +664,7 @@ points at least - a hand pushing again - or a gap of more than six frames, a
 hand that stopped it and moves again. A wheel the platform says turns notch by
 notch is no stream: it is said as notches (`HeardInput.notch`), a fine
 wheel's parts adding up to whole ones (`HandReading.notches`), each a step
-of the run to the next target (`wheelStepped`). What the hand says is kept
+of the value to its next snap. What the hand says is kept
 for the next frame and said at its start, before the cycle - its moves since
 the last frame as one (`HandPace`): a toolkit telling the hand faster than
 the display draws, 120 times a second or in a burst a busy thread held back,
@@ -677,9 +677,9 @@ down begins it where it went down in the view, the fingers' middle moving it
 (`PointerMiddle`); its first move past the platform's distance - Android's
 slop all round, WinUI's drag rectangle and the browser's four points along
 either axis (`DragRecognition.Distance`) - asks the layout; a hand taken says
-every move after; the last finger up ends it, taken or not. What the hand does to the run -
-the parameters moving with it, a throw to the target nearest its end - is the
-core's (views/motion-layout.md, the hand).
+every move after; the last finger up ends it, taken or not. What the hand does to the value -
+the hold, the move with it, a throw to the snap nearest its end - is the
+sessions' ([the hand over a value](interaction.md)).
 
 A layout whose views the hand takes by themselves (`itemDrag`) gives the
 hand one of three owners, by one rule every host shares: a first move along
@@ -699,13 +699,14 @@ an application can turn a board under an icon held at its edge.
 
 ## Two fingers over a layout
 
-A motion layout that `magnifies` or `rotates` hears two fingers itself
-(`Hearing.pinches`, `Hearing.rotations`): a pinch and a rotation, each as
+An element whose interaction program moves a value by a magnification or a
+rotation hears two fingers itself (`Hearing.pinches`, `Hearing.rotations`):
+a pinch and a rotation, each as
 the platform tells it - its own gesture where the toolkit has one, two
 pointers where it tells only pointers (`TwoFingers`: how far apart they
 stand and which way the line between them turns, clockwise in a view whose
-y grows down, the short way round). `PinchReading` makes the two one stream
-of the element's `pinchRotationUpdated`: begun with the first, ended with the last -
+y grows down, the short way round). `PinchReading` makes the two one stream:
+begun with the first, ended with the last -
 a move with no beginning heard begins it, a cancel of the last cancels it -
 each move a scale and degrees since the last, said at the next frame's
 start as one, and as the fingers lift their speed, read from the last

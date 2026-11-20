@@ -10,9 +10,27 @@ extension MotionLayout.Run {
         if let sized {
             measure = { width, height in sized(width, height, live()) }
         }
-        return states.slot.program(revision: UInt64(description), measure: measure) { width, height in
+        let front: @MainActor (Int, Double, Bool, Bool) -> Double? = { lane, value, _, atRest in
+            frontItemUnit(of: lane, at: value, atRest: atRest)
+        }
+        return states.slot.program(
+            revision: UInt64(description), measure: measure, frontItemUnit: front
+        ) { width, height in
             let room = Rect(0, 0, width, height)
             if states.room.wrappedValue != room { states.room.wrappedValue = room }
         }
+    }
+}
+
+extension MotionLayout.Run {
+    /// How far the view drawn in front goes for one unit of the axis at `lane` standing at `value`, as the host's
+    /// hand asks it: as the run stands, its motion set out where it did - or, `atRest`, as it would rest there.
+    /// Design: docs/design/views/interaction.md#the-unit
+    func frontItemUnit(of lane: Int, at value: Double, atRest: Bool) -> Double? {
+        guard let hand = hands.first(where: { $0.index == lane }) else { return nil }
+
+        let run = on(hand)
+        let from = atRest ? run.placing(value, in: parameters.journey.walked) : states.from.wrappedValue ?? live()
+        return run.measured(at: value, from: from)
     }
 }

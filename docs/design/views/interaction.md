@@ -15,6 +15,7 @@ clock.
                periodic   whether it comes round
                reversed   which way it grows
                release    how it goes on let go            InteractionRelease
+               programWrites  what a write does under the hand   InteractionProgramWrites
 ```
 
 ## One declaration
@@ -27,8 +28,8 @@ disagree.
 
 Every method answers a copy. `range`, `snaps`, `periodic` and `reversed` are
 one value's own, so said of several at once they are refused and said;
-`release` said of several is given to each, which is how values let go
-together are written to go on by one law.
+`release` and `programWrites` said of several are given to each, which is how
+values let go together are written to go on by one law.
 
 Where the hand is declared apart from the mapping, two things that were one
 declaration are two: how far the hand may take a value (the interaction's
@@ -65,8 +66,8 @@ view drawn in front moves for a unit. A point is the unit unless said: a
 value moved by a hand with no layout to measure is in points.
 
 `.frontItem` is a motion layout's to measure
-([the hand](motion-layout.md#the-hand)): it asks the layout's own arithmetic
-how far its front view goes for a unit where the run stands.
+([the hand](motion-layout.md#the-hand)): the host asks the layout's own
+arithmetic how far its front view goes for a unit where the run stands.
 
 ## Letting go
 
@@ -85,9 +86,21 @@ tenths of a second at the longest.
 
 Values let go together go on as one journey of their state, under one law:
 a throw's where one is thrown, else the approach of the longest way
-([coming onto a target](motion-layout.md#coming-onto-a-target)). A value
-that stays is set where it rests before the others set out, so it travels
-nowhere while they do.
+([letting go](../host/interaction.md#letting-go)). A value that stays is set
+where it rests before the others set out, so it travels nowhere while they
+do.
+
+## A write of the program
+
+`InteractionProgramWrites` says what a write of the program does to a value
+the hand holds: `.interrupt`, unless said, ends the hand's gesture there and
+the value travels where the program sent it from under the hand;
+`.deferLatest` keeps the value under the hand - the state going where the
+program sent it at once - and sends it there once the hand lets go. A write
+of another number of the same state meets no hand at all
+([a write of the program](../host/interaction.md#a-write-of-the-program)).
+The range and the snaps are the hand's alone: the program writes a value
+anywhere.
 
 ## On a motion layout
 
@@ -101,9 +114,29 @@ interaction.
 
 A value of the interaction is one of the layout's own parameters: its state
 is told by the identity of the storage the layout's `parameters:` binding
-stands on, and its axis is one of the parameters' `axes`. A value given no
-range has no end - the run's arithmetic stands the two infinities, giving
-nothing past an end that is not there.
+stands on, and its axis is one of the parameters' `axes`. The layout writes
+the values that stand onto its element as the program the host answers the
+hand by (`MotionLayoutContract.interaction`), and keeps of each only what its
+own arithmetic reads: which way a hand moves it, for the front view's unit,
+and its release, for a view the hand throws.
+
+## What the host is handed
+
+The differ makes the declaration plain values (`Interaction.program`,
+`HostInteractionProgram`): each value its state's number - its channel - the
+axis's place among the state's numbers, the input with its unit, the ends
+(an infinity for none), the snaps, whether it comes round, which way it
+grows, the release and what a write does under the hand. Snaps between the
+ends of a range are listed with the ends; with no range, a step is handed
+as a step (`.every`), worked out by the host and never listed, and a list
+as written. A value that is no number of its state, or whose state the host
+carries as no journey, is handed as nothing.
+
+`HostPatch.interaction` carries it: `.replace` where the values changed,
+`.clear` where the hand moves nothing any more, nil for no change. The
+program holds no closure, so it is compared as it is (`RenderedNode.interaction`)
+and one described again alike is not told again - a hand holding a value
+through a render stays where it is.
 
 ## What is refused
 
@@ -117,4 +150,4 @@ never mended into something near it:
   come round;
 - coming round with no range of some length to come round over;
 - a swipe given no snaps - it goes a snap a hand, and has none to go to;
-- snaps with no range: they stand between the ends of one.
+- the ends of a range to rest at (`.endpoints`), and no range.

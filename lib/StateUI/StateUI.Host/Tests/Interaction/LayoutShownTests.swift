@@ -4,10 +4,11 @@
 import XCTest
 
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 
-/// Where a layout's run is shown is its phase's journey value while the hand, a throw or an approach moves it: the
-/// state's own value names the target, and anything following the phase - another layout, an engine writing a
-/// channel - goes with the hand.
+/// Where the hand holds a layout's run is its parameters' journey sample - the channel's own value - while the hand,
+/// a throw or an approach moves it: the state's own value names the snap it is bound for, and anything following
+/// the journey - another layout, an engine writing a channel - goes with the hand.
 @MainActor
 final class LayoutShownTests: XCTestCase {
     override func setUp() async throws {
@@ -44,37 +45,38 @@ final class LayoutShownTests: XCTestCase {
 
     /// THE HAND'S PLACE IS THE PHASE'S VALUE, its target the state's own.
     func testTheHandsPlaceIsThePhasesValue() {
-        let (phase, read, renders) = (State(wrappedValue: 0.0), Read(), Renders())
+        let (phase, read) = (State(wrappedValue: 0.0), Read())
         func built() -> Node { tree(phase, read) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-60, 0))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-60, 0))
 
         XCTAssertEqual(phase.wrappedValue, 1, "the target named")
-        XCTAssertEqual(phase.projectedValue.journey.standing, 0.6, accuracy: 0.001, "where the hand holds the run")
+        XCTAssertEqual(phase.projectedValue.journey.sample?.value ?? 0, 0.6, accuracy: 0.001, "where the hand holds the run")
+        XCTAssertEqual(phase.projectedValue.journey.sample?.destination, 1, "bound for the snap")
+        XCTAssertEqual(phase.projectedValue.journey.sample?.velocity, 0, "standing under the hand")
     }
 
     /// AN ENGINE FOLLOWING THE PHASE GOES WITH THE HAND, move by move, and with the run as it comes onto its target.
     func testAnEngineFollowingThePhaseGoesWithTheHand() {
-        bench.walks = true
-        let (phase, read, renders) = (State(wrappedValue: 0.0), Read(), Renders())
+        let (phase, read) = (State(wrappedValue: 0.0), Read())
         func built() -> Node { tree(phase, read) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-20, 0))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-20, 0))
         bench.cycle()
         XCTAssertEqual(read.values.last ?? 0, 0.2, accuracy: 0.001)
-        bench.hand(renders, built, .changed, moved: Point(-20, 0))
+        bench.hand(.changed, moved: Point(-20, 0))
         bench.cycle()
         XCTAssertEqual(read.values.last ?? 0, 0.4, accuracy: 0.001)
 
-        bench.hand(renders, built, .ended)
+        bench.hand(.ended)
         bench.cycle()
         XCTAssertLessThan(read.values.last ?? 0, 0.4, "on its way back")
         for _ in 0..<20 { bench.cycle() }
         XCTAssertEqual(read.values.last ?? 1, 0, accuracy: 0.000_1, "and on its target")
-        XCTAssertEqual(phase.projectedValue.journey.standing, 0, accuracy: 0.000_1, "the value the target at rest")
+        XCTAssertEqual(phase.projectedValue.journey.sample?.value ?? 1, 0, accuracy: 0.000_1, "the value the target at rest")
     }
 }

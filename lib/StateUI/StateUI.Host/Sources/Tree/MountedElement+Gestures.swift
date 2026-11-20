@@ -7,8 +7,8 @@
 /// on every host.
 /// Design: docs/design/host/runtime.md#what-the-user-does-with-a-finger
 extension MountedElement {
-    /// What the element's handlers and channels ask to hear: taps, a press held, the pointer, a press dragged, a
-    /// pinch, the hand over a layout and the two fingers that spread or turn it. A pan asks for a press dragged by
+    /// What the element's handlers, channels and interaction program ask to hear: taps, a press held, the pointer,
+    /// a press dragged, a pinch, the hand over what it moves and the two fingers that spread or turn it. A pan asks for a press dragged by
     /// one pointer; one asking for more is not recognized.
     public var hearing: Hearing {
         var hearing: Hearing = []
@@ -18,9 +18,13 @@ extension MountedElement {
         let drags = handler(.panUpdated) != nil || handler(.swiped) != nil
             || channel(.panXChannel) != nil || channel(.panYChannel) != nil
         if drags, (number(.panTouchCount) ?? 1) == 1 { hearing.insert(.drags) }
-        if handler(.pinchUpdated) != nil || hearsFingers && value(.magnifies)?.bool == true { hearing.insert(.pinches) }
-        if handler(.rotationUpdated) != nil || hearsFingers && value(.rotates)?.bool == true { hearing.insert(.rotations) }
-        if handler(.translationUpdated) != nil || handler(.itemDragUpdated) != nil { hearing.insert(.hand) }
+        // What the hand moves by the element's program is heard as the program says: two fingers spreading or
+        // turning, a hand one way or every way.
+        let moved = interactionProgram?.values.map(\.input) ?? []
+        let rotates = moved.contains { if case .rotation = $0 { true } else { false } }
+        if handler(.pinchUpdated) != nil || moved.contains(.magnification) { hearing.insert(.pinches) }
+        if handler(.rotationUpdated) != nil || rotates { hearing.insert(.rotations) }
+        if handler(.itemDragUpdated) != nil || !handWays.isEmpty { hearing.insert(.hand) }
         return hearing
     }
 
@@ -139,7 +143,11 @@ extension MountedElement {
             return heard.taken
         case .notch(let notches):
             let heard = handReading.notches(notches, way: handWay)
-            if let steps = heard.steps { send(.wheelStepped, [.numbers(alongRun(steps))], in: runtime) }
+            if let steps = heard.steps {
+                let along = alongRun(steps)
+                runtime.interactions.notches(Point(along[0], along[1]), on: self)
+                runtime.displayCycle.drain(now: runtime.clock.now())
+            }
             return heard.taken
         case .dragStarted:
             send(.dragStarting, [], in: runtime)
@@ -199,7 +207,17 @@ extension MountedElement {
     }
 
     /// Whether two fingers spreading or turning move the layout this element is.
-    private var hearsFingers: Bool { handler(.pinchRotationUpdated) != nil }
+    private var hearsFingers: Bool {
+        interactionProgram?.values.contains { if case .translation = $0.input { false } else { true } } == true
+    }
+
+    /// The ways a hand moves the numbers of the element's interaction program.
+    private var handWays: Set<Orientation> {
+        Set(interactionProgram?.values.compactMap { value -> Orientation? in
+            if case .translation(let way, _, _) = value.input { return way }
+            return nil
+        } ?? [])
+    }
 
     /// Whether a press dragged with ⌥/Alt over the element is two fingers: where it hears a pinch or a rotation.
     public var hearsMirroredFingers: Bool { !hearing.isDisjoint(with: [.pinches, .rotations]) }
@@ -249,10 +267,11 @@ extension MountedElement {
         return true
     }
 
-    /// Which way the hand moves the layout this element is, where a hand does: along its axis, or every way.
+    /// Which way the hand moves the numbers of the element's program, where a hand does: one way, or - a pan -
+    /// every way.
     public var handWay: HandWay? {
-        if value(.pans)?.bool == true { return .everyWay }
-        return value(.translationOrientation)?.enumeration.flatMap(Orientation.init(rawValue:)).map(HandWay.init)
+        let ways = handWays
+        return ways.count > 1 ? .everyWay : ways.first.map(HandWay.init)
     }
 
     /// Whether the hand over the layout this element is holds one of its views by itself.
@@ -278,10 +297,9 @@ extension MountedElement {
         pinchOutbox = []
         let turn = runDirection == .rightToLeft ? -1.0 : 1
         for report in fingers {
-            send(.pinchRotationUpdated, [
-                .enumeration(report.phase.rawValue), .number(report.scale), .number(report.degrees * turn),
-                .numbers([report.speed.x, report.speed.y * turn]),
-            ], in: runtime)
+            runtime.interactions.fingers(
+                report.phase, scale: report.scale, degrees: report.degrees * turn,
+                speed: Point(report.speed.x, report.speed.y * turn), on: self)
         }
     }
 
@@ -303,7 +321,8 @@ extension MountedElement {
         runtime.handPace.opened(self)
     }
 
-    /// The hand's reports, as the element's `translationUpdated` - or `itemDragUpdated`, the hand holding one view.
+    /// The hand's reports, said to the sessions that hold what it moves - or as the element's `itemDragUpdated`,
+    /// the hand holding one view.
     private func said(_ reports: [HandReading.Report], in runtime: HostRuntime) {
         for report in reports {
             if report.item {
@@ -315,11 +334,9 @@ extension MountedElement {
                 ], in: runtime)
                 continue
             }
-            send(.translationUpdated, [
-                .enumeration(report.phase.rawValue),
-                .numbers(alongRun(report.moved)),
-                .numbers(alongRun(report.speed)),
-            ], in: runtime)
+            let (moved, speed) = (alongRun(report.moved), alongRun(report.speed))
+            runtime.interactions.hand(
+                report.phase, moved: Point(moved[0], moved[1]), speed: Point(speed[0], speed[1]), on: self)
         }
     }
 

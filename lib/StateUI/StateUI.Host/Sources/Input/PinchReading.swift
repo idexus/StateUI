@@ -7,7 +7,7 @@ import StateUIFoundation
 /// Two fingers over a motion layout, read alike on every host: the pinch and the rotation the platform tells as two
 /// gestures made one stream - begun with the first of them, ended with the last, each move how far the fingers
 /// spread and turned since the last report, and as they lift, how fast, read from their last tenth of a second.
-/// What it answers is the element's `pinchRotationUpdated`.
+/// What it answers the sessions say to the numbers the fingers move (`InteractionSessions.fingers`).
 /// Design: docs/design/host/runtime.md#two-fingers-over-a-layout
 @_spi(Host) public struct PinchReading: Sendable {
     /// One report of the fingers: its phase, how far they spread - a scale - and turned, in degrees clockwise, since

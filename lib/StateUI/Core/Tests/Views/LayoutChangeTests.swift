@@ -219,33 +219,6 @@ final class LayoutChangeTests: XCTestCase {
         XCTAssertEqual(again.views.map(\.discrete), [nil, nil, nil])
     }
 
-    /// A NEW PLACE THE MOTION SET OUT FROM IS A CHANGE: arithmetic that reads it is answered anew where the run
-    /// stood, as a change of the layout.
-    func testANewSetOutIsAChange() throws {
-        let phase = State(wrappedValue: 1.0)
-        let renders = Renders()
-        func tree() -> Node {
-            MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
-                .axis(\.self, range: 0...3, segments: .every(1))
-                .interaction(
-                    Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
-                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
-                .layoutBodies(.onChange(Spring(response: .milliseconds(160))))
-                .node
-        }
-        _ = bench.laid(renders, tree)
-        let stood = bench.answer
-
-        bench.hand(renders, tree, .began)
-        bench.hand(renders, tree, .changed, moved: Point(-120, 0))
-        bench.cycle()
-
-        XCTAssertEqual(stood.views[0].target.bounds.x, 100, accuracy: 0.001, "where it stood")
-        XCTAssertEqual(bench.answer.views[0].target.bounds.x, 200, accuracy: 0.001, "where it sets out from now")
-        XCTAssertEqual(try XCTUnwrap(bench.answer.views[0].discrete).bounds.x, 200, accuracy: 0.001)
-        XCTAssertNotEqual(bench.answer.change, stood.change)
-    }
-
     /// A NEW ROOM TRAVELS NOT: the layout follows the window at once.
     func testANewRoomTravelsNot() throws {
         let renders = Renders()

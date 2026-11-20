@@ -31,25 +31,6 @@ extension State {
         /// Design: docs/design/core/journeys.md#conversions
         var targetRevision: Int { written &+ (image?.targetRevision ?? 0) }
 
-        /// Where a run the hand or the core moves shows the value while it does, and
-        /// which run: what the journey's value answers then, the state's own still the
-        /// target named. Nothing carries it to the host, which walks the target.
-        /// Design: docs/design/core/journeys.md#where-a-run-shows-it
-        private(set) var shown: (value: Value, by: ObjectIdentifier)?
-
-        /// The run `owner` shows the value at `value`, or - nil - shows it no longer:
-        /// whoever follows where the state is shown hears of it, the state's own
-        /// readers do not.
-        func show(_ value: Value?, by owner: ObjectIdentifier) {
-            if let value {
-                shown = (value, owner)
-            } else {
-                guard shown?.by == owner else { return }
-                shown = nil
-            }
-            presentationMoved()
-        }
-
         /// What follows where the state is shown - a body that read its sample, an engine
         /// following its journey - made at the first such read; it is no image and opens
         /// no channel.

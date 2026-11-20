@@ -4,6 +4,7 @@
 import XCTest
 
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 
 /// A swipe: one hand moves the run one snap target at most, either way from where it took it, the view in front
 /// under the hand by a unit measured as it takes the run.
@@ -37,52 +38,48 @@ final class LayoutSwipeTests: XCTestCase {
     func testASwipeMovesTheRunOneTargetAtMost() {
         let phase = State(wrappedValue: 1.0)
         let handed = Handed()
-        let renders = Renders()
         func built() -> Node { row(phase, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-500, 0))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-500, 0))
         XCTAssertEqual(handed.phases.last ?? 0, 2, accuracy: 0.000_1, "one on, not five")
 
-        bench.hand(renders, built, .changed, moved: Point(900, 0))
+        bench.hand(.changed, moved: Point(900, 0))
         XCTAssertEqual(handed.phases.last ?? 0, 0, accuracy: 0.000_1, "one back from where it took it")
 
-        bench.hand(renders, built, .ended)
+        bench.hand(.ended)
         XCTAssertEqual(phase.wrappedValue, 0)
     }
 
     /// THROWN, A SWIPE GOES ON TO THE NEXT TARGET THAT WAY, however hard - and back to where it took the run when
     /// thrown back from beyond it.
     func testAThrownSwipeGoesOnToTheNextTargetThatWay() {
-        bench.walks = true
         let phase = State(wrappedValue: 1.0)
-        let renders = Renders()
         func built() -> Node { row(phase, Handed()) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-10, 0))
-        bench.hand(renders, built, .ended, velocity: Point(-100_000, 0))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-10, 0))
+        bench.hand(.ended, velocity: Point(-100_000, 0))
         XCTAssertEqual(phase.wrappedValue, 2, "the next, not the last")
 
         for _ in 0..<400 { bench.cycle() }
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-80, 0))
-        bench.hand(renders, built, .ended, velocity: Point(2_000, 0))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-80, 0))
+        bench.hand(.ended, velocity: Point(2_000, 0))
         XCTAssertEqual(phase.wrappedValue, 2, "thrown back from 2.8, to where it took it")
     }
 
     /// LET GO STILL, A SWIPE RESTS ON THE NEAREST of where it took the run and the targets either side.
     func testLetGoStillASwipeRestsOnTheNearest() {
         let phase = State(wrappedValue: 1.0)
-        let renders = Renders()
         func built() -> Node { row(phase, Handed()) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-40, 0))
-        bench.hand(renders, built, .ended)
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-40, 0))
+        bench.hand(.ended)
 
         XCTAssertEqual(phase.wrappedValue, 1, "short of halfway, back")
     }
@@ -91,26 +88,23 @@ final class LayoutSwipeTests: XCTestCase {
     /// while it goes - the rest of a burst, a spring passing its target - wait for it.
     func testAWheelsNotchesSwipeOneTargetFromRest() throws {
         let phase = State(wrappedValue: 1.0)
-        let renders = Renders()
         func built() -> Node { row(phase, Handed()) }
-        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout)?.driven?[.parameters]?.state)
+        bench.laid(built)
 
-        bench.step(renders, built, Point(-1, 0))
-        bench.step(renders, built, Point(-1, 0))
-        bench.step(renders, built, Point(-2, 0))
+        bench.step(Point(-1, 0))
+        bench.step(Point(-1, 0))
+        bench.step(Point(-2, 0))
         XCTAssertEqual(phase.wrappedValue, 2, "a burst of notches is one swipe")
 
-        moved(worn, to: 2.05)
         bench.cycle()
-        bench.step(renders, built, Point(-1, 0))
-        XCTAssertEqual(phase.wrappedValue, 2, "past its target on the way, the run still goes: the wheel waits")
-        bench.step(renders, built, Point(1, 0))
+        bench.step(Point(-1, 0))
+        XCTAssertEqual(phase.wrappedValue, 2, "on its way, the run still goes: the wheel waits")
+        bench.step(Point(1, 0))
         XCTAssertEqual(phase.wrappedValue, 2, "either way")
 
-        moved(worn, to: [2, 2, 0], mask: 0b111)
-        bench.cycle()
-        bench.step(renders, built, Point(1, 0))
-        bench.step(renders, built, Point(1, 0))
+        bench.frames(60)
+        bench.step(Point(1, 0))
+        bench.step(Point(1, 0))
         XCTAssertEqual(phase.wrappedValue, 1, "at rest, the next burst swipes on, one target")
     }
 
@@ -119,7 +113,6 @@ final class LayoutSwipeTests: XCTestCase {
     func testAPageIsTheRoomsLength() {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
-        let renders = Renders()
         func built() -> Node {
             MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 handed.phases.append(at)
@@ -130,13 +123,13 @@ final class LayoutSwipeTests: XCTestCase {
                     .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .node
         }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-150, 0))
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(-150, 0))
         XCTAssertEqual(handed.phases.last ?? 0, 0.5, accuracy: 0.001, "half the room's 300 points, half a page")
 
-        bench.hand(renders, built, .changed, moved: Point(-2_000, 0))
+        bench.hand(.changed, moved: Point(-2_000, 0))
         XCTAssertEqual(handed.phases.last ?? 0, 1, accuracy: 0.001, "a page a hand")
     }
 
@@ -145,7 +138,6 @@ final class LayoutSwipeTests: XCTestCase {
     func testASwipeMeasuresItsUnitAsItTakesTheRun() {
         let phase = State(wrappedValue: 1.0)
         let handed = Handed()
-        let renders = Renders()
         func built() -> Node {
             MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 handed.phases.append(at)
@@ -159,10 +151,10 @@ final class LayoutSwipeTests: XCTestCase {
                     .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .node
         }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.hand(renders, built, .began)
-        for _ in 0..<15 { bench.hand(renders, built, .changed, moved: Point(-10, 0)) }
+        bench.hand(.began)
+        for _ in 0..<15 { bench.hand(.changed, moved: Point(-10, 0)) }
 
         XCTAssertEqual(handed.phases.last ?? 0, 1.75, accuracy: 0.001, "150 points at 200 a unit")
     }

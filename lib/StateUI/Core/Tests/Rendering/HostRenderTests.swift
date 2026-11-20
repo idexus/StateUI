@@ -280,7 +280,7 @@ final class HostRenderTests: XCTestCase {
             motion: standing.motion, completion: standing.completion, stopped: standing.stopped)
 
         XCTAssertTrue(HostBoundary.report(frame, updating: .frame, through: binding))
-        XCTAssertEqual(fade.projectedValue.journey.standing, 0.2, "the value the program snapped to")
+        XCTAssertEqual(fade.projectedValue.journey.walked, 0.2, "the value the program snapped to")
         XCTAssertEqual(fade.wrappedValue, 0.2)
     }
 

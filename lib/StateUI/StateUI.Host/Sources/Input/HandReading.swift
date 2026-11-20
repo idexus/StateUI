@@ -5,7 +5,7 @@
 
 /// The hand over a motion layout, read alike on every host: a press dragged or a trackpad's fingers reported as they
 /// move, a wheel's notches with no lift - ended after a pause on the frame clock - and the speed at the lift where
-/// the platform tells none. What it answers is the element's `translationUpdated`.
+/// the platform tells none. What it answers the sessions say to the numbers the hand moves (`InteractionSessions.hand`).
 /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
 @_spi(Host) public struct HandReading: Sendable {
     /// One report of the hand: its phase, how far it moved what is under it since the last, and how fast it goes,

@@ -266,25 +266,6 @@ final class GalleryViewTests: XCTestCase {
             """)
     }
 
-    /// A FRAME OF THE HAND RENDERS NOBODY: the hand moves the run on the host's
-    /// own frames, and the only thing a body is built for is the card in FRONT
-    /// changing - once per card, never once per frame.
-    func testAFrameOfTheHandRendersNobody() {
-        let renders = Renders()
-        func tree() -> Node { gallery(6).node }
-        _ = laid(renders, tree)
-
-        hand(renders, tree, .began)
-        Renderer.shared.clearInvalidation()
-
-        // Ten moves within the card in front, a few points each.
-        for step in 1...10 {
-            hand(renders, tree, .changed, moved: Point(-4, 0))
-
-            XCTAssertFalse(Renderer.shared.needsRender, "move \(step) of the hand asked for a render")
-        }
-    }
-
     /// THE CARDS STAND IN READING ORDER, as a stack's views do: the gallery's
     /// layout mirrors right to left.
     func testTheCardsStandInReadingOrder() throws {
@@ -336,18 +317,6 @@ final class GalleryViewTests: XCTestCase {
 
         assertCard(showing, 0, Rect(88, 76, 176, 248))
         assertCard(showing, 1, Rect(102, 79, 176, 248))
-    }
-
-    /// A DECK IS SWIPED A CARD AT A TIME, however far the hand goes.
-    func testADeckIsSwipedACardAtATime() {
-        let renders = Renders()
-        let shown = State(0)
-        func tree() -> Node { gallery(5).arrangement(.deck).position(shown.projectedValue).node }
-        _ = laid(renders, tree)
-
-        hand(renders, tree, .began)
-        hand(renders, tree, .changed, moved: Point(-20 * reach, 0))
-        XCTAssertEqual(shown.wrappedValue, 1, "one card, not the last")
     }
 
     /// A SMALL ROOM shows the same gallery smaller rather than a slice of a
@@ -529,60 +498,6 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(shade(of: -2), 0, accuracy: 0.001, "and below is none of it")
     }
 
-    /// How far the hand travels for one card: as far as the card in front goes on the wheel, at its stated size.
-    private let reach = 176.0 * 0.52
-
-    /// The hand over the gallery `tree` describes, as a host reports it, and a cycle after it.
-    private func hand(
-        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, moved: Point = .zero, velocity: Point = .zero
-    ) {
-        guard let heard = find(.motionLayout, in: renders.renderFromScratch(tree()))?.events?[.translationUpdated] else {
-            return XCTFail("the gallery hears no hand")
-        }
-
-        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, moved, velocity)))
-        turned += 16
-        _ = HostBoundary.cycle(now: turned, reducesMotion: false)
-    }
-
-    /// A HAND OF NO NUMBER - the host saying it moved by not a number, or endlessly - moves nothing and never stops
-    /// the application.
-    func testAHandOfNoNumberMovesNothing() throws {
-        let renders = Renders()
-        let shown = State(0)
-        func tree() -> Node { gallery(5).position(shown.projectedValue).node }
-        _ = laid(renders, tree)
-
-        hand(renders, tree, .began)
-        hand(renders, tree, .changed, moved: Point(.nan, .nan))
-        hand(renders, tree, .changed, moved: Point(.infinity, 0))
-        hand(renders, tree, .ended, velocity: Point(.nan, .infinity))
-        XCTAssertEqual(shown.wrappedValue, 0)
-    }
-
-    /// The hand NAMES the card it passes: as it crosses halfway between two
-    /// cards the position is the nearer one, a move between two names nothing
-    /// new, and a card the run cannot reach is not one it names.
-    func testTheHandNamesTheCardItPasses() throws {
-        let renders = Renders()
-        let shown = State(0)
-        func tree() -> Node { gallery(5).position(shown.projectedValue).node }
-        _ = laid(renders, tree)
-
-        hand(renders, tree, .began)
-        hand(renders, tree, .changed, moved: Point(-2.6 * reach, 0))
-        XCTAssertEqual(shown.wrappedValue, 3)
-
-        hand(renders, tree, .changed, moved: Point(-0.3 * reach, 0))
-        XCTAssertEqual(shown.wrappedValue, 3, "a move between two cards names nothing new")
-
-        hand(renders, tree, .changed, moved: Point(2.5 * reach, 0))
-        XCTAssertEqual(shown.wrappedValue, 0)
-
-        hand(renders, tree, .changed, moved: Point(-20 * reach, 0))
-        XCTAssertEqual(shown.wrappedValue, 4, "a card past the last is the last")
-    }
-
     /// EACH CARD IS THE BODY ITS GALLERY GIVES ITS ITEMS: with one given, every card is answered it - following its
     /// place - and with none, a body that follows no moving place.
     func testEachCardIsTheBodyItsGalleryGivesItsItems() throws {
@@ -602,29 +517,6 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertTrue(
             following.allSatisfy { $0 == .followsLayout(Spring(response: .milliseconds(300), damping: 0.8)) },
             "behind its place as the hand carries it")
-    }
-
-    /// A ROOM THAT GROWS KEEPS THE CARD IN FRONT: the run stands on the
-    /// phase, which a room does not move - a phone turned shows the card the
-    /// user left there.
-    func testARoomThatGrowsKeepsTheCardInFront() throws {
-        let renders = Renders()
-        let shown = State(0)
-        func tree() -> Node { gallery(5).position(shown.projectedValue).node }
-        let showing = laid(renders, tree)
-        let phase = try XCTUnwrap(find(.motionLayout, in: showing.whole)?.driven?[.parameters]?.state)
-
-        hand(renders, tree, .began)
-        hand(renders, tree, .changed, moved: Point(-4 * reach, 0))
-        hand(renders, tree, .ended)
-        XCTAssertEqual(shown.wrappedValue, 4)
-
-        program?.layOut(700, 300)
-        turned += 16
-        _ = HostBoundary.cycle(now: turned, reducesMotion: false)
-
-        XCTAssertEqual(shown.wrappedValue, 4, "the card the user left in front")
-        XCTAssertEqual(try XCTUnwrap(standing(phase, as: JourneyLanes<Double>.self)).destination, 4)
     }
 
     /// A RUN SENT TO A CARD NAMES NONE ON THE WAY: the position written, the
@@ -652,58 +544,6 @@ final class GalleryViewTests: XCTestCase {
 
         XCTAssertEqual(shown.wrappedValue, 3, "the card it goes to, not the one it passes")
         XCTAssertEqual(heard, [3], "the author hears the position once")
-    }
-
-    /// A run LET GO between two cards comes onto the nearer, named at once.
-    /// A run let go on a card is left there.
-    func testARunLetGoBetweenTwoCardsTravelsOnToTheNearer() throws {
-        let renders = Renders()
-        func tree() -> Node { gallery(5).node }
-        let showing = laid(renders, tree)
-        let phase = try XCTUnwrap(find(.motionLayout, in: showing.whole)?.driven?[.parameters]?.state)
-
-        hand(renders, tree, .began)
-        hand(renders, tree, .changed, moved: Point(-1.4 * reach, 0))
-        hand(renders, tree, .ended)
-
-        let sent = try XCTUnwrap(standing(phase, as: JourneyLanes<Double>.self))
-        XCTAssertEqual(sent.destination, 1, accuracy: 0.001, "the nearer card")
-
-        // The run comes onto it - the host's animator lands its phase there - and the hand lets go of it on the card.
-        for _ in 0..<30 {
-            turned += 16
-            _ = HostBoundary.cycle(now: turned, reducesMotion: false)
-        }
-        HostAnimatorReport.land(phase)
-        hand(renders, tree, .began)
-        hand(renders, tree, .ended)
-
-        let left = try XCTUnwrap(standing(phase, as: JourneyLanes<Double>.self))
-        XCTAssertEqual(left.destination, 1, accuracy: 0.001, "a run on a card stays")
-        XCTAssertEqual(left.value, 1, accuracy: 0.001)
-    }
-
-    /// A THROW GOES ON AS `.release` SAYS: the same swipe let go with speed,
-    /// carried for three seconds' worth, comes to rest two cards on, where
-    /// the light friction of a gallery that says nothing slides it back to the
-    /// first.
-    func testAThrowGoesOnAsThrowingSays() {
-        for (throwing, card) in [(Motion?.none, 0), (.eased(.seconds(3), curve: .cubicOut), 2)] {
-            Renderer.shared.clearStates()
-            let renders = Renders()
-            let shown = State(0)
-            func tree() -> Node {
-                let swiped = gallery(5).position(shown.projectedValue)
-                return (throwing.map { swiped.release(.projected($0)) } ?? swiped).node
-            }
-            _ = laid(renders, tree)
-
-            hand(renders, tree, .began)
-            hand(renders, tree, .changed, moved: Point(-0.1 * reach, 0))
-            hand(renders, tree, .ended, velocity: Point(-200, 0))
-
-            XCTAssertEqual(shown.wrappedValue, card, "thrown \(throwing.map { "\($0.kind)" } ?? "as a gallery is")")
-        }
     }
 
     /// A tap ACTIVATES THE CARD IN FRONT, on the card itself, rather than
@@ -910,7 +750,7 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).isSwipeEnabled(false).node }).whole
 
-        XCTAssertNil(find(.motionLayout, in: showing)?.events?[.translationUpdated])
+        XCTAssertEqual(find(.motionLayout, in: showing)?.moved.count, 0)
         XCTAssertNotNil(find(.motionLayout, in: showing))
     }
 

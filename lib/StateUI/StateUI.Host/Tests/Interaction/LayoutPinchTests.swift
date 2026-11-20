@@ -7,6 +7,7 @@
 import XCTest
 
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 
 /// A phase two fingers move: how far a dial is turned, and how near it stands.
 private struct Dial: LayoutParameters {
@@ -47,159 +48,124 @@ final class LayoutPinchTests: XCTestCase {
         return layout.node
     }
 
-    private func frames(_ count: Int = 30) {
-        for _ in 0..<count { bench.cycle() }
-    }
 
     /// THE ELEMENT SAYS WHICH FINGERS IT HEARS, and hears them as one.
     func testTheElementSaysWhichFingersItHears() throws {
         let (dial, handed) = (State(wrappedValue: Dial()), Handed())
-        let layout = try XCTUnwrap(bench.laid(Renders(), { tree(dial, handed) }).patch.first(.motionLayout))
+        bench.laid { self.tree(dial, handed) }
+        let layout = try XCTUnwrap(bench.layout)
 
-        XCTAssertEqual(layout.properties[.magnifies], .bool(true))
-        XCTAssertEqual(layout.properties[.rotates], .bool(true))
-        XCTAssertNotNil(layout.events?[.pinchRotationUpdated])
-        XCTAssertNil(layout.properties[.translationOrientation], "no hand along the layout")
+        XCTAssertEqual(layout.hearing, [.pinches, .rotations])
+        XCTAssertNil(layout.handWay, "no hand along the layout")
     }
 
     /// SPREADING FINGERS MULTIPLY THE MAGNIFICATION: their distance doubled doubles it - and the target named is the
     /// nearest by its logarithm, 2 for 1.5, not the 1 a plain distance would name first.
     func testSpreadingFingersMultiplyTheMagnification() {
-        let (dial, handed, renders) = (State(wrappedValue: Dial()), Handed(), Renders())
+        let (dial, handed) = (State(wrappedValue: Dial()), Handed())
         func built() -> Node { tree(dial, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.pinch(renders, built, .began)
-        bench.pinch(renders, built, .changed, scale: 1.5)
+        bench.pinch(.began)
+        bench.pinch(.changed, scale: 1.5)
         XCTAssertEqual(handed.dials.last?.zoom ?? 0, 1.5, accuracy: 0.000_1)
         XCTAssertEqual(dial.wrappedValue.zoom, 2, "nearer 2 than 1 by the logarithm")
 
-        bench.pinch(renders, built, .changed, scale: 4.0 / 3)
+        bench.pinch(.changed, scale: 4.0 / 3)
         XCTAssertEqual(handed.dials.last?.zoom ?? 0, 2, accuracy: 0.000_1, "1.5 and a third more: twice the size")
     }
 
     /// PINCHING IN PAST THE SMALLEST GIVES LESS AND LESS, by the logarithm, and let go it comes back onto it.
     func testPinchingInPastTheSmallestGivesLessAndLess() {
-        bench.walks = true
-        let (dial, handed, renders) = (State(wrappedValue: Dial()), Handed(), Renders())
+        let (dial, handed) = (State(wrappedValue: Dial()), Handed())
         func built() -> Node { tree(dial, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.pinch(renders, built, .began)
-        bench.pinch(renders, built, .changed, scale: 0.25)
+        bench.pinch(.began)
+        bench.pinch(.changed, scale: 0.25)
         let zoom = handed.dials.last?.zoom ?? 0
         XCTAssertLessThan(zoom, 0.5, "past the smallest")
         XCTAssertGreaterThan(zoom, 0.5 * exp(-0.75), "never three quarters of a unit of its logarithm past it")
 
-        bench.pinch(renders, built, .ended)
-        frames()
+        bench.pinch(.ended)
+        bench.frames()
         XCTAssertEqual(handed.dials.last?.zoom ?? 0, 0.5, accuracy: 0.000_1, "back onto it")
     }
 
     /// TURNING FINGERS MOVE THE ROTATION'S AXIS a unit every `degreesPerUnit`, clockwise on, and let go still it
     /// comes onto the nearest target.
     func testTurningFingersMoveTheRotationsAxis() {
-        bench.walks = true
-        let (dial, handed, renders) = (State(wrappedValue: Dial()), Handed(), Renders())
+        let (dial, handed) = (State(wrappedValue: Dial()), Handed())
         func built() -> Node { tree(dial, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.pinch(renders, built, .began)
-        bench.pinch(renders, built, .changed, degrees: 45)
+        bench.pinch(.began)
+        bench.pinch(.changed, degrees: 45)
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 0.5, accuracy: 0.000_1)
-        bench.pinch(renders, built, .changed, degrees: 80)
+        bench.pinch(.changed, degrees: 80)
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 125.0 / 90, accuracy: 0.000_1)
 
-        bench.pinch(renders, built, .ended)
-        frames()
+        bench.pinch(.ended)
+        bench.frames()
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 1, accuracy: 0.000_1)
         XCTAssertEqual(dial.wrappedValue.turn, 1)
     }
 
     /// THE FINGERS MOVE BOTH AXES AT ONCE, each its own: one report spreading and turning.
     func testTheFingersMoveBothAxesAtOnce() {
-        let (dial, handed, renders) = (State(wrappedValue: Dial()), Handed(), Renders())
+        let (dial, handed) = (State(wrappedValue: Dial()), Handed())
         func built() -> Node { tree(dial, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.pinch(renders, built, .began)
-        bench.pinch(renders, built, .changed, scale: 2, degrees: 90)
+        bench.pinch(.began)
+        bench.pinch(.changed, scale: 2, degrees: 90)
         XCTAssertEqual(handed.dials.last?.zoom ?? 0, 2, accuracy: 0.000_1)
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 1, accuracy: 0.000_1)
 
-        bench.pinch(renders, built, .ended)
-        frames()
+        bench.pinch(.ended)
+        bench.frames()
         XCTAssertEqual(dial.wrappedValue, Dial(turn: 1, zoom: 2))
     }
 
     /// LET GO WITH SPEED, AN AXIS GOES ON to the target nearest where it would end; let go still, onto the nearest.
     func testAFlickGoesOnToTheTargetNearestItsEnd() {
-        bench.walks = true
-        let (dial, handed, renders) = (State(wrappedValue: Dial()), Handed(), Renders())
+        let (dial, handed) = (State(wrappedValue: Dial()), Handed())
         func built() -> Node { tree(dial, handed) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.pinch(renders, built, .began)
-        bench.pinch(renders, built, .changed, degrees: 18)
+        bench.pinch(.began)
+        bench.pinch(.changed, degrees: 18)
         // 360 degrees a second is four units: a light friction carries it some half a unit on, past halfway.
-        bench.pinch(renders, built, .ended, velocity: Point(0, 360))
-        frames()
+        bench.pinch(.ended, velocity: Point(0, 360))
+        bench.frames()
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 1, accuracy: 0.000_1, "flicked on")
 
-        bench.pinch(renders, built, .began)
-        bench.pinch(renders, built, .changed, degrees: 18)
-        bench.pinch(renders, built, .ended)
-        frames()
+        bench.pinch(.began)
+        bench.pinch(.changed, degrees: 18)
+        bench.pinch(.ended)
+        bench.frames()
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 1, accuracy: 0.000_1, "let go still, back onto the nearest")
     }
 
     /// A VIEW HELD BY ITSELF KEEPS THE HAND: the fingers move nothing while it does.
-    func testAViewHeldByItselfKeepsTheHand() {
-        let (dial, handed, renders) = (State(wrappedValue: Dial()), Handed(), Renders())
+    func testAViewHeldByItselfKeepsTheHand() throws {
+        let (dial, handed) = (State(wrappedValue: Dial()), Handed())
         func built() -> Node { tree(dial, handed, itemDrag: true) }
-        _ = bench.laid(renders, built)
+        bench.laid(built)
 
-        bench.item(renders, built, .began, at: Point(20, 20))
-        bench.pinch(renders, built, .began)
-        bench.pinch(renders, built, .changed, scale: 2, degrees: 90)
+        let (layout, runtime) = (try XCTUnwrap(bench.layout), try XCTUnwrap(bench.runtime))
+
+        // A press standing still a long press's time holds the view under it.
+        layout.hear(.hand(.began, moved: .zero, speed: nil, point: Point(20, 20)), in: runtime)
+        bench.frames(40)
+        XCTAssertTrue(layout.holdsItem)
+
+        layout.hear(.pinch(.began, scale: 1, at: Point(0.5, 0.5)), in: runtime)
+        layout.hear(.pinch(.changed, scale: 2, at: Point(0.5, 0.5)), in: runtime)
+        layout.hear(.rotation(.changed, degrees: 90), in: runtime)
+        bench.frames(4)
 
         XCTAssertEqual(handed.dials.last?.zoom ?? 0, 1, accuracy: 0.000_1)
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 0, accuracy: 0.000_1)
-    }
-
-    /// One layout of one view, moved as `interaction` says.
-    private func moved(_ dial: State<Dial>, _ interaction: Interaction) -> MotionLayout<[Int], Int, Dial> {
-        MotionLayout([0], parameters: dial.projectedValue) { Text("\($0)") } placements: { _, _ in
-            [Placement(Rect(0, 0, 40, 40))]
-        }
-        .interaction(interaction)
-    }
-
-    /// AN INTERACTION SAID AGAIN TAKES THE OTHER'S PLACE: one declaration says the whole of it.
-    func testAnInteractionSaidAgainTakesTheOthersPlace() throws {
-        let dial = State(wrappedValue: Dial())
-        let layout = moved(
-            dial, .value(dial.projectedValue, axis: \.zoom, input: .translation(.horizontal, unit: .frontItem)).range(1...2))
-            .interaction(.value(dial.projectedValue, axis: \.zoom, input: .magnification).range(1...2))
-
-        let element = try XCTUnwrap(Renders().settled(layout.node).first(.motionLayout))
-        XCTAssertNil(element.properties[.translationOrientation], "the hand's place taken")
-        XCTAssertEqual(element.properties[.magnifies], .bool(true))
-    }
-
-    /// TWO MOVING ONE NUMBER ARE REFUSED TOGETHER: neither is the one the author meant, and it is said.
-    func testTwoMovingOneNumberAreRefusedTogether() throws {
-        let dial = State(wrappedValue: Dial())
-        let layout = moved(dial, .simultaneous([
-            .value(dial.projectedValue, axis: \.zoom, input: .translation(.horizontal, unit: .frontItem)).range(1...2),
-            .value(dial.projectedValue, axis: \.zoom, input: .magnification).range(1...2),
-            .value(dial.projectedValue, axis: \.turn, input: .rotation()).range(0...1),
-        ]))
-
-        let element = try XCTUnwrap(Renders().settled(layout.node).first(.motionLayout))
-        XCTAssertNil(element.properties[.translationOrientation])
-        XCTAssertNil(element.properties[.magnifies])
-        XCTAssertEqual(element.properties[.rotates], .bool(true), "the number moved once stands")
-        XCTAssertTrue(hasComplained("A MotionLayout's interaction moves one number of its parameters twice"))
     }
 }

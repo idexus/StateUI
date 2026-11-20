@@ -98,36 +98,6 @@ final class LayoutBench {
         _ = HostBoundary.cycle(now: turned, reducesMotion: false)
     }
 
-    /// The hand over the layout `tree` describes, as a host reports it - its phase, how far it moved what is under
-    /// it since the last report, and the speed it lets go at, per second - and a cycle after it.
-    func hand(
-        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, moved: Point = .zero, velocity: Point = .zero,
-        file: StaticString = #filePath, line: UInt = #line
-    ) {
-        // The whole description: a patch says nothing of a handler that did not change.
-        guard let heard = renders.renderFromScratch(tree()).first(.motionLayout)?.events?[.translationUpdated] else {
-            return XCTFail("the layout hears no hand", file: file, line: line)
-        }
-
-        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, moved, velocity)), file: file, line: line)
-        cycle()
-    }
-
-    /// Two fingers over the layout `tree` describes, as the host layer reports them - their phase, the scale and the
-    /// degrees since the last report, and their speed as they lift - and a cycle after it.
-    func pinch(
-        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, scale: Double = 1, degrees: Double = 0,
-        velocity: Point = .zero, file: StaticString = #filePath, line: UInt = #line
-    ) {
-        guard let heard = renders.renderFromScratch(tree()).first(.motionLayout)?.events?[.pinchRotationUpdated] else {
-            return XCTFail("the layout hears no fingers", file: file, line: line)
-        }
-
-        XCTAssertTrue(
-            renders.fire(heard, with: MemberValues.encode(phase, scale, degrees, velocity)), file: file, line: line)
-        cycle()
-    }
-
     /// The hand holding one view of the layout `tree` describes, as the host layer reports it - its phase, where it is
     /// in the room, its speed as it lets go, per second, and how long it has stood still - and a cycle after it.
     func item(
@@ -139,19 +109,6 @@ final class LayoutBench {
         }
 
         XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, at, velocity, still)), file: file, line: line)
-        cycle()
-    }
-
-    /// A wheel's notches over the layout `tree` describes, as a host reports them - across and down, the way they move
-    /// what is under the hand - and a cycle after them.
-    func step(
-        _ renders: Renders, _ tree: () -> Node, _ notches: Point, file: StaticString = #filePath, line: UInt = #line
-    ) {
-        guard let heard = renders.renderFromScratch(tree()).first(.motionLayout)?.events?[.wheelStepped] else {
-            return XCTFail("the layout hears no wheel's notch", file: file, line: line)
-        }
-
-        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(notches)), file: file, line: line)
         cycle()
     }
 
@@ -193,6 +150,15 @@ extension HostPatch {
     var program: HostLayoutProgram? {
         if case .replace(let program)? = layout { return program }
         return nil
+    }
+}
+
+extension HostPatch {
+    /// The numbers the hand moves on the element this patch describes, as the host is handed them; none where it is
+    /// handed no program.
+    var moved: [HostInteractionValue] {
+        if case .replace(let program)? = interaction { return program.values }
+        return []
     }
 }
 
