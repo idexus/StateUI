@@ -15,16 +15,32 @@ final class AppKitHandReader {
     /// The element hearing what the reader says, answering whether it took it.
     private let taking: (HeardInput) -> Bool
 
+    /// Whether the element's hand takes a press whose first move is the one given, by the host layer's rule.
+    private let takesFirst: (Point) -> Bool
+
     /// Whether the last gesture was the layout's: its momentum is too.
     private var tookLast = false
 
     /// The pointer drag the reader hears beside the scroll gestures.
     let dragging: AppKitHandDrag
 
-    init(taking: @escaping (HeardInput) -> Bool) {
+    /// A reader handing what it hears to `taking`, its drag beginning where `takesFirst` takes the first move -
+    /// any move, unless said.
+    init(taking: @escaping (HeardInput) -> Bool, takesFirst: @escaping (Point) -> Bool = { _ in true }) {
+        self.takesFirst = takesFirst
         self.taking = taking
         dragging = AppKitHandDrag()
         dragging.reader = self
+    }
+
+    /// Whether the pointer's drag begins with its first move `first`: where the host layer's rule takes it. A
+    /// move it declines is told all the same - the drag tells nothing of the press after it, which would stand
+    /// still for the host layer and hold a view.
+    /// Design: docs/design/platforms/appkit/input.md#the-hand-over-a-layout
+    func begins(first: Point) -> Bool {
+        let begins = takesFirst(first)
+        if !begins { hand(.changed, moved: first) }
+        return begins
     }
 
     /// The hand at `phase`, having moved what is under it by `moved` since the last, lifting at `speed` where the
@@ -69,13 +85,16 @@ final class AppKitHandReader {
 /// last and its speed at the lift handed to the reader, from the top left - the press's end told even where it never
 /// moved, as a press that held a view lets it go.
 @MainActor
-final class AppKitHandDrag: NSPanGestureRecognizer {
+final class AppKitHandDrag: NSPanGestureRecognizer, NSGestureRecognizerDelegate {
     weak var reader: AppKitHandReader?
 
     /// Where the drag had come to at its last report, where the press went down, whether it moved as a drag, and
     /// whether the press is two fingers' rather than the hand's.
     private var last = Point.zero
     private var down = Point.zero
+
+    /// Where the pointer pressed stood at its last move, in the view: what the drag's first move is read from.
+    private var latest = Point.zero
     private var dragged = false
     private var mirrors = false
 
@@ -87,6 +106,26 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
         target = self
         action = #selector(recognized(_:))
         delaysPrimaryMouseButtonEvents = false
+        delegate = self
+    }
+
+    /// AppKit's drag begins only where the view's hand takes the press's first move - the way its values go, the
+    /// way its own drag begins, any way where it holds the view: a move it leaves is the hand's of what holds
+    /// the view, whose drag AppKit would not begin beside this one.
+    func gestureRecognizerShouldBegin(_ recognizer: NSGestureRecognizer) -> Bool {
+        // AppKit asks before its drag has a translation: the first move is read off the press itself.
+        reader?.begins(first: Point(x: latest.x - down.x, y: latest.y - down.y)) ?? true
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        if let at = point(of: event) { latest = at }
+        super.mouseDragged(with: event)
+    }
+
+    /// The hand of a view waits for the hand of a view inside it: the innermost that takes the press has it.
+    override func shouldRequireFailure(of other: NSGestureRecognizer) -> Bool {
+        guard let inner = (other as? AppKitHandDrag)?.view, let view, inner !== view else { return false }
+        return inner.isDescendant(of: view)
     }
 
     @available(*, unavailable)
@@ -113,6 +152,7 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
     /// The pointer pressed at `point` of the view: the hand begins there.
     func pressed(at point: Point) {
         down = point
+        latest = point
         last = .zero
         dragged = false
         gesture.told(.began)

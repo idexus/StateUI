@@ -200,6 +200,41 @@ final class AppKitGestureTests: XCTestCase {
         XCTAssertFalse(stacks[2].acceptsFirstMouse(for: nil), "the row that answers nothing")
         XCTAssertFalse(stacks[0].acceptsFirstMouse(for: nil), "the stack around them")
     }
+
+    /// THE POINTER'S DRAG BEGINS WHERE THE VIEW'S HAND TAKES ITS FIRST MOVE, THE INNERMOST FIRST: a card taken up
+    /// and down leaves a move across to the layout it stands in, whose own drag waits for the card's to fail -
+    /// AppKit begins no second drag beside one it began.
+    @MainActor
+    func testAHandsDragBeginsByItsFirstMoveTheInnermostFirst() throws {
+        let turn = State(wrappedValue: 0.0)
+        let renderer = AppKitRenderer.running {
+            VStack {
+                MotionLayout([0, 1], parameters: turn.projectedValue) { _ in
+                    Rectangle()
+                        .fill(.red)
+                        .interaction(.drag(.vertical, begins: .directional))
+                } placements: { _, at in
+                    (0..<2).map { Placement(Rect(x: (Double($0) - at) * 120, y: 0, width: 100, height: 40)) }
+                }
+                .interaction(.value(turn.projectedValue, input: .translation(.horizontal, unit: .points(120))).range(0...1))
+                .height(60)
+            }
+        }
+        defer { renderer.finish() }
+        let root = try XCTUnwrap(renderer.runtime.tree.root)
+        let layout = try XCTUnwrap((root.first(type: .motionLayout)?.native as? AppKitElement)?.handReader)
+        let card = try XCTUnwrap((root.first(type: .rectangle)?.native as? AppKitElement)?.handReader)
+        for reader in [card, layout] { reader.dragging.pressed(at: Point(x: 10, y: 10)) }
+
+        XCTAssertFalse(card.begins(first: Point(x: 30, y: 2)), "across: not the card's")
+        XCTAssertTrue(layout.begins(first: Point(x: 30, y: 2)), "the way the layout's value goes")
+        XCTAssertTrue(card.begins(first: Point(x: 2, y: 30)), "up and down: the card's own drag")
+        XCTAssertFalse(layout.begins(first: Point(x: 2, y: 30)), "which the layout leaves")
+
+        XCTAssertTrue(layout.dragging.shouldRequireFailure(of: card.dragging), "the layout waits for its view")
+        XCTAssertFalse(card.dragging.shouldRequireFailure(of: layout.dragging))
+        XCTAssertTrue(layout.dragging.delegate === layout.dragging, "asked by AppKit before it begins")
+    }
 }
 
 #endif
