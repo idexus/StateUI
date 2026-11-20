@@ -165,7 +165,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         // THE TURN'S OWN MOTION, `@State(motion:)`, DRIVES MOVING BETWEEN CARDS;
         // `.layoutBodies` THE CARDS reaching their new places after a card
         // joins, leaves or the order changes.
-        .layoutBodies(.onChange(Spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1)))
+        .layoutBodies(.onChange(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1))
     }
 
     /// Where one card stands in the fan: along an arc and turned with it, the

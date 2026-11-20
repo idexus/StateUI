@@ -198,7 +198,7 @@ extension LayoutTests {
         ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let clock = TestClock()
             let far = State(wrappedValue: false)
-            let bodies = LayoutBody.onChange(Spring(response: .milliseconds(400), damping: 0.5))
+            let bodies = LayoutBody.onChange(response: .milliseconds(400), damping: 0.5)
             s.start(clock: clock) {
                 VStack {
                     Shifting(element: element, bodies: bodies, law: .none, far: far.projectedValue)

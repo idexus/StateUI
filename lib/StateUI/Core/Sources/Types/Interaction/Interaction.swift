@@ -8,7 +8,7 @@
 ///             .reversed(true)
 ///             .range(0...6)
 ///             .snaps(.every(1))
-///             .release(.projected(.spring(Spring(response: .milliseconds(500), damping: 0.8)))))
+///             .release(.projected(.spring(response: .milliseconds(500), damping: 0.8))))
 ///
 /// An interaction is a value: each of its methods answers a copy, and nothing is recognized, reserved or timed
 /// until a view wearing it stands. One `.interaction(_:)` says the whole of it - several values moved at once are

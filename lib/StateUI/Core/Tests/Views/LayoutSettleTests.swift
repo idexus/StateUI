@@ -28,7 +28,7 @@ final class LayoutSettleTests: XCTestCase {
         return MotionLayout(items.wrappedValue, parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
             (0..<count).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
-        .layoutBodies(.onChange(Spring(response: .milliseconds(160))))
+        .layoutBodies(.onChange(response: .milliseconds(160)))
         .onSettled { told.phases.append($0) }
         .node
     }

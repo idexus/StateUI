@@ -8,11 +8,23 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 final class SpringTests: XCTestCase {
-    /// THE SPRING WHERE NONE IS NAMED answers in 300 milliseconds and comes to rest without passing.
-    func testTheStandardSpring() {
-        XCTAssertEqual(Spring.standard.milliseconds, 300)
-        XCTAssertEqual(Spring.standard.damping, 1)
-        XCTAssertEqual(Spring(), .standard)
+    /// THE SPRING WHERE NEITHER NUMBER IS SAID answers in 300 milliseconds and comes to rest without passing.
+    func testTheSpringWhereNeitherNumberIsSaid() {
+        XCTAssertEqual(Spring().milliseconds, 300)
+        XCTAssertEqual(Spring().damping, 1)
+    }
+
+    /// EVERY ENTRY POINT HOLDS A SPRING'S NUMBERS ALIKE: a motion's and a layout body's of either kind take the same
+    /// floors, and the same spring where neither number is said.
+    func testEveryEntryPointHoldsASpringsNumbersAlike() {
+        let floors = Spring(response: .zero, damping: 0)
+        XCTAssertEqual(Motion.spring(response: .zero, damping: 0).kind, .spring(milliseconds: floors.milliseconds, damping: floors.damping))
+        XCTAssertEqual(LayoutBody.onChange(response: .zero, damping: 0).spring, floors)
+        XCTAssertEqual(LayoutBody.followsLayout(response: .zero, damping: 0).spring, floors)
+
+        XCTAssertEqual(Motion.spring().kind, .spring(milliseconds: 300, damping: 1))
+        XCTAssertEqual(LayoutBody.onChange().spring, Spring())
+        XCTAssertEqual(LayoutBody.followsLayout().spring, Spring())
     }
 
     /// A RESPONSE IS TO THE MILLISECOND AND AT LEAST ONE; a damping is at least 0.05, and one that is no number 1.
@@ -35,20 +47,20 @@ final class SpringTests: XCTestCase {
         XCTAssertNotEqual(Spring(response: .milliseconds(240)), Spring())
     }
 
-    /// A MOTION'S SPRING IS THE SPRING IT WAS GIVEN, and the standard one where none is named.
+    /// A MOTION'S SPRING IS THE NUMBERS IT WAS GIVEN, held, and 300 milliseconds damped to rest where none is said.
     func testAMotionTakesASpring() {
         XCTAssertEqual(Motion.spring().kind, .spring(milliseconds: 300, damping: 1))
         XCTAssertEqual(
-            Motion.spring(Spring(response: .milliseconds(260), damping: 0.7)).kind,
+            Motion.spring(response: .milliseconds(260), damping: 0.7).kind,
             .spring(milliseconds: 260, damping: 0.7))
-        XCTAssertEqual(Motion.spring(Spring(damping: 0)).kind, .spring(milliseconds: 300, damping: 0.05))
+        XCTAssertEqual(Motion.spring(damping: 0).kind, .spring(milliseconds: 300, damping: 0.05))
     }
 
     /// A LAYOUT BODY FOLLOWS ITS PLACE ON THE SPRING IT WAS GIVEN, and crosses to the host and back as it is.
     func testALayoutBodyTakesASpring() throws {
-        XCTAssertEqual(LayoutBody.followsLayout().spring, .standard)
+        XCTAssertEqual(LayoutBody.followsLayout().spring, Spring())
 
-        let body = LayoutBody.followsLayout(Spring(response: .milliseconds(420), damping: 0.6))
+        let body = LayoutBody.followsLayout(response: .milliseconds(420), damping: 0.6)
         XCTAssertEqual(body.spring, Spring(response: .milliseconds(420), damping: 0.6))
         XCTAssertEqual(try XCTUnwrap(LayoutBody(propValue: body.propValue)), body)
     }
@@ -57,7 +69,7 @@ final class SpringTests: XCTestCase {
     /// damping of 1.
     func testASpringBackFromItsNumbersIsHeld() {
         XCTAssertEqual(Spring(milliseconds: 420, damping: 0.6), Spring(response: .milliseconds(420), damping: 0.6))
-        XCTAssertEqual(Spring(milliseconds: .nan, damping: .nan), .standard)
+        XCTAssertEqual(Spring(milliseconds: .nan, damping: .nan), Spring())
         XCTAssertEqual(Spring(milliseconds: -5, damping: 0).milliseconds, 1)
     }
 }

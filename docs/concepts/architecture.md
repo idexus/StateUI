@@ -314,7 +314,7 @@ struct ResizingPanel: View {
                 .fill(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
-                .motion(.spring(Spring(response: .milliseconds(320))))
+                .motion(.spring(response: .milliseconds(320)))
 
             Button("Resize").onClicked { expanded.toggle() }
         }

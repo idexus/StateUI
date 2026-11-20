@@ -79,7 +79,7 @@ final class LayoutHandAxisTests: XCTestCase {
     /// LET GO MOVING, AN AXIS WITH NO SNAPS GOES ON AS THE HAND WENT: no frame after the lift carries it farther
     /// than a frame of the hand did - a springy layout motion or none - and it slows to where its throw ends.
     func testLetGoMovingAnAxisWithNoSnapsGoesOnAsTheHandWent() {
-        for motion in [Motion.spring(Spring(response: .milliseconds(420), damping: 0.82)), .eased(.milliseconds(300), curve: .cubicOut)] {
+        for motion in [Motion.spring(response: .milliseconds(420), damping: 0.82), .eased(.milliseconds(300), curve: .cubicOut)] {
             Renderer.shared.clearStates()
             let (table, handed) = (State(wrappedValue: Table()), Handed())
             let built = tree(table, handed, motion: motion) {
@@ -110,7 +110,7 @@ final class LayoutHandAxisTests: XCTestCase {
     /// go still where it rests standing still.
     func testLetGoEveryAxisIsNamedWhereItRestsAndOneJourneyGoesOnFromTheHands() throws {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
-        let built = tree(table, handed, motion: .spring(Spring(response: .milliseconds(420), damping: 0.82))) {
+        let built = tree(table, handed, motion: .spring(response: .milliseconds(420), damping: 0.82)) {
             $0.interaction(.simultaneous([
                 .value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100)))
                     .reversed(true).range(0...3),

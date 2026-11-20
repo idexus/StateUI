@@ -63,27 +63,18 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   such a state as `.notStarted(.incompatibleAnimator)`, and `move(to:)` hands the destination to the engine.
   `.engine(following:)` and `.engine(tracking:)` take journeys beside states: a state wakes the engine as it is
   written, a journey on every frame its sample moves.
-- **A spring is a `Spring`.** `Motion.spring(response:damping:)` is `Motion.spring(Spring(response:damping:))` and
-  `LayoutBody.followsLayout(response:damping:)` is `LayoutBody.followsLayout(Spring(response:damping:))`; `.spring()`
-  and `.followsLayout()` name the standard spring, as before. The one type holds a spring's numbers - a response to
-  the millisecond and at least 1, a damping of at least 0.05 - so a layout body's damping below 0.05 is 0.05, as a
-  motion's always was.
-
-  ```swift
-  // before
-  .motion(.spring(response: .milliseconds(260), damping: 0.8))
-
-  // now
-  .motion(.spring(Spring(response: .milliseconds(260), damping: 0.8)))
-  ```
+- **A spring's numbers are held alike wherever one runs.** A motion's and a layout body's spring take the same
+  floors - a response to the millisecond and at least 1, a damping of at least 0.05 - so a layout body's damping
+  below 0.05 is 0.05, as a motion's always was.
 - **A motion layout's views are bodies it names.** `LayoutDynamics` and `.dynamics(_:)` are gone:
-  `.dynamics(.spring(response:damping:))` is `.layoutBodies(.onChange(Spring(response:damping:)))`, and
+  `.dynamics(.spring(response:damping:))` is `.layoutBodies(.onChange(response:damping:))`, and
   `.dynamics(.none)` is `.layoutBodies(.none)`. `LayoutBody` has three values - `.none`, the view at its place at
-  once; `.onChange(_:)`, a spring answering a change of the layout, which every view is unless said; and
-  `.followsLayout(_:)`, which lags behind a moving place too - and a view's own `.layoutBody(_:)` wins over its
+  once; `.onChange(response:damping:)`, a spring answering a change of the layout, which every view is unless said;
+  and `.followsLayout(response:damping:)`, which lags behind a moving place too - and a view's own
+  `.layoutBody(_:)` wins over its
   layout's: a view saying `.followsLayout` in a layout of `.none` now moves, where it stood still before.
 - **A motion layout's parameters travel under their state's motion.** `.parameterMotion(_:)` is gone: say the
-  motion where the parameters are declared, `@State(motion: .spring(Spring(response: .milliseconds(240)))) private
+  motion where the parameters are declared, `@State(motion: .spring(response: .milliseconds(240))) private
   var turn = 0.0`, and change it later with `try $turn.journey.setMotion(_:)`. A hand let go short of a rest comes
   onto it under the same motion.
 - **What the hand moves is one declaration, `.interaction(_:)`.** A motion layout's `.axis(_:input:range:keyframes:
@@ -186,8 +177,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   before. A row that becomes a column where the room runs out is one layout of the same views, each keeping its
   state and the keyboard.
 - **Every layout's children can be bodies.** `.layoutBodies(_:)` on a `VStack`, an `HStack`, a `Grid` or a `ZStack`
-  says how each child comes onto a new place - `.onChange(Spring(...))` on a spring when the tree changes the
-  layout, `.followsLayout(Spring(...))` also when the place moves on a frame, `.none` at once - and
+  says how each child comes onto a new place - `.onChange(...)` on a spring when the tree changes the
+  layout, `.followsLayout(...)` also when the place moves on a frame, `.none` at once - and
   `.layoutBody(_:)` says it for one child, which wins. A layout that says neither moves its children under its
   `.motion(_:)`, as before.
 - **An interaction of its own.** `Interaction`, `InteractionInput`, `InteractionUnit` and `InteractionRelease`

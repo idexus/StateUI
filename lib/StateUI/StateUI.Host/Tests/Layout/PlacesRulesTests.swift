@@ -66,7 +66,7 @@ final class PlacesRulesTests: XCTestCase {
     func testALayoutsChildrenTravelOnlyWhereAPatchSentThem() {
         let animator = Animator()
         let motion = LayoutMotion(animator: animator, now: { 0 }, reducesMotion: { false })
-        motion.applicationMotion = .spring(Spring(response: .milliseconds(240)))
+        motion.applicationMotion = .spring(response: .milliseconds(240))
         let places = TravelingPlaces()
         let child = Placed()
         var values = LayoutValues()

@@ -257,14 +257,15 @@ struct Rows: View {
             Button("Add").onClicked { rows.insert("New", at: 0) }
                 .layoutBody(.none)
         }
-        .layoutBodies(.onChange(Spring(response: .milliseconds(320), damping: 0.7)))
+        .layoutBodies(.onChange(response: .milliseconds(320), damping: 0.7))
     }
 }
 ```
 
-A `LayoutBody` is one of three. `.onChange(_:)` brings the child onto a new
-place on a `Spring` when the tree changes the layout, whatever the layout's
-own motion; `.followsLayout(_:)` does so whenever the place moves - on a
+A `LayoutBody` is one of three. `.onChange(response:damping:)` brings the
+child onto a new place on a spring when the tree changes the layout, whatever
+the layout's own motion; `.followsLayout(response:damping:)` does so whenever
+the place moves - on a
 frame too, as a neighbor grows under a state the host animates - so the
 child lags behind its place and settles onto it; `.none` stands the child at
 its place at once. A body takes a spring and no other motion: following a
@@ -713,8 +714,8 @@ the middle; a swipe carries the card in front with it, however big the room
 draws the cards, and `.release(_:)` says how one let go goes on, as a
 [motion layout's](#a-motion-layout) interaction does. `.itemBody(_:)` makes every card a
 body of the gallery's world, as `.layoutBody(_:)` makes one view of a motion
-layout - `.itemBody(.followsLayout(Spring(response: .milliseconds(300),
-damping: 0.8)))` and each card lags a breath behind the turn and settles back
+layout - `.itemBody(.followsLayout(response: .milliseconds(300),
+damping: 0.8))` and each card lags a breath behind the turn and settles back
 onto its place - and `.itemSize(width:height:)`, `.isSwipeEnabled`,
 `.emptyView`, `.shade` and `.fade` say the rest. Give it a
 bounded size - a `.height`, or a `.fill` row of a `Grid`.
@@ -779,7 +780,7 @@ number moves them left - most carousels - says `.reversed(true)`:
 
 ```swift
 struct Carousel: View {
-    @State(motion: .spring(Spring(response: .milliseconds(240)))) private var turn = 0.0
+    @State(motion: .spring(response: .milliseconds(240))) private var turn = 0.0
 
     let names = ["Mural", "Nebula", "Ridge", "Bloom"]
 
@@ -897,7 +898,7 @@ the same parameters leaves the hand its own:
 
 ```swift
 struct TurningCards: View {
-    @State(motion: .spring(Spring(response: .milliseconds(360)))) private var turn = 0.0
+    @State(motion: .spring(response: .milliseconds(360))) private var turn = 0.0
     @State private var turning = Ticker(every: .seconds(3))
 
     let names = ["Mural", "Nebula", "Ridge", "Bloom"]
@@ -930,8 +931,8 @@ joining fades in where the arithmetic puts it; one leaving goes at once and
 the others close up; a new order slides; and a value read in the body - a
 switch between a fan and a pile - takes every view from where it was to its
 new place as a body, while the parameters go on as they
-go. `.layoutBodies(_:)` says how, a `LayoutBody` for every view: `.onChange(_:)`
-brings each view onto its place on a `Spring` - the standard one, 300
+go. `.layoutBodies(_:)` says how, a `LayoutBody` for every view:
+`.onChange(response:damping:)` brings each view onto its place on a spring - 300
 milliseconds and never past the place, unless said - and `.none` stands the
 views at their places at once - the parameters still travel; their state's
 motion is the parameters' law alone, moving between the views' rests, and `.layoutBodies`
@@ -955,7 +956,7 @@ struct Hand: View {
                     Placement(Rect(context.bounds.width / 2 - 60 + Double(index) * gap, 0, 120, context.bounds.height))
                 }
             }
-            .layoutBodies(.onChange(Spring(response: .milliseconds(300), damping: 0.8)))
+            .layoutBodies(.onChange(response: .milliseconds(300), damping: 0.8))
             .height(160)
 
             Button("Add").onClicked {
@@ -974,8 +975,9 @@ go: `$turn.journey.move(to:)` in the same handler sends the run to the card
 before it, under the state's motion.
 
 A view can say its own body, which wins over its layout's: `.layoutBody(.none)`
-stands it at its place at once, `.layoutBody(.onChange(_:))` gives it a spring of
-its own, and `.layoutBody(.followsLayout(_:))` makes it follow its place too -
+stands it at its place at once, `.layoutBody(.onChange(response:damping:))` gives
+it a spring of its own, and `.layoutBody(.followsLayout(response:damping:))` makes
+it follow its place too -
 carried by the run, it lags behind its place while the run turns, swings past
 where a throw stops and settles back onto it. Bodies are worked out at a fixed
 step, so every host and frame rate shows the same motion; under less motion
@@ -991,7 +993,7 @@ struct Swaying: View {
     var body: some View {
         MotionLayout(["Mural", "Nebula", "Ridge", "Bloom"], parameters: $turn) { name in
             Text(name)
-                .layoutBody(.followsLayout(Spring(response: .milliseconds(420), damping: 0.55)))
+                .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
         } placements: { context, turn in
             (0..<4).map { index in
                 Placement(Rect(context.bounds.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, context.bounds.height))
@@ -1185,7 +1187,7 @@ struct Ring: View {
         .interaction(
             .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
                 .reversed(true).range(0...Double(names.count)).periodic(true).snaps(.every(1))
-                .release(.projected(.spring(Spring(response: .milliseconds(400), damping: 0.8)))))
+                .release(.projected(.spring(response: .milliseconds(400), damping: 0.8))))
         .height(200)
     }
 }
@@ -1205,7 +1207,7 @@ struct Orbit: LayoutParameters {
 }
 
 struct Planets: View {
-    @State(motion: .spring(Spring(response: .milliseconds(240)))) private var orbit = Orbit()
+    @State(motion: .spring(response: .milliseconds(240))) private var orbit = Orbit()
 
     let names = ["Mercury", "Venus", "Earth", "Mars"]
 

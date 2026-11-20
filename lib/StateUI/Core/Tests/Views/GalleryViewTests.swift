@@ -510,12 +510,12 @@ final class GalleryViewTests: XCTestCase {
             return try XCTUnwrap(program).answered().views.map(\.body)
         }
         let plain = try bodies(nil)
-        let following = try bodies(.followsLayout(Spring(response: .milliseconds(300), damping: 0.8)))
+        let following = try bodies(.followsLayout(response: .milliseconds(300), damping: 0.8))
 
         XCTAssertFalse(plain.isEmpty)
         XCTAssertTrue(plain.allSatisfy { $0 == nil }, "none of its own: the gallery's layout decides")
         XCTAssertTrue(
-            following.allSatisfy { $0 == .followsLayout(Spring(response: .milliseconds(300), damping: 0.8)) },
+            following.allSatisfy { $0 == .followsLayout(response: .milliseconds(300), damping: 0.8) },
             "behind its place as the hand carries it")
     }
 

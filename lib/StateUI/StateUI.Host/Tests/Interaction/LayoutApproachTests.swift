@@ -165,7 +165,7 @@ final class LayoutApproachTests: XCTestCase {
     func testASpringsApproachIsCutToTheWayLeft() {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
-        func built() -> Node { tree(phase, handed, .spring(Spring(response: .milliseconds(800)))) }
+        func built() -> Node { tree(phase, handed, .spring(response: .milliseconds(800))) }
         bench.laid(built)
 
         bench.hand(.began)

@@ -109,8 +109,7 @@ extension PlacedView {
         guard let spring = body.host, !reducesMotion(), spring.follows || (said && !resized)
         else { return Arrangement() }
 
-        let law = Motion.spring(
-            Spring(response: .milliseconds(Int64(spring.milliseconds.rounded())), damping: spring.damping))
+        let law = Motion.spring(response: .milliseconds(Int64(spring.milliseconds.rounded())), damping: spring.damping)
         return Arrangement(law: law, lanes: .all, fades: arrangement.fades || said)
     }
 

@@ -260,7 +260,7 @@ number, its speed told back per second included.
 
 A body answering a change alone is at its place but where a change shifted
 it: the parameters and the hand carry it exactly. A body following its layout
-(`.followsLayout(_:)`) is carried by its place's moves too: the place moving
+(`.followsLayout(response:damping:)`) is carried by its place's moves too: the place moving
 under it since the last frame, it keeps where it was shown and its spring
 pulls it after - a card lagging while the run scrolls and settling back,
 flying past where a throw stops at the end and coming back. The view the hand
@@ -272,8 +272,8 @@ every view at its place.
 
 The trap is a body that is any motion. Following a place that keeps moving
 is a spring's answer; an eased length and a glide are laws of a finite way,
-and a body given one would have to guess when its way began. The type takes
-a `Spring` and nothing else.
+and a body given one would have to guess when its way began. A body takes a
+spring's two numbers and nothing else.
 
 ## At rest
 

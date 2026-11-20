@@ -12,7 +12,7 @@ import XCTest
 /// Design: docs/design/views/motion-layout.md#a-change-where-the-parameters-stand
 @MainActor
 final class ProgramBodiesTests: XCTestCase {
-    private let quick = Spring(response: .milliseconds(160))
+    private let quick = Duration.milliseconds(160)
 
     /// A row of `items`, `gap` apart, moved a gap a unit of `phase`: every view the body `bodies`, the first of
     /// them `own` where one is given.
@@ -100,7 +100,7 @@ final class ProgramBodiesTests: XCTestCase {
     /// A VIEW LEAVING GOES AT ONCE, AND THE OTHERS CLOSE UP from where they stood, on the layout's bodies' spring.
     func testTheOthersCloseUpFromWhereTheyStood() throws {
         let scene = Scene()
-        let bench = try scene.bench(bodies: .onChange(quick))
+        let bench = try scene.bench(bodies: .onChange(response: quick))
 
         scene.items.wrappedValue = [1, 2]
         bench.frames(1)
@@ -120,7 +120,7 @@ final class ProgramBodiesTests: XCTestCase {
     func testAViewJoiningFadesIn() throws {
         let scene = Scene()
         scene.items.wrappedValue = [0, 1]
-        let bench = try scene.bench(bodies: .onChange(quick))
+        let bench = try scene.bench(bodies: .onChange(response: quick))
 
         scene.items.wrappedValue = [0, 1, 2]
         bench.frames(1)
@@ -137,7 +137,7 @@ final class ProgramBodiesTests: XCTestCase {
     /// A NEW ORDER SLIDES: each view from where it stood to its new place.
     func testANewOrderSlides() throws {
         let scene = Scene()
-        let bench = try scene.bench(bodies: .onChange(quick))
+        let bench = try scene.bench(bodies: .onChange(response: quick))
 
         scene.items.wrappedValue = [2, 1, 0]
         bench.frames(1)
@@ -151,7 +151,7 @@ final class ProgramBodiesTests: XCTestCase {
     /// A VALUE READ IN THE BODY IS A CHANGE OF THE DESCRIPTION, and the new places are traveled to.
     func testAValueReadInTheBodyTravels() throws {
         let scene = Scene()
-        let bench = try scene.bench(bodies: .onChange(quick))
+        let bench = try scene.bench(bodies: .onChange(response: quick))
 
         scene.gap.wrappedValue = 50
         bench.frames(1)
@@ -165,7 +165,7 @@ final class ProgramBodiesTests: XCTestCase {
     /// last frame stood, so each frame shows the parameters where they are, the change on its way.
     func testAChangeLeavesTheParametersTheirMove() throws {
         let scene = Scene()
-        let bench = try scene.bench(bodies: .onChange(quick))
+        let bench = try scene.bench(bodies: .onChange(response: quick))
         scene.phase.wrappedValue = 0.5
         bench.frames(2)
         XCTAssertEqual(bench.shown[2], 150, accuracy: 0.001, "(2 - 0.5) × 100")
@@ -182,7 +182,7 @@ final class ProgramBodiesTests: XCTestCase {
     /// A CHANGE ON ITS WAY, CHANGED AGAIN, sets out from where each view is shown: no jump.
     func testAChangeChangedAgainSetsOutFromWhereItIsShown() throws {
         let scene = Scene()
-        let bench = try scene.bench(bodies: .onChange(quick))
+        let bench = try scene.bench(bodies: .onChange(response: quick))
         scene.gap.wrappedValue = 50
         bench.frames(6)
         let halfway = bench.shown[2]
@@ -199,7 +199,7 @@ final class ProgramBodiesTests: XCTestCase {
     /// LESS MOTION SHOWS A CHANGE AT ONCE, and so does a layout whose views have no body.
     func testLessMotionAndNoBodyShowAChangeAtOnce() throws {
         let reduced = Scene()
-        let slow = try reduced.bench(bodies: .onChange(quick), reducesMotion: true)
+        let slow = try reduced.bench(bodies: .onChange(response: quick), reducesMotion: true)
         reduced.items.wrappedValue = [1, 2]
         slow.frames(1)
         XCTAssertEqual(slow.shown[0], 0, accuracy: 0.001)
@@ -215,14 +215,14 @@ final class ProgramBodiesTests: XCTestCase {
     /// saying a body travels in a layout whose views have none.
     func testAViewsOwnBodyWinsOverItsLayouts() throws {
         let landing = Scene()
-        let bodies = try landing.bench(bodies: .onChange(quick), own: LayoutBody.none)
+        let bodies = try landing.bench(bodies: .onChange(response: quick), own: LayoutBody.none)
         landing.items.wrappedValue = [1, 2]
         bodies.frames(1)
         XCTAssertEqual(bodies.shown[0], 0, accuracy: 0.001, "no body: at its place at once")
         XCTAssertEqual(bodies.shown[1], 200, accuracy: 12, "a body: from where it stood")
 
         let traveling = Scene()
-        let none = try traveling.bench(bodies: .none, own: .onChange(quick))
+        let none = try traveling.bench(bodies: .none, own: .onChange(response: quick))
         traveling.items.wrappedValue = [1, 2]
         none.frames(1)
         XCTAssertEqual(none.shown[0], 100, accuracy: 12, "its own body: from where it stood")
@@ -233,7 +233,7 @@ final class ProgramBodiesTests: XCTestCase {
     func testAChangeTellsTheRestOnceItsViewsStand() async throws {
         let scene = Scene()
         let settled = Settles()
-        let bench = try scene.bench(bodies: .onChange(quick), settled: settled)
+        let bench = try scene.bench(bodies: .onChange(response: quick), settled: settled)
         for _ in 0..<50 { await Task.yield() }
         let before = settled.count
 

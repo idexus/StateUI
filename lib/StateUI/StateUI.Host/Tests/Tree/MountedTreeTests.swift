@@ -409,7 +409,7 @@ final class MountedTreeTests: XCTestCase {
     @MainActor
     func testAChildsBodyIsItsOwnElseItsLayouts() {
         let (tree, _) = Self.tree(viewless: [])
-        let (own, layouts) = (LayoutBody.followsLayout(Spring(damping: 0.6)), LayoutBody.onChange())
+        let (own, layouts) = (LayoutBody.followsLayout(damping: 0.6), LayoutBody.onChange())
         var saying = HostPatch(id: .manual("saying"), type: .text)
         saying.properties[ViewContract.layoutBody.token] = own.propValue
         var bodied = HostPatch(id: .manual("bodied"), type: .vStack)

@@ -79,7 +79,7 @@ final class SidebarSlideTests: XCTestCase {
     /// Following a toolkit's own slide, it moves by the toolkit's motion and keeps its time: a late frame is not
     /// slowed, as the toolkit's sidebar is not.
     func testASlideFollowingAToolkitKeepsItsMotionAndItsTime() {
-        let toolkit = Motion.spring(Spring(response: .milliseconds(340)))
+        let toolkit = Motion.spring(response: .milliseconds(340))
         var seen: [Double] = []
         slide.slide(1, from: 0, shown: true, following: toolkit) { shown, _ in seen.append(shown) }
         clock = 120

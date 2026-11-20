@@ -71,7 +71,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     }
 
     /// How the boards turn - and the dots with them: one state, one motion.
-    static let turning = Motion.spring(Spring(response: .milliseconds(380), damping: 0.86))
+    static let turning = Motion.spring(response: .milliseconds(380), damping: 0.86)
 
     /// The icons, in order.
     @State private var icons = Self.all
@@ -273,7 +273,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             // Lifted while the hand holds it, on a spring of its own that goes
             // a little past and back.
             .scale(lifted ? 1.18 : 1)
-            .motion(.spring(Spring(response: .milliseconds(260), damping: 0.55)), .transform)
+            .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
         }
     }
     // listing: end

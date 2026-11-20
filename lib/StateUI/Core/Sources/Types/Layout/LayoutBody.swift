@@ -5,9 +5,9 @@
 /// changes, or on a spring behind a place that keeps moving.
 ///
 ///     MotionLayout(cards, id: \.name, parameters: $turn) { card in
-///         CardFace(card).layoutBody(.followsLayout(Spring(response: .milliseconds(420), damping: 0.6)))
+///         CardFace(card).layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.6))
 ///     } placements: { context, turn in … }
-///     .layoutBodies(.onChange(Spring(response: .milliseconds(300), damping: 0.8)))
+///     .layoutBodies(.onChange(response: .milliseconds(300), damping: 0.8))
 ///
 /// `layoutBodies(_:)` says it for every view of a layout, `layoutBody(_:)` for one, which wins.
 /// Design: docs/design/views/motion-layout.md#bodies
@@ -44,24 +44,26 @@ public struct LayoutBody: Equatable, Sendable {
     public static let none = LayoutBody(kind: .none)
 
     /// A body answering a change of the layout - a view joining, a new order, a new arrangement, a view the hand
-    /// lets go: it comes onto its new place on `spring`. A place moved by the parameters carries it with no lag.
+    /// lets go: it comes onto its new place on a spring. A place moved by the parameters carries it with no lag.
     ///
-    /// - Parameter spring: how quickly the body answers and how it is damped; the standard spring where none is
-    ///   named.
+    /// - Parameters:
+    ///   - response: how quickly the spring answers, to the millisecond and at least one.
+    ///   - damping: 1 comes to rest without overshooting, below 1 overshoots and comes back; at least 0.05.
     /// - Returns: the body.
-    public static func onChange(_ spring: Spring = .standard) -> LayoutBody {
-        LayoutBody(kind: .onChange(spring))
+    public static func onChange(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutBody {
+        LayoutBody(kind: .onChange(Spring(response: response, damping: damping)))
     }
 
-    /// A body following its place on `spring`: it answers a change as `onChange(_:)` does, and lags behind its
-    /// place while the run moves too - a card swaying as the run scrolls, flying a little past where a throw stops
-    /// at the end - and settles back onto it.
+    /// A body following its place on a spring: it answers a change as `onChange(response:damping:)` does, and lags
+    /// behind its place while the run moves too - a card swaying as the run scrolls, flying a little past where a
+    /// throw stops at the end - and settles back onto it.
     ///
-    /// - Parameter spring: how quickly the body answers and how it is damped; the standard spring where none is
-    ///   named.
+    /// - Parameters:
+    ///   - response: how quickly the spring answers, to the millisecond and at least one.
+    ///   - damping: 1 comes to rest without overshooting, below 1 overshoots and comes back; at least 0.05.
     /// - Returns: the body.
-    public static func followsLayout(_ spring: Spring = .standard) -> LayoutBody {
-        LayoutBody(kind: .followsLayout(spring))
+    public static func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutBody {
+        LayoutBody(kind: .followsLayout(Spring(response: response, damping: damping)))
     }
 }
 

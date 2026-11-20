@@ -94,7 +94,7 @@ final class InteractionAxisTests: XCTestCase {
 
         XCTAssertEqual(try law(.projected(cubicOut)), .glide(longest: .milliseconds(800)))
         XCTAssertEqual(try law(.projected(.glide(longest: .milliseconds(800)))), .glide(longest: .milliseconds(800)))
-        let spring = Motion.spring(Spring(response: .milliseconds(500), damping: 0.8))
+        let spring = Motion.spring(response: .milliseconds(500), damping: 0.8)
         XCTAssertEqual(try law(.projected(spring)), spring)
     }
 

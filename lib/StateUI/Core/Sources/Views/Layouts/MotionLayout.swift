@@ -448,7 +448,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// (`layoutBody(_:)`): a view a change moves - joining, the run arranged anew, let go by the hand - comes onto
     /// its new place as this body says.
     ///
-    ///     .layoutBodies(.onChange(Spring(response: .milliseconds(420), damping: 0.8)))
+    ///     .layoutBodies(.onChange(response: .milliseconds(420), damping: 0.8))
     ///
     /// - Parameter body: the views' body; `.onChange()` unless said, `.none` for views standing at their places at
     ///   once - the parameters still travel under their state's motion.

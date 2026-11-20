@@ -11,7 +11,7 @@ public protocol VisualElementProperties: PropertyContainer {}
 extension VisualElement {
     /// How this view's values animate when they change.
     ///
-    ///     VStack { … }.motion(.spring(Spring(response: .milliseconds(260))))
+    ///     VStack { … }.motion(.spring(response: .milliseconds(260)))
     ///     Text(count).motion(.none)
     ///
     /// A changed value animates to its new setting by default; `.none` snaps,
@@ -32,7 +32,7 @@ extension VisualElement {
     /// How some of this view's values animate, leaving the rest as they were.
     ///
     ///     VStack { … }
-    ///         .motion(.spring(Spring(response: .milliseconds(240))))
+    ///         .motion(.spring(response: .milliseconds(240)))
     ///         .motion(.none, .size)
     ///
     /// The last rule that names a value answers for it. The usual use is a view

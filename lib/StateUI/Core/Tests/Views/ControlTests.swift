@@ -355,14 +355,14 @@ final class ControlTests: XCTestCase {
             // The motion layout as its view writes it: the views, the arithmetic, the
             // phase and the hand over them. A composed view, so the case is its body built.
             ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
-                MotionLayout(["one", "two"], parameters: turn.traveling(.spring(Spring(response: .milliseconds(240))))) {
+                MotionLayout(["one", "two"], parameters: turn.traveling(.spring(response: .milliseconds(240)))) {
                     Text($0)
-                        .layoutBody(.followsLayout(Spring(response: .milliseconds(420), damping: 0.6)))
+                        .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.6))
                 } placements: { context, phase in
                     [Placement(Rect(phase, 0, context.bounds.width / 2, context.bounds.height)), Placement(Rect(context.bounds.width / 2, 0, 10, 10))]
                 }
                 .interaction(
-                    Interaction.value(turn.traveling(.spring(Spring(response: .milliseconds(240)))), axis: \.self, input: .translation(.horizontal, unit: .points(90))).reversed(true).range(0...1).snaps(.every(1))
+                    Interaction.value(turn.traveling(.spring(response: .milliseconds(240))), axis: \.self, input: .translation(.horizontal, unit: .points(90))).reversed(true).range(0...1).snaps(.every(1))
                         .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                 .following(chosen.projectedValue)
                 .shade {
@@ -586,7 +586,7 @@ final class ControlTests: XCTestCase {
                 .clipsContent(true)
                 .letsInputThrough(true)
                 // How its children come onto their places is the layout tier's too.
-                .layoutBodies(.onChange(Spring(response: .milliseconds(320), damping: 0.8)))
+                .layoutBodies(.onChange(response: .milliseconds(320), damping: 0.8))
                 .style(.card)
                 .padding(start: 24, top: 16, end: 24, bottom: 16)
                 .margin(start: 4, top: 8, end: 4, bottom: 8)

@@ -877,7 +877,7 @@ enum Listings {
                             .reversed(true)
                             .range(0...Double(max(count - 1, 0)))
                             .snaps(.every(1))
-                            .release(.projected(.spring(Spring(response: .milliseconds(500), damping: 0.8)))))
+                            .release(.projected(.spring(response: .milliseconds(500), damping: 0.8))))
                     // A FIRST MOVE UP is the card's: it follows the hand; let go
                     // high or fast, it flies off and the app closes - the others
                     // close up, the card in front staying in front.
@@ -1173,7 +1173,7 @@ enum Listings {
 
         @State private var wide = false
 
-        static let laws: [Motion] = [.standard, .spring(Spring(response: .milliseconds(320), damping: 0.6)), .none]
+        static let laws: [Motion] = [.standard, .spring(response: .milliseconds(320), damping: 0.6), .none]
 
         /// What the picker calls a law.
         static func name(_ law: Motion) -> String {
@@ -2123,7 +2123,7 @@ enum Listings {
             // THE TURN'S OWN MOTION, `@State(motion:)`, DRIVES MOVING BETWEEN CARDS;
             // `.layoutBodies` THE CARDS reaching their new places after a card
             // joins, leaves or the order changes.
-            .layoutBodies(.onChange(Spring(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1)))
+            .layoutBodies(.onChange(response: .milliseconds(bouncy ? 600 : 300), damping: bouncy ? 0.4 : 1))
         }
 
         /// Where one card stands in the fan: along an arc and turned with it, the
@@ -5292,7 +5292,7 @@ enum Listings {
         }
 
         /// How the boards turn - and the dots with them: one state, one motion.
-        static let turning = Motion.spring(Spring(response: .milliseconds(380), damping: 0.86))
+        static let turning = Motion.spring(response: .milliseconds(380), damping: 0.86)
 
         /// The icons, in order.
         @State private var icons = Self.all
@@ -5479,7 +5479,7 @@ enum Listings {
                 // Lifted while the hand holds it, on a spring of its own that goes
                 // a little past and back.
                 .scale(lifted ? 1.18 : 1)
-                .motion(.spring(Spring(response: .milliseconds(260), damping: 0.55)), .transform)
+                .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
             }
         }
         """#,
@@ -6332,7 +6332,7 @@ enum Listings {
         }
 
         /// Where the strips stand - handed on with `$`, never read in the body.
-        @State(motion: .spring(Spring(response: .milliseconds(360), damping: 0.8))) private var strips = Strips()
+        @State(motion: .spring(response: .milliseconds(360), damping: 0.8)) private var strips = Strips()
 
         var body: some View {
             // ONE INPUT: the hand dragged across, carrying the cards with it...
@@ -6853,7 +6853,7 @@ enum Listings {
 
         /// Where the table stands on every axis - handed on with `$`, never read
         /// in the body.
-        @State(motion: .spring(Spring(response: .milliseconds(420), damping: 0.82))) private var table = Table()
+        @State(motion: .spring(response: .milliseconds(420), damping: 0.82)) private var table = Table()
 
         /// Whether the table rests on a photo and the photos on a quarter turn:
         /// read in the body, so the switch declares the axes again.
@@ -7041,7 +7041,7 @@ enum Listings {
                 // A BODY FOR EVERY ROW, where asked: each comes onto its new
                 // place on a spring of its own - past it, and back - in place of
                 // the layout's motion.
-                springy ? stack.layoutBodies(.onChange(Spring(response: .milliseconds(420), damping: 0.55))) : stack
+                springy ? stack.layoutBodies(.onChange(response: .milliseconds(420), damping: 0.55)) : stack
 
                 SwitchRow("Springy rows", $springy)
 
@@ -8170,7 +8170,7 @@ enum Listings {
                 switch self {
                 case .easeOut: .eased(.milliseconds(400), curve: .cubicOut)
                 case .glide: .eased(.milliseconds(300), curve: .sineOut)
-                case .spring: .spring(Spring(response: .milliseconds(400), damping: 0.8))
+                case .spring: .spring(response: .milliseconds(400), damping: 0.8)
                 case .bounce: .eased(.milliseconds(600), curve: .backOut)
                 case .short: .eased(.milliseconds(200), curve: .cubicOut)
                 }
@@ -8303,7 +8303,7 @@ enum Listings {
                     // settles back onto its place.
                     if swaying {
                         face(Self.cards[index])
-                            .layoutBody(.followsLayout(Spring(response: .milliseconds(420), damping: 0.55)))
+                            .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
                     } else {
                         face(Self.cards[index])
                     }
@@ -8492,7 +8492,7 @@ enum Listings {
 
         static func law(_ index: Int) -> Motion {
             switch index {
-            case 1: .spring(Spring(response: .milliseconds(320)))
+            case 1: .spring(response: .milliseconds(320))
             case 2: .eased(.milliseconds(900), curve: .sineInOut)
             case 3: .none
             default: .standard
@@ -8502,7 +8502,7 @@ enum Listings {
         @State private var law = 2
         @State private var wide = false
         @State private var warm = false
-        @State(motion: .spring(Spring(response: .milliseconds(320)))) private var reach = 120.0
+        @State(motion: .spring(response: .milliseconds(320))) private var reach = 120.0
 
         var body: some View {
             // NOTHING HERE SAYS "ANIMATE". A value that changes is a setpoint: the
@@ -9362,8 +9362,8 @@ enum Listings {
                                 // Let go, a spring brings it home from where the
                                 // hand left it.
                                 (panX, panY) = (0, 0)
-                                $liveX.journey.move(to: 0, .spring(Spring(response: .milliseconds(600), damping: 0.5)))
-                                $liveY.journey.move(to: 0, .spring(Spring(response: .milliseconds(600), damping: 0.5)))
+                                $liveX.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
+                                $liveY.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                             case .ended where letting == "Glides on":
                                 // It goes on from the hand's speed. A cubic-out
                                 // journey sets out three times as fast as it
@@ -13468,7 +13468,7 @@ enum Listings {
 
         /// Where the ring stands on both axes - handed on with `$`, never read in
         /// the body.
-        @State(motion: .spring(Spring(response: .milliseconds(420), damping: 0.8))) private var ring = Ring()
+        @State(motion: .spring(response: .milliseconds(420), damping: 0.8)) private var ring = Ring()
 
         var body: some View {
             let count = Double(Self.cards.count)

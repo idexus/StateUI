@@ -20,7 +20,7 @@ final class LayoutFollowerTests: XCTestCase {
     private func tree(_ phase: State<Double>) -> Node {
         MotionLayout([0, 1], parameters: phase.traveling(.none)) { index in
             if index == 0 {
-                Text("\(index)").layoutBody(.followsLayout(Spring(response: .milliseconds(400), damping: 0.5)))
+                Text("\(index)").layoutBody(.followsLayout(response: .milliseconds(400), damping: 0.5))
             } else {
                 Text("\(index)")
             }
@@ -34,10 +34,10 @@ final class LayoutFollowerTests: XCTestCase {
     func testABodysSpringIsTheOneItWasGiven() {
         let spring = Spring(response: .milliseconds(420), damping: 0.55)
 
-        XCTAssertEqual(LayoutBody.followsLayout(spring).spring, spring)
-        XCTAssertEqual(LayoutBody.onChange(spring).spring, spring)
-        XCTAssertEqual(LayoutBody.followsLayout(Spring(damping: .nan)).spring, .standard)
-        XCTAssertEqual(LayoutBody.onChange().spring, .standard)
+        XCTAssertEqual(LayoutBody.followsLayout(response: .milliseconds(420), damping: 0.55).spring, spring)
+        XCTAssertEqual(LayoutBody.onChange(response: .milliseconds(420), damping: 0.55).spring, spring)
+        XCTAssertEqual(LayoutBody.followsLayout(damping: .nan).spring, Spring())
+        XCTAssertEqual(LayoutBody.onChange().spring, Spring())
     }
 
     /// A VIEW'S BODY FOLLOWS THE STATE ITS VIEW READS: a switch the views' own closure reads turns their bodies on,
@@ -56,7 +56,7 @@ final class LayoutFollowerTests: XCTestCase {
         func built() -> Node {
             let layout = MotionLayout([0], parameters: phase.traveling(.none)) { index in
                 if sways.wrappedValue {
-                    Text("\(index)").layoutBody(.followsLayout(Spring(response: .milliseconds(400), damping: 0.5)))
+                    Text("\(index)").layoutBody(.followsLayout(response: .milliseconds(400), damping: 0.5))
                 } else {
                     Text("\(index)")
                 }
@@ -79,7 +79,7 @@ final class LayoutFollowerTests: XCTestCase {
         moved(worn, to: [2, 2, 0], mask: 0b111)
         bench.cycle()
         XCTAssertEqual(
-            body(), .followsLayout(Spring(response: .milliseconds(400), damping: 0.5)),
+            body(), .followsLayout(response: .milliseconds(400), damping: 0.5),
             "a body now: answered as following its place (shaded \(shaded))")
     }
 
@@ -90,7 +90,7 @@ final class LayoutFollowerTests: XCTestCase {
         _ = bench.laid(Renders(), { self.tree(phase) })
 
         XCTAssertEqual(bench.answer.views.map(\.body), [
-            .followsLayout(Spring(response: .milliseconds(400), damping: 0.5)), nil,
+            .followsLayout(response: .milliseconds(400), damping: 0.5), nil,
         ])
     }
 }

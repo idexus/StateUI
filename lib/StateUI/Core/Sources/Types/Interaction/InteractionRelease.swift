@@ -3,7 +3,7 @@
 
 /// How a value goes on once the hand lets go of it.
 ///
-///     .release(.projected(.spring(Spring(response: .milliseconds(500), damping: 0.8))))
+///     .release(.projected(.spring(response: .milliseconds(500), damping: 0.8)))
 ///     .release(.nearest(.eased(.milliseconds(250))))
 ///     .release(.stay)
 ///

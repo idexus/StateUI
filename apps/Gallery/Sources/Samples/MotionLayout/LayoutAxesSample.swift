@@ -49,7 +49,7 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
     }
 
     /// Where the strips stand - handed on with `$`, never read in the body.
-    @State(motion: .spring(Spring(response: .milliseconds(360), damping: 0.8))) private var strips = Strips()
+    @State(motion: .spring(response: .milliseconds(360), damping: 0.8)) private var strips = Strips()
     // listing: end
 
     // The strips are moved by the hand of their own, so the example is not put

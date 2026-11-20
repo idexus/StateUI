@@ -64,7 +64,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
             // A BODY FOR EVERY ROW, where asked: each comes onto its new
             // place on a spring of its own - past it, and back - in place of
             // the layout's motion.
-            springy ? stack.layoutBodies(.onChange(Spring(response: .milliseconds(420), damping: 0.55))) : stack
+            springy ? stack.layoutBodies(.onChange(response: .milliseconds(420), damping: 0.55)) : stack
 
             SwitchRow("Springy rows", $springy)
                 .accessibilityIdentifier("living.springy")

@@ -28,7 +28,7 @@ struct LightTableSample: SampleContent, ExampleContent {
 
     /// Where the table stands on every axis - handed on with `$`, never read
     /// in the body.
-    @State(motion: .spring(Spring(response: .milliseconds(420), damping: 0.82))) private var table = Table()
+    @State(motion: .spring(response: .milliseconds(420), damping: 0.82)) private var table = Table()
 
     /// Whether the table rests on a photo and the photos on a quarter turn:
     /// read in the body, so the switch declares the axes again.

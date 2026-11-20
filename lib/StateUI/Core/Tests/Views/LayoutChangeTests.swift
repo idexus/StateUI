@@ -41,7 +41,7 @@ final class LayoutChangeTests: XCTestCase {
     /// `bodies`.
     private func row(
         _ items: State<[Int]>, gap: State<Double>? = nil, phase: State<Double>? = nil,
-        bodies: LayoutBody = .onChange(Spring(response: .milliseconds(160)))
+        bodies: LayoutBody = .onChange(response: .milliseconds(160))
     ) -> Node {
         let apart = gap?.wrappedValue ?? 100
         let count = items.wrappedValue.count
@@ -227,7 +227,7 @@ final class LayoutChangeTests: XCTestCase {
             MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Text("\($0)") } placements: { context, _ in
                 [Placement(Rect(0, 0, context.bounds.width, 10)), Placement(Rect(context.bounds.width, 0, 10, 10))]
             }
-            .layoutBodies(.onChange(Spring(response: .milliseconds(160))))
+            .layoutBodies(.onChange(response: .milliseconds(160)))
             .node
         }
         _ = bench.laid(renders, tree)

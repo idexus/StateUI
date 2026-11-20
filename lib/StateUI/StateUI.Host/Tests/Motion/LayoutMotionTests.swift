@@ -276,7 +276,7 @@ final class LayoutMotionTests: XCTestCase {
     /// too - passing its place where its spring is damped below one, and arrives where its place moved otherwise.
     func testAChildAnsweringAChangeTravelsOnItsSpring() {
         let layout = HandWoundLayout(motion: HostLayoutMotion(motion: .none, lanes: .all))
-        let body = LayoutBody.onChange(Spring(response: .milliseconds(300), damping: 0.4))
+        let body = LayoutBody.onChange(response: .milliseconds(300), damping: 0.4)
         let child = Placed()
         layout.arrange([(child, 2, Self.row(1))], bodies: [2: body])
 
@@ -300,7 +300,7 @@ final class LayoutMotionTests: XCTestCase {
     /// changes, where one answering a change alone arrives.
     func testAChildFollowingItsPlaceTravelsWheneverItMoves() {
         let layout = HandWoundLayout()
-        let body = LayoutBody.followsLayout(Spring(response: .milliseconds(300)))
+        let body = LayoutBody.followsLayout(response: .milliseconds(300))
         let (follower, answering) = (Placed(), Placed())
         layout.arrange([(follower, 2, Self.row(1)), (answering, 3, Self.row(2))])
 

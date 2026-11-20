@@ -238,7 +238,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// How the run goes on when the user lets go of it: thrown on, onto the
     /// nearest card, or left where it is.
     ///
-    ///     .release(.projected(.spring(Spring(response: .milliseconds(500), damping: 0.8))))
+    ///     .release(.projected(.spring(response: .milliseconds(500), damping: 0.8)))
     ///
     /// - Parameter release: `.projected(_:)` thrown on as the motion says -
     ///   eased, its length says how far a throw carries and its curve how it
@@ -255,7 +255,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// How each card moves as a body of the gallery's world: a body following its place lags behind it as the
     /// gallery turns, and settles back onto it.
     ///
-    ///     .itemBody(.followsLayout(Spring(response: .milliseconds(300), damping: 0.8)))
+    ///     .itemBody(.followsLayout(response: .milliseconds(300), damping: 0.8))
     ///
     /// - Parameter body: the body every card is, as `layoutBody(_:)` gives one view of a motion layout.
     /// - Returns: the gallery, its cards moving so.

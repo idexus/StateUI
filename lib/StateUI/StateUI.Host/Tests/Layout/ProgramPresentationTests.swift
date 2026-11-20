@@ -10,8 +10,8 @@ import XCTest
 /// where it was shown, a moving place carrying a child that follows it, and the bodies stepped to rest.
 /// Design: docs/design/host/layout.md#bodies
 final class ProgramPresentationTests: XCTestCase {
-    private let spring = LayoutBody.onChange(Spring(response: .milliseconds(160)))
-    private let follower = LayoutBody.followsLayout(Spring(response: .milliseconds(160)))
+    private let spring = LayoutBody.onChange(response: .milliseconds(160))
+    private let follower = LayoutBody.followsLayout(response: .milliseconds(160))
 
     /// A child `x` across, ten points square, at `opacity`.
     private func place(_ x: Double, opacity: Double = 1) -> HostPlacement {
@@ -147,7 +147,7 @@ final class ProgramPresentationTests: XCTestCase {
 
     /// A FOLLOWING CHILD DAMPED BELOW ONE PASSES ITS PLACE AND SETTLES ONTO IT.
     func testALighterDampedFollowerPassesItsPlaceAndSettles() {
-        let swaying = LayoutBody.followsLayout(Spring(response: .milliseconds(400), damping: 0.5))
+        let swaying = LayoutBody.followsLayout(response: .milliseconds(400), damping: 0.5)
         var shown = ProgramPresentation()
         _ = shown.take(answer([HostLayoutView(key: 1, target: place(0), body: swaying)]), at: 0, reducesMotion: false)
         _ = shown.take(answer([HostLayoutView(key: 1, target: place(100), body: swaying)]), at: 16, reducesMotion: false)

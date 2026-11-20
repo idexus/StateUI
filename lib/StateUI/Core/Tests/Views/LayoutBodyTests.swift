@@ -17,7 +17,7 @@ final class LayoutBodyTests: XCTestCase {
 
     private let bench = LayoutBench()
 
-    private let quick = Spring(response: .milliseconds(160))
+    private let quick = Duration.milliseconds(160)
 
     /// A row of views a hundred points apart, moved a hundred points a unit of `phase` - every view the body
     /// `bodies`, but the first of `items`, which is `own` where one is given.
@@ -43,10 +43,10 @@ final class LayoutBodyTests: XCTestCase {
 
     /// THE THREE BODIES CROSS TO THE HOST AND BACK AS THEY ARE; numbers that are no body are none.
     func testABodyCrossesAsItIs() throws {
-        for body in [LayoutBody.none, .onChange(), .onChange(quick), .followsLayout(Spring(damping: 0.6))] {
+        for body in [LayoutBody.none, .onChange(), .onChange(response: quick), .followsLayout(damping: 0.6)] {
             XCTAssertEqual(try XCTUnwrap(LayoutBody(propValue: body.propValue)), body)
         }
-        XCTAssertNotEqual(LayoutBody.onChange(quick), .followsLayout(quick), "which body it is, not its spring alone")
+        XCTAssertNotEqual(LayoutBody.onChange(response: quick), .followsLayout(response: quick), "which body it is, not its spring alone")
         XCTAssertNil(LayoutBody(propValue: .numbers([3, 300, 1])))
         XCTAssertNil(LayoutBody(propValue: .numbers([1, 300])))
         XCTAssertNil(LayoutBody(propValue: .numbers([])))
@@ -66,12 +66,12 @@ final class LayoutBodyTests: XCTestCase {
     /// layout's bodies decide that one, on the host.
     func testTheLayoutAnswersEachViewsOwnBody() {
         let (items, phase) = (State(wrappedValue: [0, 1, 2]), State(wrappedValue: 0.0))
-        let own = LayoutBody.followsLayout(Spring(response: .milliseconds(420), damping: 0.6))
+        let own = LayoutBody.followsLayout(response: .milliseconds(420), damping: 0.6)
 
-        _ = bench.laid(Renders(), { self.row(items, phase: phase, bodies: .onChange(self.quick), own: own) })
+        _ = bench.laid(Renders(), { self.row(items, phase: phase, bodies: .onChange(response: self.quick), own: own) })
         XCTAssertEqual(bench.answer.views.map(\.body), [own, nil, nil])
 
-        _ = bench.laid(Renders(), { self.row(items, phase: phase, bodies: .onChange(self.quick), own: LayoutBody.none) })
+        _ = bench.laid(Renders(), { self.row(items, phase: phase, bodies: .onChange(response: self.quick), own: LayoutBody.none) })
         XCTAssertEqual(bench.answer.views.map(\.body), [LayoutBody.none, nil, nil], "a view saying none says so")
     }
 
@@ -80,10 +80,10 @@ final class LayoutBodyTests: XCTestCase {
         let (items, phase) = (State(wrappedValue: [0, 1]), State(wrappedValue: 0.0))
         let renders = Renders()
 
-        let said = renders.render(row(items, phase: phase, bodies: .onChange(quick)))
+        let said = renders.render(row(items, phase: phase, bodies: .onChange(response: quick)))
         let layout = try XCTUnwrap(said.first(.motionLayout))
         XCTAssertEqual(
-            layout.properties[LayoutContract.layoutBodies.token].flatMap(LayoutBody.init(propValue:)), .onChange(quick))
+            layout.properties[LayoutContract.layoutBodies.token].flatMap(LayoutBody.init(propValue:)), .onChange(response: quick))
 
         let stack = renders.renderFromScratch(VStack { Text("row") }.layoutBodies(.none).node)
         XCTAssertEqual(

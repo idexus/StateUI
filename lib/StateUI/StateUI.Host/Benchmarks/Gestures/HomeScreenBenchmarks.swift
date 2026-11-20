@@ -41,7 +41,7 @@ private struct HomeApplication: Application {
 /// The icons, a board of twenty in four columns a board, the held one lifted.
 private struct HomeBoard: View {
     @State private var icons = (0..<48).map { "Icon \($0)" }
-    @State(motion: .spring(Spring(response: .milliseconds(380), damping: 0.86))) private var board = 0.0
+    @State(motion: .spring(response: .milliseconds(380), damping: 0.86)) private var board = 0.0
     @State private var lifted: String?
 
     var body: some View {
@@ -117,6 +117,6 @@ private struct HomeTile: View {
         }
         .spacing(6)
         .scale(lifted ? 1.18 : 1)
-        .motion(.spring(Spring(response: .milliseconds(260), damping: 0.55)), .transform)
+        .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
     }
 }
