@@ -6,10 +6,12 @@ avoids and the rule it keeps are here, in the present tense.
 
 ## The golden rule
 
-Comments stay under a quarter of every source file's lines; everything else
-is a design note. The `///` documentation of a public declaration - what an
-editor shows the developer on `.` - is not counted: it gives enough to choose
-and use the declaration, and leaves how it works inside to these notes.
+Comments stay under a quarter of every source file's lines - or within eight
+lines, where a quarter is fewer, so a very short file still says its
+minimum; everything else is a design note. Neither count takes the `///`
+documentation of a public declaration - what an editor shows the developer
+on `.`, which gives enough to choose and use the declaration and leaves how
+it works inside to these notes - or the license header.
 
 Where the code wants its reason, one line points here:
 

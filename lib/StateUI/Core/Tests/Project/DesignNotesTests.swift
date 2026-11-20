@@ -77,7 +77,8 @@ final class DesignNotesTests: XCTestCase {
         XCTAssertEqual(broken, [], "a reference names a note or a section that does not exist")
     }
 
-    /// In every held directory, comments stay under a quarter of each file's lines.
+    /// In every held directory, comments stay under a quarter of each file's lines - or within eight lines, where a
+    /// quarter is fewer.
     func testTheHeldSourcesKeepTheGoldenRule() throws {
         var over: [String] = []
 
@@ -89,11 +90,33 @@ final class DesignNotesTests: XCTestCase {
             for file in files {
                 let text = try String(contentsOf: root.appendingPathComponent(file), encoding: .utf8)
                 let (comments, lines) = Self.measure(text)
-                if comments * 4 >= lines { over.append("\(directory)/\(file): \(comments) of \(lines)") }
+                if !Self.keepsTheRule(comments: comments, lines: lines) {
+                    over.append("\(directory)/\(file): \(comments) of \(lines)")
+                }
             }
         }
 
-        XCTAssertEqual(over, [], "comments reach a quarter of these files; the reasons belong in docs/design")
+        XCTAssertEqual(
+            over, [], "comments pass eight lines and reach a quarter of these files; the reasons belong in docs/design")
+    }
+
+    /// A SHORT FILE STILL SAYS ITS MINIMUM: eight lines of comments stand in a file of any length; past eight they
+    /// stay under a quarter of its lines.
+    func testAShortFileKeepsEightLinesOfComments() {
+        XCTAssertTrue(Self.keepsTheRule(comments: 8, lines: 12))
+        XCTAssertTrue(Self.keepsTheRule(comments: 8, lines: 25))
+        XCTAssertFalse(Self.keepsTheRule(comments: 9, lines: 25), "past eight, and over a quarter")
+        XCTAssertFalse(Self.keepsTheRule(comments: 9, lines: 36), "a quarter reached")
+        XCTAssertTrue(Self.keepsTheRule(comments: 9, lines: 37))
+        XCTAssertTrue(Self.keepsTheRule(comments: 0, lines: 0), "a file of public documentation alone")
+    }
+
+    /// The comment lines a file of any length may hold.
+    static let floor = 8
+
+    /// Whether `comments` of `lines` - both as `measure` counts them - keep the golden rule.
+    static func keepsTheRule(comments: Int, lines: Int) -> Bool {
+        comments <= floor || comments * 4 < lines
     }
 
     /// The anchors of a note's headings: lowercase, letters and digits, one hyphen per gap.
