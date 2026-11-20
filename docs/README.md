@@ -45,7 +45,7 @@ matrix, the control dictionary and the design notes beside them.
   engines.
 - [Motion and journeys](concepts/motion-and-journeys.md) defines motion laws,
   precedence, value journeys, interruption, visibility, layout motion, and
-  how a view enters.
+  how a view comes and goes.
 - [Environment](concepts/environment.md) covers application objects, the
   facts the library offers by name (`\.application`, `\.scene`, `\.window`,
   `\.device`, `\.locale`), dates, time and time zones.

@@ -1,16 +1,16 @@
 import StateUI
 
-/// A view coming by the transition it declares.
+/// A view coming and going by the transition it declares.
 struct TransitionSample: SampleContent, ExampleContent {
     static let id = "transition"
-    static let title = "A view that enters"
-    static let summary = "Add a note: it comes from where its transition says, on a spring of its own."
+    static let title = "A view that comes and goes"
+    static let summary = "Add a note, then remove one: each comes from, and goes to, where its transition says."
 
     // listing: TransitionSample
     static let ways = ["Rising", "Growing", "From the side"]
 
-    /// What a note comes from: faded and lower, faded and smaller, or faded
-    /// and well to the side.
+    /// What a note comes from and goes to: faded and lower, faded and
+    /// smaller, or faded and well to the side.
     static func effect(_ way: Int) -> TransitionEffect {
         switch way {
         case 1: .opacity.combined(with: .scale(0.6))
@@ -42,9 +42,10 @@ struct TransitionSample: SampleContent, ExampleContent {
                     .background(Palette.raised)
                     .lineWidth(0)
                     .height(40)
-                    // HOW IT COMES, as the stack gains it: from the effect to
-                    // how it stands. A note already standing is not moved by
-                    // a transition said again.
+                    // HOW IT COMES AND GOES, as the stack gains and drops
+                    // it: from the effect to how it stands, and back to the
+                    // effect. A note already standing is not moved by a
+                    // transition said again.
                     .transition(.symmetric(Self.effect(way)))
                     // UNDER ITS OWN MOTION, whatever carries the notes
                     // below it to their new places.
@@ -63,6 +64,14 @@ struct TransitionSample: SampleContent, ExampleContent {
                 Button(Self.ways[way]).onClicked { way = (way + 1) % Self.ways.count }
                     .accessibilityIdentifier("transition.way")
 
+                // A NOTE REMOVED is no more the stack's at once - the notes
+                // under it close over its place - and is drawn until it has
+                // gone where its transition says.
+                Button("Remove").onClicked {
+                    if !cards.isEmpty { cards.removeFirst() }
+                }
+                .accessibilityIdentifier("transition.remove")
+
                 Button("Clear").onClicked { cards.removeAll() }
                     .accessibilityIdentifier("transition.clear")
             }
@@ -80,9 +89,15 @@ struct TransitionSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The middle button chooses what the NEXT note comes from. The "
+            Text("The second button chooses what the NEXT note comes from. The "
                 + "notes already standing are given the new transition too, and "
-                + "do not move for it: a transition is how a view comes.")
+                + "do not move for it: a transition is how a view comes and goes.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Remove takes the top note away. It goes where its transition "
+                + "says while the notes under it close over its place; where a "
+                + "platform keeps no leaving view, it is gone at once.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

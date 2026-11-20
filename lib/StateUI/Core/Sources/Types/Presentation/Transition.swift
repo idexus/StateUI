@@ -3,8 +3,8 @@
 
 // Design: docs/design/views/transitions.md#a-transition
 
-/// How a view comes as the tree gains it: the effect its entry comes from, held with the one its exit goes to. It
-/// moves under the view's own motion, else the application's.
+/// How a view comes and goes as the tree gains and drops it: the effect its entry comes from, and the one its exit
+/// goes to. Both move under the view's own motion, else the application's.
 ///
 ///     if showsNote {
 ///         Note().transition(.symmetric(.opacity.combined(with: .translation(y: 12))))

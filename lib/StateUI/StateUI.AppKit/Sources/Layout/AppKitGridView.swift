@@ -31,9 +31,16 @@ final class AppKitGridView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuri
     override var isFlipped: Bool { true }
 
     func setItems(_ items: [AppKitLayoutItem]) {
+        setItems(items, presenting: items.map(\.view))
+    }
+
+    /// Takes `items` to measure and place, and `views` - theirs, and those of children kept as they leave - as its
+    /// subviews in that order: a view no item names stands where it stood.
+    /// Design: docs/design/platforms/appkit/views.md#a-view-kept-as-it-leaves
+    func setItems(_ items: [AppKitLayoutItem], presenting views: [NSView]) {
+        replaceSubviews(with: views)
         guard !AppKitLayoutItem.sameArrangement(self.items, items) else { return }
 
-        replaceSubviews(with: items.map(\.view))
         self.items = items
         invalidateMeasurements()
     }

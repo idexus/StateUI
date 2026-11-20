@@ -26,6 +26,7 @@ extension AppKitElement {
         guard let view else { return }
         if let items = view as? AppKitItemsView { return items.childrenChanged() }
         let items = element.arrangedChildren.map(\.appKit).compactMap(\.layoutItem)
+        let presented = presentedViews()
         (view as? AppKitDirectedLayout)?.direction = element.layoutDirection
 
         if let label = view as? AppKitTextView {
@@ -44,7 +45,7 @@ extension AppKitElement {
         }
 
         if let stack = view as? AppKitStackView {
-            stack.setItems(items)
+            stack.setItems(items, presenting: presented)
             return
         }
 
@@ -70,17 +71,31 @@ extension AppKitElement {
         }
 
         if let grid = view as? AppKitGridView {
-            grid.setItems(items)
+            grid.setItems(items, presenting: presented)
             return
         }
 
         if let layers = view as? AppKitZStackView {
-            layers.setItems(items)
+            layers.setItems(items, presenting: presented)
             return
         }
 
         if let scroll = view as? AppKitScrollView {
             scroll.setItems(items)
+        }
+    }
+
+    /// The views that stand in this element's: its arranged children's, and those of children kept as they leave,
+    /// each made deaf to input and out of what assistive technology meets as it is found leaving.
+    /// Design: docs/design/platforms/appkit/views.md#a-view-kept-as-it-leaves
+    private func presentedViews() -> [NSView] {
+        element.presentedChildren.flatMap { child -> [NSView] in
+            let views = child.appKit.presentableViews
+            if child.lifecycle == .exiting {
+                child.appKit.applyVisibility()
+                for view in views { view.setAccessibilityHidden(true) }
+            }
+            return views
         }
     }
 

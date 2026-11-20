@@ -1,6 +1,7 @@
 # Transitions
 
-A `Transition` says how a view comes as the tree gains it. It is a value
+A `Transition` says how a view comes as the tree gains it, and goes as the
+tree drops it. It is a value
 written with the view - `.transition(_:)`, on any view
 (`ViewContract.transition`) - and read by the host layer where the view is
 given its first place: making one moves nothing and starts no clock.
@@ -16,8 +17,9 @@ What a host does with one is [the host layer's](../host/motion.md#a-view-that-en
 ## An effect
 
 A `TransitionEffect` says how a view is drawn while it is absent, against
-how it stands. An entry runs from the effect to the view as it stands. It is
-made of steps, combined in the order written:
+how it stands. An entry runs from the effect to the view as it stands, an
+exit from the view as it is drawn to the effect. It is made of steps,
+combined in the order written:
 
 ```text
   .identity              the view as it stands
@@ -70,7 +72,8 @@ A view the tree drops goes by its exit where what holds it keeps a view
 that left ([a view kept as it leaves](../host/tree.md#a-view-kept-as-it-leaves)):
 it is the application's no more at once, and drawn until the exit lands.
 Where nothing keeps it, it is released at once - as on every host whose
-layouts drop what they are not handed.
+layouts drop what they are not handed; a host says in its realization that
+it draws no exit, and the matrix shows it.
 
 Hiding a view with `isVisible(_:)` keeps the view and its state, and is no
 leaving: it crosses by the rule of

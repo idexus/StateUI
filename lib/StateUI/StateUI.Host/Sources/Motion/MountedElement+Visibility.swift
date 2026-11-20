@@ -30,9 +30,10 @@ extension MountedElement {
         isFadingOut || value(.isVisible)?.bool != false
     }
 
-    /// Whether the element answers no input: as the tree says, or while it fades out (`presented`).
+    /// Whether the element answers no input: as the tree says, while it fades out (`presented`), or kept as it
+    /// leaves - a press then reaches what stands behind it.
     public var ignoresInput: Bool {
-        presented(.ignoresInput)?.bool == true
+        lifecycle == .exiting || presented(.ignoresInput)?.bool == true
     }
 
     /// Whether the element may come moving as it is given its first place: by the transition it declares, else

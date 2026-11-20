@@ -145,6 +145,12 @@ final class AppKitElement: NSObject, NativeElement {
         releaseNativeAttachments()
     }
 
+    /// A stack, a grid and a ZStack keep a child that left: their subviews are what the tree presents.
+    /// Design: docs/design/platforms/appkit/views.md#a-view-kept-as-it-leaves
+    var keepsExits: Bool {
+        view is AppKitStackView || view is AppKitGridView || view is AppKitZStackView
+    }
+
     /// Crosses a change of visibility by the host layer's rule - out, fading and then hidden, deaf to input
     /// meanwhile; back from where it stands; in from nothing - and as a fade out ends, the layout that places the
     /// element closes over it the way a patch moves its children.

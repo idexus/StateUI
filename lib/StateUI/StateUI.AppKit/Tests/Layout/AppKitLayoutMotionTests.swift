@@ -307,6 +307,66 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertFalse(renderer.animatingForTesting)
     }
 
+    /// A row leaving a standing stack by its exit stays drawn where it stood - a subview still, deaf to input,
+    /// fading and moving as its effect says - while the row under it closes over its place at once; as the exit
+    /// lands it is gone.
+    @MainActor
+    func testARowLeavingByItsExitIsDrawnUntilItLands() throws {
+        var now = 0.0
+        let renderer = testRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.finish() }
+        let leaving = Transition(enter: .identity, exit: .opacity.combined(with: .translation(x: 40)))
+        let law = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
+        func rows(_ order: [String]) -> HostPatch {
+            var stack = HostPatch(id: .manual("stack"), type: .vStack)
+            stack.motion = law
+            stack.children = .arranged(order.map { name in
+                var box = HostPatch(id: .manual(name), type: .rectangle)
+                box.properties[VisualElementContract.width.token] = .number(100)
+                box.properties[VisualElementContract.height.token] = .number(40)
+                if name == "b" {
+                    box.properties[.transition] = leaving.propValue
+                    box.motion = law
+                }
+                return box
+            })
+            return stack
+        }
+
+        renderer.applyForTesting(rows(["a", "b", "c"]))
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
+        native.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
+        native.layoutSubtreeIfNeeded()
+        let b = try XCTUnwrap(renderer.viewForTesting(id: .manual("b")))
+        let c = try XCTUnwrap(renderer.viewForTesting(id: .manual("c")))
+        let (stood, below) = (b.frame, c.frame)
+
+        renderer.applyForTesting(rows(["a", "c"]))
+        native.layoutSubtreeIfNeeded()
+        XCTAssertTrue(b.superview === native, "still drawn in its stack")
+        XCTAssertEqual(b.frame, stood, "where it stood")
+        XCTAssertEqual(native.hitTest(NSPoint(x: stood.midX, y: stood.midY)) === b, false, "and deaf to a press")
+        XCTAssertEqual(native.subviews.filter { $0 === b || $0 === c }.count, 2)
+
+        now = 100
+        renderer.advanceAnimationsForTesting()
+        native.layoutSubtreeIfNeeded()
+        XCTAssertEqual(b.alphaValue, 0.5, accuracy: 0.001, "half way out")
+        XCTAssertEqual(b.frame, stood, "no layout places it any more")
+        XCTAssertEqual(c.frame.minY, (below.minY + stood.minY) / 2, accuracy: 0.001, "the row under it closes meanwhile")
+
+        now = 200
+        renderer.advanceAnimationsForTesting()
+        native.layoutSubtreeIfNeeded()
+        XCTAssertNil(b.superview, "gone as its exit lands")
+        XCTAssertEqual(c.frame, stood, "and the row under it stands in its place")
+        XCTAssertFalse(renderer.animatingForTesting)
+    }
+
     /// Where the user asks for less movement, every child arrives and none
     /// fades in.
     @MainActor

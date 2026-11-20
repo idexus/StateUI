@@ -31,7 +31,7 @@ Ellipse.rotationUpdated: ✓ rotate on Ellipse: the view's listening handed the 
 Fill.area: ✅
 Fill.dismissed: ✓ pressDown on Fill: the view's listening handed the recognizer's states, no touch sent
 Fill.layoutFrameChanged: ✅
-Fill.transition: ✅
+Fill.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
 Grid.longPressDuration: ✅
 Grid.pointerMoved: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.pointerPressed: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
@@ -70,7 +70,7 @@ MotionLayout.tapped: ✓ tap on MotionLayout: the view's listening handed the re
 Path.area: ✅
 Path.dismissed: ✓ pressDown on Path: the view's listening handed the recognizer's states, no touch sent
 Path.layoutFrameChanged: ✅
-Path.transition: ✅
+Path.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
 Picker.longPressDuration: ✅
 Picker.pointerMoved: ✓ hover on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.pointerPressed: ✓ hover on Picker: the view's listening handed the recognizer's states, no touch sent
@@ -125,7 +125,7 @@ Stepper.rotationUpdated: ✓ rotate on Stepper: the view's listening handed the 
 Switch.area: ✅
 Switch.dismissed: ✓ pressDown on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.layoutFrameChanged: ✅
-Switch.transition: ✅
+Switch.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Text.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Text.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session

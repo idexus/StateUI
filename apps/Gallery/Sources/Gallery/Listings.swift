@@ -13474,8 +13474,8 @@ enum Listings {
         // Sources/Samples/Animation/TransitionSample.swift
         static let ways = ["Rising", "Growing", "From the side"]
 
-        /// What a note comes from: faded and lower, faded and smaller, or faded
-        /// and well to the side.
+        /// What a note comes from and goes to: faded and lower, faded and
+        /// smaller, or faded and well to the side.
         static func effect(_ way: Int) -> TransitionEffect {
             switch way {
             case 1: .opacity.combined(with: .scale(0.6))
@@ -13504,9 +13504,10 @@ enum Listings {
                         .style(.card)
                         .lineWidth(0)
                         .height(40)
-                        // HOW IT COMES, as the stack gains it: from the effect to
-                        // how it stands. A note already standing is not moved by
-                        // a transition said again.
+                        // HOW IT COMES AND GOES, as the stack gains and drops
+                        // it: from the effect to how it stands, and back to the
+                        // effect. A note already standing is not moved by a
+                        // transition said again.
                         .transition(.symmetric(Self.effect(way)))
                         // UNDER ITS OWN MOTION, whatever carries the notes
                         // below it to their new places.
@@ -13521,6 +13522,13 @@ enum Listings {
                     }
 
                     Button(Self.ways[way]).onClicked { way = (way + 1) % Self.ways.count }
+
+                    // A NOTE REMOVED is no more the stack's at once - the notes
+                    // under it close over its place - and is drawn until it has
+                    // gone where its transition says.
+                    Button("Remove").onClicked {
+                        if !cards.isEmpty { cards.removeFirst() }
+                    }
 
                     Button("Clear").onClicked { cards.removeAll() }
                 }

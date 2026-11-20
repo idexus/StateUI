@@ -32,9 +32,18 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
     override var isFlipped: Bool { true }
 
     func setItems(_ items: [AppKitLayoutItem]) {
+        setItems(items, presenting: items.map(\.view))
+    }
+
+    /// Takes `items` to measure and place, and `views` - theirs, and those of children kept as they leave - as its
+    /// subviews in that order: a view no item names stands where it stood.
+    /// Design: docs/design/platforms/appkit/views.md#a-view-kept-as-it-leaves
+    func setItems(_ items: [AppKitLayoutItem], presenting views: [NSView]) {
+        let standing = subviews.filter { !($0 is any AppKitBoxSurface) }
+        replaceSubviews(with: views)
+        if standing.count != views.count || !zip(standing, views).allSatisfy({ $0 === $1 }) { drawingOrder = [] }
         guard !AppKitLayoutItem.sameArrangement(self.items, items) else { return }
 
-        replaceSubviews(with: items.map(\.view))
         self.items = items
         drawingOrder = []
         invalidateMeasurements()
@@ -81,7 +90,11 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
         // Turned in place: a child taken out and put back leaves the window, and a gesture under way on it is
         // cancelled. Design: docs/design/platforms/appkit/views.md#a-child-turned-in-place
         if identities != drawingOrder {
-            subviews = subviews.filter { $0 is any AppKitBoxSurface } + ordered.map { items[$0].view }
+            // A view kept as it leaves is no item's: it stays, over the views the run orders.
+            let leaving = subviews.filter { view in
+                !(view is any AppKitBoxSurface) && !items.contains { $0.view === view }
+            }
+            subviews = subviews.filter { $0 is any AppKitBoxSurface } + ordered.map { items[$0].view } + leaving
             drawingOrder = identities
         }
 

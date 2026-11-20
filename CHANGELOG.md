@@ -216,13 +216,16 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### New
 
-- **A view says how it enters.** `.transition(_:)`, on any view, names the effect the view comes from as the tree
-  gains it: a `TransitionEffect` - `.opacity`, `.translation(x:y:)`, `.scale(_:)`, combined in the order written -
-  in a `Transition`, `init(enter:exit:)` or `symmetric(_:)`. The view travels from the effect to how it stands,
-  under its own `.motion(_:)`, else the application's, in place of the fade a view joining a standing layout
-  otherwise comes with. It enters as it joins what already stands, and with `initialAppearance(true)` as it appears
-  with its page too; given to a view already standing, a transition moves nothing. A view the tree drops goes at
-  once.
+- **A view says how it comes and goes.** `.transition(_:)`, on any view, names the effect the view comes from as
+  the tree gains it and the one it goes to as the tree drops it: a `TransitionEffect` - `.opacity`,
+  `.translation(x:y:)`, `.scale(_:)`, combined in the order written - in a `Transition`, `init(enter:exit:)` or
+  `symmetric(_:)`. The view travels from the effect to how it stands, under its own `.motion(_:)`, else the
+  application's, in place of the fade a view joining a standing layout otherwise comes with. It enters as it joins
+  what already stands, and with `initialAppearance(true)` as it appears with its page too; given to a view already
+  standing, a transition moves nothing. A view the tree drops is the application's no more at once - the views
+  around it take its place - and is drawn until it has gone to its exit's effect, two seconds at most, where the
+  host keeps a view as it leaves: on AppKit, in a stack, a grid and a ZStack. On the other hosts a dropped view
+  goes at once, and the platform contract marks the transition as partly realized.
 
 - **A gesture taken away ends once, as cancelled, the same on every platform.** A press, a pan, a pinch, a value
   under the hand and a view the hand carries each end as `.cancelled` when the platform takes the touch, a scroller

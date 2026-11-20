@@ -168,6 +168,9 @@ enum AndroidRealization {
             missing: "Android shows the words beside the picture only where the bar has room: an upright phone keeps the picture alone."),
         .complete(ToggleElementContract.toggled, on: ToolbarToggleContract.self),
         .complete(ViewContract.layoutBody),
+        .partial(ViewContract.transition,
+            missing: "A view the tree drops goes at once: the host's layouts keep no view that left, so its exit "
+            + "is not drawn."),
         .complete(IconElementContract.icon, on: ToolbarLabelContract.self),
         .complete(TextElementContract.text, on: ToolbarLabelContract.self),
         .complete(ToolbarGroupContract.barEdge),

@@ -126,6 +126,31 @@ its visible page's own layout ignores, by the host layer's rule
 clear what it reaches under. The window lays the panes again as a column's
 page changes - pushed, popped, its edges said anew.
 
+## A view kept as it leaves
+
+A stack, a grid and a ZStack keep a child that left
+(`AppKitElement.keepsExits`): the tree hands them two lists as it arranges
+([a view kept as it leaves](../../host/tree.md#a-view-kept-as-it-leaves)),
+and they take them apart (`setItems(_:presenting:)`):
+
+```text
+  items      the active children: measured and placed
+  subviews   the active and the leaving, in the order the tree presents them
+```
+
+A leaving view is no item's, so no layout pass places it: it stands at its
+last frame while its opacity, its move and its scale travel to its exit's
+effect, and the rows around it close over its place under the layout's own
+motion. Found leaving, it is made deaf to input - a press reaches what
+stands behind it - and taken out of what assistive technology meets. As its
+exit ends the tree arranges its holder again, and the view is a subview no
+more. A ZStack a run places orders its items' views itself; a leaving view
+stays over them.
+
+The trap is one list for both. A view that stays a layout item is measured
+and placed after its element stopped being the application's: its row would
+keep its room until the exit ended, and the stack would jump as it did.
+
 ## A child turned in place
 
 A ZStack whose run turns its drawing order - two cards swapping ranks as a

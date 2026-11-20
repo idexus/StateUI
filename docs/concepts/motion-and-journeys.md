@@ -310,17 +310,18 @@ than its box keeps showing its former words until the box holds the new ones. Wh
 read - an `onFrameChanged` handler, a driven frame - every child arrives,
 because each step of a walk would report a room nobody chose. A child that
 joins a layout already standing fades in under the same law, unless a state
-owns its opacity or the child says how it enters.
+owns its opacity or the child says how it enters
+([a view that comes and goes](#a-view-that-comes-and-goes)).
 
 Visibility motion and layout motion are part of the cross-platform contract,
 but an application relies on them only where [Platform contract](../platform-contract.md)
 shows verified host support.
 
-## A view that enters
+## A view that comes and goes
 
-A view the tree gains can say how it comes. `.transition(_:)` names the
-effect its entry sets out from, and the view travels from that effect to how
-it stands:
+A view the tree gains can say how it comes, and one the tree drops how it
+goes. `.transition(_:)` names the effect its entry sets out from and the one
+its exit goes to:
 
 ```swift
 import StateUI
@@ -334,7 +335,9 @@ struct Details: View {
 
             if expanded {
                 Text("More to read")
-                    .transition(.symmetric(.opacity.combined(with: .translation(y: 12))))
+                    .transition(Transition(
+                        enter: .opacity.combined(with: .scale(0.97)),
+                        exit: .opacity.combined(with: .translation(y: 12))))
                     .motion(.spring(response: .milliseconds(260), damping: 0.85))
             }
         }
@@ -353,16 +356,23 @@ to; `symmetric(_:)` is one effect for both.
 
 | What happens | What the view does |
 | --- | --- |
-| it joins a layout already standing | enters from its effect, in place of the fade a joining view comes with |
+| it joins a layout already standing | enters from its entry's effect, in place of the fade a joining view comes with |
 | it appears with what holds it - a page shown, a window opened | is simply there; with `.initialAppearance(true)` it enters |
 | a transition is given to it as it stands | nothing moves |
-| the tree drops it | it goes at once |
+| the tree drops it | it is the application's no more at once, and drawn until it has gone to its exit's effect |
 
-The entry moves under the view's own `.motion(_:)`, else the application's:
-a transition says no law of its own. Where neither animates, or the user
-asked for less motion, the view is simply there. A number a state drives -
-an opacity carried from a state - stays that state's, and the entry moves
-the others.
+Both move under the view's own `.motion(_:)`, else the application's: a
+transition says no law of its own. Where neither animates, or the user
+asked for less motion, the view is simply there, or gone. A number a state
+drives - an opacity carried from a state - stays that state's on the way
+in, and the entry moves the others.
+
+A view that has left hears nothing and tells nothing while its exit is
+drawn: its handlers, its bindings and its place in the layout ended as the
+tree dropped it, and the views around it take its place at once. An exit is
+drawn where the host keeps a view as it leaves -
+[Platform contract](../platform-contract.md) says which - and for two
+seconds at most; elsewhere a dropped view goes at once.
 
 Hiding a view with `isVisible(_:)` keeps the view and its state, and crosses
 as [visibility](#visibility-and-layout-motion) does, whatever transition the

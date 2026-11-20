@@ -41,7 +41,7 @@ Grid.rotationUpdated: ✓ rotate on Grid: the view's listening handed the recogn
 HStack.area: ✅
 HStack.dismissed: ✓ pressDown on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.layoutFrameChanged: ✅
-HStack.transition: ✅
+HStack.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
 Image.longPressDuration: ✅
 Image.pointerMoved: ✓ hover on Image: the view's listening handed the recognizer's states, no touch sent
 Image.pointerPressed: ✓ hover on Image: the view's listening handed the recognizer's states, no touch sent
@@ -80,7 +80,7 @@ Picker.rotationUpdated: ✓ rotate on Picker: the view's listening handed the re
 Polygon.area: ✅
 Polygon.dismissed: ✓ pressDown on Polygon: the view's listening handed the recognizer's states, no touch sent
 Polygon.layoutFrameChanged: ✅
-Polygon.transition: ✅
+Polygon.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
 Polyline.longPressDuration: ✅
 Polyline.pointerMoved: ✓ hover on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.pointerPressed: ✓ hover on Polyline: the view's listening handed the recognizer's states, no touch sent
@@ -140,7 +140,7 @@ TextEditor.rotationUpdated: ✓ rotate on TextEditor: the view's listening hande
 TextField.area: ✅
 TextField.dismissed: ✓ pressDown on TextField: the view's listening handed the recognizer's states, no touch sent
 TextField.layoutFrameChanged: ✅
-TextField.transition: ✅
+TextField.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
 TimePicker.longPressDuration: ✅
 TimePicker.pointerMoved: ✓ hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TimePicker.pointerPressed: ✓ hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
