@@ -65,7 +65,8 @@ final class GTKFrameReportTests: XCTestCase {
     /// A view the tree reads says where it stands in the frame's layout that placed it, before the frame is drawn:
     /// no display frame comes between - a sidebar's slide lays a page out every frame. A frame its readers said in
     /// hears nothing more, one that laid the window out again moving nothing among them, so the layout widening it
-    /// comes in a frame they said nothing in yet.
+    /// comes in a frame they said nothing in yet. The view takes its width at once: a width on its way is another
+    /// layout every frame.
     func testAViewSaysWhereItStandsInTheLayoutThatPlacedIt() throws {
         try onUIThread {
             let wide = State(wrappedValue: false)
@@ -76,6 +77,7 @@ final class GTKFrameReportTests: XCTestCase {
                         .fill(.steelBlue)
                         .width(wide.wrappedValue ? 200 : 120)
                         .height(60)
+                        .motion(.none)
                         .onEvent(ViewContract.layoutFrameChanged) { heard.values.append($0[2]) }
                 }
                 .horizontalAlignment(.start)
