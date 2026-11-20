@@ -31,7 +31,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
     /// menu, one state for both.
     @State private var favorite = false
 
-    /// Whether Save's menu opens as the button is held rather than from an
+    /// Whether Save's menu opens on a long press of the button rather than from an
     /// arrow of its own.
     @State private var saveHeld = false
 
@@ -85,7 +85,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
                 SectionTitle("A button's menu")
 
-                switchRow($saveHeld, "Save's menu held", id: "toolbar.saveHeld")
+                switchRow($saveHeld, "Save's menu on a long press", id: "toolbar.saveHeld")
                 switchRow($sortArrow, "Sort's arrow", id: "toolbar.sortArrow")
 
                 SectionTitle("At the page's foot")
@@ -100,11 +100,11 @@ struct ToolbarSample: SampleContent, ExampleContent {
             .toolbar {
                 ToolbarGroup {
                     // Its click its own, its menu apart: from an arrow of its
-                    // own, or held.
+                    // own, or on a long press.
                     ToolbarButton("Save")
                         .id("save")
                         .onClicked { saved += 1 }
-                        .menu(saveHeld ? .held : .split) {
+                        .menu(saveHeld ? .longPress : .split) {
                             MenuItem("Save a copy")
                                 .id("saveCopy")
                                 .onClicked {
@@ -284,7 +284,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
             Text("Sort is a menu its click opens, an arrow saying so where the platform's bar "
                 + "draws one. Save splits: its click saves, and Save a copy opens from its arrow "
-                + "- or, held, as the button is held.")
+                + "- or, with the switch on, on a long press of the button.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

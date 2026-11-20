@@ -27,7 +27,7 @@ final class GTKButtonViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     if shown.wrappedValue {
-                        Button("Save").menu(.held) { MenuItem("Save as") }
+                        Button("Save").menu(.longPress) { MenuItem("Save as") }
                     }
                 }
             }
@@ -49,7 +49,7 @@ final class GTKButtonViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 Text("Notes").pageTitle("Notes").toolbar {
                     if shown.wrappedValue {
-                        ToolbarButton("Keep").onClicked {}.menu(.held) { MenuItem("Keep a copy") }
+                        ToolbarButton("Keep").onClicked {}.menu(.longPress) { MenuItem("Keep a copy") }
                     }
                     ToolbarButton("Share")
                 }

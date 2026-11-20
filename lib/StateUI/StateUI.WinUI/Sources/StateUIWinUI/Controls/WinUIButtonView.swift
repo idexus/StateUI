@@ -57,7 +57,7 @@ final class WinUIButtonView: WinUIView {
         let kind: StateUIButtonKind = switch opening {
         case .arrow: .split
         case .click where showsArrow: .dropDown
-        case .none, .click, .hold: .button
+        case .none, .click, .longPress: .button
         }
         super.init { number in stateui_winui_button_make(number, kind) }
     }
@@ -66,7 +66,7 @@ final class WinUIButtonView: WinUIView {
     func setMenu(_ menu: WinUIMenu) {
         switch opening {
         case .none: return
-        case .hold: setContextMenu(menu)
+        case .longPress: setContextMenu(menu)
         case .click, .arrow:
             menuActions = menu.actions
             menu.relayed { stateui_winui_button_set_menu(handle, number, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9) }

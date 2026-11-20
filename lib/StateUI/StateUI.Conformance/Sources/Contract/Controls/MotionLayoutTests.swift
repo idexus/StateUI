@@ -467,7 +467,7 @@
                 s.settle { handed.values.last == 1 }
                 s.expect(handed.values.last, 1, "the program moves it to its keyframe")
             },
-            ConformanceCase("aPressHeldTakesTheViewUnderItToTheHand", proves: [
+            ConformanceCase("aLongPressTakesTheViewUnderItToTheHand", proves: [
                 Covered(MotionLayoutContract.itemDragUpdated),
             ], needs: [Covered(ViewContract.interaction, on: RectangleContract.self)]) { s in
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())

@@ -79,7 +79,7 @@ final class LocalDragTests: XCTestCase {
         XCTAssertEqual(view.drawingTransform.translationX, 0)
 
         hand(.began, point: Point(x: 10, y: 10), on: view)
-        bench.frames(Int(HandReading.hold / 16) + 2)
+        bench.frames(Int(HandReading.longPress / 16) + 2)
         XCTAssertTrue(hand(.changed, moved: Point(x: 30, y: 20), on: view))
         XCTAssertEqual(view.drawingTransform.translationX, 30)
         XCTAssertEqual(view.drawingTransform.translationY, 20)

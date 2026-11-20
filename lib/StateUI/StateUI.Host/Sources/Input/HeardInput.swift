@@ -9,8 +9,8 @@
     /// A tap: its place in a quick run of taps, from 1; 0 for a press assistive technology made.
     case tap(run: Int)
 
-    /// A press held as long as the view's hold waits, before it moved as far as a drag.
-    case hold
+    /// A long press: a press held as long as the view waits for one, before it moved as far as a drag.
+    case longPress
 
     /// A press on a view that hears taps, as a button takes one (`ButtonPress`): its phase, where it stands in points
     /// of the view, the view's size, and whether a finger presses - which stands over the view a little beyond it.
@@ -103,14 +103,14 @@
     /// Two fingers turning: over a layout that `rotates`.
     public static let rotations = Hearing(rawValue: 1 << 5)
 
-    /// A press held.
-    public static let holds = Hearing(rawValue: 1 << 6)
+    /// A long press.
+    public static let longPresses = Hearing(rawValue: 1 << 6)
 
     /// Presses watched as they stand and move, taken from nobody: no tap comes of them.
     public static let presses = Hearing(rawValue: 1 << 7)
 
     /// Each kind of input on its own.
-    public static let kinds: [Hearing] = [.taps, .pointer, .drags, .pinches, .hand, .rotations, .holds, .presses]
+    public static let kinds: [Hearing] = [.taps, .pointer, .drags, .pinches, .hand, .rotations, .longPresses, .presses]
 }
 
 /// A pinch's steps: each step's scale since the last, of a pinch a toolkit tells as its whole scale.

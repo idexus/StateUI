@@ -286,7 +286,7 @@ final class WebLookTests: XCTestCase {
               .map((b) => b.innerText.trim() || b.getAttribute('aria-label')).join(',')
             """
 
-        XCTAssertEqual(try WebBrowser.evaluate(selectable, on: 0) ?? "", "", "buttons whose words a hold selects")
+        XCTAssertEqual(try WebBrowser.evaluate(selectable, on: 0) ?? "", "", "buttons whose words a long press selects")
     }
 
     /// The page stands in a desktop's window on every machine, a machine with no mouse too, and after a touch screen's

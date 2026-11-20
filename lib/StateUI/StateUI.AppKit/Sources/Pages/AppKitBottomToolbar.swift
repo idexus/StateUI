@@ -91,7 +91,7 @@ final class AppKitBottomToolbar: NSView {
             label.identifier = identifier
             return label
         }
-        if let menu = action.menu, menu.opening != .hold {
+        if let menu = action.menu, menu.opening != .longPress {
             let menuShown = NSMenu()
             menuShown.autoenablesItems = false
             AppKitMenus.items(menu.entries).forEach { item in
@@ -110,7 +110,7 @@ final class AppKitBottomToolbar: NSView {
             return button
         }
         let held = action.menu.map { menu in
-            let button = AppKitBarHeldButton()
+            let button = AppKitBarLongPressButton()
             button.offered.autoenablesItems = false
             AppKitMenus.items(menu.entries).forEach { item in
                 item.menu?.removeItem(item)

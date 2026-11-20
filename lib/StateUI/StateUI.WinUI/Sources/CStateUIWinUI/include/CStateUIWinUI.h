@@ -63,7 +63,7 @@ typedef enum {
     StateUIHearingPinches = 8,
     StateUIHearingHand = 16,
     StateUIHearingRotations = 32,
-    StateUIHearingHolds = 64,
+    StateUIHearingLongPresses = 64,
 } StateUIHearing;
 
 /// What a view heard: a tap, its place in a quick run of taps from 1, 0 for a press assistive technology made; the
@@ -84,7 +84,7 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIHeardRotation,
     StateUIHeardWheelPinch,
     StateUIHeardWheelScale,
-    StateUIHeardHold,
+    StateUIHeardLongPress,
     StateUIHeardButtonPress,
     StateUIHeardInvoked,
 } StateUIHeard;

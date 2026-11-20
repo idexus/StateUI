@@ -157,12 +157,12 @@ final class WebHandTests: XCTestCase {
         let rang = "window.heldAsLong === true"
 
         // The press and the finger's moves are one task of the page's, which no timer rings inside - however slow the
-        // machine. Read once a timer as long as the hold, set by the same press after the page's own, has rung: the
+        // machine. Read once a timer as long as the long press, set by the same press after the page's own, has rung: the
         // hold has rung by then, or the drag called it off - however late the page's timers run.
         func asksForTheMenu(steps: Int, of step: Double) throws -> Bool {
             try WebBrowser.run("""
                 window.heldAsLong = false;
-                e.addEventListener("pointerdown", () => setTimeout(() => { window.heldAsLong = true; }, \(HandReading.hold)),
+                e.addEventListener("pointerdown", () => setTimeout(() => { window.heldAsLong = true; }, \(HandReading.longPress)),
                   { once: true });
                 const box = e.getBoundingClientRect();
                 const finger = (type, x) => e.dispatchEvent(new PointerEvent(type, { pointerId: 7, pointerType: "touch",

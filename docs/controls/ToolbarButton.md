@@ -230,9 +230,9 @@ What a button that holds a menu has - a button's, a toolbar button's: how its me
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>menuKind</code></td><td>property</td><td><code>ButtonMenuKind</code></td><td>adaptive</td><td align="center">✓</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched<br>UIKit: UIKit's bar offers no arrow part: a split bar button opens its menu held.<br>Android Views: An Android bar's split or held button stands as its action, its menu behind the overflow.<br>WinUI 3: only through the host's own: activate on ToolbarButton: the bar's action chosen as the relay reports it, no button pressed</td></tr></tbody>
+<tr><td colspan="9">AppKit: only through the host's own: activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched<br>UIKit: UIKit's bar offers no arrow part: a split bar button opens its menu on a long press.<br>Android Views: An Android bar's split or long-press button stands as its action, its menu behind the overflow.<br>WinUI 3: only through the host's own: activate on ToolbarButton: the bar's action chosen as the relay reports it, no button pressed</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>showsMenuArrow</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: A UIKit bar button shows no arrow: its menu opens from its tap or its hold.<br>Android Views: An Android bar's action shows no arrow: its menu opens from its touch.</td></tr></tbody>
+<tr><td colspan="9">UIKit: A UIKit bar button shows no arrow: its menu opens from its tap or its long press.<br>Android Views: An Android bar's action shows no arrow: its menu opens from its touch.</td></tr></tbody>
 </table>
 
 ## From [TextAndIconElement](tiers/TextAndIconElement.md)

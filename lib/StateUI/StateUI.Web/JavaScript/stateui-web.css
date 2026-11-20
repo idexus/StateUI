@@ -477,7 +477,7 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 .stateui-menu > [role="menuitemcheckbox"][aria-checked="true"]::before { content: "✓"; }
 .stateui-menu > [role="separator"] { height: 1px; margin: 5px 6px; background: var(--stateui-line); }
 
-/* A view whose menu a held finger opens: the hold is the menu's, not a choice of the view's words nor the browser's
+/* A view whose menu a held finger opens: the long press is the menu's, not a choice of the view's words nor the browser's
    callout. */
 [data-holds-menu], [data-holds] { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 

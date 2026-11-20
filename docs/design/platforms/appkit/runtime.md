@@ -180,7 +180,7 @@ a setting a push-on push-off button; a button holding a menu an
 arrow beside it opening it - and one whose menu opens held, which AppKit's
 combo button has no style for, an accessory bar button with no arrow, its
 click its own and its menu opened by a press held past half a second, the
-same press a held button among views follows (`AppKitHeldPress`), or by
+same press a held button among views follows (`AppKitLongPress`), or by
 assistive technology asking for it; behind the overflow a More button pops a menu of
 the rest, an action holding a menu a submenu of the entries it shows there,
 as on the window's toolbar (`AppKitToolbarMenu.overflowSubmenu`). Words

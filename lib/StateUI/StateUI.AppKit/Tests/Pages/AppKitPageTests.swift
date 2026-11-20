@@ -1139,7 +1139,7 @@ final class AppKitPageTests: XCTestCase {
                 Text("Root").pageTitle("Files")
                     .toolbar(.bottom) {
                         ToolbarButton("Copy").onClicked { heard.values.append("copy") }
-                            .menu(.held) { MenuItem("Copy as").onClicked {} }
+                            .menu(.longPress) { MenuItem("Copy as").onClicked {} }
                     }
             } destination: { _ in Text("Pushed") }
         }

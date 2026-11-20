@@ -200,7 +200,7 @@ final class ContractTests: XCTestCase {
             [GridLength.automatic, .proportional(2), .fixed(100)] as [GridLength],
             [Draw.fillColor(.gold)] as [DrawCommand],
             FontAttributes.italic, FontWeight.semibold, TextStyle.title, PickerPresentation.radio,
-            ButtonMenuKind.held, ToolbarStyle.rounded,
+            ButtonMenuKind.longPress, ToolbarStyle.rounded,
             TextDecorations(rawValue: 1),
             KeyboardShortcut("s"), KeyboardShortcut(.f5, modifiers: [.primary, .shift, .alt]),
             Area.absolute(Rect(x: 0, y: 0, width: 120, height: 40)), Area.proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1)), SwipeDirections.all,

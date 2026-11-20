@@ -1,6 +1,6 @@
-# revision 32.2
-Button.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+# revision 33.2
 Button.layoutFrameChanged: ✅
+Button.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Button.margin: ✅
 Button.rotationUpdated: ✓ rotate on Button: the relay's report of the manipulation handed to the host, no touch sent
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the relay's drag reports told by the driver, no drag WinUI began
@@ -23,8 +23,8 @@ CheckBox.swipeThreshold: ✓ pan on CheckBox: the relay's report of the press dr
 CheckBox.swiped: ✓ pan on CheckBox: the relay's report of the press dragged handed to the host, no pointer sent
 CheckBox.tapCount: ✓ tap on CheckBox: the relay's report of the tap handed to the host, no pointer sent
 CheckBox.tapped: ✓ tap on CheckBox: the relay's report of the tap handed to the host, no pointer sent
-ColorPicker.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 ColorPicker.layoutFrameChanged: ✅
+ColorPicker.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 ColorPicker.margin: ✅
 ColorPicker.rotationUpdated: ✓ rotate on ColorPicker: the relay's report of the manipulation handed to the host, no touch sent
 DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the relay's drag reports told by the driver, no drag WinUI began
@@ -47,8 +47,8 @@ Fill.swipeThreshold: ✓ pan on Fill: the relay's report of the press dragged ha
 Fill.swiped: ✓ pan on Fill: the relay's report of the press dragged handed to the host, no pointer sent
 Fill.tapCount: ✓ tap on Fill: the relay's report of the tap handed to the host, no pointer sent
 Fill.tapped: ✓ tap on Fill: the relay's report of the tap handed to the host, no pointer sent
-Grid.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Grid.layoutFrameChanged: ✅
+Grid.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Grid.margin: ✅
 Grid.rotationUpdated: ✓ rotate on Grid: the relay's report of the manipulation handed to the host, no touch sent
 HStack.dragEnded: ✓ dragAndDrop on HStack: the relay's drag reports told by the driver, no drag WinUI began
@@ -82,8 +82,8 @@ Link.swipeThreshold: ✓ pan on Link: the relay's report of the press dragged ha
 Link.swiped: ✓ pan on Link: the relay's report of the press dragged handed to the host, no pointer sent
 Link.tapCount: ✓ tap on Link: the relay's report of the tap handed to the host, no pointer sent
 Link.tapped: ✓ tap on Link: the relay's report of the tap handed to the host, no pointer sent
-Map.held: 🧩
 Map.layoutFrameChanged: 🧩
+Map.longPressed: 🧩
 Map.margin: 🧩
 Map.rotationUpdated: 🧩
 MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
@@ -107,8 +107,8 @@ Picker.swipeThreshold: ✓ pan on Picker: the relay's report of the press dragge
 Picker.swiped: ✓ pan on Picker: the relay's report of the press dragged handed to the host, no pointer sent
 Picker.tapCount: ✓ tap on Picker: the relay's report of the tap handed to the host, no pointer sent
 Picker.tapped: ✓ tap on Picker: the relay's report of the tap handed to the host, no pointer sent
-Polygon.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Polygon.layoutFrameChanged: ✅
+Polygon.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Polygon.margin: ✅
 Polygon.rotationUpdated: ✓ rotate on Polygon: the relay's report of the manipulation handed to the host, no touch sent
 Polyline.dragEnded: ✓ dragAndDrop on Polyline: the relay's drag reports told by the driver, no drag WinUI began
@@ -132,8 +132,8 @@ Rectangle.swipeThreshold: ✓ pan on Rectangle: the relay's report of the press 
 Rectangle.swiped: ✓ pan on Rectangle: the relay's report of the press dragged handed to the host, no pointer sent
 Rectangle.tapCount: ✓ tap on Rectangle: the relay's report of the tap handed to the host, no pointer sent
 Rectangle.tapped: ✓ tap on Rectangle: the relay's report of the tap handed to the host, no pointer sent
-ScrollView.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 ScrollView.layoutFrameChanged: ✅
+ScrollView.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 ScrollView.margin: ✅
 ScrollView.rotationUpdated: ✓ rotate on ScrollView: the relay's report of the manipulation handed to the host, no touch sent
 SearchField.dragEnded: ✓ dragAndDrop on SearchField: the relay's drag reports told by the driver, no drag WinUI began
@@ -170,8 +170,8 @@ Spinner.swipeThreshold: ✓ pan on Spinner: the relay's report of the press drag
 Spinner.swiped: ✓ pan on Spinner: the relay's report of the press dragged handed to the host, no pointer sent
 Spinner.tapCount: ✓ tap on Spinner: the relay's report of the tap handed to the host, no pointer sent
 Spinner.tapped: ✓ tap on Spinner: the relay's report of the tap handed to the host, no pointer sent
-Stepper.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Stepper.layoutFrameChanged: ✅
+Stepper.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Stepper.margin: ✅
 Stepper.rotationUpdated: ✓ rotate on Stepper: the relay's report of the manipulation handed to the host, no touch sent
 Switch.dragEnded: ✓ dragAndDrop on Switch: the relay's drag reports told by the driver, no drag WinUI began
@@ -183,8 +183,8 @@ Switch.layoutFrameChanged: ✅
 Switch.panTouchCount: ✓ pan on Switch: the relay's report of the press dragged handed to the host, no pointer sent
 Switch.panUpdated: ✓ pan on Switch: the relay's report of the press dragged handed to the host, no pointer sent
 Switch.verticalAlignment: ✅
-Text.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Text.layoutFrameChanged: ✅
+Text.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Text.margin: ✅
 Text.rotationUpdated: ✓ rotate on Text: the relay's report of the manipulation handed to the host, no touch sent
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the relay's drop report told the driver's files, no drag WinUI began
@@ -198,8 +198,8 @@ TextField.swipeThreshold: ✓ pan on TextField: the relay's report of the press 
 TextField.swiped: ✓ pan on TextField: the relay's report of the press dragged handed to the host, no pointer sent
 TextField.tapCount: ✓ tap on TextField: the relay's report of the tap handed to the host, no pointer sent
 TextField.tapped: ✓ tap on TextField: the relay's report of the tap handed to the host, no pointer sent
-TimePicker.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 TimePicker.layoutFrameChanged: ✅
+TimePicker.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 TimePicker.margin: ✅
 TimePicker.rotationUpdated: ✓ rotate on TimePicker: the relay's report of the manipulation handed to the host, no touch sent
 VStack.dragEnded: ✓ dragAndDrop on VStack: the relay's drag reports told by the driver, no drag WinUI began

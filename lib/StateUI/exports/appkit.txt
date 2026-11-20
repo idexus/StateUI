@@ -337,7 +337,6 @@ WebView
   gridRow
   gridRowSpan
   height
-  holdDuration
   horizontalAlignment
   ignoresInput
   interaction
@@ -347,6 +346,7 @@ WebView
   keysTaken
   layoutFrame
   letsInputThrough
+  longPressDuration
   margin
   maximumHeight
   maximumWidth
@@ -380,10 +380,10 @@ WebView
   dragStarting()
   dropped()
   filesDropped()
-  held()
   isFocusedChanged()
   keyPressed()
   layoutFrameChanged()
+  longPressed()
   panUpdated()
   pinchUpdated()
   pointerEntered()

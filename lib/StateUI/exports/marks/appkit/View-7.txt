@@ -1,4 +1,4 @@
-# revision 32.1
+# revision 33.1
 Button.pointerMoved: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.pointerPressed: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.pointerReleased: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent

@@ -34,8 +34,8 @@ extension GTKDriver {
                 GTKTestHost.emit(click, "released", [Double(run), x, y])
             }
         // A press held: the click's press, the long press GTK recognizes, and the click's release.
-        case .hold:
-            guard let hold = controllers(.holds).first else { return false }
+        case .longPress:
+            guard let hold = controllers(.longPresses).first else { return false }
             let (x, y) = Self.middle(of: view)
             let click = controllers(.taps).first
             if let click { GTKTestHost.emit(click, "pressed", [1, x, y]) }

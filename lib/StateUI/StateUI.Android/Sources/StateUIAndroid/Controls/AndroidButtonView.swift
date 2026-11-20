@@ -109,13 +109,13 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// A long press opens a split button's menu, and a held one's - before a drag of it.
     override func longClicked() -> Bool {
-        guard opening == .arrow || opening == .hold else { return super.longClicked() }
+        guard opening == .arrow || opening == .longPress else { return super.longClicked() }
         showMenu()
         return true
     }
 
     override var takesLongPress: Bool {
-        opening == .arrow || opening == .hold || super.takesLongPress
+        opening == .arrow || opening == .longPress || super.takesLongPress
     }
 
     /// Android's menu popping up at the button, its entries written as it opens.

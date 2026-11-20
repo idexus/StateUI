@@ -74,8 +74,8 @@ final class AndroidMenusTests: XCTestCase {
             let offers = State(wrappedValue: false)
             let host = AndroidRenderer.running {
                 switch (holds.wrappedValue, offers.wrappedValue) {
-                case (true, false): return Text("Row").onHeld {}
-                case (true, true): return Text("Row").onHeld {}.contextMenu { MenuItem("Duplicate") }
+                case (true, false): return Text("Row").onLongPressed {}
+                case (true, true): return Text("Row").onLongPressed {}.contextMenu { MenuItem("Duplicate") }
                 case (false, true): return Text("Row").contextMenu { MenuItem("Duplicate") }
                 case (false, false): return Text("Row")
                 }

@@ -49,9 +49,9 @@ takes the stop as a move only where the press now stands past the threshold
 from where it went down, so a slow click is still a tap. The run's tap claims
 its press, and GTK denies it to every view around the one tapped.
 
-## A press held
+## A long press
 
-A hold is `GtkGestureLongPress`'s press, claimed as a tap's is. GTK waits its
+A long press is `GtkGestureLongPress`'s press, claimed as a tap's is. GTK waits its
 long-press time scaled by a factor it takes only between a half and two, so a
 view's time is held to that range - a longer or shorter one stands at its end.
 The press held is no tap as it lets go, and the host layer's rule keeps it

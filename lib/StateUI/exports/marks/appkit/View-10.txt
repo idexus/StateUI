@@ -1,113 +1,113 @@
-# revision 32.1
+# revision 33.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.filesDropped: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
-Button.holdDuration: ✅
+Button.longPressDuration: ✅
 Canvas.droppedFileTypes: ✓ dropFiles on Canvas: the window's drop routing told the driver's files, no dragging session
 Canvas.filesDropped: ✓ dropFiles on Canvas: the window's drop routing told the driver's files, no dragging session
-Canvas.holdDuration: ✅
+Canvas.longPressDuration: ✅
 Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the window's drop routing told the driver's files, no dragging session
 Capsule.filesDropped: ✓ dropFiles on Capsule: the window's drop routing told the driver's files, no dragging session
-Capsule.holdDuration: ✅
+Capsule.longPressDuration: ✅
 CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the window's drop routing told the driver's files, no dragging session
 CheckBox.filesDropped: ✓ dropFiles on CheckBox: the window's drop routing told the driver's files, no dragging session
-CheckBox.holdDuration: ✅
+CheckBox.longPressDuration: ✅
 ColorPicker.droppedFileTypes: ✓ dropFiles on ColorPicker: the window's drop routing told the driver's files, no dragging session
 ColorPicker.filesDropped: ✓ dropFiles on ColorPicker: the window's drop routing told the driver's files, no dragging session
-ColorPicker.holdDuration: ✅
+ColorPicker.longPressDuration: ✅
 DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the window's drop routing told the driver's files, no dragging session
 DatePicker.filesDropped: ✓ dropFiles on DatePicker: the window's drop routing told the driver's files, no dragging session
-DatePicker.holdDuration: ✅
+DatePicker.longPressDuration: ✅
 Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the window's drop routing told the driver's files, no dragging session
 Ellipse.filesDropped: ✓ dropFiles on Ellipse: the window's drop routing told the driver's files, no dragging session
-Ellipse.holdDuration: ✅
+Ellipse.longPressDuration: ✅
 Fill.droppedFileTypes: ✓ dropFiles on Fill: the window's drop routing told the driver's files, no dragging session
 Fill.filesDropped: ✓ dropFiles on Fill: the window's drop routing told the driver's files, no dragging session
-Fill.holdDuration: ✅
+Fill.longPressDuration: ✅
 Grid.droppedFileTypes: ✓ dropFiles on Grid: the window's drop routing told the driver's files, no dragging session
 Grid.filesDropped: ✓ dropFiles on Grid: the window's drop routing told the driver's files, no dragging session
-Grid.holdDuration: ✅
+Grid.longPressDuration: ✅
 HStack.droppedFileTypes: ✓ dropFiles on HStack: the window's drop routing told the driver's files, no dragging session
 HStack.filesDropped: ✓ dropFiles on HStack: the window's drop routing told the driver's files, no dragging session
-HStack.holdDuration: ✅
+HStack.longPressDuration: ✅
 Image.droppedFileTypes: ✓ dropFiles on Image: the window's drop routing told the driver's files, no dragging session
 Image.filesDropped: ✓ dropFiles on Image: the window's drop routing told the driver's files, no dragging session
-Image.holdDuration: ✅
+Image.longPressDuration: ✅
 ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the window's drop routing told the driver's files, no dragging session
 ItemsView.filesDropped: ✓ dropFiles on ItemsView: the window's drop routing told the driver's files, no dragging session
-ItemsView.holdDuration: ✅
+ItemsView.longPressDuration: ✅
 Line.droppedFileTypes: ✓ dropFiles on Line: the window's drop routing told the driver's files, no dragging session
 Line.filesDropped: ✓ dropFiles on Line: the window's drop routing told the driver's files, no dragging session
-Line.holdDuration: ✅
+Line.longPressDuration: ✅
 Link.droppedFileTypes: ✓ dropFiles on Link: the window's drop routing told the driver's files, no dragging session
 Link.filesDropped: ✓ dropFiles on Link: the window's drop routing told the driver's files, no dragging session
-Link.holdDuration: ✅
+Link.longPressDuration: ✅
 Map.droppedFileTypes: ✓ dropFiles on Map: the window's drop routing told the driver's files, no dragging session
 Map.filesDropped: ✓ dropFiles on Map: the window's drop routing told the driver's files, no dragging session
-Map.holdDuration: ✅
+Map.longPressDuration: ✅
 MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the window's drop routing told the driver's files, no dragging session
 MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the window's drop routing told the driver's files, no dragging session
-MotionLayout.holdDuration: ✅
 MotionLayout.interaction: ✓ sweep on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.longPressDuration: ✅
 Path.droppedFileTypes: ✓ dropFiles on Path: the window's drop routing told the driver's files, no dragging session
 Path.filesDropped: ✓ dropFiles on Path: the window's drop routing told the driver's files, no dragging session
-Path.holdDuration: ✅
+Path.longPressDuration: ✅
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the window's drop routing told the driver's files, no dragging session
 Picker.filesDropped: ✓ dropFiles on Picker: the window's drop routing told the driver's files, no dragging session
-Picker.holdDuration: ✅
+Picker.longPressDuration: ✅
 Polygon.droppedFileTypes: ✓ dropFiles on Polygon: the window's drop routing told the driver's files, no dragging session
 Polygon.filesDropped: ✓ dropFiles on Polygon: the window's drop routing told the driver's files, no dragging session
-Polygon.holdDuration: ✅
+Polygon.longPressDuration: ✅
 Polyline.droppedFileTypes: ✓ dropFiles on Polyline: the window's drop routing told the driver's files, no dragging session
 Polyline.filesDropped: ✓ dropFiles on Polyline: the window's drop routing told the driver's files, no dragging session
-Polyline.holdDuration: ✅
+Polyline.longPressDuration: ✅
 ProgressBar.droppedFileTypes: ✓ dropFiles on ProgressBar: the window's drop routing told the driver's files, no dragging session
 ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the window's drop routing told the driver's files, no dragging session
-ProgressBar.holdDuration: ✅
+ProgressBar.longPressDuration: ✅
 Rectangle.droppedFileTypes: ✓ dropFiles on Rectangle: the window's drop routing told the driver's files, no dragging session
 Rectangle.filesDropped: ✓ dropFiles on Rectangle: the window's drop routing told the driver's files, no dragging session
-Rectangle.holdDuration: ✅
+Rectangle.longPressDuration: ✅
 ScrollView.droppedFileTypes: ✓ dropFiles on ScrollView: the window's drop routing told the driver's files, no dragging session
 ScrollView.filesDropped: ✓ dropFiles on ScrollView: the window's drop routing told the driver's files, no dragging session
-ScrollView.holdDuration: ✅
+ScrollView.longPressDuration: ✅
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the window's drop routing told the driver's files, no dragging session
 SearchField.filesDropped: ✓ dropFiles on SearchField: the window's drop routing told the driver's files, no dragging session
-SearchField.holdDuration: ✅
+SearchField.longPressDuration: ✅
 Separator.droppedFileTypes: ✓ dropFiles on Separator: the window's drop routing told the driver's files, no dragging session
 Separator.filesDropped: ✓ dropFiles on Separator: the window's drop routing told the driver's files, no dragging session
-Separator.holdDuration: ✅
+Separator.longPressDuration: ✅
 Slider.droppedFileTypes: ✓ dropFiles on Slider: the window's drop routing told the driver's files, no dragging session
 Slider.filesDropped: ✓ dropFiles on Slider: the window's drop routing told the driver's files, no dragging session
-Slider.holdDuration: ✅
+Slider.longPressDuration: ✅
 Space.droppedFileTypes: ✓ dropFiles on Space: the window's drop routing told the driver's files, no dragging session
 Space.filesDropped: ✓ dropFiles on Space: the window's drop routing told the driver's files, no dragging session
-Space.holdDuration: ✅
+Space.longPressDuration: ✅
 Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the window's drop routing told the driver's files, no dragging session
 Spinner.filesDropped: ✓ dropFiles on Spinner: the window's drop routing told the driver's files, no dragging session
-Spinner.holdDuration: ✅
+Spinner.longPressDuration: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the window's drop routing told the driver's files, no dragging session
 Stepper.filesDropped: ✓ dropFiles on Stepper: the window's drop routing told the driver's files, no dragging session
-Stepper.holdDuration: ✅
+Stepper.longPressDuration: ✅
 Switch.droppedFileTypes: ✓ dropFiles on Switch: the window's drop routing told the driver's files, no dragging session
 Switch.filesDropped: ✓ dropFiles on Switch: the window's drop routing told the driver's files, no dragging session
-Switch.holdDuration: ✅
+Switch.longPressDuration: ✅
 Text.droppedFileTypes: ✓ dropFiles on Text: the window's drop routing told the driver's files, no dragging session
 Text.filesDropped: ✓ dropFiles on Text: the window's drop routing told the driver's files, no dragging session
-Text.holdDuration: ✅
+Text.longPressDuration: ✅
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the window's drop routing told the driver's files, no dragging session
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the window's drop routing told the driver's files, no dragging session
-TextEditor.holdDuration: ✅
+TextEditor.longPressDuration: ✅
 TextField.droppedFileTypes: ✓ dropFiles on TextField: the window's drop routing told the driver's files, no dragging session
 TextField.filesDropped: ✓ dropFiles on TextField: the window's drop routing told the driver's files, no dragging session
-TextField.holdDuration: ✅
+TextField.longPressDuration: ✅
 TimePicker.droppedFileTypes: ✓ dropFiles on TimePicker: the window's drop routing told the driver's files, no dragging session
 TimePicker.filesDropped: ✓ dropFiles on TimePicker: the window's drop routing told the driver's files, no dragging session
-TimePicker.holdDuration: ✅
+TimePicker.longPressDuration: ✅
 VStack.droppedFileTypes: ✓ dropFiles on VStack: the window's drop routing told the driver's files, no dragging session
 VStack.filesDropped: ✓ dropFiles on VStack: the window's drop routing told the driver's files, no dragging session
-VStack.holdDuration: ✅
+VStack.longPressDuration: ✅
 WebView.droppedFileTypes: ✓ dropFiles on WebView: the window's drop routing told the driver's files, no dragging session
 WebView.filesDropped: ✓ dropFiles on WebView: the window's drop routing told the driver's files, no dragging session
-WebView.holdDuration: ✅
+WebView.longPressDuration: ✅
 ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the window's drop routing told the driver's files, no dragging session
 ZStack.filesDropped: ✓ dropFiles on ZStack: the window's drop routing told the driver's files, no dragging session
-ZStack.holdDuration: ✅
+ZStack.longPressDuration: ✅

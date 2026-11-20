@@ -31,7 +31,7 @@ final class GTKButtonView: GTKView {
         self.opening = opening
         super.init { _ in
             switch opening {
-            case .none, .hold: toggles ? gtk_toggle_button_new() : gtk_button_new()
+            case .none, .longPress: toggles ? gtk_toggle_button_new() : gtk_button_new()
             case .click: gtk_menu_button_new()
             case .arrow: adw_split_button_new()
             }
@@ -138,7 +138,7 @@ final class GTKButtonView: GTKView {
     /// opening made.
     var child: GTKWidget? {
         switch opening {
-        case .none, .hold: gtk_button_get_child(widget.of(GtkButton.self))
+        case .none, .longPress: gtk_button_get_child(widget.of(GtkButton.self))
         case .click: gtk_menu_button_get_child(widget.opaque)
         case .arrow: adw_split_button_get_child(widget.opaque)
         }
@@ -146,7 +146,7 @@ final class GTKButtonView: GTKView {
 
     private func setChild(_ child: GTKWidget?) {
         switch opening {
-        case .none, .hold: gtk_button_set_child(widget.of(GtkButton.self), child)
+        case .none, .longPress: gtk_button_set_child(widget.of(GtkButton.self), child)
         case .click: gtk_menu_button_set_child(widget.opaque, child)
         case .arrow: adw_split_button_set_child(widget.opaque, child)
         }
@@ -173,7 +173,7 @@ final class GTKButtonView: GTKView {
         switch opening {
         case .click: gtk_menu_button_set_menu_model(widget.opaque, g_menu_model(menu.model))
         case .arrow: adw_split_button_set_menu_model(widget.opaque, g_menu_model(menu.model))
-        case .hold:
+        case .longPress:
             if let held { held.show(menu) } else { held = GTKContextMenu(menu, on: widget, heldByMouse: true) }
         case .none: break
         }

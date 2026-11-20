@@ -33,7 +33,7 @@ final class ButtonMenuTests: XCTestCase {
         XCTAssertEqual(ButtonMenu.opening(made: button(menu: false, clicks: true)), .none)
         XCTAssertEqual(ButtonMenu.opening(made: button(menu: true, clicks: false)), .click)
         XCTAssertEqual(ButtonMenu.opening(made: button(menu: true, clicks: true)), .arrow)
-        XCTAssertEqual(ButtonMenu.opening(made: button(menu: true, clicks: true, kind: .held)), .hold)
+        XCTAssertEqual(ButtonMenu.opening(made: button(menu: true, clicks: true, kind: .longPress)), .longPress)
         XCTAssertEqual(ButtonMenu.opening(made: button(menu: true, clicks: false, kind: .split)), .arrow)
         XCTAssertEqual(ButtonMenu.opening(made: nil), .none)
     }
@@ -49,14 +49,14 @@ final class ButtonMenuTests: XCTestCase {
         XCTAssertTrue(try shows(button(menu: true, clicks: false)))
         XCTAssertFalse(try shows(button(menu: true, clicks: false, arrow: false)))
         XCTAssertFalse(try shows(button(menu: true, clicks: true)), "a split button's arrow is its own part")
-        XCTAssertFalse(try shows(button(menu: true, clicks: true, kind: .held)))
+        XCTAssertFalse(try shows(button(menu: true, clicks: true, kind: .longPress)))
     }
 
     func testAButtonIsMadeShowingItsArrowAsItsPatchSays() {
         XCTAssertTrue(ButtonMenu.showsArrow(made: button(menu: true, clicks: false)))
         XCTAssertFalse(ButtonMenu.showsArrow(made: button(menu: true, clicks: false, arrow: false)))
         XCTAssertFalse(ButtonMenu.showsArrow(made: button(menu: true, clicks: true)), "a split button's arrow is a part")
-        XCTAssertFalse(ButtonMenu.showsArrow(made: button(menu: true, clicks: true, kind: .held)))
+        XCTAssertFalse(ButtonMenu.showsArrow(made: button(menu: true, clicks: true, kind: .longPress)))
         XCTAssertFalse(ButtonMenu.showsArrow(made: button(menu: false, clicks: false)))
     }
 
@@ -80,7 +80,7 @@ final class ButtonMenuTests: XCTestCase {
         }
         XCTAssertEqual(try opening(button(menu: true, clicks: false, type: .toolbarButton)), .click)
         XCTAssertEqual(try opening(button(menu: true, clicks: true, type: .toolbarButton)), .arrow)
-        XCTAssertEqual(try opening(button(menu: true, clicks: true, kind: .held, type: .toolbarButton)), .hold)
+        XCTAssertEqual(try opening(button(menu: true, clicks: true, kind: .longPress, type: .toolbarButton)), .longPress)
         XCTAssertEqual(try opening(button(menu: false, clicks: true, type: .toolbarButton)), .none)
     }
 

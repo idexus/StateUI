@@ -1,7 +1,7 @@
-# revision 32.2
+# revision 33.2
 Button.pinchUpdated: ✓ pinch on Button: the relay's report of the manipulation handed to the host, no touch sent
 Button.tapped: ✓ pressDown on Button: the relay's report of the press handed to the host, no pointer sent
-Canvas.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+Canvas.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
 Canvas.pointerMoved: ✓ hover on Canvas: the relay's report of the pointer handed to the host, no pointer sent
 Canvas.pointerPressed: ✓ hover on Canvas: the relay's report of the pointer handed to the host, no pointer sent
 Canvas.pointerReleased: ✓ hover on Canvas: the relay's report of the pointer handed to the host, no pointer sent
@@ -20,7 +20,7 @@ CheckBox.layoutBody: ✅
 CheckBox.layoutFrameChanged: ✅
 ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: the relay's report of the manipulation handed to the host, no touch sent
 ColorPicker.tapped: ✓ pressDown on ColorPicker: the relay's report of the press handed to the host, no pointer sent
-DatePicker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+DatePicker.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
 DatePicker.pointerMoved: ✓ hover on DatePicker: the relay's report of the pointer handed to the host, no pointer sent
 DatePicker.pointerPressed: ✓ hover on DatePicker: the relay's report of the pointer handed to the host, no pointer sent
 DatePicker.pointerReleased: ✓ hover on DatePicker: the relay's report of the pointer handed to the host, no pointer sent
@@ -39,7 +39,7 @@ Fill.layoutBody: ✅
 Fill.layoutFrameChanged: ✅
 Grid.pinchUpdated: ✓ pinch on Grid: the relay's report of the manipulation handed to the host, no touch sent
 Grid.tapped: ✓ pressDown on Grid: the relay's report of the press handed to the host, no pointer sent
-HStack.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+HStack.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
 HStack.pointerMoved: ✓ hover on HStack: the relay's report of the pointer handed to the host, no pointer sent
 HStack.pointerPressed: ✓ hover on HStack: the relay's report of the pointer handed to the host, no pointer sent
 HStack.pointerReleased: ✓ hover on HStack: the relay's report of the pointer handed to the host, no pointer sent
@@ -70,8 +70,8 @@ Link.layoutBody: ✅
 Link.layoutFrameChanged: ✅
 Map.pinchUpdated: 🧩
 Map.tapped: 🧩
-MotionLayout.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+MotionLayout.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
 MotionLayout.pointerMoved: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
 MotionLayout.pointerPressed: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
 MotionLayout.pointerReleased: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
@@ -90,7 +90,7 @@ Picker.layoutBody: ✅
 Picker.layoutFrameChanged: ✅
 Polygon.pinchUpdated: ✓ pinch on Polygon: the relay's report of the manipulation handed to the host, no touch sent
 Polygon.tapped: ✓ pressDown on Polygon: the relay's report of the press handed to the host, no pointer sent
-Polyline.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+Polyline.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
 Polyline.pointerMoved: ✓ hover on Polyline: the relay's report of the pointer handed to the host, no pointer sent
 Polyline.pointerPressed: ✓ hover on Polyline: the relay's report of the pointer handed to the host, no pointer sent
 Polyline.pointerReleased: ✓ hover on Polyline: the relay's report of the pointer handed to the host, no pointer sent
@@ -109,12 +109,12 @@ Rectangle.layoutBody: ✅
 Rectangle.layoutFrameChanged: ✅
 ScrollView.pinchUpdated: ✓ pinch on ScrollView: the relay's report of the manipulation handed to the host, no touch sent
 ScrollView.tapped: ✓ pressDown on ScrollView: the relay's report of the press handed to the host, no pointer sent
-SearchField.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+SearchField.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
 SearchField.pointerMoved: ✓ hover on SearchField: the relay's report of the pointer handed to the host, no pointer sent
 SearchField.pointerPressed: ✓ hover on SearchField: the relay's report of the pointer handed to the host, no pointer sent
 SearchField.pointerReleased: ✓ hover on SearchField: the relay's report of the pointer handed to the host, no pointer sent
 SearchField.presentationFrameChanged: ✅
-Separator.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+Separator.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
 Separator.pointerMoved: ✓ hover on Separator: the relay's report of the pointer handed to the host, no pointer sent
 Separator.pointerPressed: ✓ hover on Separator: the relay's report of the pointer handed to the host, no pointer sent
 Separator.pointerReleased: ✓ hover on Separator: the relay's report of the pointer handed to the host, no pointer sent
@@ -138,7 +138,7 @@ Spinner.layoutBody: ✅
 Spinner.layoutFrameChanged: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: the relay's report of the manipulation handed to the host, no touch sent
 Stepper.tapped: ✓ pressDown on Stepper: the relay's report of the press handed to the host, no pointer sent
-Switch.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+Switch.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
 Switch.pointerMoved: ✓ hover on Switch: the relay's report of the pointer handed to the host, no pointer sent
 Switch.pointerPressed: ✓ hover on Switch: the relay's report of the pointer handed to the host, no pointer sent
 Switch.pointerReleased: ✓ hover on Switch: the relay's report of the pointer handed to the host, no pointer sent
@@ -159,7 +159,7 @@ TextField.layoutBody: ✅
 TextField.layoutFrameChanged: ✅
 TimePicker.pinchUpdated: ✓ pinch on TimePicker: the relay's report of the manipulation handed to the host, no touch sent
 TimePicker.tapped: ✓ pressDown on TimePicker: the relay's report of the press handed to the host, no pointer sent
-VStack.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+VStack.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
 VStack.pointerMoved: ✓ hover on VStack: the relay's report of the pointer handed to the host, no pointer sent
 VStack.pointerPressed: ✓ hover on VStack: the relay's report of the pointer handed to the host, no pointer sent
 VStack.pointerReleased: ✓ hover on VStack: the relay's report of the pointer handed to the host, no pointer sent

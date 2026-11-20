@@ -518,8 +518,8 @@ element's events by one rule on every host (`MountedElement.hearing`,
 for a press dragged where a pan, a swipe or a state a pan carries asks - one
 pointer's alone - and for a pinch. A tap answers each time a quick run
 reaches the count asked for, and at once for a press assistive technology
-made; a press held answers once, as the platform's long press comes ([a press
-held](#a-press-held)); the pointer says where it is, but not as it enters or leaves; a press
+made; a long press answers once, as the platform's own comes ([a long
+press](#a-long-press)); the pointer says where it is, but not as it enters or leaves; a press
 dragged moves the states it carries by how far it has come from where they
 stood as it began, in one user's transaction, and is a swipe as it ends far
 enough ([a swipe](#a-swipe)); a pinch says each step's scale since the last
@@ -532,8 +532,8 @@ A view that hears taps is pressed as a button is, on every host
 (`ButtonPress`, `HeardInput.press`): the press lights it - its `.pressed`
 visual state - while it stands over the view, puts it out as it leaves and
 lights it again as it comes back; let go over the view it taps, let go away
-it taps nothing. A scroll that takes the touch, the view's own drag and a hold
-take the press: the view goes out and nothing taps. So does a hand over a
+it taps nothing. A scroll that takes the touch, the view's own drag and a long
+press take the press: the view goes out and nothing taps. So does a hand over a
 layout once it moves the run or holds a view (`HandReading.claimed`,
 `holdsView`) - the layout's own press and those of every view it holds, once
 a touch: a swipe across a run of cards opens none, and a press standing still
@@ -627,17 +627,17 @@ report it on every step, their moves read off the frame clock as the host
 layer hears them - a pan's from its totals, a pinch's from its spread, a
 rotation's from its steps ([the reports](../types/gestures.md#a-gestures-speed)).
 
-## A press held
+## A long press
 
-A view held is told by the platform's long press - a recognizer, a long
-click, a hold event, a timer the Web's relay keeps - after the time the view
-says (`holdDuration`), or the platform's own where it says none. Its rule is
-the host layer's, once (`DragRecognition.held`): a hold comes before the drag's
-threshold, so a press that became a drag is no hold, and a press held is the
-hold's - it drags nothing after, however far it moves, and its release is no
-tap. A host whose toolkit tells taps and drags of its own keeps the hold apart
-from them by the toolkit's means: a recognizer that is not heard with the
-view's tap and pan, a click the relay takes.
+A long press is told by the platform's own - a recognizer, a long click, a
+holding event, a timer the Web's relay keeps - after the time the view says
+(`longPressDuration`), or the platform's own where it says none. Its rule is
+the host layer's, once (`DragRecognition.held`): a long press comes before
+the drag's threshold, so a press that became a drag is none, and a press held
+that long drags nothing after, however far it moves, and its release is no
+tap. A host whose toolkit tells taps and drags of its own keeps the long
+press apart from them by the toolkit's means: a recognizer that is not heard
+with the view's tap and pan, a click the relay takes.
 
 ## The hand over a layout
 
@@ -685,12 +685,12 @@ A view the hand takes by itself (`HostDrag`, its interaction's) gives the
 hand another owner, by one rule every host shares: a first move along the
 way its values go is the values'; else the view itself is taken as its drag
 begins - at once by any move, directional by a first move its one axis
-leads, and by a press standing still `HandReading.hold` - 500 ms, the long
+leads, and by a press standing still `HandReading.longPress` - 500 ms, the long
 press the platforms share closely enough - then whichever way it goes. A
 first move nothing takes is left to whatever stands behind the view. A host
 says where a press went down (`HeardInput.hand`'s `point`) and every move
 and lift as it does for a value, and its end always - a press that held a
-view and never moved still lets it go; it decides nothing more. The hold is
+view and never moved still lets it go; it decides nothing more. The long press is
 found by the frames, since nothing moves: a press waiting for it holds the
 clock (`HandReading.wantsFrames`), as an open wheel does. The view's hand is
 the view's own drag ([interaction.md](interaction.md#a-views-own-press-and-drag)),

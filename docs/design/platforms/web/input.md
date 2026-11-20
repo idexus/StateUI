@@ -54,13 +54,13 @@ in a menu - so
 two taps in a row on a touch screen are two taps, never the page's zoom -
 which the rest of the page keeps.
 
-## A press held
+## A long press
 
-The browser tells no hold: the relay waits the view's time, or StateUI's own,
+The browser tells no long press: the relay waits the view's time, or StateUI's own,
 from a press of a finger, a pen or the mouse's main button, and lets it go
 where the press moves as far as a drag or lifts. A web view's document of the
-page's site is heard too. The held press's click is taken before any view
-hears it, so a press held is no tap.
+page's site is heard too. The long press's click is taken before any view
+hears it, so it is no tap.
 
 A finger held on a button selects none of its words: a button is pressed,
 never read, so every button the page stands - the page's, the bar's, a tab's

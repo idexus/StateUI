@@ -124,7 +124,7 @@ final class WinUIGesturesTests: XCTestCase {
         XCTAssertEqual(Hearing.pinches.rawValue, UInt32(StateUIHearingPinches.rawValue))
         XCTAssertEqual(Hearing.hand.rawValue, UInt32(StateUIHearingHand.rawValue))
         XCTAssertEqual(Hearing.rotations.rawValue, UInt32(StateUIHearingRotations.rawValue))
-        XCTAssertEqual(Hearing.holds.rawValue, UInt32(StateUIHearingHolds.rawValue))
+        XCTAssertEqual(Hearing.longPresses.rawValue, UInt32(StateUIHearingLongPresses.rawValue))
         XCTAssertEqual(Hearing.kinds.filter { $0 != .presses }.count, 7, "every kind the relay listens for has its bit here")
         XCTAssertEqual(WinUIView.told([.presses, .hand]), [.taps, .hand], "a press with no tap is told as a tap's press")
     }

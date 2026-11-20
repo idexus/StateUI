@@ -1,6 +1,6 @@
 import StateUI
 
-/// A button opening its menu, a split button, a button whose menu is held, and a menu's arrow shown or not.
+/// A button opening its menu, a split button, a button whose menu a long press opens, and a menu's arrow shown or not.
 struct ButtonMenuSample: SampleContent, ExampleContent {
     // listing: ButtonMenuSample
     @State private var last = "nothing yet"
@@ -10,7 +10,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
 
     static let id = "buttonMenu"
     static let title = "Button menu"
-    static let summary = "A button opening a menu, a split button, and a menu held."
+    static let summary = "A button opening a menu, a split button, and a menu on a long press."
 
     // listing: ButtonMenuSample
     var body: some View {
@@ -18,7 +18,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
         let look: StyleKey<Button>? = platformLook ? .platform : nil
 
         return VStack {
-            Text("Try each menu: Share's on a click, Save's on its arrow, Open's when held.")
+            Text("Try each menu: Share's on a click, Save's on its arrow, Open's on a long press.")
                 .fontSize(14)
 
             HStack {
@@ -40,7 +40,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
                 Button("Open")
                     .style(look)
                     .onClicked { last = "Opened" }
-                    .menu(.held) {
+                    .menu(.longPress) {
                         MenuItem("Report.txt").onClicked { last = "Opened Report.txt" }
                         MenuItem("Notes.txt").onClicked { last = "Opened Notes.txt" }
                     }
@@ -77,7 +77,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("Open's menu opens as it is held; on Windows and the Web, with the mouse's other button too.")
+        Text("Open's menu opens on a long press; on Windows and the Web, with the mouse's other button too.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

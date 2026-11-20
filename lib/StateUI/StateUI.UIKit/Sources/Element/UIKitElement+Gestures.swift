@@ -13,7 +13,7 @@ extension UIKitElement {
         guard let view else { return }
         let hearing = element.hearing
         defer {
-            listening?.wait(element.holdDuration)
+            listening?.wait(element.longPressDuration)
             listening?.countsRuns = (element.number(.tapCount) ?? 1) > 1
         }
         configureDragAndDrop(on: view)

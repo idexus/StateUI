@@ -439,8 +439,8 @@ of its own; no case gives them a verdict of their own, so no page marks them:
 | `gridColumnSpan` | [View](controls/tiers/View.md) | property |
 | `gridRow` | [View](controls/tiers/View.md) | property |
 | `gridRowSpan` | [View](controls/tiers/View.md) | property |
-| `onHeld` (`held`) | [View](controls/tiers/View.md) | event |
-| `holdDuration` | [View](controls/tiers/View.md) | property |
+| `onLongPressed` (`longPressed`) | [View](controls/tiers/View.md) | event |
+| `longPressDuration` | [View](controls/tiers/View.md) | property |
 | `horizontalAlignment` | [View](controls/tiers/View.md) | property |
 | `interaction` | [View](controls/tiers/View.md) | program |
 | `isDraggable` | [View](controls/tiers/View.md) | property |
@@ -568,7 +568,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | --- | --- | --- |
 | [AutomationElement](controls/tiers/AutomationElement.md) | `accessibilityIdentifier` | 1 |
 | [VisualElement](controls/tiers/VisualElement.md) | `accessibilityActionPerformed`, `accessibilityActions`, `onAccessibilityAdjusted` (`accessibilityAdjusted`), `accessibilityHeading`, `accessibilityHint`, `accessibilityLabel`, `accessibilityPresence`, `accessibilityRole`, `accessibilityValue`, `layoutFrame`, `presentationFrame`, `height`, `ignoresInput`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `tooltip`, `translationX`, `translationY`, `width`, `zIndex` | 33 |
-| [View](controls/tiers/View.md) | `allowsDrop`, `area`, `onDragEntered` (`dragEntered`), `onDragExited` (`dragExited`), `onDragStarting` (`dragStarting`), `dragText`, `onDropped` (`dropped`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDropped` (`filesDropped`), `layoutFrameChanged`, `presentationFrameChanged`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `onHeld` (`held`), `holdDuration`, `horizontalAlignment`, `interaction`, `isDraggable`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `layoutBody`, `onPinchUpdated` (`pinchUpdated`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `onRotationUpdated` (`rotationUpdated`), `swipeDirections`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 36 |
+| [View](controls/tiers/View.md) | `allowsDrop`, `area`, `onDragEntered` (`dragEntered`), `onDragExited` (`dragExited`), `onDragStarting` (`dragStarting`), `dragText`, `onDropped` (`dropped`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDropped` (`filesDropped`), `layoutFrameChanged`, `presentationFrameChanged`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `onLongPressed` (`longPressed`), `longPressDuration`, `horizontalAlignment`, `interaction`, `isDraggable`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `layoutBody`, `onPinchUpdated` (`pinchUpdated`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `onRotationUpdated` (`rotationUpdated`), `swipeDirections`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 36 |
 | [Layout](controls/tiers/Layout.md) | `ignoresSafeArea`, `clipsContent`, `letsInputThrough`, `layoutBodies` | 4 |
 | [Stack](controls/tiers/Stack.md) | `spacing` | 1 |
 | [TextInput](controls/tiers/TextInput.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 9 |
@@ -695,21 +695,21 @@ realizes the element and each of its members.
 `fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`, `format`, `from`,
 `geometryTransform`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`,
 `growsWithText`, `height`, `hidesWhenInactive`, `hidesWithSidebar`,
-`holdDuration`, `horizontalAlignment`, `horizontalScrollIndicator`,
-`horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
-`ignoresInput`, `ignoresSafeArea`, `inputPurpose`, `isAnimating`, `isDraggable`,
-`isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`, `isMinimizable`,
-`isOn`, `isOpen`, `isPassword`, `isPresented`, `isReadOnly`, `isRefreshEnabled`,
-`isRefreshing`, `isScrollEnabled`, `isSelectable`, `isSpellCheckEnabled`,
+`horizontalAlignment`, `horizontalScrollIndicator`, `horizontalTextAlignment`,
+`icon`, `iconPosition`, `iconSpacing`, `ignoresInput`, `ignoresSafeArea`,
+`inputPurpose`, `isAnimating`, `isDraggable`, `isEnabled`,
+`isFontAutoScalingEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`,
+`isPassword`, `isPresented`, `isReadOnly`, `isRefreshEnabled`, `isRefreshing`,
+`isScrollEnabled`, `isSelectable`, `isSpellCheckEnabled`,
 `isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`, `items`, `itemsLayout`,
 `keyboardShortcut`, `keysTaken`, `kind`, `language`, `layoutBodies`,
 `layoutBody`, `layoutDirection`, `layoutFrame`, `letsInputThrough`,
 `lineAlignment`, `lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`,
-`location`, `margin`, `maximum`, `maximumHeight`, `maximumLength`,
-`maximumLines`, `maximumWidth`, `menuKind`, `minimum`, `minimumHeight`,
-`minimumWidth`, `mirrorsRightToLeft`, `miterLimit`, `onIcon`, `opacity`,
-`options`, `order`, `padding`, `panTouchCount`, `parameters`, `part`, `pivotX`,
-`pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,
+`location`, `longPressDuration`, `margin`, `maximum`, `maximumHeight`,
+`maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`, `minimum`,
+`minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`, `miterLimit`, `onIcon`,
+`opacity`, `options`, `order`, `padding`, `panTouchCount`, `parameters`, `part`,
+`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,
 `presentation`, `presentationFrame`, `progress`, `region`, `role`, `rotation`,
 `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
 `scrollEdge`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
@@ -731,14 +731,14 @@ realizes the element and each of its members.
 `appearing`, `canGoBackChanged`, `canGoForwardChanged`, `clicked`, `closed`,
 `colorChanged`, `created`, `dateChanged`, `deactivated`, `destroying`,
 `detailsClicked`, `disappearing`, `dragEnded`, `dragEntered`, `dragExited`,
-`dragStarting`, `dropped`, `endReached`, `filesDropped`, `held`,
-`isFocusedChanged`, `isPresentedChanged`, `itemActivated`, `itemDragUpdated`,
-`keyPressed`, `layoutFrameChanged`, `linkOpened`, `locationTapped`, `navigated`,
-`navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`, `opened`,
-`panUpdated`, `pinchUpdated`, `pointerEntered`, `pointerExited`, `pointerMoved`,
-`pointerPressed`, `pointerReleased`, `popped`, `presentationFrameChanged`,
-`pressed`, `processTerminated`, `realizedChanged`, `refreshRequested`,
-`released`, `rotationUpdated`, `scrollStopped`, `selected`,
+`dragStarting`, `dropped`, `endReached`, `filesDropped`, `isFocusedChanged`,
+`isPresentedChanged`, `itemActivated`, `itemDragUpdated`, `keyPressed`,
+`layoutFrameChanged`, `linkOpened`, `locationTapped`, `longPressed`,
+`navigated`, `navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`,
+`opened`, `panUpdated`, `pinchUpdated`, `pointerEntered`, `pointerExited`,
+`pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`,
+`presentationFrameChanged`, `pressed`, `processTerminated`, `realizedChanged`,
+`refreshRequested`, `released`, `rotationUpdated`, `scrollStopped`, `selected`,
 `selectedIndexChanged`, `selectedItemsChanged`, `selectedTabChanged`,
 `showsSidebarChanged`, `stopped`, `submitted`, `swiped`, `tapped`,
 `textChanged`, `timeChanged`, `toggled`, `valueChanged`, `windowClosed`.

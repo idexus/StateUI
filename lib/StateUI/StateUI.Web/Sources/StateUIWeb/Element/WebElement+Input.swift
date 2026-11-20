@@ -34,11 +34,11 @@ extension WebElement {
                 self?.heard(.presses, .press(phase, at: at, size: size, byFinger: byFinger))
             }
         }
-        if hearing.contains(.holds) {
-            view.holdTime = element.holdDuration ?? HandReading.hold
-            if !listening.contains(.holds) {
-                listening.insert(.holds)
-                view.listenForHold { [weak self] in self?.held() }
+        if hearing.contains(.longPresses) {
+            view.longPressTime = element.longPressDuration ?? HandReading.longPress
+            if !listening.contains(.longPresses) {
+                listening.insert(.longPresses)
+                view.listenForLongPress { [weak self] in self?.held() }
             }
         }
         if !hearing.isDisjoint(with: Self.presses), listening.isDisjoint(with: Self.presses) {
@@ -260,10 +260,10 @@ extension WebElement {
             in: host.runtime)
     }
 
-    /// The relay held a press: the hold's where it has not become a drag, by the host layer's rule.
+    /// The relay held a press: the long press's where it has not become a drag, by the host layer's rule.
     private func held() {
         guard press.held() else { return }
-        heard(.holds, .hold)
+        heard(.longPresses, .longPress)
     }
 
     private func heard(_ kind: Hearing, _ input: HeardInput) {

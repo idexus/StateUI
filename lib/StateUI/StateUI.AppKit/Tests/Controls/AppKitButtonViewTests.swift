@@ -498,7 +498,7 @@ final class AppKitButtonViewTests: XCTestCase {
         let heard = Received<String>()
         let renderer = AppKitRenderer.running {
             HStack {
-                Button("Open").onClicked { heard.values.append("open") }.menu(.held) { MenuItem("Report.txt") }
+                Button("Open").onClicked { heard.values.append("open") }.menu(.longPress) { MenuItem("Report.txt") }
             }
         }
         defer { renderer.finish() }

@@ -35,7 +35,7 @@ final class ButtonMenuTests: XCTestCase {
         XCTAssertEqual(Button("Share").menu { MenuItem("Mail") }.node.buttonMenuOpening, .click)
         XCTAssertEqual(Button("Save").onClicked {}.menu { MenuItem("Save as") }.node.buttonMenuOpening, .arrow)
         XCTAssertEqual(Button("Share").menu(.split) { MenuItem("Mail") }.node.buttonMenuOpening, .arrow)
-        XCTAssertEqual(Button("Save").onClicked {}.menu(.held) { MenuItem("Save as") }.node.buttonMenuOpening, .hold)
+        XCTAssertEqual(Button("Save").onClicked {}.menu(.longPress) { MenuItem("Save as") }.node.buttonMenuOpening, .longPress)
         XCTAssertNil(Button("Share").menu { MenuItem("Mail") }.node.props[.menuKind], "the kind written only as asked")
     }
 
@@ -51,7 +51,7 @@ final class ButtonMenuTests: XCTestCase {
         let split = renders.render(Button("Save").onClicked {}.menu { MenuItem("Save a copy") }.id("b").node)
         XCTAssertTrue(split.replace, "a click of its own makes a split button")
 
-        let held = renders.render(Button("Save").onClicked {}.menu(.held) { MenuItem("Save a copy") }.id("b").node)
+        let held = renders.render(Button("Save").onClicked {}.menu(.longPress) { MenuItem("Save a copy") }.id("b").node)
         XCTAssertTrue(held.replace, "held, a button whose menu opens as it is held")
 
         let plain = renders.render(Button("Save").onClicked {}.id("b").node)

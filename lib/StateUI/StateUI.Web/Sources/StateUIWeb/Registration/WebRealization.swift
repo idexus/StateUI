@@ -208,9 +208,9 @@ enum WebRealization {
         let opened = "The browser says nothing as a picker's list or calendar opens."
         let closed = "The browser says nothing as a picker's list or calendar closes."
         let pressed = "The browser's select opens its list at the user's press, and the list keeps the pointer until "
-            + "it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed."
+            + "it closes: the page hears no long press, drag or swipe of it, and its release only where it was pressed."
         let pressing: [any ContractMember] = [
-            ViewContract.tapped, ViewContract.held, ViewContract.holdDuration, ViewContract.panUpdated,
+            ViewContract.tapped, ViewContract.longPressed, ViewContract.longPressDuration, ViewContract.panUpdated,
             ViewContract.panTouchCount, ViewContract.interaction, ViewContract.swiped,
             ViewContract.swipeDirections, ViewContract.swipeThreshold, ViewContract.pointerReleased,
         ]

@@ -80,7 +80,7 @@ final class UIKitButtonMenuTests: XCTestCase {
     func testAHeldButtonAndAButtonWithoutItsArrow() throws {
         let host = UIKitRenderer.running {
             VStack {
-                Button("Save").onClicked {}.menu(.held) { MenuItem("Save as") }
+                Button("Save").onClicked {}.menu(.longPress) { MenuItem("Save as") }
                 Button().icon(.platform(.more)).menu { MenuItem("Mail") }.showsMenuArrow(false)
             }
         }

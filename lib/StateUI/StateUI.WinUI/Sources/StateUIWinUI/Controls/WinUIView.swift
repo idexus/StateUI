@@ -519,11 +519,11 @@ class WinUIView {
         heard(.press(phase, at: point, size: size, byFinger: byFinger))
     }
 
-    /// A press the relay says WinUI held: the hold's where it has not become a drag, by the host layer's rule.
-    /// Design: docs/design/host/runtime.md#a-press-held
-    func heardHold() {
+    /// A press the relay says WinUI held: the long press's where it has not become a drag, by the host layer's rule.
+    /// Design: docs/design/host/runtime.md#a-long-press
+    func heardLongPress() {
         guard press.held() else { return }
-        heard(.hold)
+        heard(.longPress)
     }
 
     /// The hand over a layout the relay tells - begun where a pointer went down, none for a trackpad's fingers;

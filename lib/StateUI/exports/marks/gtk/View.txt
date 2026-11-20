@@ -1,4 +1,4 @@
-# revision 32.1
+# revision 33.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.dragEnded: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -13,13 +13,13 @@ Button.gridColumn: ✅
 Button.gridColumnSpan: ✅
 Button.gridRow: ✅
 Button.gridRowSpan: ✅
-Button.held: ✅
-Button.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Button.horizontalAlignment: ✅
 Button.interaction: ✅
 Button.isDraggable: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.layoutBody: ✅
 Button.layoutFrameChanged: ✅
+Button.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Button.longPressed: ✅
 Button.margin: ✅
 Button.panTouchCount: ✅
 Button.panUpdated: ✅
@@ -49,13 +49,13 @@ Canvas.gridColumn: ✅
 Canvas.gridColumnSpan: ✅
 Canvas.gridRow: ✅
 Canvas.gridRowSpan: ✅
-Canvas.held: ✅
-Canvas.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Canvas.horizontalAlignment: ✅
 Canvas.interaction: ✅
 Canvas.isDraggable: ✓ dragAndDrop on Canvas: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.layoutBody: ✅
 Canvas.layoutFrameChanged: ✅
+Canvas.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Canvas.longPressed: ✅
 Canvas.margin: ✅
 Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
@@ -85,13 +85,13 @@ Capsule.gridColumn: ✅
 Capsule.gridColumnSpan: ✅
 Capsule.gridRow: ✅
 Capsule.gridRowSpan: ✅
-Capsule.held: ✅
-Capsule.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Capsule.horizontalAlignment: ✅
 Capsule.interaction: ✅
 Capsule.isDraggable: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.layoutBody: ✅
 Capsule.layoutFrameChanged: ✅
+Capsule.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Capsule.longPressed: ✅
 Capsule.margin: ✅
 Capsule.panTouchCount: ✅
 Capsule.panUpdated: ✅
@@ -121,13 +121,13 @@ CheckBox.gridColumn: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRow: ✅
 CheckBox.gridRowSpan: ✅
-CheckBox.held: ✅
-CheckBox.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 CheckBox.horizontalAlignment: ✅
 CheckBox.interaction: ✅
 CheckBox.isDraggable: ✓ dragAndDrop on CheckBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.layoutBody: ✅
 CheckBox.layoutFrameChanged: ✅
+CheckBox.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+CheckBox.longPressed: ✅
 CheckBox.margin: ✅
 CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
@@ -157,13 +157,13 @@ ColorPicker.gridColumn: ✅
 ColorPicker.gridColumnSpan: ✅
 ColorPicker.gridRow: ✅
 ColorPicker.gridRowSpan: ✅
-ColorPicker.held: ✅
-ColorPicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ColorPicker.horizontalAlignment: ✅
 ColorPicker.interaction: ✅
 ColorPicker.isDraggable: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.layoutBody: ✅
 ColorPicker.layoutFrameChanged: ✅
+ColorPicker.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+ColorPicker.longPressed: ✅
 ColorPicker.margin: ✅
 ColorPicker.panTouchCount: ✅
 ColorPicker.panUpdated: ✅
@@ -193,13 +193,13 @@ DatePicker.gridColumn: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRow: ✅
 DatePicker.gridRowSpan: ✅
-DatePicker.held: ✅
-DatePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 DatePicker.horizontalAlignment: ✅
 DatePicker.interaction: ✅
 DatePicker.isDraggable: ✓ dragAndDrop on DatePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.layoutBody: ✅
 DatePicker.layoutFrameChanged: ✅
+DatePicker.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+DatePicker.longPressed: ✅
 DatePicker.margin: ✅
 DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
@@ -229,13 +229,13 @@ Ellipse.gridColumn: ✅
 Ellipse.gridColumnSpan: ✅
 Ellipse.gridRow: ✅
 Ellipse.gridRowSpan: ✅
-Ellipse.held: ✅
-Ellipse.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Ellipse.horizontalAlignment: ✅
 Ellipse.interaction: ✅
 Ellipse.isDraggable: ✓ dragAndDrop on Ellipse: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.layoutBody: ✅
 Ellipse.layoutFrameChanged: ✅
+Ellipse.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Ellipse.longPressed: ✅
 Ellipse.margin: ✅
 Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
@@ -265,13 +265,13 @@ Fill.gridColumn: ✅
 Fill.gridColumnSpan: ✅
 Fill.gridRow: ✅
 Fill.gridRowSpan: ✅
-Fill.held: ✅
-Fill.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Fill.horizontalAlignment: ✅
 Fill.interaction: ✅
 Fill.isDraggable: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.layoutBody: ✅
 Fill.layoutFrameChanged: ✅
+Fill.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Fill.longPressed: ✅
 Fill.margin: ✅
 Fill.panTouchCount: ✅
 Fill.panUpdated: ✅
@@ -301,13 +301,13 @@ Grid.gridColumn: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRow: ✅
 Grid.gridRowSpan: ✅
-Grid.held: ✅
-Grid.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Grid.horizontalAlignment: ✅
 Grid.interaction: ✅
 Grid.isDraggable: ✓ dragAndDrop on Grid: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.layoutBody: ✅
 Grid.layoutFrameChanged: ✅
+Grid.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Grid.longPressed: ✅
 Grid.margin: ✅
 Grid.panTouchCount: ✅
 Grid.panUpdated: ✅
@@ -337,13 +337,13 @@ HStack.gridColumn: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRow: ✅
 HStack.gridRowSpan: ✅
-HStack.held: ✅
-HStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 HStack.horizontalAlignment: ✅
 HStack.interaction: ✅
 HStack.isDraggable: ✓ dragAndDrop on HStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.layoutBody: ✅
 HStack.layoutFrameChanged: ✅
+HStack.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+HStack.longPressed: ✅
 HStack.margin: ✅
 HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
@@ -373,13 +373,13 @@ Image.gridColumn: ✅
 Image.gridColumnSpan: ✅
 Image.gridRow: ✅
 Image.gridRowSpan: ✅
-Image.held: ✅
-Image.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Image.horizontalAlignment: ✅
 Image.interaction: ✅
 Image.isDraggable: ✓ dragAndDrop on Image: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.layoutBody: ✅
 Image.layoutFrameChanged: ✅
+Image.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Image.longPressed: ✅
 Image.margin: ✅
 Image.panTouchCount: ✅
 Image.panUpdated: ✅
@@ -409,13 +409,13 @@ ItemsView.gridColumn: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRow: ✅
 ItemsView.gridRowSpan: ✅
-ItemsView.held: ✅
-ItemsView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ItemsView.horizontalAlignment: ✅
 ItemsView.interaction: ✅
 ItemsView.isDraggable: ✓ dragAndDrop on ItemsView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.layoutBody: ✅
 ItemsView.layoutFrameChanged: ✅
+ItemsView.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+ItemsView.longPressed: ✅
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
@@ -445,13 +445,13 @@ Line.gridColumn: ✅
 Line.gridColumnSpan: ✅
 Line.gridRow: ✅
 Line.gridRowSpan: ✅
-Line.held: ✅
-Line.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Line.horizontalAlignment: ✅
 Line.interaction: ✅
 Line.isDraggable: ✓ dragAndDrop on Line: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.layoutBody: ✅
 Line.layoutFrameChanged: ✅
+Line.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Line.longPressed: ✅
 Line.margin: ✅
 Line.panTouchCount: ✅
 Line.panUpdated: ✅
@@ -481,13 +481,13 @@ Link.gridColumn: ✅
 Link.gridColumnSpan: ✅
 Link.gridRow: ✅
 Link.gridRowSpan: ✅
-Link.held: ✅
-Link.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Link.horizontalAlignment: ✅
 Link.interaction: ✅
 Link.isDraggable: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.layoutBody: ✅
 Link.layoutFrameChanged: ✅
+Link.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Link.longPressed: ✅
 Link.margin: ✅
 Link.panTouchCount: ✅
 Link.panUpdated: ✅
@@ -517,13 +517,13 @@ Map.gridColumn: 🧩
 Map.gridColumnSpan: 🧩
 Map.gridRow: 🧩
 Map.gridRowSpan: 🧩
-Map.held: 🧩
-Map.holdDuration: 🧩
 Map.horizontalAlignment: 🧩
 Map.interaction: 🧩
 Map.isDraggable: 🧩
 Map.layoutBody: 🧩
 Map.layoutFrameChanged: 🧩
+Map.longPressDuration: 🧩
+Map.longPressed: 🧩
 Map.margin: 🧩
 Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
@@ -553,13 +553,13 @@ MotionLayout.gridColumn: ✅
 MotionLayout.gridColumnSpan: ✅
 MotionLayout.gridRow: ✅
 MotionLayout.gridRowSpan: ✅
-MotionLayout.held: ✅
-MotionLayout.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 MotionLayout.horizontalAlignment: ✅
 MotionLayout.interaction: ✅
 MotionLayout.isDraggable: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.layoutBody: ✅
 MotionLayout.layoutFrameChanged: ✅
+MotionLayout.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+MotionLayout.longPressed: ✅
 MotionLayout.margin: ✅
 MotionLayout.panTouchCount: ✅
 MotionLayout.panUpdated: ✅
@@ -589,13 +589,13 @@ Path.gridColumn: ✅
 Path.gridColumnSpan: ✅
 Path.gridRow: ✅
 Path.gridRowSpan: ✅
-Path.held: ✅
-Path.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Path.horizontalAlignment: ✅
 Path.interaction: ✅
 Path.isDraggable: ✓ dragAndDrop on Path: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.layoutBody: ✅
 Path.layoutFrameChanged: ✅
+Path.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Path.longPressed: ✅
 Path.margin: ✅
 Path.panTouchCount: ✅
 Path.panUpdated: ✅
@@ -625,13 +625,13 @@ Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRow: ✅
 Picker.gridRowSpan: ✅
-Picker.held: ✅
-Picker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Picker.horizontalAlignment: ✅
 Picker.interaction: ✅
 Picker.isDraggable: ✓ dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.layoutBody: ✅
 Picker.layoutFrameChanged: ✅
+Picker.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Picker.longPressed: ✅
 Picker.margin: ✅
 Picker.panTouchCount: ✅
 Picker.panUpdated: ✅
@@ -661,13 +661,13 @@ Polygon.gridColumn: ✅
 Polygon.gridColumnSpan: ✅
 Polygon.gridRow: ✅
 Polygon.gridRowSpan: ✅
-Polygon.held: ✅
-Polygon.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polygon.horizontalAlignment: ✅
 Polygon.interaction: ✅
 Polygon.isDraggable: ✓ dragAndDrop on Polygon: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.layoutBody: ✅
 Polygon.layoutFrameChanged: ✅
+Polygon.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Polygon.longPressed: ✅
 Polygon.margin: ✅
 Polygon.panTouchCount: ✅
 Polygon.panUpdated: ✅
@@ -697,13 +697,13 @@ Polyline.gridColumn: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRow: ✅
 Polyline.gridRowSpan: ✅
-Polyline.held: ✅
-Polyline.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polyline.horizontalAlignment: ✅
 Polyline.interaction: ✅
 Polyline.isDraggable: ✓ dragAndDrop on Polyline: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.layoutBody: ✅
 Polyline.layoutFrameChanged: ✅
+Polyline.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Polyline.longPressed: ✅
 Polyline.margin: ✅
 Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
@@ -733,13 +733,13 @@ ProgressBar.gridColumn: ✅
 ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRow: ✅
 ProgressBar.gridRowSpan: ✅
-ProgressBar.held: ✅
-ProgressBar.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.interaction: ✅
 ProgressBar.isDraggable: ✓ dragAndDrop on ProgressBar: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.layoutBody: ✅
 ProgressBar.layoutFrameChanged: ✅
+ProgressBar.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+ProgressBar.longPressed: ✅
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ✅
 ProgressBar.panUpdated: ✅
@@ -769,13 +769,13 @@ Rectangle.gridColumn: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRow: ✅
 Rectangle.gridRowSpan: ✅
-Rectangle.held: ✅
-Rectangle.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Rectangle.horizontalAlignment: ✅
 Rectangle.interaction: ✅
 Rectangle.isDraggable: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.layoutBody: ✅
 Rectangle.layoutFrameChanged: ✅
+Rectangle.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Rectangle.longPressed: ✅
 Rectangle.margin: ✅
 Rectangle.panTouchCount: ✅
 Rectangle.panUpdated: ✅
@@ -805,13 +805,13 @@ ScrollView.gridColumn: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRow: ✅
 ScrollView.gridRowSpan: ✅
-ScrollView.held: ✅
-ScrollView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ScrollView.horizontalAlignment: ✅
 ScrollView.interaction: ✅
 ScrollView.isDraggable: ✓ dragAndDrop on ScrollView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.layoutBody: ✅
 ScrollView.layoutFrameChanged: ✅
+ScrollView.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+ScrollView.longPressed: ✅
 ScrollView.margin: ✅
 ScrollView.panTouchCount: ✅
 ScrollView.panUpdated: ✅
@@ -841,13 +841,13 @@ SearchField.gridColumn: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRow: ✅
 SearchField.gridRowSpan: ✅
-SearchField.held: ✅
-SearchField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 SearchField.horizontalAlignment: ✅
 SearchField.interaction: ✅
 SearchField.isDraggable: ✓ dragAndDrop on SearchField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.layoutBody: ✅
 SearchField.layoutFrameChanged: ✅
+SearchField.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+SearchField.longPressed: ✅
 SearchField.margin: ✅
 SearchField.panTouchCount: ✅
 SearchField.panUpdated: ✅
@@ -877,13 +877,13 @@ Separator.gridColumn: ✅
 Separator.gridColumnSpan: ✅
 Separator.gridRow: ✅
 Separator.gridRowSpan: ✅
-Separator.held: ✅
-Separator.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Separator.horizontalAlignment: ✅
 Separator.interaction: ✅
 Separator.isDraggable: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.layoutBody: ✅
 Separator.layoutFrameChanged: ✅
+Separator.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Separator.longPressed: ✅
 Separator.margin: ✅
 Separator.panTouchCount: ✅
 Separator.panUpdated: ✅
@@ -913,13 +913,13 @@ Slider.gridColumn: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRow: ✅
 Slider.gridRowSpan: ✅
-Slider.held: ✅
-Slider.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Slider.horizontalAlignment: ✅
 Slider.interaction: ✅
 Slider.isDraggable: ✓ dragAndDrop on Slider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.layoutBody: ✅
 Slider.layoutFrameChanged: ✅
+Slider.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Slider.longPressed: ✅
 Slider.margin: ✅
 Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
@@ -949,13 +949,13 @@ Space.gridColumn: ✅
 Space.gridColumnSpan: ✅
 Space.gridRow: ✅
 Space.gridRowSpan: ✅
-Space.held: ✅
-Space.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Space.horizontalAlignment: ✅
 Space.interaction: ✅
 Space.isDraggable: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.layoutBody: ✅
 Space.layoutFrameChanged: ✅
+Space.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Space.longPressed: ✅
 Space.margin: ✅
 Space.panTouchCount: ✅
 Space.panUpdated: ✅
@@ -985,13 +985,13 @@ Spinner.gridColumn: ✅
 Spinner.gridColumnSpan: ✅
 Spinner.gridRow: ✅
 Spinner.gridRowSpan: ✅
-Spinner.held: ✅
-Spinner.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Spinner.horizontalAlignment: ✅
 Spinner.interaction: ✅
 Spinner.isDraggable: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.layoutBody: ✅
 Spinner.layoutFrameChanged: ✅
+Spinner.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Spinner.longPressed: ✅
 Spinner.margin: ✅
 Spinner.panTouchCount: ✅
 Spinner.panUpdated: ✅
@@ -1021,13 +1021,13 @@ Stepper.gridColumn: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRow: ✅
 Stepper.gridRowSpan: ✅
-Stepper.held: ✅
-Stepper.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Stepper.horizontalAlignment: ✅
 Stepper.interaction: ✅
 Stepper.isDraggable: ✓ dragAndDrop on Stepper: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.layoutBody: ✅
 Stepper.layoutFrameChanged: ✅
+Stepper.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Stepper.longPressed: ✅
 Stepper.margin: ✅
 Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
@@ -1057,13 +1057,13 @@ Switch.gridColumn: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRow: ✅
 Switch.gridRowSpan: ✅
-Switch.held: ✅
-Switch.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Switch.horizontalAlignment: ✅
 Switch.interaction: ✅
 Switch.isDraggable: ✓ dragAndDrop on Switch: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.layoutBody: ✅
 Switch.layoutFrameChanged: ✅
+Switch.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Switch.longPressed: ✅
 Switch.margin: ✅
 Switch.panTouchCount: ✅
 Switch.panUpdated: ✅
@@ -1093,13 +1093,13 @@ Text.gridColumn: ✅
 Text.gridColumnSpan: ✅
 Text.gridRow: ✅
 Text.gridRowSpan: ✅
-Text.held: ✅
-Text.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Text.horizontalAlignment: ✅
 Text.interaction: ✅
 Text.isDraggable: ✓ dragAndDrop on Text: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.layoutBody: ✅
 Text.layoutFrameChanged: ✅
+Text.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Text.longPressed: ✅
 Text.margin: ✅
 Text.panTouchCount: ✅
 Text.panUpdated: ✅
@@ -1129,13 +1129,13 @@ TextEditor.gridColumn: ✅
 TextEditor.gridColumnSpan: ✅
 TextEditor.gridRow: ✅
 TextEditor.gridRowSpan: ✅
-TextEditor.held: ✅
-TextEditor.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextEditor.horizontalAlignment: ✅
 TextEditor.interaction: ✅
 TextEditor.isDraggable: ✓ dragAndDrop on TextEditor: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.layoutBody: ✅
 TextEditor.layoutFrameChanged: ✅
+TextEditor.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+TextEditor.longPressed: ✅
 TextEditor.margin: ✅
 TextEditor.panTouchCount: ✅
 TextEditor.panUpdated: ✅
@@ -1165,13 +1165,13 @@ TextField.gridColumn: ✅
 TextField.gridColumnSpan: ✅
 TextField.gridRow: ✅
 TextField.gridRowSpan: ✅
-TextField.held: ✅
-TextField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextField.horizontalAlignment: ✅
 TextField.interaction: ✅
 TextField.isDraggable: ✓ dragAndDrop on TextField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.layoutBody: ✅
 TextField.layoutFrameChanged: ✅
+TextField.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+TextField.longPressed: ✅
 TextField.margin: ✅
 TextField.panTouchCount: ✅
 TextField.panUpdated: ✅
@@ -1201,13 +1201,13 @@ TimePicker.gridColumn: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRow: ✅
 TimePicker.gridRowSpan: ✅
-TimePicker.held: ✅
-TimePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TimePicker.horizontalAlignment: ✅
 TimePicker.interaction: ✅
 TimePicker.isDraggable: ✓ dragAndDrop on TimePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.layoutBody: ✅
 TimePicker.layoutFrameChanged: ✅
+TimePicker.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+TimePicker.longPressed: ✅
 TimePicker.margin: ✅
 TimePicker.panTouchCount: ✅
 TimePicker.panUpdated: ✅
@@ -1237,13 +1237,13 @@ VStack.gridColumn: ✅
 VStack.gridColumnSpan: ✅
 VStack.gridRow: ✅
 VStack.gridRowSpan: ✅
-VStack.held: ✅
-VStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 VStack.horizontalAlignment: ✅
 VStack.interaction: ✅
 VStack.isDraggable: ✓ dragAndDrop on VStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.layoutBody: ✅
 VStack.layoutFrameChanged: ✅
+VStack.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+VStack.longPressed: ✅
 VStack.margin: ✅
 VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
@@ -1273,13 +1273,13 @@ WebView.gridColumn: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRow: ✅
 WebView.gridRowSpan: ✅
-WebView.held: ✅
-WebView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 WebView.horizontalAlignment: ✅
 WebView.interaction: ✅
 WebView.isDraggable: ✓ dragAndDrop on WebView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.layoutBody: ✅
 WebView.layoutFrameChanged: ✅
+WebView.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+WebView.longPressed: ✅
 WebView.margin: ✅
 WebView.panTouchCount: ✅
 WebView.panUpdated: ✅
@@ -1309,13 +1309,13 @@ ZStack.gridColumn: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRow: ✅
 ZStack.gridRowSpan: ✅
-ZStack.held: ✅
-ZStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ZStack.horizontalAlignment: ✅
 ZStack.interaction: ✅
 ZStack.isDraggable: ✓ dragAndDrop on ZStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.layoutBody: ✅
 ZStack.layoutFrameChanged: ✅
+ZStack.longPressDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+ZStack.longPressed: ✅
 ZStack.margin: ✅
 ZStack.panTouchCount: ✅
 ZStack.panUpdated: ✅

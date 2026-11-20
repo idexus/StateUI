@@ -18,7 +18,7 @@ final class WinUIByHostTests: XCTestCase {
         ("minimize", "Window"), ("restore", "Window"), ("switchAway", "Window"), ("switchBack", "Window"),
         ("bringToFront", "Window"), ("openLink", "Link"), ("dragAndDrop", "Text"), ("dropFiles", "VStack"),
         ("pressDown", "Rectangle"), ("drag", "Rectangle"), ("lift", "Rectangle"), ("hover", "Rectangle"),
-        ("leave", "Rectangle"), ("tap", "Rectangle"), ("hold", "Rectangle"), ("pan", "Rectangle"),
+        ("leave", "Rectangle"), ("tap", "Rectangle"), ("longPress", "Rectangle"), ("pan", "Rectangle"),
         ("sweep", "MotionLayout"), ("pinch", "Rectangle"), ("rotate", "Rectangle"), ("answerShare", "Window"),
     ]
 

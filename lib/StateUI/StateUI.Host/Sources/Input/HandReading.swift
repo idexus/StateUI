@@ -59,7 +59,7 @@
 
     /// How long a press stands still before it holds the view under it, in milliseconds: the long press the
     /// platforms share closely enough.
-    public static let hold = 500.0
+    public static let longPress = 500.0
 
     /// How many steps of a wheel, each slower than the last, say it was let go: a trackpad's momentum.
     public static let fade = 3
@@ -157,7 +157,7 @@
     /// lifting at `speed` where the platform tells one, a press going down at `point`: a view whose values go `way`
     /// takes a gesture whose first move goes that way; one taken by itself as `drag` says takes it as its drag
     /// begins - by its first move, or a press standing still `hold` (`.longPress`, by the frames); the rest is left
-    /// to whatever stands behind the view. A hold and a held view's standing are measured on the frames' clock,
+    /// to whatever stands behind the view. A long press and a held view's standing are measured on the frames' clock,
     /// `now`; the hand's pace on the platform's, `time`. Whether it took this step, and what it says.
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func hand(
@@ -334,10 +334,10 @@
     /// stands still.
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func paced(at time: Double) -> [Report] {
-        if let press, claimed == nil, viewDrag?.begins == .longPress, time - press.time >= Self.hold {
+        if let press, claimed == nil, viewDrag?.begins == .longPress, time - press.time >= Self.longPress {
             return viewTaken(at: press.point, time: time, now: time)
         }
-        if holdsView, time - viewMovedAt >= Double(stood + 1) * Self.hold {
+        if holdsView, time - viewMovedAt >= Double(stood + 1) * Self.longPress {
             stood += 1
             return [Report(.changed, holdsView: true, at: viewAt, still: time - viewMovedAt)]
         }

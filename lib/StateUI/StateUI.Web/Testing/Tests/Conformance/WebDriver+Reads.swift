@@ -137,9 +137,9 @@ extension WebDriver {
             else { return nil }
             return .some(try color("getComputedStyle(e).backgroundColor", on: sheet.sheet.dialogNode, unlessClear: true)
                 .map { Material.color($0).propValue })
-        case (_, .holdDuration):
+        case (_, .longPressDuration):
             guard let view = (element.native as? WebElement)?.view else { return nil }
-            return .some(try WebBrowser.evaluate("e.stateuiHold", on: view.node).flatMap(Double.init).map { .number($0) })
+            return .some(try WebBrowser.evaluate("e.stateuiLongPress", on: view.node).flatMap(Double.init).map { .number($0) })
         case (_, .barBackground): return .some(try barMaterial(over: element))
         case (_, .toolbarSpacing):
             // The room between the groups at the bar's end.

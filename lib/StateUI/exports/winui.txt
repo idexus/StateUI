@@ -382,7 +382,6 @@ ZStack
   gridRow
   gridRowSpan
   height
-  holdDuration
   horizontalAlignment
   interaction
   isDraggable
@@ -390,6 +389,7 @@ ZStack
   isVisible
   keysTaken
   layoutFrame
+  longPressDuration
   margin
   maximumHeight
   maximumWidth
@@ -421,10 +421,10 @@ ZStack
   dragStarting()
   dropped()
   filesDropped()
-  held()
   isFocusedChanged()
   keyPressed()
   layoutFrameChanged()
+  longPressed()
   panUpdated()
   pinchUpdated()
   pointerEntered()

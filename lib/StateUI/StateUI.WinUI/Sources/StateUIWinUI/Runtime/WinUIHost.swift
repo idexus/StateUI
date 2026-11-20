@@ -101,8 +101,8 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated { WinUIRenderer.shared?.environmentChanged() }
             },
             heard: { view, what, phase, x, y, scale in
-                if what == .hold {
-                    return MainActor.assumeIsolated { WinUIView.find(view)?.heardHold() }
+                if what == .longPress {
+                    return MainActor.assumeIsolated { WinUIView.find(view)?.heardLongPress() }
                 }
                 if what == .tap {
                     return MainActor.assumeIsolated {

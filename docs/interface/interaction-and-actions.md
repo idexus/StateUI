@@ -87,7 +87,7 @@ accessibility press runs the same handler a tap runs, so a screen reader or an
 automation script activates the row without a pointer. Give such a view an
 `accessibilityLabel` so the button has a name.
 
-### Hold
+### Long press
 
 ```swift
 import StateUI
@@ -98,26 +98,25 @@ struct PhotoCard: View {
 
     var body: some View {
         VStack {
-            Text(selected ? "Selected" : "Hold to select")
+            Text(selected ? "Selected" : "Long press to select")
                 .onTapped { selected = false }
-                .onHeld { selected = true }
-            Text("Hold a little longer for its actions")
-                .onHeld(minimum: .milliseconds(800)) { showsActions = true }
+                .onLongPressed { selected = true }
+            Text("Press a little longer for its actions")
+                .onLongPressed(minimum: .milliseconds(800)) { showsActions = true }
         }
         .padding(12)
     }
 }
 ```
 
-A hold answers once a press has stood still as long as the platform's long
-press, or as long as `onHeld(minimum:_:)` asks. A press held is the hold's:
-its release is no tap, and it drags nothing. A press the view drags first is
-no hold.
+A long press answers once a press has stood still as long as the platform's
+own, or as long as `onLongPressed(minimum:_:)` asks. Its release is no tap,
+and it drags nothing. A press the view drags first is no long press.
 
 Android and Windows keep the system's own time, whatever a view asks, and
-Windows tells a hold of a finger or a pen, not of a mouse button; on Android a
-control that takes its own press - a slider, a scroller, a list - is never
-held. The control dictionary says it member by member.
+Windows tells a long press of a finger or a pen, not of a mouse button; on Android a
+control that takes its own press - a slider, a scroller, a list - hears no
+long press. The control dictionary says it member by member.
 
 ### Pan, pinch and rotation
 
@@ -877,7 +876,7 @@ struct Document: View {
                 .menu { MenuItem("Save as…").onClicked { last = "saved as" } }
             Button("Open")
                 .onClicked { last = "opened" }
-                .menu(.held) { MenuItem("Open recent").onClicked { last = "recent" } }
+                .menu(.longPress) { MenuItem("Open recent").onClicked { last = "recent" } }
         }
     }
 }
@@ -889,8 +888,8 @@ struct Document: View {
 - With one, the button splits: its click is its own action, and an arrow of
   its own beside it opens the menu. `.menu(.split) { }` splits a button with
   no action too.
-- `.menu(.held) { }` keeps the click the button's own and opens the menu when
-  the user holds the button - a mouse button or a finger held down; on Windows
+- `.menu(.longPress) { }` keeps the click the button's own and opens the menu
+  on a long press of the button - a mouse button or a finger held down; on Windows
   and in a browser, as the user asks for any menu there: a finger held still or
   the mouse's other button. It shows no arrow.
 

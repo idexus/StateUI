@@ -211,7 +211,7 @@ final class AndroidButtonViewTests: XCTestCase {
                     Button("Share").menu { MenuItem("Mail") }
                     Button("Share").menu { MenuItem("Mail") }.showsMenuArrow(false)
                     Button("Save").onClicked {}.menu { MenuItem("Save as") }
-                    Button("Save").onClicked {}.menu(.held) { MenuItem("Save as") }
+                    Button("Save").onClicked {}.menu(.longPress) { MenuItem("Save as") }
                 }
             }
             host.layOut()

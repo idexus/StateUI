@@ -468,7 +468,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             item.action = nil
             item.showsIndicator = menu.showsArrow
         case .arrow, .none: item.showsIndicator = true
-        case .hold: item.showsIndicator = false
+        case .longPress: item.showsIndicator = false
         }
     }
 

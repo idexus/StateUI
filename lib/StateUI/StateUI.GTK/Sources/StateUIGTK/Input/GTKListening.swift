@@ -119,7 +119,7 @@ final class GTKListening {
         switch kind {
         case .taps: [makeTaps(), makePress()]
         case .presses: [makePress()]
-        case .holds: [makeHold()]
+        case .longPresses: [makeLongPress()]
         case .pointer: makePointer()
         case .drags: [makeDrag()]
         case .hand: makeHand()
@@ -249,7 +249,7 @@ final class GTKListening {
 
     // MARK: - A press held
 
-    private func makeHold() -> OpaquePointer {
+    private func makeLongPress() -> OpaquePointer {
         let hold = gtk_gesture_long_press_new()!
         connectSignal(UnsafeMutableRawPointer(hold), "pressed", number: number) { (gesture, _: Double, _: Double, data) in
             let number = viewNumber(data)
@@ -259,30 +259,30 @@ final class GTKListening {
         return hold
     }
 
-    /// GTK's long press came: a press not yet a drag is the hold's, by the host layer's rule - claimed, so no view
+    /// GTK's long press came: a press not yet a drag is the long press's, by the host layer's rule - claimed, so no view
     /// around it answers it, and no tap as it lets go.
-    /// Design: docs/design/platforms/gtk/input.md#a-press-held
+    /// Design: docs/design/platforms/gtk/input.md#a-long-press
     func held(_ gesture: OpaquePointer?) {
         guard drag.held() else { return }
         tapHeld = true
         if let gesture { gtk_gesture_set_state(gesture, GTK_EVENT_SEQUENCE_CLAIMED) }
-        tell(.hold)
+        tell(.longPress)
     }
 
-    /// Waits `milliseconds` for a hold - between half and twice GTK's long-press time, the most GTK waits apart from
+    /// Waits `milliseconds` for a long press - between half and twice GTK's long-press time, the most GTK waits apart from
     /// it - or GTK's own time for nil.
     func wait(_ milliseconds: Double?) {
-        guard let hold = controllers[.holds]?.first else { return }
-        let factor = milliseconds.map { $0 / Self.longPressTime(of: widget) } ?? 1
+        guard let hold = controllers[.longPresses]?.first else { return }
+        let factor = milliseconds.map { $0 / Self.platformLongPressTime(of: widget) } ?? 1
         gtk_gesture_long_press_set_delay_factor(hold, min(max(factor, 0.5), 2))
     }
 
-    /// How long the view's hold waits, in milliseconds; nil while it listens for none.
-    var holdTime: Double? {
-        controllers[.holds]?.first.map { gtk_gesture_long_press_get_delay_factor($0) * Self.longPressTime(of: widget) }
+    /// How long the view's long press waits, in milliseconds; nil while it listens for none.
+    var longPressTime: Double? {
+        controllers[.longPresses]?.first.map { gtk_gesture_long_press_get_delay_factor($0) * Self.platformLongPressTime(of: widget) }
     }
 
-    private static func longPressTime(of widget: GTKWidget) -> Double {
+    private static func platformLongPressTime(of widget: GTKWidget) -> Double {
         var value = GValue()
         g_value_init(&value, g_type_from_name("gint"))
         defer { g_value_unset(&value) }

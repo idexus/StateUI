@@ -29,7 +29,7 @@ extension AppKitDriver {
                let foot = bottomToolbar(of: page)?.controlForTesting(identifier.rawValue) {
                 switch foot {
                 case let combo as NSComboButton: return Self.said(combo.menu.items)
-                case let held as AppKitBarHeldButton: return Self.said(held.offered.items)
+                case let held as AppKitBarLongPressButton: return Self.said(held.offered.items)
                 case let item as NSMenuItem: return Self.said(item.submenu?.items ?? [])
                 default: throw DriverCannot("read the menu \(button.type.name) opens: its control at the foot opens none")
                 }

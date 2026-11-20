@@ -1317,7 +1317,7 @@ swift.enum.case Blur.Thickness.thin: case thin
 swift.enum.case Blur.Thickness.ultraThick: case ultraThick
 swift.enum.case Blur.Thickness.ultraThin: case ultraThin
 swift.enum.case ButtonMenuKind.automatic: case automatic
-swift.enum.case ButtonMenuKind.held: case held
+swift.enum.case ButtonMenuKind.longPress: case longPress
 swift.enum.case ButtonMenuKind.split: case split
 swift.enum.case ButtonRole.cancel: case cancel
 swift.enum.case ButtonRole.destructive: case destructive
@@ -1897,12 +1897,12 @@ swift.method @SwiftNever.onDropped(policy:_:): @MainActor func onDropped(policy:
 swift.method @SwiftNever.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method @SwiftNever.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method @SwiftNever.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method @SwiftNever.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method @SwiftNever.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method @SwiftNever.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method @SwiftNever.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method @SwiftNever.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method @SwiftNever.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method @SwiftNever.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method @SwiftNever.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method @SwiftNever.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2085,12 +2085,12 @@ swift.method AnyView.onDropped(policy:_:): @MainActor func onDropped(policy: Gat
 swift.method AnyView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method AnyView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method AnyView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method AnyView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method AnyView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method AnyView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method AnyView.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method AnyView.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method AnyView.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method AnyView.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method AnyView.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method AnyView.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method AnyView.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method AnyView.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method AnyView.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2316,15 +2316,15 @@ swift.method Button.onDropped(policy:_:): @MainActor func onDropped(policy: Gate
 swift.method Button.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Button.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Button.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Button.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Button.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Button.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method Button.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Button.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Button.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Button.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Button.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Button.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Button.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Button.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Button.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2527,12 +2527,12 @@ swift.method Canvas.onDropped(policy:_:): @MainActor func onDropped(policy: Gate
 swift.method Canvas.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Canvas.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Canvas.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Canvas.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Canvas.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Canvas.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Canvas.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Canvas.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Canvas.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Canvas.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Canvas.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Canvas.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2723,12 +2723,12 @@ swift.method Capsule.onDropped(policy:_:): @MainActor func onDropped(policy: Gat
 swift.method Capsule.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Capsule.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Capsule.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Capsule.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Capsule.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Capsule.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Capsule.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Capsule.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Capsule.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Capsule.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Capsule.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Capsule.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2910,15 +2910,15 @@ swift.method CheckBox.onDropped(policy:_:): @MainActor func onDropped(policy: Ga
 swift.method CheckBox.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method CheckBox.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method CheckBox.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method CheckBox.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method CheckBox.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method CheckBox.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method CheckBox.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method CheckBox.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method CheckBox.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method CheckBox.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method CheckBox.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method CheckBox.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method CheckBox.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method CheckBox.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method CheckBox.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method CheckBox.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method CheckBox.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method CheckBox.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3118,15 +3118,15 @@ swift.method ColorPicker.onDropped(policy:_:): @MainActor func onDropped(policy:
 swift.method ColorPicker.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method ColorPicker.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ColorPicker.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ColorPicker.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method ColorPicker.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ColorPicker.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ColorPicker.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method ColorPicker.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method ColorPicker.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method ColorPicker.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ColorPicker.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ColorPicker.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ColorPicker.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ColorPicker.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ColorPicker.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ColorPicker.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ColorPicker.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ColorPicker.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3330,15 +3330,15 @@ swift.method DatePicker.onDropped(policy:_:): @MainActor func onDropped(policy: 
 swift.method DatePicker.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method DatePicker.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method DatePicker.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method DatePicker.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method DatePicker.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method DatePicker.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method DatePicker.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method DatePicker.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method DatePicker.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method DatePicker.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method DatePicker.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DatePicker.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DatePicker.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DatePicker.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DatePicker.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3526,12 +3526,12 @@ swift.method DebugInspector.onDropped(policy:_:): @MainActor func onDropped(poli
 swift.method DebugInspector.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method DebugInspector.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method DebugInspector.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method DebugInspector.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method DebugInspector.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method DebugInspector.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspector.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method DebugInspector.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method DebugInspector.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DebugInspector.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspector.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspector.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspector.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspector.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspector.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3705,12 +3705,12 @@ swift.method DebugInspectorButton.onDropped(policy:_:): @MainActor func onDroppe
 swift.method DebugInspectorButton.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method DebugInspectorButton.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method DebugInspectorButton.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method DebugInspectorButton.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method DebugInspectorButton.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method DebugInspectorButton.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspectorButton.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method DebugInspectorButton.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method DebugInspectorButton.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DebugInspectorButton.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspectorButton.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspectorButton.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspectorButton.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3913,12 +3913,12 @@ swift.method Either.onDropped(policy:_:): @MainActor func onDropped(policy: Gate
 swift.method Either.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Either.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Either.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Either.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Either.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Either.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Either.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Either.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Either.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Either.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Either.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Either.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Either.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Either.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Either.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4119,12 +4119,12 @@ swift.method Ellipse.onDropped(policy:_:): @MainActor func onDropped(policy: Gat
 swift.method Ellipse.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Ellipse.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Ellipse.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Ellipse.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Ellipse.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Ellipse.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Ellipse.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Ellipse.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Ellipse.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Ellipse.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Ellipse.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Ellipse.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Ellipse.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Ellipse.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Ellipse.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4308,12 +4308,12 @@ swift.method Fill.onDropped(policy:_:): @MainActor func onDropped(policy: GatePo
 swift.method Fill.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Fill.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Fill.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Fill.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Fill.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Fill.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Fill.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Fill.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Fill.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Fill.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Fill.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Fill.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4518,15 +4518,15 @@ swift.method GalleryView.onDropped(policy:_:): @MainActor func onDropped(policy:
 swift.method GalleryView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method GalleryView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method GalleryView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method GalleryView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method GalleryView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method GalleryView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GalleryView.onItemActivated(_:): @MainActor func onItemActivated(_ handler: @escaping @MainActor @Sendable (ID) throws -> Void) -> GalleryView<Items, ID>
 swift.method GalleryView.onItemActivated(gate:_:): @MainActor func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> GalleryView<Items, ID>
 swift.method GalleryView.onItemActivated(policy:_:): @MainActor func onItemActivated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> GalleryView<Items, ID>
 swift.method GalleryView.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method GalleryView.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method GalleryView.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method GalleryView.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method GalleryView.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method GalleryView.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GalleryView.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GalleryView.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GalleryView.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4706,12 +4706,12 @@ swift.method GeometryReader.onDropped(policy:_:): @MainActor func onDropped(poli
 swift.method GeometryReader.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method GeometryReader.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method GeometryReader.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method GeometryReader.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method GeometryReader.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method GeometryReader.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GeometryReader.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method GeometryReader.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method GeometryReader.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method GeometryReader.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method GeometryReader.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method GeometryReader.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GeometryReader.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GeometryReader.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GeometryReader.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4894,15 +4894,15 @@ swift.method Grid.onDropped(policy:_:): @MainActor func onDropped(policy: GatePo
 swift.method Grid.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Grid.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Grid.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Grid.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Grid.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Grid.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Grid.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method Grid.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Grid.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Grid.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Grid.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Grid.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Grid.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Grid.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Grid.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Grid.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Grid.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Grid.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5093,12 +5093,12 @@ swift.method Group.onDropped(policy:_:): @MainActor func onDropped(policy: GateP
 swift.method Group.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Group.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Group.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Group.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Group.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Group.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Group.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Group.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Group.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Group.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Group.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Group.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Group.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Group.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Group.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5278,15 +5278,15 @@ swift.method HStack.onDropped(policy:_:): @MainActor func onDropped(policy: Gate
 swift.method HStack.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method HStack.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method HStack.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method HStack.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method HStack.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method HStack.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method HStack.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method HStack.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method HStack.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method HStack.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method HStack.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method HStack.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method HStack.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method HStack.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method HStack.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method HStack.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method HStack.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method HStack.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5480,12 +5480,12 @@ swift.method Image.onDropped(policy:_:): @MainActor func onDropped(policy: GateP
 swift.method Image.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Image.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Image.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Image.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Image.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Image.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Image.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Image.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Image.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Image.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Image.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Image.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Image.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Image.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Image.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5683,9 +5683,6 @@ swift.method ItemsView.onEndReached(within:policy:_:): @MainActor func onEndReac
 swift.method ItemsView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method ItemsView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ItemsView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ItemsView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method ItemsView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ItemsView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onItemActivated(_:): @MainActor func onItemActivated(_ handler: @escaping @MainActor @Sendable (ID) throws -> Void) -> ItemsView<ID>
 swift.method ItemsView.onItemActivated(gate:_:): @MainActor func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> ItemsView<ID>
 swift.method ItemsView.onItemActivated(policy:_:): @MainActor func onItemActivated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> ItemsView<ID>
@@ -5695,6 +5692,9 @@ swift.method ItemsView.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_
 swift.method ItemsView.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ItemsView.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ItemsView.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ItemsView.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ItemsView.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ItemsView.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ItemsView.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5912,12 +5912,12 @@ swift.method Line.onDropped(policy:_:): @MainActor func onDropped(policy: GatePo
 swift.method Line.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Line.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Line.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Line.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Line.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Line.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Line.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Line.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Line.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Line.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Line.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Line.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6106,15 +6106,15 @@ swift.method Link.onDropped(policy:_:): @MainActor func onDropped(policy: GatePo
 swift.method Link.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Link.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Link.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Link.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Link.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Link.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method Link.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Link.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Link.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Link.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Link.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Link.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Link.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Link.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Link.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6310,15 +6310,15 @@ swift.method Map.onDropped(policy:_:): @MainActor func onDropped(policy: GatePol
 swift.method Map.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Map.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Map.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Map.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Map.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Map.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Map.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Map.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Map.onLocationTapped(_:): @MainActor func onLocationTapped(_ handler: @escaping @MainActor @Sendable (Location) throws -> Void) -> Map.Modified
 swift.method Map.onLocationTapped(gate:_:): @MainActor func onLocationTapped(gate: Gate, _ handler: @escaping ValueEventHandler<Location>) -> Map.Modified
 swift.method Map.onLocationTapped(policy:_:): @MainActor func onLocationTapped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Map.Modified
+swift.method Map.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Map.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Map.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Map.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6564,12 +6564,12 @@ swift.method ModifiedContent.onDropped(policy:_:): @MainActor func onDropped(pol
 swift.method ModifiedContent.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ModifiedContent.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ModifiedContent.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method ModifiedContent.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ModifiedContent.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ModifiedContent.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ModifiedContent.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ModifiedContent.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ModifiedContent.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ModifiedContent.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ModifiedContent.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ModifiedContent.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6751,9 +6751,6 @@ swift.method MotionLayout.onDropped(policy:_:): @MainActor func onDropped(policy
 swift.method MotionLayout.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method MotionLayout.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method MotionLayout.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method MotionLayout.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method MotionLayout.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method MotionLayout.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onItemActivated(_:): @MainActor func onItemActivated(_ handler: @escaping @MainActor @Sendable (ID) throws -> Void) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onItemActivated(gate:_:): @MainActor func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onItemActivated(policy:_:): @MainActor func onItemActivated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
@@ -6766,6 +6763,9 @@ swift.method MotionLayout.onItemDragged(policy:_:): @MainActor func onItemDragge
 swift.method MotionLayout.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method MotionLayout.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method MotionLayout.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method MotionLayout.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method MotionLayout.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method MotionLayout.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method MotionLayout.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6969,12 +6969,12 @@ swift.method NavigationStack.onDropped(policy:_:): @MainActor func onDropped(pol
 swift.method NavigationStack.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method NavigationStack.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method NavigationStack.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method NavigationStack.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method NavigationStack.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method NavigationStack.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method NavigationStack.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method NavigationStack.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method NavigationStack.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method NavigationStack.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method NavigationStack.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method NavigationStack.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method NavigationStack.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method NavigationStack.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method NavigationStack.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7169,12 +7169,12 @@ swift.method Path.onDropped(policy:_:): @MainActor func onDropped(policy: GatePo
 swift.method Path.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Path.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Path.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Path.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Path.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Path.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Path.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Path.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Path.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Path.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Path.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Path.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Path.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Path.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Path.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7367,15 +7367,15 @@ swift.method Picker.onDropped(policy:_:): @MainActor func onDropped(policy: Gate
 swift.method Picker.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Picker.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Picker.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Picker.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Picker.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Picker.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method Picker.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Picker.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Picker.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Picker.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Picker.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Picker.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Picker.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Picker.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Picker.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7584,12 +7584,12 @@ swift.method Polygon.onDropped(policy:_:): @MainActor func onDropped(policy: Gat
 swift.method Polygon.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Polygon.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Polygon.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Polygon.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Polygon.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Polygon.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Polygon.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Polygon.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Polygon.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Polygon.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Polygon.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polygon.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7784,12 +7784,12 @@ swift.method Polyline.onDropped(policy:_:): @MainActor func onDropped(policy: Ga
 swift.method Polyline.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Polyline.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Polyline.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Polyline.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Polyline.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Polyline.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Polyline.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Polyline.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Polyline.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Polyline.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Polyline.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polyline.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7992,12 +7992,12 @@ swift.method PositionDots.onDropped(policy:_:): @MainActor func onDropped(policy
 swift.method PositionDots.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method PositionDots.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method PositionDots.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method PositionDots.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method PositionDots.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method PositionDots.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method PositionDots.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method PositionDots.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method PositionDots.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method PositionDots.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method PositionDots.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method PositionDots.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8179,12 +8179,12 @@ swift.method ProgressBar.onDropped(policy:_:): @MainActor func onDropped(policy:
 swift.method ProgressBar.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method ProgressBar.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ProgressBar.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ProgressBar.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method ProgressBar.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ProgressBar.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ProgressBar.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ProgressBar.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ProgressBar.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ProgressBar.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ProgressBar.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ProgressBar.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8387,12 +8387,12 @@ swift.method Rectangle.onDropped(policy:_:): @MainActor func onDropped(policy: G
 swift.method Rectangle.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Rectangle.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Rectangle.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Rectangle.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Rectangle.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Rectangle.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Rectangle.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Rectangle.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Rectangle.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Rectangle.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Rectangle.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Rectangle.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8591,15 +8591,15 @@ swift.method ScrollView.onDropped(policy:_:): @MainActor func onDropped(policy: 
 swift.method ScrollView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method ScrollView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ScrollView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ScrollView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method ScrollView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ScrollView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ScrollView.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method ScrollView.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method ScrollView.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method ScrollView.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ScrollView.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ScrollView.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ScrollView.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ScrollView.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ScrollView.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ScrollView.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ScrollView.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ScrollView.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8810,15 +8810,15 @@ swift.method SearchField.onDropped(policy:_:): @MainActor func onDropped(policy:
 swift.method SearchField.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method SearchField.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method SearchField.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method SearchField.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method SearchField.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method SearchField.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SearchField.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method SearchField.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method SearchField.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method SearchField.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method SearchField.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method SearchField.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method SearchField.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method SearchField.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method SearchField.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SearchField.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SearchField.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SearchField.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9017,12 +9017,12 @@ swift.method Separator.onDropped(policy:_:): @MainActor func onDropped(policy: G
 swift.method Separator.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Separator.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Separator.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Separator.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Separator.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Separator.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Separator.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Separator.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Separator.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Separator.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Separator.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Separator.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Separator.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Separator.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Separator.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9217,15 +9217,15 @@ swift.method Slider.onDropped(policy:_:): @MainActor func onDropped(policy: Gate
 swift.method Slider.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Slider.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Slider.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Slider.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Slider.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Slider.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method Slider.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Slider.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Slider.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Slider.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Slider.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Slider.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Slider.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Slider.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Slider.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9416,12 +9416,12 @@ swift.method Space.onDropped(policy:_:): @MainActor func onDropped(policy: GateP
 swift.method Space.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Space.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Space.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Space.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Space.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Space.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Space.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Space.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Space.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Space.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Space.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Space.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9603,12 +9603,12 @@ swift.method Spinner.onDropped(policy:_:): @MainActor func onDropped(policy: Gat
 swift.method Spinner.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Spinner.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Spinner.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Spinner.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Spinner.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Spinner.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Spinner.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Spinner.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Spinner.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Spinner.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Spinner.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Spinner.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Spinner.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Spinner.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Spinner.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9798,12 +9798,12 @@ swift.method SplitView.onDropped(policy:_:): @MainActor func onDropped(policy: G
 swift.method SplitView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method SplitView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method SplitView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method SplitView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method SplitView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method SplitView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SplitView.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method SplitView.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method SplitView.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method SplitView.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method SplitView.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method SplitView.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SplitView.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SplitView.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SplitView.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10002,15 +10002,15 @@ swift.method Stepper.onDropped(policy:_:): @MainActor func onDropped(policy: Gat
 swift.method Stepper.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Stepper.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Stepper.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Stepper.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Stepper.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Stepper.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Stepper.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method Stepper.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Stepper.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Stepper.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Stepper.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Stepper.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Stepper.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Stepper.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Stepper.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Stepper.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Stepper.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Stepper.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10337,15 +10337,15 @@ swift.method Switch.onDropped(policy:_:): @MainActor func onDropped(policy: Gate
 swift.method Switch.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Switch.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Switch.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Switch.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Switch.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Switch.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Switch.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method Switch.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Switch.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method Switch.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Switch.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Switch.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Switch.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Switch.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Switch.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Switch.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Switch.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Switch.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10540,12 +10540,12 @@ swift.method TabView.onDropped(policy:_:): @MainActor func onDropped(policy: Gat
 swift.method TabView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method TabView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TabView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method TabView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method TabView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method TabView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TabView.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method TabView.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TabView.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TabView.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method TabView.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TabView.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TabView.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TabView.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TabView.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10734,12 +10734,12 @@ swift.method Text.onDropped(policy:_:): @MainActor func onDropped(policy: GatePo
 swift.method Text.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Text.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Text.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method Text.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method Text.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Text.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Text.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Text.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Text.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Text.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Text.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Text.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Text.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Text.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Text.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10951,15 +10951,15 @@ swift.method TextEditor.onDropped(policy:_:): @MainActor func onDropped(policy: 
 swift.method TextEditor.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method TextEditor.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TextEditor.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method TextEditor.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method TextEditor.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method TextEditor.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextEditor.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method TextEditor.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method TextEditor.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method TextEditor.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method TextEditor.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TextEditor.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TextEditor.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method TextEditor.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TextEditor.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextEditor.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextEditor.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextEditor.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11168,15 +11168,15 @@ swift.method TextField.onDropped(policy:_:): @MainActor func onDropped(policy: G
 swift.method TextField.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method TextField.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TextField.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method TextField.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method TextField.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method TextField.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextField.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method TextField.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method TextField.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method TextField.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method TextField.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TextField.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TextField.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method TextField.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TextField.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextField.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextField.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextField.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11440,15 +11440,15 @@ swift.method TimePicker.onDropped(policy:_:): @MainActor func onDropped(policy: 
 swift.method TimePicker.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method TimePicker.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TimePicker.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method TimePicker.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method TimePicker.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method TimePicker.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method TimePicker.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method TimePicker.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method TimePicker.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method TimePicker.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TimePicker.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TimePicker.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method TimePicker.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TimePicker.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TimePicker.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11750,15 +11750,15 @@ swift.method VStack.onDropped(policy:_:): @MainActor func onDropped(policy: Gate
 swift.method VStack.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method VStack.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method VStack.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method VStack.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method VStack.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method VStack.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method VStack.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method VStack.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method VStack.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method VStack.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method VStack.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method VStack.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method VStack.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method VStack.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method VStack.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11893,12 +11893,12 @@ swift.method View.onDropped(policy:_:): @MainActor func onDropped(policy: GatePo
 swift.method View.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method View.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method View.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method View.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method View.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method View.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method View.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method View.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method View.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method View.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method View.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method View.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method View.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method View.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method View.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12159,15 +12159,15 @@ swift.method WebView.onDropped(policy:_:): @MainActor func onDropped(policy: Gat
 swift.method WebView.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method WebView.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method WebView.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method WebView.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method WebView.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method WebView.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method WebView.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method WebView.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method WebView.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method WebView.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method WebView.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method WebView.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method WebView.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method WebView.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method WebView.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method WebView.onNavigated(_:): @MainActor func onNavigated(_ handler: @escaping @MainActor @Sendable (WebNavigated) throws -> Void) -> WebView.Modified
 swift.method WebView.onNavigated(gate:_:): @MainActor func onNavigated(gate: Gate, _ handler: @escaping ValueEventHandler<WebNavigated>) -> WebView.Modified
 swift.method WebView.onNavigated(policy:_:): @MainActor func onNavigated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigated>) -> WebView.Modified
@@ -12384,15 +12384,15 @@ swift.method ZStack.onDropped(policy:_:): @MainActor func onDropped(policy: Gate
 swift.method ZStack.onFrameChanged(in:stage:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method ZStack.onFrameChanged(in:stage:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ZStack.onFrameChanged(in:stage:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, stage: GeometryStage = .layout, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method ZStack.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method ZStack.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ZStack.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ZStack.onKeyPressed(_:_:): @MainActor func onKeyPressed(_ keys: [Key], _ handler: @escaping @MainActor @Sendable (KeyPress) throws -> Void) -> Self.Modified
 swift.method ZStack.onKeyPressed(_:gate:_:): @MainActor func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method ZStack.onKeyPressed(_:policy:_:): @MainActor func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>) -> Self.Modified
 swift.method ZStack.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ZStack.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ZStack.onLinkOpened(policy:_:): @MainActor func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ZStack.onLongPressed(minimum:_:): @MainActor func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ZStack.onLongPressed(minimum:gate:_:): @MainActor func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ZStack.onLongPressed(minimum:policy:_:): @MainActor func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ZStack.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ZStack.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ZStack.onNavigatedFrom(policy:_:): @MainActor func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -13573,13 +13573,13 @@ swift.type.property ViewContract.gridColumn: static let gridColumn: ElementPrope
 swift.type.property ViewContract.gridColumnSpan: static let gridColumnSpan: ElementProperty<ViewContract, Int>
 swift.type.property ViewContract.gridRow: static let gridRow: ElementProperty<ViewContract, Int>
 swift.type.property ViewContract.gridRowSpan: static let gridRowSpan: ElementProperty<ViewContract, Int>
-swift.type.property ViewContract.held: static let held: ElementEvent<ViewContract, Void>
-swift.type.property ViewContract.holdDuration: static let holdDuration: ElementProperty<ViewContract, Double>
 swift.type.property ViewContract.horizontalAlignment: static let horizontalAlignment: ElementProperty<ViewContract, Alignment>
 swift.type.property ViewContract.interaction: static let interaction: ElementProgram<ViewContract, Interaction>
 swift.type.property ViewContract.isDraggable: static let isDraggable: ElementProperty<ViewContract, Bool>
 swift.type.property ViewContract.layoutBody: static let layoutBody: ElementProperty<ViewContract, LayoutBody>
 swift.type.property ViewContract.layoutFrameChanged: static let layoutFrameChanged: ElementEvent<ViewContract, [Double]>
+swift.type.property ViewContract.longPressDuration: static let longPressDuration: ElementProperty<ViewContract, Double>
+swift.type.property ViewContract.longPressed: static let longPressed: ElementEvent<ViewContract, Void>
 swift.type.property ViewContract.margin: static let margin: ElementProperty<ViewContract, Insets>
 swift.type.property ViewContract.name: static let name: String
 swift.type.property ViewContract.panTouchCount: static let panTouchCount: ElementProperty<ViewContract, Int>

@@ -46,7 +46,7 @@ struct WebPress {
         .radius(kind == .touch ? finger : pointer)
     }
 
-    /// The page held the press: the hold's, unless it is a drag already, by the host layer's rule. Whether it is.
+    /// The page held the press: the long press's, unless it is a drag already, by the host layer's rule. Whether it is.
     mutating func held() -> Bool {
         drag.held()
     }

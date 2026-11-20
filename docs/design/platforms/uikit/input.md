@@ -63,12 +63,12 @@ that one's, as UIKit keeps a control's touch from the gestures around it; one
 on the parts of a view that is a control is its own. UIKit's tap recognizer
 stays for a run of taps alone, which it counts by the touch's `tapCount`.
 
-## A press held
+## A long press
 
-A hold is UIKit's long-press recognizer, waiting the view's time or UIKit's
-own. It is the one recognizer of a view that is not heard with others: with
-the view's tap and pan it is not recognized together, so a press held is no
-tap and drags nothing, and a press dragged first is no hold.
+A long press is UIKit's long-press recognizer, waiting the view's time or
+UIKit's own. It is the one recognizer of a view that is not heard with
+others: with the view's tap and pan it is not recognized together, so a long
+press is no tap and drags nothing, and a press dragged first is none.
 
 ## The hand over a layout
 

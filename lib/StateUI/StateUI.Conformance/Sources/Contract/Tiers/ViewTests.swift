@@ -19,7 +19,7 @@
         Specimens.wearing(ViewContract.self).flatMap { element in
             [
                 margined(element), drawn(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
-                tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), swiped(element), pinched(element), rotated(element), pointed(element),
+                tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
         } + [
@@ -605,18 +605,18 @@
         }
     }
 
-    /// A press held is heard as held, and its release is no tap; a tap is no hold.
+    /// A press held is heard as held, and its release is no tap; a tap is no long press.
     @MainActor
-    static func held(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aPressHeldIsHeldAndNoTap", proves: [
-            Covered(ViewContract.held, on: element),
+    static func longPressed(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aLongPressIsHeardAndNoTap", proves: [
+            Covered(ViewContract.longPressed, on: element),
         ], needs: [Covered(ViewContract.tapped, on: element)]) { s in
             let heard = Received<String>()
             s.start {
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        HearDone(ViewContract.held) { heard.values.append("held") },
+                        HearDone(ViewContract.longPressed) { heard.values.append("longPressed") },
                         HearDone(ViewContract.tapped) { heard.values.append("tapped") },
                     ])
                 }
@@ -624,40 +624,40 @@
             }
             let view = try s.element("specimen")
 
-            try s.perform(.hold, on: view)
-            s.settle { heard.values.contains("held") }
-            s.expect(heard.values, ["held"], "held, and its release no tap")
+            try s.perform(.longPress, on: view)
+            s.settle { heard.values.contains("longPressed") }
+            s.expect(heard.values, ["longPressed"], "held, and its release no tap")
             try s.perform(.tap(count: 1), on: view)
             s.turn()
-            s.expect(heard.values.filter { $0 == "held" }, ["held"], "a tap is no hold")
+            s.expect(heard.values.filter { $0 == "longPressed" }, ["longPressed"], "a tap is no long press")
         }
     }
 
-    /// A view's hold waits the time the tree gives it, as its native recognizer holds it, and the time the tree
+    /// A view's long press waits the time the tree gives it, as its native recognizer holds it, and the time the tree
     /// changes it to.
     @MainActor
-    static func heldAfterItsTime(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aHoldWaitsItsTime", proves: [
-            Covered(ViewContract.holdDuration, on: element),
-        ], needs: [Covered(ViewContract.held, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+    static func longPressedAfterItsTime(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aLongPressWaitsItsTime", proves: [
+            Covered(ViewContract.longPressDuration, on: element),
+        ], needs: [Covered(ViewContract.longPressed, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let long = State(wrappedValue: false)
             s.start {
                 VStack {
                     Button("Longer").onClicked { long.wrappedValue = true }.id("change")
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Write(ViewContract.holdDuration, long.wrappedValue ? 900 : 700), HearDone(ViewContract.held) {},
+                        Write(ViewContract.longPressDuration, long.wrappedValue ? 900 : 700), HearDone(ViewContract.longPressed) {},
                     ])
                 }
                 .horizontalAlignment(.start)
             }
             let view = try s.element("specimen")
-            try s.settle { try s.held(ViewContract.holdDuration, on: view) == 700 }
-            s.expect(try s.held(ViewContract.holdDuration, on: view), 700, "the time the tree gave")
+            try s.settle { try s.held(ViewContract.longPressDuration, on: view) == 700 }
+            s.expect(try s.held(ViewContract.longPressDuration, on: view), 700, "the time the tree gave")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(ViewContract.holdDuration, on: view) == 900 }
-            s.expect(try s.held(ViewContract.holdDuration, on: view), 900, "the time the tree changed it to")
+            try s.settle { try s.held(ViewContract.longPressDuration, on: view) == 900 }
+            s.expect(try s.held(ViewContract.longPressDuration, on: view), 900, "the time the tree changed it to")
         }
     }
 

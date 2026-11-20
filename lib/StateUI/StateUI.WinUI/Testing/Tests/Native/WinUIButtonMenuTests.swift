@@ -15,7 +15,7 @@ private struct MenuButtonsPage: View {
         VStack {
             Button("Share").menu { MenuItem("Mail") }
             Button("More").menu { MenuItem("Mail") }.showsMenuArrow(false)
-            Button("Save").onClicked {}.menu(.held) { MenuItem("Save as") }
+            Button("Save").onClicked {}.menu(.longPress) { MenuItem("Save as") }
         }
     }
 }
@@ -27,7 +27,7 @@ private struct MenuActionsPage: View {
             ToolbarButton("Save").onClicked {}.menu(.split) { MenuItem("Save a copy") }
             ToolbarButton("Sort").menu { MenuItem("A to Z") }
             ToolbarButton("Share").menu { MenuItem("Mail") }.showsMenuArrow(false)
-            ToolbarButton("Keep").onClicked {}.menu(.held) { MenuItem("Keep a copy") }
+            ToolbarButton("Keep").onClicked {}.menu(.longPress) { MenuItem("Keep a copy") }
         }
     }
 }

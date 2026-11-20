@@ -128,10 +128,10 @@ extension AppKitElement {
         (view as? AppKitHitTestView)?.pressAction = hearing.contains(.taps)
             ? { [weak self] in self?.hear(.tap(run: 0)) }
             : nil
-        holdRecognizer = installed(holdRecognizer, hearing.contains(.holds), on: view) {
-            AppKitHoldRecognizer(hearing: heard)
+        longPressRecognizer = installed(longPressRecognizer, hearing.contains(.longPresses), on: view) {
+            AppKitLongPressRecognizer(hearing: heard)
         }
-        holdRecognizer?.wait(element.holdDuration)
+        longPressRecognizer?.wait(element.longPressDuration)
         panRecognizer = installed(panRecognizer, hearing.contains(.drags), on: view) { AppKitPanRecognizer(hearing: heard) }
         pinchRecognizer = installed(pinchRecognizer, hearing.contains(.pinches), on: view) {
             AppKitPinchRecognizer(hearing: heard)

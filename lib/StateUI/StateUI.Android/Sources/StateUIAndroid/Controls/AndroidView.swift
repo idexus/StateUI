@@ -338,18 +338,18 @@ class AndroidView {
     func chose(_ place: Int) {}
 
     /// The user held the view down long - the one place deciding what that does: the view's own (a button's menu),
-    /// else its hold - a press held before it became a drag, by the host layer's rule - and its drag; whether it
+    /// else its long press - a press held before it became a drag, by the host layer's rule - and its drag; whether it
     /// took it - else Android goes on to its context menu.
     /// Design: docs/design/platforms/android/controls.md#a-long-press
     func longClicked() -> Bool {
-        let held = listening.hearing.contains(.holds) && press.held() && onHeard?(.hold) == true
+        let held = listening.hearing.contains(.longPresses) && press.held() && onHeard?(.longPress) == true
         return startDrag() || held
     }
 
     /// Whether a long press is the view's to decide: it is held, it can be dragged, or - a button's menu - holds its
     /// own.
     var takesLongPress: Bool {
-        listening.hearing.contains(.holds) || offered.words != nil
+        listening.hearing.contains(.longPresses) || offered.words != nil
     }
 
     /// Hands the view's one long-press listener on, or takes it back, as `takesLongPress` now says - a view that took
@@ -378,7 +378,7 @@ class AndroidView {
     /// Whether the view takes a long press of itself, read before the host first hands it a listener for one.
     private lazy var longClickableOfItself = Java.callBool(reference, JavaAPI.isLongClickable)
 
-    /// Writes whether the view takes a long press: of itself, for its hold or drag, or for its menu.
+    /// Writes whether the view takes a long press: of itself, for its long press or drag, or for its menu.
     private func writeLongClickable() {
         Java.call(reference, JavaAPI.setLongClickable,
             .bool(longClickableOfItself || listensForLongPress || onMenuOpening != nil))

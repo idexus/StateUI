@@ -19,13 +19,13 @@
     /// A held button's click is its own action, and its menu stands apart.
     @MainActor
     static func held(_ element: String, at place: MenuButtons.BarPlace = .top) -> ConformanceCase {
-        ConformanceCase("\(element)\(place.named).aHeldButtonsClickIsItsOwnItsMenuApart", proves: [
+        ConformanceCase("\(element)\(place.named).aButtonsClickIsItsOwnItsLongPressMenuApart", proves: [
             Covered(ButtonMenuElementContract.menuKind, on: element),
         ], needs: [clicking(element), Covered(ClickElementContract.clicked, on: "MenuItem")]) { s in
             let heard = Received<String>()
             s.start {
                 MenuButtons.standing(
-                    element, "Save", clicked: { heard.values.append("save") }, kind: .held, at: place,
+                    element, "Save", clicked: { heard.values.append("save") }, kind: .longPress, at: place,
                     entries: { MenuItem("Save as").onClicked { heard.values.append("save as") }.id("saveAs") })
             }
             let save = try s.element("save")

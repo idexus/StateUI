@@ -1,4 +1,4 @@
-# revision 32.1
+# revision 33.1
 Button.horizontalAlignment: ✅
 Button.interaction: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.layoutFrameChanged: ✅

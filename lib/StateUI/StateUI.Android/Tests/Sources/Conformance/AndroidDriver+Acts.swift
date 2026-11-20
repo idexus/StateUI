@@ -97,7 +97,7 @@ extension AndroidDriver {
         case (.choose(let place), let tabs as AndroidTabView):
             guard Self.tap(tab: place, of: tabs) else { throw DriverCannot(act, on: element) }
         case (.tap(let count), let view?): Self.tap(view, count: count)
-        case (.hold, let view?): Self.hold(view)
+        case (.longPress, let view?): Self.longPress(view)
         case (.pan(let offset), let view?): Self.pan(view, by: offset)
         case (.sweep(let offset, let speed), let view?):
             // One finger as the listener tells it, lifted at `speed`: a sweep shorter than the slop goes past it its
@@ -187,7 +187,7 @@ extension AndroidDriver {
     }
 
     /// A finger put down in the middle of `view`, held there through Android's long-press time, and lifted.
-    private static func hold(_ view: AndroidView) {
+    private static func longPress(_ view: AndroidView) {
         let (x, y) = (Float(view.frame.width) / 2, Float(view.frame.height) / 2)
         let held = Int64(Java.callStaticInt(JavaAPI.viewConfiguration, longPressTimeout)) + 100
         view.touch(down, x: x, y: y, at: 0)

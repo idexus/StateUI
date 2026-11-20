@@ -181,8 +181,8 @@ asked (`ButtonMenuKind`):
   up and down, which says a choice of values, as a picker's;
 - a click of its own, or `.split`: a split button, its click its own action,
   its arrow a part of its own opening the menu;
-- `.held`: the click its own action, the menu opened by holding the button,
-  and no arrow.
+- `.longPress`: the click its own action, the menu opened by a long press of
+  the button, and no arrow.
 
 Each toolkit makes a control of its own of each - GTK's menu button and
 libadwaita's split button; WinUI's DropDownButton, a Button with a flyout, its

@@ -97,7 +97,7 @@ enum GTKRealization {
             reason: "GTK fixes a widget's role as it is made, and a widget is the kind its class says."),
         .notPlanned(VisualElementContract.accessibilityValue,
             reason: "GTK says a value only of a range, a role a widget takes as it is made."),
-        .partial(ViewContract.holdDuration,
+        .partial(ViewContract.longPressDuration,
             missing: "GTK waits from half to twice its long-press time: a time beyond either stands at that end."),
         .partial(VisualElementContract.accessibilityPresence,
             missing: "GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too."),

@@ -11,7 +11,7 @@ extension UIKitDriver {
     func byHost(_ ability: String) -> String? {
         let taken = Ability(ability)
         switch taken.act {
-        case "tap", "hold", "pan", "sweep", "notch", "pinch", "rotate", "hover", "leave", "drag", "pressDown", "lift":
+        case "tap", "longPress", "pan", "sweep", "notch", "pinch", "rotate", "hover", "leave", "drag", "pressDown", "lift":
             return "the view's listening handed the recognizer's states, no touch sent"
         case "accessibilityPress":
             return "VoiceOver's activation, else a tap the view's listening is handed, no touch sent"

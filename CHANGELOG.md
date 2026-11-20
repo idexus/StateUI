@@ -183,6 +183,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   layout that scrolls sideways is `.interaction(.drag(.vertical, begins: .directional))`; `.onItemDragged` and
   `.onItemDismissed` are told as before. Said inside the view's own body, the drag leaves the layout building no
   view again as its order changes.
+- **A press held is a long press.** `.onHeld(minimum:_:)` is `.onLongPressed(minimum:_:)`, with its `policy:` and
+  `gate:` forms; a button's menu a held press opens is `.menu(.longPress)` (`ButtonMenuKind.held` is gone). An
+  extension reads `ViewContract.longPressed` and `ViewContract.longPressDuration` for `held` and `holdDuration`,
+  and a test sends `UserAct.longPress`. "Hold" names only the hand's hold on a value or a view it moves.
 
 ### New
 

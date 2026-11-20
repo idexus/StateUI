@@ -119,6 +119,8 @@ and this table maps the two.
 
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
+| long press (`onLongPressed`, `Hearing.longPresses`) | long press, press and hold, long click | a press kept still as long as the view waits for one, or the platform's own time: one event, no tap as it lets go |
+| hold (the hand's: `handHolds`, `holdsView`) | grab, grip | the hand keeping a value or a view under it from its press to its lift - never the long press |
 | host | platform layer | the package that shows StateUI with one toolkit, `lib/StateUI/StateUI.<Host>` |
 | runtime | platform runtime | a host's elements: the host layer and its toolkit half |
 | host layer | shared platform code | the toolkit-neutral elements in `lib/StateUI/StateUI.Host`, the module `StateUIHost` |

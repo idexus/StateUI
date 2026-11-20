@@ -1,113 +1,113 @@
-# revision 32.1
+# revision 33.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
 Button.filesDropped: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
-Button.holdDuration: ✅
+Button.longPressDuration: ✅
 Canvas.droppedFileTypes: ✓ dropFiles on Canvas: the drop interaction's handler told the driver's files, no drag session
 Canvas.filesDropped: ✓ dropFiles on Canvas: the drop interaction's handler told the driver's files, no drag session
-Canvas.holdDuration: ✅
+Canvas.longPressDuration: ✅
 Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the drop interaction's handler told the driver's files, no drag session
 Capsule.filesDropped: ✓ dropFiles on Capsule: the drop interaction's handler told the driver's files, no drag session
-Capsule.holdDuration: ✅
+Capsule.longPressDuration: ✅
 CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the drop interaction's handler told the driver's files, no drag session
 CheckBox.filesDropped: ✓ dropFiles on CheckBox: the drop interaction's handler told the driver's files, no drag session
-CheckBox.holdDuration: ✅
+CheckBox.longPressDuration: ✅
 ColorPicker.droppedFileTypes: ✓ dropFiles on ColorPicker: the drop interaction's handler told the driver's files, no drag session
 ColorPicker.filesDropped: ✓ dropFiles on ColorPicker: the drop interaction's handler told the driver's files, no drag session
-ColorPicker.holdDuration: ✅
+ColorPicker.longPressDuration: ✅
 DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the drop interaction's handler told the driver's files, no drag session
 DatePicker.filesDropped: ✓ dropFiles on DatePicker: the drop interaction's handler told the driver's files, no drag session
-DatePicker.holdDuration: ✅
+DatePicker.longPressDuration: ✅
 Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the drop interaction's handler told the driver's files, no drag session
 Ellipse.filesDropped: ✓ dropFiles on Ellipse: the drop interaction's handler told the driver's files, no drag session
-Ellipse.holdDuration: ✅
+Ellipse.longPressDuration: ✅
 Fill.droppedFileTypes: ✓ dropFiles on Fill: the drop interaction's handler told the driver's files, no drag session
 Fill.filesDropped: ✓ dropFiles on Fill: the drop interaction's handler told the driver's files, no drag session
-Fill.holdDuration: ✅
+Fill.longPressDuration: ✅
 Grid.droppedFileTypes: ✓ dropFiles on Grid: the drop interaction's handler told the driver's files, no drag session
 Grid.filesDropped: ✓ dropFiles on Grid: the drop interaction's handler told the driver's files, no drag session
-Grid.holdDuration: ✅
+Grid.longPressDuration: ✅
 HStack.droppedFileTypes: ✓ dropFiles on HStack: the drop interaction's handler told the driver's files, no drag session
 HStack.filesDropped: ✓ dropFiles on HStack: the drop interaction's handler told the driver's files, no drag session
-HStack.holdDuration: ✅
+HStack.longPressDuration: ✅
 Image.droppedFileTypes: ✓ dropFiles on Image: the drop interaction's handler told the driver's files, no drag session
 Image.filesDropped: ✓ dropFiles on Image: the drop interaction's handler told the driver's files, no drag session
-Image.holdDuration: ✅
+Image.longPressDuration: ✅
 ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the drop interaction's handler told the driver's files, no drag session
 ItemsView.filesDropped: ✓ dropFiles on ItemsView: the drop interaction's handler told the driver's files, no drag session
-ItemsView.holdDuration: ✅
+ItemsView.longPressDuration: ✅
 Line.droppedFileTypes: ✓ dropFiles on Line: the drop interaction's handler told the driver's files, no drag session
 Line.filesDropped: ✓ dropFiles on Line: the drop interaction's handler told the driver's files, no drag session
-Line.holdDuration: ✅
+Line.longPressDuration: ✅
 Link.droppedFileTypes: ✓ dropFiles on Link: the drop interaction's handler told the driver's files, no drag session
 Link.filesDropped: ✓ dropFiles on Link: the drop interaction's handler told the driver's files, no drag session
-Link.holdDuration: ✅
+Link.longPressDuration: ✅
 Map.droppedFileTypes: ✓ dropFiles on Map: the drop interaction's handler told the driver's files, no drag session
 Map.filesDropped: ✓ dropFiles on Map: the drop interaction's handler told the driver's files, no drag session
-Map.holdDuration: ✅
+Map.longPressDuration: ✅
 MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the drop interaction's handler told the driver's files, no drag session
 MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the drop interaction's handler told the driver's files, no drag session
-MotionLayout.holdDuration: ✅
 MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.longPressDuration: ✅
 Path.droppedFileTypes: ✓ dropFiles on Path: the drop interaction's handler told the driver's files, no drag session
 Path.filesDropped: ✓ dropFiles on Path: the drop interaction's handler told the driver's files, no drag session
-Path.holdDuration: ✅
+Path.longPressDuration: ✅
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the drop interaction's handler told the driver's files, no drag session
 Picker.filesDropped: ✓ dropFiles on Picker: the drop interaction's handler told the driver's files, no drag session
-Picker.holdDuration: ✅
+Picker.longPressDuration: ✅
 Polygon.droppedFileTypes: ✓ dropFiles on Polygon: the drop interaction's handler told the driver's files, no drag session
 Polygon.filesDropped: ✓ dropFiles on Polygon: the drop interaction's handler told the driver's files, no drag session
-Polygon.holdDuration: ✅
+Polygon.longPressDuration: ✅
 Polyline.droppedFileTypes: ✓ dropFiles on Polyline: the drop interaction's handler told the driver's files, no drag session
 Polyline.filesDropped: ✓ dropFiles on Polyline: the drop interaction's handler told the driver's files, no drag session
-Polyline.holdDuration: ✅
+Polyline.longPressDuration: ✅
 ProgressBar.droppedFileTypes: ✓ dropFiles on ProgressBar: the drop interaction's handler told the driver's files, no drag session
 ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the drop interaction's handler told the driver's files, no drag session
-ProgressBar.holdDuration: ✅
+ProgressBar.longPressDuration: ✅
 Rectangle.droppedFileTypes: ✓ dropFiles on Rectangle: the drop interaction's handler told the driver's files, no drag session
 Rectangle.filesDropped: ✓ dropFiles on Rectangle: the drop interaction's handler told the driver's files, no drag session
-Rectangle.holdDuration: ✅
+Rectangle.longPressDuration: ✅
 ScrollView.droppedFileTypes: ✓ dropFiles on ScrollView: the drop interaction's handler told the driver's files, no drag session
 ScrollView.filesDropped: ✓ dropFiles on ScrollView: the drop interaction's handler told the driver's files, no drag session
-ScrollView.holdDuration: ✅
+ScrollView.longPressDuration: ✅
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the drop interaction's handler told the driver's files, no drag session
 SearchField.filesDropped: ✓ dropFiles on SearchField: the drop interaction's handler told the driver's files, no drag session
-SearchField.holdDuration: ✅
+SearchField.longPressDuration: ✅
 Separator.droppedFileTypes: ✓ dropFiles on Separator: the drop interaction's handler told the driver's files, no drag session
 Separator.filesDropped: ✓ dropFiles on Separator: the drop interaction's handler told the driver's files, no drag session
-Separator.holdDuration: ✅
+Separator.longPressDuration: ✅
 Slider.droppedFileTypes: ✓ dropFiles on Slider: the drop interaction's handler told the driver's files, no drag session
 Slider.filesDropped: ✓ dropFiles on Slider: the drop interaction's handler told the driver's files, no drag session
-Slider.holdDuration: ✅
+Slider.longPressDuration: ✅
 Space.droppedFileTypes: ✓ dropFiles on Space: the drop interaction's handler told the driver's files, no drag session
 Space.filesDropped: ✓ dropFiles on Space: the drop interaction's handler told the driver's files, no drag session
-Space.holdDuration: ✅
+Space.longPressDuration: ✅
 Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the drop interaction's handler told the driver's files, no drag session
 Spinner.filesDropped: ✓ dropFiles on Spinner: the drop interaction's handler told the driver's files, no drag session
-Spinner.holdDuration: ✅
+Spinner.longPressDuration: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session
 Stepper.filesDropped: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session
-Stepper.holdDuration: ✅
+Stepper.longPressDuration: ✅
 Switch.droppedFileTypes: ✓ dropFiles on Switch: the drop interaction's handler told the driver's files, no drag session
 Switch.filesDropped: ✓ dropFiles on Switch: the drop interaction's handler told the driver's files, no drag session
-Switch.holdDuration: ✅
+Switch.longPressDuration: ✅
 Text.droppedFileTypes: ✓ dropFiles on Text: the drop interaction's handler told the driver's files, no drag session
 Text.filesDropped: ✓ dropFiles on Text: the drop interaction's handler told the driver's files, no drag session
-Text.holdDuration: ✅
+Text.longPressDuration: ✅
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the drop interaction's handler told the driver's files, no drag session
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the drop interaction's handler told the driver's files, no drag session
-TextEditor.holdDuration: ✅
+TextEditor.longPressDuration: ✅
 TextField.droppedFileTypes: ✓ dropFiles on TextField: the drop interaction's handler told the driver's files, no drag session
 TextField.filesDropped: ✓ dropFiles on TextField: the drop interaction's handler told the driver's files, no drag session
-TextField.holdDuration: ✅
+TextField.longPressDuration: ✅
 TimePicker.droppedFileTypes: ✓ dropFiles on TimePicker: the drop interaction's handler told the driver's files, no drag session
 TimePicker.filesDropped: ✓ dropFiles on TimePicker: the drop interaction's handler told the driver's files, no drag session
-TimePicker.holdDuration: ✅
+TimePicker.longPressDuration: ✅
 VStack.droppedFileTypes: ✓ dropFiles on VStack: the drop interaction's handler told the driver's files, no drag session
 VStack.filesDropped: ✓ dropFiles on VStack: the drop interaction's handler told the driver's files, no drag session
-VStack.holdDuration: ✅
+VStack.longPressDuration: ✅
 WebView.droppedFileTypes: ✓ dropFiles on WebView: the drop interaction's handler told the driver's files, no drag session
 WebView.filesDropped: ✓ dropFiles on WebView: the drop interaction's handler told the driver's files, no drag session
-WebView.holdDuration: ✅
+WebView.longPressDuration: ✅
 ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the drop interaction's handler told the driver's files, no drag session
 ZStack.filesDropped: ✓ dropFiles on ZStack: the drop interaction's handler told the driver's files, no drag session
-ZStack.holdDuration: ✅
+ZStack.longPressDuration: ✅

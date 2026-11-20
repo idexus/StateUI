@@ -63,7 +63,7 @@ final class GTKContextMenu {
     }
 
     /// The secondary button's click and a held finger - a held mouse too, where `heldByMouse` - open the menu where
-    /// they are; a hold claims the press, so the button under it is not clicked.
+    /// they are; a long press claims the press, so the button under it is not clicked.
     private func listen(heldByMouse: Bool) {
         let click = gtk_gesture_click_new()!
         gtk_gesture_single_set_button(click, guint(GDK_BUTTON_SECONDARY))

@@ -219,8 +219,8 @@ final class WinUIDriver: HostDriver {
                     view.heardButtonPress(.ended, at: middle, byFinger: false)
                 }
             }
-        case (.hold, let view?) where view.hearing.contains(.holds):
-            view.heardHold()
+        case (.longPress, let view?) where view.hearing.contains(.longPresses):
+            view.heardLongPress()
         case (.pan(let offset), let view?) where view.hearing.contains(.drags):
             // The press the relay tells from the view's middle - at its point of the window's content and of the
             // view - which the host layer's rule makes a drag.

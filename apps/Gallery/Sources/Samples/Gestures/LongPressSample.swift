@@ -1,29 +1,29 @@
 import StateUI
 
-/// A press held on a whole view, at the platform's time and at one of its own.
-struct HoldSample: SampleContent, ExampleContent {
-    // listing: HoldSample
+/// A long press on a whole view, at the platform's time and at one of its own.
+struct LongPressSample: SampleContent, ExampleContent {
+    // listing: LongPressSample
     @State private var taps = 0
-    @State private var holds = 0
-    @State private var longHolds = 0
+    @State private var presses = 0
+    @State private var longer = 0
     // listing: end
 
-    static let id = "hold"
-    static let title = "Hold"
-    static let summary = "A press kept still is a hold - and its release no tap."
+    static let id = "longPress"
+    static let title = "Long press"
+    static let summary = "A press kept still is a long press - and its release no tap."
 
     // A gesture sample is not put in a scroller: a scroller would claim the
     // press before the example heard about it - see SampleContent.scrolls.
     static let scrolls = false
 
-    // listing: HoldSample
+    // listing: LongPressSample
     var body: some View {
         VStack {
-            // The counts are read here, so every tap and hold builds this closure.
+            // The counts are read here, so every tap and long press builds this closure.
             DebugInfoLabel()
 
             ZStack {
-                Text("Tap or hold this box")
+                Text("Tap or long press this box")
                     .fontSize(15)
                     .padding(24)
                     .horizontalTextAlignment(.center)
@@ -33,10 +33,10 @@ struct HoldSample: SampleContent, ExampleContent {
             .lineWidth(1)
             .shape(.roundedRectangle(10))
             .onTapped { taps += 1 }
-            .onHeld { holds += 1 }
+            .onLongPressed { presses += 1 }
 
             ZStack {
-                Text("Hold this one a second")
+                Text("Press this one for a second")
                     .fontSize(15)
                     .padding(24)
                     .horizontalTextAlignment(.center)
@@ -45,9 +45,9 @@ struct HoldSample: SampleContent, ExampleContent {
             .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))
-            .onHeld(minimum: .seconds(1)) { longHolds += 1 }
+            .onLongPressed(minimum: .seconds(1)) { longer += 1 }
 
-            Text("Tapped \(taps), held \(holds), held a second \(longHolds)")
+            Text("Tapped \(taps), long pressed \(presses), for a second \(longer)")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
         }
@@ -57,7 +57,7 @@ struct HoldSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         Text("Android and Windows wait the system's own time for both boxes; "
-            + "Windows holds for a finger or a pen, not the mouse.")
+            + "Windows tells a long press of a finger or a pen, not the mouse.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

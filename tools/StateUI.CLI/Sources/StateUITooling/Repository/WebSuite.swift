@@ -42,7 +42,7 @@ struct WebSuite {
         "WebChoiceTests",
         "WebEditMenuTests",
         "WebTestWindowTests",
-        "WebHeldMenuTests",
+        "WebLongPressMenuTests",
         "WebWordsOnTheWayTests",
         "WebScreenReaderTests",
         "WebItemCellTests",

@@ -203,7 +203,7 @@ final class UIKitButtonView: UIButton {
     /// Design: docs/design/platforms/uikit/controls.md#a-buttons-menu
     func offer(_ menu: UIMenu?, opening: ButtonMenuOpening, showsArrow: Bool) {
         let opensOnTap = opening == .click
-        self.menu = opening == .click || opening == .hold ? menu : nil
+        self.menu = opening == .click || opening == .longPress ? menu : nil
         showsMenuAsPrimaryAction = opensOnTap && menu != nil
         if let menu, opening == .arrow || opensOnTap && showsArrow {
             var arrow = self.arrow ?? makeArrow()

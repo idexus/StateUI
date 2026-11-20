@@ -35,7 +35,7 @@ final class AppKitElement: NSObject, NativeElement {
 
     var tapRecognizer: AppKitTapRecognizer?
     var pressRecognizer: AppKitPressRecognizer?
-    var holdRecognizer: AppKitHoldRecognizer?
+    var longPressRecognizer: AppKitLongPressRecognizer?
     var panRecognizer: AppKitPanRecognizer?
     var handReader: AppKitHandReader?
     var pinchRecognizer: AppKitPinchRecognizer?

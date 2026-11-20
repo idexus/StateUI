@@ -67,12 +67,12 @@ public enum ViewContract: Tier {
     /// How many rows of a Grid the view spans.
     public static let gridRowSpan = ElementProperty<Self, Int>("gridRowSpan", layer: .stateUI, travels: false)
 
-    /// The user held the view down - pressed and kept still - as long as a hold waits.
-    public static let held = ElementEvent<Self, Void>("held", layer: .native)
+    /// A long press: the user held the view down - pressed and kept still - as long as the view waits for one.
+    public static let longPressed = ElementEvent<Self, Void>("longPressed", layer: .native)
 
-    /// How long a press stands still before the view is held, in milliseconds; unwritten, the platform's own.
-    public static let holdDuration = ElementProperty<Self, Double>(
-        "holdDuration", layer: .structure, travels: false, cleared: false)
+    /// How long a press stands still before it is a long press, in milliseconds; unwritten, the platform's own.
+    public static let longPressDuration = ElementProperty<Self, Double>(
+        "longPressDuration", layer: .structure, travels: false, cleared: false)
 
     /// How the view uses the width its layout offers.
     public static let horizontalAlignment = ElementProperty<Self, Alignment>(
@@ -142,5 +142,5 @@ public enum ViewContract: Tier {
         "verticalAlignment", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, filesDropped, layoutFrameChanged, presentationFrameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, interaction, isDraggable, margin, panTouchCount, panUpdated, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, verticalAlignment]
+    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, filesDropped, layoutFrameChanged, presentationFrameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, longPressed, longPressDuration, horizontalAlignment, interaction, isDraggable, margin, panTouchCount, panUpdated, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, verticalAlignment]
 }

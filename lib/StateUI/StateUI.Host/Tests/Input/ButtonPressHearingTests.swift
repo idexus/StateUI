@@ -6,7 +6,7 @@
 import XCTest
 
 /// A view that hears taps, pressed as a button on every host: its pressed state lit while the press stands over it,
-/// a tap where the press lets go over it, none where it lets go away or a hold takes it.
+/// a tap where the press lets go over it, none where it lets go away or a long press takes it.
 @MainActor
 final class ButtonPressHearingTests: XCTestCase {
     private let size = LayoutSize(width: 100, height: 40)
@@ -44,7 +44,7 @@ final class ButtonPressHearingTests: XCTestCase {
         let (runtime, row) = try running()
 
         row.hear(.press(.began, at: Point(x: 50, y: 20), size: size, byFinger: true), in: runtime)
-        row.hear(.hold, in: runtime)
+        row.hear(.longPress, in: runtime)
         row.hear(.press(.ended, at: Point(x: 50, y: 20), size: size, byFinger: true), in: runtime)
         settle(runtime)
 
@@ -119,7 +119,7 @@ private struct RowApplication: Application {
         WindowGroup {
             ZStack { Text("Row") }
                 .onTapped { @MainActor in taps += 1 }
-                .onHeld { @MainActor in held += 1 }
+                .onLongPressed { @MainActor in held += 1 }
                 .visualState(.pressed) { $0.background(.green) }
                 .onVisualStateChanged { @MainActor state in states.append(state.name) }
                 .id("row")

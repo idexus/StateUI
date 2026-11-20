@@ -6,10 +6,10 @@
 @testable import StateUIWeb
 import XCTest
 
-/// A view's menu a held finger opens, as a phone's browser holds one: the hold is the menu's - none of the view's
+/// A view's menu a held finger opens, as a phone's browser holds one: the long press is the menu's - none of the view's
 /// words chosen by it - and the finger lifting is no touch beside the menu, which stays until one comes.
 @MainActor
-final class WebHeldMenuTests: XCTestCase {
+final class WebLongPressMenuTests: XCTestCase {
     override func setUp() async throws {
         WebTestLoop.started
     }
@@ -28,7 +28,7 @@ final class WebHeldMenuTests: XCTestCase {
 
         touch("touchStart", [middle])
         settle(host) { self.menuShows }
-        XCTAssertTrue(menuShows, "the hold opened the menu")
+        XCTAssertTrue(menuShows, "the long press opened the menu")
         touch("touchEnd", [])
         for _ in 0..<10 {
             host.step()
@@ -38,7 +38,7 @@ final class WebHeldMenuTests: XCTestCase {
         XCTAssertTrue(menuShows, "the menu stays as the finger that opened it lifts")
         XCTAssertEqual(
             try WebBrowser.evaluate("getComputedStyle(\(words)).userSelect", on: 0), "none",
-            "the hold chooses none of the view's words")
+            "the long press chooses none of the view's words")
         touch("touchStart", [Point(x: 4, y: 4)])
         touch("touchEnd", [])
         settle(host) { !self.menuShows }
@@ -88,7 +88,7 @@ final class WebHeldMenuTests: XCTestCase {
             host.step()
             WebBrowser.pause()
         }
-        XCTAssertTrue(menuShows, "the hold opened the menu")
+        XCTAssertTrue(menuShows, "the long press opened the menu")
         XCTAssertEqual(try WebBrowser.number("stateuiCounted.hung", on: 0), 2, "a touch beside it and Escape")
 
         shown.wrappedValue = false

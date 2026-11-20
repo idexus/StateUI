@@ -46,8 +46,8 @@ import StateUI
     case leave
     /// A quick run of taps on the element.
     case tap(count: Int)
-    /// A press on the element held as long as its hold waits, and let go.
-    case hold
+    /// A long press on the element: held as long as it waits for one, and let go.
+    case longPress
     /// A press dragged across the element by an offset, and let go.
     case pan(by: Point)
     /// The hand swept over a layout - a press dragged, a trackpad's fingers - moving what is under it by an offset,
@@ -135,7 +135,7 @@ import StateUI
         case .leave: "leave"
         case .tap: "tap"
         case .openLink: "openLink"
-        case .hold: "hold"
+        case .longPress: "longPress"
         case .pan: "pan"
         case .sweep: "sweep"
         case .notch: "notch"

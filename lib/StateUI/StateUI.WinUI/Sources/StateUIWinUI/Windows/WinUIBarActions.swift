@@ -95,7 +95,7 @@ struct WinUIBarActions {
             let behind = places[place] < 0
             let menu = WinUIMenu(entries: behind ? opened.inOverflow : opened.entries)
             defer { first += Int32(menu.actions.count) }
-            return (Int32(place), !behind && opened.opening == .hold, first, menu)
+            return (Int32(place), !behind && opened.opening == .longPress, first, menu)
         }
     }
 

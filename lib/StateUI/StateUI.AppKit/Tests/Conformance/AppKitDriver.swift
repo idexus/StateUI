@@ -240,7 +240,7 @@ final class AppKitDriver: HostDriver {
         if let web = (element.native as? AppKitElement)?.view as? WebKitView, let held = webHolds(property, web) {
             return held
         }
-        if property == .holdDuration, let hold = (element.native as? AppKitElement)?.holdRecognizer {
+        if property == .longPressDuration, let hold = (element.native as? AppKitElement)?.longPressRecognizer {
             return .number(hold.minimumPressDuration * 1000)
         }
         if property == .language, let words = (element.native as? AppKitElement)?.view as? AppKitTextView {

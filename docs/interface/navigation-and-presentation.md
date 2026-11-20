@@ -695,8 +695,8 @@ VStack { … }
 A `ToolbarButton` holds a menu as a button does
 ([A button's menu](interaction-and-actions.md#a-buttons-menu)): with no
 `.onClicked` its click opens it, an arrow saying so unless `showsMenuArrow(false)`;
-with one it splits, its click its own and its menu beside it; `.held` opens the
-menu as the button is held. Behind the overflow it is a submenu under its words,
+with one it splits, its click its own and its menu beside it; `.longPress` opens the
+menu on a long press of the button. Behind the overflow it is a submenu under its words,
 its own action first. A Mac draws the arrow on its toolbar's menu item, GTK and
 the Web on theirs; iOS, Android and WinUI draw none on a bar. A bar that has no
 split part - iOS and WinUI - opens a split item's menu held, and Android puts it

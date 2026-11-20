@@ -41,39 +41,40 @@ extension View {
         }
     }
 
-    // MARK: Hold
+    // MARK: Long press
 
-    /// Runs when the user holds the view down - a finger, a pen or a button
-    /// pressed and kept still - once the press has stood still `minimum`, or
-    /// as long as the platform's long press where it is nil, the default.
+    /// Runs on a long press: the user holds the view down - a finger, a pen or
+    /// a button pressed and kept still - until the press has stood still
+    /// `minimum`, or as long as the platform's own long press where it is nil,
+    /// the default.
     ///
     ///     Photo(item)
-    ///         .onHeld { selection.insert(item.id) }
+    ///         .onLongPressed { selection.insert(item.id) }
     ///
-    ///     Photo(item).onHeld(minimum: .milliseconds(800)) { showActions(for: item) }
+    ///     Photo(item).onLongPressed(minimum: .milliseconds(800)) { showActions(for: item) }
     ///
-    /// A press held is the hold's: its release is no tap, and it drags nothing.
-    public func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
+    /// A long press is no tap as it lets go, and it drags nothing.
+    public func onLongPressed(minimum: Duration? = nil, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
         modified {
-            $0.hearsHolds(minimum)
-            $0.addHandler(ViewContract.held.token, handler)
+            $0.hearsLongPresses(minimum)
+            $0.addHandler(ViewContract.longPressed.token, handler)
         }
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onLongPressed(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         modified {
-            $0.hearsHolds(minimum)
-            $0.addHandler(ViewContract.held.token, gate: .own(policy), handler)
+            $0.hearsLongPresses(minimum)
+            $0.addHandler(ViewContract.longPressed.token, gate: .own(policy), handler)
         }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onLongPressed(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         modified {
-            $0.hearsHolds(minimum)
-            $0.addHandler(ViewContract.held.token, gate: .shared(gate), handler)
+            $0.hearsLongPresses(minimum)
+            $0.addHandler(ViewContract.longPressed.token, gate: .shared(gate), handler)
         }
     }
 
@@ -614,15 +615,15 @@ extension Node {
         if count != 1 || said != nil { write(ViewContract.tapCount, count) }
     }
 
-    /// Waits `minimum` for a hold, a hold saying none keeping the one said; a view asked for two is said.
-    fileprivate mutating func hearsHolds(_ minimum: Duration?) {
+    /// Waits `minimum` for a long press, one saying none keeping the one said; a view asked for two is said.
+    fileprivate mutating func hearsLongPresses(_ minimum: Duration?) {
         guard let minimum else { return }
         let milliseconds = Double(Motion.milliseconds(of: minimum))
-        if let said = props[ViewContract.holdDuration.token].flatMap(Double.init(propValue:)), said != milliseconds {
-            complain("A view waits one time for a hold: \(said) and \(milliseconds) milliseconds were asked on it, "
+        if let said = props[ViewContract.longPressDuration.token].flatMap(Double.init(propValue:)), said != milliseconds {
+            complain("A view waits one time for a long press: \(said) and \(milliseconds) milliseconds were asked on it, "
                 + "and the last stands.")
         }
-        write(ViewContract.holdDuration, milliseconds)
+        write(ViewContract.longPressDuration, milliseconds)
     }
 
     /// Hears pans of `touchCount`, a pan saying none keeping the one said; a view asked for two is said.

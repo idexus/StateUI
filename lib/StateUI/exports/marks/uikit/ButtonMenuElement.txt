@@ -1,5 +1,5 @@
 # revision 2.1
 Button.menuKind: ✅
 Button.showsMenuArrow: ✅
-ToolbarButton.menuKind: ☑️ UIKit's bar offers no arrow part: a split bar button opens its menu held.
-ToolbarButton.showsMenuArrow: – A UIKit bar button shows no arrow: its menu opens from its tap or its hold.
+ToolbarButton.menuKind: ☑️ UIKit's bar offers no arrow part: a split bar button opens its menu on a long press.
+ToolbarButton.showsMenuArrow: – A UIKit bar button shows no arrow: its menu opens from its tap or its long press.

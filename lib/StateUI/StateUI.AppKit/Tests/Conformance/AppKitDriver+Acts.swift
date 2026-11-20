@@ -82,8 +82,8 @@ extension AppKitDriver {
         case (.leave, _) where native?.pointerRecognizer != nil:
             native?.pointerRecognizer?.pointed(.pointerExited, at: Point(x: 0, y: 0))
         case (.tap(let count), let view?) where native?.tapRecognizer != nil: tap(native, view, count: count)
-        case (.hold, _) where native?.holdRecognizer != nil:
-            native?.holdRecognizer?.held()
+        case (.longPress, _) where native?.longPressRecognizer != nil:
+            native?.longPressRecognizer?.held()
         case (.pan(let offset), _) where native?.panRecognizer != nil:
             // Pressed in the view's middle, as a hand does.
             let size = native?.view?.bounds.size ?? .zero

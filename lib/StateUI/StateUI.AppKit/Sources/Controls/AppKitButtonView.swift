@@ -316,7 +316,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         switch opening {
         // The menu opens as the button is pressed, and stays pressed while it is open.
         case .click: pressed(showMenu)
-        case .hold: held()
+        case .longPress: held()
         // AppKit tracks the press inside this call, until the button is let go.
         case .none, .arrow: super.mouseDown(with: event)
         }
@@ -332,12 +332,12 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         highlight(false)
     }
 
-    /// A held button: let go before the hold's delay, its click; held past it, its menu opens (`AppKitHeldPress`).
+    /// A held button: let go before the long press's delay, its click; held past it, its menu opens (`AppKitLongPress`).
     private func held() {
         pressed {
-            switch AppKitHeldPress.follow(on: self) {
+            switch AppKitLongPress.follow(on: self) {
             case .click: onClicked?()
-            case .held: showMenu()
+            case .longPressed: showMenu()
             case .away: break
             }
         }

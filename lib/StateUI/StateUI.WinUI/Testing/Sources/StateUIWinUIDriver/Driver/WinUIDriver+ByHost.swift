@@ -23,7 +23,7 @@ extension WinUIDriver {
         case "pressDown", "drag", "lift": return "the relay's report of the press handed to the host, no pointer sent"
         case "hover", "leave": return "the relay's report of the pointer handed to the host, no pointer sent"
         case "tap": return "the relay's report of the tap handed to the host, no pointer sent"
-        case "hold": return "the relay's report of the hold handed to the host, no pointer sent"
+        case "longPress": return "the relay's report of the long press handed to the host, no pointer sent"
         case "pan": return "the relay's report of the press dragged handed to the host, no pointer sent"
         case "goBack": return "the title bar's way back chosen as the relay reports it, no button pressed"
         case "toggle" where Ability(ability).element == "SplitView":

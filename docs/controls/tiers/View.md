@@ -39,8 +39,8 @@ How each of them realizes these members is on its own page.
 | `gridColumnSpan` | property | `Int` | stateUI |
 | `gridRow` | property | `Int` | stateUI |
 | `gridRowSpan` | property | `Int` | stateUI |
-| `onHeld` (`held`) | event |  | native |
-| `holdDuration` | property | `Double` | structure |
+| `onLongPressed` (`longPressed`) | event |  | native |
+| `longPressDuration` | property | `Double` | structure |
 | `horizontalAlignment` | property | `Alignment` | native |
 | `interaction` | program |  | stateUI |
 | `isDraggable` | property | `Bool` | native |

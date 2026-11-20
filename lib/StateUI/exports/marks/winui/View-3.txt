@@ -1,4 +1,4 @@
-# revision 32.2
+# revision 33.2
 Button.droppedFileTypes: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.filesDropped: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.gridColumn: ✅
@@ -10,8 +10,8 @@ Canvas.swipeThreshold: ✓ pan on Canvas: the relay's report of the press dragge
 Canvas.swiped: ✓ pan on Canvas: the relay's report of the press dragged handed to the host, no pointer sent
 Canvas.tapCount: ✓ tap on Canvas: the relay's report of the tap handed to the host, no pointer sent
 Canvas.tapped: ✓ tap on Canvas: the relay's report of the tap handed to the host, no pointer sent
-Capsule.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Capsule.layoutFrameChanged: ✅
+Capsule.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Capsule.margin: ✅
 Capsule.rotationUpdated: ✓ rotate on Capsule: the relay's report of the manipulation handed to the host, no touch sent
 CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the relay's drag reports told by the driver, no drag WinUI began
@@ -34,8 +34,8 @@ DatePicker.swipeThreshold: ✓ pan on DatePicker: the relay's report of the pres
 DatePicker.swiped: ✓ pan on DatePicker: the relay's report of the press dragged handed to the host, no pointer sent
 DatePicker.tapCount: ✓ tap on DatePicker: the relay's report of the tap handed to the host, no pointer sent
 DatePicker.tapped: ✓ tap on DatePicker: the relay's report of the tap handed to the host, no pointer sent
-Ellipse.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Ellipse.layoutFrameChanged: ✅
+Ellipse.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Ellipse.margin: ✅
 Ellipse.rotationUpdated: ✓ rotate on Ellipse: the relay's report of the manipulation handed to the host, no touch sent
 Fill.dragEnded: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
@@ -58,8 +58,8 @@ HStack.swipeThreshold: ✓ pan on HStack: the relay's report of the press dragge
 HStack.swiped: ✓ pan on HStack: the relay's report of the press dragged handed to the host, no pointer sent
 HStack.tapCount: ✓ tap on HStack: the relay's report of the tap handed to the host, no pointer sent
 HStack.tapped: ✓ tap on HStack: the relay's report of the tap handed to the host, no pointer sent
-Image.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Image.layoutFrameChanged: ✅
+Image.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Image.margin: ✅
 Image.rotationUpdated: ✓ rotate on Image: the relay's report of the manipulation handed to the host, no touch sent
 ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
@@ -71,8 +71,8 @@ ItemsView.layoutFrameChanged: ✅
 ItemsView.panTouchCount: ✓ pan on ItemsView: the relay's report of the press dragged handed to the host, no pointer sent
 ItemsView.panUpdated: ✓ pan on ItemsView: the relay's report of the press dragged handed to the host, no pointer sent
 ItemsView.verticalAlignment: ✅
-Line.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Line.layoutFrameChanged: ✅
+Line.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Line.margin: ✅
 Line.rotationUpdated: ✓ rotate on Line: the relay's report of the manipulation handed to the host, no touch sent
 Link.dragEnded: ✓ dragAndDrop on Link: the relay's drag reports told by the driver, no drag WinUI began
@@ -96,8 +96,8 @@ MotionLayout.swipeThreshold: ✓ pan on MotionLayout: the relay's report of the 
 MotionLayout.swiped: ✓ pan on MotionLayout: the relay's report of the press dragged handed to the host, no pointer sent
 MotionLayout.tapCount: ✓ tap on MotionLayout: the relay's report of the tap handed to the host, no pointer sent
 MotionLayout.tapped: ✓ tap on MotionLayout: the relay's report of the tap handed to the host, no pointer sent
-Path.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Path.layoutFrameChanged: ✅
+Path.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Path.margin: ✅
 Path.rotationUpdated: ✓ rotate on Path: the relay's report of the manipulation handed to the host, no touch sent
 Picker.dragEnded: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
@@ -120,8 +120,8 @@ Polyline.swipeThreshold: ✓ pan on Polyline: the relay's report of the press dr
 Polyline.swiped: ✓ pan on Polyline: the relay's report of the press dragged handed to the host, no pointer sent
 Polyline.tapCount: ✓ tap on Polyline: the relay's report of the tap handed to the host, no pointer sent
 Polyline.tapped: ✓ tap on Polyline: the relay's report of the tap handed to the host, no pointer sent
-ProgressBar.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 ProgressBar.layoutFrameChanged: ✅
+ProgressBar.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 ProgressBar.margin: ✅
 ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the relay's report of the manipulation handed to the host, no touch sent
 Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -149,8 +149,8 @@ Separator.swipeThreshold: ✓ pan on Separator: the relay's report of the press 
 Separator.swiped: ✓ pan on Separator: the relay's report of the press dragged handed to the host, no pointer sent
 Separator.tapCount: ✓ tap on Separator: the relay's report of the tap handed to the host, no pointer sent
 Separator.tapped: ✓ tap on Separator: the relay's report of the tap handed to the host, no pointer sent
-Slider.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Slider.layoutFrameChanged: ✅
+Slider.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Slider.margin: ✅
 Slider.rotationUpdated: ✓ rotate on Slider: the relay's report of the manipulation handed to the host, no touch sent
 Space.dragEnded: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
@@ -189,8 +189,8 @@ Text.gridRow: ✅
 Text.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Text.layoutFrameChanged: ✅
 Text.verticalAlignment: ✅
-TextEditor.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 TextEditor.layoutFrameChanged: ✅
+TextEditor.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 TextEditor.margin: ✅
 TextEditor.rotationUpdated: ✓ rotate on TextEditor: the relay's report of the manipulation handed to the host, no touch sent
 TextField.dragEnded: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
@@ -213,8 +213,8 @@ VStack.swipeThreshold: ✓ pan on VStack: the relay's report of the press dragge
 VStack.swiped: ✓ pan on VStack: the relay's report of the press dragged handed to the host, no pointer sent
 VStack.tapCount: ✓ tap on VStack: the relay's report of the tap handed to the host, no pointer sent
 VStack.tapped: ✓ tap on VStack: the relay's report of the tap handed to the host, no pointer sent
-WebView.held: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.layoutFrameChanged: ✅
+WebView.longPressed: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.margin: ✅
 WebView.rotationUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 ZStack.dragEnded: ✓ dragAndDrop on ZStack: the relay's drag reports told by the driver, no drag WinUI began

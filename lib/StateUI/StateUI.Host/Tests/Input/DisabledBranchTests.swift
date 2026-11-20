@@ -15,10 +15,10 @@ final class DisabledBranchTests: XCTestCase {
 
         inner.hear(.tap(run: 1), in: runtime)
         inner.hear(.pointer(.pointerEntered, Point(x: 1, y: 1)), in: runtime)
-        inner.hear(.hold, in: runtime)
+        inner.hear(.longPress, in: runtime)
         for _ in 0..<5 { runtime.pump.turn() }
 
-        XCTAssertEqual(heard, [], "neither a tap, the pointer nor a hold in a disabled branch")
+        XCTAssertEqual(heard, [], "neither a tap, the pointer nor a long press in a disabled branch")
         XCTAssertFalse(inner.isEffectivelyEnabled)
         XCTAssertEqual(inner.presented(.isEnabled), .bool(false), "presented disabled, its own value written nowhere")
         XCTAssertNil(inner.value(.isEnabled), "its own value is what the tree wrote")
@@ -39,7 +39,7 @@ final class DisabledBranchTests: XCTestCase {
         XCTAssertTrue(told.contains(.manual("inner")), "the view in the branch heard its enablement turn")
 
         inner.hear(.tap(run: 1), in: runtime)
-        inner.hear(.hold, in: runtime)
+        inner.hear(.longPress, in: runtime)
         for _ in 0..<5 { runtime.pump.turn() }
         XCTAssertEqual(heard, ["opened", "inner tapped", "inner held"])
     }
@@ -140,7 +140,7 @@ private struct BranchPage: View {
             VStack {
                 Text("Inner").onTapped { @MainActor in heard.append("inner tapped") }.id("inner")
                     .onPointerEntered { @MainActor in heard.append("inner entered") }
-                    .onHeld { @MainActor in heard.append("inner held") }
+                    .onLongPressed { @MainActor in heard.append("inner held") }
                     .contextMenu { MenuItem("Copy").id("copy") }
                     .toolbar { ToolbarButton("Save").id("save") }
             }

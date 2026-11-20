@@ -18,7 +18,7 @@ BottomBarSample.swift cacd9f70509e0781
 BoundPropertiesSample.swift 402926dee36da563
 BrushSample.swift 05bfa1025c390d89
 BuilderSample.swift 0275d3a2df5a10da
-ButtonMenuSample.swift 47796ae5e7e354c5
+ButtonMenuSample.swift 696a072e17c74832
 ButtonRoleSample.swift 3e904d0aa8e02d9c
 ButtonSample.swift 4bf410b3eb5f6336
 CanvasSample.swift b31634f0ee2057b2
@@ -55,7 +55,6 @@ GridSample.swift 9c95bd0181e0d392
 HTTPRequestSample.swift bf26141a6d52f7d9
 HandMovesStateSample.swift 7b5ef0a4304c1b44
 HandOnViewSample.swift 800b775e2acd1641
-HoldSample.swift 3179a83bed36f2d7
 HomeScreenSample.swift 7bf2792b8c26b4ca
 HostTimeSample.swift 45f0551e77c396a8
 IconButtonSample.swift a4ebe7201bac278c
@@ -82,6 +81,7 @@ LivingLayoutSample.swift 98c03556776524ba
 LoadingItemsSample.swift d2272cd7a5da23bc
 LocaleInfoSample.swift feb36c49b5e60da9
 LocalizationSample.swift 81563e37d3bb7500
+LongPressSample.swift 1736a6ebe132c0ce
 MainQueueSample.swift 142b7947497fae78
 MapSample.swift 9a6aed334665c0de
 MaterialsSample.swift 9bec51fd1229db7f
@@ -145,7 +145,7 @@ TextStyleSample.swift 492fb505d2e2275f
 TickerSample.swift ecca16670e47a404
 TimePickerSample.swift d379ec1a41803822
 ToolbarLayersSample.swift 4b02c24858d329d1
-ToolbarSample.swift 491da26dc6c36d8f
+ToolbarSample.swift 12e1a056530504fe
 TooltipSample.swift 75b87b84ff2d3bb2
 TouchThroughSample.swift 2f49a42898ac5f63
 TransformSample.swift 42f89ce8b8c4c513

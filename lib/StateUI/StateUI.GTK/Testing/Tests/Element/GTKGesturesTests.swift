@@ -34,7 +34,7 @@ private struct TapsPage: View {
 }
 
 /// A row held - waiting a minute - or tapped, and what it heard; a row held after a moment.
-private struct HoldPage: View {
+private struct LongPressPage: View {
     @State private var said = ""
 
     var body: some View {
@@ -44,11 +44,11 @@ private struct HoldPage: View {
                 .width(200)
                 .height(40)
                 .onTapped { said += "tapped; " }
-                .onHeld(minimum: .seconds(60)) { said += "held; " }
+                .onLongPressed(minimum: .seconds(60)) { said += "held; " }
             HStack { Text("short") }
                 .width(200)
                 .height(40)
-                .onHeld(minimum: .milliseconds(1)) {}
+                .onLongPressed(minimum: .milliseconds(1)) {}
         }
         .horizontalAlignment(.start)
         .verticalAlignment(.start)
@@ -138,16 +138,16 @@ final class GTKGesturesTests: XCTestCase {
     /// either stands at that end. A press held is no tap as it lets go; the next press taps again.
     func testAHoldWaitsWithinGTKsRangeAndIsNoTap() throws {
         try onUIThread {
-            let host = GTKRenderer.running { HoldPage() }
+            let host = GTKRenderer.running { LongPressPage() }
             let rows = Array(host.views(GTKStackView.self).dropFirst())
             let listening = try XCTUnwrap(rows.first?.listening)
-            let time = try XCTUnwrap(listening.holdTime)
+            let time = try XCTUnwrap(listening.longPressTime)
             let gtks = time / 2
             XCTAssertGreaterThan(gtks, 0)
-            XCTAssertEqual(rows.dropFirst().first?.listening?.holdTime, gtks / 2, "half GTK's time, the least it waits")
+            XCTAssertEqual(rows.dropFirst().first?.listening?.longPressTime, gtks / 2, "half GTK's time, the least it waits")
 
             let press = try XCTUnwrap(listening.controllers[.taps]?.last)
-            let hold = try XCTUnwrap(listening.controllers[.holds]?.first)
+            let hold = try XCTUnwrap(listening.controllers[.longPresses]?.first)
             GTKTestHost.emit(press, "drag-begin", [20, 20])
             GTKTestHost.emit(hold, "pressed", [20, 20])
             GTKTestHost.emit(press, "drag-end", [0, 0])

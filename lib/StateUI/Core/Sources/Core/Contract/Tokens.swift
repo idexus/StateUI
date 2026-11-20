@@ -213,7 +213,7 @@ extension NodeType {
     static let barEdge = ToolbarGroupContract.barEdge.token
     static let position = ToolbarGroupContract.position.token
     static let padding = PaddingElementContract.padding.token
-    static let holdDuration = ViewContract.holdDuration.token
+    static let longPressDuration = ViewContract.longPressDuration.token
     static let choosesOpacity = ColorPickerContract.choosesOpacity.token
     static let color = ColorPickerContract.color.token
     static let panTouchCount = ViewContract.panTouchCount.token
@@ -313,7 +313,7 @@ extension NodeType {
     static let navigating = WebViewContract.navigating.token
     static let navigatingFrom = PageContract.navigatingFrom.token
     static let opened = PopupElementContract.opened.token
-    static let held = ViewContract.held.token
+    static let longPressed = ViewContract.longPressed.token
     static let colorChanged = ColorPickerContract.colorChanged.token
     static let panUpdated = ViewContract.panUpdated.token
     static let pinchUpdated = ViewContract.pinchUpdated.token

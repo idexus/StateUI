@@ -13,7 +13,7 @@ extension MountedElement {
     public var hearing: Hearing {
         var hearing: Hearing = []
         if handler(.tapped) != nil { hearing.insert(.taps) }
-        if handler(.held) != nil { hearing.insert(.holds) }
+        if handler(.longPressed) != nil { hearing.insert(.longPresses) }
         if Self.pointerEvents.contains(where: { handler($0) != nil }) { hearing.insert(.pointer) }
         let drags = handler(.panUpdated) != nil || handler(.swiped) != nil
         if drags, (number(.panTouchCount) ?? 1) == 1 { hearing.insert(.drags) }
@@ -31,8 +31,8 @@ extension MountedElement {
     }
 
     /// How long a press stands still before the element is held, in milliseconds; nil for the platform's own time.
-    public var holdDuration: Double? {
-        number(.holdDuration)
+    public var longPressDuration: Double? {
+        number(.longPressDuration)
     }
 
     /// The user's input the view heard, as the element's events: a tap each time a run reaches the count asked for - at
@@ -91,10 +91,10 @@ extension MountedElement {
         case .tap(let run):
             let count = max(1, whole(.tapCount) ?? 1)
             if run == 0 || run % count == 0 { send(.tapped, [], in: runtime) }
-        case .hold:
-            // A held press is the hold's: no tap.
+        case .longPress:
+            // A held press is the long press's: no tap.
             pressed(.cancelled, over: false, in: runtime)
-            send(.held, [], in: runtime)
+            send(.longPressed, [], in: runtime)
         case .pointer(let event, let point, let byFinger):
             // Design: docs/design/host/runtime.md#a-finger-hovers-over-nothing
             if byFinger, [.pointerEntered, .pointerMoved, .pointerExited].contains(event) { return false }

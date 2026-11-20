@@ -42,7 +42,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
 
     /// The press held, while the view listens for one, and UIKit's own time, which a view saying none waits.
     private var hold: UILongPressGestureRecognizer?
-    private static let platformHold = UILongPressGestureRecognizer().minimumPressDuration
+    private static let platformLongPress = UILongPressGestureRecognizer().minimumPressDuration
 
     /// The place in its quick run of the tap the tap recognizer follows, as the touch counts it.
     var tapRun = 1
@@ -78,7 +78,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
                     handPan = nil
                     handWheel = nil
                 }
-                if kind == .holds { hold = nil }
+                if kind == .longPresses { hold = nil }
             }
         }
         self.hearing = hearing
@@ -95,7 +95,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
             let press = UIKitPressRecognizer(target: nil, action: nil)
             press.onPress = { [weak self] phase, at, byFinger in self?.press(phase, at: at, byFinger: byFinger) }
             return [press]
-        case .holds:
+        case .longPresses:
             let press = UILongPressGestureRecognizer(target: self, action: #selector(held(_:)))
             hold = press
             return [press]
@@ -148,20 +148,20 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
 
     // MARK: - A press held
 
-    /// Waits `milliseconds` for a hold, or UIKit's own time for nil.
-    /// Design: docs/design/platforms/uikit/input.md#a-press-held
+    /// Waits `milliseconds` for a long press, or UIKit's own time for nil.
+    /// Design: docs/design/platforms/uikit/input.md#a-long-press
     func wait(_ milliseconds: Double?) {
-        hold?.minimumPressDuration = milliseconds.map { $0 / 1000 } ?? Self.platformHold
+        hold?.minimumPressDuration = milliseconds.map { $0 / 1000 } ?? Self.platformLongPress
     }
 
-    /// How long the view's hold waits, in milliseconds; nil while it listens for none.
-    var holdTime: Double? {
+    /// How long the view's long press waits, in milliseconds; nil while it listens for none.
+    var longPressTime: Double? {
         hold.map { $0.minimumPressDuration * 1000 }
     }
 
     @objc func held(_ recognizer: UILongPressGestureRecognizer) {
         guard recognizer.state == .began else { return }
-        tell(.hold)
+        tell(.longPress)
     }
 
     // MARK: - The pointer
@@ -344,7 +344,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// Every recognizer hears with the others but a stack's swipe back from within its page, which a drag comes
     /// before, and a press held, which keeps the view's tap and drag from the press.
     /// Design: docs/design/platforms/uikit/input.md#a-press-dragged
-    /// Design: docs/design/platforms/uikit/input.md#a-press-held
+    /// Design: docs/design/platforms/uikit/input.md#a-long-press
     func gestureRecognizer(
         _ recognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer
     ) -> Bool {
@@ -356,7 +356,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         }
         // The hand over a layout is the layout's alone: a scroller holding it does not move with it.
         if recognizer === handPan || recognizer === handWheel, other is UIPanGestureRecognizer { return false }
-        // A press held is the hold's: no tap of the view, and no drag of it.
+        // A press held is the long press's: no tap of the view, and no drag of it.
         if let hold, recognizer === hold || other === hold, heldApart(recognizer === hold ? other : recognizer) {
             return false
         }

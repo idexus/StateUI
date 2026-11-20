@@ -55,7 +55,7 @@ outside. AppKit's own recognizer goes on with a gesture taken away, and
 nothing more of it is told, though the view is drawn whole again before it
 ends ([a gesture taken away](../../host/runtime.md#a-gesture-taken-away)).
 The frame alone never stands in for a drawing that has no inverse.
-A recognizer of AppKit's own - a drag, the hand, a pinch, a rotation, a hold -
+A recognizer of AppKit's own - a drag, the hand, a pinch, a rotation, a long press -
 reads what AppKit tells, its state and its place in the window, and hands it
 to the part that decides (`recognized(_:at:)`), which a test drives: AppKit
 follows such a recognizer's state only through the events a shown window
@@ -162,9 +162,9 @@ picture, which AppKit makes controls though they only show, is the view's, and
 one on the parts of a view that is a control is its own. AppKit's click recognizer stays for a run of taps alone, counting it
 by the event's `clickCount`.
 
-## A press held
+## A long press
 
-A hold is AppKit's press recognizer, waiting the view's time or AppKit's own.
+A long press is AppKit's press recognizer, waiting the view's time or AppKit's own.
 Recognized, it keeps the press from the view's click and drag recognizers, as
 AppKit lets one recognizer of a view have a press: a click held long is no
 click.

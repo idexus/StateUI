@@ -7,7 +7,7 @@
 /// own: a drag once it has moved more than the platform's distance from where it went down, then each move the
 /// drag's, measured from there, until the press lets go or the platform takes it away - unless it is held first.
 /// Design: docs/design/host/runtime.md#a-press-dragged
-/// Design: docs/design/host/runtime.md#a-press-held
+/// Design: docs/design/host/runtime.md#a-long-press
 @_spi(Host) public struct DragRecognition: Sendable {
     /// How far a press moves before it is a drag, as the platform measures it.
     public enum Distance: Equatable, Sendable {
@@ -57,7 +57,7 @@
         isHeld = false
     }
 
-    /// The platform's hold came: a press not yet a drag is the hold's, and drags nothing after. Whether the hold
+    /// The platform's long press came: a press not yet a drag is the long press's, and drags nothing after. Whether the long press
     /// stands - none once the press is a drag.
     public mutating func held() -> Bool {
         guard !isDragging else { return false }

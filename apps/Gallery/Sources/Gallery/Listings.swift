@@ -1793,7 +1793,7 @@ enum Listings {
             let look: StyleKey<Button>? = platformLook ? .platform : nil
 
             return VStack {
-                Text("Try each menu: Share's on a click, Save's on its arrow, Open's when held.")
+                Text("Try each menu: Share's on a click, Save's on its arrow, Open's on a long press.")
 
                 HStack {
                     Button("Share").style(look).menu {
@@ -1814,7 +1814,7 @@ enum Listings {
                     Button("Open")
                         .style(look)
                         .onClicked { last = "Opened" }
-                        .menu(.held) {
+                        .menu(.longPress) {
                             MenuItem("Report.txt").onClicked { last = "Opened Report.txt" }
                             MenuItem("Notes.txt").onClicked { last = "Opened Notes.txt" }
                         }
@@ -5238,38 +5238,6 @@ enum Listings {
             }
         }
         """#,
-        "HoldSample": #"""
-        // Sources/Samples/Gestures/HoldSample.swift
-        @State private var taps = 0
-        @State private var holds = 0
-        @State private var longHolds = 0
-
-        var body: some View {
-            VStack {
-                // The counts are read here, so every tap and hold builds this closure.
-                DebugInfoLabel()
-
-                ZStack {
-                    Text("Tap or hold this box")
-                }
-                .style(.card)
-                .stroke(Palette.outline)
-                .lineWidth(1)
-                .onTapped { taps += 1 }
-                .onHeld { holds += 1 }
-
-                ZStack {
-                    Text("Hold this one a second")
-                }
-                .style(.card)
-                .stroke(Palette.outline)
-                .lineWidth(1)
-                .onHeld(minimum: .seconds(1)) { longHolds += 1 }
-
-                Text("Tapped \(taps), held \(holds), held a second \(longHolds)")
-            }
-        }
-        """#,
         "HomeScreenSample": #"""
         // Sources/Samples/MotionLayout/HomeScreenSample.swift
         /// One icon: its name, which is its identity, its glyph and its color.
@@ -7425,6 +7393,38 @@ enum Listings {
                     .gridRow(2)
             }
             .rows(.automatic, .fill, .automatic)
+        }
+        """#,
+        "LongPressSample": #"""
+        // Sources/Samples/Gestures/LongPressSample.swift
+        @State private var taps = 0
+        @State private var presses = 0
+        @State private var longer = 0
+
+        var body: some View {
+            VStack {
+                // The counts are read here, so every tap and long press builds this closure.
+                DebugInfoLabel()
+
+                ZStack {
+                    Text("Tap or long press this box")
+                }
+                .style(.card)
+                .stroke(Palette.outline)
+                .lineWidth(1)
+                .onTapped { taps += 1 }
+                .onLongPressed { presses += 1 }
+
+                ZStack {
+                    Text("Press this one for a second")
+                }
+                .style(.card)
+                .stroke(Palette.outline)
+                .lineWidth(1)
+                .onLongPressed(minimum: .seconds(1)) { longer += 1 }
+
+                Text("Tapped \(taps), long pressed \(presses), for a second \(longer)")
+            }
         }
         """#,
         "MailFilters": #"""
@@ -12973,7 +12973,7 @@ enum Listings {
         /// menu, one state for both.
         @State private var favorite = false
 
-        /// Whether Save's menu opens as the button is held rather than from an
+        /// Whether Save's menu opens on a long press of the button rather than from an
         /// arrow of its own.
         @State private var saveHeld = false
 
@@ -13014,7 +13014,7 @@ enum Listings {
 
                     SectionTitle("A button's menu")
 
-                    switchRow($saveHeld, "Save's menu held", id: "toolbar.saveHeld")
+                    switchRow($saveHeld, "Save's menu on a long press", id: "toolbar.saveHeld")
                     switchRow($sortArrow, "Sort's arrow", id: "toolbar.sortArrow")
 
                     SectionTitle("At the page's foot")
@@ -13028,11 +13028,11 @@ enum Listings {
                 .toolbar {
                     ToolbarGroup {
                         // Its click its own, its menu apart: from an arrow of its
-                        // own, or held.
+                        // own, or on a long press.
                         ToolbarButton("Save")
                             .id("save")
                             .onClicked { saved += 1 }
-                            .menu(saveHeld ? .held : .split) {
+                            .menu(saveHeld ? .longPress : .split) {
                                 MenuItem("Save a copy")
                                     .id("saveCopy")
                                     .onClicked {

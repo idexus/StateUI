@@ -142,7 +142,7 @@ final class ControlTests: XCTestCase {
             ControlCase("MenuButton", source: "Button.swift",
                 Button("Save")
                     .onClicked {}
-                    .menu(.held) { MenuItem("Save as") }
+                    .menu(.longPress) { MenuItem("Save as") }
                     .showsMenuArrow(false)),
 
             ControlCase("IconButton", source: "Button.swift",
@@ -621,7 +621,7 @@ final class ControlTests: XCTestCase {
                 // only way to check that each recognizer is asked for on its
                 // own terms.
                 .onTapped(count: 2) {}
-                .onHeld(minimum: .milliseconds(800)) {}
+                .onLongPressed(minimum: .milliseconds(800)) {}
                 .onSwiped(directions: [.left, .up], threshold: 60) { _ in }
                 .onPanUpdated(touchCount: 1) { _ in }
                 .onPinchUpdated { _ in }
@@ -651,7 +651,7 @@ final class ControlTests: XCTestCase {
     /// guess at.
     /// A menu written again stands in for the last, all of it: a button's kind of menu, and a view's context menu.
     func testAMenuWrittenAgainStandsInForTheLast() {
-        let button = Button("Share").menu(.held) { MenuItem("Mail") }.menu { MenuItem("Message") }.node
+        let button = Button("Share").menu(.longPress) { MenuItem("Mail") }.menu { MenuItem("Message") }.node
         XCTAssertNil(button.props[ButtonMenuElementContract.menuKind.token], "the second menu says no kind, so none stands")
 
         let text = Text("Row").contextMenu { MenuItem("Copy") }.contextMenu { MenuItem("Paste") }.node

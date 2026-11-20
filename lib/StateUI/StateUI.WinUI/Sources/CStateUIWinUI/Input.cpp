@@ -311,13 +311,13 @@ namespace {
                 args.Handled(true);
                 tap(view, args.GetPosition(sender.as<xaml::UIElement>()));
             }));
-        // A finger or a pen held: WinUI tells a mouse button held as no hold.
+        // A finger or a pen held: WinUI tells a mouse button held as no long press.
         entry.holding = element.Holding(guarded("handling Holding",
             [view](IInspectable const &sender, input::HoldingRoutedEventArgs const &args) {
-            if (!listener(view, StateUIHearingHolds)) return;
+            if (!listener(view, StateUIHearingLongPresses)) return;
             if (args.HoldingState() != winrt::Microsoft::UI::Input::HoldingState::Started) return;
             args.Handled(true);
-            tell(view, StateUIHeardHold, 0, args.GetPosition(sender.as<xaml::UIElement>()));
+            tell(view, StateUIHeardLongPress, 0, args.GetPosition(sender.as<xaml::UIElement>()));
         }));
         entry.entered = element.PointerEntered(guarded("handling PointerEntered",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {

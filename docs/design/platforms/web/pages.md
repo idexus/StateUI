@@ -265,16 +265,16 @@ window's height in Safari.
 A context menu a held finger opens is the page's to close: that finger went
 down before the menu stood, so its lift comes beside the menu, and the
 browser's light dismissal - a press and a release beside it - closed it the
-moment it lifted (Safari on a phone). Opened by a hold, the menu stands as
+moment it lifted (Safari on a phone). Opened by a long press, the menu stands as
 `popover="manual"` while it is open and closes on a press beside it or
 Escape, the relay's own; the view it belongs to chooses none of its words by
-the hold and shows no callout of the browser's (`data-holds-menu`).
+the long press and shows no callout of the browser's (`data-holds-menu`).
 
 A bar's action that is a menu opens its entries under it. The actions
 standing behind the bar - its overflow - and the menus the page's path
 declares stand in one menu at the bar's end, the overflow first. A view
 whose element declares a context menu opens it as the user asks: a right
-click, or a finger held still the host layer's hold (`HandReading.hold`) -
+click, or a finger held still the host layer's hold (`HandReading.longPress`) -
 still meaning no farther from where it pressed than a finger goes before
 its press is a drag (`WebPress.finger`), so steps each too short to count
 still add up; its entries are read as they stand then.

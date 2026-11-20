@@ -305,7 +305,7 @@ final class HandReadingTests: XCTestCase {
         var hand = HandReading()
 
         _ = hand.hand(.began, moved: .zero, speed: nil, at: 0, way: .horizontal, point: Point(x: 40, y: 40), drag: HostDrag(axes: .both, begins: .longPress))
-        XCTAssertTrue(hand.wantsFrames, "the frames find the hold")
+        XCTAssertTrue(hand.wantsFrames, "the frames find the long press")
         XCTAssertEqual(hand.paced(at: 480), [])
         XCTAssertEqual(hand.paced(at: 500), [.init(.began, holdsView: true, at: Point(x: 40, y: 40))])
         XCTAssertEqual(hand.hand(.changed, moved: Point(x: 0, y: 30), speed: nil, at: 520, way: .horizontal).reports,
@@ -314,8 +314,8 @@ final class HandReadingTests: XCTestCase {
         _ = hand.hand(.ended, moved: .zero, speed: nil, at: 540, way: .horizontal)
         _ = hand.hand(.began, moved: .zero, speed: nil, at: 600, way: .horizontal, point: Point(x: 40, y: 40), drag: HostDrag(axes: .both, begins: .longPress))
         XCTAssertEqual(hand.hand(.changed, moved: Point(x: 20, y: 0), speed: nil, at: 700, way: .horizontal).reports,
-                       [.init(.began), .init(.changed, moved: Point(x: 20, y: 0), speed: Point(x: 1_250, y: 0))], "moved before the hold: the run's")
-        XCTAssertEqual(hand.paced(at: 1_200), [], "and no hold after")
+                       [.init(.began), .init(.changed, moved: Point(x: 20, y: 0), speed: Point(x: 1_250, y: 0))], "moved before the long press: the run's")
+        XCTAssertEqual(hand.paced(at: 1_200), [], "and no long press after")
     }
 
     /// A HELD VIEW STANDING STILL IS TOLD AGAIN EACH HOLD, how long it has stood; a move starts the count again.
