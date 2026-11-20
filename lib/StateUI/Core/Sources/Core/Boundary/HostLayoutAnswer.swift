@@ -37,23 +37,18 @@
     /// way is measured to. Nil for a child the change moves nowhere.
     public var discrete: HostPlacement?
 
-    /// How fast the child sets out at the change, across and down, in points a second - a view the hand let go;
-    /// nil for a child that keeps the speed it has.
-    public var velocity: Point?
-
-    /// Where the hand holds the child, which is shown exactly there; nil for a child no hand holds.
+    /// Where a child the hand dismissed flies, which is shown exactly there; nil for any other.
     public var held: HostPlacement?
 
     /// The child `key` at `target`.
     public init(
         key: Int, target: HostPlacement, body: LayoutBody? = nil, discrete: HostPlacement? = nil,
-        velocity: Point? = nil, held: HostPlacement? = nil
+        held: HostPlacement? = nil
     ) {
         self.key = key
         self.target = target
         self.body = body
         self.discrete = discrete
-        self.velocity = velocity
         self.held = held
     }
 }

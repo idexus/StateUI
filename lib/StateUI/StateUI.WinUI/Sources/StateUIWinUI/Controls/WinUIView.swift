@@ -85,7 +85,7 @@ class WinUIView {
         replacedNative = true
 
         stateui_winui_fill_place(handle)
-        if !hearing.isEmpty { stateui_winui_hear(handle, number, hearing.rawValue) }
+        if !hearing.isEmpty { stateui_winui_hear(handle, number, Self.told(hearing).rawValue) }
         if hearsFocus { stateui_winui_hear_focus(handle, number, true) }
         stateui_winui_set_shown(handle, isShown)
         stateui_winui_set_opacity(handle, writtenOpacity)
@@ -473,7 +473,7 @@ class WinUIView {
         onHeard = hearing.isEmpty ? nil : heard
         if hearing != self.hearing {
             self.hearing = hearing
-            stateui_winui_hear(handle, number, hearing.rawValue)
+            stateui_winui_hear(handle, number, Self.told(hearing).rawValue)
         }
         let way = hearing.contains(.hand) ? way : nil
         let pinches = hearing.contains(.pinches)
@@ -487,6 +487,13 @@ class WinUIView {
         case nil: .none
         }
         stateui_winui_hear_hand(handle, number, axis, pinches ? 1 : 0)
+    }
+
+    /// What the relay is told to listen for: the view's own press is told as a tap's press is - the relay hears
+    /// one by its taps - and the host layer makes no tap of it.
+    /// Design: docs/design/platforms/winui/input.md#taps
+    nonisolated static func told(_ hearing: Hearing) -> Hearing {
+        hearing.contains(.presses) ? hearing.subtracting(.presses).union(.taps) : hearing
     }
 
     /// What the relay says the view heard.

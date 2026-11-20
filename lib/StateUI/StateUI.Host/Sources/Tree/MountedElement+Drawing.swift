@@ -20,7 +20,7 @@ extension MountedElement {
     /// it turns about its middle where the tree says no pivot.
     public var drawingTransform: HostDrawingTransform {
         let scale = number(.scale) ?? 1
-        return HostDrawingTransform(
+        let own = HostDrawingTransform(
             translationX: number(.translationX) ?? 0,
             translationY: number(.translationY) ?? 0,
             rotation: number(.rotation) ?? 0,
@@ -30,6 +30,16 @@ extension MountedElement {
             scaleY: scale * (number(.scaleY) ?? 1),
             pivotX: number(.pivotX) ?? 0.5,
             pivotY: number(.pivotY) ?? 0.5)
+        // What the hand does to the view itself is laid over its own transform here where no layout program
+        // places it; one that does lays it over the view's place.
+        // Design: docs/design/host/interaction.md#a-views-own-press-and-drag
+        guard !local.isIdle, programPlacing == nil else { return own }
+
+        let held = local.held ?? .zero
+        return own.under(HostDrawingTransform(
+            translationX: local.pressed.translation.x + held.x, translationY: local.pressed.translation.y + held.y,
+            rotation: local.pressed.rotation, rotationX: 0, rotationY: 0, scaleX: local.pressed.scaleX,
+            scaleY: local.pressed.scaleY, pivotX: 0.5, pivotY: 0.5))
     }
 
     /// The property a layout's own placing run is presented under, where the element runs a layout program: the

@@ -27,6 +27,13 @@ extension WebElement {
             }
             view.hear(.activate) { [weak self] in self?.heard(.taps, .tap(run: 0)) }
         }
+        // The view's own press, told as a tap's is, with no tap.
+        if hearing.contains(.presses), !listening.contains(.presses) {
+            listening.insert(.presses)
+            view.hearPress { [weak self] phase, at, size, byFinger in
+                self?.heard(.presses, .press(phase, at: at, size: size, byFinger: byFinger))
+            }
+        }
         if hearing.contains(.holds) {
             view.holdTime = element.holdDuration ?? HandReading.hold
             if !listening.contains(.holds) {
@@ -155,6 +162,10 @@ extension WebElement {
                 if handRecognition.isTaken { WebRelay.capturePointer(view.node) }
                 return
             }
+            // A view the hand takes by itself keeps the pointer from its press: it stands under it no more once the
+            // pointer moves faster than the view follows.
+            // Design: docs/design/platforms/web/input.md#a-view-the-hand-takes
+            if element.handDrag != nil { WebRelay.capturePress(view.node) }
             hand(.began, moved: Point(x: 0, y: 0), point: at)
         }
         view.listen("pointermove") { [weak self, weak view] in
@@ -181,7 +192,7 @@ extension WebElement {
         // threshold comes before the hand's drag distance, by no rule.
         view.listen("dragstart") { [weak self] in
             guard let self else { return }
-            if handRecognition.isOpen || element.holdsItem { WebRelay.takeEvent() }
+            if handRecognition.isOpen || element.holdsView { WebRelay.takeEvent() }
         }
         for (event, letGo) in [("pointerup", true), ("pointercancel", false)] {
             view.listen(event) { [weak self] in

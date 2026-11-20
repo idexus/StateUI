@@ -240,6 +240,86 @@ The state need not be drawn: `.interaction(.value($turn, input:
 .translation(.horizontal)).release(.stay))` moves a state an engine follows,
 left where the hand leaves it.
 
+### The hand on a view itself
+
+An interaction also says what the hand does to the view itself, which moves
+no state: the view is drawn off the place its layout gives it while the hand
+is on it, and where its layout puts it again once the hand is gone.
+
+A press is watched, not taken - a tap, a scroll and a drag go on as they
+would. `.press(values:_:)` hands its effect a `PressInput` on every frame
+the press moved - where it stands in the view (`location`), where about the
+view's middle from -1 to 1 (`normalizedLocation`), how far it has gone
+(`displacement`) and how fast (`velocity`) - and draws the view by the
+`PresentationOffset` the effect answers: moved, turned and scaled about its
+middle. Of the answer only the numbers `values` names are kept, a
+`PresentationValues` - `.translation`, `.rotation`, `.scale`, or `.all`. The
+effect writes no state; everything it is handed is measured in the view as
+its layout places it, so moving the view moves nothing it reads.
+`.elasticPress()` is the press most views want: grown a little wherever the
+finger goes down, pulled toward it as a band stretched - quickly at first,
+less and less toward the view's edge - and stretched the way it is pulled,
+wider as the finger goes across, taller as it goes down. It comes after the
+finger on a spring of its own, so nothing jumps.
+
+```swift
+struct Cards: View {
+    var body: some View {
+        VStack {
+            // Tilts toward the side it is pressed on, and shrinks a little.
+            Rectangle()
+                .fill(.cornflowerBlue)
+                .height(80)
+                .interaction(.press(values: [.rotation, .scale]) { press in
+                    PresentationOffset(rotation: press.normalizedLocation.x * 4, scaleX: 0.97, scaleY: 0.97)
+                })
+
+            // Grown under the finger, pulled toward it and stretched the way it is pulled.
+            Rectangle()
+                .fill(.tomato)
+                .height(80)
+                .interaction(.elasticPress(maximumOffset: 8, scale: 1.02, maximumScale: 1.06))
+        }
+        .spacing(12)
+    }
+}
+```
+
+A press with an effect of its own is drawn at once, and comes back at once
+when it lifts. A view that is a body of its layout -
+`.layoutBody(.followsLayout())` - is carried by such a press as by any move
+of its place: it lags behind the finger and springs back.
+
+`.drag(_:begins:)` gives the view to the hand: it stays under the hand along
+its `DragAxes` - `.horizontal`, `.vertical` or `.both` - over what stands
+beside it, and goes back to its place let go: as a body where it is one
+(`.layoutBody(_:)`, or its layout's `.layoutBodies(_:)`), at once where it
+is none. `begins:` is a `DragStart`:
+`.immediately` as soon as the press moves; `.longPress` once it has stood
+still a long press's time; `.directional` once its first move goes the
+drag's one axis - a first move across is left to whatever stands behind the
+view, a scroller or a layout the hand moves.
+
+```swift
+struct Shelf: View {
+    var body: some View {
+        HStack {
+            // Lifted up or down by the hand; a move sideways scrolls the shelf.
+            ForEach(["Mural", "Nebula", "Ridge"]) { name in
+                Text(name)
+                    .padding(16)
+                    .interaction(.drag(.vertical, begins: .directional))
+            }
+        }
+        .spacing(12)
+    }
+}
+```
+
+A press, a drag and values stand together in one
+`Interaction.simultaneous(_:)`. In [a motion layout](layout.md#a-motion-layout)
+a view taken by its drag is what `.onItemDragged` tells of.
+
 ### Pointer
 
 Pointer handlers cover enter, exit, move, press, and release. Coordinate

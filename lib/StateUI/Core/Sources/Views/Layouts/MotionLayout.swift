@@ -180,7 +180,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
 
     /// How the hand takes one view by itself, what it is told as it moves it, and which way letting it go far enough
     /// dismisses it.
-    private var itemStart: ItemDragStart?
     private var dragged: [ValueHandler<ItemDrag<ID>>] = []
     private var dismissals: [LayoutDismissal<ID>] = []
 
@@ -542,24 +541,14 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         return copy
     }
 
-    /// The hand takes one view by itself, rather than moving the run, when it begins as `start` says: the view drawn
-    /// on top under the press follows the hand over the others, and let go goes back to its place under the layout's
-    /// motion. A hand that begins any other way moves the run.
+    /// Runs as the hand takes a view by itself - a view saying `interaction(.drag(_:begins:))` - each time it moves
+    /// it, and each time it has stood still a long press's time more: the item's identity, where the hand is in the
+    /// room, and how long it has stood still - an order changed as the hand crosses a slot moves the others, the
+    /// held view staying under the hand.
     ///
-    ///     .itemDrag(begins: .longPress)
-    ///
-    /// - Parameter start: a first move across the layout's axis, or a press standing still a long press's time.
-    /// - Returns: the layout, its views taken by the hand.
-    public func itemDrag(begins start: ItemDragStart) -> Self {
-        var copy = self
-        copy.itemStart = start
-        return copy
-    }
-
-    /// Runs as the hand takes a view by itself, each time it moves it, and each time it has stood still a long
-    /// press's time more: the item's identity, where the hand is in the room, and how long it has stood still - an
-    /// order changed as the hand crosses a slot moves the others, the held view staying under the hand.
-    ///
+    ///     MotionLayout(icons, id: \.name, parameters: $board) { icon in
+    ///         IconView(icon).interaction(.drag(.both, begins: .longPress))
+    ///     } placements: { context, board in … }
     ///     .onItemDragged { drag in move(drag.id, to: slot(at: drag.at, in: drag.room)) }
     ///
     /// - Parameter handler: what to run, given the drag.
@@ -652,7 +641,10 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         let worked = self.worked
         for complaint in worked.complaints { complain(complaint) }
         let definition = LayoutProgramDefinition(host: run.program())
-        let moving = worked.moving.isEmpty ? nil : Interaction(standing: worked.moving)
+        // The values that stand, with the press and the drag written on the layout itself, as on any view.
+        var moving = declared.map { _ in Interaction(standing: worked.moving) }
+        moving?.press = declared?.press
+        moving?.drag = declared?.drag
 
         return PlacedStack {
             ForEach(run.slots, identify: { $0.identity }) { slot in run.wrapped(slot) }
@@ -667,10 +659,12 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             // The hand is heard on the element itself, over every view, which still answers a tap: what it moves is
             // the host's to hold, by the program every view has for it.
             element.setProgram(ViewContract.interaction, definition: moving)
-            element.describe(MotionLayoutContract.itemDrag, run.itemStart)
-            if run.itemStart != nil {
-                element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still in
-                    run.item(gesture, at: at.told, velocity: velocity.told, still: still.isFinite ? still : 0)
+            // A view the hand takes by itself is its holder's drag, which the host tells the layout of: heard
+            // where something asks to be told of it, or a view let go may be dismissed.
+            if !run.dragged.isEmpty || !run.dismissals.isEmpty {
+                element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still, child in
+                    run.item(
+                        gesture, child: child, at: at.told, velocity: velocity.told, still: still.isFinite ? still : 0)
                 }
             }
         }
@@ -799,7 +793,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             path: path,
             activated: activated,
             named: named,
-            itemStart: itemStart,
             dragged: dragged,
             dismissals: dismissals,
             parameters: parameters,
@@ -870,7 +863,7 @@ extension MotionLayout: WalkedView {
             ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns), ("_dragRuns", _dragRuns),
             ("source", source), ("parameters", parameters), ("mappings", mappings), ("declared", declared as Any), ("curve", curve as Any),
             ("followed", followed), ("consumed", consumed), ("mask", mask as Any), ("activated", activated),
-            ("itemStart", itemStart as Any), ("dragged", dragged), ("dismissals", dismissals),
+            ("dragged", dragged), ("dismissals", dismissals),
             ("settled", settled), ("sized", sized as Any),
             ("mirrors", mirrors),
             ("named", named as Any), ("written", written),

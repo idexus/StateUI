@@ -9,9 +9,74 @@
     /// The numbers moved, in written order.
     public var values: [HostInteractionValue]
 
-    /// A program moving `values`.
-    public init(values: [HostInteractionValue]) {
+    /// The view's own press; nil for none.
+    public var press: HostPress?
+
+    /// The view's own drag; nil for none.
+    public var drag: HostDrag?
+
+    /// Whether the hand does nothing on the element.
+    public var isEmpty: Bool { values.isEmpty && press == nil && drag == nil }
+
+    /// A program moving `values`, the view answering `press` and taken by `drag`.
+    public init(press: HostPress? = nil, drag: HostDrag? = nil, values: [HostInteractionValue]) {
         self.values = values
+        self.press = press
+        self.drag = drag
+    }
+}
+
+/// A view's own press as the host meets it: the numbers of its presentation it moves, and what answers its
+/// offset - the same press while that is the same object.
+/// Design: docs/design/views/interaction.md#a-views-own-press-and-drag
+@_spi(Host) public struct HostPress: Equatable, Sendable {
+    /// The numbers of the view's presentation the press moves.
+    public var values: PresentationValues
+
+    /// What answers the press's offset.
+    public var effect: HostPressEffect
+
+    /// The spring the view comes after the answer on; nil for a view that is there at once.
+    public var spring: HostLayoutBody?
+
+    /// A press moving `values` by what `effect` answers, the view coming after it on `spring`.
+    public init(values: PresentationValues, effect: HostPressEffect, spring: HostLayoutBody? = nil) {
+        self.values = values
+        self.effect = effect
+        self.spring = spring
+    }
+
+    /// Whether two presses move the same numbers by the same object's answers on the same spring.
+    public static func == (one: HostPress, other: HostPress) -> Bool {
+        one.values == other.values && one.effect === other.effect && one.spring == other.spring
+    }
+}
+
+/// What answers a press's offset: the application's effect, the newest its view was described with. One object
+/// stands while the view does, so a view described again alike is told nothing and still answers by its newest
+/// effect.
+@_spi(Host) @MainActor public final class HostPressEffect: Sendable {
+    /// The offset for a press as it stands.
+    public var offset: @MainActor (PressInput) -> PresentationOffset
+
+    /// An effect answering by `offset`.
+    public init(_ offset: @escaping @MainActor (PressInput) -> PresentationOffset) {
+        self.offset = offset
+    }
+}
+
+/// A view's own drag as the host meets it: which ways the hand takes it, and when.
+@_spi(Host) public struct HostDrag: Equatable, Sendable {
+    /// Which ways the hand takes the view.
+    public var axes: DragAxes
+
+    /// When it takes it.
+    public var begins: DragStart
+
+    /// A drag along `axes` beginning as `begins` says.
+    public init(axes: DragAxes, begins: DragStart) {
+        self.axes = axes
+        self.begins = begins
     }
 }
 

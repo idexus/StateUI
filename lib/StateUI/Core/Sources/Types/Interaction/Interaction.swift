@@ -44,6 +44,20 @@ public struct Interaction {
     /// What was written on it that does not stand, as the author is told it.
     var refused: [String] = []
 
+    /// The view's own press and its own drag, where the interaction says them.
+    var press: Press?
+    var drag: Drag?
+
+    /// An interaction of `leaves` - several at once where `isSet` - with what was refused of it and its view's own
+    /// press and drag.
+    init(leaves: [Leaf], isSet: Bool, refused: [String] = [], press: Press? = nil, drag: Drag? = nil) {
+        self.leaves = leaves
+        self.isSet = isSet
+        self.refused = refused
+        self.press = press
+        self.drag = drag
+    }
+
     /// The hand moving a state that is one number: the state's value follows the hand while it holds it, and goes on
     /// as `release(_:)` says once it lets go.
     ///
@@ -89,8 +103,10 @@ public struct Interaction {
     /// - Parameter interactions: the interactions, each as it would stand alone.
     /// - Returns: the interaction of them all.
     public static func simultaneous(_ interactions: [Interaction]) -> Interaction {
-        Interaction(
+        var all = Interaction(
             leaves: interactions.flatMap(\.leaves), isSet: true, refused: interactions.flatMap(\.refused))
+        all.takeLocal(of: interactions)
+        return all
     }
 
     /// How far the hand may take the value: it moves freely inside the range, less and less past an end, and comes
@@ -157,8 +173,10 @@ public struct Interaction {
         var copy = self
         guard !isSet, !copy.leaves.isEmpty else {
             copy.refused.append(
-                "An interaction of several values at once was given `\(name)`, which each value says for itself. "
-                    + "It is left out.")
+                isSet
+                    ? "An interaction of several values at once was given `\(name)`, which each value says for "
+                        + "itself. It is left out."
+                    : "An interaction that moves no value was given `\(name)`, a value's. It is left out.")
             return copy
         }
         change(&copy.leaves[0])
@@ -246,8 +264,16 @@ extension Interaction {
     /// The interaction as the host is handed it, each state by the number `numbered` gives its image: a value whose
     /// state the host carries as no journey, or that is no number of its state, moves nothing.
     /// Design: docs/design/views/interaction.md#what-the-host-is-handed
-    func program(numbered: (HostStorage) -> Int32) -> HostInteractionProgram {
-        HostInteractionProgram(values: leaves.compactMap { leaf in
+    func program(pressedBy effect: HostPressEffect? = nil, numbered: (HostStorage) -> Int32) -> HostInteractionProgram {
+        let press = press.flatMap { press in
+            effect.map { effect in
+                HostPress(values: press.values, effect: effect, spring: press.spring.map {
+                    HostLayoutBody(milliseconds: $0.response, damping: $0.damping, follows: true)
+                })
+            }
+        }
+        let drag = drag.map { HostDrag(axes: $0.axes, begins: $0.begins) }
+        return HostInteractionProgram(press: press, drag: drag, values: leaves.compactMap { leaf in
             guard let lane = leaf.lane, let image = leaf.image() else { return nil }
 
             let input: HostInteractionInput

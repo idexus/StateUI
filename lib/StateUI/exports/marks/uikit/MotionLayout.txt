@@ -1,7 +1,6 @@
-# revision 23.1
+# revision 24.1
 MotionLayout: ✅
-MotionLayout.itemDrag: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
-MotionLayout.itemDragUpdated: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.itemDragUpdated: ✅
 MotionLayout.layout: ✅
 MotionLayout.mirrorsRightToLeft: ✅
 MotionLayout.parameters: ✅

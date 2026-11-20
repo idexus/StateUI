@@ -157,9 +157,9 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
                 .range(0...Double(max(count - 1, 0)))
                 .snaps(.every(1))
                 .release(.projected(.eased(.milliseconds(400)))))
-        // A CARD PULLED UP is the hand's alone: let go far enough, it flies
-        // out of the deck and leaves it; short of that, it goes back.
-        .itemDrag(begins: .perpendicular)
+        // A CARD PULLED UP is the hand's alone - each face says its own drag:
+        // let go far enough, it flies out of the deck and leaves it; short
+        // of that, it goes back.
         .onItemDismissed(directions: .up, threshold: 120) { name in remove(name) }
         // THE TURN'S OWN MOTION, `@State(motion:)`, DRIVES MOVING BETWEEN CARDS;
         // `.layoutBodies` THE CARDS reaching their new places after a card
@@ -243,6 +243,9 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
             .spacing(10)
             .verticalAlignment(.center)
         }
+        // THE HAND TAKES THE CARD ITSELF where its first move goes up or down;
+        // a first move sideways turns the deck.
+        .interaction(.drag(.vertical, begins: .directional))
     }
     // listing: end
 

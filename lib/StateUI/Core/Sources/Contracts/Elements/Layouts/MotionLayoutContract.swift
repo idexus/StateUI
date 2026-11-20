@@ -18,13 +18,10 @@ public enum MotionLayoutContract: ElementContract {
     /// host walks them under the layout's motion and says where they stand every frame.
     public static let parameters = ElementProperty<Self, [Double]>("parameters", layer: .stateUI)
 
-    /// How the hand takes one view by itself rather than moving the run, where it does: the host layer gives the
-    /// hand to the view under the press by it.
-    public static let itemDrag = ElementProperty<Self, ItemDragStart>("itemDrag", layer: .structure, travels: false)
-
     /// The hand holding one view by itself: its phase, where it is in the element, how fast it was going as it lets
-    /// go, per second, and how long it has stood still, in milliseconds.
-    public static let itemDragUpdated = ElementEvent<Self, (GesturePhase, Point, Point, Double)>(
+    /// go, per second, how long it has stood still, in milliseconds, and which view - its place among the
+    /// layout's views.
+    public static let itemDragUpdated = ElementEvent<Self, (GesturePhase, Point, Point, Double, Int)>(
         "itemDragUpdated", layer: .native)
 
     /// The layout's arithmetic: the host says the room the element stands in, and reads where each child stands
@@ -38,6 +35,6 @@ public enum MotionLayoutContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        itemDrag, itemDragUpdated, layout, mirrorsRightToLeft, parameters,
+        itemDragUpdated, layout, mirrorsRightToLeft, parameters,
     ]
 }

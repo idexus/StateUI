@@ -59,6 +59,24 @@ final class GTKListening {
     private var handPending = false
     private var handTaking = false
 
+    /// The widget the hand's moves are measured in, which the hand itself does not move - the layout placing the
+    /// view, else the widget above it - and where the press went down, in the view and there. A drag's offset is
+    /// the widget's own, and a widget the hand takes comes after it.
+    /// Design: docs/design/platforms/gtk/input.md#the-hand-over-a-layout
+    var handSpace: (() -> GTKWidget?)?
+    private var handFrom = Point(x: 0, y: 0)
+    private var handFromInSpace = Point(x: 0, y: 0)
+
+    /// `point` of the view as it stands now, in the widget the hand is measured in.
+    private func inHandSpace(_ point: Point) -> Point {
+        guard let space = handSpace?() ?? gtk_widget_get_parent(widget) else { return point }
+
+        var from = graphene_point_t(x: Float(point.x), y: Float(point.y))
+        var to = graphene_point_t()
+        guard gtk_widget_compute_point(widget, space, &from, &to) != 0 else { return point }
+        return Point(x: Double(to.x), y: Double(to.y))
+    }
+
     init(widget: GTKWidget, number: Int64) {
         self.widget = widget
         self.number = number
@@ -100,6 +118,7 @@ final class GTKListening {
     private func makeControllers(for kind: Hearing) -> [OpaquePointer] {
         switch kind {
         case .taps: [makeTaps(), makePress()]
+        case .presses: [makePress()]
         case .holds: [makeHold()]
         case .pointer: makePointer()
         case .drags: [makeDrag()]
@@ -436,12 +455,18 @@ final class GTKListening {
         handPending = true
         handTaking = false
         handLast = Point(x: 0, y: 0)
+        handFrom = point
+        handFromInSpace = inHandSpace(point)
         hand(.began, moved: .zero, at: Self.time(of: gesture), point: point)
     }
 
     /// The drag moved: past the threshold its first move says whose it is - claimed for the layout, so no view
     /// around it drags or scrolls with it, or denied, for a scroller holding it to take.
     private func handUpdated(_ gesture: OpaquePointer?, offset: Point) {
+        // How far the press has come where the hand is measured: the drag's own offset is the widget's, which
+        // comes after the hand.
+        let here = inHandSpace(Point(x: handFrom.x + offset.x, y: handFrom.y + offset.y))
+        let offset = Point(x: here.x - handFromInSpace.x, y: here.y - handFromInSpace.y)
         if handPending {
             guard dragDistance.isPassed(by: offset) else { return }
 

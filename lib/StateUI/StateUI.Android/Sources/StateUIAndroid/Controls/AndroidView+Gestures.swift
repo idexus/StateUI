@@ -33,7 +33,8 @@ extension AndroidView {
         if countsTaps, hearing.contains(.taps) { taps = Self.doubleTap(density: density) }
         Java.call(
             listener.reference, JavaAPI.setGestures, .object(reference), .float(Float(density)),
-            .bool(countsTaps && hearing.contains(.taps)), .bool(hearing.contains(.taps)),
+            // A press is told for a tap's sake, or for the view's own press, which no click comes of.
+            .bool(countsTaps && hearing.contains(.taps)), .bool(!hearing.isDisjoint(with: [.taps, .presses])),
             .bool(hearing.contains(.taps) && !ownsClick), .bool(hearing.contains(.drags)),
             .bool(hearing.contains(.pinches)), .bool(hearing.contains(.pointer)), .bool(hearing.contains(.hand)),
             .bool(hearing.contains(.rotations)))

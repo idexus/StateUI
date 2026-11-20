@@ -21,7 +21,7 @@
         public let speed: Point
 
         /// Whether the hand holds one view by itself rather than moving the run.
-        public let item: Bool
+        public let holdsView: Bool
 
         /// Where a hand holding a view is, in points of the layout.
         public let at: Point
@@ -31,20 +31,20 @@
 
         /// A report of `phase`.
         public init(
-            _ phase: GesturePhase, moved: Point = .zero, speed: Point = .zero, item: Bool = false, at: Point = .zero,
+            _ phase: GesturePhase, moved: Point = .zero, speed: Point = .zero, holdsView: Bool = false, at: Point = .zero,
             still: Double = 0
         ) {
             self.phase = phase
             self.moved = moved
             self.speed = speed
-            self.item = item
+            self.holdsView = holdsView
             self.at = at
             self.still = still
         }
 
         /// The same report, of the hand holding a view at `at`.
         func holding(at: Point) -> Report {
-            Report(phase, moved: moved, speed: speed, item: true, at: at, still: still)
+            Report(phase, moved: moved, speed: speed, holdsView: true, at: at, still: still)
         }
     }
 
@@ -87,21 +87,21 @@
     /// platform tells after it - a trackpad's momentum - goes where the gesture went.
     public private(set) var claimed: Bool?
 
-    /// Where a press went down and when, while nobody has it yet, and how a view of the layout is taken by itself.
+    /// Where a press went down and when, while nobody has it yet, and how the view is taken by itself.
     private var press: (point: Point, time: Double)?
-    private var itemStart: ItemDragStart?
+    private var viewDrag: HostDrag?
 
     /// Whether the hand holds one view by itself, where it is, when it last moved on the frames' clock, and how many
     /// long presses it has stood still since, each told.
-    public private(set) var holdsItem = false
-    private var itemAt = Point.zero
-    private var itemMovedAt = 0.0
+    public private(set) var holdsView = false
+    private var viewAt = Point.zero
+    private var viewMovedAt = 0.0
     private var stood = 0
 
     /// Whether the hand asks the frames for something: a wheel to let go, a press to hold a view, a held view
     /// standing still.
     public var wantsFrames: Bool {
-        isWheeling || holdsItem || (press != nil && itemStart == .longPress && claimed == nil)
+        isWheeling || holdsView || (press != nil && viewDrag?.begins == .longPress && claimed == nil)
     }
 
     /// How fast the hand goes, by its moves of the last `reading` milliseconds.
@@ -136,35 +136,45 @@
         return along > 0 && along >= across
     }
 
-    /// Whether a hand whose first move is `moved` is taken over a layout moved `way` whose views are taken as `items`
-    /// says - the run's its way, a view's across it with `.perpendicular` - and any way where it already holds a view:
-    /// what a toolkit asks before its drag begins.
-    public static func takes(_ moved: Point, way: HandWay?, items: ItemDragStart?, holding: Bool) -> Bool {
-        holding || way.map { claims(moved, way: $0) } == true || (items == .perpendicular && moved != .zero)
+    /// Whether a hand whose first move is `moved` is taken over a view whose values it moves `way` and which is
+    /// taken by itself as `drag` says - the values' its way, the view's own as its drag begins - and any way where
+    /// it already holds the view: what a toolkit asks before its drag begins.
+    public static func takes(_ moved: Point, way: HandWay?, drag: HostDrag?, holding: Bool) -> Bool {
+        holding || way.map { claims(moved, way: $0) } == true || drag.map { begins($0, with: moved) } == true
+    }
+
+    /// Whether a first move of `moved` takes a view by itself as `drag` says: at once any move, directional one
+    /// its axis leads, a long press none - its frames do.
+    public static func begins(_ drag: HostDrag, with moved: Point) -> Bool {
+        switch drag.begins {
+        case .immediately: moved != .zero
+        case .directional: drag.axes != .both && claims(moved, way: drag.axes == .horizontal ? .horizontal : .vertical)
+        case .longPress: false
+        }
     }
 
     /// The hand at `phase` - a press dragged or a trackpad's fingers - moving what is under it by `moved` at `time`,
-    /// lifting at `speed` where the platform tells one, a press going down at `point`: a layout moved `way` takes a
-    /// gesture whose first move goes its way; one whose views are taken as `items` says gives the view under the press
-    /// a first move across it (`.perpendicular`) or a press standing still `hold` (`.longPress`, by the frames); the
-    /// rest is left to whatever holds the layout. A hold and a held view's standing are measured on the frames' clock,
+    /// lifting at `speed` where the platform tells one, a press going down at `point`: a view whose values go `way`
+    /// takes a gesture whose first move goes that way; one taken by itself as `drag` says takes it as its drag
+    /// begins - by its first move, or a press standing still `hold` (`.longPress`, by the frames); the rest is left
+    /// to whatever stands behind the view. A hold and a held view's standing are measured on the frames' clock,
     /// `now`; the hand's pace on the platform's, `time`. Whether it took this step, and what it says.
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func hand(
         _ phase: GesturePhase, moved: Point, speed: Point?, at time: Double, way: HandWay?,
-        point: Point? = nil, items: ItemDragStart? = nil, now: Double? = nil
+        point: Point? = nil, drag: HostDrag? = nil, now: Double? = nil
     ) -> (taken: Bool, reports: [Report]) {
         let now = now ?? time
         switch phase {
         case .began:
             claimed = nil
-            holdsItem = false
-            itemStart = items
+            holdsView = false
+            viewDrag = drag
             press = point.map { ($0, now) }
             return (true, [])
 
         case .changed:
-            if holdsItem { return (true, itemDragUpdated(moved, at: time, now: now)) }
+            if holdsView { return (true, viewDragged(moved, at: time, now: now)) }
             if claimed == nil {
                 guard moved != .zero else { return (true, []) }
 
@@ -173,11 +183,11 @@
                     press = nil
                     return (true, began(at: time) + self.moved(moved, at: time))
                 }
-                guard itemStart == .perpendicular, let press else {
+                guard let viewDrag, Self.begins(viewDrag, with: moved), let press else {
                     self.press = nil
                     return (false, [])
                 }
-                return (true, itemTaken(at: press.point, time: time, now: now) + itemDragUpdated(moved, at: time, now: now))
+                return (true, viewTaken(at: press.point, time: time, now: now) + viewDragged(moved, at: time, now: now))
             }
             guard claimed == true else { return (false, []) }
 
@@ -185,9 +195,9 @@
 
         case .ended, .cancelled:
             press = nil
-            if holdsItem {
-                holdsItem = false
-                let at = itemAt
+            if holdsView {
+                holdsView = false
+                let at = viewAt
                 return (true, (phase == .ended ? lifted(at: time, speed: speed) : cancelled()).map { $0.holding(at: at) })
             }
             guard claimed == true else { return (false, []) }
@@ -198,21 +208,21 @@
 
     /// The press holds the view under `point` at `time`, `now` on the frames' clock: the hand is that view's to its
     /// lift.
-    private mutating func itemTaken(at point: Point, time: Double, now: Double) -> [Report] {
+    private mutating func viewTaken(at point: Point, time: Double, now: Double) -> [Report] {
         press = nil
-        holdsItem = true
-        itemAt = point
-        itemMovedAt = now
+        holdsView = true
+        viewAt = point
+        viewMovedAt = now
         stood = 0
         return began(at: time).map { $0.holding(at: point) }
     }
 
     /// The hand holding a view moved it by `moved` at `time`, `now` on the frames' clock.
-    private mutating func itemDragUpdated(_ moved: Point, at time: Double, now: Double) -> [Report] {
-        itemAt = Point(x: itemAt.x + moved.x, y: itemAt.y + moved.y)
-        itemMovedAt = now
+    private mutating func viewDragged(_ moved: Point, at time: Double, now: Double) -> [Report] {
+        viewAt = Point(x: viewAt.x + moved.x, y: viewAt.y + moved.y)
+        viewMovedAt = now
         stood = 0
-        return self.moved(moved, at: time).map { $0.holding(at: itemAt) }
+        return self.moved(moved, at: time).map { $0.holding(at: viewAt) }
     }
 
     /// A wheel's notch moving what is under the hand by `moved` at `time`, over a layout moved `way`: taken where it
@@ -324,12 +334,12 @@
     /// stands still.
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func paced(at time: Double) -> [Report] {
-        if let press, claimed == nil, itemStart == .longPress, time - press.time >= Self.hold {
-            return itemTaken(at: press.point, time: time, now: time)
+        if let press, claimed == nil, viewDrag?.begins == .longPress, time - press.time >= Self.hold {
+            return viewTaken(at: press.point, time: time, now: time)
         }
-        if holdsItem, time - itemMovedAt >= Double(stood + 1) * Self.hold {
+        if holdsView, time - viewMovedAt >= Double(stood + 1) * Self.hold {
             stood += 1
-            return [Report(.changed, item: true, at: itemAt, still: time - itemMovedAt)]
+            return [Report(.changed, holdsView: true, at: viewAt, still: time - viewMovedAt)]
         }
         guard isWheeling, time - last >= Self.pause else { return [] }
 

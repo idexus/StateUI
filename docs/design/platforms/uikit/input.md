@@ -82,6 +82,13 @@ trackpad tells no move yet - by the host layer's rule, recognize alone, and
 a scroller holding the layout waits for them to fail, so a page scrolls by a
 hand across the layout's axis.
 
+The pan's moves and the speed of its lift are read in the view the host
+layer names for the hand (`handSpace`,
+[where the hand is measured](../../host/interaction.md#where-the-hand-is-measured)):
+`translation(in:)` and `velocity(in:)` of a view that moves under the hand
+- its transform, or its place - are the hand's less what the view has come
+after it.
+
 ## A drag between views
 
 A view's drag between views is UIKit's own pair of interactions on the view

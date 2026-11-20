@@ -17,6 +17,16 @@ enum Opened {
         view.interaction(.value(x, input: .translation(.horizontal)).release(.stay))
     }
 
+    /// `view`, drawn twelve points across while a press stands on it.
+    static func pressed<V: View>(_ view: V) -> some View {
+        view.interaction(.press(values: .translation) { _ in PresentationOffset(translation: Point(x: 12, y: 0)) })
+    }
+
+    /// `view`, taken by the hand any way as soon as the press moves.
+    static func taken<V: View>(_ view: V) -> some View {
+        view.interaction(.drag(.both))
+    }
+
     /// `view`, aimed at by `focus`.
     static func aimed<V: View>(_ view: V, by focus: FocusAim) -> some View {
         let aim = Aim(V.self)

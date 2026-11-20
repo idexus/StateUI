@@ -289,7 +289,6 @@ enum AppKitRealization {
         .complete(BorderElementContract.stroke, on: MotionLayoutContract.self),
         .complete(AutomationElementContract.accessibilityIdentifier, on: MotionLayoutContract.self),
         .complete(VisualElementContract.ignoresInput, on: MotionLayoutContract.self),
-        .complete(MotionLayoutContract.itemDrag),
         .complete(MotionLayoutContract.itemDragUpdated),
         .notPlanned(TintElementContract.tint, on: SpinnerContract.self, reason: accentColored),
         .notPlanned(TintElementContract.tint, on: ProgressBarContract.self, reason: accentColored),

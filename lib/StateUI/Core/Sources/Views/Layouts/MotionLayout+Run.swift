@@ -68,7 +68,6 @@ extension MotionLayout {
         let path: KeyPath<Items.Element, ID>
         let activated: [ValueHandler<ID>]
         let named: ((Parameters) -> Void)?
-        let itemStart: ItemDragStart?
         let dragged: [ValueHandler<ItemDrag<ID>>]
         let dismissals: [LayoutDismissal<ID>]
 

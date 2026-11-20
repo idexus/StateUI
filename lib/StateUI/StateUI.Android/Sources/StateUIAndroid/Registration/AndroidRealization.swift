@@ -201,7 +201,6 @@ enum AndroidRealization {
         .partial(BackgroundElementContract.background, on: WindowContract.self,
             missing: "An activity is opaque by the theme it starts in: a blur or glass shows its color."),
         .complete(LayoutContract.ignoresSafeArea),
-        .complete(MotionLayoutContract.itemDrag),
         .complete(MotionLayoutContract.itemDragUpdated),
     ] + windowRoom + wordsInTheirLanguage + HostRecord.motionLayout + HostRecord.layoutBodies
         + BarItemLook.notPlanned(reason: "A toolbar's actions stand in Android's own look.")

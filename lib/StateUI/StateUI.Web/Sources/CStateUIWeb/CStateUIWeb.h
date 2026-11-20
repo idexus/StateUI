@@ -172,6 +172,10 @@ STATEUI_WEB(scroll_into_view) void stateui_web_scroll_into_view(int32_t element,
 /// The pointer of the event being heard goes on telling the element, wherever it moves, until it lets go.
 STATEUI_WEB(capture_pointer) void stateui_web_capture_pointer(int32_t element);
 
+/// The pointer of the press being heard goes on telling the element until it lets go, unless the press went down
+/// on a control inside it, whose press it is.
+STATEUI_WEB(capture_press) void stateui_web_capture_press(int32_t element);
+
 /// The event being heard no longer does what the page would do with it: scroll, zoom, select.
 STATEUI_WEB(take_event) void stateui_web_take_event(void);
 

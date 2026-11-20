@@ -27,6 +27,14 @@
 
     /// Whether such a child is still on its way: the frames go on for it.
     var layoutBodiesMove: Bool { get }
+
+    /// The elements the hand moved by themselves since the last frame, where no layout program places them, by
+    /// mount.
+    func takeLocalMoves() -> [UInt64]
+}
+
+extension FramePresenter {
+    func takeLocalMoves() -> [UInt64] { [] }
 }
 
 /// One frame of the display's clock, in the order every runtime keeps.
@@ -121,6 +129,9 @@
         // And the children still on their way to their places take this frame's step.
         // Design: docs/design/host/layout.md#bodies
         for mount in presenter?.stepLayoutBodies() ?? [] { properties[mount, default: []].insert(.area) }
+        // And a view the hand moved by itself is drawn by its own transform.
+        // Design: docs/design/host/interaction.md#a-views-own-press-and-drag
+        for mount in presenter?.takeLocalMoves() ?? [] { properties[mount, default: []].insert(.translationX) }
         tellFrameReaders()
 
         collectStateChannels()

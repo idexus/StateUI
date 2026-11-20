@@ -372,7 +372,6 @@ final class ControlTests: XCTestCase {
                 .layoutBodies(.onChange())
                 .mirrorsRightToLeft(true)
                 .onItemActivated { _ in }
-                .itemDrag(begins: .longPress)
                 .onItemDragged { _ in }
                 .onItemDismissed(directions: .up, threshold: 80) { _ in }
                 .node.built),
@@ -900,7 +899,6 @@ final class ControlTests: XCTestCase {
             "Views/Collections/GalleryView.swift|fade:Double", "Views/Collections/GalleryView.swift|isSwipeEnabled:Bool",
             "Views/Collections/GalleryView.swift|itemBody:LayoutBody",
             "Views/Collections/GalleryView.swift|release:InteractionRelease", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
-            "Views/Layouts/MotionLayout.swift|itemDrag:ItemDragStart",
             "Views/Layouts/MotionLayout.swift|mirrorsRightToLeft:Bool",
         ]
         let missing = values

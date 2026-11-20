@@ -442,7 +442,6 @@ swift.conformance Insets: StateUI.HostRepresentable
 swift.conformance Insets: StateUI.LaneValue
 swift.conformance Insets: StateUI.StateValue
 swift.conformance Insets: StateUI.Walked
-swift.conformance ItemDragStart: StateUI.HostRepresentable
 swift.conformance ItemsEntries.Section: Swift.Equatable
 swift.conformance ItemsEntries.Section: Swift.Sendable
 swift.conformance ItemsEntries: StateUI.HostRepresentable
@@ -1574,8 +1573,6 @@ swift.init InputPurpose.init(propValue:): init?(propValue: PropValue)
 swift.init InputPurpose.init(rawValue:): init?(rawValue: Int32)
 swift.init Insets.init(carried:): init?(carried: StateCarried)
 swift.init Insets.init(propValue:): init?(propValue: PropValue)
-swift.init ItemDragStart.init(propValue:): init?(propValue: PropValue)
-swift.init ItemDragStart.init(rawValue:): init?(rawValue: Int32)
 swift.init ItemsEntries.Section.init(_:header:footer:items:): init(_ identity: String, header: String? = nil, footer: String? = nil, items: [String])
 swift.init ItemsEntries.init(header:footer:sections:): init(header: String? = nil, footer: String? = nil, sections: [ItemsEntries.Section])
 swift.init ItemsEntries.init(propValue:): init?(propValue: PropValue)
@@ -1625,6 +1622,7 @@ swift.init PickerPresentation.init(propValue:): init?(propValue: PropValue)
 swift.init PickerPresentation.init(rawValue:): init?(rawValue: Int32)
 swift.init Point.init(carried:): init?(carried: StateCarried)
 swift.init Point.init(propValue:): init?(propValue: PropValue)
+swift.init PresentationValues.init(rawValue:): init(rawValue: UInt8)
 swift.init PropValue.init(propValue:): init?(propValue: PropValue)
 swift.init Rect.init(carried:): init?(carried: StateCarried)
 swift.init Rect.init(propValue:): init?(propValue: PropValue)
@@ -2391,7 +2389,6 @@ swift.property InputPurpose.carried: var carried: StateCarried { get }
 swift.property InputPurpose.propValue: var propValue: PropValue { get }
 swift.property Insets.carried: var carried: StateCarried { get }
 swift.property Insets.propValue: var propValue: PropValue { get }
-swift.property ItemDragStart.propValue: var propValue: PropValue { get }
 swift.property ItemsEntries.Section.footer: let footer: String?
 swift.property ItemsEntries.Section.header: let header: String?
 swift.property ItemsEntries.Section.identity: let identity: String
@@ -2472,6 +2469,7 @@ swift.property Polyline.node: @MainActor var node: Node
 swift.property Polyline.nodes: @MainActor var nodes: [Node] { get }
 swift.property PositionDots.node: @MainActor var node: Node { get set }
 swift.property PositionDots.nodes: @MainActor var nodes: [Node] { get }
+swift.property PresentationValues.rawValue: let rawValue: UInt8
 swift.property ProgressBar.node: @MainActor var node: Node
 swift.property ProgressBar.nodes: @MainActor var nodes: [Node] { get }
 swift.property PropValue.bool: var bool: Bool? { get }
@@ -2754,8 +2752,6 @@ swift.type.method InputPurpose.list(from:): static func list(from value: PropVal
 swift.type.method InputPurpose.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method Insets.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Insets.propValue(of:): static func propValue(of list: [Self]) -> PropValue
-swift.type.method ItemDragStart.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ItemDragStart.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ItemsEntries.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ItemsEntries.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ItemsLayout.list(from:): static func list(from value: PropValue) -> [Self]?

@@ -249,6 +249,40 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
+    /// A VIEW THE HAND TAKES IS MEASURED WHERE THE HAND DOES NOT MOVE IT: GTK tells a drag's offset in the widget's
+    /// own points, and the widget comes after the hand - a pointer standing still over a view it dragged thirty
+    /// points is thirty points on, though the widget's own offset is nought again.
+    func testAViewTheHandTakesStaysUnderAPointerStandingStill() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    Rectangle()
+                        .fill(.red)
+                        .width(100)
+                        .height(40)
+                        .interaction(.drag(.both))
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            host.layOut()
+            let box = try XCTUnwrap(host.views(GTKShapeView.self).first)
+            let drag = try XCTUnwrap(box.listening?.controllers[.hand]?.first)
+            let element = try XCTUnwrap(host.runtime.tree.root?.first(type: .rectangle))
+
+            GTKTestHost.emit(drag, "drag-begin", [10, 10])
+            GTKTestHost.emit(drag, "drag-update", [30, 0])
+            host.frame()
+            XCTAssertEqual(element.drawingTransform.translationX, 30, "under the hand")
+
+            // The widget stands thirty points on: the pointer, where it was, is at the press's own point of it.
+            GTKTestHost.emit(drag, "drag-update", [0, 0])
+            host.frame()
+            XCTAssertEqual(element.drawingTransform.translationX, 30, "and stays, the pointer standing still")
+            GTKTestHost.emit(drag, "drag-end", [0, 0])
+        }
+    }
+
     /// A pinch says its scale since it began and where it is - begun first where GTK told no beginning; the pointer
     /// says where it moved.
     func testAPinchAndThePointerSayWhereTheyAre() throws {

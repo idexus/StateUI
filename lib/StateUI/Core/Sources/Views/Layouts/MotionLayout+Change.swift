@@ -36,14 +36,7 @@ extension MotionLayout.Run {
         let identities = slots.map { $0.identity }
         var poses = poses
         let hand = hold(over: &poses, at: now, room: room)
-        var changedTo = discrete
-        var released: [Int: Point] = [:]
-        if let let_go = hand.released {
-            // Let go, the view goes back onto its place from where the hand held it, at the hand's speed.
-            changedTo[identities[let_go.index]] = poses[let_go.index]
-            released[identities[let_go.index]] = let_go.velocity
-        }
-        if !changedTo.isEmpty { states.slot.changed(changedTo, released: released) }
+        if !discrete.isEmpty { states.slot.changed(discrete) }
 
         var placed = poses
         var views: [HostLayoutView] = []
@@ -52,7 +45,6 @@ extension MotionLayout.Run {
             var view = HostLayoutView(
                 key: identity, target: HostBoundary.placement(of: poses[index]), body: body(index))
             view.discrete = states.slot.discrete[identity].map(HostBoundary.placement(of:))
-            view.velocity = states.slot.released[identity]
             if let held = hand.held, held.index == index {
                 view.held = HostBoundary.placement(of: held.placement)
                 placed[index] = held.placement

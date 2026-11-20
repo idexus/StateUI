@@ -34,7 +34,9 @@ final class LayoutPinchTests: XCTestCase {
     /// Four views a dial turns - a unit every 90 degrees, round and round - and spreads, resting at half, whole and
     /// twice its size.
     private func tree(_ dial: State<Dial>, _ handed: Handed, itemDrag: Bool = false) -> Node {
-        var layout = MotionLayout([0, 1, 2, 3], parameters: dial.traveling(.eased(.milliseconds(160), curve: .linear))) { Text("\($0)") } placements: { _, dial in
+        let layout = MotionLayout([0, 1, 2, 3], parameters: dial.traveling(.eased(.milliseconds(160), curve: .linear))) {
+            Text("\($0)").interaction(itemDrag ? .drag(.both, begins: .longPress) : nil)
+        } placements: { _, dial in
             handed.dials.append(dial)
             return (0..<4).map { _ in Placement(Rect(x: 0, y: 0, width: 40, height: 40)) }
         }
@@ -44,7 +46,6 @@ final class LayoutPinchTests: XCTestCase {
                 Interaction.value(dial.traveling(.eased(.milliseconds(160), curve: .linear)), axis: \.turn, input: .rotation(degreesPerUnit: 90)).range(0...4).snaps(.every(1)).periodic(true),
             ])
                 .release(.projected(.eased(.milliseconds(400)))))
-        if itemDrag { layout = layout.itemDrag(begins: .longPress) }
         return layout.node
     }
 
@@ -156,9 +157,10 @@ final class LayoutPinchTests: XCTestCase {
         let (layout, runtime) = (try XCTUnwrap(bench.layout), try XCTUnwrap(bench.runtime))
 
         // A press standing still a long press's time holds the view under it.
-        layout.hear(.hand(.began, moved: .zero, speed: nil, point: Point(x: 20, y: 20)), in: runtime)
+        let view = try XCTUnwrap(layout.children.first?.children.first)
+        view.hear(.hand(.began, moved: .zero, speed: nil, point: Point(x: 20, y: 20)), in: runtime)
         bench.frames(40)
-        XCTAssertTrue(layout.holdsItem)
+        XCTAssertTrue(view.holdsView)
 
         layout.hear(.pinch(.began, scale: 1, at: Point(x: 0.5, y: 0.5)), in: runtime)
         layout.hear(.pinch(.changed, scale: 2, at: Point(x: 0.5, y: 0.5)), in: runtime)

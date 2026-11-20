@@ -106,8 +106,11 @@
     /// A press held.
     public static let holds = Hearing(rawValue: 1 << 6)
 
+    /// Presses watched as they stand and move, taken from nobody: no tap comes of them.
+    public static let presses = Hearing(rawValue: 1 << 7)
+
     /// Each kind of input on its own.
-    public static let kinds: [Hearing] = [.taps, .pointer, .drags, .pinches, .hand, .rotations, .holds]
+    public static let kinds: [Hearing] = [.taps, .pointer, .drags, .pinches, .hand, .rotations, .holds, .presses]
 }
 
 /// A pinch's steps: each step's scale since the last, of a pinch a toolkit tells as its whole scale.

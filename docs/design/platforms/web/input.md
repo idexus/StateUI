@@ -118,6 +118,18 @@ fading steps: the run is thrown from there, and the momentum after it is
 taken from the page and moves nothing
 ([the hand over a layout](../../host/runtime.md#the-hand-over-a-layout)).
 
+## A view the hand takes
+
+A view saying its own drag hears the hand as a layout does, and keeps the
+pointer from its press (`capture_press`): the page hands a mouse's moves to
+what stands under the pointer, and a view follows the hand a frame behind -
+a pointer leaving it in one step would tell it nothing, and the view would
+stay where it stood. A press that went down on a control inside the view is
+that control's, as a tap's press is; the view takes the pointer from it once
+the hand is its own. A layout whose view is pressed hears the same pointer
+as it comes up through it, and takes it from the view when the hand is the
+layout's.
+
 ## A drag between views
 
 A view's drag between views is HTML's own drag and drop, set on the element

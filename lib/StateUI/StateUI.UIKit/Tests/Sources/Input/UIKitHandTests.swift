@@ -15,8 +15,49 @@ final class UIKitHandTests: XCTestCase {
         var items: [Int] = []
     }
 
-    /// A FIRST MOVE UIKIT LEAVES TO THE PAGE IS NO HOLD: a press on a layout whose views are taken by a long press,
-    /// moved across it - its pan declining it, so no move of it is told after - lifts no view, however long it
+    /// A pan that says in which view each reading of it was asked.
+    private final class AskedPan: UIPanGestureRecognizer {
+        var asked: [UIView?] = []
+        override var state: UIGestureRecognizer.State {
+            get { .changed }
+            set {}
+        }
+
+        override func translation(in view: UIView?) -> CGPoint {
+            asked.append(view)
+            return CGPoint(x: 10, y: 0)
+        }
+    }
+
+    /// THE HAND IS READ IN A VIEW IT DOES NOT MOVE: a view saying its own drag comes after the hand, and a pan read
+    /// in the view itself tells less than the finger went - the view trailing it. The pan is read in the view the
+    /// host layer names, the stack the view stands in.
+    @MainActor
+    func testAViewsOwnDragIsReadInAViewTheHandDoesNotMove() throws {
+        let host = UIKitRenderer.running {
+            VStack {
+                Rectangle()
+                    .fill(.red)
+                    .width(40)
+                    .height(40)
+                    .interaction(.drag(.both))
+            }
+        }
+        defer { host.finish() }
+        let element = try XCTUnwrap(host.runtime.tree.root?.first(type: .rectangle))
+        let native = try XCTUnwrap(element.native as? UIKitElement)
+        let space = try XCTUnwrap((element.handSpace?.native as? UIKitElement)?.view)
+        let pan = AskedPan(target: nil, action: nil)
+
+        try XCTUnwrap(native.listening).handMoved(pan)
+
+        XCTAssertEqual(pan.asked.count, 1)
+        XCTAssertTrue(pan.asked.first.flatMap { $0 } === space, "read in the stack the view stands in")
+        XCTAssertFalse(space === native.view, "which is not the view the hand moves")
+    }
+
+    /// A FIRST MOVE UIKIT LEAVES TO THE PAGE IS NO HOLD: a press on a view taken by a long press, moved before it
+    /// stood its time - its pan declining it, so no move of it is told after - lifts no view, however long it
     /// stays down.
     @MainActor
     func testAFirstMoveLeftToThePageIsNoHold() throws {
@@ -25,19 +66,19 @@ final class UIKitHandTests: XCTestCase {
             MotionLayout([0, 1, 2], parameters: turn.projectedValue) { _ in
                 Rectangle()
                     .fill(.red)
+                    .interaction(.drag(.both, begins: .longPress))
             } placements: { _, at in
                 (0..<3).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 80, height: 80)) }
             }
             .interaction(
                 .value(turn.projectedValue, input: .translation(.horizontal, unit: .frontItem))
                     .reversed(true).range(0...2).snaps(.every(1)))
-            .itemDrag(begins: .longPress)
             .onItemDragged { told.items.append($0.id) }
             .width(300)
             .height(100)
         }
         defer { host.finish() }
-        let element = try XCTUnwrap(host.runtime.tree.root?.first(type: .motionLayout))
+        let element = try XCTUnwrap(host.runtime.tree.root?.first(type: .rectangle))
         let listening = try XCTUnwrap((element.native as? UIKitElement)?.listening)
 
         // The finger goes down on the first view, as the pan tells it, then moves down two icons' height.

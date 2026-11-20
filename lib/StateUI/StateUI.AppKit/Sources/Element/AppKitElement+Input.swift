@@ -121,7 +121,8 @@ extension AppKitElement {
 
         tapRecognizer = installed(tapRecognizer, hearing.contains(.taps), on: view) { AppKitTapRecognizer(hearing: heard) }
         tapRecognizer?.countsRuns = (element.number(.tapCount) ?? 1) > 1
-        pressRecognizer = installed(pressRecognizer, hearing.contains(.taps), on: view) {
+        // A press is told for a tap's sake, or for the view's own press, which no tap comes of.
+        pressRecognizer = installed(pressRecognizer, !hearing.isDisjoint(with: [.taps, .presses]), on: view) {
             AppKitPressRecognizer(hearing: heard)
         }
         (view as? AppKitHitTestView)?.pressAction = hearing.contains(.taps)

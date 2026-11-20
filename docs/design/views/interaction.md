@@ -139,6 +139,74 @@ hand by (`ViewContract.interaction`), and keeps of each only what its
 own arithmetic reads: which way a hand moves it, for the front view's unit,
 and its release, for a view the hand throws.
 
+## A view's own press and drag
+
+Beside the values it moves, an interaction says what the hand does to the
+view itself, which moves no state:
+
+```text
+  .press(values:_:)        the view drawn as an effect answers while a press
+                           stands on it
+  .elasticPress(...)       a press pulling the view toward itself and growing it
+  .drag(_:begins:)         the hand taking the view, along its axes
+```
+
+A press is watched, never taken: a tap, a scroll and a drag go on as they
+would, and no tap comes of it. Its effect is the application's code, asked
+on a frame the press moved with a `PressInput` - everything in it measured
+in the view as its layout places it, never as the press draws it, so an
+effect moving the view moves nothing it is handed. It answers a
+`PresentationOffset`, of which only the numbers `values` names are kept, a
+number that is none left out; the press lifted or taken away, the offset is
+none. The effect writes no state and calls nothing.
+
+`elasticPress` is that press with the library's effect and a spring of its
+own. The view is drawn a little larger wherever the press stands (`scale`);
+moved by where the press stands about its middle; and stretched the way it
+is moved - wider by how far across the press stands, taller by how far down,
+each to `maximumScale` at its edge. The pull is a band stretched - quickly
+at first, less and less toward the edge, all of its way there
+(`Interaction.stretched`):
+
+```text
+  share of the way to the edge    0     0.25   0.5    0.75   1
+  share of the pull               0     0.51   0.78   0.92   1      (1 - e^(-2.5 s)) / (1 - e^(-2.5))
+```
+
+A pull growing evenly reads as a view sliding under the finger; one that
+resists as it goes reads as a view held. One scale by the distance would
+grow the view the same whichever way it was pulled; a scale a way stretches
+it toward the finger.
+
+The spring is the press's, not a body's: an elastic press that waited for
+its view to be a body of some layout would jump on every view that is none
+- most of them. So the host brings the view after what the press answers on
+the press's own spring (220 ms, damped 0.8), from the frame the press goes
+down to the one it rests on, and back the same way. A press with an effect
+of the application's has no spring: it is drawn at once, and a body
+following its layout is what lags behind it.
+
+A drag says the axes the hand takes the view along and when it does:
+
+```text
+  .immediately    as soon as the press moves
+  .longPress      once the press has stood still a long press's time
+  .directional    once its first move goes the drag's one axis more than
+                  across it; a first move across is left to what stands behind
+```
+
+The view stays under the hand, over what stands beside it, and goes back
+where its layout puts it let go. One press and one drag stand on a view:
+two of either said at once are refused together, as two values moving one
+number are, and a directional drag given both axes takes the view no way -
+it could never tell its way from the other.
+
+The trap is the effect's identity. A closure is made anew at every
+description of the view, and a program compared by it would be told to the
+host every time; the differ keeps one `HostPressEffect` a view while it
+stands and hands it the newest closure, so a view described again alike is
+told nothing and still answers by what it was last described with.
+
 ## What the host is handed
 
 The differ makes the declaration plain values (`Interaction.program`,

@@ -242,6 +242,12 @@ swift.conformance DotShape: Swift.Equatable
 swift.conformance DotShape: Swift.Hashable
 swift.conformance DotShape: Swift.RawRepresentable
 swift.conformance DotShape: Swift.Sendable
+swift.conformance DragAxes: Swift.Equatable
+swift.conformance DragAxes: Swift.Hashable
+swift.conformance DragAxes: Swift.Sendable
+swift.conformance DragStart: Swift.Equatable
+swift.conformance DragStart: Swift.Hashable
+swift.conformance DragStart: Swift.Sendable
 swift.conformance DrawCommand: Swift.Equatable
 swift.conformance DrawCommand: Swift.Sendable
 swift.conformance Easing: Swift.Equatable
@@ -418,10 +424,6 @@ swift.conformance InteractionUnit: Swift.Equatable
 swift.conformance InteractionUnit: Swift.Sendable
 swift.conformance ItemDrag: Swift.Equatable where ID : Hashable
 swift.conformance ItemDrag: Swift.Sendable where ID : Hashable, ID : Sendable
-swift.conformance ItemDragStart: Swift.Equatable
-swift.conformance ItemDragStart: Swift.Hashable
-swift.conformance ItemDragStart: Swift.RawRepresentable
-swift.conformance ItemDragStart: Swift.Sendable
 swift.conformance ItemsLayout: Swift.Equatable
 swift.conformance ItemsLayout: Swift.Sendable
 swift.conformance ItemsView: StateUI.View
@@ -676,12 +678,23 @@ swift.conformance PopupElementContract: Swift.Sendable
 swift.conformance PositionDots: StateUI.View
 swift.conformance PositionDots: StateUI.Views
 swift.conformance PositionDots: Swift.Sendable
+swift.conformance PresentationOffset: Swift.Equatable
+swift.conformance PresentationOffset: Swift.Sendable
+swift.conformance PresentationValues: Swift.Equatable
+swift.conformance PresentationValues: Swift.ExpressibleByArrayLiteral
+swift.conformance PresentationValues: Swift.Hashable
+swift.conformance PresentationValues: Swift.OptionSet
+swift.conformance PresentationValues: Swift.RawRepresentable
+swift.conformance PresentationValues: Swift.Sendable
+swift.conformance PresentationValues: Swift.SetAlgebra
 swift.conformance PresentedElementContract: StateUI.Tier
 swift.conformance PresentedElementContract: StateUI.WornContract
 swift.conformance PresentedElementContract: Swift.Sendable
 swift.conformance PressElementContract: StateUI.Tier
 swift.conformance PressElementContract: StateUI.WornContract
 swift.conformance PressElementContract: Swift.Sendable
+swift.conformance PressInput: Swift.Equatable
+swift.conformance PressInput: Swift.Sendable
 swift.conformance ProgressBar: StateUI.View
 swift.conformance ProgressBar: StateUI.Views
 swift.conformance ProgressBar: Swift.Sendable
@@ -1096,6 +1109,8 @@ swift.enum DecorableTextElementContract: enum DecorableTextElementContract
 swift.enum DisplayOrientation: enum DisplayOrientation
 swift.enum DisplayRotation: enum DisplayRotation
 swift.enum DotShape: enum DotShape
+swift.enum DragAxes: enum DragAxes
+swift.enum DragStart: enum DragStart
 swift.enum Draw: enum Draw
 swift.enum DrawingBuilder: @resultBuilder enum DrawingBuilder
 swift.enum Easing: enum Easing
@@ -1127,7 +1142,6 @@ swift.enum InputPurpose: enum InputPurpose
 swift.enum InteractionProgramWrites: enum InteractionProgramWrites
 swift.enum InteractionRelease: enum InteractionRelease
 swift.enum InteractionUnit: enum InteractionUnit
-swift.enum ItemDragStart: enum ItemDragStart
 swift.enum ItemsLayout: enum ItemsLayout
 swift.enum ItemsViewContract: enum ItemsViewContract
 swift.enum KeyboardElementContract: enum KeyboardElementContract
@@ -1345,6 +1359,12 @@ swift.enum.case DisplayRotation.rotation90: case rotation90
 swift.enum.case DisplayRotation.unknown: case unknown
 swift.enum.case DotShape.circle: case circle
 swift.enum.case DotShape.square: case square
+swift.enum.case DragAxes.both: case both
+swift.enum.case DragAxes.horizontal: case horizontal
+swift.enum.case DragAxes.vertical: case vertical
+swift.enum.case DragStart.directional: case directional
+swift.enum.case DragStart.immediately: case immediately
+swift.enum.case DragStart.longPress: case longPress
 swift.enum.case Easing.backIn: case backIn
 swift.enum.case Easing.backOut: case backOut
 swift.enum.case Easing.bounceIn: case bounceIn
@@ -1445,8 +1465,6 @@ swift.enum.case InteractionRelease.stay: case stay
 swift.enum.case InteractionUnit.containerLength: case containerLength
 swift.enum.case InteractionUnit.frontItem: case frontItem
 swift.enum.case InteractionUnit.points(_:): case points(Double)
-swift.enum.case ItemDragStart.longPress: case longPress
-swift.enum.case ItemDragStart.perpendicular: case perpendicular
 swift.enum.case ItemsLayout.grid(minimumItemWidth:spacing:): case grid(minimumItemWidth: Double, spacing: Double = 0)
 swift.enum.case ItemsLayout.list(spacing:): case list(spacing: Double = 0)
 swift.enum.case ItemsLayout.row(spacing:): case row(spacing: Double = 0)
@@ -1706,6 +1724,7 @@ swift.init Polygon.init(_:): @MainActor init(_ points: [Point])
 swift.init Polyline.init(_:): @MainActor init(_ points: [Point])
 swift.init PositionDots.init(): @MainActor init()
 swift.init PositionDots.init(_:content:): @MainActor init<Items, Content>(_ items: Items, @ViewBuilder content: (Items.Element) -> Content) where Items : RandomAccessCollection, Content : View
+swift.init PresentationOffset.init(translation:rotation:scaleX:scaleY:): init(translation: Point = .zero, rotation: Double = 0, scaleX: Double = 1, scaleY: Double = 1)
 swift.init ProgressBar.init(_:): @MainActor init(_ progress: Double)
 swift.init ProgressBar.init(_:): @MainActor init(_ state: Binding<Double>)
 swift.init Rect.init(x:y:width:height:): init(x: Double, y: Double, width: Double, height: Double)
@@ -6679,7 +6698,6 @@ swift.method MotionLayout.isDraggable(_:): @MainActor func isDraggable(_ state: 
 swift.method MotionLayout.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method MotionLayout.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
-swift.method MotionLayout.itemDrag(begins:): @MainActor func itemDrag(begins start: ItemDragStart) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.layoutBodies(_:): @MainActor func layoutBodies(_ body: LayoutBody) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method MotionLayout.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -12677,6 +12695,16 @@ swift.property Point.y: var y: Double
 swift.property Polygon.body: @MainActor var body: Never { get }
 swift.property Polyline.body: @MainActor var body: Never { get }
 swift.property PositionDots.body: @MainActor var body: some View { get }
+swift.property PresentationOffset.rotation: var rotation: Double
+swift.property PresentationOffset.scaleX: var scaleX: Double
+swift.property PresentationOffset.scaleY: var scaleY: Double
+swift.property PresentationOffset.translation: var translation: Point
+swift.property PressInput.bounds: let bounds: Rect
+swift.property PressInput.displacement: let displacement: Point
+swift.property PressInput.location: let location: Point
+swift.property PressInput.normalizedLocation: let normalizedLocation: Point
+swift.property PressInput.phase: let phase: GesturePhase
+swift.property PressInput.velocity: let velocity: Point
 swift.property ProgressBar.body: @MainActor var body: Never { get }
 swift.property Rect.height: var height: Double
 swift.property Rect.width: var width: Double
@@ -12874,6 +12902,9 @@ swift.struct Point: struct Point
 swift.struct Polygon: @MainActor struct Polygon
 swift.struct Polyline: @MainActor struct Polyline
 swift.struct PositionDots: @MainActor struct PositionDots
+swift.struct PresentationOffset: struct PresentationOffset
+swift.struct PresentationValues: struct PresentationValues
+swift.struct PressInput: struct PressInput
 swift.struct ProgressBar: @MainActor struct ProgressBar
 swift.struct Rect: struct Rect
 swift.struct Rectangle: @MainActor struct Rectangle
@@ -12989,6 +13020,9 @@ swift.type.method GridTracks.fill(count:): static func fill(count: Int) -> GridT
 swift.type.method GridTracks.fixed(_:count:): static func fixed(_ length: Double, count: Int = 1) -> GridTracks
 swift.type.method GridTracks.proportional(_:count:): static func proportional(_ share: Double, count: Int = 1) -> GridTracks
 swift.type.method ImageSource.platform(_:): static func platform(_ icon: Icon) -> ImageSource
+swift.type.method Interaction.drag(_:begins:): @MainActor static func drag(_ axes: DragAxes, begins: DragStart = .immediately) -> Interaction
+swift.type.method Interaction.elasticPress(maximumOffset:scale:maximumScale:): @MainActor static func elasticPress(maximumOffset: Double = 6, scale: Double = 1.02, maximumScale: Double = 1.04) -> Interaction
+swift.type.method Interaction.press(values:_:): @MainActor static func press(values: PresentationValues, _ effect: @escaping @MainActor @Sendable (PressInput) -> PresentationOffset) -> Interaction
 swift.type.method Interaction.simultaneous(_:): @MainActor static func simultaneous(_ interactions: [Interaction]) -> Interaction
 swift.type.method Interaction.value(_:axis:input:): @MainActor static func value<Parameters>(_ state: Binding<Parameters>, axis: WritableKeyPath<Parameters, Double>, input: InteractionInput) -> Interaction where Parameters : LayoutParameters
 swift.type.method Interaction.value(_:input:): @MainActor static func value(_ state: Binding<Double>, input: InteractionInput) -> Interaction
@@ -13318,8 +13352,7 @@ swift.type.property MenuToggleContract.name: static var name: String { get }
 swift.type.property Motion.inherited: static let inherited: Motion
 swift.type.property Motion.none: static let none: Motion
 swift.type.property Motion.standard: static let standard: Motion
-swift.type.property MotionLayoutContract.itemDrag: static let itemDrag: ElementProperty<MotionLayoutContract, ItemDragStart>
-swift.type.property MotionLayoutContract.itemDragUpdated: static let itemDragUpdated: ElementEvent<MotionLayoutContract, (GesturePhase, Point, Point, Double)>
+swift.type.property MotionLayoutContract.itemDragUpdated: static let itemDragUpdated: ElementEvent<MotionLayoutContract, (GesturePhase, Point, Point, Double, Int)>
 swift.type.property MotionLayoutContract.layout: static let layout: ElementProgram<MotionLayoutContract, LayoutProgramDefinition>
 swift.type.property MotionLayoutContract.mirrorsRightToLeft: static let mirrorsRightToLeft: ElementProperty<MotionLayoutContract, Bool>
 swift.type.property MotionLayoutContract.name: static var name: String { get }
@@ -13375,6 +13408,15 @@ swift.type.property PopupElementContract.closed: static let closed: ElementEvent
 swift.type.property PopupElementContract.isOpen: static let isOpen: ElementProperty<PopupElementContract, Bool>
 swift.type.property PopupElementContract.name: static let name: String
 swift.type.property PopupElementContract.opened: static let opened: ElementEvent<PopupElementContract, Void>
+swift.type.property PresentationOffset.identity: static let identity: PresentationOffset
+swift.type.property PresentationValues.all: static let all: PresentationValues
+swift.type.property PresentationValues.rotation: static let rotation: PresentationValues
+swift.type.property PresentationValues.scale: static let scale: PresentationValues
+swift.type.property PresentationValues.scaleX: static let scaleX: PresentationValues
+swift.type.property PresentationValues.scaleY: static let scaleY: PresentationValues
+swift.type.property PresentationValues.translation: static let translation: PresentationValues
+swift.type.property PresentationValues.translationX: static let translationX: PresentationValues
+swift.type.property PresentationValues.translationY: static let translationY: PresentationValues
 swift.type.property PresentedElementContract.isPresented: static let isPresented: ElementProperty<PresentedElementContract, Bool>
 swift.type.property PresentedElementContract.isPresentedChanged: static let isPresentedChanged: ElementEvent<PresentedElementContract, Bool>
 swift.type.property PresentedElementContract.name: static let name: String

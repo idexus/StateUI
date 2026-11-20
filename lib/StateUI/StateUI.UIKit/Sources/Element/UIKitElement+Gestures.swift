@@ -24,7 +24,8 @@ extension UIKitElement {
             return element.hear(heard, in: host.runtime)
         }
         listening.handWay = { [weak self] in self?.element.handWay }
-        listening.handItems = { [weak self] in (self?.element.itemDrag, self?.element.holdsItem ?? false) }
+        listening.handDrag = { [weak self] in (self?.element.handDrag, self?.element.holdsView ?? false) }
+        listening.handSpace = { [weak self] in (self?.element.handSpace?.native as? UIKitElement)?.view }
         listening.listen(for: hearing)
         self.listening = hearing.isEmpty ? nil : listening
     }

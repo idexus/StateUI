@@ -177,9 +177,23 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **A rectangle and a point are written with their labels.** `Rect(_:_:_:_:)` and `Point(_:_:)` are gone:
   `Rect(0, 0, 120, 40)` is `Rect(x: 0, y: 0, width: 120, height: 40)` and `Point(20, 0)` is `Point(x: 20, y: 0)`,
   the one spelling each has.
+- **A view the hand takes by itself says so itself.** `MotionLayout.itemDrag(begins:)` and `ItemDragStart` are gone:
+  the view says `.interaction(.drag(_:begins:))`. `.itemDrag(begins: .longPress)` is
+  `.interaction(.drag(.both, begins: .longPress))` on each view, and `.itemDrag(begins: .perpendicular)` on a
+  layout that scrolls sideways is `.interaction(.drag(.vertical, begins: .directional))`; `.onItemDragged` and
+  `.onItemDismissed` are told as before. Said inside the view's own body, the drag leaves the layout building no
+  view again as its order changes.
 
 ### New
 
+- **A view answers the hand itself.** `.interaction(.press(values:_:))` draws a view by the `PresentationOffset`
+  its effect answers for a `PressInput` while a press stands on it - moved, turned and scaled about its middle,
+  only the `PresentationValues` it names. `.elasticPress()` is the press most views want: the view grown a
+  little, pulled toward the finger and stretched the way it is pulled, on a spring of its own. A press is
+  watched, never taken.
+  `.interaction(.drag(_:begins:))` gives the view to the hand along its `DragAxes` - at once, after a long press,
+  or by a first move its one axis leads (`DragStart`) - over what stands beside it, and back onto its place let
+  go. Neither moves a state.
 - **A layout measures its views.** Each of `context.subviews` answers how large its view is in a room offered:
   `view.sizeThatFits()` the size it takes by itself, `view.sizeThatFits(width: 200)` the size its words
   take wrapped to 200 points, as a `LayoutSize`; `firstBaseline(width:height:)` where its first line rests. A view is found by

@@ -169,16 +169,54 @@ final class ProgramPresentationTests: XCTestCase {
     func testAChildLetGoSetsOutAtTheHandsSpeed() {
         var shown = ProgramPresentation()
         _ = shown.take(answer([HostLayoutView(key: 1, target: place(0), body: spring)]), at: 0, reducesMotion: false)
-        let held = shown.take(
-            answer([HostLayoutView(key: 1, target: place(0), body: spring, held: place(60))]), at: 16, reducesMotion: false)
-        XCTAssertEqual(held, [place(60)], "where the hand holds it")
+        var hand = LocalPresentation()
+        hand.held = Point(x: 60, y: 0)
+        XCTAssertEqual(shown.step(to: 16, locals: [hand]).map(\.bounds.x), [60], "where the hand holds it")
         XCTAssertFalse(shown.moves)
 
-        let released = answer([
-            HostLayoutView(key: 1, target: place(0), body: spring, discrete: place(0), velocity: Point(x: 2_000, y: 0)),
-        ], change: 1)
-        XCTAssertEqual(shown.take(released, at: 32, reducesMotion: false)[0].bounds.x, 60, accuracy: 0.001)
-        XCTAssertGreaterThan(shown.step(to: 48)[0].bounds.x, 60, "carried on by the hand's speed before it turns back")
+        hand.held = nil
+        hand.letGo = Point(x: 2_000, y: 0)
+        XCTAssertEqual(shown.step(to: 32, locals: [hand])[0].bounds.x, 60, accuracy: 0.001)
+        XCTAssertGreaterThan(
+            shown.step(to: 48, locals: [hand])[0].bounds.x, 60, "carried on by the hand's speed before it turns back")
+    }
+
+    /// A HELD CHILD IS RANKED OVER EVERY OTHER HOWEVER HIGH THEY STAND - the highest rank an integer holds, several
+    /// alike - and the others keep their order beneath it.
+    func testAHeldChildIsRankedOverChildrenAtTheHighestRank() {
+        func ranked(_ x: Double, _ rank: Int) -> HostPlacement { place(x).ranked(rank) }
+        var shown = ProgramPresentation()
+        let layout = answer([
+            HostLayoutView(key: 1, target: ranked(0, .max)), HostLayoutView(key: 2, target: ranked(50, .max)),
+            HostLayoutView(key: 3, target: ranked(200, .max - 1)),
+        ])
+        _ = shown.take(layout, at: 0, reducesMotion: false)
+        var hand = LocalPresentation()
+        hand.held = Point(x: 10, y: 0)
+
+        let held = shown.step(to: 16, locals: [hand, LocalPresentation(), LocalPresentation()])
+
+        XCTAssertEqual(held.map(\.zIndex), [2, 1, 0], "the first held over the second, the second over the third as they stood")
+    }
+
+    /// A HELD CHILD WEARS ITS PLACE'S LOOK WHERE THE HAND HOLDS IT: the layout may lift it meanwhile - larger - and
+    /// it stays under the hand.
+    func testAHeldChildWearsItsPlacesLookWhereTheHandHoldsIt() {
+        func lifted(_ scale: Double) -> HostPlacement {
+            HostPlacement(
+                bounds: Rect(x: 50, y: 0, width: 100, height: 100), translationX: 0, translationY: 0, rotation: 0,
+                scaleX: scale, scaleY: scale, opacity: 1, zIndex: 0, shade: HostPlacement.unshaded)
+        }
+        var shown = ProgramPresentation()
+        _ = shown.take(answer([HostLayoutView(key: 1, target: lifted(1))]), at: 0, reducesMotion: false)
+        var hand = LocalPresentation()
+        hand.held = Point(x: 30, y: 40)
+        _ = shown.step(to: 16, locals: [hand])
+
+        let held = shown.take(answer([HostLayoutView(key: 1, target: lifted(1.2))]), locals: [hand], at: 32, reducesMotion: false)
+
+        XCTAssertEqual(held[0].scaleX, 1.2, "lifted as its place says")
+        XCTAssertEqual(held[0].bounds, Rect(x: 80, y: 40, width: 100, height: 100), "under the hand")
     }
 
     /// A CHILD GONE FROM THE ANSWER IS FORGOTTEN: come again, it joins from nothing.

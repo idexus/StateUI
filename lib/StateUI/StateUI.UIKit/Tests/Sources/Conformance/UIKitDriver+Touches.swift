@@ -78,13 +78,18 @@ extension UIKitDriver {
         }
     }
 
+    /// Whether a press reaches the view's own recognizer: it hears taps, or presses with no tap.
+    private static func hearsPresses(_ listening: UIKitListening) -> Bool {
+        !listening.hearing.isDisjoint(with: [.taps, .presses])
+    }
+
     func pressDown(_ listening: UIKitListening?, on view: UIView, at point: Point) {
         (view as? UIControl)?.sendActions(for: .touchDown)
         let pan = DrivenPan(on: view)
         pan.start = CGPoint(x: point.x, y: point.y)
         pan.point = pan.start
         press = (pan, false)
-        if let listening, listening.hearing.contains(.taps) { listening.press(.began, at: pan.start) }
+        if let listening, Self.hearsPresses(listening) { listening.press(.began, at: pan.start) }
         if let listening, listening.hearing.contains(.hand) { listening.hand(.began, moved: .zero, point: point) }
         guard let listening, listening.hearing.contains(.pointer) else { return }
         let down = DrivenPress(on: view)
@@ -95,7 +100,7 @@ extension UIKitDriver {
     func drag(_ listening: UIKitListening?, to point: Point) {
         guard let (pan, dragging) = press else { return }
         Self.track(pan.on, to: point)
-        if let listening, listening.hearing.contains(.taps) { listening.press(.changed, at: CGPoint(x: point.x, y: point.y)) }
+        if let listening, Self.hearsPresses(listening) { listening.press(.changed, at: CGPoint(x: point.x, y: point.y)) }
         if let listening, listening.hearing.contains(.hand) {
             listening.hand(.changed, moved: Point(x: point.x - Double(pan.point.x), y: point.y - Double(pan.point.y)))
         }
@@ -113,7 +118,7 @@ extension UIKitDriver {
         if pan.on is UIKitSliderView { Self.track(pan.on, to: point) }
         (pan.on as? UIControl)?.sendActions(for: .touchUpInside)
         if let listening, listening.hearing.contains(.hand) { listening.hand(.ended, moved: .zero) }
-        if let listening, listening.hearing.contains(.taps) { listening.press(.ended, at: CGPoint(x: point.x, y: point.y)) }
+        if let listening, Self.hearsPresses(listening) { listening.press(.ended, at: CGPoint(x: point.x, y: point.y)) }
         pan.point = CGPoint(x: point.x, y: point.y)
         if dragging, let listening, listening.hearing.contains(.drags) {
             pan.driven = .ended

@@ -8,7 +8,7 @@ AnalogClockSample.swift 36fae89e23890a5c
 AnimatedInputSample.swift 3debeeed0b95faf1
 AnimatedPropertySample.swift 5d64a0fa9ca4b419
 AnimationSample.swift 37db0e9277b19034
-AppSwitcherSample.swift b3de3abb61e6e8ce
+AppSwitcherSample.swift 4bc843b06e5f796b
 AppThemeSample.swift e3467cfdec02937b
 AppearanceSample.swift 348208e2cc7d9598
 ApplicationSessionSample.swift 02b610eb8ee6a1b1
@@ -22,7 +22,7 @@ ButtonMenuSample.swift 47796ae5e7e354c5
 ButtonRoleSample.swift 3e904d0aa8e02d9c
 ButtonSample.swift 4bf410b3eb5f6336
 CanvasSample.swift b31634f0ee2057b2
-ChangingDeckSample.swift 7ca0a558bb8712f4
+ChangingDeckSample.swift 061945d5f613d411
 CheckBoxSample.swift 59e11010b2651d72
 ChoosingItemsSample.swift 85105c1d71a4884c
 ClipboardSample.swift a210a3c26540a05e
@@ -54,8 +54,9 @@ GeometryReaderSample.swift bf9abb25965cc062
 GridSample.swift 9c95bd0181e0d392
 HTTPRequestSample.swift bf26141a6d52f7d9
 HandMovesStateSample.swift 7b5ef0a4304c1b44
+HandOnViewSample.swift 800b775e2acd1641
 HoldSample.swift 3179a83bed36f2d7
-HomeScreenSample.swift 50cd956c7387c181
+HomeScreenSample.swift 7bf2792b8c26b4ca
 HostTimeSample.swift 45f0551e77c396a8
 IconButtonSample.swift a4ebe7201bac278c
 IconSample.swift 086e9eaca0e7c97a

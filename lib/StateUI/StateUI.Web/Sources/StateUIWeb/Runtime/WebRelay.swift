@@ -410,6 +410,12 @@ enum WebRelay {
         stateui_web_capture_pointer(element)
     }
 
+    /// The pointer of the press being heard goes on telling `element` until it lets go, unless the press went down
+    /// on a control inside it, whose press it is.
+    static func capturePress(_ element: Int32) {
+        stateui_web_capture_press(element)
+    }
+
     /// Whether the page stands on one of Apple's platforms, whose shortcuts Command takes.
     static var onApple: Bool { stateui_web_apple() != 0 }
 

@@ -13,18 +13,19 @@ struct LayoutDismissal<Item> {
 }
 
 extension MotionLayout.Run {
-    /// The hand holding one view by itself at the parameters, at `point` in the room, letting go at `velocity` points a
-    /// second, having stood still `still` milliseconds: taken where it presses, told as it moves and stands, let go
-    /// back or dismissed.
+    /// The hand holding the view at `child` among the layout's views by itself, at `point` in the room, letting go
+    /// at `velocity` points a second, having stood still `still` milliseconds: told as it takes the view, moves and
+    /// stands, and lets it go - back, which is its host's, or dismissed.
     /// Design: docs/design/views/motion-layout.md#one-view-in-the-hand
-    func item(_ gesture: GesturePhase, at point: Point, velocity: Point, still: Double) {
+    func item(_ gesture: GesturePhase, child: Int, at point: Point, velocity: Point, still: Double) {
         switch gesture {
         case .began:
             guard states.item.wrappedValue?.velocity != nil || states.item.wrappedValue == nil,
-                  let (identity, placement) = view(at: point)
+                  slots.indices.contains(child),
+                  let placement = states.shown.wrappedValue.poses[slots[child].identity]
             else { return }
 
-            let hand = LayoutItemHand(identity: identity, taken: placement, from: point, at: point)
+            let hand = LayoutItemHand(identity: slots[child].identity, taken: placement, from: point, at: point)
             states.item.wrappedValue = hand
             tell(hand, gesture, still: still, velocity: Point(x: 0, y: 0))
 
@@ -44,12 +45,6 @@ extension MotionLayout.Run {
             states.item.wrappedValue = hand
             tell(hand, gesture, still: 0, velocity: hand.velocity ?? Point(x: 0, y: 0))
         }
-    }
-
-    /// The view on top at `point` in the room, by where the run last put each - its place turned as it is drawn, a
-    /// view drawn clear passed over - and that place. A view still on its way is found at its place.
-    func view(at point: Point) -> (Int, Placement)? {
-        view(at: point, among: states.shown.wrappedValue.poses)
     }
 
     /// The view on top at `point` among `placements`, by identity - a view drawn clear and the view of `passing`
@@ -126,20 +121,18 @@ extension MotionLayout.Run {
         })
     }
 
-    /// What the hand does to the run this frame: the view it holds and where, the view it let go and how fast, and
-    /// whether its own movement goes on - a dismissed view's flight.
+    /// What a view let go and dismissed does to the run this frame: where it flies, and whether its flight goes on.
     struct Hold {
         var held: (index: Int, placement: Placement)?
-        var released: (index: Int, velocity: Point)?
         var goesOn = false
     }
 
-    /// The hand over `poses` - worked out at `now` in `room`: the view it holds stands where it holds it; let go,
-    /// it goes back onto its place setting out at the hand's speed; dismissed, it flies on, and its item is told
-    /// once it has left the room. A run standing at the highest rank is ranked anew for the held view to stand over.
+    /// The view the hand dismissed over `poses` - worked out at `now` in `room`: it flies on from where the hand
+    /// let it go, and its item is told once it has left the room. A view the hand holds, and one let go back to its
+    /// place, are its host's to show. A run standing at the highest rank is ranked anew for the view to fly over.
     func hold(over poses: inout [Placement], at now: Double, room: Rect) -> Hold {
-        guard var hand = states.item.wrappedValue else { return Hold() }
-        guard let index = slots.firstIndex(where: { $0.identity == hand.identity }) else {
+        guard var hand = states.item.wrappedValue, hand.velocity != nil else { return Hold() }
+        guard hand.dismissed, let index = slots.firstIndex(where: { $0.identity == hand.identity }) else {
             states.item.wrappedValue = nil
             return Hold()
         }
@@ -150,23 +143,17 @@ extension MotionLayout.Run {
             for (place, rank) in Placement.drawingOrder(of: poses).enumerated() { poses[place].zIndex = rank }
         }
         var placement = hand.held(poses[index], over: poses)
-        if let thrown = hand.velocity, !hand.dismissed {
-            states.item.wrappedValue = nil
-            return Hold(released: (index, thrown))
+        let flew = hand.flew ?? now
+        let flying = flight(of: hand, in: room)
+        placement.bounds.x += flying.x * (now - flew) / 1_000
+        placement.bounds.y += flying.y * (now - flew) / 1_000
+        hand.flew = flew
+        if !hand.gone, Self.outside(placement, room) {
+            hand.gone = true
+            dismissed(hand)
         }
-        if hand.dismissed {
-            let flew = hand.flew ?? now
-            let flying = flight(of: hand, in: room)
-            placement.bounds.x += flying.x * (now - flew) / 1_000
-            placement.bounds.y += flying.y * (now - flew) / 1_000
-            hand.flew = flew
-            if !hand.gone, Self.outside(placement, room) {
-                hand.gone = true
-                dismissed(hand)
-            }
-            if hand != states.item.wrappedValue { states.item.wrappedValue = hand }
-        }
-        return Hold(held: (index, placement), goesOn: hand.dismissed && !hand.gone)
+        if hand != states.item.wrappedValue { states.item.wrappedValue = hand }
+        return Hold(held: (index, placement), goesOn: !hand.gone)
     }
 
     /// How fast a dismissed view flies on, per second: the hand's speed, and its way out no slower than the room's

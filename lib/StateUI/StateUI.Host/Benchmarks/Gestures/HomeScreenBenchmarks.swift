@@ -13,17 +13,18 @@ final class HomeScreenBenchmarks: XCTestCase {
     /// new places on the frames.
     func testAHeldIconMovedAcrossTheBoard() throws {
         let bench = Bench(HomeApplication())
-        let board = try bench.element(.motionLayout)
+        // The hand takes the first icon, which says its own drag in its body: its holder stays carried.
+        let icon = try XCTUnwrap(bench.element(.motionLayout).children.first?.children.first)
         let cell = Point(x: (bench.room.width - 16) / 4, y: (bench.room.height - 16) / 5)
 
-        bench.hand(.began, on: board, at: Point(x: 8 + cell.x / 2, y: 8 + cell.y / 2))
+        bench.hand(.began, on: icon, at: Point(x: cell.x / 2, y: cell.y / 2))
         bench.frames(for: 600)
         let work = bench.measure("home screen, a held icon moved a cell", steps: 12) { step in
             let across = step % 4 == 3
-            bench.hand(.changed, on: board, moved: across ? Point(x: -cell.x * 3, y: cell.y) : Point(x: cell.x, y: 0))
+            bench.hand(.changed, on: icon, moved: across ? Point(x: -cell.x * 3, y: cell.y) : Point(x: cell.x, y: 0))
             bench.frames(for: 100)
         }
-        bench.hand(.ended, on: board, speed: Point(x: 0, y: 0))
+        bench.hand(.ended, on: icon, speed: Point(x: 0, y: 0))
         bench.frames(for: 1_000)
 
         XCTAssertEqual(work, Work(
@@ -55,7 +56,6 @@ private struct HomeBoard: View {
         .interaction(
             .value($board, input: .swipe(.horizontal, unit: .containerLength)).reversed(true).range(0...2).snaps(.every(1))
                 .release(.projected(.eased(.milliseconds(400)))))
-        .itemDrag(begins: .longPress)
         .onItemDragged { drag in
             switch drag.phase {
             case .began: lifted = drag.id
@@ -118,5 +118,7 @@ private struct HomeTile: View {
         .spacing(6)
         .scale(lifted ? 1.18 : 1)
         .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
+        // Said in the tile's own body, so the board's holders are carried whole across its descriptions.
+        .interaction(.drag(.both, begins: .longPress))
     }
 }

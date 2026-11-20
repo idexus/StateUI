@@ -1109,12 +1109,14 @@ struct Boards: View {
 }
 ```
 
-The hand can also take one view by itself. `.itemDrag(begins: .longPress)` gives
-it the view under a press that stands still a long press's time - an icon
-lifted off a board - and `.itemDrag(begins: .perpendicular)` the view under a press
-whose first move runs across the layout's axis - a card pulled up out of a
-deck that scrolls sideways; a hand that begins any other way moves the run
-as before. The held view follows the hand over the others, and
+The hand can also take one view by itself, where the view says so:
+`.interaction(.drag(.both, begins: .longPress))` on a view gives it to a
+press that stands still on it a long press's time - an icon lifted off a
+board - and `.interaction(.drag(.vertical, begins: .directional))` to a
+press whose first move goes up or down - a card pulled up out of a deck
+that scrolls sideways; a hand that begins any other way moves the run as
+before ([The hand taking a view](interaction-and-actions.md#the-hand-on-a-view-itself)).
+The held view follows the hand over the others, and
 `.onItemDragged` is told, as an `ItemDrag`, whether the hand takes it, moves it or lets it go,
 the identity of its item (`drag.id`), where the hand is in the room, how long
 it has stood still, how fast the hand goes (`drag.velocity`), and the
@@ -1132,13 +1134,12 @@ struct Board: View {
 
     var body: some View {
         MotionLayout(names, parameters: $turn) { name in
-            Text(name)
+            Text(name).interaction(.drag(.both, begins: .longPress))
         } placements: { context, _ in
             names.indices.map { index in
                 Placement(Rect(x: Double(index) * context.bounds.width / 4, y: 0, width: context.bounds.width / 4, height: context.bounds.height))
             }
         }
-        .itemDrag(begins: .longPress)
         .onItemDragged { drag in
             // Over another name, the held one takes its place, the others make room.
             guard let over = drag.over, let from = names.firstIndex(of: drag.id),

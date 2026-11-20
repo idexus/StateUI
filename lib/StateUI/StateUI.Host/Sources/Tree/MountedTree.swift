@@ -181,6 +181,28 @@
         return moved
     }
 
+    /// The elements the hand moved by themselves since the last frame, where no layout program places them, by
+    /// mount.
+    private var movedLocally: Set<UInt64> = []
+
+    /// What the hand does to `element`'s own presentation changed: the layout program placing it steps its
+    /// places at the next frame, and an element no program places is drawn again by its own transform.
+    /// Design: docs/design/host/interaction.md#a-views-own-press-and-drag
+    func movedLocally(_ element: MountedElement) {
+        if let layout = element.programPlacing?.layout {
+            layout.childrenMovedLocally = true
+            movingLayouts.insert(layout.mount)
+        } else {
+            movedLocally.insert(element.mount)
+        }
+    }
+
+    /// The elements the hand moved by themselves since this was last asked, by mount, in order.
+    public func takeLocalMoves() -> [UInt64] {
+        defer { movedLocally = [] }
+        return movedLocally.sorted()
+    }
+
     /// `element` runs the layout program `slot` names.
     func layoutStands(_ slot: UInt64, on element: MountedElement) { layouts[slot] = element.mount }
 

@@ -69,6 +69,7 @@ final class ElementPass {
     var followed: [StateEntry] = []
     var layout: (slot: UInt64, revision: UInt64)?
     var interaction: HostInteractionProgram?
+    var pressEffect: HostPressEffect?
     var conversions: [Conversion] = []
     var patch: HostPatch
     var menuKey: MenuKeys.Key?

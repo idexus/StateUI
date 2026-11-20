@@ -363,6 +363,7 @@ extension HostRuntime: FramePresenter {
     func mount(ofLayout slot: UInt64) -> UInt64? { tree.mount(ofLayout: slot) }
 
     func stepLayoutBodies() -> [UInt64] { tree.stepLayoutBodies() }
+    func takeLocalMoves() -> [UInt64] { tree.takeLocalMoves() }
 
     var layoutBodiesMove: Bool { tree.layoutBodiesMove }
 }

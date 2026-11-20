@@ -68,10 +68,10 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                         .range(0...Double(max(count - 1, 0)))
                         .snaps(.every(1))
                         .release(.projected(.spring(response: .milliseconds(500), damping: 0.8))))
-                // A FIRST MOVE UP is the card's: it follows the hand; let go
-                // high or fast, it flies off and the app closes - the others
-                // close up, the card in front staying in front.
-                .itemDrag(begins: .perpendicular)
+                // A FIRST MOVE UP is the card's, which says so itself, below:
+                // it follows the hand; let go high or fast, it flies off and
+                // the app closes - the others close up, the card in front
+                // staying in front.
                 .onItemDismissed(directions: .up, threshold: 120) { name in close(name) }
             }
             .gridRow(0)
@@ -177,6 +177,9 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                 guard let shown = turn.journey.sample?.value else { return }
                 $named.journey.snap(to: min(max(1 + (Double(index) - shown) / 0.6, 0), 1))
             }
+            // THE HAND TAKES THE CARD ITSELF where its first move goes up or
+            // down; a first move sideways is the run's.
+            .interaction(.drag(.vertical, begins: .directional))
         }
     }
     // listing: end

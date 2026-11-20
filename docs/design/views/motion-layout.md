@@ -168,6 +168,14 @@ no view, the differ matching them by identity alone. A shade is a built node
 and a tap a closure the item's value is caught in, which nothing compares, so
 a layout given either builds its holders as part of its own description.
 
+The layout places the holder, so what the hand does to the view itself - its
+press, its drag ([interaction.md](interaction.md#a-views-own-press-and-drag))
+- the host lays over the holder's place: it reads a view standing first in a
+holder a layout program places as that program's child. A view's interaction
+written inside its own body keeps the holder carried; written on the view
+where the layout makes it, it is a part of the view nothing compares, and
+the holder is built again with every description of the layout.
+
 ## A view is its item's identity
 
 A view's identity is its item's own, the value `id:` names, compared as that
@@ -516,49 +524,46 @@ the parameters stand and tells nobody.
 
 ## One view in the hand
 
-`.itemDrag(begins:)` lets the hand take one view by itself rather than move
-the run: by a first move across the layout's axis (`.across` - a card pulled
-up out of a deck that scrolls sideways), or by a press standing still a long
-press's time (`.held` - an icon lifted off a board). Which hand it is - the
-run's, a view's or the page's - is the host layer's rule, one for every host
-([the hand over a layout](../host/runtime.md#the-hand-over-a-layout)); a host
-passes the press's point and decides nothing more. The element hears that
-hand as an event of its own, `itemDragUpdated`: its phase, where it is in the
-layout, how fast it goes - at the lift, as fast as it lifted - and how long
-it has stood still - told again each long press's time it stands, so an
-application can turn a board while an icon is held at its edge.
+A view of the layout the hand takes by itself says so itself -
+`.interaction(.drag(_:begins:))`
+([a view's own press and drag](interaction.md#a-views-own-press-and-drag)) -
+and the layout takes no hand for its views. Which hand it is - the run's,
+the view's or the page's - is decided where each is recognized: the run's
+by the layout's own value, the view's by its drag, a first move neither
+takes left to whatever stands behind
+([the hand over a layout](../host/runtime.md#the-hand-over-a-layout)).
 
-The core finds the view under the press from what the run last showed: the
-one drawn on top - the highest `zIndex`, then the later - whose place, turned
-as it is drawn about its middle, covers the point; a view drawn clear is
-passed over. The held view is the third layer's: its middle where the middle
-it was taken by has moved with the hand, over every other view - a run
-standing at the highest rank an integer holds is ranked anew first, its order
-kept, so nothing stands too high to be passed over. Everything
-else of it is its place's, as shown, and the view's own: the application is
-told as the hand takes it and as it lets it go (`ItemDrag.phase`), and lifts
-it there by the view's own properties - `.scale` under the view's `.motion`,
-a spring of its own - which the run never writes over; a hand that cannot
-see its view lifted does not know it has it. Its place may change meanwhile
-- the application moves its item in the order as the hand crosses a slot,
-and the others travel to their new places as any change at the current
-parameters do - but the held view stays under the hand, so it never leaves the
-finger. The core tells which item that is (`ItemDrag.over`): the one whose
-place stands under the hand, on top there, the held view passed over - the
-places the arithmetic gives by the description as it stands, at the parameters
-the run last showed, not where the views are drawn on their way, so the view
-that made room, still traveling off from under the hand, never answers a
-second time and swings the order back. An application reorders by the item
-it is over and never works its own arithmetic backwards to a slot.
+The view under the hand is its host's to show: pinned to the hand in the
+layout's room over every other view, whatever the run does meanwhile - the
+application moves its item in the order as the hand crosses a slot, and the
+others travel to their new places - and back onto its place as a body let
+go, setting out at the hand's speed
+([a layout's view in the hand](../host/interaction.md#a-layouts-view-in-the-hand)).
+Everything else of it is its place's and the view's own: the application
+lifts it by the view's own properties - `.scale` under the view's `.motion`,
+a spring of its own - as the hand takes it and lets it go; a hand that
+cannot see its view lifted does not know it has it.
 
-Let go, the difference between where it is shown and its place becomes a
-change under the layout's motion, setting out at the hand's speed: the view
-settles into its slot as a changed order would. With `.onItemDismissed`, a
-view the hand took far enough one of its ways - or threw far enough, as a
-throw of the input would carry it - flies on at the hand's speed, no slower
-than the room's length a motion's length, and its item is told once it has
-left the room; the application removes the item then. Every dismissal written
-is a way out: the view leaves when it passed one, and each one it passed is
-told, in the order written. The handler runs after the frame, as a job of the
-UI thread, never inside the cycle.
+The layout is told of the hand - `itemDragUpdated`: its phase, where it is in
+the room, how fast it goes, how long it has stood still - told again each
+long press's time it stands, so an application can turn a board while an
+icon is held at its edge - and which of its views. From it the run makes the
+application's `ItemDrag`, and tells which item the hand is over
+(`ItemDrag.over`): the one whose place stands under the hand, on top there,
+the held view passed over - the places the arithmetic gives by the
+description as it stands, at the parameters the run last showed, not where
+the views are drawn on their way, so the view that made room, still
+traveling off from under the hand, never answers a second time and swings
+the order back. An application reorders by the item it is over and never
+works its own arithmetic backwards to a slot.
+
+With `.onItemDismissed`, a view the hand took far enough one of its ways -
+or threw far enough, as a throw of the input would carry it - is the run's
+from the lift: it answers where the view flies (`HostLayoutView.held`), at
+the hand's speed and no slower than the room's length a motion's length,
+and its item is told once it has left the room; the application removes the
+item then. Every dismissal written is a way out: the view leaves when it
+passed one, and each one it passed is told, in the order written. The
+handler runs after the frame, as a job of the UI thread, never inside the
+cycle.
 

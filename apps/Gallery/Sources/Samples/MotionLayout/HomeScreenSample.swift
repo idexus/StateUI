@@ -125,12 +125,11 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                         .range(0...Double(boards - 1))
                         .snaps(.every(1))
                         .release(.projected(.eased(.milliseconds(400)))))
-                // HELD, AN ICON LEAVES ITS BOARD for the hand: each move
-                // gives it the slot under the hand, and the others travel to
-                // make room; held still at an edge, the boards turn under it.
-                // Taken, it lifts, so the hand knows it has it; let go, it
-                // settles back.
-                .itemDrag(begins: .longPress)
+                // HELD, AN ICON LEAVES ITS BOARD for the hand - each icon
+                // says so itself, below: each move gives it the slot under
+                // the hand, and the others travel to make room; held still at
+                // an edge, the boards turn under it. Taken, it lifts, so the
+                // hand knows it has it; let go, it settles back.
                 .onItemDragged { drag in
                     switch drag.phase {
                     case .began:
@@ -274,6 +273,10 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             // a little past and back.
             .scale(lifted ? 1.18 : 1)
             .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
+            // THE HAND TAKES THE ICON ITSELF once a press has stood still on
+            // it: said here, in the icon's own body, so a new order still
+            // builds no icon again.
+            .interaction(.drag(.both, begins: .longPress))
         }
     }
     // listing: end

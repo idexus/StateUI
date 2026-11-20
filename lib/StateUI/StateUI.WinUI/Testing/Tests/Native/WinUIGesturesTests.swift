@@ -115,7 +115,8 @@ final class WinUIGesturesTests: XCTestCase {
         }
     }
 
-    /// The relay listens by the host layer's own bits, which a view hands it as they are.
+    /// The relay listens by the host layer's own bits, which a view hands it as they are - but for a press with no
+    /// tap, which it hears as it hears a tap's press and has no bit for.
     func testTheRelayListensByTheHostLayersBits() {
         XCTAssertEqual(Hearing.taps.rawValue, UInt32(StateUIHearingTaps.rawValue))
         XCTAssertEqual(Hearing.pointer.rawValue, UInt32(StateUIHearingPointer.rawValue))
@@ -124,7 +125,8 @@ final class WinUIGesturesTests: XCTestCase {
         XCTAssertEqual(Hearing.hand.rawValue, UInt32(StateUIHearingHand.rawValue))
         XCTAssertEqual(Hearing.rotations.rawValue, UInt32(StateUIHearingRotations.rawValue))
         XCTAssertEqual(Hearing.holds.rawValue, UInt32(StateUIHearingHolds.rawValue))
-        XCTAssertEqual(Hearing.kinds.count, 7, "every kind the relay listens for has its bit here")
+        XCTAssertEqual(Hearing.kinds.filter { $0 != .presses }.count, 7, "every kind the relay listens for has its bit here")
+        XCTAssertEqual(WinUIView.told([.presses, .hand]), [.taps, .hand], "a press with no tap is told as a tap's press")
     }
 
     /// A view listens for what its handlers ask, and stops once it leaves the tree.

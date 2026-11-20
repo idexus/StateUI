@@ -134,6 +134,14 @@ touchpad's two fingers (`scroll-begin`, each step, `scroll-end`) told as the
 hand and a wheel's notches (`GDK_SCROLL_UNIT_WHEEL`, parts of one for a fine
 wheel) as notches, each a step of the run to the next target - every step
 answering whether the layout took it.
+
+The drag's offset is the widget's own - where the pointer stands in it now,
+less where the press went down in it - and a widget the hand takes comes
+after the pointer. So the offset is turned into the widget the host layer
+names for the hand (`handSpace`,
+[where the hand is measured](../../host/interaction.md#where-the-hand-is-measured)),
+`gtk_widget_compute_point` of where the press went down and of where it
+stands, and their difference is what the hand moved.
 ## A drag between views
 
 A view's drags are GTK's own controllers. A view that can be dragged holds a

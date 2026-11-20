@@ -170,7 +170,6 @@ enum WinUIRealization {
         .partial(ViewContract.interaction,
             missing: "A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, "
             + "its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch."),
-        .complete(MotionLayoutContract.itemDrag),
         .complete(MotionLayoutContract.itemDragUpdated),
         .complete(EnabledElementContract.isEnabled, on: MenuContract.self),
         .complete(TextElementContract.text, on: MenuContract.self),

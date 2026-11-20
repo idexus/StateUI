@@ -44,6 +44,11 @@ class GTKView {
     /// The controllers the view listens through, and what hears them; nil while it listens for nothing.
     private(set) var listening: GTKListening?
 
+    /// The widget a hand over the view is measured in, as the host layer names it (`MountedElement.handSpace`).
+    var handSpace: (() -> GTKWidget?)? {
+        didSet { listening?.handSpace = handSpace }
+    }
+
     /// The view's drags, once it offers or takes one.
     private(set) var dragAndDrop: GTKDragAndDrop?
     private var onHeard: ((HeardInput) -> Bool)?
@@ -308,6 +313,7 @@ class GTKView {
 
         if GTKPanel.holds(widget) { GTKPanel.setPressable(widget, hearing.contains(.taps)) }
         let listening = listening ?? GTKListening(widget: widget, number: number)
+        listening.handSpace = handSpace
         listening.listen(for: hearing)
         self.listening = hearing.isEmpty ? nil : listening
     }

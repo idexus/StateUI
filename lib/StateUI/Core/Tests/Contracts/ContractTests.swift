@@ -216,7 +216,6 @@ final class ContractTests: XCTestCase {
             [Key.escape, "a"], MapKind(rawValue: 1)!,
             WebNavigationKind(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
             Orientation.vertical,
-            ItemDragStart.longPress,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
             SelectionMode.multiple, ScrollAnchor.center, ScrollEdge.hard, ToolbarEdge.bottom,
             LayoutBody.followsLayout(response: .milliseconds(420), damping: 0.6),

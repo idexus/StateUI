@@ -23,7 +23,10 @@ extension MountedElement {
         let rotates = moved.contains { if case .rotation = $0 { true } else { false } }
         if handler(.pinchUpdated) != nil || moved.contains(.magnification) { hearing.insert(.pinches) }
         if handler(.rotationUpdated) != nil || rotates { hearing.insert(.rotations) }
-        if handler(.itemDragUpdated) != nil || !handWays.isEmpty { hearing.insert(.hand) }
+        if !handWays.isEmpty || interactionProgram?.drag != nil { hearing.insert(.hand) }
+        // A view's own press is watched, never taken: heard by the press of its taps where it hears them, so no
+        // host tells a press twice.
+        if interactionProgram?.press != nil, !hearing.contains(.taps) { hearing.insert(.presses) }
         return hearing
     }
 
@@ -79,8 +82,12 @@ extension MountedElement {
     private func take(_ input: HeardInput, in runtime: HostRuntime) -> Bool {
         switch input {
         case .press(let phase, let point, let size, let byFinger):
-            let over = ButtonPress.isOver(point, in: size, byFinger: byFinger)
-            pressed(phase, over: over, waits: byFinger && standsInAScroller, in: runtime)
+            // A press is a button's where the view hears taps, and the view's own where it answers one.
+            if hearing.contains(.taps) {
+                let over = ButtonPress.isOver(point, in: size, byFinger: byFinger)
+                pressed(phase, over: over, waits: byFinger && standsInAScroller, in: runtime)
+            }
+            pressedLocally(phase, at: point, size: size, in: runtime)
         case .tap(let run):
             let count = max(1, whole(.tapCount) ?? 1)
             if run == 0 || run % count == 0 { send(.tapped, [], in: runtime) }
@@ -124,13 +131,13 @@ extension MountedElement {
             // burst its arrival would read as a throw.
             let now = runtime.clock.now()
             let heard = handReading.hand(
-                phase, moved: moved, speed: speed, at: time ?? now, way: handWay, point: point, items: itemDrag,
+                phase, moved: moved, speed: speed, at: time ?? now, way: handWay, point: point, drag: handDrag,
                 now: now)
             gather(heard.reports, in: runtime)
             if handReading.wantsFrames { runtime.handPace.opened(self) }
             if phase == .began { handTookPresses = false }
             // The hand has the touch once it moves the run or holds a view: a press standing still is a tap.
-            if handReading.claimed == true || handReading.holdsItem, !handTookPresses {
+            if handReading.claimed == true || handReading.holdsView, !handTookPresses {
                 handTookPresses = true
                 takePresses(in: runtime)
             }
@@ -248,7 +255,7 @@ extension MountedElement {
     /// by itself keeps the hand, the fingers saying nothing.
     /// Design: docs/design/host/runtime.md#two-fingers-over-a-layout
     private func fingers(_ reports: [PinchReading.Report], in runtime: HostRuntime) -> Bool {
-        guard !handReading.holdsItem else {
+        guard !handReading.holdsView, !children.contains(where: \.holdsPlacedView) else {
             pinchReading = PinchReading()
             return false
         }
@@ -273,18 +280,14 @@ extension MountedElement {
         return ways.count > 1 ? .everyWay : ways.first.map(HandWay.init)
     }
 
-    /// Whether the hand over the layout this element is holds one of its views by itself.
-    public var holdsItem: Bool { handReading.holdsItem }
-
-    /// How the hand takes one view of the layout this element is by itself, where it does.
-    public var itemDrag: ItemDragStart? {
-        value(.itemDrag)?.enumeration.flatMap(ItemDragStart.init(rawValue:))
-    }
+    /// Whether the hand holds the view itself.
+    public var holdsView: Bool { handReading.holdsView }
 
     /// A frame at `now` found the element's wheel open or its hand's reports waiting: the wheel let go where it has
     /// stood still long enough, then what the hand said since the last frame said at once.
     func paced(now: Double, in runtime: HostRuntime) {
         tell(buttonPress.paced(now: now), in: runtime)
+        pacedLocally(in: runtime)
         for each in wheelPinch.paced(now: now) { hear(each, in: runtime) }
         gather(handReading.paced(at: now), in: runtime)
         let reports = handOutbox
@@ -309,10 +312,10 @@ extension MountedElement {
         guard !reports.isEmpty else { return }
 
         for report in reports {
-            if report.phase == .changed, let last = handOutbox.last, last.phase == .changed, last.item == report.item {
+            if report.phase == .changed, let last = handOutbox.last, last.phase == .changed, last.holdsView == report.holdsView {
                 handOutbox[handOutbox.count - 1] = HandReading.Report(
                     .changed, moved: Point(x: last.moved.x + report.moved.x, y: last.moved.y + report.moved.y),
-                    speed: report.speed, item: report.item, at: report.at, still: max(last.still, report.still))
+                    speed: report.speed, holdsView: report.holdsView, at: report.at, still: max(last.still, report.still))
             } else {
                 handOutbox.append(report)
             }
@@ -320,17 +323,12 @@ extension MountedElement {
         runtime.handPace.opened(self)
     }
 
-    /// The hand's reports, said to the sessions that hold what it moves - or as the element's `itemDragUpdated`,
-    /// the hand holding one view.
+    /// The hand's reports, said to the sessions that hold what it moves - or, the hand holding the view itself,
+    /// to the view's own drag.
     private func said(_ reports: [HandReading.Report], in runtime: HostRuntime) {
         for report in reports {
-            if report.item {
-                send(.itemDragUpdated, [
-                    .enumeration(report.phase.rawValue),
-                    .numbers(inRun(report.at)),
-                    .numbers(alongRun(report.speed)),
-                    .number(report.still),
-                ], in: runtime)
+            if report.holdsView {
+                draggedLocally(report, in: runtime)
                 continue
             }
             let (moved, speed) = (alongRun(report.moved), alongRun(report.speed))
@@ -342,13 +340,13 @@ extension MountedElement {
     /// A move along and down - the hand's, a speed, a wheel's notches - as the run's arithmetic reads it: right to
     /// left, the other way along.
     /// Design: docs/design/host/layout.md#right-to-left
-    private func alongRun(_ move: Point) -> [Double] {
+    func alongRun(_ move: Point) -> [Double] {
         [runDirection == .rightToLeft ? -move.x : move.x, move.y]
     }
 
     /// A point over the layout as the run's arithmetic reads it: right to left, turned about the middle of the room
     /// it last said it has.
-    private func inRun(_ point: Point) -> [Double] {
+    func inRun(_ point: Point) -> [Double] {
         guard runDirection == .rightToLeft else { return [point.x, point.y] }
         let width = laidOutRoom?.width ?? 0
         return [width - point.x, point.y]

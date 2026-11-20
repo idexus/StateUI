@@ -110,6 +110,23 @@
     /// What the element shows of its program's answers: the children's bodies on their way.
     private var programPresentation = ProgramPresentation()
 
+    /// What the user's hand does to the element's own presentation, and whether a child's changed since the
+    /// element last stepped its program's places.
+    /// Design: docs/design/host/interaction.md#a-views-own-press-and-drag
+    var local = LocalPresentation()
+    var childrenMovedLocally = false
+
+    /// The view's own press as its effect is handed it, and where the hand took the view it holds by itself.
+    var pressReading = PressReading()
+    var localFollow = LocalFollow()
+    var dragFrom = Point.zero
+    var dragOrigin = Rect.zero
+
+    /// Where the element last showed the child at `place` of its program's places; nil where it shows none there.
+    func programPlace(at place: Int) -> HostPlacement? {
+        programPlaces.indices.contains(place) ? programPlaces[place] : nil
+    }
+
     /// Whether a child is still on its way to the place the program gave it.
     var programBodiesMove: Bool { programPresentation.moves }
 
@@ -121,8 +138,10 @@
         // A view is the body it says itself, else the layout's for every child - a spring answering a change where
         // the layout says none.
         let bodies = value(LayoutContract.layoutBodies.token).flatMap(LayoutBody.init(propValue:)) ?? .onChange()
+        childrenMovedLocally = false
         let placed = programPresentation.take(
-            program.answered(), layoutBodies: bodies, at: now, reducesMotion: reducesMotion)
+            program.answered(), layoutBodies: bodies, locals: children.map(\.placedLocal), at: now,
+            reducesMotion: reducesMotion)
         // The layout is at rest only once the element moves none of its children: it hears either way.
         program.bodiesMove(programPresentation.moves)
         return presents(placed)
@@ -130,9 +149,11 @@
 
     /// Steps the children on their way to `now`; whether that changed what the element presents.
     func stepProgramPlaces(to now: Double) -> Bool {
-        guard let program = layoutProgram, programPresentation.moves else { return false }
+        guard let program = layoutProgram, programPresentation.moves || childrenMovedLocally else { return false }
 
-        let placed = programPresentation.step(to: now)
+        childrenMovedLocally = false
+        let placed = programPresentation.step(to: now, locals: children.map(\.placedLocal))
+        program.bodiesMove(programPresentation.moves)
         if !programPresentation.moves { program.bodiesMove(false) }
         return presents(placed)
     }
@@ -402,6 +423,7 @@
             let before = interactionProgram
             if case .replace(let program) = update { interactionProgram = program } else { interactionProgram = nil }
             tree.interactionChanged(self, before)
+            localInteractionChanged(in: tree)
         }
         wear(driven)
         // A journey followed with no property has no view to read it: its channel opens here.

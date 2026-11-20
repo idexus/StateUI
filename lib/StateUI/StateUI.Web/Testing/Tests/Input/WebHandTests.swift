@@ -42,13 +42,14 @@ final class WebHandTests: XCTestCase {
     func testAHandTheLayoutTookStartsNoDragOfTheBrowsersOwn() throws {
         let turn = State(wrappedValue: 0.0)
         let host = WebRenderer.running {
-            MotionLayout([0, 1, 2], parameters: turn.projectedValue) { Text("\($0)") } placements: { context, phase in
+            MotionLayout([0, 1, 2], parameters: turn.projectedValue) {
+                Text("\($0)").interaction(.drag(.both, begins: .longPress))
+            } placements: { context, phase in
                 (0..<3).map { Placement(Rect(x: (Double($0) - phase) * 100, y: 0, width: 100, height: context.bounds.height)) }
             }
             .interaction(
                 .value(turn.projectedValue, input: .translation(.horizontal, unit: .frontItem))
                     .reversed(true).range(0...2).snaps(.every(1)))
-            .itemDrag(begins: .longPress)
             .width(300)
             .height(200)
         }
@@ -74,6 +75,35 @@ final class WebHandTests: XCTestCase {
         XCTAssertFalse(try dragStarted(after: [(-20, 2)]), "the run's hand")
         XCTAssertFalse(try dragStarted(after: [(-3, 0)]), "a hand the layout may still take")
         XCTAssertTrue(try dragStarted(after: [(2, 20)]), "a hand across the layout, left to the page")
+    }
+
+    /// A VIEW THE HAND TAKES IS FOLLOWED WHEREVER THE POINTER GOES: a mouse pressed on a view saying its own drag and
+    /// moved off it in one step - further than the view is wide, before it can follow - is the view's all the same;
+    /// the page hands a mouse's moves to what stands under it, and the view is under it no more.
+    func testAViewsOwnDragFollowsAMouseThatLeavesItInOneStep() throws {
+        let host = WebRenderer.running {
+            Rectangle()
+                .fill(.blue)
+                .width(20)
+                .height(20)
+                .interaction(.drag(.both))
+                .id("chip")
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+        }
+        let chip = try XCTUnwrap(host.runtime.tree.root?.first(id: .manual("chip")))
+        let view = try XCTUnwrap((chip.native as? WebElement)?.view)
+        host.settle { (try? WebBrowser.number("e.getBoundingClientRect().width", on: view.node)) == 20 }
+        let (driver, box) = (WebDriver(), try WebDriver().box(of: view.node))
+
+        driver.mouse("mousePressed", at: Point(x: 10, y: 10), in: box)
+        driver.mouse("mouseMoved", at: Point(x: 70, y: 10), in: box, held: true)
+        host.settle { chip.holdsView }
+
+        XCTAssertTrue(chip.holdsView, "the view is the hand's, sixty points from where it stood")
+        driver.mouse("mouseReleased", at: Point(x: 70, y: 10), in: box)
+        host.settle { !chip.holdsView }
+        driver.park()
     }
 
     /// ⌥/ALT AND A DRAG ARE TWO FINGERS: a mouse pressed with Alt and dragged twice as far from the layout's middle

@@ -468,17 +468,18 @@
                 s.expect(handed.values.last, 1, "the program moves it to its keyframe")
             },
             ConformanceCase("aPressHeldTakesTheViewUnderItToTheHand", proves: [
-                Covered(MotionLayoutContract.itemDrag), Covered(MotionLayoutContract.itemDragUpdated),
-            ]) { s in
+                Covered(MotionLayoutContract.itemDragUpdated),
+            ], needs: [Covered(ViewContract.interaction, on: RectangleContract.self)]) { s in
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
-                let layout = try itemLayout(s, clock: clock, phase: phase, begins: .longPress, told: told)
+                let view = try itemLayout(s, clock: clock, phase: phase, drag: .drag(.both, begins: .longPress), told: told)
 
-                // The middle view stands from 30 to 50 across: a press on it held past a long press is its.
-                try s.perform(.pressDown(at: Point(x: 40, y: 20)), on: layout)
+                // The middle view stands from 30 to 50 across and 10 to 30 down: a press at its middle held past
+                // a long press is its, and the layout is told where the hand is in its own room.
+                try s.perform(.pressDown(at: Point(x: 10, y: 10)), on: view)
                 s.frames(of: clock, until: clock.now + 600)
-                try s.perform(.drag(to: Point(x: 70, y: 30)), on: layout)
+                try s.perform(.drag(to: Point(x: 40, y: 20)), on: view)
                 s.frames(of: clock, until: clock.now + 48)
-                try s.perform(.lift(at: Point(x: 70, y: 30)), on: layout)
+                try s.perform(.lift(at: Point(x: 40, y: 20)), on: view)
                 s.frames(of: clock, until: clock.now + 600)
 
                 s.expect(told.values.first, "1 at 40,20", "the view under the press, where it went down")
@@ -486,29 +487,34 @@
                 s.expect(phase.wrappedValue, 0, "the run stands")
             },
             ConformanceCase("aFirstMoveAcrossTakesTheViewUnderThePress", proves: [
-                Covered(MotionLayoutContract.itemDrag), Covered(MotionLayoutContract.itemDragUpdated),
-            ]) { s in
+                Covered(MotionLayoutContract.itemDragUpdated),
+            ], needs: [Covered(ViewContract.interaction, on: RectangleContract.self)]) { s in
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
-                let layout = try itemLayout(s, clock: clock, phase: phase, begins: .perpendicular, told: told)
+                let view = try itemLayout(
+                    s, clock: clock, phase: phase, drag: .drag(.vertical, begins: .directional), told: told)
 
-                try s.perform(.pressDown(at: Point(x: 40, y: 15)), on: layout)
-                try s.perform(.drag(to: Point(x: 42, y: 35)), on: layout)
+                try s.perform(.pressDown(at: Point(x: 10, y: 5)), on: view)
+                try s.perform(.drag(to: Point(x: 12, y: 25)), on: view)
                 s.frames(of: clock, until: clock.now + 48)
-                try s.perform(.lift(at: Point(x: 42, y: 35)), on: layout)
+                try s.perform(.lift(at: Point(x: 12, y: 25)), on: view)
                 s.frames(of: clock, until: clock.now + 600)
 
                 s.expect(told.values.first, "1 at 40,15", "the view under the press")
-                s.expect(told.values.last, "1 at 42,35", "moved down with the hand")
+                s.expect(told.values.last, "1 at 40,35", "moved down with the hand, and no way across: its drag's way")
                 s.expect(phase.wrappedValue, 0, "the run stands")
             },
-            ConformanceCase("aViewLetGoFarEnoughIsDismissed", proves: [Covered(MotionLayoutContract.itemDragUpdated)]) { s in
+            ConformanceCase("aViewLetGoFarEnoughIsDismissed", proves: [
+                Covered(MotionLayoutContract.itemDragUpdated),
+            ], needs: [Covered(ViewContract.interaction, on: RectangleContract.self)]) { s in
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
-                let layout = try itemLayout(s, clock: clock, phase: phase, begins: .perpendicular, told: told, dismissing: true)
+                let view = try itemLayout(
+                    s, clock: clock, phase: phase, drag: .drag(.vertical, begins: .directional), told: told,
+                    dismissing: true)
 
-                try s.perform(.pressDown(at: Point(x: 40, y: 15)), on: layout)
-                try s.perform(.drag(to: Point(x: 40, y: 38)), on: layout)
+                try s.perform(.pressDown(at: Point(x: 10, y: 5)), on: view)
+                try s.perform(.drag(to: Point(x: 10, y: 28)), on: view)
                 s.frames(of: clock, until: clock.now + 48)
-                try s.perform(.lift(at: Point(x: 40, y: 38)), on: layout)
+                try s.perform(.lift(at: Point(x: 10, y: 28)), on: view)
                 s.frames(of: clock, until: clock.now + 1_000)
                 s.settle { told.values.last == "1 dismissed" }
 
@@ -518,28 +524,29 @@
     }
 }
 
-/// A layout of three views a hand moves across, whose views it takes by themselves as `begins` says - each told to
-/// `told` with where the hand is, and one let go twenty points down dismissed where `dismissing` - its run on
-/// `clock`: the layout's element, once the room is told.
+/// A layout of three views a hand moves across, each taken by itself as its own `drag` says - told to `told` with
+/// where the hand is, and one let go twenty points down dismissed where `dismissing` - its run on `clock`: the
+/// middle view's element, once the room is told.
 @MainActor
 private func itemLayout(
-    _ s: Session, clock: TestClock, phase: State<Double>, begins: ItemDragStart, told: Received<String>,
+    _ s: Session, clock: TestClock, phase: State<Double>, drag: Interaction, told: Received<String>,
     dismissing: Bool = false
 ) throws -> MountedElement {
     // The parameters travel under their state's own motion.
     try? phase.projectedValue.journey.setMotion(.eased(.milliseconds(200), curve: .linear))
     s.start(clock: clock) {
         VStack {
-            let layout = MotionLayout([0, 1, 2], parameters: phase.projectedValue) { _ in
+            let layout = MotionLayout([0, 1, 2], parameters: phase.projectedValue) { index in
                 Rectangle()
                     .fill(.red)
+                    .interaction(drag)
+                    .id("view\(index)")
             } placements: { _, at in
                 (0..<3).map { Placement(Rect(x: (Double($0) - at) * 30, y: 10, width: 20, height: 20)) }
             }
             .interaction(
                 .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))
                     .release(.projected(.eased(.milliseconds(400)))))
-            .itemDrag(begins: begins)
             .onItemDragged { told.values.append("\($0.id) at \(Int($0.at.x)),\(Int($0.at.y))") }
             if dismissing {
                 layout.onItemDismissed(directions: .down, threshold: 10) { told.values.append("\($0) dismissed") }
@@ -552,7 +559,7 @@ private func itemLayout(
         .verticalAlignment(.start)
     }
     s.frames(of: clock, until: 64)
-    return try s.element(ofType: .motionLayout)
+    return try s.element("view1")
 }
 
 /// A phase of two axes: how far a run is turned, and how large it stands.

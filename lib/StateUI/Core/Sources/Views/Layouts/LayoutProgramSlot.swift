@@ -14,11 +14,10 @@ final class LayoutProgramSlot: FollowedState {
     /// What the host is answered: the places, and what brings each child onto its own.
     var answer = HostLayoutAnswer()
 
-    /// The last change of the layout: its number, where it measures each view's way to, by the view's identity, and
-    /// how fast a view the hand let go sets out. Kept until the next, so a host that reads late still hears it.
+    /// The last change of the layout: its number, and where it measures each view's way to, by the view's
+    /// identity. Kept until the next, so a host that reads late still hears it.
     private(set) var changes: UInt64 = 0
     private(set) var discrete: [Int: Placement] = [:]
-    private(set) var released: [Int: Point] = [:]
 
     /// Whether a child is still on its way to its place: the layout's own word at a change, the host's from then.
     private(set) var bodiesMove = false
@@ -26,12 +25,10 @@ final class LayoutProgramSlot: FollowedState {
     /// Whether a hand holds a number of the layout's parameters, as the host says.
     private(set) var handHolds = false
 
-    /// A change of the layout: `discrete` and `released` are its own, and its views are on their way until the
-    /// host says they rest.
-    func changed(_ discrete: [Int: Placement], released: [Int: Point]) {
+    /// A change of the layout: `discrete` is its own, and its views are on their way until the host says they rest.
+    func changed(_ discrete: [Int: Placement]) {
         changes &+= 1
         self.discrete = discrete
-        self.released = released
         bodiesMove = true
     }
 

@@ -13,6 +13,7 @@ extension GTKElement {
             guard let self, let host else { return false }
             return element.hear(heard, in: host.runtime)
         }
+        view.handSpace = { [weak self] in (self?.element.handSpace?.native as? GTKElement)?.view?.widget }
         view.hear(
             element.hearing, holdingFor: element.holdDuration, countingRuns: (element.number(.tapCount) ?? 1) > 1, heard)
         view.offer(element.dragAndDrop) { _ = heard($0) }

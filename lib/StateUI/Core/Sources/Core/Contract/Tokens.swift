@@ -188,7 +188,6 @@ extension NodeType {
     static let showsUserLocation = MapContract.showsUserLocation.token
     static let isSpellCheckEnabled = TextInputContract.isSpellCheckEnabled.token
     static let isTextPredictionEnabled = TextInputContract.isTextPredictionEnabled.token
-    static let itemDrag = MotionLayoutContract.itemDrag.token
     static let showsTraffic = MapContract.showsTraffic.token
     static let isVisible = VisualElementContract.isVisible.token
     static let isZoomEnabled = MapContract.isZoomEnabled.token

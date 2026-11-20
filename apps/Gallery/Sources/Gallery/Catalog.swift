@@ -364,6 +364,7 @@ final class Catalog {
                 Sample(HoldSample()),
                 Sample(PanSample()),
                 Sample(HandMovesStateSample()),
+                Sample(HandOnViewSample()),
                 Sample(SwipeSample()),
                 Sample(PinchSample()),
                 Sample(PointerSample()),

@@ -38,7 +38,6 @@ final class LayoutItemDragTests: XCTestCase {
                 order == nil ? places[name] ?? Placement(.zero) : Placement(Rect(x: Double(index) * 60, y: 120, width: 50, height: 50))
             }
         }
-        .itemDrag(begins: .longPress)
         .onItemDragged { told.drags.append($0) }
         .layoutBodies(.onChange(response: .milliseconds(160)))
         if awaiting {
@@ -54,110 +53,6 @@ final class LayoutItemDragTests: XCTestCase {
     /// The run shown now.
     private func shown(_ renders: Renders, _ tree: () -> Node) -> [Placement] {
         bench.shown(renders.renderFromScratch(tree()))
-    }
-
-    /// THE PRESS TAKES THE VIEW DRAWN ON TOP UNDER IT, its place turned as it is drawn.
-    func testThePressTakesTheViewDrawnOnTopUnderIt() {
-        let told = Told()
-        let renders = Renders()
-        func tree() -> Node { cards(told) }
-        _ = bench.laid(renders, tree)
-
-        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
-        XCTAssertEqual(told.drags.last?.id, "B", "B over A")
-        bench.item(renders, tree, .ended, at: Point(x: 75, y: 50))
-        for _ in 0..<20 { bench.cycle() }
-
-        // An eighth of a turn stands C's corner ten points above its square: a point there is C's.
-        bench.item(renders, tree, .began, at: Point(x: 225, y: -8))
-        XCTAssertEqual(told.drags.last?.id, "C", "turned as it is drawn")
-        XCTAssertEqual(told.drags.last?.at, Point(x: 225, y: -8))
-        XCTAssertEqual(told.drags.last?.room, Rect(x: 0, y: 0, width: 300, height: 200))
-    }
-
-    /// A HELD VIEW KEEPS TO THE HAND, drawn over every other; the others stand.
-    func testAHeldViewKeepsToTheHandOverTheOthers() {
-        let told = Told()
-        let renders = Renders()
-        func tree() -> Node { cards(told) }
-        _ = bench.laid(renders, tree)
-
-        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
-        bench.item(renders, tree, .changed, at: Point(x: 105, y: 90))
-        let run = shown(renders, tree)
-
-        XCTAssertEqual(run[1].bounds, Rect(x: 80, y: 40, width: 100, height: 100), "B moved as the hand moved")
-        XCTAssertGreaterThan(run[1].zIndex, max(run[0].zIndex, run[2].zIndex), "over every other")
-        XCTAssertEqual(run[0].bounds, Rect(x: 0, y: 0, width: 100, height: 100), "A stands")
-        XCTAssertEqual(told.drags.map(\.at), [Point(x: 75, y: 50), Point(x: 105, y: 90)], "told as it takes it and moves it")
-    }
-
-    /// A HELD VIEW IS DRAWN OVER EVERY OTHER HOWEVER HIGH THEY STAND - the highest rank an integer holds, several
-    /// alike - and the others keep their order beneath it.
-    func testAHeldViewIsDrawnOverViewsAtTheHighestRank() {
-        let renders = Renders()
-        func tree() -> Node {
-            let places = [
-                Placement(Rect(x: 0, y: 0, width: 100, height: 100), zIndex: .max), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: .max),
-                Placement(Rect(x: 200, y: 0, width: 50, height: 50), zIndex: .max - 1),
-            ]
-            return MotionLayout(["A", "B", "C"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) }
-                placements: { _, _ in places }
-                .itemDrag(begins: .longPress)
-                .node
-        }
-        _ = bench.laid(renders, tree)
-
-        bench.item(renders, tree, .began, at: Point(x: 25, y: 50))
-        bench.item(renders, tree, .changed, at: Point(x: 35, y: 50))
-        let ranks = Placement.drawingOrder(of: shown(renders, tree))
-
-        XCTAssertEqual(ranks, [2, 1, 0], "A held over B, B over C as they stood")
-    }
-
-    /// A HELD VIEW STAYS UNDER THE HAND AS THE ORDER CHANGES: its place moves under it, the others travel to theirs.
-    func testAHeldViewStaysUnderTheHandAsTheOrderChanges() {
-        let told = Told()
-        let order = State(wrappedValue: ["A", "B", "C"])
-        let renders = Renders()
-        func tree() -> Node { cards(told, order) }
-        _ = bench.laid(renders, tree)
-
-        bench.item(renders, tree, .began, at: Point(x: 25, y: 145))
-        bench.item(renders, tree, .changed, at: Point(x: 95, y: 145))
-        order.wrappedValue = ["B", "A", "C"]
-        _ = renders.render(tree())
-        for _ in 0..<3 { bench.cycle() }
-        let run = shown(renders, tree)
-
-        XCTAssertEqual(run[1].bounds.x, 70, accuracy: 0.001, "A under the hand, not at its new place")
-        XCTAssertEqual(bench.answer.views[1].held?.bounds.x ?? -1, 70, accuracy: 0.001, "answered where it is held")
-        XCTAssertNil(bench.answer.views[0].held)
-        XCTAssertEqual(bench.answer.views[0].discrete?.bounds.x, 0, "B answered its way to A's old place")
-    }
-
-    /// LET GO, THE VIEW IS ANSWERED ITS WAY BACK TO ITS PLACE, setting out at the hand's speed: the host brings it
-    /// from where the hand held it.
-    func testLetGoTheViewComesBackToItsPlace() {
-        let told = Told()
-        let renders = Renders()
-        func tree() -> Node { cards(told) }
-        _ = bench.laid(renders, tree)
-
-        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
-        bench.item(renders, tree, .changed, at: Point(x: 155, y: 50))
-        let held = bench.answer
-        XCTAssertEqual(held.views[1].held?.bounds.x ?? -1, 130, accuracy: 0.001, "where the hand holds it")
-
-        bench.item(renders, tree, .ended, at: Point(x: 155, y: 50))
-        _ = shown(renders, tree)
-        let released = bench.answer.views[1]
-
-        XCTAssertNil(released.held, "let go")
-        XCTAssertEqual(released.target.bounds.x, 50, accuracy: 0.001, "its place")
-        XCTAssertEqual(released.discrete?.bounds.x ?? -1, 50, accuracy: 0.001, "where its way back is measured to")
-        XCTAssertNotNil(released.velocity, "setting out at the hand's speed")
-        XCTAssertNotEqual(bench.answer.change, held.change, "a change of its own")
     }
 
     /// LET GO FAR ENOUGH, THE VIEW FLIES ON OUT OF THE ROOM, and its item is told once it has left; short of it, it
@@ -198,7 +93,6 @@ final class LayoutItemDragTests: XCTestCase {
             MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
                 [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
-            .itemDrag(begins: .longPress)
             .onItemDragged { told.drags.append($0) }
             .onItemDragged { told.drags.append($0) }
             .onItemDismissed(directions: .up, threshold: 50) { told.dismissed.append("up \($0)") }
@@ -228,7 +122,6 @@ final class LayoutItemDragTests: XCTestCase {
             MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
                 [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
-            .itemDrag(begins: .longPress)
             .onItemDragged { told.drags.append($0) }
             .onItemDragged(policy: .ignoreWhileRunning) { drag in
                 awaited.append(drag.phase)
@@ -255,7 +148,6 @@ final class LayoutItemDragTests: XCTestCase {
             MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
                 [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
-            .itemDrag(begins: .longPress)
             .onItemDismissed(directions: .up, threshold: 50, policy: .ignoreWhileRunning) { _ in
                 heard.append(1)
                 try await Task.sleep(for: .seconds(60))
@@ -285,7 +177,6 @@ final class LayoutItemDragTests: XCTestCase {
             let layout = MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
                 [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
-            .itemDrag(begins: .longPress)
             return (hears.wrappedValue
                 ? layout.onItemDismissed(directions: .up, threshold: 50, gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
                 : layout).node
@@ -317,7 +208,6 @@ final class LayoutItemDragTests: XCTestCase {
             MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
                 [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
-            .itemDrag(begins: .longPress)
             .onItemDismissed(directions: .up, threshold: 50, gate: gate) { _ in
                 heard += 1
                 try await Task.sleep(for: .seconds(60))
@@ -356,35 +246,6 @@ final class LayoutItemDragTests: XCTestCase {
         }
 
         XCTAssertEqual(told.dismissed, ["B"], "the second ignored while the first runs")
-    }
-
-    /// A HELD VIEW WEARS ITS PLACE'S LOOK WHERE THE HAND HOLDS IT: the arithmetic may lift it - larger, turned -
-    /// and it stays under the hand; the application is told as the hand takes it and as it lets it go.
-    func testAHeldViewWearsItsPlacesLookWhereTheHandHoldsIt() {
-        let told = Told()
-        let (lift, turn) = (State(wrappedValue: 1.0), State(wrappedValue: 0.0))
-        let renders = Renders()
-        func tree() -> Node {
-            MotionLayout(["A", "B"], parameters: turn.projectedValue) { Text($0) } placements: { _, _ in
-                [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), transform: .scale(lift.wrappedValue))]
-            }
-            .itemDrag(begins: .longPress)
-            .onItemDragged { told.drags.append($0) }
-            .following(lift.projectedValue)
-            .node
-        }
-        _ = bench.laid(renders, tree)
-
-        bench.item(renders, tree, .began, at: Point(x: 125, y: 50))
-        bench.item(renders, tree, .changed, at: Point(x: 155, y: 90))
-        lift.wrappedValue = 1.2
-        bench.cycle()
-        let held = shown(renders, tree)[1]
-
-        XCTAssertEqual(held.transform, .scale(1.2), "lifted as its place says")
-        XCTAssertEqual(held.bounds, Rect(x: 80, y: 40, width: 100, height: 100), "under the hand")
-        bench.item(renders, tree, .ended, at: Point(x: 155, y: 90))
-        XCTAssertEqual(told.drags.map(\.phase), [.began, .changed, .ended])
     }
 
     /// A HAND STANDING STILL IS TOLD HOW LONG it has stood.
@@ -432,7 +293,6 @@ final class LayoutItemDragTests: XCTestCase {
             return MotionLayout(names, parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
                 names.indices.map { Placement(Rect(x: Double($0) * 60, y: 0, width: 50, height: 50)) }
             }
-            .itemDrag(begins: .longPress)
             .onItemDragged { drag in
                 told.drags.append(drag)
                 guard let over = drag.over, let from = order.wrappedValue.firstIndex(of: drag.id),
@@ -453,16 +313,20 @@ final class LayoutItemDragTests: XCTestCase {
         XCTAssertEqual(order.wrappedValue, ["B", "A", "C"])
     }
 
-    /// THE LAYOUT SAYS HOW THE HAND TAKES ONE OF ITS VIEWS, and hears that hand; one that says nothing hears none.
-    func testTheLayoutSaysHowTheHandTakesOneOfItsViews() {
-        let renders = Renders()
-        let taking = renders.render(cards(Told())).first(.motionLayout)
+    /// THE LAYOUT HEARS A VIEW'S DRAG WHERE SOMETHING ASKS TO BE TOLD OF IT - a drag's handler, or a dismissal - and
+    /// one that asks nothing hears none: the view is still its host's to hold.
+    func testTheLayoutHearsItsViewsDragWhereSomethingAsks() {
+        let asking = Renders().render(cards(Told())).first(.motionLayout)
+        let dismissing = Renders().render(
+            MotionLayout(["A"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [Placement(.zero)] }
+                .onItemDismissed(directions: .up, threshold: 50) { _ in }
+                .node)
+            .first(.motionLayout)
         let plain = Renders().render(MotionLayout(["A"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [Placement(.zero)] }.node)
             .first(.motionLayout)
 
-        XCTAssertEqual(taking?.props[.itemDrag], ItemDragStart.longPress.propValue)
-        XCTAssertNotNil(taking?.events?[.itemDragUpdated])
-        XCTAssertNil(plain?.props[.itemDrag])
+        XCTAssertNotNil(asking?.events?[.itemDragUpdated])
+        XCTAssertNotNil(dismissing?.events?[.itemDragUpdated])
         XCTAssertNil(plain?.events?[.itemDragUpdated])
     }
 }

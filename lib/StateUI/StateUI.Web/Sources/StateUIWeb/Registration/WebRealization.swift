@@ -176,7 +176,6 @@ enum WebRealization {
             missing: "Chrome and Firefox tell no trackpad's rotation: two fingers turn "
             + "a layout on a touch screen, and on a trackpad in Safari."),
         .complete(LayoutContract.ignoresSafeArea),
-        .complete(MotionLayoutContract.itemDrag),
         .complete(MotionLayoutContract.itemDragUpdated),
         .partial(BackgroundElementContract.background, on: WindowContract.self,
             missing: "A page draws its window opaque: a blur or glass shows its color."),

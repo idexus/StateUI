@@ -19,7 +19,7 @@
         Specimens.wearing(ViewContract.self).flatMap { element in
             [
                 margined(element), drawn(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
-                tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), moved(element), swiped(element), pinched(element), rotated(element), pointed(element),
+                tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
         } + [
@@ -726,6 +726,73 @@
             s.frames(of: clock, until: clock.now + 320)
             s.expect(x.wrappedValue, -50, "the state moved as far as the hand went, and left there")
             s.expect(x.projectedValue.journey.sample?.value, -50, "shown there, standing still")
+        }
+    }
+
+    /// A press on a view saying its own press draws the view as its effect answers while it stands, and where its
+    /// layout puts it once it lifts: no tap comes of it, and no state moves.
+    @MainActor
+    static func pressedByItself(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aPressDrawsItAsItsEffectAnswers", proves: [
+            Covered(ViewContract.interaction, on: element),
+        ], needs: [Covered(ViewContract.presentationFrameChanged, on: element)]) { s in
+            let (clock, drawn) = (TestClock(), Received<[Double]>())
+            s.start(clock: clock) {
+                VStack {
+                    Opened.pressed(Specimens.view(element, [
+                        Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
+                        Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
+                    ]))
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.settle { drawn.values.last.map(FrameReport.place) == [0, 0, 100, 100] }
+            let view = try s.element("specimen")
+
+            try s.perform(.pressDown(at: Point(x: 50, y: 50)), on: view)
+            s.frames(of: clock, until: clock.now + 48)
+            s.settle { drawn.values.last.map(FrameReport.place) == [12, 0, 100, 100] }
+            s.expect(drawn.values.last.map(FrameReport.place), [12, 0, 100, 100], "drawn as its effect answers")
+
+            try s.perform(.lift(at: Point(x: 50, y: 50)), on: view)
+            s.frames(of: clock, until: clock.now + 48)
+            s.settle { drawn.values.last.map(FrameReport.place) == [0, 0, 100, 100] }
+            s.expect(drawn.values.last.map(FrameReport.place), [0, 0, 100, 100], "where its layout puts it again")
+        }
+    }
+
+    /// The hand takes a view saying its own drag: the view stays under the hand as far as it goes, and stands
+    /// where its layout puts it once let go.
+    @MainActor
+    static func taken(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).theHandTakesTheViewItself", proves: [
+            Covered(ViewContract.interaction, on: element),
+        ], needs: [Covered(ViewContract.presentationFrameChanged, on: element)]) { s in
+            let (clock, drawn) = (TestClock(), Received<[Double]>())
+            s.start(clock: clock) {
+                VStack {
+                    Opened.taken(Specimens.view(element, [
+                        Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
+                        Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
+                    ]))
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.settle { drawn.values.last.map(FrameReport.place) == [0, 0, 100, 100] }
+            let view = try s.element("specimen")
+
+            try s.perform(.pressDown(at: Point(x: 50, y: 50)), on: view)
+            try s.perform(.drag(to: Point(x: 80, y: 70)), on: view)
+            s.frames(of: clock, until: clock.now + 48)
+            s.settle { drawn.values.last.map(FrameReport.place) == [30, 20, 100, 100] }
+            s.expect(drawn.values.last.map(FrameReport.place), [30, 20, 100, 100], "under the hand")
+
+            try s.perform(.lift(at: Point(x: 80, y: 70)), on: view)
+            s.frames(of: clock, until: clock.now + 48)
+            s.settle { drawn.values.last.map(FrameReport.place) == [0, 0, 100, 100] }
+            s.expect(drawn.values.last.map(FrameReport.place), [0, 0, 100, 100], "let go: where its layout puts it")
         }
     }
 

@@ -107,19 +107,21 @@ final class HandHearingTests: XCTestCase {
         }
     }
 
-    /// THE VIEW UNDER THE HAND OF A MIRRORED LAYOUT IS THE ONE DRAWN THERE: the hand at the right edge takes the
-    /// view the run wrote at the left, and the author is told the point as the arithmetic reads it.
-    func testTheViewUnderTheHandOfAMirroredLayoutIsTheOneDrawnThere() throws {
+    /// THE HAND ON A VIEW OF A MIRRORED LAYOUT IS TOLD AS THE ARITHMETIC READS THE ROOM: the view the run wrote at
+    /// the left is drawn at the right, and a press three points from its left edge on the screen stands seven
+    /// from the run's.
+    func testTheHandOnAViewOfAMirroredLayoutIsToldAsTheArithmeticReadsIt() throws {
         let (runtime, clock) = running(RightToLeftApplication(mirrors: true))
-        let ring = try ring(in: runtime)
+        let view = try XCTUnwrap(ring(in: runtime).children.first?.children.first)
 
-        ring.hear(.hand(.began, moved: .zero, speed: nil, point: Point(x: 295, y: 5)), in: runtime)
-        ring.hear(.hand(.changed, moved: Point(x: 0, y: 30), speed: nil, point: Point(x: 295, y: 35)), in: runtime)
+        view.hear(.hand(.began, moved: .zero, speed: nil, point: Point(x: 3, y: 5)), in: runtime)
+        view.hear(.hand(.changed, moved: Point(x: 0, y: 30), speed: nil), in: runtime)
         frames(runtime, clock, until: 64)
 
-        let drag = try XCTUnwrap(dragged.first)
-        XCTAssertEqual(drag.item, 0, "the view drawn at the right edge")
-        XCTAssertEqual(drag.at.x, 5, accuracy: 0.001, "the point mirrored about the room's width")
+        let drag = try XCTUnwrap(dragged.last)
+        XCTAssertEqual(drag.item, 0, "the view the hand took")
+        XCTAssertEqual(drag.at.x, 7, accuracy: 0.001, "measured from the run's edge of the view")
+        XCTAssertEqual(drag.at.y, 35, accuracy: 0.001)
     }
 
     /// Display frames until `end`, sixteen milliseconds apart, the clock standing at each.
@@ -248,7 +250,9 @@ private struct RightToLeftPage: View {
     @State(motion: .eased(.milliseconds(200), curve: .linear)) private var turn = 0.0
 
     var body: some View {
-        MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)") } placements: { _, phase in
+        MotionLayout([0, 1, 2, 3, 4], parameters: $turn) {
+            Text("\($0)").interaction(.drag(.vertical, begins: .directional))
+        } placements: { _, phase in
             handed.append(phase)
             return (0..<5).map { Placement(Rect(x: Double($0) * 20, y: 0, width: 10, height: 10)) }
         }
@@ -256,7 +260,6 @@ private struct RightToLeftPage: View {
             .value($turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
                 .release(.projected(.eased(.milliseconds(400)))))
         .mirrorsRightToLeft(mirrors)
-        .itemDrag(begins: .perpendicular)
         .onItemDragged { drag in dragged.append((drag.id, drag.at)) }
         .layoutDirection(.rightToLeft)
     }

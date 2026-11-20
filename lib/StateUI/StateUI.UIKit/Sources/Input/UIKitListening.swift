@@ -19,10 +19,17 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// What hears what the view heard, answering whether the element took it.
     var onHeard: ((HeardInput) -> Bool)?
 
-    /// Which way the hand moves the layout the view is, where one does; how the hand takes one of its views by
-    /// itself, and whether it holds one.
+    /// Which way the hand moves the layout the view is, where one does; how the hand takes the view by itself,
+    /// and whether it holds it.
     var handWay: (() -> HandWay?)?
-    var handItems: (() -> (start: ItemDragStart?, holding: Bool))?
+    var handDrag: (() -> (drag: HostDrag?, holding: Bool))?
+
+    /// The view the hand's moves are measured in, which the hand itself does not move: the layout placing the
+    /// view, else the view above it. A view the hand takes comes after it, and a move measured in the view itself
+    /// would shrink as it came.
+    /// Design: docs/design/platforms/uikit/input.md#the-hand-over-a-layout
+    var handSpace: (() -> UIView?)?
+    private var measured: UIView? { handSpace?() ?? view?.superview ?? view }
 
     /// The hand over a layout, and where it had come to at its last report; a wheel turned notch by notch over it,
     /// and where it had come to.
@@ -83,6 +90,11 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
             let press = UIKitPressRecognizer(target: nil, action: nil)
             press.onPress = { [weak self] phase, at, byFinger in self?.press(phase, at: at, byFinger: byFinger) }
             return [press, UITapGestureRecognizer(target: self, action: #selector(tapped(_:)))]
+        case .presses:
+            // The view's own press, told as a tap's is, with no tap.
+            let press = UIKitPressRecognizer(target: nil, action: nil)
+            press.onPress = { [weak self] phase, at, byFinger in self?.press(phase, at: at, byFinger: byFinger) }
+            return [press]
         case .holds:
             let press = UILongPressGestureRecognizer(target: self, action: #selector(held(_:)))
             hold = press
@@ -203,7 +215,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// The hand over a layout: what it moved since the last report, from the top left, and as it lifts, its speed.
     /// Design: docs/design/platforms/uikit/input.md#the-hand-over-a-layout
     @objc func handMoved(_ recognizer: UIPanGestureRecognizer) {
-        let total = recognizer.translation(in: view)
+        let total = recognizer.translation(in: measured)
         switch recognizer.state {
         case .began:
             // A finger told its press as it went down; a trackpad's fingers touch nothing, and begin here.
@@ -215,7 +227,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
             hand(.changed, moved: Point(x: total.x - handLast.x, y: total.y - handLast.y))
             handLast = total
         case .ended:
-            let speed = recognizer.velocity(in: view)
+            let speed = recognizer.velocity(in: measured)
             hand(.ended, moved: .zero, speed: Point(x: speed.x, y: speed.y))
         case .cancelled, .failed:
             hand(.cancelled, moved: .zero)
@@ -256,10 +268,10 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         guard recognizer === handPan || recognizer === handWheel, let pan = recognizer as? UIPanGestureRecognizer
         else { return true }
 
-        let moved = pan.translation(in: view)
-        let first = moved == .zero ? pan.velocity(in: view) : moved
+        let moved = pan.translation(in: measured)
+        let first = moved == .zero ? pan.velocity(in: measured) : moved
         guard recognizer === handPan else {
-            return HandReading.takes(Point(x: first.x, y: first.y), way: handWay?(), items: nil, holding: false)
+            return HandReading.takes(Point(x: first.x, y: first.y), way: handWay?(), drag: nil, holding: false)
         }
         return handBegins(first: Point(x: first.x, y: first.y))
     }
@@ -268,8 +280,8 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// declines is told all the same: the pan tells nothing of the press after it, which would stand still for the
     /// host layer and hold a view.
     func handBegins(first: Point) -> Bool {
-        let items = handItems?()
-        let begins = HandReading.takes(first, way: handWay?(), items: items?.start, holding: items?.holding ?? false)
+        let own = handDrag?()
+        let begins = HandReading.takes(first, way: handWay?(), drag: own?.drag, holding: own?.holding ?? false)
         if !begins { hand(.changed, moved: first) }
         return begins
     }

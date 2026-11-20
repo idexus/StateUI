@@ -104,13 +104,27 @@ final class LayoutBench {
         _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, at: Point, velocity: Point = .zero,
         still: Double = 0, file: StaticString = #filePath, line: UInt = #line
     ) {
-        guard let heard = renders.renderFromScratch(tree()).first(.motionLayout)?.events?[.itemDragUpdated] else {
+        let patch = renders.renderFromScratch(tree())
+        guard let heard = patch.first(.motionLayout)?.events?[.itemDragUpdated] else {
             return XCTFail("the layout hears no hand on its views", file: file, line: line)
         }
+        // The host says which view the hand took: here, the one on top whose place the press stands in.
+        if phase == .began {
+            let places = shown(patch)
+            taken = places.indices.filter { index in
+                let bounds = places[index].bounds
+                return at.x >= bounds.x && at.x <= bounds.x + bounds.width && at.y >= bounds.y
+                    && at.y <= bounds.y + bounds.height
+            }.max { places[$0].zIndex != places[$1].zIndex ? places[$0].zIndex < places[$1].zIndex : $0 < $1 } ?? 0
+        }
 
-        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, at, velocity, still)), file: file, line: line)
+        XCTAssertTrue(
+            renders.fire(heard, with: MemberValues.encode(phase, at, velocity, still, taken)), file: file, line: line)
         cycle()
     }
+
+    /// The view the hand took last, by its place among the layout's views.
+    private var taken = 0
 
     /// Renders `tree`, feeds the layout the room `room` as the host does, and turns the board until the arithmetic
     /// has answered: the run of placements the layout's own area carries.

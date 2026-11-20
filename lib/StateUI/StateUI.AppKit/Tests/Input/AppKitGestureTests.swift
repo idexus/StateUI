@@ -73,6 +73,45 @@ final class AppKitGestureTests: XCTestCase {
         XCTAssertEqual(taps.values, ["row"], "the words' press is the row's; the button's is the button's")
     }
 
+    /// A VIEW'S OWN PRESS IS HEARD WITH NO TAP: a view saying a press and hearing no tap carries the press's
+    /// recognizer and no tap's, and is drawn as its effect says while the mouse is down on it.
+    @MainActor
+    func testAViewsOwnPressIsHeardWithNoTap() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Rectangle()
+                    .fill(.red)
+                    .width(100)
+                    .height(40)
+                    .interaction(.press(values: .translation) { _ in PresentationOffset(translation: Point(x: 12, y: 0)) })
+            }
+        }
+        defer { renderer.finish() }
+        for controller in renderer.windowsForTesting { controller.window?.layoutIfNeeded() }
+        let view = try XCTUnwrap(renderer.nativeViews(NSView.self).first { view in
+            view.gestureRecognizers.contains { $0 is AppKitPressRecognizer }
+        })
+        XCTAssertFalse(view.gestureRecognizers.contains { $0 is AppKitTapRecognizer }, "no tap comes of it")
+        let press = try XCTUnwrap(view.gestureRecognizers.compactMap { $0 as? AppKitPressRecognizer }.first)
+        let element = try XCTUnwrap(renderer.runtime.tree.root?.first(type: .rectangle))
+
+        func mouse(_ type: NSEvent.EventType) throws {
+            let point = view.convert(NSPoint(x: view.bounds.midX, y: view.bounds.midY), to: nil)
+            let event = try XCTUnwrap(NSEvent.mouseEvent(
+                with: type, location: point, modifierFlags: [], timestamp: 0,
+                windowNumber: view.window?.windowNumber ?? 0, context: nil, eventNumber: 0, clickCount: 1,
+                pressure: 1))
+            type == .leftMouseDown ? press.mouseDown(with: event) : press.mouseUp(with: event)
+            renderer.runtime.displayCycle.frame(now: renderer.runtime.clock.now())
+        }
+
+        try mouse(.leftMouseDown)
+        XCTAssertEqual(element.drawingTransform.translationX, 12, "drawn as its effect says")
+
+        try mouse(.leftMouseUp)
+        XCTAssertEqual(element.drawingTransform.translationX, 0, "and as its layout has it once the press lifts")
+    }
+
     /// A pan asked of one pointer is recognized and reaches its handler. A
     /// pan asked of two leaves the view no pan recognizer: AppKit recognizes a
     /// one-pointer drag only, so it cannot honor that count.

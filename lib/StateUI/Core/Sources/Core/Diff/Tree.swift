@@ -162,6 +162,9 @@ final class RenderedNode {
     /// What the host was told the hand moves on it; nil for nothing.
     var interaction: HostInteractionProgram?
 
+    /// What answers its press, one object while it stands: each description hands it its own effect.
+    var pressEffect: HostPressEffect?
+
     /// The conversions whose derived states it wears, held: the graph keeps each up to date while it stands.
     /// Design: docs/design/core/journeys.md#the-graph-of-destinations
     var conversions: [Conversion] = []

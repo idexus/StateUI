@@ -19,6 +19,8 @@ extension GTKDriver {
         if case .sweep = act, !view.hearing.contains(.hand) { return true }
         guard let listening = view.listening else { return view is GTKButtonView && ["pressDown", "lift"].contains(act.description) }
         let controllers = { (kind: Hearing) in listening.controllers[kind] ?? [] }
+        // The press a tap is made of, or the one a view hears with no tap.
+        let press = controllers(.taps).last ?? controllers(.presses).last
         renderer?.layOut()
         switch act {
         // Each tap a press - the press's drag gesture from its fall to its lift - and the click counting its run.
@@ -89,17 +91,17 @@ extension GTKDriver {
         // A press goes down, moves and lifts through the pointer's own press and the press a tap is made of, as GTK
         // emits them.
         case .pressDown(let point):
-            let presses = [controllers(.pointer).last, controllers(.taps).last].compactMap { $0 }
+            let presses = [controllers(.pointer).last, press].compactMap { $0 }
             guard !presses.isEmpty else { return view is GTKButtonView }
             pressed.at = point
             for press in presses { GTKTestHost.emit(press, "drag-begin", [point.x, point.y]) }
         case .drag(let point):
-            let motion = controllers(.pointer).first, press = controllers(.taps).last
+            let motion = controllers(.pointer).first
             guard motion != nil || press != nil else { return false }
             if let motion { GTKTestHost.emit(motion, "motion", [point.x, point.y]) }
             if let press { GTKTestHost.emit(press, "drag-update", [point.x - pressed.at.x, point.y - pressed.at.y]) }
         case .lift(let point):
-            let presses = [controllers(.pointer).last, controllers(.taps).last].compactMap { $0 }
+            let presses = [controllers(.pointer).last, press].compactMap { $0 }
             guard !presses.isEmpty else { return view is GTKButtonView }
             for press in presses { GTKTestHost.emit(press, "drag-end", [point.x - pressed.at.x, point.y - pressed.at.y]) }
         default: return false

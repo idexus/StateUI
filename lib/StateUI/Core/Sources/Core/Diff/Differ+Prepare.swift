@@ -193,10 +193,13 @@ extension Differ {
         // What the hand moves on the element, as it stands there: a state it moves is consumed too, unless the
         // element wears it already.
         // Design: docs/design/views/interaction.md#what-the-host-is-handed
-        let moved = node.program(ViewContract.interaction)
-            .map { $0.standing(measuresFront: node.program(MotionLayoutContract.layout) != nil) }
-        for complaint in moved?.complaints ?? [] { complain(complaint) }
-        let hand = moved.map { Interaction(standing: $0.leaves) }
+        let declared = node.program(ViewContract.interaction)
+        let moved = declared.map { $0.standing(measuresFront: node.program(MotionLayoutContract.layout) != nil) }
+        let local = declared?.standingLocal()
+        for complaint in (moved?.complaints ?? []) + (local?.complaints ?? []) { complain(complaint) }
+        var hand = moved.map { Interaction(standing: $0.leaves) }
+        hand?.press = local?.press
+        hand?.drag = local?.drag
         let worn = Set(node.driven.values.map { ObjectIdentifier($0.state) })
         let held = (hand?.consumers ?? []).filter { consumer in
             consumer.image().map { !worn.contains(ObjectIdentifier($0)) } ?? false
@@ -419,10 +422,18 @@ extension Differ {
             patch.layout = .clear
         }
         // What the hand moves is told again where it changed; said no longer, it is cleared.
-        let handed = hand?.program { Renderer.shared.number(for: $0) }
-        if let handed, !handed.values.isEmpty {
+        // A press's effect is the application's code: the object the host keeps stands while the view does, and
+        // every description hands it its own.
+        let effect = hand?.press.map { press -> HostPressEffect in
+            let kept = previous?.pressEffect ?? HostPressEffect(press.effect)
+            kept.offset = press.effect
+            return kept
+        }
+        let handed = hand?.program(pressedBy: effect) { Renderer.shared.number(for: $0) }
+        if let handed, !handed.isEmpty {
             if describeAll || previous?.interaction != handed { patch.interaction = .replace(handed) }
             pass.interaction = handed
+            pass.pressEffect = effect
         } else if previous?.interaction != nil, !describeAll {
             patch.interaction = .clear
         }

@@ -216,6 +216,95 @@ own, and both travel beside each other.
                  motion, and that write's waiter is answered by that run
 ```
 
+## A view's own press and drag
+
+What the hand does to a view itself - its press's offset, its drag's hold -
+is one thing kept on the view's element, `LocalPresentation`, and read by
+whoever places the view:
+
+```text
+  a layout program places it     ProgramPresentation lays it over the
+                                 child's place
+  nothing of the kind does       the element lays it over its own transform
+                                 (MountedElement.drawingTransform)
+```
+
+Over a place, a press's offset moves the child's target: a child of no body
+stands there at once, and a body following its layout is carried by that
+move as by any other of its place, so it lags behind the press and springs
+back with no motion added for it. A hold is exact: the child is shown as it
+was when the hand took it, its middle moved as far as the hand has gone,
+whatever its place does meanwhile - a new order, the layout's parameters
+traveling - and ranked over every other child, the others ranked anew
+where that would pass the highest rank an integer holds. Let go, a body
+sets out from where it was shown at the hand's speed; a child of no body is
+at its place at once; a hand taken away gives it no speed.
+
+Over its own transform the offset is the outer layer - the view's own move
+turned and scaled by it - and a frame that changed it draws the view by the
+property every host already presents on a frame (`presentFrame`), so no
+host draws a press of its own.
+
+A press is told as often as the toolkit tells it and asked of its effect
+once a frame, of where it last stood (`PressReading`): how far it has gone
+since it went down, and how fast, by the reading every gesture's speed is
+read by. An element answering a press listens for `Hearing.presses`, which
+a host hears as it hears a tap's press and tells with no tap.
+
+A drag is recognized by the element's own hand (`HandReading`, the view's
+`HostDrag`): its values' way claims a first move first, then the view's own
+drag by how it begins - at once any move, directional one its axis leads, a
+long press by the frames once the press stood its time. What it does not
+take is left to whatever stands behind the view.
+
+## A press with a spring of its own
+
+A press that says a spring (`HostPress.spring` - the elastic press's) is not
+drawn where its effect answers but on its way there (`LocalFollow`): what
+the effect answers is where the view is bound, and what is laid over the
+view is a body behind it - the solver every layout's children move by,
+carried by each move of the answer, stepped on the frames the hand's pace
+holds open until it rests. The frame a press goes down shows the view as it
+was; a lift binds it for its place, and it comes back the same way. Under
+less motion, and for a press with no spring, the answer is what is drawn.
+
+A view the hand held and no layout program places comes back by the same
+solver: let go, it sets out from where the hand left it at the hand's speed
+on the body it is - the one it says itself, else its layout's for every
+child - and is at its place at once where it is none.
+
+## Where the hand is measured
+
+A view the hand takes moves under it, and so does a view drawn by the state
+its hand moves. A toolkit that told the hand's moves in that view's own
+space would tell less and less as the view came after the hand - the view
+trailing the finger, never under it. So a hand is measured in a space it
+does not move (`MountedElement.handSpace`): the view of the layout whose
+program places the view, else the view above it. Every host reads its
+recognizer there - how far the hand has gone, and how fast it lifts - and
+the first move that decides whose the hand is.
+
+## A layout's view in the hand
+
+A motion layout stands each of its views in a holder, which its program
+places and which lets input through to the view. The view is what the user
+presses and what says the press and the drag, so the host reads the two as
+one: an element standing first in such a holder is placed by the holder's
+layout, at the holder's place among its children (`programPlacing`). Its
+press's offset and its drag's hold are laid over the holder's place; the
+layout's two fingers stand still while one of its views is held; and where
+the layout listens (`itemDragUpdated`) it is told of the hand - its phase,
+where it is in the layout's room, its speed, how long it has stood still,
+and which view.
+
+Where the hand is, is where the holder stood as the hand took it and where
+the press stands in the view, measured from the view's other edge where the
+run is mirrored - as the layout's arithmetic reads its room - and gone only
+as far as the view's drag takes it: a view taken up and down is told with no
+way across, and its speed that way alone. What the layout makes of it - the
+item the view is over, a dismissal, the way a dismissed view flies - goes
+the way the view went. The view under the hand is the host's to show.
+
 ## A program described again
 
 A program is compared as the values it is: described again alike, nothing

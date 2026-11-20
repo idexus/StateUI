@@ -200,8 +200,8 @@ final class WinUIDriver: HostDriver {
                 phase: Int32(StateUIPressPhase.letGo.rawValue), pointer: 1, at: point, inView: point, time: nil)
         case (.pressDown(let point), let view?): try press(view, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, down: false, at: point, element)
-        case (.drag(let point), let view?) where view.hearing.contains(.taps) || view.hearing.contains(.pointer):
-            if view.hearing.contains(.taps) { view.heardButtonPress(.changed, at: point, byFinger: false) }
+        case (.drag(let point), let view?) where Self.hearsPresses(view) || view.hearing.contains(.pointer):
+            if Self.hearsPresses(view) { view.heardButtonPress(.changed, at: point, byFinger: false) }
             if view.hearing.contains(.pointer) { view.heard(.pointer(.pointerMoved, point)) }
         case (.hover(let point), let view?) where view.hearing.contains(.pointer):
             view.heard(.pointer(.pointerEntered, point))
@@ -379,11 +379,16 @@ final class WinUIDriver: HostDriver {
         throw DriverCannot(.activate, on: element)
     }
 
+    /// Whether the relay tells `view` a press: it hears taps, or presses with no tap.
+    private static func hearsPresses(_ view: WinUIView) -> Bool {
+        !view.hearing.isDisjoint(with: [.taps, .presses])
+    }
+
     /// A pointer pressed down or let go: a button held, a slider's thumb taken, and a view that hears the pointer
     /// told.
     private func press(_ view: WinUIView, down: Bool, at point: Point, _ element: MountedElement) throws {
         var done = false
-        if view.hearing.contains(.taps) {
+        if Self.hearsPresses(view) {
             view.heardButtonPress(down ? .began : .ended, at: point, byFinger: false)
             done = true
         }

@@ -535,7 +535,7 @@ lights it again as it comes back; let go over the view it taps, let go away
 it taps nothing. A scroll that takes the touch, the view's own drag and a hold
 take the press: the view goes out and nothing taps. So does a hand over a
 layout once it moves the run or holds a view (`HandReading.claimed`,
-`holdsItem`) - the layout's own press and those of every view it holds, once
+`holdsView`) - the layout's own press and those of every view it holds, once
 a touch: a swipe across a run of cards opens none, and a press standing still
 under the hand taps. A finger's press on a view standing in what it may still
 begin to scroll - a scroller, a collection, a layout a hand moves - lights the
@@ -681,21 +681,20 @@ every move after; the last finger up ends it, taken or not. What the hand does t
 the hold, the move with it, a throw to the snap nearest its end - is the
 sessions' ([the hand over a value](interaction.md)).
 
-A layout whose views the hand takes by themselves (`itemDrag`) gives the
-hand one of three owners, by one rule every host shares: a first move along
-its axis is the run's; a first move across it is the view's under the press
-where views are taken `.perpendicular`, else the page's; and a press standing
-still `HandReading.hold` - 500 ms, the long press the platforms share closely
-enough - is the view's where they are taken `.longPress`, then whichever way
-it goes. A host says where a press went down (`HeardInput.hand`'s `point`) and
-every move and lift as it does for the run, and its end always - a press that
-held a view and never moved still lets it go; it decides nothing more. The
-hold is found by the frames, since nothing moves: a press waiting for it holds
-the clock (`HandReading.wantsFrames`), as an open wheel does. The view's hand
-is said as the element's `itemDragUpdated` - where it is in the layout, from the
-press's point and every move since, its speed at the lift as the run's is
-read, and how long it has stood still - told again each hold it stands, so
-an application can turn a board under an icon held at its edge.
+A view the hand takes by itself (`HostDrag`, its interaction's) gives the
+hand another owner, by one rule every host shares: a first move along the
+way its values go is the values'; else the view itself is taken as its drag
+begins - at once by any move, directional by a first move its one axis
+leads, and by a press standing still `HandReading.hold` - 500 ms, the long
+press the platforms share closely enough - then whichever way it goes. A
+first move nothing takes is left to whatever stands behind the view. A host
+says where a press went down (`HeardInput.hand`'s `point`) and every move
+and lift as it does for a value, and its end always - a press that held a
+view and never moved still lets it go; it decides nothing more. The hold is
+found by the frames, since nothing moves: a press waiting for it holds the
+clock (`HandReading.wantsFrames`), as an open wheel does. The view's hand is
+the view's own drag ([interaction.md](interaction.md#a-views-own-press-and-drag)),
+told again each hold it stands still.
 
 ## Two fingers over a layout
 

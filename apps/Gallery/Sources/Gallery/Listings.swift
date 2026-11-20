@@ -878,10 +878,10 @@ enum Listings {
                             .range(0...Double(max(count - 1, 0)))
                             .snaps(.every(1))
                             .release(.projected(.spring(response: .milliseconds(500), damping: 0.8))))
-                    // A FIRST MOVE UP is the card's: it follows the hand; let go
-                    // high or fast, it flies off and the app closes - the others
-                    // close up, the card in front staying in front.
-                    .itemDrag(begins: .perpendicular)
+                    // A FIRST MOVE UP is the card's, which says so itself, below:
+                    // it follows the hand; let go high or fast, it flies off and
+                    // the app closes - the others close up, the card in front
+                    // staying in front.
                     .onItemDismissed(directions: .up, threshold: 120) { name in close(name) }
                 }
                 .gridRow(0)
@@ -980,6 +980,9 @@ enum Listings {
                     guard let shown = turn.journey.sample?.value else { return }
                     $named.journey.snap(to: min(max(1 + (Double(index) - shown) / 0.6, 0), 1))
                 }
+                // THE HAND TAKES THE CARD ITSELF where its first move goes up or
+                // down; a first move sideways is the run's.
+                .interaction(.drag(.vertical, begins: .directional))
             }
         }
         """#,
@@ -2115,9 +2118,9 @@ enum Listings {
                     .range(0...Double(max(count - 1, 0)))
                     .snaps(.every(1))
                     .release(.projected(.eased(.milliseconds(400)))))
-            // A CARD PULLED UP is the hand's alone: let go far enough, it flies
-            // out of the deck and leaves it; short of that, it goes back.
-            .itemDrag(begins: .perpendicular)
+            // A CARD PULLED UP is the hand's alone - each face says its own drag:
+            // let go far enough, it flies out of the deck and leaves it; short
+            // of that, it goes back.
             .onItemDismissed(directions: .up, threshold: 120) { name in remove(name) }
             // THE TURN'S OWN MOTION, `@State(motion:)`, DRIVES MOVING BETWEEN CARDS;
             // `.layoutBodies` THE CARDS reaching their new places after a card
@@ -2196,6 +2199,9 @@ enum Listings {
                 }
                 .verticalAlignment(.center)
             }
+            // THE HAND TAKES THE CARD ITSELF where its first move goes up or down;
+            // a first move sideways turns the deck.
+            .interaction(.drag(.vertical, begins: .directional))
         }
         """#,
         "CheckBoxSample": #"""
@@ -5193,6 +5199,45 @@ enum Listings {
             }
         }
         """#,
+        "HandOnViewSample": #"""
+        // Sources/Samples/Gestures/HandOnViewSample.swift
+        var body: some View {
+            VStack {
+                // The hand builds no view: the label says so.
+                DebugInfoLabel()
+
+                // A PRESS GROWS THE CARD A LITTLE, PULLS IT TOWARD ITSELF AND STRETCHES IT THE WAY IT PULLS - on a
+                // spring of its own, so nothing jumps as the press goes down or lifts.
+                ZStack {
+                    Rectangle()
+                        .fill(Palette.accent)
+                    Text("Press me")
+                        .fontWeight(.semibold)
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
+                }
+                .width(220)
+                .height(96)
+                .horizontalAlignment(.center)
+                .interaction(.elasticPress(maximumOffset: 10, scale: 1.03, maximumScale: 1.08))
+
+                // THE HAND TAKES THE CHIP ITSELF: it stays under the hand any way, and goes back where the stack
+                // puts it once let go - on the spring its body names.
+                ZStack {
+                    Rectangle()
+                        .fill(Palette.raised)
+                    Text("Drag me")
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
+                }
+                .width(140)
+                .height(44)
+                .horizontalAlignment(.center)
+                .interaction(.drag(.both))
+                .layoutBody(.onChange(response: .milliseconds(320), damping: 0.7))
+            }
+        }
+        """#,
         "HoldSample": #"""
         // Sources/Samples/Gestures/HoldSample.swift
         @State private var taps = 0
@@ -5336,12 +5381,11 @@ enum Listings {
                             .range(0...Double(boards - 1))
                             .snaps(.every(1))
                             .release(.projected(.eased(.milliseconds(400)))))
-                    // HELD, AN ICON LEAVES ITS BOARD for the hand: each move
-                    // gives it the slot under the hand, and the others travel to
-                    // make room; held still at an edge, the boards turn under it.
-                    // Taken, it lifts, so the hand knows it has it; let go, it
-                    // settles back.
-                    .itemDrag(begins: .longPress)
+                    // HELD, AN ICON LEAVES ITS BOARD for the hand - each icon
+                    // says so itself, below: each move gives it the slot under
+                    // the hand, and the others travel to make room; held still at
+                    // an edge, the boards turn under it. Taken, it lifts, so the
+                    // hand knows it has it; let go, it settles back.
                     .onItemDragged { drag in
                         switch drag.phase {
                         case .began:
@@ -5479,6 +5523,10 @@ enum Listings {
                 // a little past and back.
                 .scale(lifted ? 1.18 : 1)
                 .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
+                // THE HAND TAKES THE ICON ITSELF once a press has stood still on
+                // it: said here, in the icon's own body, so a new order still
+                // builds no icon again.
+                .interaction(.drag(.both, begins: .longPress))
             }
         }
         """#,
