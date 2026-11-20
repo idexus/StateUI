@@ -163,7 +163,7 @@ final class DismissalTests: XCTestCase {
         let told = Told()
         let (waits, lets) = AsyncStream<Void>.makeStream()
         let view = try card(told) { for await _ in waits { break } }
-        weak var runtime = bench.runtime
+        weak let runtime = bench.runtime
 
         hand(.began, point: Point(x: 10, y: 10), on: view)
         hand(.changed, moved: Point(x: 0, y: -40), on: view)
