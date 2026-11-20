@@ -44,9 +44,6 @@ final class WebRenderer {
         toolkit: actToolkit, files: WebFileToolkit(renderer: self), network: WebNetwork(), answers: runtime.core,
         tree: { [unowned self] in runtime.tree })
 
-    /// Whether the call ending reports what it laid out: a call the browser makes inside it reports nothing.
-    private var ending = false
-
     /// The windows the tree holds, each with its controller, in the tree's order. The browser shows the first.
     let roster = WindowRoster<WebWindowController>()
 
@@ -127,7 +124,8 @@ final class WebRenderer {
             kept: { WebKeptValues.readKept(into: core, application: keptUnder) },
             // The scenes kept when the page was left come back; else the window launch opens.
             windows: { scenes.restore(WebKeptValues.readScenes(keptUnder), in: runtime) },
-            turns: entryEnded)
+            // The start is a call from the page too: what it puts in the page ends with it.
+            turns: { WebRelay.entry {} })
     }
 
     /// A key going down before the element holding the keyboard has it, sent to a view taking it (`KeyPresses`) -
@@ -160,22 +158,17 @@ final class WebRenderer {
         WebRelay.takeEvent()
     }
 
-    /// Every call from the page ends with a turn, and asks the page to call again where work is left or a job kept
-    /// for later comes due.
+    /// The outermost call from the page ends with a turn, and asks the page to call again where work is left or a
+    /// job kept for later comes due (`WebRelay.entry`).
     /// Design: docs/design/platforms/web/runtime.md#the-relay
     func entryEnded() {
         runtime.pump.turn()
         placements.settle()
         // What the call laid out says where it stands before the browser draws, so a size read from a frame is
-        // drawn with the page it measures - once, as the outermost call ends: an event the browser raises inside
-        // the turn ends a call of its own there.
-        if !ending {
-            ending = true
-            defer { ending = false }
-            if runtime.frames.reportLaidOut() {
-                runtime.pump.turn()
-                placements.settle()
-            }
+        // drawn with the page it measures.
+        if runtime.frames.reportLaidOut() {
+            runtime.pump.turn()
+            placements.settle()
         }
         if let wait = runtime.core.nextWake { WebRelay.wake(after: wait) }
     }

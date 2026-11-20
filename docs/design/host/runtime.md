@@ -397,7 +397,12 @@ page meets a display frame before the layout pass that places it - so the
 first report a handler hears is where the view is laid out, never zeros. A
 view is laid out once StateUI's layout placed it or its toolkit gave it a
 size, the same on every native host (`MountedElement.isLaidOut`); the Web
-asks the browser whether the element has a box.
+asks the browser whether the element has a box. What a toolkit does before
+any layout is no layout's, and each host keeps it out of what a view says: a
+size a control is made with
+([UIKit](../platforms/uikit/layout.md#a-control-born-with-a-size)), an event
+the browser raises as an element is put in the page
+([the Web](../platforms/web/runtime.md#the-relay)).
 The Web, as each call from the page ends and before the browser draws, lets
 what was laid out say it at once (`FrameFollowers.reportLaidOut`), so a
 size worked out from a frame is drawn in the frame that measured it; a

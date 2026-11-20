@@ -288,6 +288,15 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   Its `id` may be kept and asked again with `window.presentation(_:)`, and `generation` tells one mounting of a view
   from the next.
 
+### Fixed
+
+- **A view that joins says where its layout puts it, and nothing before.** A handler of a view's frame heard one
+  frame too many on two hosts as the view joined a layout already standing. On UIKit a stepper, a spinner, a date
+  picker and a time picker said the size they are made with, at their parent's corner, before the layout placed
+  them. On the Web a web view said the box it had before its size was written: the frame's document loads as its
+  element is put in the page, and that call from the page ended by itself in the middle of the one laying the page
+  out - a call made inside another is now a part of it.
+
 ## 0.8.6 - 2026-11-16
 
 ### Breaking changes

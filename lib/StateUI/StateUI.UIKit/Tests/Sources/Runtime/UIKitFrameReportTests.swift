@@ -62,6 +62,36 @@ final class UIKitFrameReportTests: XCTestCase {
         XCTAssertEqual(heard.values.first.map { Array($0.prefix(4)) }, [0, 20, 120, 60])
     }
 
+    /// A control UIKit sizes as it makes it - a stepper, a spinner, a date picker - says nothing before its layout
+    /// places it either: the size it is born with is no layout's.
+    @MainActor
+    func testAControlBornWithASizeSaysNothingBeforeItIsLaidOut() {
+        for element in ["Stepper", "Spinner", "DatePicker", "TimePicker"] {
+            let heard = Received<[Double]>()
+            let shown = State(wrappedValue: false)
+            let host = UIKitRenderer.running {
+                VStack {
+                    Text("above").height(20)
+                    if shown.wrappedValue {
+                        Specimens.view(element, [
+                            Write(VisualElementContract.width, 120), Write(VisualElementContract.height, 40),
+                            Hear(ViewContract.layoutFrameChanged) { numbers in heard.values.append(numbers) },
+                        ])
+                    }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            defer { host.finish() }
+            shown.wrappedValue = true
+            host.runtime.pump.turn()
+            host.frame()
+            host.settle { heard.values.last.map { Array($0.prefix(4)) } == [0, 20, 120, 40] }
+
+            XCTAssertEqual(heard.values.map { Array($0.prefix(4)) }, [[0, 20, 120, 40]], element)
+        }
+    }
+
     /// The safe area is where a page's content may stand: under a stack's bar too, not the status bar alone - a view
     /// at the top corner of its page reads nothing from it.
     @MainActor

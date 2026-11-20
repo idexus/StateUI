@@ -11,7 +11,8 @@
 /// and a drop; each case made for every element wearing the tier. And
 /// where a view stands in its window as a scroller's or a list's scroll moves it, and from the safe area at its page's
 /// corner; how a view of a motion layout moves as a body following its place; and what a hand does to a number a
-/// motion layout's interaction names; and how a view joining a standing layout comes by its transition.
+/// motion layout's interaction names; and how a view joining a standing layout says where it stands and comes by
+/// its transition.
 @_spi(Host) public enum ViewTests: ConformanceFamily {
     public static let name = "View"
 
@@ -20,7 +21,7 @@
             [
                 margined(element), drawn(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
                 tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), thrown(element), pressTakenAway(element), takenFromTheHand(element), swiped(element), pinched(element), rotated(element), pointed(element),
-                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element),
+                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element), joined(element),
             ]
         } + [
             scrolledInItsWindow, scrolledInAList, atItsPagesCorner, carriedToItsPlace, onAFirstBaseline, showsItsPress,
@@ -280,6 +281,36 @@
             s.expect(first < 50, true, "behind its place as it leaps")
             s.expect(farthest > 101, true, "past it, on its spring")
             s.expect(abs(moved() - 100) < 0.5, true, "and onto it")
+        }
+    }
+
+    /// A view joining a layout already standing says where that layout puts it, and nothing before: no frame it
+    /// was made at, and none of a size it was born with.
+    @MainActor
+    static func joined(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aViewJoiningSaysWhereItsLayoutPutsItAlone", proves: [
+            Covered(ViewContract.layoutFrameChanged, on: element),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+            let shown = State(wrappedValue: false)
+            let placed = Received<[Double]>()
+            s.start {
+                VStack {
+                    Button("Show").onClicked { shown.wrappedValue = true }.id("show")
+                    if shown.wrappedValue {
+                        reporting(element, placed, [
+                            Write(VisualElementContract.width, 120), Write(VisualElementContract.height, 40),
+                        ])
+                    }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+
+            try s.perform(.activate, on: s.element("show"))
+            s.settle { placed.values.last.map(FrameReport.size) == [120, 40] }
+            let places = placed.values.map(FrameReport.place)
+            s.expect(places.first.map { Array($0.dropFirst(2)) }, [120, 40], "the first it says is its layout's")
+            s.expect(Set(places).count, 1, "and it says no other: \(places)")
         }
     }
 

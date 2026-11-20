@@ -73,14 +73,12 @@ extension WebRenderer {
     /// then the jobs, a turn, and a display frame while something asks for one.
     func step() {
         WebBrowser.pause()
-        _ = runtime.core.runJobs()
-        entryEnded()
+        WebRelay.entry { _ = runtime.core.runJobs() }
         if frameClock.held { frame() }
     }
 
     /// One display frame at the clock's time, and what it placed.
     func frame() {
-        runtime.displayCycle.frame(now: frameClock.now())
-        entryEnded()
+        WebRelay.entry { runtime.displayCycle.frame(now: frameClock.now()) }
     }
 }

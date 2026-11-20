@@ -76,6 +76,16 @@ replaces the one asked for before: at once where work is left, or when a
 sleep comes due. One thread runs everything, and the browser's event loop is
 its loop ([WebAssembly](../../core/concurrency.md#webassembly)).
 
+The browser raises some events from inside a call: a frame's document loads
+as its element is put in the page, in the middle of the turn that lays the
+page out - and that turn runs in the body of the call that asked for it, a
+press's handler, before the call ends. So the relay counts the calls that
+stand open (`WebRelay.entry`): one made inside another is a part of the
+outer one, and what runs after a call - the turn, the layouts placed, the
+views saying where they stand - runs once, as the outermost ends. The trap
+is ending the inner call as any other: a view put in the page, and not yet
+given its size, would say a frame its layout never gave it.
+
 Words read back - a field's value - are read in two steps: the relay encodes
 them and answers their length, and Swift hands it a buffer of that length to
 copy them into.

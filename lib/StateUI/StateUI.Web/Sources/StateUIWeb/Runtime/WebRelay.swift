@@ -17,7 +17,7 @@ enum WebRelay {
     /// What a display frame runs, at its time.
     static var onFrame: ((Double) -> Void)?
 
-    /// What runs once every call from the page has run its listener: the turn the browser's event loop asks for.
+    /// What runs as every outermost call from the page ends: the turn the browser's event loop asks for.
     static var afterEntry: () -> Void = {}
 
     /// Hands the page the two functions it calls Swift through.
@@ -42,14 +42,26 @@ enum WebRelay {
             { time in MainActor.assumeIsolated { WebRelay.frame(at: time) } })
     }
 
+    /// How many calls from the page stand open.
+    private static var open = 0
+
+    /// Runs `body` as a call from the page, and what runs after every call as the outermost ends. A call the
+    /// browser makes inside another - a frame's document loading as its element is put in the page - is a part
+    /// of the outer one, and so is one made while that ends.
+    /// Design: docs/design/platforms/web/runtime.md#the-relay
+    static func entry(_ body: () -> Void) {
+        open += 1
+        defer { open -= 1 }
+        body()
+        if open == 1 { afterEntry() }
+    }
+
     private static func heard(_ listener: Int32) {
-        listeners[listener]?()
-        afterEntry()
+        entry { listeners[listener]?() }
     }
 
     private static func frame(at time: Double) {
-        onFrame?(time)
-        afterEntry()
+        entry { onFrame?(time) }
     }
 
     /// A listener for `action`, under a number the page calls it by until `forget`.

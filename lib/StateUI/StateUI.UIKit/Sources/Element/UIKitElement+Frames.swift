@@ -29,12 +29,21 @@ extension UIKitElement: FrameReporter {
     /// under the page's bars as well as the screen's; nil for a view in no window, or one no layout placed yet -
     /// StateUI's, or UIKit's giving it a size.
     func frameNumbers() -> [Double]? {
+        let given = sizeUIKitGave
         guard let view, let window = view.window,
-              MountedElement.isLaidOut(placed: isPlaced, width: view.bounds.width, height: view.bounds.height)
+              MountedElement.isLaidOut(placed: isPlaced, width: given.width, height: given.height)
         else { return nil }
         let safe = Self.safeCorner(of: view, in: window)
         return MountedElement.frameNumbers(
             place: placedFrame, corner: windowCorner ?? .zero, content: Point(x: safe.x, y: safe.y))
+    }
+
+    /// The size UIKit's own layout gave the view: none for a view a layout of StateUI's holds, whose size before
+    /// that layout places it is the one it was made with - a stepper's, a spinner's, a date picker's.
+    /// Design: docs/design/platforms/uikit/layout.md#a-control-born-with-a-size
+    private var sizeUIKitGave: CGSize {
+        guard let view, !((element.layoutParent?.native as? UIKitElement)?.view is UIKitLayoutView) else { return .zero }
+        return view.bounds.size
     }
 
     /// Where the top left corner of the view's laid-out rectangle stands in its window, no transform in it.

@@ -12,6 +12,21 @@ stands each child by its bounds and center, on its way there where the
 layout moves. A change that alters a size is measured again up to the
 window; one that does not - a color, a value - measures nothing.
 
+## A control born with a size
+
+UIKit makes some controls at a size of their own - a stepper, a spinner, a
+date picker - before any layout touches them. A view says where it stands
+once a layout placed it, StateUI's or its toolkit's giving it a size
+([where a view stands](../../host/runtime.md#where-a-view-stands)); read as
+it is, a size the control was born with would pass for a layout's, and a
+handler of its frame would hear the control at its parent's corner before
+the layout placed it.
+
+So the host reads UIKit's size only for a view no layout of StateUI's holds
+(`UIKitElement.sizeUIKitGave`) - a page's root, which UIKit's own layout
+sizes. A view a layout of StateUI's holds says where it stands once that
+layout placed it, and never by its size.
+
 ## Scrolling
 
 A ScrollView is a layout holding UIKit's own scroll view over the whole of
