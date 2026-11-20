@@ -41,7 +41,7 @@ final class WebGesturePaceTests: XCTestCase {
 private enum SlowGestures: ConformanceFamily {
     static let name = ViewTests.name
     static let names = [
-        "Rectangle.aPanIsHeardAndCarriesItsStateAcross", "Rectangle.twoFingersTurningAreHeardFromTheirStart",
+        "Rectangle.aPanIsHeardFromItsStartToItsEnd", "Rectangle.twoFingersTurningAreHeardFromTheirStart",
     ]
 
     static var cases: [ConformanceCase] {
