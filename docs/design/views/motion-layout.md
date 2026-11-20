@@ -322,8 +322,10 @@ leaving and one for staying agree - nothing drawn jumps as the way turns. A
 hand taking the run on its way keeps it too: the card it catches goes on
 with it, either way.
 
-Passing a target on the hand's axis, the motion sets out from the last it
-passed, either way, and at rest from where the run stands. Passing is again a
+Passing the start of a segment the axis's mapping names (`segments:`), the
+motion sets out from the last it passed, either way, and at rest from where
+the run stands - whoever moves the axis, the hand or the program. Where the
+mapping comes round its segments repeat every turn. Passing is again a
 whole step, so the cards go out one by one without a jump: one long hand, a
 throw across several targets, two quick swipes a wheel reads as one hand.
 Should an arithmetic draw a whole step otherwise for another `from`, the
@@ -354,18 +356,20 @@ naming no axes is said.
 
 ## An axis
 
-`.axis(_:input:range:keyframes:snaps:periodic:)` is the one declaration of an
-axis: what moves it (a `LayoutInput`, or none), how far (`range`), where its
-layout is worked out (`keyframes`, [keyframes](#keyframes)), where it may rest
-(`snaps`), and whether it comes round (`periodic`) - the keyframes and the
-snaps both an `AxisValues`, places on the axis. One concept, one place: an
-input, a rest and its coming round are never declared apart, so no axis has
-an input with no range or a rest with no input. An axis with no input is
-keyframes alone: the program moves it, the arithmetic is asked at its
-keyframes, and the element says no hand for it (no `translationOrientation`,
-`pans`, `magnifies` or `rotates` from it); one with neither input nor
-keyframes declares nothing, and one with snaps and no input rests no hand -
-each is said.
+`.axis(_:range:keyframes:segments:periodic:)` says how the layout maps an
+axis: how far the mapping runs (`range`), where its layout is worked out
+(`keyframes`, [keyframes](#keyframes)), where its segments begin
+(`segments`, [where a motion set out](#where-a-motion-set-out)) and whether
+the mapping comes round (`periodic`) - the keyframes and the segments both an
+`AxisValues`, places on the axis. It says nothing of the hand: what moves an
+axis, how far, where it rests and how it goes on let go is the layout's one
+`.interaction(_:)` ([interaction](interaction.md#on-a-motion-layout)), whose
+range is the hand's own and may be another than the mapping's. The run works
+on one record an axis (`Hand`), made of both: an axis the interaction moves,
+mapped or not, and an axis mapped alone, which the program moves - the
+arithmetic is asked at its keyframes, and the element says no hand for it
+(no `translationOrientation`, `pans`, `magnifies` or `rotates` from it). A
+mapping with neither keyframes nor segments declares nothing, and is said.
 
 - THE RANGE is the hand's, not the program's: the hand moves the axis freely
   inside it and less and less past an end ([the hand](#the-hand)); the
@@ -389,8 +393,8 @@ each is said.
   one way, `pans` where both, `magnifies` and `rotates` where two fingers do.
 - WHAT CANNOT MOVE IS SAID (`complain`) and moves nothing: an axis the
   parameters' `axes` do not list, a range with no end, a magnification's range
-  reaching nought. A magnification told to come round stops at its ends; a
-  swipe given no snaps swipes from end to end, its ends its snaps.
+  reaching nought or told to come round, a swipe given no snaps, and what
+  else an interaction is refused for ([interaction](interaction.md#what-is-refused)).
 
 ## Keyframes
 
@@ -409,10 +413,12 @@ hand moves through them:
 - ONE ARITHMETIC. There is no second closure: the keyframes only say where
   the engine asks the one it has. With none, it is asked every frame, as
   always.
-- A REST IS NEVER A BLEND. The ends and the snaps are always keyframes, so
-  wherever the run can come to rest it shows the arithmetic's own answer;
-  where a keyframe stands is not where the run rests unless it is a snap -
-  a layout passes through a keyframe at 0.5 and rests at 0 and 1.
+- A REST IS THE AUTHOR'S TO KEYFRAME. The ends of the mapping's range are
+  always keyframes; where the hand rests is the interaction's, another
+  declaration, so a layout that should show the arithmetic's own answer
+  wherever it rests names its snaps among its keyframes. Where a keyframe
+  stands is not where the run rests unless it is a snap - a layout passes
+  through a keyframe at 0.5 and rests at 0 and 1.
 - ASKED ONCE. A keyframe's pose is worked out the first frame the curve
   needs it (`LayoutPoses`, kept on the description's `Source`) and kept
   while what it was worked out with stands: the description - a render is a
@@ -500,8 +506,8 @@ still answer a tap.
 - Let go with speed, it is thrown ([a throw](#a-throw)).
 
 The unit is how far the hand travels for one unit of its axis - the input's
-`travel`: so many device units (`lengthPerUnit`), the room's length along the
-axis (`.pages`), or, unless the input says, how far the view drawn in front
+`InteractionUnit`: so many points (`.points`), the room's length along the
+axis (`.containerLength`), or (`.frontItem`) how far the view drawn in front
 goes for one unit where the run stands - of the views the parameters move, the
 highest, then the one nearest the middle - measured by the arithmetic a
 hundredth of a unit either side. The hand then carries that view with it,
@@ -531,7 +537,7 @@ the ends give less and less past them, a snap is nearest by the
 logarithm, a throw carries the logarithm on - and pinching in acts as
 spreading does. Its range stands above nought. A rotation moves a unit
 every `degreesPerUnit` the fingers turn, clockwise on. Let go, the axes go
-on together, each to where it would end under the layout's `throwMotion` - the
+on together, each to where it would end as its release throws it - the
 snap nearest that - or onto the nearest as a hand let go still does; a unit of
 a magnification's logarithm counts as a hundred device units and a
 rotation's as its degrees, by which either is judged thrown or settled. A
@@ -539,8 +545,8 @@ view held by itself keeps the hand, and the fingers move nothing.
 
 ## A pan
 
-A pan is two axes the hand moves, one across (`.scroll(.horizontal)`) and
-one down (`.scroll(.vertical)`): each moves with its part of the hand's move,
+A pan is two axes the hand moves, one across (`.translation(.horizontal)`) and
+one down (`.translation(.vertical)`): each moves with its part of the hand's move,
 the unit each's own - so many points, else the view in front's along that
 axis. No input of its own: the ways the axes' inputs go make it. The element
 says `pans` and no `translationOrientation`, so a host hears the hand every way and the
@@ -551,7 +557,7 @@ way, the run traveling to all of their rests as one set of parameters.
 
 ## A swipe
 
-`.swipe(_:)` is the hand of a deck or of pages: one hand moves the run one
+`.swipe(_:unit:)` is the hand of a deck or of pages: one hand moves the run one
 snap at most, either way from the snap nearest where it took it,
 however far it goes. A trackpad's quick flick is some 1500 points of the
 platform's own speeding up before the fingers lift, and a throw on top - a
@@ -563,7 +569,8 @@ it from beyond that - and let go still, to the nearest of them. A wheel's
 notches swipe alike: a notch moves the run one target from where it rests,
 and the notches that come while it goes wait for it - the rest of a burst, a
 spring passing its target, which would otherwise count as the next card
-reached. Its axis needs snaps; given none, the range's ends are its snaps.
+reached. Its value needs snaps; given none, the interaction is refused and
+the hand moves nothing of it.
 
 Its unit is measured once, as the hand takes the run, as if the run stood on
 the target it took it at, and kept while the hand holds it: a view that goes
@@ -572,7 +579,7 @@ otherwise quicken the hand as it slows, and the moment the hand caught it on
 its way would decide how fast it moves. A scroll measures where the run
 stands at each move, a ring of views keeping to the finger all round.
 
-`.pages(_:)` is a swipe whose unit is the room's length along its axis: a
+A swipe whose unit is `.containerLength` goes the room's length along its axis a unit: a
 board of icons is a screen, the boards side by side a room apart, and a hand
 across the room turns one. The room is read at each move, never kept, so a
 window grown or a phone turned under the hand keeps a board a screen; no
@@ -582,11 +589,11 @@ nearest to the middle may stand still between boards.
 ## A throw
 
 A throw goes on to the target nearest where it would end: the speed the hand
-let go at, carried by the layout's `throwMotion` - a motion like any other, one
-for every axis - says
+let go at, carried by the motion its release throws by
+(`InteractionRelease.projected`) - a motion like any other - says
 how much farther it would go (eased, the speed for its length over how
-steeply its curve sets out; a spring, for a third of its response; 400 ms of
-`cubicOut` unless said, about an eighth of a second's worth of the speed), and
+steeply its curve sets out; a spring, for a third of its response; a glide of
+800 ms unless said, about a quarter of a second's worth of the speed), and
 the nearest target to that end - a turn on or back where
 the run comes round, never past the last of one that does not - is where it
 goes. The parameters are named that target at once: the state is where the run is

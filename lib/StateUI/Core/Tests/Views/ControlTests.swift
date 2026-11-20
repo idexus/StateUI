@@ -362,7 +362,9 @@ final class ControlTests: XCTestCase {
                 } placements: { context, phase in
                     [Placement(Rect(phase, 0, context.bounds.width / 2, context.bounds.height)), Placement(Rect(context.bounds.width / 2, 0, 10, 10))]
                 }
-                .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 90), range: 0...1, snaps: .every(1))
+                .interaction(
+                    Interaction.value(turn.traveling(.spring(Spring(response: .milliseconds(240)))), axis: \.self, input: .translation(.horizontal, unit: .points(90))).reversed(true).range(0...1).snaps(.every(1))
+                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                 .following(chosen.projectedValue)
                 .shade {
                     Rectangle()
@@ -381,10 +383,14 @@ final class ControlTests: XCTestCase {
                 MotionLayout(["one", "two"], parameters: dial.projectedValue) { Text($0) } placements: { context, dial in
                     [Placement(Rect(dial.turn, 0, context.bounds.width / 2 * dial.size, context.bounds.height)), Placement(.zero)]
                 }
-                .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...1, snaps: .endpoints)
-                .axis(\.size, input: .magnification, range: 1...2, snaps: .endpoints)
-                .axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 90), range: 0...1, snaps: .endpoints)
-                .axis(\.y, input: .scroll(.vertical, lengthPerUnit: 90), range: 0...1, snaps: .endpoints)
+                .interaction(
+                    .simultaneous([
+                        Interaction.value(dial.projectedValue, axis: \.turn, input: .rotation(degreesPerUnit: 90)).range(0...1).snaps(.endpoints),
+                        Interaction.value(dial.projectedValue, axis: \.size, input: .magnification).range(1...2).snaps(.endpoints),
+                        Interaction.value(dial.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(90))).reversed(true).range(0...1).snaps(.endpoints),
+                        Interaction.value(dial.projectedValue, axis: \.y, input: .translation(.vertical, unit: .points(90))).reversed(true).range(0...1).snaps(.endpoints),
+                    ])
+                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                 .node.built),
 
             // Both halves of a map: the control, and the markers on it. A Marker is
@@ -833,7 +839,7 @@ final class ControlTests: XCTestCase {
             "style", "fontFamily", "source", "userAgent", "data", "content",
             // A value the host cannot be handed whole - a gradient among them.
             "icon", "pageIcon", "dash", "points", "options", "columns", "rows",
-            "shape", "geometryTransform", "transform", "motion", "throwMotion", "layoutBody",
+            "shape", "geometryTransform", "transform", "motion", "release", "interaction", "layoutBody",
             "layoutBodies",
             "id", "assign", "area",
             // Tiers no view wears: a bar's item, a run of text, a map's marker - and an entry's automation name,
@@ -898,7 +904,7 @@ final class ControlTests: XCTestCase {
             "Views/Collections/GalleryView.swift|arrangement:GalleryArrangement",
             "Views/Collections/GalleryView.swift|fade:Double", "Views/Collections/GalleryView.swift|isSwipeEnabled:Bool",
             "Views/Collections/GalleryView.swift|itemBody:LayoutBody",
-            "Views/Collections/GalleryView.swift|throwMotion:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
+            "Views/Collections/GalleryView.swift|release:InteractionRelease", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
             "Views/Layouts/MotionLayout.swift|itemDrag:ItemDragStart",
             "Views/Layouts/MotionLayout.swift|mirrorsRightToLeft:Bool",
         ]

@@ -644,7 +644,9 @@ private func itemLayout(
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 30, 10, 20, 20)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
+            .interaction(
+                Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .itemDrag(begins: begins)
             .onItemDragged { told.values.append("\($0.id) at \(Int($0.at.x)),\(Int($0.at.y))") }
             if dismissing {
@@ -685,7 +687,9 @@ private func handLayout(
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...5, snaps: .every(1))
+            .interaction(
+                Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...5).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .mirrorsRightToLeft(mirrored)
             .width(100).height(40)
         }
@@ -719,8 +723,12 @@ private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) th
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at.x) * 50 + 40, 60 - at.y * 50, 20, 20)) }
             }
-            .axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
-            .axis(\.y, input: .scroll(.vertical, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
+            .interaction(
+                .simultaneous([
+                    Interaction.value(square.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1)),
+                    Interaction.value(square.projectedValue, axis: \.y, input: .translation(.vertical, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1)),
+                ])
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .width(200).height(160)
         }
         .horizontalAlignment(.start)
@@ -734,7 +742,7 @@ private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) th
 /// every screen - its run on `clock`: the layout's element, once the room is told.
 @MainActor
 private func fingersLayout(
-    _ s: Session, clock: TestClock, phase: State<Double>, input: LayoutInput
+    _ s: Session, clock: TestClock, phase: State<Double>, input: InteractionInput
 ) throws -> MountedElement {
     // The parameters travel under their state's own motion.
     try? phase.projectedValue.journey.setMotion(.eased(.milliseconds(200), curve: .linear))
@@ -746,7 +754,9 @@ private func fingersLayout(
             } placements: { _, at in
                 (0..<3).map { Placement(Rect(Double($0) * 80 + 20, 60, 40 * at, 40)) }
             }
-            .axis(\.self, input: input, range: 0.5...2, snaps: [1])
+            .interaction(
+                Interaction.value(phase.projectedValue, axis: \.self, input: input).range(0.5...2).snaps([1])
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .width(300).height(240)
         }
         .horizontalAlignment(.start)

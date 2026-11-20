@@ -17,11 +17,14 @@ final class WebHandTests: XCTestCase {
     /// and the browser's own pan never takes it after - a slant on the way included; a touch whose first move runs
     /// across stays the page's.
     func testATouchTheLayoutTookIsKeptFromThePage() throws {
+        let turn = State(wrappedValue: 0.0)
         let host = WebRenderer.running {
-            MotionLayout([0, 1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { context, phase in
+            MotionLayout([0, 1, 2], parameters: turn.projectedValue) { Text("\($0)") } placements: { context, phase in
                 (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, context.bounds.height)) }
             }
-            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
+            .interaction(
+                .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                    .reversed(true).range(0...2).snaps(.every(1)))
             .width(300)
             .height(200)
         }
@@ -37,11 +40,14 @@ final class WebHandTests: XCTestCase {
     /// pointer taken away from the layout, its lift never told; a hand the layout let go by leaves the browser's drag
     /// be.
     func testAHandTheLayoutTookStartsNoDragOfTheBrowsersOwn() throws {
+        let turn = State(wrappedValue: 0.0)
         let host = WebRenderer.running {
-            MotionLayout([0, 1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { context, phase in
+            MotionLayout([0, 1, 2], parameters: turn.projectedValue) { Text("\($0)") } placements: { context, phase in
                 (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, context.bounds.height)) }
             }
-            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
+            .interaction(
+                .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                    .reversed(true).range(0...2).snaps(.every(1)))
             .itemDrag(begins: .longPress)
             .width(300)
             .height(200)
@@ -78,7 +84,9 @@ final class WebHandTests: XCTestCase {
             MotionLayout([0, 1, 2], parameters: zoom.projectedValue) { Text("\($0)") } placements: { context, at in
                 (0..<3).map { Placement(Rect(Double($0) * 100, 0, 100 * at, context.bounds.height)) }
             }
-            .axis(\.self, input: .magnification, range: 1...3, snaps: [2])
+            .interaction(
+                Interaction.value(zoom.projectedValue, axis: \.self, input: .magnification).range(1...3).snaps([2])
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .width(300)
             .height(200)
         }

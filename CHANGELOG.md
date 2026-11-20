@@ -86,6 +86,26 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   motion where the parameters are declared, `@State(motion: .spring(Spring(response: .milliseconds(240)))) private
   var turn = 0.0`, and change it later with `try $turn.journey.setMotion(_:)`. A hand let go short of a rest comes
   onto it under the same motion.
+- **What the hand moves is one declaration, `.interaction(_:)`.** A motion layout's `.axis(_:input:range:keyframes:
+  snaps:periodic:)` no longer says the hand: an `Interaction` names the state, the axis and the input, and says the
+  rest - `.interaction(.value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+  .reversed(true).range(0...6).snaps(.every(1)))`. Several axes moved at once are `Interaction.simultaneous([...])`;
+  an interaction said again takes the other's place, and two values moving one axis are refused together.
+  `LayoutInput` is `InteractionInput`: `.scroll(way)` is `.translation(way, unit: .frontItem)`, `lengthPerUnit: n`
+  is `unit: .points(n)`, `.pages(way)` is `.swipe(way, unit: .containerLength)`; magnification and rotation keep
+  their names. A unit is a point unless said - say `.frontItem` where the hand should carry the view in front.
+- **A value grows as the hand moves right or down.** It grew as the hand moved left or up. A row of cards whose
+  growing number moves them left says `.reversed(true)`; every `.scroll`, `.swipe` and `.pages` moved over says it.
+- **A throw is the interaction's release.** `.throwMotion(_:)` is `.release(.projected(_:))` on the interaction -
+  on several at once, every one of them - and on a `GalleryView`, `.release(_:)`. Unless said a value is thrown on
+  as a glide of 800 ms at the longest, where a layout threw by 400 ms of `cubicOut`: say
+  `.release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))` to keep the throw it had.
+- **An axis maps, and names its segments.** `.axis(_:range:keyframes:segments:periodic:)` says where the
+  arithmetic is asked and where a segment begins, for the hand and the program alike. A layout whose arithmetic
+  takes where the motion set out says `segments:` where it said `snaps:`; keyframes no longer take the hand's
+  snaps in - name them among the keyframes where the layout should rest on the arithmetic's own answer. The
+  mapping's range and the hand's are two: the hand's is the interaction's `.range(_:)`.
+- **A swipe given no snaps moves nothing,** and says so, where it swiped from end to end of its range.
 - **Reading a frame changes no motion.** A layout whose frame, or a frame under it, was read stood every child at
   its place at once, and a stated size in it changed with no travel. A reader changes nothing now: children travel
   under their layout's `.motion(_:)` and a size under its view's, read or not. A size or a place worked out from a
@@ -149,6 +169,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   layout, `.followsLayout(Spring(...))` also when the place moves on a frame, `.none` at once - and
   `.layoutBody(_:)` says it for one child, which wins. A layout that says neither moves its children under its
   `.motion(_:)`, as before.
+- **An interaction of its own.** `Interaction`, `InteractionInput`, `InteractionUnit` and `InteractionRelease`
+  are values: nothing is recognized or timed until a view wearing one stands. A value given no `.range(_:)` has
+  no end. `.release(.nearest(_:))` comes onto the nearest rest with no throw, and `.release(.stay)` leaves the
+  value where the hand left it.
 - **A view's two rectangles.** `.frame(into:stage:)` and `.onFrameChanged(in:stage:)` take a `GeometryStage`:
   `.layout`, unless said, is where the view's layout puts it, and `.presentation` the rectangle around what is
   drawn of it - every step of its way to a new place, and its own `.scale`, `.rotation` and move. One view feeds

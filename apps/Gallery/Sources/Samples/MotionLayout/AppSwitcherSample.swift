@@ -58,10 +58,16 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                 } placements: { context, turn in
                     (0..<count).map { place($0, turn, context.bounds) }
                 }
-                // Thrown as the gallery's home turns its cards: a spring that
-                // carries the hand on and settles.
-                .axis(\.self, input: .scroll(.horizontal), range: 0...Double(max(count - 1, 0)), snaps: .every(1))
-                .throwMotion(.spring(Spring(response: .milliseconds(500), damping: 0.8)))
+                // THE HAND CARRIES THE CARD IN FRONT, a growing turn moving the
+                // cards left; let go, the run is thrown on as the gallery's
+                // home turns its cards: a spring that carries the hand on
+                // and settles on a card.
+                .interaction(
+                    .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                        .reversed(true)
+                        .range(0...Double(max(count - 1, 0)))
+                        .snaps(.every(1))
+                        .release(.projected(.spring(Spring(response: .milliseconds(500), damping: 0.8)))))
                 // A FIRST MOVE UP is the card's: it follows the hand; let go
                 // high or fast, it flies off and the app closes - the others
                 // close up, the card in front staying in front.

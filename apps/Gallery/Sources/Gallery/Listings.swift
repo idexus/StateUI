@@ -868,10 +868,16 @@ enum Listings {
                     } placements: { context, turn in
                         (0..<count).map { place($0, turn, context.bounds) }
                     }
-                    // Thrown as the gallery's home turns its cards: a spring that
-                    // carries the hand on and settles.
-                    .axis(\.self, input: .scroll(.horizontal), range: 0...Double(max(count - 1, 0)), snaps: .every(1))
-                    .throwMotion(.spring(Spring(response: .milliseconds(500), damping: 0.8)))
+                    // THE HAND CARRIES THE CARD IN FRONT, a growing turn moving the
+                    // cards left; let go, the run is thrown on as the gallery's
+                    // home turns its cards: a spring that carries the hand on
+                    // and settles on a card.
+                    .interaction(
+                        .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                            .reversed(true)
+                            .range(0...Double(max(count - 1, 0)))
+                            .snaps(.every(1))
+                            .release(.projected(.spring(Spring(response: .milliseconds(500), damping: 0.8)))))
                     // A FIRST MOVE UP is the card's: it follows the hand; let go
                     // high or fast, it flies off and the app closes - the others
                     // close up, the card in front staying in front.
@@ -2098,10 +2104,18 @@ enum Listings {
             } placements: { context, turn, segmentStart in
                 (0..<count).map { fanned ? fan($0, turn, context.bounds) : pile($0, turn, segmentStart, context.bounds) }
             }
-            // The pile is swiped a card at a time, the fan scrolled through.
-            .axis(
-                \.self, input: fanned ? .scroll(.horizontal) : .swipe(.horizontal),
-                range: 0...Double(max(count - 1, 0)), snaps: .every(1))
+            // A SEGMENT A CARD: a card setting out is told which card the run
+            // set out from.
+            .axis(\.self, range: 0...Double(max(count - 1, 0)), segments: .every(1))
+            // The pile is swiped a card at a time, the fan moved through.
+            .interaction(
+                .value(
+                    $turn, axis: \.self,
+                    input: fanned ? .translation(.horizontal, unit: .frontItem) : .swipe(.horizontal, unit: .frontItem))
+                    .reversed(true)
+                    .range(0...Double(max(count - 1, 0)))
+                    .snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             // A CARD PULLED UP is the hand's alone: let go far enough, it flies
             // out of the deck and leaves it; short of that, it goes back.
             .itemDrag(begins: .perpendicular)
@@ -5268,9 +5282,17 @@ enum Listings {
                     } placements: { context, board in
                         (0..<count).map { Self.place($0, board, context.bounds, fit) }
                     }
-                    .axis(
-                        \.self, input: .pages(.horizontal), range: 0...Double(boards - 1), keyframes: .every(1),
-                        snaps: .every(1))
+                    // A BOARD A KEYFRAME: the arithmetic is asked at whole boards,
+                    // and the icons are blended between them.
+                    .axis(\.self, range: 0...Double(boards - 1), keyframes: .every(1))
+                    // A PAGE A HAND: the room's width turns one board, the next
+                    // at most, however far or fast the hand goes.
+                    .interaction(
+                        .value($board, axis: \.self, input: .swipe(.horizontal, unit: .containerLength))
+                            .reversed(true)
+                            .range(0...Double(boards - 1))
+                            .snaps(.every(1))
+                            .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                     // HELD, AN ICON LEAVES ITS BOARD for the hand: each move
                     // gives it the slot under the hand, and the others travel to
                     // make room; held still at an edge, the boards turn under it.
@@ -6270,7 +6292,7 @@ enum Listings {
 
         var body: some View {
             // ONE INPUT: the hand dragged across, carrying the cards with it...
-            let hand = LayoutInput.scroll(.horizontal)
+            let hand = InteractionInput.translation(.horizontal, unit: .frontItem)
 
             return Grid {
                 MotionLayout(Self.parts, parameters: $strips) { part in
@@ -6278,17 +6300,22 @@ enum Listings {
                 } placements: { context, strips in
                     Self.parts.map { place($0, strips, context.bounds) }
                 }
-                // ...MOVES FIVE STRIPS, each resting its own way: anywhere between
-                // its ends, coming back only from past one...
-                .axis(\.free, input: hand, range: 0...3)
-                // ...on a card - 1 or 2 - or on an end...
-                .axis(\.snapping, input: hand, range: 0...3, snaps: [1, 2])
-                // ...on an end alone: the first card or the last...
-                .axis(\.endpoints, input: hand, range: 0...3, snaps: .endpoints)
-                // ...round and round, anywhere - 4 is 0 a turn on...
-                .axis(\.round, input: hand, range: 0...4, periodic: true)
-                // ...and round and round, a card at a time.
-                .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), periodic: true)
+                .interaction(.simultaneous([
+                    // ...MOVES FIVE STRIPS, each resting its own way: anywhere
+                    // between its ends, coming back only from past one...
+                    .value($strips, axis: \.free, input: hand).reversed(true).range(0...3),
+                    // ...on a card - 1 or 2 - or on an end...
+                    .value($strips, axis: \.snapping, input: hand).reversed(true).range(0...3).snaps([1, 2]),
+                    // ...on an end alone: the first card or the last...
+                    .value($strips, axis: \.endpoints, input: hand).reversed(true).range(0...3).snaps(.endpoints),
+                    // ...round and round, anywhere - 4 is 0 a turn on...
+                    .value($strips, axis: \.round, input: hand).reversed(true).range(0...4).periodic(true),
+                    // ...and round and round, a card at a time.
+                    .value($strips, axis: \.stepping, input: hand).reversed(true).range(0...4).periodic(true)
+                        .snaps(.every(1)),
+                ])
+                // LET GO, the five go on together by one law.
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             }
             .clipsContent(true)
         }
@@ -6437,11 +6464,18 @@ enum Listings {
                 // ASKED AT 0, 1 AND 2 ALONE, each answering a whole layout.
                 [ring(context.bounds), grid(context.bounds), pile(context.bounds)][Int(arrangement)]
             }
+            // THREE LAYOUTS, A KEYFRAME EACH: the arithmetic is asked at 0, 1
+            // and 2 alone, whoever moves the number.
+            .axis(\.self, range: 0...2, keyframes: .every(1))
             // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
-            // input, the axis is keyframes alone and the buttons move it.
-            .axis(
-                \.self, input: byHand ? .scroll(.horizontal, lengthPerUnit: 260) : nil, range: 0...2,
-                keyframes: .every(1), snaps: byHand ? .every(1) : nil)
+            // interaction, the buttons alone move it.
+            .interaction(byHand
+                ? .value($arrangement, axis: \.self, input: .translation(.horizontal, unit: .points(260)))
+                    .reversed(true)
+                    .range(0...2)
+                    .snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))
+                : nil)
             // BETWEEN THEM each card goes straight, or by a curve its neighbors
             // shape.
             .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
@@ -6590,11 +6624,14 @@ enum Listings {
             } placements: { context, deal in
                 Self.cards.indices.map { place($0, deal, context.bounds) }
             }
-            // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
-            // no hand, so it is declared no axis.
-            .axis(
-                \.turn, input: .scroll(.horizontal, lengthPerUnit: 90),
-                range: 0...Double(Self.cards.count - 1), snaps: .every(1))
+            // THE HAND MOVES THE TURN ALONE, ninety points a card, resting on a
+            // card; the spread has no hand, so the interaction says nothing of it.
+            .interaction(
+                .value($deal, axis: \.turn, input: .translation(.horizontal, unit: .points(90)))
+                    .reversed(true)
+                    .range(0...Double(Self.cards.count - 1))
+                    .snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
 
         /// Where one card stands: between a pile and an arc by the spread, the
@@ -6816,18 +6853,25 @@ enum Listings {
             } placements: { context, table in
                 Self.photos.indices.map { place($0, table, context.bounds) }
             }
-            // ONE FINGER OR TWO MOVE THE TABLE every way - one axis scrolled
-            // across, one down - resting on a photo, or, not snapping, anywhere...
-            .axis(\.x, input: .scroll(.horizontal), range: 0...2, snaps: snaps ? .every(1) : nil)
-            .axis(\.y, input: .scroll(.vertical), range: 0...2, snaps: snaps ? .every(1) : nil)
-            // ...while TWO SPREAD it anywhere from the whole table to one photo,
-            // coming back only from past either end...
-            .axis(\.zoom, input: .magnification, range: 0.45...1)
-            // ...and TURN the photos a quarter at a time, or freely, round and
-            // round.
-            .axis(
-                \.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: snaps ? .every(0.25) : nil,
-                periodic: true)
+            .interaction(.simultaneous([
+                // ONE FINGER OR TWO MOVE THE TABLE every way - one number moved
+                // across, one down - resting on a photo, or, not snapping,
+                // anywhere...
+                .value($table, axis: \.x, input: .translation(.horizontal, unit: .frontItem))
+                    .reversed(true).range(0...2).snaps(snaps ? .every(1) : nil),
+                .value($table, axis: \.y, input: .translation(.vertical, unit: .frontItem))
+                    .reversed(true).range(0...2).snaps(snaps ? .every(1) : nil),
+                // ...while TWO SPREAD it anywhere from the whole table to one
+                // photo, coming back only from past either end...
+                .value($table, axis: \.zoom, input: .magnification)
+                    .range(0.45...1),
+                // ...and TURN the photos a quarter at a time, or freely, round
+                // and round.
+                .value($table, axis: \.turn, input: .rotation(degreesPerUnit: 360))
+                    .range(0...1).periodic(true).snaps(snaps ? .every(0.25) : nil),
+            ])
+            // LET GO, every number goes on by one law.
+            .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
 
         /// Where the photo at `index` lies: its square of the table, a photo's
@@ -8221,8 +8265,14 @@ enum Listings {
             // nearest where the throw would end. It rests on a card, never
             // between two - and comes round, a turn of the range bringing every
             // card back.
-            .axis(\.self, input: .scroll(.horizontal), range: 0...Double(Self.cards.count), snaps: .every(1), periodic: true)
-            .throwMotion(throwing.motion)
+            .interaction(
+                .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                    // A growing turn moves the cards left.
+                    .reversed(true)
+                    .range(0...Double(Self.cards.count))
+                    .periodic(true)
+                    .snaps(.every(1))
+                    .release(.projected(throwing.motion)))
             // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
             // over every card, wearing the card's own corners - which is why it is
             // the application's to give and not the library's to draw.
@@ -13369,10 +13419,13 @@ enum Listings {
                 // TWO FINGERS TURNING turn the ring a card every eighth of a
                 // turn, round and round; SPREADING, they grow it from small to
                 // large, resting at either or at its own size - both at once.
-                .axis(
-                    \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
-                    periodic: true)
-                .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
+                .interaction(.simultaneous([
+                    .value($ring, axis: \.turn, input: .rotation(degreesPerUnit: 360 / count))
+                        .range(0...count).periodic(true).snaps(.every(1)),
+                    .value($ring, axis: \.size, input: .magnification)
+                        .range(0.6...1.5).snaps([1]),
+                ])
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             }
             .clipsContent(true)
         }

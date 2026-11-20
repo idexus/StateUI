@@ -633,7 +633,9 @@ extension ControlDictionary {
                     Placement(Rect((Double(index) - phase) * 120 + context.bounds.width / 2 - 50, 0, 100, context.bounds.height))
                 }
             }
-            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
+            .interaction(
+                Interaction.value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .height(160)
             """#),
 

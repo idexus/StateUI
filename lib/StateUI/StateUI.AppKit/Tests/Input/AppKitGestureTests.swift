@@ -114,7 +114,9 @@ final class AppKitGestureTests: XCTestCase {
             MotionLayout([0, 1], parameters: zoom.projectedValue) { Text("\($0)") } placements: { _, at in
                 [Placement(Rect(0, 0, 10 * at, 10)), Placement(Rect(20, 0, 10, 10))]
             }
-            .axis(\.self, input: .magnification, range: 1...3, snaps: [2])
+            .interaction(
+                Interaction.value(zoom.projectedValue, axis: \.self, input: .magnification).range(1...3).snaps([2])
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         defer { renderer.finish() }
         let mirrored = try XCTUnwrap(

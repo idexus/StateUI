@@ -29,8 +29,10 @@ final class MotionLayoutTests: XCTestCase {
     /// THE LAYOUT NAMES EVERY PART A MIRROR WOULD, in the same order under the same labels: a field added and not
     /// named would be an input never compared, or a state never kept.
     func testTheLayoutNamesEveryPartAMirrorWould() {
-        let layout = MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
-            .axis(\.self, input: .scroll(.horizontal), range: 0...1)
+        let turn = State(wrappedValue: 0.0)
+        let layout = MotionLayout([1, 2], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in [] }
+            .interaction(
+                .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).range(0...1))
 
         XCTAssertEqual(layout.walkedParts.map(\.label), Mirror(reflecting: layout).children.map { $0.label ?? "" })
     }
@@ -102,11 +104,14 @@ final class MotionLayoutTests: XCTestCase {
 
     /// THE VIEWS ALONE, IN THE ITEMS' ORDER: a hand lays nothing over them.
     func testTheRunPlacesTheViewsAlone() {
+        let turn = State(wrappedValue: 0.0)
         let (_, run) = bench.laid(Renders(), {
-            MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in
+            MotionLayout([1, 2], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in
                 [Placement(Rect(0, 0, 10, 10), zIndex: 5), Placement(Rect(20, 0, 10, 10))]
             }
-            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...1, snaps: .every(1))
+            .interaction(
+                .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100)))
+                    .reversed(true).range(0...1).snaps(.every(1)))
             .node
         })
 
@@ -115,9 +120,12 @@ final class MotionLayoutTests: XCTestCase {
 
     /// THE HAND IS HEARD ON THE ELEMENT ITSELF, over every view, which way it moves the run said to the host.
     func testTheHandIsHeardOnTheElementItself() throws {
+        let turn = State(wrappedValue: 0.0)
         let patch = Renders().render(
-            MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                .axis(\.self, input: .scroll(.vertical, lengthPerUnit: 100), range: 0...1, snaps: .every(1))
+            MotionLayout([1], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+                .interaction(
+                    .value(turn.projectedValue, axis: \.self, input: .translation(.vertical, unit: .points(100)))
+                        .reversed(true).range(0...1).snaps(.every(1)))
                 .node)
         let layout = try XCTUnwrap(patch.first(.motionLayout))
 
@@ -259,7 +267,9 @@ final class MotionLayoutTests: XCTestCase {
                     Placement(Rect(0, 0, 10, 10), zIndex: 2),
                 ]
             }
-            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
+            .interaction(
+                Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .node
         }
         _ = bench.laid(renders, tree)
@@ -279,7 +289,9 @@ final class MotionLayoutTests: XCTestCase {
             MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { context, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * context.bounds.width / 2, 0, 10, 10)) }
             }
-            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
+            .interaction(
+                Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .node
         }
         _ = renders.render(tree())
@@ -378,8 +390,9 @@ final class MotionLayoutTests: XCTestCase {
             let renders = Renders()
             func tree() -> Node {
                 MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                    .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...6, snaps: .every(1))
-                    .throwMotion(throwing)
+                    .interaction(
+                        Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...6).snaps(.every(1))
+                            .release(.projected(throwing)))
                     .node
             }
 
@@ -455,7 +468,9 @@ final class MotionLayoutTests: XCTestCase {
                 handed.phases.append(at)
                 return [Placement(Rect(0, 0, 10, 10))]
             }
-            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...7, snaps: .every(1), periodic: true)
+            .interaction(
+                Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...7).snaps(.every(1)).periodic(true)
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .node
         }
 
@@ -478,7 +493,9 @@ final class MotionLayoutTests: XCTestCase {
             handed?.phases.append(at)
             return [Placement(Rect(0, 0, 10, 10))]
         }
-        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: range, snaps: snaps)
+        .interaction(
+            Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         .node
     }
 
@@ -513,8 +530,9 @@ final class MotionLayoutTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node {
             MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                .axis(
-                    \.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1), periodic: true)
+                .interaction(
+                    Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1)).periodic(true)
+                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                 .node
         }
         _ = bench.laid(renders, tree)
@@ -560,9 +578,12 @@ final class MotionLayoutTests: XCTestCase {
     func testATapLandsOnTheViewItself() async throws {
         var heard: [Int] = []
         let renders = Renders()
+        let turn = State(wrappedValue: 0.0)
         let patch = renders.render(
-            MotionLayout([7, 8], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
-                .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...1, snaps: .every(1))
+            MotionLayout([7, 8], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in [] }
+                .interaction(
+                    .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100)))
+                        .reversed(true).range(0...1).snaps(.every(1)))
                 .onItemActivated { heard.append($0) }
                 .node)
         let layout = try XCTUnwrap(patch.first(.motionLayout))

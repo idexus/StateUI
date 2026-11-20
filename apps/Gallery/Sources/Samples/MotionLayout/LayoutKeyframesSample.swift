@@ -89,11 +89,18 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
             // ASKED AT 0, 1 AND 2 ALONE, each answering a whole layout.
             [ring(context.bounds), grid(context.bounds), pile(context.bounds)][Int(arrangement)]
         }
+        // THREE LAYOUTS, A KEYFRAME EACH: the arithmetic is asked at 0, 1
+        // and 2 alone, whoever moves the number.
+        .axis(\.self, range: 0...2, keyframes: .every(1))
         // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
-        // input, the axis is keyframes alone and the buttons move it.
-        .axis(
-            \.self, input: byHand ? .scroll(.horizontal, lengthPerUnit: 260) : nil, range: 0...2,
-            keyframes: .every(1), snaps: byHand ? .every(1) : nil)
+        // interaction, the buttons alone move it.
+        .interaction(byHand
+            ? .value($arrangement, axis: \.self, input: .translation(.horizontal, unit: .points(260)))
+                .reversed(true)
+                .range(0...2)
+                .snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))
+            : nil)
         // BETWEEN THEM each card goes straight, or by a curve its neighbors
         // shape.
         .interpolation(smooth ? LayoutCurve.catmullRom : .linear)

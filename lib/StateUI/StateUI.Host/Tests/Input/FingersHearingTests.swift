@@ -149,8 +149,12 @@ private struct FingersPage: View {
             handed.append(dial)
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
-        .axis(\.turn, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
-        .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
+        .interaction(
+            .simultaneous([
+                Interaction.value($dial, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1)),
+                Interaction.value($dial, axis: \.zoom, input: .magnification).range(1...2).snaps(.endpoints),
+            ])
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
     }
 }
 
@@ -169,7 +173,9 @@ private struct TurnedPage: View {
             handed.append(dial)
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
-        .axis(\.zoom, input: .rotation(degreesPerUnit: 90), range: -2...2)
+        .interaction(
+            Interaction.value($dial, axis: \.zoom, input: .rotation(degreesPerUnit: 90)).range(-2...2)
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         .mirrorsRightToLeft(mirrors)
         .layoutDirection(.rightToLeft)
     }

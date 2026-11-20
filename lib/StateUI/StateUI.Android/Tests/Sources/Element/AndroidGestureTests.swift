@@ -206,7 +206,9 @@ final class AndroidGestureTests: XCTestCase {
                 } placements: { _, phase in
                     (0..<4).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, 100)) }
                 }
-                .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
+                .interaction(
+                    Interaction.value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
+                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                 .height(100)
             }
             host.layOut()

@@ -24,7 +24,9 @@
 ///                 48))
 ///         }
 ///     }
-///     .axis(\.self, input: .scroll(.horizontal), range: 0...Double(planets.count - 1), snaps: .every(1))
+///     .interaction(
+///         .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+///             .reversed(true).range(0...Double(planets.count - 1)).snaps(.every(1)))
 ///
 /// The parameters are a state of yours, two-way: written by the program, the run travels there; under the user's hand
 /// they are the snap the run passes, and where it comes to rest. The arithmetic runs on the host's frames whenever the
@@ -78,83 +80,145 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// Where the parameters are written and read.
     private let parameters: Binding<Parameters>
 
-    /// The axes the user's hand and fingers move, one declaration an axis.
-    private var axes: [Given] = []
+    /// The axes the layout maps by keyframes or segments, one declaration an axis (`axis`).
+    private var mappings: [Mapping] = []
 
-    /// One axis as declared: which it is, what moves it, how far it runs, where its layout is worked out, where it
-    /// rests, and whether it comes round.
-    private struct Given {
+    /// What the user's hand and fingers move, as declared (`interaction(_:)`).
+    private var declared: Interaction?
+
+    /// One axis as the layout maps it: how far the mapping runs, where the arithmetic is asked, where its segments
+    /// begin and whether it comes round.
+    private struct Mapping {
         let axis: WritableKeyPath<Parameters, Double>
-        let input: LayoutInput?
         let range: ClosedRange<Double>
         let keyframes: AxisValues?
-        let snaps: AxisValues?
+        let segments: AxisValues?
         let periodic: Bool
 
         /// What is wrong with the declaration, if anything, as the author is told it.
         var complaint: String? {
             let (low, high) = (range.lowerBound, range.upperBound)
             if !Parameters.axes.contains(axis) {
-                return "A MotionLayout was given an axis its parameters' `axes` do not list. The hand moves nothing."
+                return "A MotionLayout was given an axis its parameters' `axes` do not list. Nothing maps it."
             }
             if !low.isFinite || !high.isFinite {
-                return "A MotionLayout's axis was given a range with no end. The hand moves nothing."
+                return "A MotionLayout's axis was given a range with no end. Nothing maps it."
             }
-            if input == nil, keyframes == nil {
-                return "A MotionLayout's axis was given no input and no keyframes: the declaration changes nothing."
-            }
-            if input == nil, snaps != nil {
-                return "A MotionLayout's axis was given snaps and no input: snaps are where the hand rests, and no "
-                    + "hand moves it."
-            }
-            if input?.gesture == .magnification, low <= 0 {
-                return "A MotionLayout's magnification was given a range reaching nought, which no spreading of the "
-                    + "fingers reaches. The fingers move nothing."
-            }
-            if periodic, input?.gesture == .magnification {
-                return "A MotionLayout's magnification was told to come round, which a size never does: it stops at "
-                    + "the ends of its range."
+            if keyframes == nil, segments == nil {
+                return "A MotionLayout's axis was given no keyframes and no segments: the declaration changes nothing."
             }
             if periodic, high <= low {
                 return "A MotionLayout's axis was told to come round over a range of no length: it stays where it is."
             }
-            if snaps == nil, case .hand(_, _, swipes: true)? = input?.gesture {
-                return "A MotionLayout's swipe moves the run one snap a hand, and its axis was given none: it swipes "
-                    + "from end to end of its range."
-            }
-            if periodic, keyframes != nil, let knots = hand?.knots, knots.count < 3 {
+            if periodic, keyframes != nil, (knots?.count ?? 0) < 3 {
                 return "A MotionLayout's axis comes round with keyframes at its ends alone, which are one place a "
                     + "turn apart: nothing is blended between them."
             }
             return nil
         }
 
-        /// The axis as the run works on it; nil where the hand cannot move it.
-        var hand: Hand? {
-            let (low, high) = (range.lowerBound, range.upperBound)
-            guard let index = Parameters.axes.firstIndex(of: axis), low.isFinite, high.isFinite,
-                  input?.gesture != .magnification || low > 0
-            else { return nil }
-
-            let period = periodic && high > low && input?.gesture != .magnification ? high - low : nil
-            let swipes = if case .hand(_, _, swipes: true)? = input?.gesture { true } else { false }
-            let snaps = snaps ?? (swipes ? .endpoints : nil)
-            let knots = keyframes.map { keyframes in
-                Array(Set(keyframes.values(in: range, periodic: false) + (snaps?.values(in: range, periodic: false) ?? [])))
-                    .sorted()
-            }
-            return Hand(
-                index: index, axis: axis, gesture: input?.gesture, low: low, high: high,
-                stops: snaps?.values(in: range, periodic: period != nil) ?? [], period: period, knots: knots)
+        /// Whether the declaration maps anything.
+        var stands: Bool {
+            Parameters.axes.contains(axis) && range.lowerBound.isFinite && range.upperBound.isFinite
         }
+
+        /// How far one turn takes the axis, where it comes round.
+        var period: Double? { periodic && range.upperBound > range.lowerBound ? range.upperBound - range.lowerBound : nil }
+
+        /// Where the arithmetic is asked, lowest first, the ends included; nil for every frame.
+        var knots: [Double]? { keyframes?.values(in: range, periodic: false) }
+
+        /// Where the axis's segments begin, lowest first - one turn's, where it comes round.
+        var marks: [Double] { segments?.values(in: range, periodic: period != nil) ?? [] }
     }
 
-    /// What is wrong with the axes as declared, as the author is told it.
-    private var complaints: [String] {
-        let blends = curve != nil && !axes.contains { $0.keyframes != nil }
-        return axes.compactMap { $0.complaint } + (blends
-            ? ["A MotionLayout was given an interpolation and no axis with keyframes: nothing is blended."]
-            : [])
+    /// The axes as the run works on them - each the hand moves, and each mapped alone - with what is wrong with the
+    /// declarations, as the author is told it.
+    /// Design: docs/design/views/interaction.md#on-a-motion-layout
+    private var worked: (hands: [Hand], complaints: [String]) {
+        var complaints = (declared?.refused ?? []) + mappings.compactMap { $0.complaint }
+        if curve != nil, !mappings.contains(where: { $0.keyframes != nil }) {
+            complaints.append("A MotionLayout was given an interpolation and no axis with keyframes: nothing is blended.")
+        }
+        let own = ObjectIdentifier(parameters.storage)
+        var moved: [(index: Int, leaf: Interaction.Leaf)] = []
+        for leaf in declared?.leaves ?? [] {
+            guard leaf.state == own, let axis = leaf.axis as? WritableKeyPath<Parameters, Double>,
+                  let index = Parameters.axes.firstIndex(of: axis)
+            else {
+                complaints.append(
+                    "A MotionLayout's interaction moves a number that is no axis of the layout's parameters. The hand "
+                        + "moves nothing of it.")
+                continue
+            }
+            moved.append((index, leaf))
+        }
+        // Two moving one number are refused together: neither is the one the author meant.
+        let twice = Set(Dictionary(grouping: moved, by: \.index).filter { $0.value.count > 1 }.keys)
+        if !twice.isEmpty {
+            complaints.append(
+                "A MotionLayout's interaction moves one number of its parameters twice. The hand moves nothing of it.")
+        }
+
+        var hands: [Hand] = []
+        for (index, leaf) in moved where !twice.contains(index) {
+            let mapping = mappings.last { $0.stands && Parameters.axes.firstIndex(of: $0.axis) == index }
+            if let complaint = Self.complaint(of: leaf) {
+                complaints.append(complaint)
+                continue
+            }
+            hands.append(Self.hand(at: index, moved: leaf, mapped: mapping))
+        }
+        for mapping in mappings where mapping.stands {
+            guard let index = Parameters.axes.firstIndex(of: mapping.axis), !hands.contains(where: { $0.index == index })
+            else { continue }
+            hands.append(Self.hand(at: index, moved: nil, mapped: mapping))
+        }
+        return (hands, complaints)
+    }
+
+    /// What is wrong with one value an interaction moves, if anything, as the author is told it.
+    private static func complaint(of leaf: Interaction.Leaf) -> String? {
+        let magnifies = leaf.input.gesture == .magnification
+        if let range = leaf.range {
+            if !range.lowerBound.isFinite || !range.upperBound.isFinite {
+                return "An interaction was given a range with no end. The hand moves nothing of it."
+            }
+            if magnifies, range.lowerBound <= 0 {
+                return "An interaction's magnification was given a range reaching nought, which no spreading of the "
+                    + "fingers reaches. The fingers move nothing."
+            }
+        }
+        if leaf.periodic, magnifies {
+            return "An interaction's magnification was told to come round, which a size never does. The fingers move "
+                + "nothing."
+        }
+        if leaf.periodic, (leaf.range.map { $0.upperBound > $0.lowerBound } ?? false) == false {
+            return "An interaction was told to come round with no range of some length to come round over. The hand "
+                + "moves nothing of it."
+        }
+        if leaf.input.swipes, leaf.snaps == nil {
+            return "An interaction's swipe moves its value one snap a hand, and was given no snaps. The hand moves "
+                + "nothing of it."
+        }
+        if leaf.snaps != nil, leaf.range == nil {
+            return "An interaction was given snaps and no range: its snaps stand between the ends of a range. The "
+                + "hand moves nothing of it."
+        }
+        return nil
+    }
+
+    /// The axis at `index` as the run works on it: moved as `leaf` says, mapped as `mapping` does.
+    private static func hand(at index: Int, moved leaf: Interaction.Leaf?, mapped mapping: Mapping?) -> Hand {
+        let range = leaf?.range
+        let (low, high) = (range?.lowerBound ?? -.infinity, range?.upperBound ?? .infinity)
+        let period = leaf?.periodic == true ? high - low : nil
+        let stops = range.flatMap { range in leaf?.snaps?.values(in: range, periodic: period != nil) } ?? []
+        let span = mapping.map { Hand.Span(low: $0.range.lowerBound, high: $0.range.upperBound, period: $0.period) }
+        return Hand(
+            index: index, axis: Parameters.axes[index], gesture: leaf?.input.gesture, low: low, high: high,
+            stops: stops, period: period, reversed: leaf?.reversed ?? false, release: leaf?.release ?? .standard,
+            knots: mapping?.knots, span: span, segments: mapping?.marks ?? [])
     }
 
     /// The curve between the poses at the axes' keyframes, where one was given.
@@ -177,9 +241,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     private var itemStart: ItemDragStart?
     private var dragged: [ValueHandler<ItemDrag<ID>>] = []
     private var dismissals: [LayoutDismissal<ID>] = []
-
-    /// How a throw goes on once the hand lets go, every axis alike.
-    private var throwLaw = Motion.eased(.milliseconds(400), curve: .cubicOut)
 
     /// What is told once the run comes to rest.
     private var settled: [ValueHandler<Parameters>] = []
@@ -278,60 +339,68 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         self.init(items, id: \.self, parameters: parameters, content: content, placements: placements)
     }
 
-    /// One axis of the parameters: what moves it - the user's hand or fingers, or the program alone - how far it runs,
-    /// where its layout is worked out, where it comes to rest and whether it comes round.
+    /// How the layout maps one axis of the parameters: where its arithmetic is asked, and where its segments begin.
     ///
-    ///     .axis(\.self, input: .swipe(.horizontal), range: 0...Double(cards.count - 1), snaps: .every(1))
-    ///     .axis(\.zoom, input: .magnification, range: 0.5...2)
-    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: .every(0.25), periodic: true)
+    ///     .axis(\.self, range: 0...2, keyframes: .every(1))
+    ///     .axis(\.turn, range: 0...7, segments: .every(1), periodic: true)
     ///
-    /// The hand moves the axis freely inside its range - less and less past an end, which it comes back onto when
-    /// let go - and let go, the run goes on to where its throw would end: the snap nearest it, where the axis has
-    /// snaps. Wrapping, the axis has no end: one turn of the range's length brings the layout back to where it was,
-    /// so the hand moves it on for ever - `turn` 9 of seven cards is the third, a turn on, so a write of one more
-    /// always travels one card on. The program writes the axis anywhere; the range and the snaps are the hand's.
+    /// Given keyframes, the arithmetic is asked only there and at the range's ends, and the layout is blended
+    /// between its answers along `interpolation(_:)`: quite different layouts, one at each keyframe, become one the
+    /// value moves through. Past an end of a range that does not come round, the last two answers go on in a line.
     ///
-    /// Each axis is moved by its own input alone, and one input may move several axes - a hand moving the photos
-    /// and, slower, the sky behind them. Two axes scrolled one across and one down are a pan: the hand moves both,
-    /// whichever way it goes. Two fingers spreading and turning move their axes at once, and the hand goes on with
-    /// their middle. An axis declared again takes the other's place; the axes declared none go on as the program
-    /// sends them. The views still answer a tap.
+    /// Given segments, the arithmetic taking `from` - where the motion set out - is handed the last segment the
+    /// value passed, so a layout worked out from where a card started knows where that was.
     ///
-    /// Given keyframes, the arithmetic is asked only there - at them, the range's ends and the snaps - and the
-    /// layout is blended between its answers along `interpolation(_:)`: quite different layouts, one at each
-    /// keyframe, become one the hand moves through.
-    ///
-    ///     .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1), snaps: .endpoints)
-    ///     .axis(\.self, range: 0...2, keyframes: .every(1))     // the program moves it
+    /// The mapping says nothing of the hand: what moves the axis, how far and where it rests is
+    /// `interaction(_:)`'s, and the program writes the axis anywhere. An axis declared again takes the other's place.
     ///
     /// - Parameters:
     ///   - axis: the axis, one of the parameters' `axes`; `\.self` for `Double` parameters.
-    ///   - input: what moves it; none for an axis of keyframes alone, which the program moves.
-    ///   - range: how far the hand moves it; above nought for a magnification.
-    ///   - keyframes: where the arithmetic is asked beside the ends of the range and the snaps; every frame unless
-    ///     said.
-    ///   - snaps: where it may rest beside the ends of its range; anywhere inside it unless said.
-    ///   - periodic: whether its end meets its start, its range one turn.
-    /// - Returns: the layout, its axis moved by the hand.
+    ///   - range: how far the mapping runs.
+    ///   - keyframes: where the arithmetic is asked beside the ends of the range; every frame unless said.
+    ///   - segments: where a segment begins beside the ends of the range; none unless said.
+    ///   - periodic: whether the range's end meets its start, the range one turn.
+    /// - Returns: the layout, its axis mapped so.
     public func axis(
         _ axis: WritableKeyPath<Parameters, Double>,
-        input: LayoutInput? = nil,
         range: ClosedRange<Double>,
         keyframes: AxisValues? = nil,
-        snaps: AxisValues? = nil,
+        segments: AxisValues? = nil,
         periodic: Bool = false
     ) -> Self {
         var copy = self
-        copy.axes.removeAll { $0.axis == axis }
-        copy.axes.append(
-            Given(axis: axis, input: input, range: range, keyframes: keyframes, snaps: snaps, periodic: periodic))
+        copy.mappings.removeAll { $0.axis == axis }
+        copy.mappings.append(
+            Mapping(axis: axis, range: range, keyframes: keyframes, segments: segments, periodic: periodic))
+        return copy
+    }
+
+    /// What the user's hand and fingers move of the layout's parameters, and how.
+    ///
+    ///     .interaction(
+    ///         .value($turn, axis: \.self, input: .swipe(.horizontal, unit: .frontItem))
+    ///             .reversed(true)
+    ///             .range(0...Double(cards.count - 1))
+    ///             .snaps(.every(1)))
+    ///
+    /// The hand moves a value freely inside its range - less and less past an end, which it comes back onto when
+    /// let go - and let go, the value goes on as its `release(_:)` says. Several values moved at once are
+    /// `Interaction.simultaneous(_:)`: two moved one across and one down are a pan, and two fingers spreading and
+    /// turning move theirs while the hand goes on with their middle. The views still answer a tap. An interaction
+    /// said again takes the other's place.
+    ///
+    /// - Parameter interaction: the interaction, each value of it one of the layout's parameters; nil for none.
+    /// - Returns: the layout, moved so by the hand.
+    public func interaction(_ interaction: Interaction?) -> Self {
+        var copy = self
+        copy.declared = interaction
         return copy
     }
 
     /// The curve every view follows between the poses the arithmetic answers at the axes' keyframes: straight
     /// unless said.
     ///
-    ///     .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1))
+    ///     .axis(\.self, range: 0...2, keyframes: .every(1))
     ///     .interpolation(.catmullRom)
     ///
     /// Each view goes from its pose at one keyframe to its pose at the next by its identity: its place and size,
@@ -429,21 +498,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     func shading(_ mask: Node) -> Self {
         var copy = self
         copy.mask = mask
-        return copy
-    }
-
-    /// How the parameters go on once the hand lets go of them with speed - how far a throw carries and how it slows -
-    /// every axis alike, so axes let go together go on by one law whatever order they were declared in.
-    ///
-    ///     .throwMotion(.spring(Spring(response: .milliseconds(500), damping: 0.8)))
-    ///
-    /// - Parameter motion: eased, its length says how far a throw carries - the hand's speed for that long, over how
-    ///   steeply the curve sets out - and its curve how it slows; a spring carries the hand's speed for a third of its
-    ///   response and settles as springs do. Either sets out at the hand's speed. A light friction unless said.
-    /// - Returns: the layout, thrown that way.
-    public func throwMotion(_ motion: Motion) -> Self {
-        var copy = self
-        copy.throwLaw = motion
         return copy
     }
 
@@ -636,7 +690,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         if Parameters.axes.isEmpty {
             complain("A MotionLayout's parameters name no axes: `axes` lists the numbers the hand and the program move.")
         }
-        for complaint in complaints { complain(complaint) }
+        for complaint in worked.complaints { complain(complaint) }
         let definition = LayoutProgramDefinition(host: run.program())
 
         return PlacedStack {
@@ -770,7 +824,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         let items = Array(source.items)
         let path = source.path
         // Closures, not key paths: one written in a generic type is made anew at every call.
-        let hands = axes.compactMap { $0.hand }
+        let hands = worked.hands
         let identities = numbers.numbered(items.map { AnyHashable($0[keyPath: path]) })
         let subviews = LayoutSubviews(items.map { $0[keyPath: path] }, measuring: slot.measuring)
         var sizing: (@MainActor (Double?, Double?, Parameters) -> LayoutSize)?
@@ -814,7 +868,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
                 grip: _grip, item: _item, dismissals: dismissalRuns, settles: settledRuns, drags: dragRuns),
             hands: hands,
             focus: hands.first { $0.way != nil },
-            throwing: throwLaw,
             viewsBody: written.value(LayoutContract.layoutBodies.token).flatMap(LayoutBody.init(propValue:)) ?? .onChange(),
             body: { [bodies] index in bodies(index) },
             rebuilt: { [bodies] index in bodies.rebuilt(index) },
@@ -877,10 +930,10 @@ extension MotionLayout: WalkedView {
             ("_held", _held), ("_grip", _grip), ("_item", _item),
             ("_slot", _slot), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
             ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns), ("_dragRuns", _dragRuns),
-            ("source", source), ("parameters", parameters), ("axes", axes), ("curve", curve as Any),
+            ("source", source), ("parameters", parameters), ("mappings", mappings), ("declared", declared as Any), ("curve", curve as Any),
             ("followed", followed), ("consumed", consumed), ("mask", mask as Any), ("activated", activated),
             ("itemStart", itemStart as Any), ("dragged", dragged), ("dismissals", dismissals),
-            ("throwLaw", throwLaw), ("settled", settled), ("sized", sized as Any),
+            ("settled", settled), ("sized", sized as Any),
             ("mirrors", mirrors),
             ("named", named as Any), ("written", written),
         ]

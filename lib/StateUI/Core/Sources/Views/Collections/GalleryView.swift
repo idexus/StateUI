@@ -72,7 +72,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private var swipes = true
 
     /// How a throw of the hand goes on, where the author says.
-    private var thrown: Motion?
+    private var released: InteractionRelease?
 
     /// What stands in when there are no items at all.
     private var empty: (any View)?
@@ -235,18 +235,20 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         return copy
     }
 
-    /// How the run goes on when the user lets go of it with speed - how far a
-    /// throw carries, and how it slows - as any motion says it.
+    /// How the run goes on when the user lets go of it: thrown on, onto the
+    /// nearest card, or left where it is.
     ///
-    ///     .throwMotion(.spring(Spring(response: .milliseconds(500), damping: 0.8)))
+    ///     .release(.projected(.spring(Spring(response: .milliseconds(500), damping: 0.8))))
     ///
-    /// - Parameter motion: eased, its length says how far a throw carries and
-    ///   its curve how it slows; a spring settles as springs do. Either sets
-    ///   out at the hand's speed.
-    /// - Returns: the gallery, thrown that way.
-    public func throwMotion(_ motion: Motion) -> Self {
+    /// - Parameter release: `.projected(_:)` thrown on as the motion says -
+    ///   eased, its length says how far a throw carries and its curve how it
+    ///   slows; a spring settles as springs do - `.nearest(_:)` onto the
+    ///   nearest card, `.stay` where the hand left it. Thrown on, slowing
+    ///   over four tenths of a second, unless said.
+    /// - Returns: the gallery, let go that way.
+    public func release(_ release: InteractionRelease) -> Self {
         var copy = self
-        copy.thrown = motion
+        copy.released = release
         return copy
     }
 
@@ -413,11 +415,20 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             }
         }
 
+        // A segment a card: a card setting out is told where the run set out from.
+        let cards = 0...Double(max(count - 1, 0))
+        layout = layout.axis(\.self, range: cards, segments: .every(1))
+
         // The hand carries the card in front, however big the room draws it; a deck is swiped a card at a time.
         if swipes {
-            let input = shape == .deck ? LayoutInput.swipe(.horizontal) : .scroll(.horizontal)
-            layout = layout.axis(\.self, input: input, range: 0...Double(max(count - 1, 0)), snaps: .every(1))
-            if let thrown { layout = layout.throwMotion(thrown) }
+            let input: InteractionInput = shape == .deck
+                ? .swipe(.horizontal, unit: .frontItem) : .translation(.horizontal, unit: .frontItem)
+            layout = layout.interaction(
+                Interaction.value(turns.projectedValue, axis: \.self, input: input)
+                    .reversed(true)
+                    .range(cards)
+                    .snaps(.every(1))
+                    .release(released ?? .projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
 
         // The shade sits beside the press: the card that dips wears none.

@@ -73,7 +73,7 @@ final class LayoutAxisTests: XCTestCase {
     /// AN AXIS WITH NO SNAPS RESTS WHERE THE HAND LEAVES IT, and is named nothing while the hand holds it.
     func testAnAxisWithNoSnapsRestsWhereTheHandLeavesIt() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
-        let built = tree(table, handed) { $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3) }
+        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
         _ = bench.laid(renders, built)
 
         bench.hand(renders, built, .began)
@@ -94,7 +94,7 @@ final class LayoutAxisTests: XCTestCase {
             Renderer.shared.clearStates()
             let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
             let built = tree(table, handed, motion: motion) {
-                $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3)
+                $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             }
             _ = bench.laid(renders, built)
 
@@ -122,8 +122,12 @@ final class LayoutAxisTests: XCTestCase {
     func testLetGoEveryAxisIsNamedWhereItRestsAndOneJourneyGoesOnFromTheHands() throws {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed, motion: .spring(Spring(response: .milliseconds(420), damping: 0.82))) {
-            $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3)
-                .axis(\.turn, input: .scroll(.vertical, lengthPerUnit: 100), range: 0...3)
+            $0.interaction(.simultaneous([
+                .value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100)))
+                    .reversed(true).range(0...3),
+                .value(table.projectedValue, axis: \.turn, input: .translation(.vertical, unit: .points(100)))
+                    .reversed(true).range(0...3),
+            ]).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout)?.driven?[.parameters]?.state)
 
@@ -147,7 +151,7 @@ final class LayoutAxisTests: XCTestCase {
     func testPastItsEndTheAxisComesBackOntoTheEnd() {
         bench.walks = true
         let (table, handed, renders) = (State(wrappedValue: Table(x: 3)), Handed(), Renders())
-        let built = tree(table, handed) { $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3) }
+        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
         _ = bench.laid(renders, built)
 
         bench.hand(renders, built, .began)
@@ -163,7 +167,7 @@ final class LayoutAxisTests: XCTestCase {
     /// A THROW GOES ON TO WHERE IT WOULD END, and no farther than the range's end.
     func testAThrowGoesOnToWhereItWouldEnd() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
-        let built = tree(table, handed) { $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3) }
+        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
         _ = bench.laid(renders, built)
 
         bench.hand(renders, built, .began)
@@ -183,7 +187,7 @@ final class LayoutAxisTests: XCTestCase {
     func testAnAxisSnappingToItsLimitsRestsOnTheNearerEnd() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed) {
-            $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .endpoints)
+            $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.endpoints).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         _ = bench.laid(renders, built)
 
@@ -207,7 +211,7 @@ final class LayoutAxisTests: XCTestCase {
     func testAnAxisThatComesRoundHasNoEnd() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed) {
-            $0.axis(\.turn, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...1, periodic: true)
+            $0.interaction(.value(table.projectedValue, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...1).periodic(true).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         _ = bench.laid(renders, built)
 
@@ -225,9 +229,7 @@ final class LayoutAxisTests: XCTestCase {
     func testSnapsComeRoundATurnOn() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed) {
-            $0.axis(
-                \.turn, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...1, snaps: .every(0.25),
-                periodic: true)
+            $0.interaction(.value(table.projectedValue, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...1).snaps(.every(0.25)).periodic(true).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         _ = bench.laid(renders, built)
 
@@ -245,8 +247,12 @@ final class LayoutAxisTests: XCTestCase {
     func testOneInputMovesSeveralAxes() throws {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed) {
-            $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
-                .axis(\.sky, input: .scroll(.horizontal, lengthPerUnit: 200), range: 0...3)
+            $0.interaction(.simultaneous([
+                .value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100)))
+                    .reversed(true).range(0...3).snaps(.every(1)),
+                .value(table.projectedValue, axis: \.sky, input: .translation(.horizontal, unit: .points(200)))
+                    .reversed(true).range(0...3),
+            ]).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         let layout = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout))
         XCTAssertEqual(layout.properties[.translationOrientation], .enumeration(Orientation.horizontal.rawValue))
@@ -266,7 +272,7 @@ final class LayoutAxisTests: XCTestCase {
     /// TWO FINGERS ON A MAGNIFICATION WITH NO SNAPS rest where they leave it, and past its end come back onto it.
     func testAMagnificationWithNoSnapsRestsWhereTheFingersLeaveIt() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
-        let built = tree(table, handed) { $0.axis(\.zoom, input: .magnification, range: 0.5...2) }
+        let built = tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.zoom, input: .magnification).range(0.5...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }
         _ = bench.laid(renders, built)
 
         bench.pinch(renders, built, .began)
@@ -289,45 +295,77 @@ final class LayoutAxisTests: XCTestCase {
     func testAnAxisTheParametersDoNotListMovesNothing() throws {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
         let patch = Renders().render(tree(table, handed) {
-            $0.axis(\.note, input: .scroll(.horizontal), range: 0...1)
+            $0.interaction(.value(table.projectedValue, axis: \.note, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...1).release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }())
 
         XCTAssertNil(try XCTUnwrap(patch.first(.motionLayout)).events?[.translationUpdated])
-        XCTAssertTrue(hasComplained("an axis its parameters' `axes` do not list"))
+        XCTAssertTrue(hasComplained("a number that is no axis of the layout's parameters"))
     }
 
-    /// AN AXIS NO INPUT MOVES SAYS SOMETHING: with no keyframes it declares nothing, and its snaps would be where no
-    /// hand rests - each is said.
-    func testAnAxisNoInputMovesSaysSomething() throws {
+    /// AN AXIS MAPPING NOTHING SAYS SO: with no keyframes and no segments the declaration changes nothing.
+    func testAnAxisMappingNothingSaysSo() throws {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
         _ = Renders().render(tree(table, handed) { $0.axis(\.x, range: 0...1) }())
-        XCTAssertTrue(hasComplained("no input and no keyframes"))
+        XCTAssertTrue(hasComplained("no keyframes and no segments"))
+    }
 
-        _ = Renders().render(tree(table, handed) { $0.axis(\.sky, range: 0...2, keyframes: .every(1), snaps: .every(1)) }())
-        XCTAssertTrue(hasComplained("snaps and no input"))
+    /// AN INTERACTION THAT DOES NOT STAND MOVES NOTHING, and says why: coming round over no range, snaps between
+    /// no ends, points a unit not above nought, and what each value says for itself said of several at once.
+    func testAnInteractionThatDoesNotStandMovesNothing() throws {
+        let (table, handed) = (State(wrappedValue: Table()), Handed())
+        let hand = InteractionInput.translation(.horizontal, unit: .points(100))
+        func heard(_ interaction: Interaction) throws -> Bool {
+            let patch = Renders().render(tree(table, handed) { $0.interaction(interaction) }())
+            return try XCTUnwrap(patch.first(.motionLayout)).events?[.translationUpdated] != nil
+        }
+
+        XCTAssertFalse(try heard(.value(table.projectedValue, axis: \.x, input: hand).periodic(true)))
+        XCTAssertTrue(hasComplained("told to come round with no range"))
+
+        XCTAssertFalse(try heard(.value(table.projectedValue, axis: \.x, input: hand).snaps(.every(1))))
+        XCTAssertTrue(hasComplained("snaps and no range"))
+
+        _ = try heard(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(0))))
+        XCTAssertTrue(hasComplained("points a unit that are not above nought"))
+
+        XCTAssertTrue(try heard(.simultaneous([.value(table.projectedValue, axis: \.x, input: hand)]).range(0...1)))
+        XCTAssertTrue(hasComplained("several values at once was given `range`"))
+    }
+
+    /// A VALUE GIVEN NO RANGE HAS NO END: the hand moves it as far as it goes, with nothing to come back onto.
+    func testAValueGivenNoRangeHasNoEnd() {
+        let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
+        let built = tree(table, handed) {
+            $0.interaction(.value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).release(.stay))
+        }
+        _ = bench.laid(renders, built)
+
+        bench.hand(renders, built, .began)
+        bench.hand(renders, built, .changed, moved: Point(730, 0))
+        bench.hand(renders, built, .ended)
+        frames(10)
+
+        XCTAssertEqual(table.wrappedValue.x, 7.3, accuracy: 0.000_1, "to the right the value grows, unless reversed")
     }
 
     /// A MAGNIFICATION'S RANGE STANDS ABOVE NOUGHT: one reaching it moves nothing, and says why.
     func testAMagnificationReachingNoughtMovesNothing() throws {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
-        let patch = Renders().render(tree(table, handed) { $0.axis(\.zoom, input: .magnification, range: 0...2) }())
+        let patch = Renders().render(tree(table, handed) { $0.interaction(.value(table.projectedValue, axis: \.zoom, input: .magnification).range(0...2).release(.projected(.eased(.milliseconds(400), curve: .cubicOut)))) }())
 
         XCTAssertNil(try XCTUnwrap(patch.first(.motionLayout)).properties[.magnifies])
         XCTAssertTrue(hasComplained("a range reaching nought"))
     }
 
-    /// A SWIPE GIVEN NO SNAPS swipes from end to end, and says why.
-    func testASwipeGivenNoSnapsSwipesFromEndToEnd() {
-        let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
-        let built = tree(table, handed) { $0.axis(\.x, input: .swipe(.horizontal, lengthPerUnit: 100), range: 0...3) }
-        _ = bench.laid(renders, built)
+    /// A SWIPE GIVEN NO SNAPS MOVES NOTHING, and says why: a swipe goes a snap a hand.
+    func testASwipeGivenNoSnapsMovesNothing() throws {
+        let (table, handed) = (State(wrappedValue: Table()), Handed())
+        let patch = Renders().render(tree(table, handed) {
+            $0.interaction(
+                .value(table.projectedValue, axis: \.x, input: .swipe(.horizontal, unit: .points(100))).range(0...3))
+        }())
 
-        bench.hand(renders, built, .began)
-        bench.hand(renders, built, .changed, moved: Point(-40, 0))
-        bench.hand(renders, built, .ended, velocity: Point(-300, 0))
-        frames(60)
-
-        XCTAssertEqual(table.wrappedValue.x, 3)
-        XCTAssertTrue(hasComplained("its axis was given none"))
+        XCTAssertNil(try XCTUnwrap(patch.first(.motionLayout)).events?[.translationUpdated])
+        XCTAssertTrue(hasComplained("was given no snaps"))
     }
 }

@@ -29,7 +29,9 @@ final class LayoutShownTests: XCTestCase {
             MotionLayout([0, 1, 2], parameters: phase.traveling(.eased(.milliseconds(160), curve: .linear))) { Text("\($0)") } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
+            .interaction(
+                Interaction.value(phase.traveling(.eased(.milliseconds(160), curve: .linear)), axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
 
             Rectangle()
                 .fill(.red)

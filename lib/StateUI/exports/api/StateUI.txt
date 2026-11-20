@@ -406,6 +406,13 @@ swift.conformance Insets: Swift.Equatable
 swift.conformance Insets: Swift.ExpressibleByFloatLiteral
 swift.conformance Insets: Swift.ExpressibleByIntegerLiteral
 swift.conformance Insets: Swift.Sendable
+swift.conformance Interaction: Swift.Sendable
+swift.conformance InteractionInput: Swift.Equatable
+swift.conformance InteractionInput: Swift.Sendable
+swift.conformance InteractionRelease: Swift.Equatable
+swift.conformance InteractionRelease: Swift.Sendable
+swift.conformance InteractionUnit: Swift.Equatable
+swift.conformance InteractionUnit: Swift.Sendable
 swift.conformance ItemDrag: Swift.Equatable where ID : Hashable
 swift.conformance ItemDrag: Swift.Sendable where ID : Hashable, ID : Sendable
 swift.conformance ItemDragStart: Swift.Equatable
@@ -459,8 +466,6 @@ swift.conformance LayoutDirection: Swift.Equatable
 swift.conformance LayoutDirection: Swift.Hashable
 swift.conformance LayoutDirection: Swift.RawRepresentable
 swift.conformance LayoutDirection: Swift.Sendable
-swift.conformance LayoutInput: Swift.Equatable
-swift.conformance LayoutInput: Swift.Sendable
 swift.conformance LayoutInterpolation: Swift.Sendable
 swift.conformance LayoutParameters: Swift.Equatable
 swift.conformance LayoutParameters: Swift.Sendable
@@ -1118,6 +1123,8 @@ swift.enum IconElementContract: enum IconElementContract
 swift.enum IconPosition: enum IconPosition
 swift.enum ImageContract: enum ImageContract
 swift.enum InputPurpose: enum InputPurpose
+swift.enum InteractionRelease: enum InteractionRelease
+swift.enum InteractionUnit: enum InteractionUnit
 swift.enum ItemDragStart: enum ItemDragStart
 swift.enum ItemsLayout: enum ItemsLayout
 swift.enum ItemsViewContract: enum ItemsViewContract
@@ -1428,6 +1435,12 @@ swift.enum.case InputPurpose.telephone: case telephone
 swift.enum.case InputPurpose.text: case text
 swift.enum.case InputPurpose.url: case url
 swift.enum.case InputPurpose.username: case username
+swift.enum.case InteractionRelease.nearest(_:): case nearest(Motion)
+swift.enum.case InteractionRelease.projected(_:): case projected(Motion)
+swift.enum.case InteractionRelease.stay: case stay
+swift.enum.case InteractionUnit.containerLength: case containerLength
+swift.enum.case InteractionUnit.frontItem: case frontItem
+swift.enum.case InteractionUnit.points(_:): case points(Double)
 swift.enum.case ItemDragStart.longPress: case longPress
 swift.enum.case ItemDragStart.perpendicular: case perpendicular
 swift.enum.case ItemsLayout.grid(minimumItemWidth:spacing:): case grid(minimumItemWidth: Double, spacing: Double = 0)
@@ -4566,6 +4579,7 @@ swift.method GalleryView.pivotY(_:): @MainActor func pivotY(_ state: Binding<Dou
 swift.method GalleryView.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method GalleryView.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method GalleryView.position(_:): @MainActor func position(_ state: Binding<Int>) -> GalleryView<Items, ID>
+swift.method GalleryView.release(_:): @MainActor func release(_ release: InteractionRelease) -> GalleryView<Items, ID>
 swift.method GalleryView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
@@ -4584,7 +4598,6 @@ swift.method GalleryView.showsNavigationBar(_:): @MainActor func showsNavigation
 swift.method GalleryView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method GalleryView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method GalleryView.throwMotion(_:): @MainActor func throwMotion(_ motion: Motion) -> GalleryView<Items, ID>
 swift.method GalleryView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method GalleryView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method GalleryView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -5559,6 +5572,11 @@ swift.method Image.visualState(_:_:): @MainActor func visualState(_ state: Visua
 swift.method Image.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method ImageProperties.isAnimating(_:): @MainActor func isAnimating(_ value: Bool) -> Self.Modified
+swift.method Interaction.periodic(_:): @MainActor func periodic(_ enabled: Bool) -> Interaction
+swift.method Interaction.range(_:): @MainActor func range(_ range: ClosedRange<Double>) -> Interaction
+swift.method Interaction.release(_:): @MainActor func release(_ release: InteractionRelease) -> Interaction
+swift.method Interaction.reversed(_:): @MainActor func reversed(_ enabled: Bool) -> Interaction
+swift.method Interaction.snaps(_:): @MainActor func snaps(_ values: AxisValues?) -> Interaction
 swift.method ItemsView.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ItemsView.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6647,7 +6665,7 @@ swift.method MotionLayout.accessibilityRole(_:): @MainActor func accessibilityRo
 swift.method MotionLayout.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method MotionLayout.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
 swift.method MotionLayout.area(_:): @MainActor func area(_ value: Area) -> Self.Modified
-swift.method MotionLayout.axis(_:input:range:keyframes:snaps:periodic:): @MainActor func axis(_ axis: WritableKeyPath<Parameters, Double>, input: LayoutInput? = nil, range: ClosedRange<Double>, keyframes: AxisValues? = nil, snaps: AxisValues? = nil, periodic: Bool = false) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.axis(_:range:keyframes:segments:periodic:): @MainActor func axis(_ axis: WritableKeyPath<Parameters, Double>, range: ClosedRange<Double>, keyframes: AxisValues? = nil, segments: AxisValues? = nil, periodic: Bool = false) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.backButtonTitle(_:): @MainActor func backButtonTitle(_ state: Binding<String>) -> Self.Modified
 swift.method MotionLayout.backButtonTitle(_:): @MainActor func backButtonTitle(_ value: String) -> Self.Modified
 swift.method MotionLayout.background(_:): @MainActor func background(_ state: Binding<Color>) -> Self.Modified
@@ -6677,6 +6695,7 @@ swift.method MotionLayout.height(_:): @MainActor func height(_ state: Binding<Do
 swift.method MotionLayout.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method MotionLayout.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method MotionLayout.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method MotionLayout.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.interpolation(_:): @MainActor func interpolation(_ curve: some LayoutInterpolation) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
@@ -6831,7 +6850,6 @@ swift.method MotionLayout.showsNavigationBar(_:): @MainActor func showsNavigatio
 swift.method MotionLayout.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method MotionLayout.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method MotionLayout.throwMotion(_:): @MainActor func throwMotion(_ motion: Motion) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method MotionLayout.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method MotionLayout.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
@@ -12858,6 +12876,8 @@ swift.struct HTTPResponse: struct HTTPResponse
 swift.struct Image: @MainActor struct Image
 swift.struct ImageSource: struct ImageSource
 swift.struct Insets: struct Insets
+swift.struct Interaction: @MainActor struct Interaction
+swift.struct InteractionInput: struct InteractionInput
 swift.struct ItemDrag: struct ItemDrag<ID> where ID : Hashable
 swift.struct ItemsView: @MainActor struct ItemsView<ID> where ID : Hashable
 swift.struct Journey: @MainActor struct Journey<Value> where Value : Walked
@@ -12868,7 +12888,6 @@ swift.struct KeyPress: struct KeyPress
 swift.struct LayoutBody: struct LayoutBody
 swift.struct LayoutContext: struct LayoutContext<ID> where ID : Hashable
 swift.struct LayoutCurve: struct LayoutCurve
-swift.struct LayoutInput: struct LayoutInput
 swift.struct LayoutMeasurementContext: struct LayoutMeasurementContext<ID> where ID : Hashable
 swift.struct LayoutProposal: struct LayoutProposal
 swift.struct LayoutSize: struct LayoutSize
@@ -13021,13 +13040,14 @@ swift.type.method GridTracks.fill(count:): static func fill(count: Int) -> GridT
 swift.type.method GridTracks.fixed(_:count:): static func fixed(_ length: Double, count: Int = 1) -> GridTracks
 swift.type.method GridTracks.proportional(_:count:): static func proportional(_ share: Double, count: Int = 1) -> GridTracks
 swift.type.method ImageSource.icon(_:): static func icon(_ icon: Icon) -> ImageSource
+swift.type.method Interaction.simultaneous(_:): @MainActor static func simultaneous(_ interactions: [Interaction]) -> Interaction
+swift.type.method Interaction.value(_:axis:input:): @MainActor static func value<Parameters>(_ state: Binding<Parameters>, axis: WritableKeyPath<Parameters, Double>, input: InteractionInput) -> Interaction where Parameters : LayoutParameters
+swift.type.method InteractionInput.rotation(degreesPerUnit:): static func rotation(degreesPerUnit: Double = 360) -> InteractionInput
+swift.type.method InteractionInput.swipe(_:unit:): static func swipe(_ orientation: Orientation, unit: InteractionUnit = .points(1)) -> InteractionInput
+swift.type.method InteractionInput.translation(_:unit:): static func translation(_ orientation: Orientation, unit: InteractionUnit = .points(1)) -> InteractionInput
 swift.type.method LayoutBody.followsLayout(_:): static func followsLayout(_ spring: Spring = .standard) -> LayoutBody
 swift.type.method LayoutBody.onChange(_:): static func onChange(_ spring: Spring = .standard) -> LayoutBody
 swift.type.method LayoutCurve.catmullRom(tension:): static func catmullRom(tension: Double) -> LayoutCurve
-swift.type.method LayoutInput.pages(_:): static func pages(_ orientation: Orientation) -> LayoutInput
-swift.type.method LayoutInput.rotation(degreesPerUnit:): static func rotation(degreesPerUnit: Double) -> LayoutInput
-swift.type.method LayoutInput.scroll(_:lengthPerUnit:): static func scroll(_ orientation: Orientation, lengthPerUnit: Double? = nil) -> LayoutInput
-swift.type.method LayoutInput.swipe(_:lengthPerUnit:): static func swipe(_ orientation: Orientation, lengthPerUnit: Double? = nil) -> LayoutInput
 swift.type.method LayoutInterpolation.catmullRom(tension:): static func catmullRom(tension: Double) -> LayoutCurve
 swift.type.method LocalizedResources.resources(for:): @MainActor static func resources(for language: Self.Catalog.CatalogLanguage) -> Self
 swift.type.method MarkerBuilder.buildBlock(_:): static func buildBlock(_ components: [Marker]...) -> [Marker]
@@ -13254,6 +13274,7 @@ swift.type.property IconElementContract.name: static let name: String
 swift.type.property ImageContract.isAnimating: static let isAnimating: ElementProperty<ImageContract, Bool>
 swift.type.property ImageContract.name: static var name: String { get }
 swift.type.property ImageContract.source: static let source: ElementProperty<ImageContract, ImageSource>
+swift.type.property InteractionInput.magnification: static let magnification: InteractionInput
 swift.type.property ItemsViewContract.endReached: static let endReached: ElementEvent<ItemsViewContract, Void>
 swift.type.property ItemsViewContract.endReachedWithin: static let endReachedWithin: ElementProperty<ItemsViewContract, Int>
 swift.type.property ItemsViewContract.itemActivated: static let itemActivated: ElementEvent<ItemsViewContract, String>
@@ -13307,7 +13328,6 @@ swift.type.property LayoutContract.name: static let name: String
 swift.type.property LayoutCurve.catmullRom: static var catmullRom: LayoutCurve { get }
 swift.type.property LayoutCurve.linear: static var linear: LayoutCurve { get }
 swift.type.property LayoutCurve.monotone: static var monotone: LayoutCurve { get }
-swift.type.property LayoutInput.magnification: static var magnification: LayoutInput { get }
 swift.type.property LayoutInterpolation.catmullRom: static var catmullRom: LayoutCurve { get }
 swift.type.property LayoutInterpolation.linear: static var linear: LayoutCurve { get }
 swift.type.property LayoutInterpolation.monotone: static var monotone: LayoutCurve { get }

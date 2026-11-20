@@ -68,9 +68,11 @@ extension MotionLayout.Hand {
     /// turn's, where the axis comes round; past an end, the end's two.
     /// Design: docs/design/views/motion-layout.md#keyframes
     func keyframes(around value: Double, reach: Int) -> MotionLayout.KeyframesAround {
-        guard let knots, knots.count > 1 else {
+        guard let knots, knots.count > 1, let span else {
             return .init(knots: [], place: value, segment: 0, exact: value, beyond: false)
         }
+        // The mapping's own range: the hand's may be another.
+        let (low, high, period) = (span.low, span.high, span.period)
 
         // A keyframe a rounding from the place is the place.
         func exact(_ candidates: [Double], _ place: Double) -> Double? {

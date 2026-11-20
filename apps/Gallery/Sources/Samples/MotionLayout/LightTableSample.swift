@@ -83,18 +83,25 @@ struct LightTableSample: SampleContent, ExampleContent {
         } placements: { context, table in
             Self.photos.indices.map { place($0, table, context.bounds) }
         }
-        // ONE FINGER OR TWO MOVE THE TABLE every way - one axis scrolled
-        // across, one down - resting on a photo, or, not snapping, anywhere...
-        .axis(\.x, input: .scroll(.horizontal), range: 0...2, snaps: snaps ? .every(1) : nil)
-        .axis(\.y, input: .scroll(.vertical), range: 0...2, snaps: snaps ? .every(1) : nil)
-        // ...while TWO SPREAD it anywhere from the whole table to one photo,
-        // coming back only from past either end...
-        .axis(\.zoom, input: .magnification, range: 0.45...1)
-        // ...and TURN the photos a quarter at a time, or freely, round and
-        // round.
-        .axis(
-            \.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: snaps ? .every(0.25) : nil,
-            periodic: true)
+        .interaction(.simultaneous([
+            // ONE FINGER OR TWO MOVE THE TABLE every way - one number moved
+            // across, one down - resting on a photo, or, not snapping,
+            // anywhere...
+            .value($table, axis: \.x, input: .translation(.horizontal, unit: .frontItem))
+                .reversed(true).range(0...2).snaps(snaps ? .every(1) : nil),
+            .value($table, axis: \.y, input: .translation(.vertical, unit: .frontItem))
+                .reversed(true).range(0...2).snaps(snaps ? .every(1) : nil),
+            // ...while TWO SPREAD it anywhere from the whole table to one
+            // photo, coming back only from past either end...
+            .value($table, axis: \.zoom, input: .magnification)
+                .range(0.45...1),
+            // ...and TURN the photos a quarter at a time, or freely, round
+            // and round.
+            .value($table, axis: \.turn, input: .rotation(degreesPerUnit: 360))
+                .range(0...1).periodic(true).snaps(snaps ? .every(0.25) : nil),
+        ])
+        // LET GO, every number goes on by one law.
+        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
     }
 
     /// Where the photo at `index` lies: its square of the table, a photo's

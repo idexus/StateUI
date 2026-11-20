@@ -114,9 +114,17 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                 } placements: { context, board in
                     (0..<count).map { Self.place($0, board, context.bounds, fit) }
                 }
-                .axis(
-                    \.self, input: .pages(.horizontal), range: 0...Double(boards - 1), keyframes: .every(1),
-                    snaps: .every(1))
+                // A BOARD A KEYFRAME: the arithmetic is asked at whole boards,
+                // and the icons are blended between them.
+                .axis(\.self, range: 0...Double(boards - 1), keyframes: .every(1))
+                // A PAGE A HAND: the room's width turns one board, the next
+                // at most, however far or fast the hand goes.
+                .interaction(
+                    .value($board, axis: \.self, input: .swipe(.horizontal, unit: .containerLength))
+                        .reversed(true)
+                        .range(0...Double(boards - 1))
+                        .snaps(.every(1))
+                        .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
                 // HELD, AN ICON LEAVES ITS BOARD for the hand: each move
                 // gives it the slot under the hand, and the others travel to
                 // make room; held still at an edge, the boards turn under it.

@@ -34,18 +34,19 @@ final class LayoutPanTests: XCTestCase {
     /// A board of three by three a hand pans a hundred points a unit, resting on each square, and two fingers spread
     /// as large as twice.
     private func tree(_ board: State<Board>, _ handed: Handed, downFirst: Bool = false) -> Node {
-        let layout = MotionLayout([0, 1], parameters: board.traveling(.eased(.milliseconds(160), curve: .linear))) { Text("\($0)") } placements: { _, board in
+        let moved = board.traveling(.eased(.milliseconds(160), curve: .linear))
+        let across = Interaction.value(moved, axis: \.x, input: .translation(.horizontal, unit: .points(100)))
+            .reversed(true).range(0...2).snaps(.every(1))
+        let down = Interaction.value(moved, axis: \.y, input: .translation(.vertical, unit: .points(100)))
+            .reversed(true).range(0...2).snaps(.every(1))
+        let zoom = Interaction.value(moved, axis: \.zoom, input: .magnification).range(1...2).snaps(.endpoints)
+        return MotionLayout([0, 1], parameters: moved) { Text("\($0)") } placements: { _, board in
             handed.boards.append(board)
             return [Placement(Rect(-board.x * 100, -board.y * 100, 40, 40)), Placement(.zero)]
         }
-        let across = { (layout: MotionLayout<[Int], Int, Board>) in
-            layout.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
-        }
-        let down = { (layout: MotionLayout<[Int], Int, Board>) in
-            layout.axis(\.y, input: .scroll(.vertical, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
-        }
-        return (downFirst ? across(down(layout)) : down(across(layout)))
-        .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
+        .interaction(
+            .simultaneous((downFirst ? [down, across] : [across, down]) + [zoom])
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         .node
     }
 
@@ -183,21 +184,24 @@ final class LayoutPanTests: XCTestCase {
     /// AXES SCROLLED ACROSS AND DOWN ARE A PAN, heard every way; scrolled one way alone, a hand along the layout.
     func testAxesScrolledAcrossAndDownAreAPan() throws {
         let (board, handed) = (State(wrappedValue: Board()), Handed())
-        func layout() -> MotionLayout<[Int], Int, Board> {
+        func layout(down: Orientation) -> MotionLayout<[Int], Int, Board> {
             MotionLayout([0], parameters: board.projectedValue) { Text("\($0)") } placements: { _, board in
                 handed.boards.append(board)
                 return [Placement(Rect(0, 0, 40, 40))]
             }
-            .axis(\.x, input: .scroll(.horizontal), range: 0...1, snaps: .endpoints)
+            .interaction(.simultaneous([
+                .value(board.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .frontItem))
+                    .range(0...1).snaps(.endpoints),
+                .value(board.projectedValue, axis: \.y, input: .translation(down, unit: .frontItem))
+                    .range(0...1).snaps(.endpoints),
+            ]))
         }
 
-        let panned = try XCTUnwrap(Renders().settled(
-            layout().axis(\.y, input: .scroll(.vertical), range: 0...1, snaps: .endpoints).node).first(.motionLayout))
+        let panned = try XCTUnwrap(Renders().settled(layout(down: .vertical).node).first(.motionLayout))
         XCTAssertEqual(panned.properties[.pans], .bool(true))
         XCTAssertNil(panned.properties[.translationOrientation])
 
-        let scrolled = try XCTUnwrap(Renders().settled(
-            layout().axis(\.y, input: .scroll(.horizontal), range: 0...1, snaps: .endpoints).node).first(.motionLayout))
+        let scrolled = try XCTUnwrap(Renders().settled(layout(down: .horizontal).node).first(.motionLayout))
         XCTAssertNil(scrolled.properties[.pans], "two axes, one way")
         XCTAssertEqual(scrolled.properties[.translationOrientation], .enumeration(Orientation.horizontal.rawValue))
     }

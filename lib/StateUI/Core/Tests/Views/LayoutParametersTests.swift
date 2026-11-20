@@ -179,7 +179,9 @@ final class LayoutParametersTests: XCTestCase {
                 handed?.phases.append(phase)
                 return [Placement(Rect(0, 0, 10, 10))]
             }
-            .axis(\.turn, input: .scroll(.horizontal, lengthPerUnit: 100), range: range, snaps: snaps)
+            .interaction(
+                Interaction.value(orbit.projectedValue, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .node
         }
     }

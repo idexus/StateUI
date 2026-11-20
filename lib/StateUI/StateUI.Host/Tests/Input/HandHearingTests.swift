@@ -212,7 +212,9 @@ private struct HandPage: View {
             handed.append(phase)
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
-        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
+        .interaction(
+            Interaction.value($turn, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
     }
 }
 
@@ -228,7 +230,9 @@ private struct TappedHandPage: View {
         MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)").onTapped { tapped += 1 } } placements: { _, _ in
             (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
-        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
+        .interaction(
+            Interaction.value($turn, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         .onItemActivated { _ in tapped += 1 }
     }
 }
@@ -247,7 +251,9 @@ private struct RightToLeftPage: View {
             handed.append(phase)
             return (0..<5).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
         }
-        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
+        .interaction(
+            Interaction.value($turn, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         .mirrorsRightToLeft(mirrors)
         .itemDrag(begins: .perpendicular)
         .onItemDragged { drag in dragged.append((drag.id, drag.at)) }

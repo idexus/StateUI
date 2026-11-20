@@ -146,10 +146,18 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         } placements: { context, turn, segmentStart in
             (0..<count).map { fanned ? fan($0, turn, context.bounds) : pile($0, turn, segmentStart, context.bounds) }
         }
-        // The pile is swiped a card at a time, the fan scrolled through.
-        .axis(
-            \.self, input: fanned ? .scroll(.horizontal) : .swipe(.horizontal),
-            range: 0...Double(max(count - 1, 0)), snaps: .every(1))
+        // A SEGMENT A CARD: a card setting out is told which card the run
+        // set out from.
+        .axis(\.self, range: 0...Double(max(count - 1, 0)), segments: .every(1))
+        // The pile is swiped a card at a time, the fan moved through.
+        .interaction(
+            .value(
+                $turn, axis: \.self,
+                input: fanned ? .translation(.horizontal, unit: .frontItem) : .swipe(.horizontal, unit: .frontItem))
+                .reversed(true)
+                .range(0...Double(max(count - 1, 0)))
+                .snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         // A CARD PULLED UP is the hand's alone: let go far enough, it flies
         // out of the deck and leaves it; short of that, it goes back.
         .itemDrag(begins: .perpendicular)

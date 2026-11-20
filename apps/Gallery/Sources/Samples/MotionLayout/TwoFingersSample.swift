@@ -53,10 +53,13 @@ struct TwoFingersSample: SampleContent, ExampleContent {
             // TWO FINGERS TURNING turn the ring a card every eighth of a
             // turn, round and round; SPREADING, they grow it from small to
             // large, resting at either or at its own size - both at once.
-            .axis(
-                \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
-                periodic: true)
-            .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
+            .interaction(.simultaneous([
+                .value($ring, axis: \.turn, input: .rotation(degreesPerUnit: 360 / count))
+                    .range(0...count).periodic(true).snaps(.every(1)),
+                .value($ring, axis: \.size, input: .magnification)
+                    .range(0.6...1.5).snaps([1]),
+            ])
+            .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         .clipsContent(true)
     }

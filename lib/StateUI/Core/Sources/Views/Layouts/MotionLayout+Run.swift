@@ -8,19 +8,42 @@
 import StateUIFoundation
 
 extension MotionLayout {
-    /// One axis the hand or the fingers move: its place in the parameters' `axes`, by which the hand's hold, its throw
-    /// and its grip are kept, the axis, what moves it and how a throw goes on, the ends of its range, where on it the
-    /// run may come to rest, lowest first - none for anywhere in the range - how far one turn takes it where it
-    /// comes round, and where the arithmetic is asked, lowest first, the ends included - nil for every frame.
+    /// One axis the run works on: its place in the parameters' `axes`, by which the hand's hold, its throw and its
+    /// grip are kept, and the axis. As the hand moves it: what moves it, the ends of its range - none for no end -
+    /// where on it the run may come to rest, lowest first - none for anywhere in the range - how far one turn takes
+    /// it where it comes round, whether it grows the other way, and how it goes on let go. As the layout maps it:
+    /// where the arithmetic is asked, lowest first, the ends included - nil for every frame - the mapping's own
+    /// range, and where its segments begin.
+    /// Design: docs/design/views/interaction.md#on-a-motion-layout
     struct Hand {
+        /// A mapping's range, and how far one turn takes it where it comes round.
+        struct Span {
+            let low: Double
+            let high: Double
+            let period: Double?
+        }
+
         let index: Int
         let axis: WritableKeyPath<Parameters, Double>
-        let gesture: LayoutInput.Gesture?
+        let gesture: InteractionInput.Gesture?
         let low: Double
         let high: Double
         let stops: [Double]
         let period: Double?
+        let reversed: Bool
+        let release: InteractionRelease
         let knots: [Double]?
+        let span: Span?
+        let segments: [Double]
+
+        /// Where the axis's segments begin as they come round near `value`: the turn it stands in and one either
+        /// side.
+        func marks(near value: Double) -> [Double] {
+            guard let span, let period = span.period else { return segments }
+
+            let turn = ((value - span.low) / period).rounded(.down)
+            return [turn - 1, turn, turn + 1].flatMap { turn in segments.map { $0 + turn * period } }
+        }
 
         /// Which way the hand moves the axis, where the hand does rather than two fingers.
         var way: Orientation? {
@@ -72,9 +95,6 @@ extension MotionLayout {
         let hands: [Hand]
         var focus: Hand?
 
-        /// How a throw goes on once the hands let go, every axis alike (`throwMotion(_:)`).
-        let throwing: Motion
-
         /// How the views come onto their places as the layout itself was told (`layoutBodies(_:)`) - what a
         /// dismissed view's flight is timed by; and the body the view at an index says it is itself - nil for one
         /// that says none.
@@ -121,7 +141,7 @@ extension MotionLayout {
         /// Which way the hand moves the axis in focus, how far it travels for one unit where the input says, whether
         /// it moves it one snap at most, and how a throw goes on.
         var across: Bool { focus?.way != .vertical }
-        var travel: LayoutInput.Travel {
+        var travel: InteractionInput.Travel {
             guard case .hand(_, let travel, _)? = focus?.gesture ?? nil else { return .front }
             return travel
         }
@@ -129,6 +149,22 @@ extension MotionLayout {
             guard case .hand(_, _, let swipes)? = focus?.gesture ?? nil else { return false }
             return swipes
         }
+
+        /// How a throw of the axis in focus goes on - its release's, where it throws - whether letting it go throws
+        /// it at all, and the motion it comes onto the nearest under where its release names one.
+        var throwing: Motion { focus?.release.throwing ?? .eased(.milliseconds(400), curve: .cubicOut) }
+        var throwsOn: Bool {
+            if case .projected = focus?.release ?? .standard { return true }
+            return false
+        }
+        var stays: Bool { focus?.release == .stay }
+        var approaching: Motion? {
+            if case .nearest(let motion)? = focus?.release { return motion }
+            return nil
+        }
+
+        /// Which way the axis in focus grows under the hand: with it, or - reversed - against it.
+        var sense: Double { focus?.reversed == true ? -1 : 1 }
 
         /// Where the hand holds the axis in focus, while it does.
         var held: Double? {
@@ -311,7 +347,8 @@ extension MotionLayout {
         /// Of the targets on the hand's axis beyond `start` up to `value`, the one nearest `value`: the last the run
         /// passed going from one to the other; nil where it passed none.
         func passed(from start: Double, to value: Double) -> Double? {
-            let beyond = around(stops, near: value).filter { value > start ? $0 > start && $0 <= value : $0 < start && $0 >= value }
+            let marks = focus?.marks(near: value) ?? []
+            let beyond = marks.filter { value > start ? $0 > start && $0 <= value : $0 < start && $0 >= value }
             return value > start ? beyond.max() : beyond.min()
         }
 
@@ -424,7 +461,7 @@ extension MotionLayout {
                 // A room not yet measured draws no view, so a hand over it moves none.
                 guard let per = unit(at: held) else { return }
 
-                move(by: -(across ? moved.x : moved.y) / per)
+                move(by: sense * (across ? moved.x : moved.y) / per)
             case .ended, .cancelled:
                 break
             }
@@ -451,7 +488,7 @@ extension MotionLayout {
 
             let measured = unit(at: held)
             let per = measured ?? 1
-            let thrown = gesture == .ended && measured != nil ? -(across ? velocity.x : velocity.y) / per : 0
+            let thrown = gesture == .ended && measured != nil ? sense * (across ? velocity.x : velocity.y) / per : 0
             return letting(at: held, per: per, velocity: thrown)
         }
 
@@ -460,7 +497,8 @@ extension MotionLayout {
         /// does not come round, and where it was let go for a hand too slow to throw.
         func letting(at value: Double, per: Double, velocity: Double) -> Letting {
             let point = toHand(value)
-            let carried = abs(velocity) * per >= Self.throwing ? point + Self.carried(velocity, by: throwing) : point
+            let throwsFar = throwsOn && abs(velocity) * per >= Self.throwing
+            let carried = throwsFar ? point + Self.carried(velocity, by: throwing) : point
             let end = period == nil ? min(max(carried, toHand(low)), toHand(high)) : carried
             return Letting(point: point, per: per, velocity: velocity, end: end)
         }
@@ -468,7 +506,7 @@ extension MotionLayout {
         /// Where the axis in focus comes to rest let go as `letting` says: a swipe thrown, the next snap of its reach
         /// that way; otherwise where the throw ends, onto the snap nearest it.
         func rest(of letting: Letting) -> Double {
-            let thrown = abs(letting.velocity) * letting.per >= Self.throwing ? letting.velocity : 0
+            let thrown = throwsOn && abs(letting.velocity) * letting.per >= Self.throwing ? letting.velocity : 0
             return swiped(from: fromHand(letting.point), thrown: thrown) ?? resting(at: fromHand(letting.end))
         }
 
@@ -478,14 +516,17 @@ extension MotionLayout {
         /// thrown, else the approach of the longest way.
         /// Design: docs/design/views/motion-layout.md#coming-onto-a-target
         func letGo(together lettings: [(run: Run, letting: Letting)]) {
-            let start = live()
+            var start = live()
             let rests = lettings.map { $0.run.rest(of: $0.letting) }
             for ((run, _), rest) in zip(lettings, rests) {
                 run.grip = nil
                 run.name(rest)
+                // An axis that stays rests where it was named, at once: it sets out from there.
+                if run.stays { start = run.placing(rest, in: start) }
             }
             let goings = zip(lettings, rests).compactMap { lettingRest in
-                lettingRest.0.run.going(lettingRest.0.letting, to: lettingRest.1).map { (run: lettingRest.0.run, going: $0) }
+                lettingRest.0.run.stays ? nil
+                    : lettingRest.0.run.going(lettingRest.0.letting, to: lettingRest.1).map { (run: lettingRest.0.run, going: $0) }
             }
             for (run, _) in lettings { run.held = nil }
             // One law whatever order the axes were declared in: a throw's, where one is thrown - every axis throws
@@ -512,11 +553,12 @@ extension MotionLayout {
         func going(_ letting: Letting, to value: Double) -> (law: Motion, velocity: Double, thrown: Bool, left: Double)? {
             let along = toHand(value)
             let left = along - letting.point
-            let motion = resolvedLaw
+            let motion = approaching ?? resolvedLaw
             let flight = Self.flight(left, at: letting.velocity, by: throwing)
             let onward = stops.isEmpty || !next(from: fromHand(letting.point), to: value)
                 || flight <= abs(left) * Double(motion.milliseconds)
-            let isThrow = abs(letting.velocity) * letting.per >= Self.throwing && left * letting.velocity > 0 && onward
+            let isThrow = throwsOn && abs(letting.velocity) * letting.per >= Self.throwing
+                && left * letting.velocity > 0 && onward
 
             guard abs(left) * letting.per > Self.settled, motion.kind != .custom || isThrow else { return nil }
 
@@ -554,9 +596,10 @@ extension MotionLayout {
             for hand in hands {
                 // How far the fingers moved the axis, how fast in units a second, and how many of theirs a unit is.
                 let (step, rate, per): (Double, Double, Double)
+                let sense: Double = hand.reversed ? -1 : 1
                 switch hand.gesture {
-                case .magnification?: (step, rate, per) = (scale > 0 ? log(scale) : 0, velocity.x, 100)
-                case .rotation(let unit)?: (step, rate, per) = (degrees / unit, velocity.y / unit, unit)
+                case .magnification?: (step, rate, per) = (sense * (scale > 0 ? log(scale) : 0), sense * velocity.x, 100)
+                case .rotation(let unit)?: (step, rate, per) = (sense * degrees / unit, sense * velocity.y / unit, unit)
                 case .hand?, nil: continue
                 }
 
@@ -666,7 +709,7 @@ extension MotionLayout {
         /// Design: docs/design/views/motion-layout.md#a-wheels-notch
         func step(_ notches: Point) {
             // A notch the host says as no number is no notch.
-            guard let count = Int(nearest: -(across ? notches.x : notches.y)), count != 0 else { return }
+            guard let count = Int(nearest: sense * (across ? notches.x : notches.y)), count != 0 else { return }
             guard held == nil else { return }
 
             let journey = parameters.journey

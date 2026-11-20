@@ -80,11 +80,14 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
         } placements: { context, deal in
             Self.cards.indices.map { place($0, deal, context.bounds) }
         }
-        // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
-        // no hand, so it is declared no axis.
-        .axis(
-            \.turn, input: .scroll(.horizontal, lengthPerUnit: 90),
-            range: 0...Double(Self.cards.count - 1), snaps: .every(1))
+        // THE HAND MOVES THE TURN ALONE, ninety points a card, resting on a
+        // card; the spread has no hand, so the interaction says nothing of it.
+        .interaction(
+            .value($deal, axis: \.turn, input: .translation(.horizontal, unit: .points(90)))
+                .reversed(true)
+                .range(0...Double(Self.cards.count - 1))
+                .snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
     }
 
     /// Where one card stands: between a pile and an arc by the spread, the
@@ -153,8 +156,8 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`.axis(\\.turn, input:range:snaps:)` gives the hand the turn alone and rests it on a "
-                + "card whatever the spread does. The switch writes one axis, `deal.spread`; the "
+            Text("`.interaction(.value($deal, axis: \\.turn, input:))` gives the hand the turn alone and rests it "
+                + "on a card whatever the spread does. The switch writes one axis, `deal.spread`; the "
                 + "arithmetic is handed both as they stand each frame.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

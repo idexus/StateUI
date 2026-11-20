@@ -683,7 +683,7 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(left.value, 1, accuracy: 0.001)
     }
 
-    /// A THROW GOES ON AS `.throwMotion` SAYS: the same swipe let go with speed,
+    /// A THROW GOES ON AS `.release` SAYS: the same swipe let go with speed,
     /// carried for three seconds' worth, comes to rest two cards on, where
     /// the light friction of a gallery that says nothing slides it back to the
     /// first.
@@ -694,7 +694,7 @@ final class GalleryViewTests: XCTestCase {
             let shown = State(0)
             func tree() -> Node {
                 let swiped = gallery(5).position(shown.projectedValue)
-                return (throwing.map { swiped.throwMotion($0) } ?? swiped).node
+                return (throwing.map { swiped.release(.projected($0)) } ?? swiped).node
             }
             _ = laid(renders, tree)
 

@@ -232,8 +232,14 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
         // nearest where the throw would end. It rests on a card, never
         // between two - and comes round, a turn of the range bringing every
         // card back.
-        .axis(\.self, input: .scroll(.horizontal), range: 0...Double(Self.cards.count), snaps: .every(1), periodic: true)
-        .throwMotion(throwing.motion)
+        .interaction(
+            .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                // A growing turn moves the cards left.
+                .reversed(true)
+                .range(0...Double(Self.cards.count))
+                .periodic(true)
+                .snaps(.every(1))
+                .release(.projected(throwing.motion)))
         // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
         // over every card, wearing the card's own corners - which is why it is
         // the application's to give and not the library's to draw.
@@ -414,9 +420,9 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 + "end: past the last card is the first again. `Back` and `Next` send it "
                 + "there without the hand - the parameters themselves travel, under their state's own "
                 + "motion, `@State(motion:)`. The parameters, `parameters: $turn`, are the card at the front; "
-                + "`.axis(\\.self, input: .scroll(…), range:, snaps: .every(1), periodic: true)` gives "
-                + "it to the hand, resting on a card and coming round. The picker changes how a throw goes "
-                + "on - `.throwMotion(_:)` takes any motion: eased, its length says how far a "
+                + "`.interaction(.value($turn, axis: \\.self, input: .translation(…)).range(…).periodic(true)"
+                + ".snaps(.every(1)))` gives it to the hand, resting on a card and coming round. The picker changes "
+                + "how a throw goes on - `.release(.projected(_:))` takes any motion: eased, its length says how far a "
                 + "throw carries and its curve how it slows; a spring settles as springs do.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

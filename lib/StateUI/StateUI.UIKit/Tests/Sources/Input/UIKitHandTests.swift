@@ -20,15 +20,17 @@ final class UIKitHandTests: XCTestCase {
     /// stays down.
     @MainActor
     func testAFirstMoveLeftToThePageIsNoHold() throws {
-        let (clock, told) = (TestClock(), Told())
+        let (clock, told, turn) = (TestClock(), Told(), State(wrappedValue: 0.0))
         let host = UIKitRenderer.running(clock: clock) {
-            MotionLayout([0, 1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
+            MotionLayout([0, 1, 2], parameters: turn.projectedValue) { _ in
                 Rectangle()
                     .fill(.red)
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 80, 80)) }
             }
-            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
+            .interaction(
+                .value(turn.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                    .reversed(true).range(0...2).snaps(.every(1)))
             .itemDrag(begins: .longPress)
             .onItemDragged { told.items.append($0.id) }
             .width(300)

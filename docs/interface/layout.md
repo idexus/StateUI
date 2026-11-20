@@ -424,8 +424,8 @@ page continues moving under vertical input.
 
 A layout whose views the hand moves without moving its content - a run of
 cards turned by a finger, a wheel or a trackpad, endless if need be - is a
-[motion layout](#a-motion-layout) whose axis the hand scrolls:
-`.axis(_:input:range:snaps:)` with `.scroll(_:)`.
+[motion layout](#a-motion-layout) whose parameters the hand moves:
+`.interaction(_:)` with `.translation(_:unit:)`.
 
 ## Repeated content and collections
 
@@ -710,8 +710,8 @@ settled on, and a write moves the run. `.onItemActivated` hears the card in
 front opened - a tap on it - with its identity, as a list's item is, and
 `.onPositionChanged` another card coming to
 the middle; a swipe carries the card in front with it, however big the room
-draws the cards, and `.throwMotion(_:)` says how one let go with speed goes on, as a
-[motion layout's](#a-motion-layout) does. `.itemBody(_:)` makes every card a
+draws the cards, and `.release(_:)` says how one let go goes on, as a
+[motion layout's](#a-motion-layout) interaction does. `.itemBody(_:)` makes every card a
 body of the gallery's world, as `.layoutBody(_:)` makes one view of a motion
 layout - `.itemBody(.followsLayout(Spring(response: .milliseconds(300),
 damping: 0.8)))` and each card lags a breath behind the turn and settles back
@@ -758,11 +758,23 @@ struct Shelf: View {
 ```
 
 The parameters are where the run rests or is going: the program moves the run by
-writing it; declare its axis
-with `.axis(_:input:range:snaps:)` and the hand moves it too - a finger or a
-pointer dragged, a trackpad's two fingers, a wheel - on its own, with no
-scroller under it, carrying the view in front with it across its range and
-coming to rest on the nearest of its snaps:
+writing it; say an `.interaction(_:)` of it and the hand moves it too - a
+finger or a pointer dragged, a trackpad's two fingers, a wheel - on its own,
+with no scroller under it, carrying the view in front with it across its
+range and coming to rest on the nearest of its snaps. An `Interaction` names
+the state it moves, the number of it, and the input; its methods say the
+rest:
+
+| Method | What it says |
+| --- | --- |
+| `.range(_:)` | how far the hand may take the value; no end unless said |
+| `.snaps(_:)` | where it may rest - `.every(1)`, `[1, 2]`, `.endpoints`; anywhere unless said |
+| `.periodic(_:)` | whether it comes round, its range one turn |
+| `.reversed(_:)` | which way it grows: to the right or down unless reversed |
+| `.release(_:)` | how it goes on let go: `.projected(_:)`, `.nearest(_:)`, `.stay` |
+
+A value grows as the hand moves right or down. A row of cards whose growing
+number moves them left - most carousels - says `.reversed(true)`:
 
 ```swift
 struct Carousel: View {
@@ -784,7 +796,9 @@ struct Carousel: View {
                         zIndex: -Int(abs(step) * 10))
                 }
             }
-            .axis(\.self, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
+            .interaction(
+                .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                    .reversed(true).range(0...Double(names.count - 1)).snaps(.every(1)))
             .height(200)
 
             Button("Next").onClicked { turn = min(turn + 1, Double(names.count - 1)) }
@@ -831,22 +845,29 @@ struct Drawer: View {
             [Placement(Rect(0, context.bounds.height - 60 - open * 200, context.bounds.width, 260))]
         }
         // Pulled up, it opens; let go, it is open or closed.
-        .axis(\.self, input: .scroll(.vertical, lengthPerUnit: 200), range: 0...1, snaps: .endpoints)
+        .interaction(
+            .value($open, axis: \.self, input: .translation(.vertical, unit: .points(200)))
+                .reversed(true).range(0...1).snaps(.endpoints))
         .height(300)
     }
 }
 ```
 
-The hand carries the view in front: it travels as far for one unit of the
-parameters as the front view of those the parameters move goes for it, so a carousel
-that grows with its window turns as far under the finger as on a phone.
-`lengthPerUnit:` gives the distance instead, for a run whose front view
-hardly moves - a pile of cards fanned out by another axis.
+An `InteractionInput` says what of the hand moves the value -
+`.translation(_:unit:)`, `.swipe(_:unit:)`, `.magnification`,
+`.rotation(degreesPerUnit:)` - and its `unit:` how far the hand travels for
+one unit of the value, an `InteractionUnit`. `.frontItem` carries the view in front: the hand
+travels as far as the front view of those the parameters move goes for one
+unit, so a carousel that grows with its window turns as far under the finger
+as on a phone. `.points(_:)` gives the distance instead - a point unless
+said - for a run whose front view hardly moves, a pile of cards fanned out by
+another axis; `.containerLength` is the room's length, a page.
 
 A hand let go with speed throws the run: it goes on to the snap nearest
 where the throw would end, and `turn` names that snap at once. How it goes
-on is the layout's `.throwMotion(_:)` - one for every axis, so axes let go
-together go on by one law - eased, its length says how far it
+on is the interaction's `.release(_:)`, an `InteractionRelease` - said of
+several values at once, they go on by one law. `.projected(_:)` throws it
+on: eased, its length says how far it
 carries, a shorter length stopping it sooner, and it slows onto the snap from
 the hand's speed; a spring carries it as far as its response and settles as
 springs do. A throw sets out at the hand's speed, and goes on as the parameters'
@@ -931,7 +952,9 @@ struct Swaying: View {
                 Placement(Rect(context.bounds.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, context.bounds.height))
             }
         }
-        .axis(\.self, input: .scroll(.horizontal), range: 0...3, snaps: .every(1))
+        .interaction(
+            .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                .reversed(true).range(0...3).snaps(.every(1)))
         .onSettled { turn in print("at rest on \(turn)") }
         .height(160)
     }
@@ -971,22 +994,28 @@ struct Pile: View {
                     zIndex: leaving && abs(step) > 0.5 ? -100 : -Int(behind * 10))
             }
         }
-        .axis(\.self, input: .swipe(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
+        .axis(\.self, range: 0...Double(names.count - 1), segments: .every(1))
+        .interaction(
+            .value($turn, axis: \.self, input: .swipe(.horizontal, unit: .frontItem))
+                .reversed(true).range(0...Double(names.count - 1)).snaps(.every(1)))
         .height(220)
     }
 }
 ```
 
-`.swipe(_:)` moves the run one card a hand, however far the hand goes - a
+`.swipe(_:unit:)` moves the run one card a hand, however far the hand goes - a
 trackpad's flick speeds up to well past a card - and a throw goes on to the
-next card that way, no farther - so its axis needs snaps; its unit is
-measured as the hand takes the run, so the card in front moves under it. At the parameters it set out from,
+next card that way, no farther - so its value needs snaps; its unit is
+measured as the hand takes the run, so the card in front moves under it.
+The arithmetic taking a third argument is handed where the motion set out
+from - the start of the segment the value last passed, which the axis's
+`segments:` say: here a segment a card. At the parameters it set out from,
 every view stands where it stood, so a hand taking the run back past it
 changes nothing drawn - the same card goes out
 the other way. A hand catching the card on its way goes on with it; a long
 hand or a throw across several cards sends each out in turn.
 
-`.pages(_:)` is a swipe a room's length a unit: boards side by side a room
+A swipe whose unit is `.containerLength` goes a room's length a unit: boards side by side a room
 apart are turned a board a hand, and a wider window or a turned phone keeps a
 board a screen. A row of dots can wear the same `$board` under them - one
 state, so they go with the hand and with every throw:
@@ -1011,7 +1040,9 @@ struct Boards: View {
                         Rect((Double(page) - board) * context.bounds.width + Double(slot) * width, 0, width, context.bounds.height))
                 }
             }
-            .axis(\.self, input: .pages(.horizontal), range: 0...1, snaps: .every(1))
+            .interaction(
+                .value($board, axis: \.self, input: .swipe(.horizontal, unit: .containerLength))
+                    .reversed(true).range(0...1).snaps(.every(1)))
             .height(80)
 
             MotionLayout([0, 1], parameters: $board) { _ in
@@ -1106,8 +1137,10 @@ struct Ring: View {
                     opacity: 1 - min(abs(step) / 3, 1))
             }
         }
-        .axis(\.self, input: .scroll(.horizontal), range: 0...Double(names.count), snaps: .every(1), periodic: true)
-        .throwMotion(.spring(Spring(response: .milliseconds(400), damping: 0.8)))
+        .interaction(
+            .value($turn, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                .reversed(true).range(0...Double(names.count)).periodic(true).snaps(.every(1))
+                .release(.projected(.spring(Spring(response: .milliseconds(400), damping: 0.8)))))
         .height(200)
     }
 }
@@ -1143,7 +1176,9 @@ struct Planets: View {
                     return Placement(Rect(context.bounds.width / 2 - size / 2 + step * size * 1.5, 0, size, size))
                 }
             }
-            .axis(\.turn, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
+            .interaction(
+                .value($orbit, axis: \.turn, input: .translation(.horizontal, unit: .frontItem))
+                    .reversed(true).range(0...Double(names.count - 1)).snaps(.every(1)))
             .height(160)
 
             Button("Nearer").onClicked { orbit.zoom = orbit.zoom == 1 ? 2 : 1 }
@@ -1152,14 +1187,14 @@ struct Planets: View {
 }
 ```
 
-`.axis(_:input:range:keyframes:snaps:periodic:)` declares one axis whole - what
-moves it, how far it runs, where its layout is worked out, where it rests,
-whether it comes round - and the hand moves
-that one alone, resting it on its own snaps whatever the others do. One input
-may move several axes, each by its own unit and range, resting its own way:
-a hand that turns the cards and, slower, the sky behind them. Declared again,
-an axis takes the new declaration; an axis declared none goes on as the
-program sends it. A `Double` is the parameters of one axis, `\.self`.
+`Interaction.value(_:axis:input:)` names one axis of the parameters, and the
+hand moves that one alone, resting it on its own snaps whatever the others
+do. Several moved at once are `Interaction.simultaneous(_:)`: one input may
+move several axes, each by its own unit and range, resting its own way - a
+hand that turns the cards and, slower, the sky behind them - but no two move
+the same axis. One `.interaction(_:)` says the whole of it: said again, it
+takes the other's place, and an axis it names none goes on as the program
+sends it. A `Double` is the parameters of one axis, `\.self`.
 
 Two fingers are inputs of their own: `.magnification` multiplies an axis
 by how far they spread - on a touch screen, or a trackpad's pinch - and
@@ -1200,8 +1235,12 @@ struct Compass: View {
                     24))
             }
         }
-        .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), periodic: true)
-        .axis(\.size, input: .magnification, range: 0.5...2, snaps: [1])
+        .interaction(.simultaneous([
+            .value($dial, axis: \.turn, input: .rotation(degreesPerUnit: 90))
+                .range(0...4).periodic(true).snaps(.every(1)),
+            .value($dial, axis: \.size, input: .magnification)
+                .range(0.5...2).snaps([1]),
+        ]))
         .height(240)
     }
 }
@@ -1251,16 +1290,21 @@ struct Contacts: View {
                     size))
             }
         }
-        .axis(\.x, input: .scroll(.horizontal), range: 0...1, snaps: .every(1))
-        .axis(\.y, input: .scroll(.vertical), range: 0...1, snaps: .every(1))
-        .axis(\.zoom, input: .magnification, range: 0.5...1)
+        .interaction(.simultaneous([
+            .value($sheet, axis: \.x, input: .translation(.horizontal, unit: .frontItem))
+                .reversed(true).range(0...1).snaps(.every(1)),
+            .value($sheet, axis: \.y, input: .translation(.vertical, unit: .frontItem))
+                .reversed(true).range(0...1).snaps(.every(1)),
+            .value($sheet, axis: \.zoom, input: .magnification)
+                .range(0.5...1),
+        ]))
         .height(300)
     }
 }
 ```
 
-Given keyframes, an axis has its arithmetic asked only there - at them, at
-its range's ends and at its snaps - and every view goes from its pose at one
+Given keyframes, an axis has its arithmetic asked only there - at them and at
+its range's ends - and every view goes from its pose at one
 keyframe to its pose at the next along `.interpolation(_:)`, a
 `LayoutInterpolation` - the library's are each a `LayoutCurve`: straight
 unless said, `.catmullRom` a smooth curve through them, `.monotone` one that
@@ -1280,7 +1324,10 @@ struct Arrangements: View {
             // Asked at 0, 1 and 2 alone: a row, a column, a pile.
             [row(in: context.bounds), column(in: context.bounds), pile(in: context.bounds)][Int(arrangement)]
         }
-        .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1), snaps: .every(1))
+        .axis(\.self, range: 0...2, keyframes: .every(1))
+        .interaction(
+            .value($arrangement, axis: \.self, input: .translation(.horizontal, unit: .frontItem))
+                .reversed(true).range(0...2).snaps(.every(1)))
         .interpolation(.catmullRom)
         .height(300)
     }
@@ -1304,10 +1351,11 @@ struct Arrangements: View {
 }
 ```
 
-An axis needs no input: declared with keyframes alone, the hand passes it by
-and the program moves it - the arithmetic is still asked at the keyframes
-alone and the poses between them blended. Adding `input: .scroll(.horizontal)`
-is all it takes for the hand to move it too:
+`.axis(_:range:keyframes:segments:periodic:)` says how the layout maps an
+axis and nothing of the hand: with no interaction the hand passes it by and
+the program moves it - the arithmetic is still asked at the keyframes alone
+and the poses between them blended. An interaction of the same axis is all it
+takes for the hand to move it too, and its range is the hand's own:
 
 ```swift
 struct Rearranged: View {

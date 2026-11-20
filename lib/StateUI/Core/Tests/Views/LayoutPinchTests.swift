@@ -37,8 +37,12 @@ final class LayoutPinchTests: XCTestCase {
             handed.dials.append(dial)
             return (0..<4).map { _ in Placement(Rect(0, 0, 40, 40)) }
         }
-        .axis(\.zoom, input: .magnification, range: 0.5...2, snaps: [1])
-        .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), periodic: true)
+        .interaction(
+            .simultaneous([
+                Interaction.value(dial.traveling(.eased(.milliseconds(160), curve: .linear)), axis: \.zoom, input: .magnification).range(0.5...2).snaps([1]),
+                Interaction.value(dial.traveling(.eased(.milliseconds(160), curve: .linear)), axis: \.turn, input: .rotation(degreesPerUnit: 90)).range(0...4).snaps(.every(1)).periodic(true),
+            ])
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         if itemDrag { layout = layout.itemDrag(begins: .longPress) }
         return layout.node
     }
@@ -163,18 +167,39 @@ final class LayoutPinchTests: XCTestCase {
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 0, accuracy: 0.000_1)
     }
 
-    /// AN AXIS DECLARED AGAIN TAKES THE OTHER'S PLACE: its input with it.
-    func testAnAxisDeclaredAgainTakesTheOthersPlace() throws {
-        let (dial, handed) = (State(wrappedValue: Dial()), Handed())
-        let layout = MotionLayout([0], parameters: dial.projectedValue) { Text("\($0)") } placements: { _, dial in
-            handed.dials.append(dial)
-            return [Placement(Rect(0, 0, 40, 40))]
+    /// One layout of one view, moved as `interaction` says.
+    private func moved(_ dial: State<Dial>, _ interaction: Interaction) -> MotionLayout<[Int], Int, Dial> {
+        MotionLayout([0], parameters: dial.projectedValue) { Text("\($0)") } placements: { _, _ in
+            [Placement(Rect(0, 0, 40, 40))]
         }
-        .axis(\.zoom, input: .scroll(.horizontal), range: 1...2)
-        .axis(\.zoom, input: .magnification, range: 1...2)
+        .interaction(interaction)
+    }
+
+    /// AN INTERACTION SAID AGAIN TAKES THE OTHER'S PLACE: one declaration says the whole of it.
+    func testAnInteractionSaidAgainTakesTheOthersPlace() throws {
+        let dial = State(wrappedValue: Dial())
+        let layout = moved(
+            dial, .value(dial.projectedValue, axis: \.zoom, input: .translation(.horizontal, unit: .frontItem)).range(1...2))
+            .interaction(.value(dial.projectedValue, axis: \.zoom, input: .magnification).range(1...2))
 
         let element = try XCTUnwrap(Renders().settled(layout.node).first(.motionLayout))
-        XCTAssertNil(element.properties[.translationOrientation], "the scroll's place taken")
+        XCTAssertNil(element.properties[.translationOrientation], "the hand's place taken")
         XCTAssertEqual(element.properties[.magnifies], .bool(true))
+    }
+
+    /// TWO MOVING ONE NUMBER ARE REFUSED TOGETHER: neither is the one the author meant, and it is said.
+    func testTwoMovingOneNumberAreRefusedTogether() throws {
+        let dial = State(wrappedValue: Dial())
+        let layout = moved(dial, .simultaneous([
+            .value(dial.projectedValue, axis: \.zoom, input: .translation(.horizontal, unit: .frontItem)).range(1...2),
+            .value(dial.projectedValue, axis: \.zoom, input: .magnification).range(1...2),
+            .value(dial.projectedValue, axis: \.turn, input: .rotation()).range(0...1),
+        ]))
+
+        let element = try XCTUnwrap(Renders().settled(layout.node).first(.motionLayout))
+        XCTAssertNil(element.properties[.translationOrientation])
+        XCTAssertNil(element.properties[.magnifies])
+        XCTAssertEqual(element.properties[.rotates], .bool(true), "the number moved once stands")
+        XCTAssertTrue(hasComplained("A MotionLayout's interaction moves one number of its parameters twice"))
     }
 }

@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Places on an axis of a motion layout's parameters, beside the ends of its range, which are always among them: where
-/// the axis may come to rest under the user's hand (`snaps:`), and where its layout is worked out (`keyframes:`).
-/// This library's own.
+/// Places on a number, beside the ends of its range, which are always among them: where a value may come to rest
+/// under the user's hand (`Interaction.snaps(_:)`), where a motion layout's arithmetic is asked (`keyframes:`) and
+/// where its segments begin (`segments:`). This library's own.
 ///
-///     .axis(\.x, input: .scroll(.horizontal), range: 0...3, snaps: [1, 2])      // 0, 1, 2, 3
-///     .axis(\.x, input: .scroll(.horizontal), range: 0...3, snaps: .endpoints)     // 0, 3
-///     .axis(\.x, input: .scroll(.horizontal), range: 0...3, snaps: .every(1))   // 0, 1, 2, 3
+///     .value($x, axis: \.self, input: hand).range(0...3).snaps([1, 2])        // 0, 1, 2, 3
+///     .value($x, axis: \.self, input: hand).range(0...3).snaps(.endpoints)    // 0, 3
+///     .value($x, axis: \.self, input: hand).range(0...3).snaps(.every(1))     // 0, 1, 2, 3
 ///
-/// An axis given no snaps rests wherever its throw ends inside its range.
+/// A value given no snaps rests wherever its throw ends inside its range.
 /// Design: docs/design/views/motion-layout.md#an-axis
 public struct AxisValues: Equatable, Sendable, ExpressibleByArrayLiteral {
     /// The places listed, or a step from the lower end.
@@ -25,7 +25,7 @@ public struct AxisValues: Equatable, Sendable, ExpressibleByArrayLiteral {
 
     /// Every `step` from the lower end of the range, and the upper end.
     ///
-    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: .every(0.25), periodic: true)
+    ///     .value($dial, axis: \.turn, input: .rotation()).range(0...1).snaps(.every(0.25)).periodic(true)
     ///
     /// - Parameter step: how far apart the places are; above nought.
     /// - Returns: the places.
@@ -35,7 +35,7 @@ public struct AxisValues: Equatable, Sendable, ExpressibleByArrayLiteral {
 
     /// The places `values` lists, and the ends of the range: a list worked out, which a literal cannot take.
     ///
-    ///     .axis(\.self, input: .scroll(.horizontal), range: 0...10, snaps: .at(chapters.map(\.start)))
+    ///     .axis(\.self, range: 0...10, segments: .at(chapters.map(\.start)))
     ///
     /// - Parameter values: the places inside the range; those outside it are left out.
     /// - Returns: the places.

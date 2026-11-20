@@ -62,7 +62,7 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
     // listing: LayoutAxesSample
     var body: some View {
         // ONE INPUT: the hand dragged across, carrying the cards with it...
-        let hand = LayoutInput.scroll(.horizontal)
+        let hand = InteractionInput.translation(.horizontal, unit: .frontItem)
 
         return Grid {
             MotionLayout(Self.parts, parameters: $strips) { part in
@@ -70,17 +70,22 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
             } placements: { context, strips in
                 Self.parts.map { place($0, strips, context.bounds) }
             }
-            // ...MOVES FIVE STRIPS, each resting its own way: anywhere between
-            // its ends, coming back only from past one...
-            .axis(\.free, input: hand, range: 0...3)
-            // ...on a card - 1 or 2 - or on an end...
-            .axis(\.snapping, input: hand, range: 0...3, snaps: [1, 2])
-            // ...on an end alone: the first card or the last...
-            .axis(\.endpoints, input: hand, range: 0...3, snaps: .endpoints)
-            // ...round and round, anywhere - 4 is 0 a turn on...
-            .axis(\.round, input: hand, range: 0...4, periodic: true)
-            // ...and round and round, a card at a time.
-            .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), periodic: true)
+            .interaction(.simultaneous([
+                // ...MOVES FIVE STRIPS, each resting its own way: anywhere
+                // between its ends, coming back only from past one...
+                .value($strips, axis: \.free, input: hand).reversed(true).range(0...3),
+                // ...on a card - 1 or 2 - or on an end...
+                .value($strips, axis: \.snapping, input: hand).reversed(true).range(0...3).snaps([1, 2]),
+                // ...on an end alone: the first card or the last...
+                .value($strips, axis: \.endpoints, input: hand).reversed(true).range(0...3).snaps(.endpoints),
+                // ...round and round, anywhere - 4 is 0 a turn on...
+                .value($strips, axis: \.round, input: hand).reversed(true).range(0...4).periodic(true),
+                // ...and round and round, a card at a time.
+                .value($strips, axis: \.stepping, input: hand).reversed(true).range(0...4).periodic(true)
+                    .snaps(.every(1)),
+            ])
+            // LET GO, the five go on together by one law.
+            .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         }
         .clipsContent(true)
     }

@@ -28,7 +28,9 @@ final class LayoutSettleTests: XCTestCase {
         return MotionLayout(items.wrappedValue, parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
             (0..<count).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
-        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
+        .interaction(
+            Interaction.value(phase.traveling(.eased(.milliseconds(160))), axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
+                .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
         .layoutBodies(.onChange(Spring(response: .milliseconds(160))))
         .onSettled { told.phases.append($0) }
         .node
@@ -43,7 +45,9 @@ final class LayoutSettleTests: XCTestCase {
             MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
+            .interaction(
+                Interaction.value(phase.traveling(.eased(.milliseconds(160))), axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .onSettled(policy: .ignoreWhileRunning) { _ in
                 heard.append(1)
                 try await Task.sleep(for: .seconds(60))
@@ -72,7 +76,9 @@ final class LayoutSettleTests: XCTestCase {
             let layout = MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
+            .interaction(
+                Interaction.value(phase.traveling(.eased(.milliseconds(160))), axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             return (hears.wrappedValue
                 ? layout.onSettled(gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
                 : layout).node
@@ -105,7 +111,9 @@ final class LayoutSettleTests: XCTestCase {
             let layout = MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
+            .interaction(
+                Interaction.value(phase.traveling(.eased(.milliseconds(160))), axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             return (hears.wrappedValue
                 ? layout.onSettled(gate: gate) { _ in
                     heard += 1
@@ -137,7 +145,9 @@ final class LayoutSettleTests: XCTestCase {
             MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
+            .interaction(
+                Interaction.value(phase.traveling(.eased(.milliseconds(160))), axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
+                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
             .onSettled { told.phases.append($0) }
             .onSettled { told.phases.append($0 + 10) }
             .node
