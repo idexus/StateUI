@@ -1,0 +1,248 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+@_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
+import XCTest
+
+/// A view kept as it leaves: no more the application's at once, drawn on by the exit its transition declares where
+/// what holds it keeps one, released as that ends - and gone at once wherever nothing keeps it.
+/// Design: docs/design/host/tree.md#a-view-kept-as-it-leaves
+@MainActor
+final class StructuralTransitionsTests: XCTestCase {
+    private static let fading = Transition(enter: .identity, exit: .opacity.combined(with: .translation(y: 12)))
+
+    /// A runtime on a clock wound by hand whose application moves by `motion`, every view keeping a child that
+    /// left where `keeps`, and how each kept exit ended.
+    @MainActor
+    private final class Bench {
+        let clock = WoundClock()
+        let runtime: HostRuntime
+        var ended: [(id: ElementID, result: PresentationOperation.Result)] = []
+
+        init(
+            keeps: Bool = true, reducesMotion: Bool = false, motion: Motion = .eased(.milliseconds(200), curve: .linear)
+        ) {
+            runtime = HostRuntime(
+                clock: clock, reducesMotion: { reducesMotion },
+                makeNative: { _ in
+                    let view = NoView()
+                    view.keepsExits = keeps
+                    return view
+                },
+                log: { _ in })
+            runtime.layoutMotion.applicationMotion = motion
+            runtime.tree.exits.onEnded = { [unowned self] element, result in ended.append((element.id, result)) }
+        }
+
+        var root: MountedElement { runtime.tree.root! }
+
+        /// A text of `id`, exiting by `transition` where one is given.
+        static func text(_ id: String, _ transition: Transition? = nil) -> HostPatch {
+            var patch = HostPatch(id: .manual(id), type: .text)
+            if let transition { patch.properties = [.transition: transition.propValue] }
+            return patch
+        }
+
+        /// The root stack holding `children`, said whole or as a patch.
+        func show(_ children: [HostPatch], complete: Bool = false) {
+            var root = HostPatch(id: .manual("root"), type: .vStack)
+            root.children = .arranged(children)
+            runtime.tree.apply(root, complete: complete)
+        }
+
+        func frame(at time: Double) {
+            clock.time = time
+            runtime.displayCycle.frame(now: time)
+        }
+
+        func shown(_ property: Prop, of element: MountedElement) -> Double? {
+            runtime.tree.presentedPropertyValue(mount: element.mount, property: property)?.number
+        }
+
+        func ids(_ elements: [MountedElement]) -> [String] { elements.map { "\($0.id)" } }
+    }
+
+    private func view(_ element: MountedElement) -> NoView { element.native as! NoView }
+
+    /// A CHILD THAT EXITS IS THE APPLICATION'S NO MORE AT ONCE, AND DRAWN UNTIL ITS EXIT LANDS: out of its parent's
+    /// children, among its presented ones, its numbers on their way to the effect - then released, once.
+    func testAChildThatExitsIsKeptUntilItsExitLands() {
+        let bench = Bench()
+        bench.show([Bench.text("a"), Bench.text("b", Self.fading)], complete: true)
+        let (a, b) = (bench.root.children[0], bench.root.children[1])
+        let arranged = view(bench.root).arranged
+
+        bench.show([Bench.text("a")])
+        XCTAssertEqual(b.lifecycle, .exiting)
+        XCTAssertEqual(view(b).deactivated, 1, "deaf and detached at once")
+        XCTAssertEqual(view(b).released, 0, "its view stands")
+        XCTAssertTrue(bench.root.children.elementsEqual([a], by: ===), "measured and laid out without it")
+        XCTAssertTrue(bench.root.presentedChildren.elementsEqual([a, b], by: ===), "drawn where it stood")
+        XCTAssertEqual(bench.runtime.tree.exits.count, 1)
+
+        bench.frame(at: 100)
+        XCTAssertEqual(bench.shown(.opacity, of: b) ?? .nan, 0.5, accuracy: 0.001, "half way out")
+        XCTAssertEqual(bench.shown(.translationY, of: b) ?? .nan, 6, accuracy: 0.001)
+        XCTAssertEqual(b.lifecycle, .exiting)
+
+        bench.frame(at: 200)
+        XCTAssertEqual(b.lifecycle, .released)
+        XCTAssertEqual(view(b).released, 1, "released once")
+        XCTAssertTrue(bench.root.presentedChildren.elementsEqual([a], by: ===))
+        XCTAssertEqual(bench.runtime.tree.exits.count, 0)
+        XCTAssertEqual(bench.ended.map(\.result), [.finished])
+        XCTAssertGreaterThan(view(bench.root).arranged, arranged, "what kept it arranges its views without it")
+
+        bench.frame(at: 400)
+        XCTAssertEqual(view(b).released, 1, "and never again")
+    }
+
+    /// WHERE NOTHING KEEPS IT, A CHILD LEAVES AT ONCE: a view keeping none, no transition, an exit that changes
+    /// nothing, less motion, and nothing to move by.
+    func testWhereNothingKeepsItAChildLeavesAtOnce() {
+        let still = Transition(enter: .opacity, exit: .identity)
+        let cases: [(String, Bench, Transition?)] = [
+            ("a view that keeps none", Bench(keeps: false), Self.fading),
+            ("no transition", Bench(), nil),
+            ("an exit that changes nothing", Bench(), still),
+            ("less motion", Bench(reducesMotion: true), Self.fading),
+            ("nothing to move by", Bench(motion: .none), Self.fading),
+        ]
+        for (name, bench, transition) in cases {
+            bench.show([Bench.text("a"), Bench.text("b", transition)], complete: true)
+            let b = bench.root.children[1]
+
+            bench.show([Bench.text("a")])
+
+            XCTAssertEqual(b.lifecycle, .released, name)
+            XCTAssertEqual(view(b).released, 1, name)
+            XCTAssertEqual(bench.runtime.tree.exits.count, 0, name)
+            XCTAssertEqual(bench.root.presentedChildren.count, 1, name)
+            XCTAssertTrue(bench.ended.isEmpty, "\(name): no exit was kept, so none ended")
+        }
+    }
+
+    /// A MESSAGE MAKING THE TREE AGAIN KEEPS NOTHING: what it drops goes at once, and an exit running as it comes
+    /// ends detached.
+    func testAMessageMakingTheTreeAgainKeepsNothing() {
+        let bench = Bench()
+        bench.show(
+            [Bench.text("a"), Bench.text("b", Self.fading), Bench.text("c", Self.fading)], complete: true)
+        let (b, c) = (bench.root.children[1], bench.root.children[2])
+
+        bench.show([Bench.text("a"), Bench.text("c", Self.fading)])
+        XCTAssertEqual(b.lifecycle, .exiting)
+
+        bench.show([Bench.text("a")], complete: true)
+        XCTAssertEqual(b.lifecycle, .released, "the exit running ends")
+        XCTAssertEqual(c.lifecycle, .released, "and what the message drops goes at once")
+        XCTAssertEqual(bench.ended.map(\.result), [.detached])
+        XCTAssertEqual(bench.runtime.tree.exits.count, 0)
+    }
+
+    /// A LEAVING VIEW STANDS WHERE IT STOOD among the views drawn: after the one it stood after, whatever joins or
+    /// leaves beside it.
+    func testALeavingViewStandsWhereItStood() {
+        let bench = Bench()
+        bench.show([Bench.text("a", Self.fading), Bench.text("b", Self.fading), Bench.text("c")], complete: true)
+
+        bench.show([Bench.text("a", Self.fading), Bench.text("c")])
+        XCTAssertEqual(bench.ids(bench.root.presentedChildren), ["a", "b", "c"].map { "\(ElementID.manual($0))" })
+
+        bench.show([Bench.text("a", Self.fading), Bench.text("d"), Bench.text("c")])
+        XCTAssertEqual(
+            bench.ids(bench.root.presentedChildren), ["a", "b", "d", "c"].map { "\(ElementID.manual($0))" },
+            "one that joins stands after the leaving one")
+
+        bench.show([Bench.text("d"), Bench.text("c")])
+        XCTAssertEqual(
+            bench.ids(bench.root.presentedChildren), ["a", "b", "d", "c"].map { "\(ElementID.manual($0))" },
+            "and a second leaving keeps the first after it")
+        XCTAssertEqual(bench.ids(bench.root.arrangedChildren), ["d", "c"].map { "\(ElementID.manual($0))" })
+    }
+
+    /// THE BUDGET ENDS THE OLDEST: a window keeps thirty-two views leaving at once, none longer than two seconds,
+    /// and a subtree past its whole budget leaves at once.
+    func testTheBudgetEndsTheOldest() {
+        let bench = Bench(motion: .eased(.seconds(5), curve: .linear))
+        let many = (0...KeptExits.rootLimit).map { Bench.text("v\($0)", Self.fading) }
+        bench.show(many, complete: true)
+        let first = bench.root.children[0]
+
+        bench.show([])
+        XCTAssertEqual(bench.runtime.tree.exits.count, KeptExits.rootLimit)
+        XCTAssertEqual(first.lifecycle, .released, "the oldest made room")
+        XCTAssertEqual(bench.ended.map(\.result), [.limited])
+        XCTAssertEqual("\(bench.ended[0].id)", "\(ElementID.manual("v0"))")
+
+        bench.frame(at: KeptExits.timeLimit - 1)
+        XCTAssertEqual(bench.runtime.tree.exits.count, KeptExits.rootLimit, "still within their time")
+        bench.frame(at: KeptExits.timeLimit)
+        XCTAssertEqual(bench.runtime.tree.exits.count, 0, "none is kept past it")
+        XCTAssertEqual(Set(bench.ended.map(\.result)), [.limited])
+
+        var large = HostPatch(id: .manual("large"), type: .vStack)
+        large.properties = [.transition: Self.fading.propValue]
+        large.children = .arranged((0..<KeptExits.mountLimit).map { Bench.text("leaf\($0)") })
+        bench.show([large])
+        let held = bench.root.children[0]
+        bench.show([])
+        XCTAssertEqual(held.lifecycle, .released, "larger than the budget: gone at once")
+        XCTAssertEqual(bench.runtime.tree.exits.count, 0)
+    }
+
+    /// AN ELEMENT LEAVING OWNS THE LEAVINGS UNDER IT: gone at once, it takes them with it; kept itself, they stand
+    /// as drawn, end none of their own, and are released with it.
+    func testAnElementLeavingOwnsTheLeavingsUnderIt() {
+        func box(_ transition: Transition?, _ children: [HostPatch]) -> HostPatch {
+            var patch = HostPatch(id: .manual("box"), type: .vStack)
+            if let transition { patch.properties = [.transition: transition.propValue] }
+            patch.children = .arranged(children)
+            return patch
+        }
+
+        let gone = Bench()
+        gone.show([box(nil, [Bench.text("a"), Bench.text("b", Self.fading)])], complete: true)
+        var inner = gone.root.children[0].children[1]
+        gone.show([box(nil, [Bench.text("a")])])
+        XCTAssertEqual(inner.lifecycle, .exiting)
+        gone.show([])
+        XCTAssertEqual(inner.lifecycle, .released, "its holder went at once, and took it")
+        XCTAssertEqual(view(inner).released, 1)
+        XCTAssertEqual(gone.ended.map(\.result), [.cancelled])
+
+        let kept = Bench(motion: .eased(.milliseconds(400), curve: .linear))
+        kept.show([box(Self.fading, [Bench.text("a"), Bench.text("b", Self.fading)])], complete: true)
+        let holder = kept.root.children[0]
+        inner = holder.children[1]
+        kept.show([box(Self.fading, [Bench.text("a")])])
+        kept.frame(at: 200)
+        kept.show([])
+        XCTAssertEqual(holder.lifecycle, .exiting)
+        XCTAssertEqual(inner.lifecycle, .exiting, "it stands as drawn under its holder")
+        XCTAssertEqual(kept.ended.map(\.result), [.cancelled], "its own exit is over")
+
+        kept.frame(at: 400)
+        XCTAssertEqual(inner.lifecycle, .exiting, "its own motion's end releases nothing")
+        XCTAssertEqual(view(inner).released, 0)
+
+        kept.frame(at: 600)
+        XCTAssertEqual(holder.lifecycle, .released)
+        XCTAssertEqual(inner.lifecycle, .released, "released with its holder")
+        XCTAssertEqual(view(inner).released, 1)
+        XCTAssertEqual(kept.ended.map(\.result), [.cancelled, .finished])
+    }
+
+    /// NOTHING HOLDS A VIEW ONCE ITS EXIT ENDED: the tree, its parent and the budget have let it go.
+    func testNothingHoldsAViewOnceItsExitEnded() {
+        let bench = Bench()
+        bench.show([Bench.text("a"), Bench.text("b", Self.fading)], complete: true)
+        weak let leaving = bench.root.children[1]
+        bench.show([Bench.text("a")])
+        XCTAssertNotNil(leaving, "kept while it exits")
+
+        bench.frame(at: 200)
+        XCTAssertNil(leaving)
+    }
+}

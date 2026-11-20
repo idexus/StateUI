@@ -21,6 +21,10 @@
         case interrupted
         /// The view, or the room it stood in, went first.
         case cancelled
+        /// The budget of views kept as they leave ended it: too many at once, or too long.
+        case limited
+        /// A message made again what the tree showed.
+        case detached
     }
 
     /// What it does.

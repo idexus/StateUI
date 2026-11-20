@@ -389,7 +389,7 @@ frame waits for it as its host follows the element again (`follow`), and on each
 scrollers say what they did, then the elements where they stand, each in the
 order it was made, as one user's transaction. A host follows an element by
 the element (`FrameFollowers.follow(_:of:reads:)`); one that leaves the tree
-is followed no more, the tree telling it as it unmounts the element. A list's view moving
+is followed no more, the tree telling it as the element is deactivated. A list's view moving
 says it too (items.md, `The view moving`). A host says only what its
 toolkit knows: the numbers of the place. It says nothing while the view
 stands in no window or before a layout placed it - a view that joins a shown

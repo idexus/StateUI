@@ -133,6 +133,7 @@ and this table maps the two.
 | transition (`Transition`) | enter and exit animation | how a view comes as the tree gains it: the effect its entry sets out from, held with the one its exit goes to |
 | effect (`TransitionEffect`) | an animation's from-state | a view as it is drawn while absent - faded, moved, scaled - against how it stands |
 | joining, appearing (`LayoutEntry`) | insertion, first layout | how a child given its first place comes to it: into a layout already standing, or with its layout as that is first arranged |
+| kept as it leaves (`KeptExits`) | exit animation retention | a dropped view drawn on, no more the application's, until its transition's exit ends |
 | active, exiting, released (`ElementLifecycle`) | mounted, unmounting, unmounted | where an element stands in its life in the mounted tree: the application's; no more the application's, its view still standing; gone |
 | deactivate, release | teardown | the two steps of leaving: an element stops being the application's, then its presentation ends |
 | program write | programmatic change | a write to a control made by the program, not the user |

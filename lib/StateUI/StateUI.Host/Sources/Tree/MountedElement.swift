@@ -148,6 +148,16 @@
     /// Design: docs/design/host/tree.md#leaving
     public private(set) var lifecycle = ElementLifecycle.active
 
+    /// The children kept as they leave, each drawn until its exit ends, and the order the element's views stand in
+    /// with them - nil while it keeps none. Design: docs/design/host/tree.md#a-view-kept-as-it-leaves
+    var keptExits: [MountedElement] = []
+    var presentedOrder: [MountedElement]?
+
+    /// How many of the numbers its exit moves are still on their way; whether an element leaving above it took
+    /// its exit over.
+    var exitsRunning = 0
+    var isAbsorbed = false
+
     /// Whether a view standing in the element may be thrown out of it: the room it leaves is this element's.
     private(set) var holdsDismissing = false
 
@@ -558,9 +568,11 @@
         if child.type == childPatch.type, !childPatch.replace {
             child.apply(childPatch)
         } else if childPatch.replace {
+            let presented = presentedChildren
             child.leave()
             let anew = MountedElement(childPatch, tree: tree, parent: self)
             if isSlot { slots[index] = anew } else { children[index] = anew }
+            orderPresented(after: presented)
             changedByRender([])
         } else {
             tree.intake.drifted(
@@ -616,6 +628,7 @@
     /// Reconciles a complete child arrangement by key - an arrangement of pages keeping its slots apart.
     private func arrange(_ patches: [HostPatch], tree: MountedTree) {
         let before = held
+        let presented = presentedChildren
         let previous = Self.byId(before)
         var children: [MountedElement] = []
         var slots: [MountedElement] = []
@@ -630,7 +643,7 @@
         self.children = children
         self.slots = slots
         dismissingChanged()
-        leave(before)
+        leave(before, presented: presented)
         if described { arrangedByRender(from: before) }
     }
 
@@ -706,12 +719,14 @@
     /// The layouts whose children can overlap, drawn in `zIndex` order.
     private static let layered: Set<NodeType> = [.grid, .zStack, .motionLayout]
 
-    /// Detaches every one of `previous` that is no longer a child.
-    private func leave(_ previous: [MountedElement]) {
+    /// Every one of `previous` that is no longer a child leaves: kept as it goes where it exits by a transition
+    /// and this element's view keeps one, else gone at once. `presented` is how the views stood before.
+    private func leave(_ previous: [MountedElement], presented: [MountedElement]) {
         let staying = Set(held.map(ObjectIdentifier.init))
         for child in previous where !staying.contains(ObjectIdentifier(child)) {
-            child.leave()
+            if !child.exit(from: self) { child.leave() }
         }
+        orderPresented(after: presented)
     }
 
     /// Ties this element to the channels of the states its properties wear and of those whose journey it follows.
@@ -736,21 +751,32 @@
     /// attached. Said again, it does nothing.
     /// Design: docs/design/host/tree.md#leaving
     public func deactivate() {
+        deactivate(kept: false)
+    }
+
+    /// Deactivates the element, `kept` where its view goes on being drawn as it leaves: found by its mount, its
+    /// properties' motions running, until it is released.
+    func deactivate(kept: Bool) {
         guard lifecycle == .active else { return }
 
         exits()
-        detach()
+        detach(kept: kept)
         tree?.consumersChanged()
     }
 
     /// The presentation of this element and everything under it ends: deactivated first where it was not, then
-    /// nothing of the host holds its view. Said again, it does nothing.
+    /// nothing of the host holds its view - nor the views kept under it as they left. Said again, it does nothing.
     public func release() {
         guard lifecycle != .released else { return }
 
         deactivate()
         lifecycle = .released
-        for child in held { child.release() }
+        for child in held + keptExits { child.release() }
+        keptExits = []
+        presentedOrder = nil
+        tree?.released(self)
+        tree?.exits.ended(self, as: .cancelled)
+        native.releasePresentation()
     }
 
     /// Marks the subtree exiting, before any of it is detached: nothing a detaching tells finds part of it active.
@@ -759,13 +785,13 @@
         for child in held { child.exits() }
     }
 
-    /// Lets go of what ties the element and everything under it to the runtime.
-    private func detach() {
+    /// Lets go of what ties the element and everything under it to the runtime; the element itself `kept` where
+    /// its view goes on being drawn. A view kept under it as it left is its own leaving's part from here on.
+    private func detach(kept: Bool) {
         madeOrLeftByRender()
         if let tree {
             for state in wornStates { tree.stateChannels.detach(state) }
-            tree.removeMotions(mount: mount)
-            tree.unmounted(self, presenting: presentedStates)
+            tree.deactivated(self, presenting: presentedStates, kept: kept)
             if let program = layoutProgram { tree.layoutLeft(program.slot) }
         }
         layoutProgram = nil
@@ -775,7 +801,8 @@
         presentedStates = []
         isFadingOut = false
         native.deactivate()
-        for child in held { child.detach() }
+        for child in held { child.detach(kept: false) }
+        for exit in keptExits { exit.absorbed() }
     }
 
     /// The first element of `type` in this subtree, this one first.

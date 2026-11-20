@@ -80,6 +80,14 @@
     /// Design: docs/design/host/tree.md#leaving
     func deactivate()
 
+    /// Whether the element's view keeps a child that left - drawn where it stood, out of its layout - until that
+    /// child's presentation is released.
+    /// Design: docs/design/host/tree.md#a-view-kept-as-it-leaves
+    var keepsExits: Bool { get }
+
+    /// The element's presentation ends: its view leaves what held it.
+    func releasePresentation()
+
     /// The tab the user chose on a tabbed view, which the tree may not say yet; nil where none.
     var chosenTab: Int? { get }
 
@@ -96,6 +104,12 @@
 
     /// A view that lays nothing out by direction takes none.
     public func directionChanged() {}
+
+    /// A view keeps no child that left: what it drops is gone at once.
+    public var keepsExits: Bool { false }
+
+    /// What held the view dropped it as its element left.
+    public func releasePresentation() {}
 }
 
 /// The runtime's mounted tree: its root, its elements' numbers, and the animations its patches start.
@@ -128,6 +142,9 @@
 
     /// The animations of the layouts' places.
     public let layoutMotion: LayoutMotion
+
+    /// The views kept as they leave, and the budget of them.
+    public let exits = KeptExits()
 
     /// Called when a property animation starts, so the frame clock is held while it runs.
     public var onAnimation: () -> Void = {}
@@ -314,6 +331,7 @@
         let previousRemakes = remakes
         appliesCompleteMessage = complete
         remakes = root != nil && (complete || patch.replace)
+        if remakes { exits.endAll(.detached) }
         if patchTime == nil { patchTime = now() }
         if patchReducesMotion == nil { patchReducesMotion = reducesMotion() }
         let inspecting = core.inspecting
@@ -420,14 +438,27 @@
         for state in states { presenters[state, default: []].insert(element.mount) }
     }
 
-    /// `element` leaves, with the states it presented: no frame finds it again.
-    func unmounted(_ element: MountedElement, presenting states: [Int32]) {
-        byMount[element.mount] = nil
+    /// `element` is the application's no more, with the states it presented: nothing awaits it, follows it or
+    /// places it. One `kept` as it leaves is still found by its mount, its properties' motions running on, until
+    /// it is `released`.
+    /// Design: docs/design/host/tree.md#a-view-kept-as-it-leaves
+    func deactivated(_ element: MountedElement, presenting states: [Int32], kept: Bool) {
         waitingPopovers[element.mount] = nil
         sheets[element.mount] = nil
         presents(element, [], before: states)
         left(element.mount)
+        layoutMotion.remove(mount: element.mount)
+        if !kept { released(element) }
     }
+
+    /// Nothing of `element` is drawn any more: no frame finds it again.
+    func released(_ element: MountedElement) {
+        byMount[element.mount] = nil
+        describedMotion.remove(mount: element.mount)
+    }
+
+    /// The time the message being applied stands at, else now.
+    var time: Double { patchTime ?? now() }
 
     /// Starts, retargets or cuts short the animation of `property` on the element `mount`.
     @discardableResult
@@ -474,9 +505,4 @@
         return nextMount
     }
 
-    /// Drops the animations of an element that leaves: its properties' and its place's.
-    func removeMotions(mount: UInt64) {
-        describedMotion.remove(mount: mount)
-        layoutMotion.remove(mount: mount)
-    }
 }

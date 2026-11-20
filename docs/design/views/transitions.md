@@ -66,9 +66,11 @@ transition says `initialAppearance(true)`. A transition given to a view
 already standing moves nothing: it is how the view comes, not something
 that happens to it.
 
-A view the tree drops is released at once
-([leaving](../host/tree.md#leaving)): its exit crosses with the transition,
-and nothing draws it.
+A view the tree drops goes by its exit where what holds it keeps a view
+that left ([a view kept as it leaves](../host/tree.md#a-view-kept-as-it-leaves)):
+it is the application's no more at once, and drawn until the exit lands.
+Where nothing keeps it, it is released at once - as on every host whose
+layouts drop what they are not handed.
 
 Hiding a view with `isVisible(_:)` keeps the view and its state, and is no
 leaving: it crosses by the rule of

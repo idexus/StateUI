@@ -532,6 +532,11 @@ host.
   coming: a child given its first place enters from its transition's effect
   under its own motion, or - declaring none - fades in under the law of the
   layout it joins. ([A view that enters](../design/host/motion.md#a-view-that-enters))
+- **`KeptExits`**, **`MountedElement.presentedChildren`** and
+  **`NativeElement.keepsExits`** are a view kept as it leaves: no more the
+  application's at once, drawn on by its transition's exit where what holds it
+  keeps one, released as that ends - within a window's budget.
+  ([A view kept as it leaves](../design/host/tree.md#a-view-kept-as-it-leaves))
 - **`MountedElement.crossVisibility`** and **`standsShown`**
   are an element's showing: a
   hidden one fades out still standing shown and then hides as its layout

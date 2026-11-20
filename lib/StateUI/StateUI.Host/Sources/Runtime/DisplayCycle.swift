@@ -123,6 +123,9 @@ extension FramePresenter {
         HostProbe.timed(.animations) {
             follow(animator.advance(to: now, reducesMotion: reducesMotion), reducedMotion: reducesMotion)
         }
+        // A view kept past its time as it leaves is let go: after the frame's motions, so one landing now ends
+        // as landed. Design: docs/design/host/tree.md#a-view-kept-as-it-leaves
+        runtime?.tree.exits.expire(now: now)
 
         let cycle = HostProbe.timed(.cycle) { core.cycle(now: now, reducesMotion: reducesMotion) }
 

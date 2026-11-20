@@ -164,6 +164,13 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `Arrangement.fades` is `joins`. `MountedElement.fadesIn(presentsOpacity:)` and `fadeIn(_:under:)` are
   `entersMoving(presentsOpacity:)` and `enter(_:as:)`, which decides the entry: by the view's transition, else the
   fade. A host built on `StateUIHost` hands the entry on as it handed the law.
+- **For a host: a view may be kept as it leaves.** `NativeElement` gains `keepsExits` - whether the view keeps a
+  child that left, drawn where it stood and out of its layout - and `releasePresentation()`, told to a leaving
+  element as its presentation ends; both have a default, a view keeping none. `MountedElement.presentedChildren`
+  is what stands in the native view, the active and the kept, beside `arrangedChildren`, the active alone. The
+  tree keeps a dropped child that declares an exit, within a window's budget (`MountedTree.exits`, a `KeptExits`),
+  and `PresentationOperation.Result` gains `.limited` and `.detached`. `MountedTree.removeMotions` and `unmounted`
+  are gone.
 - **For a host: an element leaves in two steps.** `NativeElement.leave()` is `deactivate()`: the element stops
   being the application's, and everything its native half attached outside the tree lets go. A mounted element has
   a `lifecycle` - `.active`, `.exiting`, `.released` - with `deactivate()` and `release()` between them, each said

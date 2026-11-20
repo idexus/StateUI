@@ -125,7 +125,8 @@ the frame clock. The subtree is marked exiting before any of it is let go,
 so nothing a detaching tells finds part of it active. Each step said again
 does nothing. A child no longer held is deactivated and released one after
 the other in the same transaction (`leave`), and nothing keeps a control
-alive after the tree drops it.
+alive after the tree drops it - but a view kept as it leaves, between the
+two steps ([a view kept as it leaves](#a-view-kept-as-it-leaves)).
 
 What an element answers by itself is guarded by its life, once, where the
 effect begins: `hear`, `send` - a link's own opening and a return's handing
@@ -138,6 +139,70 @@ The trap is one flag for two things. A view fading out because it is being
 hidden (`isFadingOut`) keeps its place in the tree and its state; it is
 active, deaf to input meanwhile by its own rule
 ([showing and hiding](motion.md#showing-and-hiding)), and no leaving.
+
+## A view kept as it leaves
+
+A child dropped from an arrangement may go on being drawn while the exit
+its transition declares runs ([transitions](../views/transitions.md)). It is
+the application's no more at once - deactivated, as any leaving - and only
+its release waits. The tree alone keeps it; no host has a pool of its own.
+
+An element so has two orders of what it holds:
+
+```text
+  arrangedChildren    the active: measured, laid out, reached by input and by the application
+  presentedChildren   the active and those kept as they leave, each after the view it stood after:
+                      what stands in the native view, and the order it is drawn in
+```
+
+Whether a child is kept is decided once, as it is dropped
+(`MountedElement.exit(from:)`):
+
+```text
+  it declares a transition whose exit changes something
+  what holds it keeps a view that left      NativeElement.keepsExits
+  its own motion, else the application's, animates - and the user asked for no less
+  the message makes nothing again           MountedTree.remakes
+  the window's budget holds                 KeptExits
+```
+
+Else it leaves at once, as ever. A view keeps none unless it says so: a
+host whose layout drops what it is not handed keeps nothing, and its
+dropped views go at once.
+
+A kept child stays found by its mount, so a frame's values reach its view,
+and nothing else of the tree finds it. Each number its exit touches -
+opacity, the move across and down, scale - sets out from where it is drawn
+now, a motion on its way going on from there, and travels to what the
+effect says by the road a property's own animation takes. As the last
+lands its exit ends: what kept it forgets it, its presentation is released
+(`NativeElement.releasePresentation`), and what kept it arranges its views
+without it.
+
+An exit ends once, as one of (`PresentationOperation.Result`):
+
+```text
+  finished    it came where its effect leads
+  limited     the budget ended it: the window kept too many, or it ran past its time
+  cancelled   what held it left first
+  detached    a message made the tree again
+```
+
+An element that leaves owns the leavings under it. Gone at once, it takes
+them with it. Kept itself, they are its own exit's part: each stands as it
+is drawn, ends no exit of its own - its motion's end releases nothing - and
+is released with it.
+
+The budget is a window's (`KeptExits`): thirty-two views leaving at once,
+two thousand and forty-eight mounted elements under them, two seconds a
+view. Past it the oldest end as limited until it holds, a view past its
+time ends on the frame that finds it so, and a subtree larger than the
+whole budget is not kept at all.
+
+The trap is keeping the view and letting its element go. A native half
+reads its element for as long as it draws; the tree keeps the whole mounted
+element until the release, and nothing of a host may hold a view the tree
+released.
 
 ## Drawn over its place
 
