@@ -134,37 +134,32 @@ extension View {
         }
     }
 
+    // MARK: The hand moving a state
+
+    /// What the user's hand moves on the view, and how: a number of a state, held under the hand while it moves
+    /// it and let go as the interaction's release says.
+    ///
+    ///     @State(motion: .spring()) private var offset = 0.0
+    ///
+    ///     Rectangle()
+    ///         .translationX($offset)
+    ///         .interaction(
+    ///             .value($offset, axis: \.self, input: .translation(.horizontal))
+    ///                 .range(0...240)
+    ///                 .snaps([0, 120, 240]))
+    ///
+    /// The hand moves the state itself, on the display's frames and with no view built: whatever shows the state
+    /// follows the hand, and a write of the program travels on the same value. One `.interaction(_:)` says the whole
+    /// of a view's interaction - several values at once are `Interaction.simultaneous(_:)` - and said again it takes
+    /// the other's place.
+    ///
+    /// - Parameter interaction: the interaction; nil for none.
+    /// - Returns: the view, moved so by the hand.
+    public func interaction(_ interaction: Interaction?) -> Modified {
+        modified { $0.setProgram(ViewContract.interaction, definition: interaction) }
+    }
+
     // MARK: Pan
-
-    /// Writes how far the view has been dragged across into a state, with no
-    /// view rebuilt as it moves.
-    ///
-    ///     @State private var turn = 0.0
-    ///
-    ///     Fill()
-    ///         .panX($turn)
-    ///
-    /// The distance `onPanUpdated` reports, for an `.engine(following:)` to
-    /// follow frame by frame. A drag moves the value on from where it stood, so
-    /// a second drag carries on where the first left off.
-    ///
-    /// - Parameter state: the state the distance is written into.
-    /// - Returns: the view, reporting there.
-    public func panX(_ state: Binding<Double>) -> Modified {
-        driven(ViewContract.panXChannel.token, by: state)
-    }
-
-    /// Writes how far the view has been dragged down into a state, with no view
-    /// rebuilt as it moves; see `panX(_:)`.
-    ///
-    ///     Fill()
-    ///         .panY($turn)
-    ///
-    /// - Parameter state: the state the distance is written into.
-    /// - Returns: the view, reporting there.
-    public func panY(_ state: Binding<Double>) -> Modified {
-        driven(ViewContract.panYChannel.token, by: state)
-    }
 
     /// Runs as the view is dragged, from the moment it starts until it is let
     /// go.

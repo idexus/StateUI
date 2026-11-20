@@ -42,12 +42,11 @@ How each of them realizes these members is on its own page.
 | `onHeld` (`held`) | event |  | native |
 | `holdDuration` | property | `Double` | structure |
 | `horizontalAlignment` | property | `Alignment` | native |
+| `interaction` | program |  | stateUI |
 | `isDraggable` | property | `Bool` | native |
 | `margin` | property | `Insets` | native |
 | `panTouchCount` | property | `Int` | structure |
 | `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Point, Point, Point)` | native |
-| `panXChannel` | property | `Int` | structure |
-| `panYChannel` | property | `Int` | structure |
 | `layoutBody` | property | `LayoutBody` | stateUI |
 | `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point, Double)` | native |
 | `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |

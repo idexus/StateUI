@@ -340,6 +340,7 @@ WebView
   holdDuration
   horizontalAlignment
   ignoresInput
+  interaction
   isDraggable
   isEnabled
   isVisible
@@ -353,8 +354,6 @@ WebView
   minimumWidth
   opacity
   panTouchCount
-  panXChannel
-  panYChannel
   pivotX
   pivotY
   presentationFrame

@@ -167,19 +167,6 @@
         return true
     }
 
-    /// The number a gesture channel's state stands at; nil for no such state.
-    public func standingGestureValue(state: Int32) -> Double? {
-        core.gestureValue(state: state)
-    }
-
-    /// Moves a gesture channel's state to `value`, and draws what that moves; whether it moved.
-    @discardableResult
-    public func takeGestureValue(_ value: Double, state: Int32) -> Bool {
-        guard core.moveGestureValue(value, state: state) else { return false }
-        displayCycle.drain(now: clock.now())
-        return true
-    }
-
     /// What the application stands on changed - the theme, the locale, the power, the network: `report` tells the
     /// core what stands now, the tree follows the language's direction, and a turn renders what it all changed. A
     /// report that repeats what stands takes no turn; answers whether it changed anything.

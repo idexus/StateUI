@@ -10,7 +10,8 @@
 /// a pan carrying its states and ending as a swipe, a pinch, the pointer coming, moving, pressing and going, a drag
 /// and a drop; each case made for every element wearing the tier. And
 /// where a view stands in its window as a scroller's or a list's scroll moves it, and from the safe area at its page's
-/// corner; and how a view of a motion layout moves as a body following its place.
+/// corner; how a view of a motion layout moves as a body following its place; and what a hand does to a number a
+/// motion layout's interaction names.
 @_spi(Host) public enum ViewTests: ConformanceFamily {
     public static let name = "View"
 
@@ -18,13 +19,13 @@
         Specimens.wearing(ViewContract.self).flatMap { element in
             [
                 margined(element), drawn(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
-                tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), rotated(element), pointed(element),
+                tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), moved(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
         } + [
             scrolledInItsWindow, scrolledInAList, atItsPagesCorner, carriedToItsPlace, onAFirstBaseline, showsItsPress,
             pressedByAScreenReader,
-        ]
+        ] + layoutUnderTheHand
     }
 
     /// A view answering a tap is a button to assistive technology: a screen reader's press on it runs the handler a
@@ -661,21 +662,19 @@
     }
 
     /// A press dragged across a view is heard as it starts, runs and ends - each report how far it came and how fast
-    /// it goes, its end where it reached, where the press is in the view's own points - carrying the state its pan
-    /// across moves. The view stands away from the window's corner, so a point of the window is no point of the view.
+    /// it goes, its end where it reached, where the press is in the view's own points. The view stands away from the
+    /// window's corner, so a point of the window is no point of the view.
     @MainActor
     static func panned(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aPanIsHeardAndCarriesItsStateAcross", proves: [
+        ConformanceCase("\(element).aPanIsHeardFromItsStartToItsEnd", proves: [
             Covered(ViewContract.panUpdated, on: element), Covered(ViewContract.panTouchCount, on: element),
-            Covered(ViewContract.panXChannel, on: element),
         ], needs: [Covered(PaddingElementContract.padding, on: "VStack")]) { s in
-            let x = State(wrappedValue: 10.0)
             let heard = Received<String>()
             let lifted = Received<Point>()
             let began = Received<Point>()
             s.start(clock: TestClock()) {
                 VStack {
-                    Opened.pannedAcross(Specimens.view(element, [
+                    Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
                         Write(ViewContract.panTouchCount, 1),
                         HearFour(ViewContract.panUpdated) { phase, total, velocity, at in
@@ -683,7 +682,7 @@
                             began.values.append(Point(at.x - total.x, at.y - total.y))
                             if phase == .ended { lifted.values.append(velocity) }
                         },
-                    ]), carrying: x.projectedValue)
+                    ])
                 }
                 .padding(start: 120, top: 120, end: 0, bottom: 0)
                 .horizontalAlignment(.start)
@@ -702,27 +701,31 @@
                      "where the press is moves with it: \(began.values)")
             s.expect((0...100).contains(start.x) && (0...100).contains(start.y), true,
                      "it began on the view, in its own points: \(start)")
-            s.expect(x.wrappedValue, -50, "the state carried as far as the hand went across")
         }
     }
 
-    /// A press dragged down a view carries the state its pan down moves.
+    /// The hand over a view moves the state its interaction names - a point a point, the state nothing draws
+    /// carried for the hand alone - and let go still, leaves it where it took it.
     @MainActor
-    static func pannedDown(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aPanCarriesItsStateDown", proves: [Covered(ViewContract.panYChannel, on: element)]) { s in
-            let y = State(wrappedValue: 5.0)
-            s.start(clock: TestClock()) {
+    static func moved(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).theHandMovesTheStateItsInteractionNames", proves: [
+            Covered(ViewContract.interaction, on: element),
+        ]) { s in
+            let (clock, x) = (TestClock(), State(wrappedValue: 10.0))
+            s.start(clock: clock) {
                 VStack {
-                    Opened.pannedDown(Specimens.view(element, [
+                    Opened.moved(Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
-                    ]), carrying: y.projectedValue)
+                    ]), across: x.projectedValue)
                 }
                 .horizontalAlignment(.start)
             }
+            s.frames(of: clock, until: 64)
 
-            try s.perform(.pan(by: Point(0, 20)), on: s.element("specimen"))
-            s.settle { y.wrappedValue == 25 }
-            s.expect(y.wrappedValue, 25, "the state carried as far as the hand went down")
+            try s.perform(.sweep(by: Point(-60, 0), speed: .zero), on: s.element("specimen"))
+            s.frames(of: clock, until: clock.now + 320)
+            s.expect(x.wrappedValue, -50, "the state moved as far as the hand went, and left there")
+            s.expect(x.projectedValue.journey.sample?.value, -50, "shown there, standing still")
         }
     }
 

@@ -74,11 +74,17 @@
         return min(max(setting, shortest), longest(of: throwing))
     }
 
-    /// `motion` for an approach `left` units long, a unit a length: eased, as long as the way left takes; a
-    /// spring, its response cut alike; none for a way that is no number, or a motion that does not animate.
+    /// How much of a motion's length an approach `left` units long takes: a unit the whole of it, less a part of
+    /// it alike, and more no more than the whole - a value a point a unit comes onto a snap sixty points off in
+    /// the motion's length, not sixty of them. None for a way that is no number.
+    public static func share(of left: Double) -> Double {
+        left.isFinite ? min(abs(left), 1) : 0
+    }
+
+    /// `motion` for an approach `left` units long: eased, as long as its share of the motion's length; a spring,
+    /// its response cut alike; none for a motion that does not animate.
     public static func approach(_ motion: Motion, over left: Double) -> Motion {
-        let way = abs(left) * Double(motion.milliseconds)
-        let length = Duration.milliseconds(Int64(way.isFinite ? min(way, Double(UInt32.max)).rounded() : 0))
+        let length = Duration.milliseconds(Int64((share(of: left) * Double(motion.milliseconds)).rounded()))
 
         switch motion.kind {
         case .eased(_, let curve): return .eased(length, curve: curve)

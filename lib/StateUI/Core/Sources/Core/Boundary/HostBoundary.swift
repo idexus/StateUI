@@ -237,18 +237,6 @@
         Renderer.shared.hostValue(for: binding)
     }
 
-    /// Reads where a one-lane state named directly by `panX` or `panY` stands.
-    public static func gestureValue(state: Int32) -> Double? {
-        Renderer.shared.hostGestureValue(state: state)
-    }
-
-    /// Moves the first lane of a state named directly by a native gesture.
-    /// The host advances its StateUI cycle immediately after this write.
-    @discardableResult
-    public static func moveGestureValue(_ value: Double, state: Int32) -> Bool {
-        Renderer.shared.hostMovedGesture(value, state: state)
-    }
-
     // What a report carries besides its value is who made it - the user, the platform's measurement, the host's
     // animation: never worked out from what moved.
     // Design: docs/design/core/cycle.md#what-the-host-reports

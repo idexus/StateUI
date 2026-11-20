@@ -856,19 +856,72 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertNil(patch.events, "the offset is carried, and nothing hears it besides")
     }
 
-    /// A view whose drag is written into values says both numbers.
-    func testADraggedViewNamesTheValuesItIsWrittenInto() {
+    /// A VIEW THE HAND MOVES A STATE ON NAMES THE STATE'S NUMBER AND FOLLOWS ITS JOURNEY: the host is handed the
+    /// channel and the lane, and carries the state though nothing draws it.
+    func testAViewTheHandMovesAStateOnNamesItAndConsumesIt() throws {
         let across = State(wrappedValue: 0.0)
-        let down = State(wrappedValue: 0.0)
 
-        let node = Rectangle()
-            .fill(Color(hex: 0x000000))
-            .panX(across.projectedValue)
-            .panY(down.projectedValue)
-            .node
+        let patch = Renders().render(
+            Rectangle()
+                .fill(Color(hex: 0x000000))
+                .interaction(.value(across.projectedValue, axis: \.self, input: .translation(.horizontal)).release(.stay))
+                .id("moved")
+                .node)
 
-        XCTAssertEqual(node.props[.panXChannel], .number(Double(across.number)))
-        XCTAssertEqual(node.props[.panYChannel], .number(Double(down.number)))
+        let state = try XCTUnwrap(across.storage.image?.number)
+        XCTAssertEqual(patch.moved, [
+            HostInteractionValue(
+                state: state, lane: 0, input: .translation(.horizontal, unit: .points(1), swipes: false),
+                release: .stay),
+        ])
+        guard case .replace(let followed)? = patch.followed else { return XCTFail("the state is not followed") }
+        XCTAssertEqual(followed.map(\.state), [state], "its channel has a consumer: the view the hand moves it on")
+    }
+
+    /// AN INTERACTION WRITTEN ON A COMPOSED VIEW LANDS ON THE ELEMENT THE VIEW BUILDS, as its properties and its
+    /// handlers do: a view of the application's, a list, a layout are moved by the hand as a rectangle is.
+    func testAnInteractionWrittenOnAComposedViewLandsOnItsElement() throws {
+        struct Card: View {
+            var body: some View { VStack { Text("card") } }
+        }
+        let across = State(wrappedValue: 0.0)
+        let hand = Interaction.value(across.projectedValue, axis: \.self, input: .translation(.horizontal))
+
+        let composed = Renders().render(Card().interaction(hand).id("card").node)
+        XCTAssertEqual(composed.first(.vStack)?.moved.count, 1, "on the stack the card builds")
+
+        let list = Renders().render(ItemsView([1, 2], id: \.self) { Text("\($0)") }.interaction(hand).id("list").node)
+        XCTAssertEqual(list.first(.itemsView)?.moved.count, 1, "on the list's own element")
+    }
+
+    /// A STATE THE VIEW ALREADY WEARS IS NOT CONSUMED TWICE: the property is its consumer.
+    func testAStateTheViewWearsIsNotConsumedTwice() throws {
+        let across = State(wrappedValue: 0.0)
+
+        let patch = Renders().render(
+            Rectangle()
+                .translationX(across.projectedValue)
+                .interaction(.value(across.projectedValue, axis: \.self, input: .translation(.horizontal)))
+                .id("moved")
+                .node)
+
+        XCTAssertFalse(patch.moved.isEmpty)
+        XCTAssertNil(patch.followed, "the property carries it")
+    }
+
+    /// THE VIEW IN FRONT IS A LAYOUT'S TO MEASURE: on a view that runs no layout the unit is refused and said, and
+    /// the hand moves nothing of that value.
+    func testAFrontItemUnitIsRefusedOnAViewWithNoLayout() {
+        let across = State(wrappedValue: 0.0)
+
+        let patch = Renders().render(
+            Rectangle()
+                .interaction(.value(across.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .frontItem)))
+                .id("moved")
+                .node)
+
+        XCTAssertTrue(patch.moved.isEmpty)
+        XCTAssertTrue(hasComplained("its view runs no layout that draws one"))
     }
 
     // MARK: - The law a driven value travels under

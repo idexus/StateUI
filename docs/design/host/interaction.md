@@ -86,7 +86,7 @@ rotation's unit as its degrees, by which either is judged thrown or settled.
 Past an end of a number that does not come round, the number gives less and
 less, back as forth (`given`, `pulled`): half as far as the hand at first,
 never three quarters of a unit past the end, so no hand carries everything
-away. The two are each other's inverse, so a hand coming back the way it
+away - a unit of the value, so a value a point a unit gives under a point. The two are each other's inverse, so a hand coming back the way it
 went brings the number back onto the end where it left it. A number that
 comes round has no end; a number with no range gives nothing.
 
@@ -169,10 +169,13 @@ slow throw reaches, none between - no slower than its state's motion moves
 a unit (`InteractionAxis.going`). Let go still, thrown back, or by a hand
 whose throw would reach that snap later than the motion at a unit a length,
 it approaches under the release's motion - `.nearest`'s own, else the
-state's - over as much of the motion's length as the way left is of a unit:
-0.4 left of 300 ms is 120 ms on the motion's curve; a spring's response is
-cut alike and sets out at the hand's speed toward the snap. A whole motion
-for a short way would crawl, and a slow throw would drift onto it.
+state's - over as much of the motion's length as the way left is of a unit,
+the whole of it at most (`InteractionArithmetic.share`): 0.4 left of 300 ms is
+120 ms on the motion's curve; a spring's response is cut alike and sets out
+at the hand's speed toward the snap. A whole motion for a short way would
+crawl, and a slow throw would drift onto it; and a value a point a unit - a
+panel - comes onto a snap sixty points off in the motion's own length, as a
+write of the program would send it, never sixty of them.
 
 A throw that gets there sooner sets out at the hand's speed and keeps its
 release's motion: a spring settles there as springs do; an eased motion

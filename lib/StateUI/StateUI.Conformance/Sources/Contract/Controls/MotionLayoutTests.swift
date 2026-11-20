@@ -7,8 +7,9 @@
 /// `MotionLayoutContract` on a host: each view stands where the arithmetic puts it, the arithmetic is handed the room
 /// the layout was given and handed it again when it changes, measures its views as they stand by themselves and again
 /// when one is sized anew, the layout takes no size from its views but the one it measures, the phase the
-/// program sends travels there and is awaited - each axis of it on its own - a scroll comes to rest on a snap
-/// target, a throw going on as the phase's journey, and a layout mirrored right to left stands its views and hears the hand turned about its middle.
+/// program sends travels there and is awaited - each axis of it on its own - a view under a press goes to the hand
+/// and is dismissed let go far enough, and a layout mirrored right to left stands its views and hears the hand
+/// turned about its middle. What a hand does to the number its interaction names is the View tier's.
 @_spi(Host) public enum MotionLayoutTests: ConformanceFamily {
     public static let name = "MotionLayout"
 
@@ -419,92 +420,15 @@
                 s.frames(of: clock, until: 1_000)
                 s.expect(handed.values.last, Orbit(turn: 4, zoom: 2), "both where they were sent")
             },
-            ConformanceCase("theHandMovesTheRunAndRestsItOnTheNearestTarget", proves: [
-                Covered(MotionLayoutContract.interaction),
-            ]) { s in
-                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
-                let layout = try handLayout(s, clock: clock, phase: phase)
-
-                // 140 points to the left is 1.4 targets on: let go still, it rests on the nearest.
-                try s.perform(.sweep(by: Point(-140, 0), speed: .zero), on: layout)
-                frames(s, clock, until: 1_600)
-
-                s.expect(phase.wrappedValue, 1, "the target nearest where the hand let it go")
-            },
-            ConformanceCase("aThrowGoesOnToTheTargetNearestWhereItWouldEnd", proves: [Covered(MotionLayoutContract.interaction)]) { s in
-                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
-                let layout = try handLayout(s, clock: clock, phase: phase)
-
-                // Let go at 2,250 points a second, 22.5 targets a second, the throw carries it three targets on.
-                try s.perform(.sweep(by: Point(-10, 0), speed: Point(-2_250, 0)), on: layout)
-                frames(s, clock, until: 1_600)
-
-                s.expect(phase.wrappedValue, 3, "not the nearest to where the hand let go, but to where the throw ends")
-            },
-            ConformanceCase("aThrowGoesOnAsThePhasesJourney", proves: [Covered(MotionLayoutContract.interaction)]) { s in
-                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
-                let layout = try handLayout(s, clock: clock, phase: phase)
-                let journey = phase.projectedValue.journey
-
-                try s.perform(.sweep(by: Point(-10, 0), speed: Point(-2_250, 0)), on: layout)
-                // Each frame read as the host walks it: on its way to the target named already, going on.
-                var (fastest, onItsWay) = (0.0, false)
-                while clock.now < 1_600 {
-                    clock.now += 16
-                    s.frame()
-                    guard let sample = journey.sample else { continue }
-
-                    fastest = max(fastest, sample.velocity)
-                    if phase.wrappedValue == 3, sample.value > 0.1, sample.value < 3 { onItsWay = true }
-                }
-                s.expect(fastest > 0, true, "going on, as the host walks the phase")
-                s.expect(onItsWay, true, "on its way to the target it named")
-                s.expect(journey.sample?.value, 3, "on its target")
-                s.expect(journey.sample?.velocity, 0, "at rest")
-            },
-            ConformanceCase("aWheelsNotchStepsTheRunToTheNextTarget", proves: [Covered(MotionLayoutContract.interaction)]) { s in
-                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
-                let layout = try handLayout(s, clock: clock, phase: phase)
-
-                // A notch is a step, however far a target stands: one on, then two more.
-                try s.perform(.notch(by: Point(-1, 0)), on: layout)
-                frames(s, clock, until: 800)
-                s.expect(phase.wrappedValue, 1, "the next target")
-
-                try s.perform(.notch(by: Point(-2, 0)), on: layout)
-                frames(s, clock, until: 1_600)
-                s.expect(phase.wrappedValue, 3, "a target a notch")
-            },
-            ConformanceCase("aProgramsWriteTakesTheRunFromTheHand", proves: [Covered(MotionLayoutContract.interaction)]) { s in
-                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
-                let layout = try handLayout(s, clock: clock, phase: phase)
-
-                // The hand takes the run and holds it 0.4 targets on, bound for the first.
-                try s.perform(.pressDown(at: Point(60, 10)), on: layout)
-                try s.perform(.drag(to: Point(20, 10)), on: layout)
-                frames(s, clock, until: clock.now + 48)
-                s.expect(phase.wrappedValue, 0, "under the hand, bound for the nearest target")
-
-                // The program sends it to the fifth: the hand's gesture ends there, whatever it says after.
-                phase.wrappedValue = 4
-                frames(s, clock, until: clock.now + 48)
-                try s.perform(.drag(to: Point(90, 10)), on: layout)
-                frames(s, clock, until: clock.now + 48)
-                try s.perform(.lift(at: Point(90, 10)), on: layout)
-                frames(s, clock, until: clock.now + 1_600)
-
-                s.expect(phase.wrappedValue, 4, "where the program sent it")
-                s.expect(phase.projectedValue.journey.sample?.value, 4, "and standing there")
-            },
             ConformanceCase("mirroredRightToLeftTheHandMovesTheRunTheOtherWay", proves: [
                 Covered(MotionLayoutContract.mirrorsRightToLeft),
-            ], needs: [Covered(MotionLayoutContract.interaction), Covered(VisualElementContract.layoutDirection, on: "VStack")]) { s in
+            ], needs: [Covered(ViewContract.interaction, on: MotionLayoutContract.self), Covered(VisualElementContract.layoutDirection, on: "VStack")]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
-                let layout = try handLayout(s, clock: clock, phase: phase, mirrored: true)
+                let layout = try HandLayouts.hand(s, clock: clock, phase: phase, mirrored: true)
 
                 // 140 points to the right is 1.4 targets on in the mirror: let go still, it rests on the nearest.
                 try s.perform(.sweep(by: Point(140, 0), speed: .zero), on: layout)
-                frames(s, clock, until: 1_600)
+                s.frames(of: clock, until: 1_600)
 
                 s.expect(phase.wrappedValue, 1, "on, the hand going the mirror's way")
             },
@@ -535,22 +459,13 @@
 
                 // Declared with keyframes and no input: the hand passes it by, the program moves it.
                 try s.perform(.sweep(by: Point(-140, 0), speed: Point(-600, 0)), on: layout)
-                frames(s, clock, until: 1_600)
+                s.frames(of: clock, until: 1_600)
                 s.expect(arrangement.wrappedValue, 0, "no hand moves an axis of keyframes alone")
 
                 try s.perform(.activate, on: s.element("go"))
-                frames(s, clock, until: 3_200)
+                s.frames(of: clock, until: 3_200)
                 s.settle { handed.values.last == 1 }
                 s.expect(handed.values.last, 1, "the program moves it to its keyframe")
-            },
-            ConformanceCase("aHandAcrossItsAxisLeavesTheRun", proves: [Covered(MotionLayoutContract.interaction)]) { s in
-                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
-                let layout = try handLayout(s, clock: clock, phase: phase)
-
-                try s.perform(.sweep(by: Point(0, -140), speed: Point(0, -600)), on: layout)
-                frames(s, clock, until: 1_600)
-
-                s.expect(phase.wrappedValue, 0, "a hand moving down is not the run's, which moves across")
             },
             ConformanceCase("aPressHeldTakesTheViewUnderItToTheHand", proves: [
                 Covered(MotionLayoutContract.itemDrag), Covered(MotionLayoutContract.itemDragUpdated),
@@ -560,11 +475,11 @@
 
                 // The middle view stands from 30 to 50 across: a press on it held past a long press is its.
                 try s.perform(.pressDown(at: Point(40, 20)), on: layout)
-                frames(s, clock, until: clock.now + 600)
+                s.frames(of: clock, until: clock.now + 600)
                 try s.perform(.drag(to: Point(70, 30)), on: layout)
-                frames(s, clock, until: clock.now + 48)
+                s.frames(of: clock, until: clock.now + 48)
                 try s.perform(.lift(at: Point(70, 30)), on: layout)
-                frames(s, clock, until: clock.now + 600)
+                s.frames(of: clock, until: clock.now + 600)
 
                 s.expect(told.values.first, "1 at 40,20", "the view under the press, where it went down")
                 s.expect(told.values.last, "1 at 70,30", "and where the hand took it")
@@ -578,53 +493,13 @@
 
                 try s.perform(.pressDown(at: Point(40, 15)), on: layout)
                 try s.perform(.drag(to: Point(42, 35)), on: layout)
-                frames(s, clock, until: clock.now + 48)
+                s.frames(of: clock, until: clock.now + 48)
                 try s.perform(.lift(at: Point(42, 35)), on: layout)
-                frames(s, clock, until: clock.now + 600)
+                s.frames(of: clock, until: clock.now + 600)
 
                 s.expect(told.values.first, "1 at 40,15", "the view under the press")
                 s.expect(told.values.last, "1 at 42,35", "moved down with the hand")
                 s.expect(phase.wrappedValue, 0, "the run stands")
-            },
-            ConformanceCase("aPanMovesTheRunEveryWayAndRestsOnTheNearestSquare", proves: [
-                Covered(MotionLayoutContract.interaction),
-            ]) { s in
-                let (clock, square) = (TestClock(), State(wrappedValue: Square()))
-                let layout = try panLayout(s, clock: clock, square: square)
-
-                // 140 points to the left and 60 up are 1.4 squares on across and 0.6 down: let go still, the nearest.
-                try s.perform(.sweep(by: Point(-140, -60), speed: .zero), on: layout)
-                frames(s, clock, until: clock.now + 1_600)
-                s.expect(square.wrappedValue, Square(x: 1, y: 1), "both axes on the square nearest")
-            },
-            ConformanceCase("twoFingersSpreadTheMagnification", proves: [
-                Covered(MotionLayoutContract.interaction),
-            ]) { s in
-                let (clock, phase) = (TestClock(), State(wrappedValue: 1.0))
-                let layout = try fingersLayout(s, clock: clock, phase: phase, input: .magnification)
-
-                try s.perform(.pinch(scale: 2, at: Point(0.5, 0.5)), on: layout)
-                frames(s, clock, until: clock.now + 1_000)
-                s.expect(phase.wrappedValue, 2, "spread to twice their distance: twice the size")
-
-                // To the ends, so a lift at the driver's speed rests where a still one does.
-                try s.perform(.pinch(scale: 0.25, at: Point(0.5, 0.5)), on: layout)
-                frames(s, clock, until: clock.now + 1_000)
-                s.expect(phase.wrappedValue, 0.5, "and pinched in to a quarter: the smallest")
-            },
-            ConformanceCase("twoFingersTurnTheRotation", proves: [
-                Covered(MotionLayoutContract.interaction),
-            ]) { s in
-                let (clock, phase) = (TestClock(), State(wrappedValue: 1.0))
-                let layout = try fingersLayout(s, clock: clock, phase: phase, input: .rotation(degreesPerUnit: 90))
-
-                try s.perform(.rotate(degrees: 90, at: Point(0.5, 0.5)), on: layout)
-                frames(s, clock, until: clock.now + 1_000)
-                s.expect(phase.wrappedValue, 2, "a quarter turn clockwise: a unit on")
-
-                try s.perform(.rotate(degrees: -180, at: Point(0.5, 0.5)), on: layout)
-                frames(s, clock, until: clock.now + 1_000)
-                s.expect(phase.wrappedValue, 0.5, "and back the other way, to the lowest")
             },
             ConformanceCase("aViewLetGoFarEnoughIsDismissed", proves: [Covered(MotionLayoutContract.itemDragUpdated)]) { s in
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
@@ -632,9 +507,9 @@
 
                 try s.perform(.pressDown(at: Point(40, 15)), on: layout)
                 try s.perform(.drag(to: Point(40, 38)), on: layout)
-                frames(s, clock, until: clock.now + 48)
+                s.frames(of: clock, until: clock.now + 48)
                 try s.perform(.lift(at: Point(40, 38)), on: layout)
-                frames(s, clock, until: clock.now + 1_000)
+                s.frames(of: clock, until: clock.now + 1_000)
                 s.settle { told.values.last == "1 dismissed" }
 
                 s.expect(told.values.last, "1 dismissed", "flown out of the room, its item told")
@@ -676,7 +551,7 @@ private func itemLayout(
         .horizontalAlignment(.start)
         .verticalAlignment(.start)
     }
-    frames(s, clock, until: 64)
+    s.frames(of: clock, until: 64)
     return try s.element(ofType: .motionLayout)
 }
 
@@ -686,108 +561,4 @@ private struct Orbit: LayoutParameters {
     var zoom = 1.0
 
     static var axes: [WritableKeyPath<Orbit, Double>] { [\.turn, \.zoom] }
-}
-
-/// A layout of three views a hand moves across, a hundred points a unit, resting on 0 to 5, its run on `clock` -
-/// `mirrored`, laid out right to left and turned about its middle: the layout's element, once the room is told.
-@MainActor
-private func handLayout(
-    _ s: Session, clock: TestClock, phase: State<Double>, mirrored: Bool = false
-) throws -> MountedElement {
-    // The parameters travel under their state's own motion.
-    try? phase.projectedValue.journey.setMotion(.eased(.milliseconds(300), curve: .linear))
-    s.start(clock: clock) {
-        VStack {
-            MotionLayout([0, 1, 2], parameters: phase.projectedValue) { _ in
-                Rectangle()
-                    .fill(.red)
-            } placements: { _, at in
-                (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
-            }
-            .interaction(
-                Interaction.value(phase.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...5).snaps(.every(1))
-                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
-            .mirrorsRightToLeft(mirrored)
-            .width(100).height(40)
-        }
-        .horizontalAlignment(.start)
-        .verticalAlignment(.start)
-        .layoutDirection(mirrored ? .rightToLeft : .inherited)
-    }
-    frames(s, clock, until: 64)
-    return try s.element(ofType: .motionLayout)
-}
-
-/// A square of a board: across and down.
-private struct Square: LayoutParameters {
-    var x = 0.0
-    var y = 0.0
-
-    static var axes: [WritableKeyPath<Square, Double>] { [\.x, \.y] }
-}
-
-/// A board of three by three squares a hand pans a hundred points a unit either way, its run on `clock`: the layout's
-/// element, once the room is told.
-@MainActor
-private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) throws -> MountedElement {
-    // The parameters travel under their state's own motion.
-    try? square.projectedValue.journey.setMotion(.eased(.milliseconds(300), curve: .linear))
-    s.start(clock: clock) {
-        VStack {
-            MotionLayout([0, 1, 2], parameters: square.projectedValue) { _ in
-                Rectangle()
-                    .fill(.red)
-            } placements: { _, at in
-                (0..<3).map { Placement(Rect((Double($0) - at.x) * 50 + 40, 60 - at.y * 50, 20, 20)) }
-            }
-            .interaction(
-                .simultaneous([
-                    Interaction.value(square.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1)),
-                    Interaction.value(square.projectedValue, axis: \.y, input: .translation(.vertical, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1)),
-                ])
-                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
-            .width(200).height(160)
-        }
-        .horizontalAlignment(.start)
-        .verticalAlignment(.start)
-    }
-    frames(s, clock, until: 64)
-    return try s.element(ofType: .motionLayout)
-}
-
-/// A layout of three views two fingers move as `input` says, resting on 0.5, 1 and 2 - room for two fingers on
-/// every screen - its run on `clock`: the layout's element, once the room is told.
-@MainActor
-private func fingersLayout(
-    _ s: Session, clock: TestClock, phase: State<Double>, input: InteractionInput
-) throws -> MountedElement {
-    // The parameters travel under their state's own motion.
-    try? phase.projectedValue.journey.setMotion(.eased(.milliseconds(200), curve: .linear))
-    s.start(clock: clock) {
-        VStack {
-            MotionLayout([0, 1, 2], parameters: phase.projectedValue) { _ in
-                Rectangle()
-                    .fill(.red)
-            } placements: { _, at in
-                (0..<3).map { Placement(Rect(Double($0) * 80 + 20, 60, 40 * at, 40)) }
-            }
-            .interaction(
-                Interaction.value(phase.projectedValue, axis: \.self, input: input).range(0.5...2).snaps([1])
-                    .release(.projected(.eased(.milliseconds(400), curve: .cubicOut))))
-            .width(300).height(240)
-        }
-        .horizontalAlignment(.start)
-        .verticalAlignment(.start)
-    }
-    frames(s, clock, until: 64)
-    return try s.element(ofType: .motionLayout)
-}
-
-/// Display frames until `end`, sixteen milliseconds apart.
-@MainActor
-private func frames(_ s: Session, _ clock: TestClock, until end: Double) {
-    while clock.now < end {
-        clock.now += 16
-        s.frame()
-    }
 }

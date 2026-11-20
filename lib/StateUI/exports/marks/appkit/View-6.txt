@@ -1,11 +1,11 @@
-# revision 29.1
+# revision 31.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.filesDropped: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.tapped: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.holdDuration: ✅
+Capsule.interaction: ✓ sweep on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 Capsule.layoutFrameChanged: ✅
 Capsule.margin: ✅
-Capsule.panYChannel: ✓ pan on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.horizontalAlignment: ✅
 CheckBox.layoutFrameChanged: ✅
 CheckBox.pinchUpdated: ✓ pinch on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
@@ -26,7 +26,6 @@ Ellipse.held: ✓ hold on Ellipse: handed to the host's recognizer or handler, n
 Ellipse.layoutBody: ✅
 Fill.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Fill.panUpdated: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
-Fill.panXChannel: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Grid.presentationFrameChanged: ✅
 Grid.swipeDirections: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.swipeThreshold: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
@@ -60,12 +59,11 @@ Map.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's d
 Map.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Map.tapCount: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.tapped: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.interaction: ✓ sweep on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.margin: ✅
-MotionLayout.panYChannel: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Path.panUpdated: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
-Path.panXChannel: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Picker.presentationFrameChanged: ✅
 Picker.swipeDirections: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.swipeThreshold: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
@@ -85,9 +83,9 @@ ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the window's drop routin
 ProgressBar.tapped: ✓ pressDown on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.holdDuration: ✅
 Rectangle.layoutFrameChanged: ✅
+ScrollView.interaction: ✓ sweep on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.layoutFrameChanged: ✅
 ScrollView.margin: ✅
-ScrollView.panYChannel: ✓ pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.horizontalAlignment: ✅
 SearchField.layoutFrameChanged: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: handed to the host's recognizer or handler, no NSEvent sent
@@ -117,7 +115,6 @@ Stepper.held: ✓ hold on Stepper: handed to the host's recognizer or handler, n
 Stepper.layoutBody: ✅
 Switch.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Switch.panUpdated: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Switch.panXChannel: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Text.holdDuration: ✅
 TextEditor.presentationFrameChanged: ✅
 TextEditor.swipeDirections: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
@@ -137,6 +134,6 @@ VStack.droppedFileTypes: ✓ dropFiles on VStack: the window's drop routing told
 VStack.filesDropped: ✓ dropFiles on VStack: the window's drop routing told the driver's files, no dragging session
 VStack.tapped: ✓ pressDown on VStack: handed to the host's recognizer or handler, no NSEvent sent
 WebView.holdDuration: ✅
+ZStack.interaction: ✓ sweep on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.layoutFrameChanged: ✅
 ZStack.margin: ✅
-ZStack.panYChannel: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent

@@ -55,9 +55,11 @@ private struct HoldPage: View {
     }
 }
 
-/// A box a press drags across, a swipe told apart, and what the pan, the pinch and the pointer said, in order.
+/// A box a press drags across, its pan moving a state from where it took it, a swipe told apart, and what the pan,
+/// the pinch and the pointer said, in order.
 private struct DragPage: View {
     @State private var x = 10.0
+    @State private var taken = 10.0
     @State private var said = ""
 
     var body: some View {
@@ -67,8 +69,10 @@ private struct DragPage: View {
                 .fill(.steelBlue)
                 .width(100)
                 .height(100)
-                .panX($x)
-                .onPanUpdated { pan in said += "pan \(pan.phase.rawValue) \(Int(pan.total.x)); " }
+                .onPanUpdated { pan in
+                    said += "pan \(pan.phase.rawValue) \(Int(pan.total.x)); "
+                    if pan.phase == .began { taken = x } else { x = taken + pan.total.x }
+                }
                 .onSwiped(directions: [.left, .right]) { direction in said += "swiped \(direction.rawValue); " }
                 .onPinchUpdated { pinch in said += "pinch \(pinch.scale) at \(pinch.pivot.x); " }
                 .onPointerMoved { point in said += "moved \(Int(point.x)),\(Int(point.y)); " }

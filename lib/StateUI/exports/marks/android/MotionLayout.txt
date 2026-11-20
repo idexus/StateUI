@@ -1,6 +1,5 @@
-# revision 21.1
+# revision 23.1
 MotionLayout: ✅
-MotionLayout.interaction: ✅
 MotionLayout.itemDrag: ✅
 MotionLayout.itemDragUpdated: ✅
 MotionLayout.layout: ✅

@@ -5150,6 +5150,50 @@ enum Listings {
             return String(current[found.upperBound...].prefix { "-.0123456789".contains($0) })
         }
         """#,
+        "HandMovesStateSample": #"""
+        // Sources/Samples/Gestures/HandMovesStateSample.swift
+        /// WHERE THE PANEL STANDS OR IS GOING: the buttons write it and the hand moves it - one value, traveling under
+        /// the motion said here.
+        @State(motion: .spring()) private var offset = 0.0
+
+        var body: some View {
+            VStack {
+                // The hand builds no view: the label says so.
+                DebugInfoLabel()
+
+                // The track the panel moves along, the panel at its start.
+                ZStack {
+                    Rectangle()
+                        .fill(Palette.accent)
+                        .width(100)
+                        .height(80)
+                        .horizontalAlignment(.start)
+                        // WHAT SHOWS THE STATE: the panel stands where the value is.
+                        .translationX($offset)
+                        // WHAT GIVES IT TO THE HAND: dragged, the value follows the hand a point a point, less and
+                        // less past an end; let go, it is thrown on to the place nearest where the throw would end.
+                        .interaction(
+                            .value($offset, axis: \.self, input: .translation(.horizontal))
+                                .range(0...240)
+                                .snaps([120])
+                                .release(.projected(.spring())))
+                }
+                .width(340)
+                .height(80)
+                .horizontalAlignment(.center)
+
+                HStack {
+                    // THE PROGRAM WRITES THE SAME VALUE: caught on its way, the panel goes on from under the hand.
+                    Button("Start").onClicked { offset = 0 }
+
+                    Button("Middle").onClicked { offset = 120 }
+
+                    Button("End").onClicked { offset = 240 }
+                }
+                .horizontalAlignment(.center)
+            }
+        }
+        """#,
         "HoldSample": #"""
         // Sources/Samples/Gestures/HoldSample.swift
         @State private var taps = 0

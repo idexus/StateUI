@@ -383,6 +383,7 @@ ZStack
   holdDuration
   horizontalAlignment
   ignoresInput
+  interaction
   isDraggable
   isEnabled
   isVisible
@@ -395,8 +396,6 @@ ZStack
   minimumWidth
   opacity
   panTouchCount
-  panXChannel
-  panYChannel
   pivotX
   pivotY
   presentationFrame

@@ -90,17 +90,6 @@
         HostBoundary.complete(completion, as: outcome)
     }
 
-    /// Where a one-lane state named by a native gesture stands.
-    public func gestureValue(state: Int32) -> Double? {
-        HostBoundary.gestureValue(state: state)
-    }
-
-    /// Moves a one-lane state named by a native gesture.
-    @discardableResult
-    public func moveGestureValue(_ value: Double, state: Int32) -> Bool {
-        HostBoundary.moveGestureValue(value, state: state)
-    }
-
     // MARK: - Events, jobs and acts
 
     /// Reports a native event and runs its handler.

@@ -1,4 +1,4 @@
-# revision 29.1
+# revision 31.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.dragEnded: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -16,14 +16,13 @@ Button.gridRowSpan: ✅
 Button.held: ✅
 Button.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Button.horizontalAlignment: ✅
+Button.interaction: ✓ sweep on Button: the hand handed to the host's entry with its speed, no event
 Button.isDraggable: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.layoutBody: ✅
 Button.layoutFrameChanged: ✅
 Button.margin: ✅
 Button.panTouchCount: ✅
 Button.panUpdated: ✅
-Button.panXChannel: ✅
-Button.panYChannel: ✅
 Button.pinchUpdated: ✓ pinch on Button: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Button.pointerMoved: ✅
 Button.pointerPressed: ✅
@@ -53,14 +52,13 @@ Canvas.gridRowSpan: ✅
 Canvas.held: ✅
 Canvas.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Canvas.horizontalAlignment: ✅
+Canvas.interaction: ✓ sweep on Canvas: the hand handed to the host's entry with its speed, no event
 Canvas.isDraggable: ✓ dragAndDrop on Canvas: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.layoutBody: ✅
 Canvas.layoutFrameChanged: ✅
 Canvas.margin: ✅
 Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
-Canvas.panXChannel: ✅
-Canvas.panYChannel: ✅
 Canvas.pinchUpdated: ✓ pinch on Canvas: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Canvas.pointerMoved: ✅
 Canvas.pointerPressed: ✅
@@ -90,14 +88,13 @@ Capsule.gridRowSpan: ✅
 Capsule.held: ✅
 Capsule.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Capsule.horizontalAlignment: ✅
+Capsule.interaction: ✓ sweep on Capsule: the hand handed to the host's entry with its speed, no event
 Capsule.isDraggable: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.layoutBody: ✅
 Capsule.layoutFrameChanged: ✅
 Capsule.margin: ✅
 Capsule.panTouchCount: ✅
 Capsule.panUpdated: ✅
-Capsule.panXChannel: ✅
-Capsule.panYChannel: ✅
 Capsule.pinchUpdated: ✓ pinch on Capsule: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Capsule.pointerMoved: ✅
 Capsule.pointerPressed: ✅
@@ -127,14 +124,13 @@ CheckBox.gridRowSpan: ✅
 CheckBox.held: ✅
 CheckBox.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 CheckBox.horizontalAlignment: ✅
+CheckBox.interaction: ✓ sweep on CheckBox: the hand handed to the host's entry with its speed, no event
 CheckBox.isDraggable: ✓ dragAndDrop on CheckBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.layoutBody: ✅
 CheckBox.layoutFrameChanged: ✅
 CheckBox.margin: ✅
 CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
-CheckBox.panXChannel: ✅
-CheckBox.panYChannel: ✅
 CheckBox.pinchUpdated: ✓ pinch on CheckBox: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
@@ -164,14 +160,13 @@ ColorPicker.gridRowSpan: ✅
 ColorPicker.held: ✅
 ColorPicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ColorPicker.horizontalAlignment: ✅
+ColorPicker.interaction: ✓ sweep on ColorPicker: the hand handed to the host's entry with its speed, no event
 ColorPicker.isDraggable: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.layoutBody: ✅
 ColorPicker.layoutFrameChanged: ✅
 ColorPicker.margin: ✅
 ColorPicker.panTouchCount: ✅
 ColorPicker.panUpdated: ✅
-ColorPicker.panXChannel: ✅
-ColorPicker.panYChannel: ✅
 ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 ColorPicker.pointerMoved: ✅
 ColorPicker.pointerPressed: ✅
@@ -201,14 +196,13 @@ DatePicker.gridRowSpan: ✅
 DatePicker.held: ✅
 DatePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 DatePicker.horizontalAlignment: ✅
+DatePicker.interaction: ✓ sweep on DatePicker: the hand handed to the host's entry with its speed, no event
 DatePicker.isDraggable: ✓ dragAndDrop on DatePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.layoutBody: ✅
 DatePicker.layoutFrameChanged: ✅
 DatePicker.margin: ✅
 DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
-DatePicker.panXChannel: ✅
-DatePicker.panYChannel: ✅
 DatePicker.pinchUpdated: ✓ pinch on DatePicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 DatePicker.pointerMoved: ✅
 DatePicker.pointerPressed: ✅
@@ -238,14 +232,13 @@ Ellipse.gridRowSpan: ✅
 Ellipse.held: ✅
 Ellipse.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Ellipse.horizontalAlignment: ✅
+Ellipse.interaction: ✓ sweep on Ellipse: the hand handed to the host's entry with its speed, no event
 Ellipse.isDraggable: ✓ dragAndDrop on Ellipse: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.layoutBody: ✅
 Ellipse.layoutFrameChanged: ✅
 Ellipse.margin: ✅
 Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
-Ellipse.panXChannel: ✅
-Ellipse.panYChannel: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Ellipse.pointerMoved: ✅
 Ellipse.pointerPressed: ✅
@@ -275,14 +268,13 @@ Fill.gridRowSpan: ✅
 Fill.held: ✅
 Fill.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Fill.horizontalAlignment: ✅
+Fill.interaction: ✓ sweep on Fill: the hand handed to the host's entry with its speed, no event
 Fill.isDraggable: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.layoutBody: ✅
 Fill.layoutFrameChanged: ✅
 Fill.margin: ✅
 Fill.panTouchCount: ✅
 Fill.panUpdated: ✅
-Fill.panXChannel: ✅
-Fill.panYChannel: ✅
 Fill.pinchUpdated: ✓ pinch on Fill: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Fill.pointerMoved: ✅
 Fill.pointerPressed: ✅
@@ -312,14 +304,13 @@ Grid.gridRowSpan: ✅
 Grid.held: ✅
 Grid.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Grid.horizontalAlignment: ✅
+Grid.interaction: ✓ sweep on Grid: the hand handed to the host's entry with its speed, no event
 Grid.isDraggable: ✓ dragAndDrop on Grid: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.layoutBody: ✅
 Grid.layoutFrameChanged: ✅
 Grid.margin: ✅
 Grid.panTouchCount: ✅
 Grid.panUpdated: ✅
-Grid.panXChannel: ✅
-Grid.panYChannel: ✅
 Grid.pinchUpdated: ✓ pinch on Grid: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Grid.pointerMoved: ✅
 Grid.pointerPressed: ✅
@@ -349,14 +340,13 @@ HStack.gridRowSpan: ✅
 HStack.held: ✅
 HStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 HStack.horizontalAlignment: ✅
+HStack.interaction: ✓ sweep on HStack: the hand handed to the host's entry with its speed, no event
 HStack.isDraggable: ✓ dragAndDrop on HStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.layoutBody: ✅
 HStack.layoutFrameChanged: ✅
 HStack.margin: ✅
 HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
-HStack.panXChannel: ✅
-HStack.panYChannel: ✅
 HStack.pinchUpdated: ✓ pinch on HStack: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 HStack.pointerMoved: ✅
 HStack.pointerPressed: ✅
@@ -386,14 +376,13 @@ Image.gridRowSpan: ✅
 Image.held: ✅
 Image.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Image.horizontalAlignment: ✅
+Image.interaction: ✓ sweep on Image: the hand handed to the host's entry with its speed, no event
 Image.isDraggable: ✓ dragAndDrop on Image: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.layoutBody: ✅
 Image.layoutFrameChanged: ✅
 Image.margin: ✅
 Image.panTouchCount: ✅
 Image.panUpdated: ✅
-Image.panXChannel: ✅
-Image.panYChannel: ✅
 Image.pinchUpdated: ✓ pinch on Image: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Image.pointerMoved: ✅
 Image.pointerPressed: ✅
@@ -423,14 +412,13 @@ ItemsView.gridRowSpan: ✅
 ItemsView.held: ✅
 ItemsView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ItemsView.horizontalAlignment: ✅
+ItemsView.interaction: ✓ sweep on ItemsView: the hand handed to the host's entry with its speed, no event
 ItemsView.isDraggable: ✓ dragAndDrop on ItemsView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.layoutBody: ✅
 ItemsView.layoutFrameChanged: ✅
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
-ItemsView.panXChannel: ✅
-ItemsView.panYChannel: ✅
 ItemsView.pinchUpdated: ✓ pinch on ItemsView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 ItemsView.pointerMoved: ✅
 ItemsView.pointerPressed: ✅
@@ -460,14 +448,13 @@ Line.gridRowSpan: ✅
 Line.held: ✅
 Line.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Line.horizontalAlignment: ✅
+Line.interaction: ✓ sweep on Line: the hand handed to the host's entry with its speed, no event
 Line.isDraggable: ✓ dragAndDrop on Line: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.layoutBody: ✅
 Line.layoutFrameChanged: ✅
 Line.margin: ✅
 Line.panTouchCount: ✅
 Line.panUpdated: ✅
-Line.panXChannel: ✅
-Line.panYChannel: ✅
 Line.pinchUpdated: ✓ pinch on Line: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Line.pointerMoved: ✅
 Line.pointerPressed: ✅
@@ -497,14 +484,13 @@ Link.gridRowSpan: ✅
 Link.held: ✅
 Link.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Link.horizontalAlignment: ✅
+Link.interaction: ✓ sweep on Link: the hand handed to the host's entry with its speed, no event
 Link.isDraggable: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.layoutBody: ✅
 Link.layoutFrameChanged: ✅
 Link.margin: ✅
 Link.panTouchCount: ✅
 Link.panUpdated: ✅
-Link.panXChannel: ✅
-Link.panYChannel: ✅
 Link.pinchUpdated: ✓ pinch on Link: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Link.pointerMoved: ✅
 Link.pointerPressed: ✅
@@ -534,14 +520,13 @@ Map.gridRowSpan: 🧩
 Map.held: 🧩
 Map.holdDuration: 🧩
 Map.horizontalAlignment: 🧩
+Map.interaction: 🧩
 Map.isDraggable: 🧩
 Map.layoutBody: 🧩
 Map.layoutFrameChanged: 🧩
 Map.margin: 🧩
 Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
-Map.panXChannel: 🧩
-Map.panYChannel: 🧩
 Map.pinchUpdated: 🧩
 Map.pointerMoved: 🧩
 Map.pointerPressed: 🧩
@@ -571,14 +556,13 @@ MotionLayout.gridRowSpan: ✅
 MotionLayout.held: ✅
 MotionLayout.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 MotionLayout.horizontalAlignment: ✅
+MotionLayout.interaction: ✅
 MotionLayout.isDraggable: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.layoutBody: ✅
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.margin: ✅
 MotionLayout.panTouchCount: ✅
 MotionLayout.panUpdated: ✅
-MotionLayout.panXChannel: ✅
-MotionLayout.panYChannel: ✅
 MotionLayout.pinchUpdated: ✓ pinch on MotionLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 MotionLayout.pointerMoved: ✅
 MotionLayout.pointerPressed: ✅
@@ -608,14 +592,13 @@ Path.gridRowSpan: ✅
 Path.held: ✅
 Path.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Path.horizontalAlignment: ✅
+Path.interaction: ✓ sweep on Path: the hand handed to the host's entry with its speed, no event
 Path.isDraggable: ✓ dragAndDrop on Path: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.layoutBody: ✅
 Path.layoutFrameChanged: ✅
 Path.margin: ✅
 Path.panTouchCount: ✅
 Path.panUpdated: ✅
-Path.panXChannel: ✅
-Path.panYChannel: ✅
 Path.pinchUpdated: ✓ pinch on Path: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Path.pointerMoved: ✅
 Path.pointerPressed: ✅
@@ -645,14 +628,13 @@ Picker.gridRowSpan: ✅
 Picker.held: ✅
 Picker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Picker.horizontalAlignment: ✅
+Picker.interaction: ✓ sweep on Picker: the hand handed to the host's entry with its speed, no event
 Picker.isDraggable: ✓ dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.layoutBody: ✅
 Picker.layoutFrameChanged: ✅
 Picker.margin: ✅
 Picker.panTouchCount: ✅
 Picker.panUpdated: ✅
-Picker.panXChannel: ✅
-Picker.panYChannel: ✅
 Picker.pinchUpdated: ✓ pinch on Picker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Picker.pointerMoved: ✅
 Picker.pointerPressed: ✅
@@ -682,14 +664,13 @@ Polygon.gridRowSpan: ✅
 Polygon.held: ✅
 Polygon.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polygon.horizontalAlignment: ✅
+Polygon.interaction: ✓ sweep on Polygon: the hand handed to the host's entry with its speed, no event
 Polygon.isDraggable: ✓ dragAndDrop on Polygon: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.layoutBody: ✅
 Polygon.layoutFrameChanged: ✅
 Polygon.margin: ✅
 Polygon.panTouchCount: ✅
 Polygon.panUpdated: ✅
-Polygon.panXChannel: ✅
-Polygon.panYChannel: ✅
 Polygon.pinchUpdated: ✓ pinch on Polygon: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Polygon.pointerMoved: ✅
 Polygon.pointerPressed: ✅
@@ -719,14 +700,13 @@ Polyline.gridRowSpan: ✅
 Polyline.held: ✅
 Polyline.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polyline.horizontalAlignment: ✅
+Polyline.interaction: ✓ sweep on Polyline: the hand handed to the host's entry with its speed, no event
 Polyline.isDraggable: ✓ dragAndDrop on Polyline: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.layoutBody: ✅
 Polyline.layoutFrameChanged: ✅
 Polyline.margin: ✅
 Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
-Polyline.panXChannel: ✅
-Polyline.panYChannel: ✅
 Polyline.pinchUpdated: ✓ pinch on Polyline: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Polyline.pointerMoved: ✅
 Polyline.pointerPressed: ✅
@@ -756,14 +736,13 @@ ProgressBar.gridRowSpan: ✅
 ProgressBar.held: ✅
 ProgressBar.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ProgressBar.horizontalAlignment: ✅
+ProgressBar.interaction: ✓ sweep on ProgressBar: the hand handed to the host's entry with its speed, no event
 ProgressBar.isDraggable: ✓ dragAndDrop on ProgressBar: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.layoutBody: ✅
 ProgressBar.layoutFrameChanged: ✅
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ✅
 ProgressBar.panUpdated: ✅
-ProgressBar.panXChannel: ✅
-ProgressBar.panYChannel: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 ProgressBar.pointerMoved: ✅
 ProgressBar.pointerPressed: ✅
@@ -793,14 +772,13 @@ Rectangle.gridRowSpan: ✅
 Rectangle.held: ✅
 Rectangle.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Rectangle.horizontalAlignment: ✅
+Rectangle.interaction: ✓ sweep on Rectangle: the hand handed to the host's entry with its speed, no event
 Rectangle.isDraggable: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.layoutBody: ✅
 Rectangle.layoutFrameChanged: ✅
 Rectangle.margin: ✅
 Rectangle.panTouchCount: ✅
 Rectangle.panUpdated: ✅
-Rectangle.panXChannel: ✅
-Rectangle.panYChannel: ✅
 Rectangle.pinchUpdated: ✓ pinch on Rectangle: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Rectangle.pointerMoved: ✅
 Rectangle.pointerPressed: ✅
@@ -830,14 +808,13 @@ ScrollView.gridRowSpan: ✅
 ScrollView.held: ✅
 ScrollView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ScrollView.horizontalAlignment: ✅
+ScrollView.interaction: ✓ sweep on ScrollView: the hand handed to the host's entry with its speed, no event
 ScrollView.isDraggable: ✓ dragAndDrop on ScrollView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.layoutBody: ✅
 ScrollView.layoutFrameChanged: ✅
 ScrollView.margin: ✅
 ScrollView.panTouchCount: ✅
 ScrollView.panUpdated: ✅
-ScrollView.panXChannel: ✅
-ScrollView.panYChannel: ✅
 ScrollView.pinchUpdated: ✓ pinch on ScrollView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 ScrollView.pointerMoved: ✅
 ScrollView.pointerPressed: ✅
@@ -867,14 +844,13 @@ SearchField.gridRowSpan: ✅
 SearchField.held: ✅
 SearchField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 SearchField.horizontalAlignment: ✅
+SearchField.interaction: ✓ sweep on SearchField: the hand handed to the host's entry with its speed, no event
 SearchField.isDraggable: ✓ dragAndDrop on SearchField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.layoutBody: ✅
 SearchField.layoutFrameChanged: ✅
 SearchField.margin: ✅
 SearchField.panTouchCount: ✅
 SearchField.panUpdated: ✅
-SearchField.panXChannel: ✅
-SearchField.panYChannel: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 SearchField.pointerMoved: ✅
 SearchField.pointerPressed: ✅
@@ -904,14 +880,13 @@ Separator.gridRowSpan: ✅
 Separator.held: ✅
 Separator.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Separator.horizontalAlignment: ✅
+Separator.interaction: ✓ sweep on Separator: the hand handed to the host's entry with its speed, no event
 Separator.isDraggable: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.layoutBody: ✅
 Separator.layoutFrameChanged: ✅
 Separator.margin: ✅
 Separator.panTouchCount: ✅
 Separator.panUpdated: ✅
-Separator.panXChannel: ✅
-Separator.panYChannel: ✅
 Separator.pinchUpdated: ✓ pinch on Separator: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Separator.pointerMoved: ✅
 Separator.pointerPressed: ✅
@@ -941,14 +916,13 @@ Slider.gridRowSpan: ✅
 Slider.held: ✅
 Slider.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Slider.horizontalAlignment: ✅
+Slider.interaction: ✓ sweep on Slider: the hand handed to the host's entry with its speed, no event
 Slider.isDraggable: ✓ dragAndDrop on Slider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.layoutBody: ✅
 Slider.layoutFrameChanged: ✅
 Slider.margin: ✅
 Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
-Slider.panXChannel: ✅
-Slider.panYChannel: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
@@ -978,14 +952,13 @@ Space.gridRowSpan: ✅
 Space.held: ✅
 Space.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Space.horizontalAlignment: ✅
+Space.interaction: ✓ sweep on Space: the hand handed to the host's entry with its speed, no event
 Space.isDraggable: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.layoutBody: ✅
 Space.layoutFrameChanged: ✅
 Space.margin: ✅
 Space.panTouchCount: ✅
 Space.panUpdated: ✅
-Space.panXChannel: ✅
-Space.panYChannel: ✅
 Space.pinchUpdated: ✓ pinch on Space: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Space.pointerMoved: ✅
 Space.pointerPressed: ✅
@@ -1015,14 +988,13 @@ Spinner.gridRowSpan: ✅
 Spinner.held: ✅
 Spinner.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Spinner.horizontalAlignment: ✅
+Spinner.interaction: ✓ sweep on Spinner: the hand handed to the host's entry with its speed, no event
 Spinner.isDraggable: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.layoutBody: ✅
 Spinner.layoutFrameChanged: ✅
 Spinner.margin: ✅
 Spinner.panTouchCount: ✅
 Spinner.panUpdated: ✅
-Spinner.panXChannel: ✅
-Spinner.panYChannel: ✅
 Spinner.pinchUpdated: ✓ pinch on Spinner: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Spinner.pointerMoved: ✅
 Spinner.pointerPressed: ✅
@@ -1052,14 +1024,13 @@ Stepper.gridRowSpan: ✅
 Stepper.held: ✅
 Stepper.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Stepper.horizontalAlignment: ✅
+Stepper.interaction: ✓ sweep on Stepper: the hand handed to the host's entry with its speed, no event
 Stepper.isDraggable: ✓ dragAndDrop on Stepper: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.layoutBody: ✅
 Stepper.layoutFrameChanged: ✅
 Stepper.margin: ✅
 Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
-Stepper.panXChannel: ✅
-Stepper.panYChannel: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Stepper.pointerMoved: ✅
 Stepper.pointerPressed: ✅
@@ -1089,14 +1060,13 @@ Switch.gridRowSpan: ✅
 Switch.held: ✅
 Switch.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Switch.horizontalAlignment: ✅
+Switch.interaction: ✓ sweep on Switch: the hand handed to the host's entry with its speed, no event
 Switch.isDraggable: ✓ dragAndDrop on Switch: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.layoutBody: ✅
 Switch.layoutFrameChanged: ✅
 Switch.margin: ✅
 Switch.panTouchCount: ✅
 Switch.panUpdated: ✅
-Switch.panXChannel: ✅
-Switch.panYChannel: ✅
 Switch.pinchUpdated: ✓ pinch on Switch: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Switch.pointerMoved: ✅
 Switch.pointerPressed: ✅
@@ -1126,14 +1096,13 @@ Text.gridRowSpan: ✅
 Text.held: ✅
 Text.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Text.horizontalAlignment: ✅
+Text.interaction: ✓ sweep on Text: the hand handed to the host's entry with its speed, no event
 Text.isDraggable: ✓ dragAndDrop on Text: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.layoutBody: ✅
 Text.layoutFrameChanged: ✅
 Text.margin: ✅
 Text.panTouchCount: ✅
 Text.panUpdated: ✅
-Text.panXChannel: ✅
-Text.panYChannel: ✅
 Text.pinchUpdated: ✓ pinch on Text: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Text.pointerMoved: ✅
 Text.pointerPressed: ✅
@@ -1163,14 +1132,13 @@ TextEditor.gridRowSpan: ✅
 TextEditor.held: ✅
 TextEditor.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextEditor.horizontalAlignment: ✅
+TextEditor.interaction: ✓ sweep on TextEditor: the hand handed to the host's entry with its speed, no event
 TextEditor.isDraggable: ✓ dragAndDrop on TextEditor: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.layoutBody: ✅
 TextEditor.layoutFrameChanged: ✅
 TextEditor.margin: ✅
 TextEditor.panTouchCount: ✅
 TextEditor.panUpdated: ✅
-TextEditor.panXChannel: ✅
-TextEditor.panYChannel: ✅
 TextEditor.pinchUpdated: ✓ pinch on TextEditor: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 TextEditor.pointerMoved: ✅
 TextEditor.pointerPressed: ✅
@@ -1200,14 +1168,13 @@ TextField.gridRowSpan: ✅
 TextField.held: ✅
 TextField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextField.horizontalAlignment: ✅
+TextField.interaction: ✓ sweep on TextField: the hand handed to the host's entry with its speed, no event
 TextField.isDraggable: ✓ dragAndDrop on TextField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.layoutBody: ✅
 TextField.layoutFrameChanged: ✅
 TextField.margin: ✅
 TextField.panTouchCount: ✅
 TextField.panUpdated: ✅
-TextField.panXChannel: ✅
-TextField.panYChannel: ✅
 TextField.pinchUpdated: ✓ pinch on TextField: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 TextField.pointerMoved: ✅
 TextField.pointerPressed: ✅
@@ -1237,14 +1204,13 @@ TimePicker.gridRowSpan: ✅
 TimePicker.held: ✅
 TimePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TimePicker.horizontalAlignment: ✅
+TimePicker.interaction: ✓ sweep on TimePicker: the hand handed to the host's entry with its speed, no event
 TimePicker.isDraggable: ✓ dragAndDrop on TimePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.layoutBody: ✅
 TimePicker.layoutFrameChanged: ✅
 TimePicker.margin: ✅
 TimePicker.panTouchCount: ✅
 TimePicker.panUpdated: ✅
-TimePicker.panXChannel: ✅
-TimePicker.panYChannel: ✅
 TimePicker.pinchUpdated: ✓ pinch on TimePicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 TimePicker.pointerMoved: ✅
 TimePicker.pointerPressed: ✅
@@ -1274,14 +1240,13 @@ VStack.gridRowSpan: ✅
 VStack.held: ✅
 VStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 VStack.horizontalAlignment: ✅
+VStack.interaction: ✓ sweep on VStack: the hand handed to the host's entry with its speed, no event
 VStack.isDraggable: ✓ dragAndDrop on VStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.layoutBody: ✅
 VStack.layoutFrameChanged: ✅
 VStack.margin: ✅
 VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
-VStack.panXChannel: ✅
-VStack.panYChannel: ✅
 VStack.pinchUpdated: ✓ pinch on VStack: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 VStack.pointerMoved: ✅
 VStack.pointerPressed: ✅
@@ -1311,14 +1276,13 @@ WebView.gridRowSpan: ✅
 WebView.held: ✅
 WebView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 WebView.horizontalAlignment: ✅
+WebView.interaction: ✓ sweep on WebView: the hand handed to the host's entry with its speed, no event
 WebView.isDraggable: ✓ dragAndDrop on WebView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.layoutBody: ✅
 WebView.layoutFrameChanged: ✅
 WebView.margin: ✅
 WebView.panTouchCount: ✅
 WebView.panUpdated: ✅
-WebView.panXChannel: ✅
-WebView.panYChannel: ✅
 WebView.pinchUpdated: ✓ pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 WebView.pointerMoved: ✅
 WebView.pointerPressed: ✅
@@ -1348,14 +1312,13 @@ ZStack.gridRowSpan: ✅
 ZStack.held: ✅
 ZStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ZStack.horizontalAlignment: ✅
+ZStack.interaction: ✓ sweep on ZStack: the hand handed to the host's entry with its speed, no event
 ZStack.isDraggable: ✓ dragAndDrop on ZStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.layoutBody: ✅
 ZStack.layoutFrameChanged: ✅
 ZStack.margin: ✅
 ZStack.panTouchCount: ✅
 ZStack.panUpdated: ✅
-ZStack.panXChannel: ✅
-ZStack.panYChannel: ✅
 ZStack.pinchUpdated: ✓ pinch on ZStack: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 ZStack.pointerMoved: ✅
 ZStack.pointerPressed: ✅

@@ -187,9 +187,57 @@ Rectangle()
     }
 ```
 
-For frame-rate gesture data that should not rebuild a body, `panX($state)` and
-`panY($state)` feed host-carried state directly. An engine or driven property
-can consume that channel without creating a description loop.
+### The hand moving a state
+
+A handler hears a gesture; an `.interaction(_:)` gives a state to the hand.
+The hand - a finger or a pointer dragged, a trackpad's two fingers, a wheel -
+moves a number of the state on the display's own frames, with no handler run
+and no view built: whatever shows the state follows the hand, and a write of
+the program travels on the same value, so a panel sent somewhere by a button
+and caught on its way goes on from where the hand took it:
+
+```swift
+struct Panel: View {
+    @State(motion: .spring()) private var offset = 0.0
+
+    var body: some View {
+        VStack {
+            Rectangle()
+                .fill(.cornflowerBlue)
+                .width(100)
+                .height(80)
+                .translationX($offset)
+                .interaction(
+                    .value($offset, axis: \.self, input: .translation(.horizontal))
+                        .range(0...240)
+                        .snaps([120])
+                        .release(.projected(.spring())))
+
+            Button("Middle").onClicked { offset = 120 }
+            Button("Start").onClicked { offset = 0 }
+        }
+    }
+}
+```
+
+An `Interaction` names the state, the number of it (`\.self` for a `Double`)
+and the input; `.range(_:)` says how far the hand may take it - less and less
+past an end - `.snaps(_:)` where it may rest, the ends of its range among
+them, and `.release(_:)` how it goes on let go: thrown on to the snap nearest
+where the throw would end (`.projected(_:)`), onto the nearest
+(`.nearest(_:)`), or left where the hand left it (`.stay`). A value grows as
+the hand moves right or down, a point a point unless the input's `unit:` says
+otherwise. Two fingers move a value by `.magnification` or
+`.rotation(degreesPerUnit:)`, and several values moved at once are
+`Interaction.simultaneous(_:)`. A write of the program to a value the hand
+holds takes it from the hand, unless the interaction says
+`.programWrites(.deferLatest)`. [A motion layout](layout.md#a-motion-layout)
+takes the same declaration for its parameters, and measures the view in front
+for the hand's unit (`.frontItem`).
+
+The state need not be drawn: `.interaction(.value($turn, axis: \.self, input:
+.translation(.horizontal)).release(.stay))` moves a state an engine follows,
+left where the hand leaves it.
 
 ### Pointer
 

@@ -1,4 +1,4 @@
-# revision 29.2
+# revision 31.2
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
 Button.layoutFrameChanged: ✅
@@ -78,6 +78,7 @@ MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports
 MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.presentationFrameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅

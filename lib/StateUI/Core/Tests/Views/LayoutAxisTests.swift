@@ -79,7 +79,7 @@ final class LayoutAxisTests: XCTestCase {
         }())
 
         XCTAssertTrue(try XCTUnwrap(patch.first(.motionLayout)).moved.isEmpty)
-        XCTAssertTrue(hasComplained("a number that is no axis of the layout's parameters"))
+        XCTAssertTrue(hasComplained("a number its state's `axes` do not list"))
     }
 
     /// AN AXIS MAPPING NOTHING SAYS SO: with no keyframes and no segments the declaration changes nothing.
@@ -229,6 +229,24 @@ final class LayoutAxisTests: XCTestCase {
 
         let element = try XCTUnwrap(Renders().settled(layout.node).first(.motionLayout))
         XCTAssertEqual(element.moved.map(\.input), [.rotation(degreesPerUnit: 360)], "the number moved once stands")
-        XCTAssertTrue(hasComplained("A MotionLayout's interaction moves one number of its parameters twice"))
+        XCTAssertTrue(hasComplained("An interaction moves one number twice"))
+    }
+
+    /// A VALUE OF ANOTHER STATE THAN THE LAYOUT'S PARAMETERS IS MOVED AS ON ANY VIEW: the hand over the layout holds
+    /// it by its own state's channel, beside the values of the parameters.
+    func testAValueOfAnotherStateIsMovedAsOnAnyView() throws {
+        let (table, handed, other) = (State(wrappedValue: Table()), Handed(), State(wrappedValue: 0.0))
+        let patch = Renders().render(tree(table, handed) {
+            $0.interaction(.simultaneous([
+                .value(table.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .frontItem)).range(0...3),
+                .value(other.projectedValue, axis: \.self, input: .translation(.vertical)),
+            ]))
+        }())
+        let layout = try XCTUnwrap(patch.first(.motionLayout))
+        let parameters = try XCTUnwrap(layout.driven?[.parameters]?.state)
+
+        XCTAssertEqual(layout.moved.map(\.state), [parameters, try XCTUnwrap(other.storage.image?.number)])
+        guard case .replace(let followed)? = layout.followed else { return XCTFail("the other state is not followed") }
+        XCTAssertEqual(followed.map(\.state), [try XCTUnwrap(other.storage.image?.number)], "the other state alone")
     }
 }

@@ -201,6 +201,15 @@
         realized = nil
     }
 
+    /// A program the host's shared element machinery runs on every element wearing its contract - what the hand
+    /// moves on a view - rather than one registration.
+    ///
+    /// - Parameter program: the program, written with its contract.
+    public func everyElementRuns<Owner: WornContract, Definition>(_ program: ElementProgram<Owner, Definition>) {
+        everyElement.append((owner: Owner.self, member: program.name))
+        realized = nil
+    }
+
     /// The names of the members the shared machinery realizes and raises, as they were registered.
     public var sharedNames: [String] {
         everyElement.map(\.member)

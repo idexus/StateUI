@@ -1,4 +1,4 @@
-# revision 29.1
+# revision 31.1
 Button.presentationFrameChanged: ✅
 Button.swipeDirections: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Button.swipeThreshold: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
@@ -17,9 +17,9 @@ CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the drop interaction's han
 CheckBox.filesDropped: ✓ dropFiles on CheckBox: the drop interaction's handler told the driver's files, no drag session
 CheckBox.tapped: ✓ pressDown on CheckBox: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.holdDuration: ✅
+DatePicker.interaction: ✓ sweep on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.layoutFrameChanged: ✅
 DatePicker.margin: ✅
-DatePicker.panYChannel: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
 Ellipse.horizontalAlignment: ✅
 Ellipse.layoutFrameChanged: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: the view's listening handed the recognizer's states, no touch sent
@@ -40,7 +40,6 @@ HStack.held: ✓ hold on HStack: the view's listening handed the recognizer's st
 HStack.layoutBody: ✅
 Image.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Image.panUpdated: ✓ pan on Image: the view's listening handed the recognizer's states, no touch sent
-Image.panXChannel: ✓ pan on Image: the view's listening handed the recognizer's states, no touch sent
 ItemsView.presentationFrameChanged: ✅
 ItemsView.swipeDirections: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.swipeThreshold: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
@@ -49,14 +48,15 @@ Line.droppedFileTypes: ✓ dropFiles on Line: the drop interaction's handler tol
 Line.filesDropped: ✓ dropFiles on Line: the drop interaction's handler told the driver's files, no drag session
 Line.tapped: ✓ pressDown on Line: the view's listening handed the recognizer's states, no touch sent
 Link.holdDuration: ✅
+Map.interaction: ✓ sweep on Map: the view's listening handed the recognizer's states, no touch sent
 Map.layoutFrameChanged: ✅
 Map.margin: ✅
-Map.panYChannel: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
 MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
 MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
 MotionLayout.gridColumnSpan: ✅
 MotionLayout.gridRowSpan: ✅
+MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.isDraggable: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
 MotionLayout.layoutFrameChanged: ✅
 Path.gridColumn: ✅
@@ -75,7 +75,6 @@ Polygon.held: ✓ hold on Polygon: the view's listening handed the recognizer's 
 Polygon.layoutBody: ✅
 Polyline.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Polyline.panUpdated: ✓ pan on Polyline: the view's listening handed the recognizer's states, no touch sent
-Polyline.panXChannel: ✓ pan on Polyline: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.presentationFrameChanged: ✅
 ProgressBar.swipeDirections: ✓ pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.swipeThreshold: ✓ pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
@@ -98,12 +97,11 @@ Separator.layoutFrameChanged: ✅
 Separator.pinchUpdated: ✓ pinch on Separator: the view's listening handed the recognizer's states, no touch sent
 Separator.verticalAlignment: ✅
 Slider.holdDuration: ✅
+Space.interaction: ✓ sweep on Space: the view's listening handed the recognizer's states, no touch sent
 Space.layoutFrameChanged: ✅
 Space.margin: ✅
-Space.panYChannel: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Spinner.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Spinner.panUpdated: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
-Spinner.panXChannel: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.horizontalAlignment: ✅
 Stepper.layoutFrameChanged: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: the view's listening handed the recognizer's states, no touch sent
@@ -127,7 +125,6 @@ TextField.held: ✓ hold on TextField: the view's listening handed the recognize
 TextField.layoutBody: ✅
 TimePicker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TimePicker.panUpdated: ✓ pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
-TimePicker.panXChannel: ✓ pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
 VStack.presentationFrameChanged: ✅
 VStack.swipeDirections: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.swipeThreshold: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent

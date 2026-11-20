@@ -157,11 +157,12 @@ extension AppKitElement {
         }
     }
 
-    /// The hand over a layout an engine moves - a pointer dragged, a trackpad, a wheel - where `wanted`.
+    /// The hand over a view whose interaction moves a value - a pointer dragged, a trackpad, a wheel - where
+    /// `wanted`.
     private func configureHand(_ wanted: Bool, on view: NSView, heard: @escaping AppKitHearing) {
         guard wanted else {
             if let reader = handReader { view.removeGestureRecognizer(reader.dragging) }
-            (view as? AppKitZStackView)?.hand = nil
+            AppKitHandScroll.hear(nil, on: view)
             handReader = nil
             return
         }
@@ -169,7 +170,7 @@ extension AppKitElement {
 
         let reader = AppKitHandReader { [weak self] input in self?.hear(input) ?? false }
         view.addGestureRecognizer(reader.dragging)
-        (view as? AppKitZStackView)?.hand = { [weak reader] event in reader?.scrolled(event) ?? false }
+        AppKitHandScroll.hear(reader, on: view)
         handReader = reader
     }
 

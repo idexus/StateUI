@@ -115,13 +115,18 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   program sent it until the hand's next move took it back. The write ends the hand's gesture now: the value
   travels where the program sent it from under the hand. Say `.programWrites(.deferLatest)` on the interaction for
   a hand that keeps the value until it lets go.
-- **A motion layout's element says what the hand moves as one program.** `MotionLayoutContract.interaction` takes
-  the place of `translationOrientation`, `pans`, `magnifies`, `rotates`, `translationUpdated`, `wheelStepped` and
-  `pinchRotationUpdated`: the hand's hold, its move and its release are the host layer's
+- **What the hand moves is every view's `interaction` program.** `ViewContract.interaction` takes the place of a
+  motion layout's `translationOrientation`, `pans`, `magnifies`, `rotates`, `translationUpdated`, `wheelStepped`
+  and `pinchRotationUpdated`: the hand's hold, its move and its release are the host layer's
   (`InteractionSessions`), on the state's own channel, and the core hears their reports. A host goes on handing
-  what its toolkit tells to `MountedElement.hear` and reading `hearing` and `handWay`; its realization records
-  `MotionLayoutContract.interaction` where it recorded the seven. `HostPatch.interaction` carries the program,
-  and a layout program says `handHolds` and answers `frontItemUnit`.
+  what its toolkit tells to `MountedElement.hear` and reading `hearing` and `handWay`; the host layer registers
+  the program for every element (`everyElementRuns`), and a realization records `ViewContract.interaction` only
+  where its toolkit tells less of the hand. `HostPatch.interaction` carries the program, and a layout program
+  says `handHolds` and answers `frontItemUnit`.
+- **`panX(_:)` and `panY(_:)` are an interaction.** `.panX($x)` is `.interaction(.value($x, axis: \.self, input:
+  .translation(.horizontal)).release(.stay))`, and down alike with `.vertical`; both on one view are
+  `Interaction.simultaneous([...])`. The state is carried as a journey now, so a write of the program travels on
+  the same value. `ViewContract.panXChannel` and `panYChannel` are gone, with `HostRuntime.takeGestureValue`.
 - **Reading a frame changes no motion.** A layout whose frame, or a frame under it, was read stood every child at
   its place at once, and a stated size in it changed with no travel. A reader changes nothing now: children travel
   under their layout's `.motion(_:)` and a size under its view's, read or not. A size or a place worked out from a
@@ -189,6 +194,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   are values: nothing is recognized or timed until a view wearing one stands. A value given no `.range(_:)` has
   no end. `.release(.nearest(_:))` comes onto the nearest rest with no throw, and `.release(.stay)` leaves the
   value where the hand left it.
+- **The hand moves a state on any view.** `.interaction(_:)` is every view's: a rectangle moved by
+  `.translationX($offset)` and given `.interaction(.value($offset, axis: \.self, input:
+  .translation(.horizontal)).range(0...240).snaps([120]))` is dragged between three places with no handler and no
+  view built, and a button writing `offset` sends it on the same value. A state nothing draws is carried for the
+  hand alone. `.containerLength` is the view's own length; `.frontItem` is a motion layout's, and is refused
+  elsewhere.
 - **A write of the program under the hand.** `Interaction.programWrites(_:)` takes an
   `InteractionProgramWrites`: `.interrupt`, unless said, or `.deferLatest` - the state is going where the program
   sent it at once, the value stays under the hand, and let go it travels where the program sent it last. A write

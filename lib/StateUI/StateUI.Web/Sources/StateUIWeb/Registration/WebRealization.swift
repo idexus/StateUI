@@ -172,7 +172,7 @@ enum WebRealization {
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(BackgroundElementContract.background, on: MotionLayoutContract.self,
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
-        .partial(MotionLayoutContract.interaction,
+        .partial(ViewContract.interaction,
             missing: "Chrome and Firefox tell no trackpad's rotation: two fingers turn "
             + "a layout on a touch screen, and on a trackpad in Safari."),
         .complete(LayoutContract.ignoresSafeArea),
@@ -212,7 +212,7 @@ enum WebRealization {
             + "it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed."
         let pressing: [any ContractMember] = [
             ViewContract.tapped, ViewContract.held, ViewContract.holdDuration, ViewContract.panUpdated,
-            ViewContract.panTouchCount, ViewContract.panXChannel, ViewContract.panYChannel, ViewContract.swiped,
+            ViewContract.panTouchCount, ViewContract.interaction, ViewContract.swiped,
             ViewContract.swipeDirections, ViewContract.swipeThreshold, ViewContract.pointerReleased,
         ]
         return pressing.map { .notPlanned($0, on: PickerContract.self, reason: pressed) } + [

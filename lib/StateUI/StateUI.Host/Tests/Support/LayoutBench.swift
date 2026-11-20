@@ -20,15 +20,8 @@ final class LayoutBench {
         _ tree: @escaping () -> Node, room: Rect? = Rect(10, 20, 300, 200),
         file: StaticString = #filePath, line: UInt = #line
     ) -> [Placement] {
-        Renderer.shared.clearInvalidation()
-        Renderer.shared.clearStates()
-        benchTree = tree
-        Renderer.shared.setApplication(BenchApplication())
-        let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
-        self.runtime = runtime
-        runtime.connectWindow()
-        runtime.pump.turn()
-        guard let layout = runtime.tree.root?.first(type: .motionLayout) else {
+        mounted(tree)
+        guard let runtime, let layout else {
             XCTFail("no layout was mounted", file: file, line: line)
             return []
         }
@@ -37,6 +30,30 @@ final class LayoutBench {
         cycle()
         cycle()
         return placed
+    }
+
+    /// Mounts the views `tree` describes as a window's page, whatever they are, and runs a frame.
+    func mounted(_ tree: @escaping () -> Node) {
+        Renderer.shared.clearInvalidation()
+        Renderer.shared.clearStates()
+        benchTree = tree
+        Renderer.shared.setApplication(BenchApplication())
+        let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        self.runtime = runtime
+        runtime.connectWindow()
+        runtime.pump.turn()
+        cycle()
+    }
+
+    /// The first element of `type` the tree mounted.
+    func element(_ type: NodeType) -> MountedElement? {
+        runtime?.tree.root?.first(type: type)
+    }
+
+    /// The journey of the first state `element`'s hand moves, as its channel carries it.
+    func journey(movedOn element: MountedElement) -> HostJourney? {
+        guard let state = element.interactionProgram?.values.first?.state else { return nil }
+        return runtime?.stateChannels.standing(state)
     }
 
     /// The layout's element, as the tree mounted it: the first, where the tree holds several.

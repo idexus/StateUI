@@ -171,16 +171,30 @@ click.
 
 ## The hand over a layout
 
-A layout an engine moves hears the hand on its own view (`AppKitHandReader`):
-a pointer dragged, by a pan recognizer whose moves and lift speed it hands
-on; a trackpad's or a Magic Mouse's fingers, by the view's `scrollWheel`,
-each event with a `phase` a step of the gesture - the system's momentum
-after the lift (`momentumPhase`) swallowed, as the layout throws the run
-itself; and a wheel's notches, events with no phase and no precise deltas,
-told as notches - each a step of the run to the next target. The
-first move of a gesture decides whose it is, as for a one-axis scroller
-(scrolling, above): more along the layout's axis than across, the layout's,
-and a scroll it does not take goes on to whatever holds it - a page's
+A view whose interaction moves a value by a hand hears the hand through a
+reader of its own (`AppKitHandReader`), whatever its class: a pointer
+dragged, by a pan recognizer on the view whose moves and lift speed it hands
+on; a trackpad's or a Magic Mouse's fingers, scroll events each with a
+`phase`, a step of the gesture - the system's momentum after the lift
+(`momentumPhase`) swallowed, as the host layer throws the value itself; and
+a wheel's notches, events with no phase and no precise deltas, told as
+notches - each a step of the value to its next snap.
+
+AppKit hands a scroll event to the view under the pointer, which a view of
+AppKit's own class cannot be taught to offer to a hand, so the host takes
+scroll events before they are dispatched (`AppKitHandScroll`, a local
+monitor) and offers each to the hands from the view under the pointer up. A
+gesture's beginning goes to every one of them; its steps and its momentum to
+the innermost that takes them, so a run turned sideways inside one turned
+down each takes its own way; a wheel with no phase to the innermost that
+takes it. A scroller standing between the pointer and a hand keeps the event
+- the innermost wins, hand or scroller - and what a scroller of the host's
+leaves, a move across its axis, it offers to the hands above it before the
+scroller that holds it. An event no hand takes is dispatched as AppKit does.
+
+The first move of a gesture decides whose it is, as for a one-axis scroller
+(scrolling, above): more along the hand's way than across, the hand's, and a
+scroll it does not take goes on to whatever holds the view - a page's
 scroller. AppKit tells no speed at a trackpad's lift, so the host layer reads
 it from the last moves.
 

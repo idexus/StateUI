@@ -16,7 +16,6 @@ extension MountedElement {
         if handler(.held) != nil { hearing.insert(.holds) }
         if Self.pointerEvents.contains(where: { handler($0) != nil }) { hearing.insert(.pointer) }
         let drags = handler(.panUpdated) != nil || handler(.swiped) != nil
-            || channel(.panXChannel) != nil || channel(.panYChannel) != nil
         if drags, (number(.panTouchCount) ?? 1) == 1 { hearing.insert(.drags) }
         // What the hand moves by the element's program is heard as the program says: two fingers spreading or
         // turning, a hand one way or every way.
@@ -34,8 +33,8 @@ extension MountedElement {
     }
 
     /// The user's input the view heard, as the element's events: a tap each time a run reaches the count asked for - at
-    /// once for a press assistive technology made; a press held; the pointer where it is; a press dragged moving the
-    /// states it carries, a swipe as it ends far enough; a pinch's step; the hand over a layout; a drag between views
+    /// once for a press assistive technology made; a press held; the pointer where it is; a press dragged, a swipe
+    /// as it ends far enough; a pinch's step; the hand over a layout; a drag between views
     /// by `DropTarget`. Whether the element took it: a hand over a layout across its axis it leaves to whatever holds
     /// it.
     @discardableResult
@@ -359,11 +358,6 @@ extension MountedElement {
         .pointerEntered, .pointerExited, .pointerMoved, .pointerPressed, .pointerReleased,
     ]
 
-    /// The state a press dragged carries along an axis, where one does.
-    private func channel(_ property: Prop) -> Int32? {
-        number(property).flatMap { $0 == 0 ? nil : Int32($0) }
-    }
-
     /// A press dragged moves the states it carries by how far it has come, from where they stood as it began, and
     /// says so, in one of the user's transactions; ended, it is a swipe where it went far enough.
     /// A press on the view as a button takes it: its pressed state lit and put out, and a tap where it lets go over
@@ -405,15 +399,8 @@ extension MountedElement {
     }
 
     private func dragged(_ phase: GesturePhase, x: Double, y: Double, from: Point, in runtime: HostRuntime) {
-        let across = channel(.panXChannel)
-        let down = channel(.panYChannel)
-        if phase == .began {
-            // A drag takes the press: no tap.
-            pressed(.cancelled, over: false, in: runtime)
-            dragStart = Point(
-                x: across.flatMap(runtime.standingGestureValue(state:)) ?? 0,
-                y: down.flatMap(runtime.standingGestureValue(state:)) ?? 0)
-        }
+        // A drag takes the press: no tap.
+        if phase == .began { pressed(.cancelled, over: false, in: runtime) }
         // Every report tells how far the pan came since it began and how fast it goes - its end as fast as it lifted.
         // Design: docs/design/types/gestures.md#a-gestures-speed
         let now = runtime.clock.now()
@@ -425,10 +412,6 @@ extension MountedElement {
         }
         let speed = phase == .began || phase == .cancelled ? Point(x: 0, y: 0) : panSpeed.speed(at: now)
         runtime.performUserTransaction {
-            if phase == .changed {
-                if let across { runtime.takeGestureValue(dragStart.x + x, state: across) }
-                if let down { runtime.takeGestureValue(dragStart.y + y, state: down) }
-            }
             send(.panUpdated, [
                 .enumeration(phase.rawValue), .numbers([panFromStart.x, panFromStart.y]), .numbers([speed.x, speed.y]),
                 .numbers([from.x + panFromStart.x, from.y + panFromStart.y]),

@@ -26,7 +26,7 @@ for it on UIKit - yet whether it is ticked is `native`. A `Picker` is native, ye
 of options is `structure`, data the host lays into its control. A `Map` is a
 provider's, yet whether a drag pans it is `native`. A member that carries a
 state's number, a placement a layout reads, or a report fed back into a
-state, such as `panXChannel`, `area` or `frame`, is
+state, such as `scrollOffset`, `area` or `frame`, is
 `structure`.
 
 ## Choosing a layer

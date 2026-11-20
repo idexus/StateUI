@@ -74,7 +74,7 @@ final class WinUIDeclarationExportTests: XCTestCase {
     func testAWebViewsGesturesAreNeverOnWinUI() {
         let register = WinUIDriver().register
         let gestures = [
-            "panTouchCount", "panUpdated", "panXChannel", "panYChannel", "pinchUpdated", "pointerEntered",
+            "interaction", "panTouchCount", "panUpdated", "pinchUpdated", "pointerEntered",
             "pointerExited", "pointerMoved", "pointerPressed", "pointerReleased", "swipeDirections", "swipeThreshold",
             "swiped", "tapCount", "tapped",
         ]

@@ -1698,7 +1698,9 @@ final class CatalogTests: XCTestCase {
 
             func walk(_ node: Node, scrolled: Bool) {
                 let scrolled = scrolled || node.type == "ScrollView"
+                // A view whose hand moves a state hears the hand as a recognizer's view does.
                 let handled = node.events.keys.map(\.memberName).filter { gestures.contains($0) }
+                    + (node.program(ViewContract.interaction) == nil ? [] : ["interaction"])
 
                 found += handled.count
 

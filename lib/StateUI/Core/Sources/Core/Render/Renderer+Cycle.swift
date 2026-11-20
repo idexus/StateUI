@@ -39,32 +39,6 @@ extension Renderer {
             lanes: binding.kind == .text ? 0 : StateValueLanes.own)
     }
 
-    /// The first lane of a state a native gesture names by its number, which the
-    /// gesture carries on the view.
-    func hostGestureValue(state: Int32) -> Double? {
-        guard storage(of: state) != nil,
-              let bytes = board.whole(state),
-              case .lanes(let lanes) = StateImage.carried(
-                of: bytes, lanes: StateValueLanes.own)
-        else { return nil }
-
-        return lanes.first
-    }
-
-    /// Writes a gesture's one lane before the host runs the cycle. Keyed by state
-    /// number: `panX` and `panY` feed an engine without driving a property.
-    func hostMovedGesture(_ value: Double, state: Int32) -> Bool {
-        guard value.isFinite, let storage = storage(of: state) else { return false }
-
-        let mask: UInt64 = 1
-        board.told(
-            StateImage.bytes(of: .lanes([value])),
-            mask: mask,
-            to: storage)
-        storage.told?(mask, .user)
-        return true
-    }
-
     /// Takes one native control's report into the state's image, for a Swift host.
     /// Text crosses whole and plain values and feeds name every lane; an animated
     /// property reports through its journey instead.

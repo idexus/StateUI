@@ -192,13 +192,14 @@ the old value. The payload carries the new value either way.
 ## Feeds
 
 A feed is a value only the platform knows, written into a state:
-`.frame(into: $room)` writes the frame layout gave the view, and `.panX($turn)` and
-`.panY` write how far a drag has moved. Nothing this side writes reaches the
-platform through them. A pan feed writes the state's number onto the view, so
-the platform knows where to report, and reads nothing at build, so a drag
-under a finger rebuilds nothing while an engine following the state places
-views frame by frame. A drag moves the value on from where it stood rather than
-setting it, so a second drag carries on where the first left off.
+`.frame(into: $room)` writes the frame layout gave the view. Nothing this
+side writes reaches the platform through it, and it reads nothing at build.
+
+A value the hand moves is no feed: `.interaction(_:)` hands the host a
+program naming the state's channel and its lane
+([interaction](interaction.md#what-the-host-is-handed)), and the hand holds
+the lane there - the state is carried as a journey, the program's writes and
+the hand's hold on one value.
 
 ## Sampling an animating value
 

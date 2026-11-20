@@ -190,7 +190,18 @@ extension Differ {
         // carried as a journey from here on, one entry a state.
         // Design: docs/design/core/journeys.md#a-channels-life
         var followedStates: [Int32: (state: HostStorage, entry: StateEntry)] = [:]
-        for consumer in node.engines.flatMap(\.consumes) + pass.consumers {
+        // What the hand moves on the element, as it stands there: a state it moves is consumed too, unless the
+        // element wears it already.
+        // Design: docs/design/views/interaction.md#what-the-host-is-handed
+        let moved = node.program(ViewContract.interaction)
+            .map { $0.standing(measuresFront: node.program(MotionLayoutContract.layout) != nil) }
+        for complaint in moved?.complaints ?? [] { complain(complaint) }
+        let hand = moved.map { Interaction(standing: $0.leaves) }
+        let worn = Set(node.driven.values.map { ObjectIdentifier($0.state) })
+        let held = (hand?.consumers ?? []).filter { consumer in
+            consumer.image().map { !worn.contains(ObjectIdentifier($0)) } ?? false
+        }
+        for consumer in node.engines.flatMap(\.consumes) + pass.consumers + held {
             guard let state = consumer.image() else { continue }
 
             if state.door == nil { state.door = .property }
@@ -408,12 +419,10 @@ extension Differ {
             patch.layout = .clear
         }
         // What the hand moves is told again where it changed; said no longer, it is cleared.
-        // Design: docs/design/views/interaction.md#what-the-host-is-handed
-        let moved = node.program(MotionLayoutContract.interaction)?
-            .program { Renderer.shared.number(for: $0) }
-        if let moved, !moved.values.isEmpty {
-            if describeAll || previous?.interaction != moved { patch.interaction = .replace(moved) }
-            pass.interaction = moved
+        let handed = hand?.program { Renderer.shared.number(for: $0) }
+        if let handed, !handed.values.isEmpty {
+            if describeAll || previous?.interaction != handed { patch.interaction = .replace(handed) }
+            pass.interaction = handed
         } else if previous?.interaction != nil, !describeAll {
             patch.interaction = .clear
         }

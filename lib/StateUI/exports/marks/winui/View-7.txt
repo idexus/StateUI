@@ -1,11 +1,10 @@
-# revision 29.2
+# revision 31.2
 Button.droppedFileTypes: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.filesDropped: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.horizontalAlignment: ✅
 Button.layoutFrameChanged: ✅
 Button.panTouchCount: ✓ pan on Button: the relay's report of the press dragged handed to the host, no pointer sent
 Button.panUpdated: ✓ pan on Button: the relay's report of the press dragged handed to the host, no pointer sent
-Button.panXChannel: ✓ pan on Button: the relay's report of the press dragged handed to the host, no pointer sent
 Button.verticalAlignment: ✅
 Canvas.rotationUpdated: ✓ rotate on Canvas: the relay's report of the manipulation handed to the host, no touch sent
 Canvas.tapCount: ✓ tap on Canvas: the relay's report of the tap handed to the host, no pointer sent
@@ -16,7 +15,6 @@ Capsule.horizontalAlignment: ✅
 Capsule.layoutFrameChanged: ✅
 Capsule.panTouchCount: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
 Capsule.panUpdated: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
-Capsule.panXChannel: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
 Capsule.verticalAlignment: ✅
 CheckBox.rotationUpdated: ✓ rotate on CheckBox: the relay's report of the manipulation handed to the host, no touch sent
 CheckBox.tapCount: ✓ tap on CheckBox: the relay's report of the tap handed to the host, no pointer sent
@@ -27,7 +25,6 @@ ColorPicker.horizontalAlignment: ✅
 ColorPicker.layoutFrameChanged: ✅
 ColorPicker.panTouchCount: ✓ pan on ColorPicker: the relay's report of the press dragged handed to the host, no pointer sent
 ColorPicker.panUpdated: ✓ pan on ColorPicker: the relay's report of the press dragged handed to the host, no pointer sent
-ColorPicker.panXChannel: ✓ pan on ColorPicker: the relay's report of the press dragged handed to the host, no pointer sent
 ColorPicker.verticalAlignment: ✅
 DatePicker.rotationUpdated: ✓ rotate on DatePicker: the relay's report of the manipulation handed to the host, no touch sent
 DatePicker.tapCount: ✓ tap on DatePicker: the relay's report of the tap handed to the host, no pointer sent
@@ -38,7 +35,6 @@ Ellipse.horizontalAlignment: ✅
 Ellipse.layoutFrameChanged: ✅
 Ellipse.panTouchCount: ✓ pan on Ellipse: the relay's report of the press dragged handed to the host, no pointer sent
 Ellipse.panUpdated: ✓ pan on Ellipse: the relay's report of the press dragged handed to the host, no pointer sent
-Ellipse.panXChannel: ✓ pan on Ellipse: the relay's report of the press dragged handed to the host, no pointer sent
 Ellipse.verticalAlignment: ✅
 Fill.rotationUpdated: ✓ rotate on Fill: the relay's report of the manipulation handed to the host, no touch sent
 Fill.tapCount: ✓ tap on Fill: the relay's report of the tap handed to the host, no pointer sent
@@ -49,7 +45,6 @@ Grid.horizontalAlignment: ✅
 Grid.layoutFrameChanged: ✅
 Grid.panTouchCount: ✓ pan on Grid: the relay's report of the press dragged handed to the host, no pointer sent
 Grid.panUpdated: ✓ pan on Grid: the relay's report of the press dragged handed to the host, no pointer sent
-Grid.panXChannel: ✓ pan on Grid: the relay's report of the press dragged handed to the host, no pointer sent
 Grid.verticalAlignment: ✅
 HStack.rotationUpdated: ✓ rotate on HStack: the relay's report of the manipulation handed to the host, no touch sent
 HStack.tapCount: ✓ tap on HStack: the relay's report of the tap handed to the host, no pointer sent
@@ -60,7 +55,6 @@ Image.horizontalAlignment: ✅
 Image.layoutFrameChanged: ✅
 Image.panTouchCount: ✓ pan on Image: the relay's report of the press dragged handed to the host, no pointer sent
 Image.panUpdated: ✓ pan on Image: the relay's report of the press dragged handed to the host, no pointer sent
-Image.panXChannel: ✓ pan on Image: the relay's report of the press dragged handed to the host, no pointer sent
 Image.verticalAlignment: ✅
 ItemsView.rotationUpdated: ✓ rotate on ItemsView: the relay's report of the manipulation handed to the host, no touch sent
 ItemsView.tapCount: ✓ tap on ItemsView: the relay's report of the tap handed to the host, no pointer sent
@@ -71,7 +65,6 @@ Line.horizontalAlignment: ✅
 Line.layoutFrameChanged: ✅
 Line.panTouchCount: ✓ pan on Line: the relay's report of the press dragged handed to the host, no pointer sent
 Line.panUpdated: ✓ pan on Line: the relay's report of the press dragged handed to the host, no pointer sent
-Line.panXChannel: ✓ pan on Line: the relay's report of the press dragged handed to the host, no pointer sent
 Line.verticalAlignment: ✅
 Link.rotationUpdated: ✓ rotate on Link: the relay's report of the manipulation handed to the host, no touch sent
 Link.tapCount: ✓ tap on Link: the relay's report of the tap handed to the host, no pointer sent
@@ -82,8 +75,8 @@ Map.horizontalAlignment: 🧩
 Map.layoutFrameChanged: 🧩
 Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
-Map.panXChannel: 🧩
 Map.verticalAlignment: 🧩
+MotionLayout.interaction: does not apply - notch on MotionLayout - A wheel reaches the layout as WinUI's own scroller takes it, its tracker's: the tracker tells no notch
 MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: the relay's report of the manipulation handed to the host, no touch sent
 MotionLayout.tapCount: ✓ tap on MotionLayout: the relay's report of the tap handed to the host, no pointer sent
 MotionLayout.tapped: ✓ tap on MotionLayout: the relay's report of the tap handed to the host, no pointer sent
@@ -93,7 +86,6 @@ Path.horizontalAlignment: ✅
 Path.layoutFrameChanged: ✅
 Path.panTouchCount: ✓ pan on Path: the relay's report of the press dragged handed to the host, no pointer sent
 Path.panUpdated: ✓ pan on Path: the relay's report of the press dragged handed to the host, no pointer sent
-Path.panXChannel: ✓ pan on Path: the relay's report of the press dragged handed to the host, no pointer sent
 Path.verticalAlignment: ✅
 Picker.rotationUpdated: ✓ rotate on Picker: the relay's report of the manipulation handed to the host, no touch sent
 Picker.tapCount: ✓ tap on Picker: the relay's report of the tap handed to the host, no pointer sent
@@ -104,7 +96,6 @@ Polygon.horizontalAlignment: ✅
 Polygon.layoutFrameChanged: ✅
 Polygon.panTouchCount: ✓ pan on Polygon: the relay's report of the press dragged handed to the host, no pointer sent
 Polygon.panUpdated: ✓ pan on Polygon: the relay's report of the press dragged handed to the host, no pointer sent
-Polygon.panXChannel: ✓ pan on Polygon: the relay's report of the press dragged handed to the host, no pointer sent
 Polygon.verticalAlignment: ✅
 Polyline.rotationUpdated: ✓ rotate on Polyline: the relay's report of the manipulation handed to the host, no touch sent
 Polyline.tapCount: ✓ tap on Polyline: the relay's report of the tap handed to the host, no pointer sent
@@ -115,7 +106,6 @@ ProgressBar.horizontalAlignment: ✅
 ProgressBar.layoutFrameChanged: ✅
 ProgressBar.panTouchCount: ✓ pan on ProgressBar: the relay's report of the press dragged handed to the host, no pointer sent
 ProgressBar.panUpdated: ✓ pan on ProgressBar: the relay's report of the press dragged handed to the host, no pointer sent
-ProgressBar.panXChannel: ✓ pan on ProgressBar: the relay's report of the press dragged handed to the host, no pointer sent
 ProgressBar.verticalAlignment: ✅
 Rectangle.layoutFrameChanged: ✅
 Rectangle.rotationUpdated: ✓ rotate on Rectangle: the relay's report of the manipulation handed to the host, no touch sent
@@ -127,7 +117,6 @@ ScrollView.horizontalAlignment: ✅
 ScrollView.layoutFrameChanged: ✅
 ScrollView.panTouchCount: ✓ pan on ScrollView: the relay's report of the press dragged handed to the host, no pointer sent
 ScrollView.panUpdated: ✓ pan on ScrollView: the relay's report of the press dragged handed to the host, no pointer sent
-ScrollView.panXChannel: ✓ pan on ScrollView: the relay's report of the press dragged handed to the host, no pointer sent
 ScrollView.verticalAlignment: ✅
 SearchField.rotationUpdated: ✓ rotate on SearchField: the relay's report of the manipulation handed to the host, no touch sent
 SearchField.tapCount: ✓ tap on SearchField: the relay's report of the tap handed to the host, no pointer sent
@@ -141,7 +130,6 @@ Slider.horizontalAlignment: ✅
 Slider.layoutFrameChanged: ✅
 Slider.panTouchCount: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent
 Slider.panUpdated: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent
-Slider.panXChannel: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent
 Slider.verticalAlignment: ✅
 Space.rotationUpdated: ✓ rotate on Space: the relay's report of the manipulation handed to the host, no touch sent
 Space.tapCount: ✓ tap on Space: the relay's report of the tap handed to the host, no pointer sent
@@ -155,7 +143,6 @@ Stepper.horizontalAlignment: ✅
 Stepper.layoutFrameChanged: ✅
 Stepper.panTouchCount: ✓ pan on Stepper: the relay's report of the press dragged handed to the host, no pointer sent
 Stepper.panUpdated: ✓ pan on Stepper: the relay's report of the press dragged handed to the host, no pointer sent
-Stepper.panXChannel: ✓ pan on Stepper: the relay's report of the press dragged handed to the host, no pointer sent
 Stepper.verticalAlignment: ✅
 Switch.rotationUpdated: ✓ rotate on Switch: the relay's report of the manipulation handed to the host, no touch sent
 Switch.tapCount: ✓ tap on Switch: the relay's report of the tap handed to the host, no pointer sent
@@ -166,7 +153,6 @@ Text.horizontalAlignment: ✅
 Text.layoutFrameChanged: ✅
 Text.panTouchCount: ✓ pan on Text: the relay's report of the press dragged handed to the host, no pointer sent
 Text.panUpdated: ✓ pan on Text: the relay's report of the press dragged handed to the host, no pointer sent
-Text.panXChannel: ✓ pan on Text: the relay's report of the press dragged handed to the host, no pointer sent
 Text.verticalAlignment: ✅
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the relay's drop report told the driver's files, no drag WinUI began
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the relay's drop report told the driver's files, no drag WinUI began
@@ -174,7 +160,6 @@ TextEditor.horizontalAlignment: ✅
 TextEditor.layoutFrameChanged: ✅
 TextEditor.panTouchCount: ✓ pan on TextEditor: the relay's report of the press dragged handed to the host, no pointer sent
 TextEditor.panUpdated: ✓ pan on TextEditor: the relay's report of the press dragged handed to the host, no pointer sent
-TextEditor.panXChannel: ✓ pan on TextEditor: the relay's report of the press dragged handed to the host, no pointer sent
 TextEditor.verticalAlignment: ✅
 TextField.rotationUpdated: ✓ rotate on TextField: the relay's report of the manipulation handed to the host, no touch sent
 TextField.tapCount: ✓ tap on TextField: the relay's report of the tap handed to the host, no pointer sent
@@ -185,7 +170,6 @@ TimePicker.horizontalAlignment: ✅
 TimePicker.layoutFrameChanged: ✅
 TimePicker.panTouchCount: ✓ pan on TimePicker: the relay's report of the press dragged handed to the host, no pointer sent
 TimePicker.panUpdated: ✓ pan on TimePicker: the relay's report of the press dragged handed to the host, no pointer sent
-TimePicker.panXChannel: ✓ pan on TimePicker: the relay's report of the press dragged handed to the host, no pointer sent
 TimePicker.verticalAlignment: ✅
 VStack.rotationUpdated: ✓ rotate on VStack: the relay's report of the manipulation handed to the host, no touch sent
 VStack.tapCount: ✓ tap on VStack: the relay's report of the tap handed to the host, no pointer sent
@@ -196,7 +180,6 @@ WebView.horizontalAlignment: ✅
 WebView.layoutFrameChanged: ✅
 WebView.panTouchCount: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.panUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.panXChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.verticalAlignment: ✅
 ZStack.rotationUpdated: ✓ rotate on ZStack: the relay's report of the manipulation handed to the host, no touch sent
 ZStack.tapCount: ✓ tap on ZStack: the relay's report of the tap handed to the host, no pointer sent

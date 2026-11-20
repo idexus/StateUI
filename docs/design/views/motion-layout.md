@@ -479,7 +479,7 @@ cross rather than at half way.
 What the hand moves of the parameters is declared with the layout
 (`interaction(_:)`, [interaction.md](interaction.md#on-a-motion-layout)) and
 handed to the host as the element's program
-(`MotionLayoutContract.interaction`); the hand itself is the host layer's -
+(`ViewContract.interaction`, every view's); the hand itself is the host layer's -
 the hold, the move, the rest, the throw
 ([the hand over a value](../host/interaction.md)). No scroller lies over the
 views, so nothing bounds how far the hand goes, and the views under it

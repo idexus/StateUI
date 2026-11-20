@@ -1,4 +1,4 @@
-# revision 29.1
+# revision 31.1
 Button.horizontalAlignment: ✅
 Button.layoutFrameChanged: ✅
 Button.pinchUpdated: ✓ pinch on Button: the view's listening handed the recognizer's states, no touch sent
@@ -19,7 +19,6 @@ CheckBox.held: ✓ hold on CheckBox: the view's listening handed the recognizer'
 CheckBox.layoutBody: ✅
 ColorPicker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ColorPicker.panUpdated: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
-ColorPicker.panXChannel: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.presentationFrameChanged: ✅
 DatePicker.swipeDirections: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.swipeThreshold: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
@@ -38,9 +37,9 @@ Grid.droppedFileTypes: ✓ dropFiles on Grid: the drop interaction's handler tol
 Grid.filesDropped: ✓ dropFiles on Grid: the drop interaction's handler told the driver's files, no drag session
 Grid.tapped: ✓ pressDown on Grid: the view's listening handed the recognizer's states, no touch sent
 HStack.holdDuration: ✅
+Image.interaction: ✓ sweep on Image: the view's listening handed the recognizer's states, no touch sent
 Image.layoutFrameChanged: ✅
 Image.margin: ✅
-Image.panYChannel: ✓ pan on Image: the view's listening handed the recognizer's states, no touch sent
 ItemsView.horizontalAlignment: ✅
 ItemsView.layoutFrameChanged: ✅
 ItemsView.pinchUpdated: ✓ pinch on ItemsView: the view's listening handed the recognizer's states, no touch sent
@@ -49,7 +48,6 @@ Line.held: ✓ hold on Line: the view's listening handed the recognizer's states
 Line.layoutBody: ✅
 Link.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Link.panUpdated: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
-Link.panXChannel: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
 Map.presentationFrameChanged: ✅
 Map.swipeDirections: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 Map.swipeThreshold: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
@@ -58,6 +56,7 @@ MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interac
 MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.tapCount: ✓ tap on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.tapped: ✓ tap on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.dragEnded: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
@@ -71,9 +70,9 @@ Picker.droppedFileTypes: ✓ dropFiles on Picker: the drop interaction's handler
 Picker.filesDropped: ✓ dropFiles on Picker: the drop interaction's handler told the driver's files, no drag session
 Picker.tapped: ✓ pressDown on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.holdDuration: ✅
+Polyline.interaction: ✓ sweep on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.layoutFrameChanged: ✅
 Polyline.margin: ✅
-Polyline.panYChannel: ✓ pan on Polyline: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.layoutFrameChanged: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: the view's listening handed the recognizer's states, no touch sent
@@ -97,14 +96,13 @@ Separator.layoutFrameChanged: ✅
 Separator.rotationUpdated: ✓ rotate on Separator: the view's listening handed the recognizer's states, no touch sent
 Slider.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Slider.panUpdated: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
-Slider.panXChannel: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Space.presentationFrameChanged: ✅
 Space.swipeDirections: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Space.swipeThreshold: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Space.swiped: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
+Spinner.interaction: ✓ sweep on Spinner: the view's listening handed the recognizer's states, no touch sent
 Spinner.layoutFrameChanged: ✅
 Spinner.margin: ✅
-Spinner.panYChannel: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.area: ✅
 Stepper.layoutFrameChanged: ✅
 Stepper.rotationUpdated: ✓ rotate on Stepper: the view's listening handed the recognizer's states, no touch sent
@@ -125,9 +123,9 @@ TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the drop interaction's
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the drop interaction's handler told the driver's files, no drag session
 TextEditor.tapped: ✓ pressDown on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextField.holdDuration: ✅
+TimePicker.interaction: ✓ sweep on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TimePicker.layoutFrameChanged: ✅
 TimePicker.margin: ✅
-TimePicker.panYChannel: ✓ pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
 VStack.horizontalAlignment: ✅
 VStack.layoutFrameChanged: ✅
 VStack.pinchUpdated: ✓ pinch on VStack: the view's listening handed the recognizer's states, no touch sent

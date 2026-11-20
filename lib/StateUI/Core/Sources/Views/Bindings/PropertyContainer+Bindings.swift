@@ -63,19 +63,6 @@ extension ModifiableElement {
 }
 
 extension PropertyContainer {
-    /// Writes the number of a carried state onto a property - how a drag is
-    /// told where to report (`panX`, `panY`). It reads nothing at build, so
-    /// the reports rebuild nothing.
-    func driven<Value: StateValue>(_ property: Prop, by state: Binding<Value>) -> Modified {
-        guard let image = state.image else {
-            complain("`\(property.name)` was told to report into a state the host carries as a journey. "
-                + "Report into a state of its own.")
-            return modified { _ in }
-        }
-
-        return setValue(property, .number(Double(Renderer.shared.number(for: image))))
-    }
-
     /// Carries a property from a state by its token - what the typed
     /// `setValue(_:on:as:)` and every driven modifier are written over.
     func setValue<Value: LaneValue>(

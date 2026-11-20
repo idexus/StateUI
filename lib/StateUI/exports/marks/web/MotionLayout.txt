@@ -1,6 +1,5 @@
-# revision 21.2
+# revision 23.2
 MotionLayout: ✅
-MotionLayout.interaction: ☑️ Chrome and Firefox tell no trackpad's rotation: two fingers turn a layout on a touch screen, and on a trackpad in Safari.
 MotionLayout.itemDrag: ✅
 MotionLayout.itemDragUpdated: ✅
 MotionLayout.layout: ✅

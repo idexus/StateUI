@@ -26,10 +26,18 @@ struct FrameReaders: Equatable {
 /// Design: docs/design/host/runtime.md#where-a-view-stands
 extension MountedElement {
     /// Whether the tree reads where this element itself stands: a state its frame drives, a handler of its changes,
-    /// or - a split view - the state its sidebar's place drives (`reportSidebarOverlays(_:in:)`), said with it once
-    /// laid out.
+    /// a layout's program or a hand's unit worked out of its room, or - a split view - the state its sidebar's
+    /// place drives (`reportSidebarOverlays(_:in:)`), said with it once laid out.
     public var readsOwnFrame: Bool {
-        frameReaders != nil || driven[.sidebarOverlays] != nil || layoutProgram != nil
+        frameReaders != nil || driven[.sidebarOverlays] != nil || layoutProgram != nil || movesByItsLength
+    }
+
+    /// Whether the hand moves a value by the element's own length: the unit is read off where it stands.
+    private var movesByItsLength: Bool {
+        interactionProgram?.values.contains { value in
+            if case .translation(_, .containerLength, _) = value.input { return true }
+            return false
+        } == true
     }
 
     /// What reads this element's frame itself, a stage each - a state it drives, a handler of its changes - or nil

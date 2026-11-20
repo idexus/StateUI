@@ -12,14 +12,9 @@ enum Opened {
         view.frame(into: room, stage: stage)
     }
 
-    /// `view`, a pan across it carrying `x`.
-    static func pannedAcross<V: View>(_ view: V, carrying x: Binding<Double>) -> some View {
-        view.panX(x)
-    }
-
-    /// `view`, a pan down it carrying `y`.
-    static func pannedDown<V: View>(_ view: V, carrying y: Binding<Double>) -> some View {
-        view.panY(y)
+    /// `view`, the hand moving `x` across it a point a point, left where the hand leaves it.
+    static func moved<V: View>(_ view: V, across x: Binding<Double>) -> some View {
+        view.interaction(.value(x, axis: \.self, input: .translation(.horizontal)).release(.stay))
     }
 
     /// `view`, aimed at by `focus`.

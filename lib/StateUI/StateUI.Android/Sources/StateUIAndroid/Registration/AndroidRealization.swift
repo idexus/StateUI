@@ -201,7 +201,6 @@ enum AndroidRealization {
         .partial(BackgroundElementContract.background, on: WindowContract.self,
             missing: "An activity is opaque by the theme it starts in: a blur or glass shows its color."),
         .complete(LayoutContract.ignoresSafeArea),
-        .complete(MotionLayoutContract.interaction),
         .complete(MotionLayoutContract.itemDrag),
         .complete(MotionLayoutContract.itemDragUpdated),
     ] + windowRoom + wordsInTheirLanguage + HostRecord.motionLayout + HostRecord.layoutBodies

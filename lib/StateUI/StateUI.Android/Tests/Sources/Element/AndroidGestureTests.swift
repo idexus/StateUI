@@ -11,7 +11,7 @@ final class AndroidGestureTests: XCTestCase {
     static var allTests: [(String, (AndroidGestureTests) -> () throws -> Void)] {
         [
             ("testTapsAreCountedToTheCountAsked", testTapsAreCountedToTheCountAsked),
-            ("testAPanSaysHowFarItHasComeAndMovesItsState", testAPanSaysHowFarItHasComeAndMovesItsState),
+            ("testAPanSaysHowFarItHasCome", testAPanSaysHowFarItHasCome),
             ("testASwipePastItsThresholdSaysItsDirection", testASwipePastItsThresholdSaysItsDirection),
             ("testAPinchSaysItsScaleAndWhereItIsCentered", testAPinchSaysItsScaleAndWhereItIsCentered),
             ("testAPinchIsNoTapAndACancelledOneIsCancelled", testAPinchIsNoTapAndACancelledOneIsCancelled),
@@ -45,15 +45,12 @@ final class AndroidGestureTests: XCTestCase {
         }
     }
 
-    /// A pan says how far it has come in points, from where it began - its end the totals it reached - and moves the
-    /// state it carries by as much.
-    func testAPanSaysHowFarItHasComeAndMovesItsState() throws {
+    /// A pan says how far it has come in points, from where it began - its end the totals it reached.
+    func testAPanSaysHowFarItHasCome() throws {
         try onMainActor {
             let heard = Received<String>()
-            let across = State(wrappedValue: 5.0)
             let (host, box) = try Self.box {
-                $0.panX(across.projectedValue)
-                    .onPanUpdated { heard.values.append("\($0.phase) \(Int($0.total.x)) \(Int($0.total.y))") }
+                $0.onPanUpdated { heard.values.append("\($0.phase) \(Int($0.total.x)) \(Int($0.total.y))") }
             }
 
             box.touch(0, x: 10, y: 10, at: 0)
@@ -63,7 +60,6 @@ final class AndroidGestureTests: XCTestCase {
             host.settle { heard.values.count == 4 }
 
             XCTAssertEqual(heard.values, ["began 0 0", "changed 50 0", "changed 80 10", "ended 80 10"])
-            XCTAssertEqual(across.wrappedValue, 85)
         }
     }
 

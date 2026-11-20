@@ -199,4 +199,112 @@ final class InteractionSessionsTests: XCTestCase {
         bench.hand(.changed, moved: Point(100, 0), on: kept)
         XCTAssertEqual(try XCTUnwrap(bench.journey).value[0], 2, accuracy: 0.000_1, "the view that stayed takes it")
     }
+
+    // MARK: - On any view
+
+    /// A panel a hand drags across between three snaps, its place the state itself.
+    private func panel(_ offset: State<Double>, release: InteractionRelease = .nearest(.eased(.milliseconds(160), curve: .linear))) -> Node {
+        Rectangle()
+            .width(100)
+            .height(80)
+            .translationX(offset.projectedValue)
+            .interaction(
+                .value(offset.projectedValue, axis: \.self, input: .translation(.horizontal))
+                    .range(0...240).snaps([120]).release(release))
+            .node
+    }
+
+    /// A HAND MOVES A STATE ON ANY VIEW: the view hears the hand one way, the state stands under the hand bound for
+    /// the snap nearest, and let go it comes onto it - no layout, no engine, no handler of the application's.
+    func testAHandMovesAStateOnAnyView() throws {
+        let offset = State(wrappedValue: 0.0)
+        bench.mounted { self.panel(offset) }
+        let panel = try XCTUnwrap(bench.element(.rectangle))
+        XCTAssertEqual(panel.hearing, [.hand])
+        XCTAssertEqual(panel.handWay, .horizontal)
+
+        bench.hand(.began, on: panel)
+        bench.hand(.changed, moved: Point(70, 0), on: panel)
+        let held = try XCTUnwrap(bench.journey(movedOn: panel))
+        XCTAssertEqual(held.value, [70], "under the hand: it grows as the hand moves right")
+        XCTAssertEqual(offset.wrappedValue, 120, "bound for the snap nearest")
+
+        bench.hand(.changed, moved: Point(400, 0), on: panel)
+        XCTAssertLessThan(try XCTUnwrap(bench.journey(movedOn: panel)).value[0], 241, "less and less past its end")
+
+        bench.hand(.ended, on: panel)
+        bench.frames(30)
+        XCTAssertEqual(offset.wrappedValue, 240, "back onto the end")
+        XCTAssertEqual(try XCTUnwrap(bench.journey(movedOn: panel)).value, [240])
+    }
+
+    /// A WRITE OF THE PROGRAM AND THE HAND SHARE THE VALUE: sent to the middle by a write and caught on its way, the
+    /// panel is taken where it is shown, and let go it comes onto a snap from there.
+    func testAProgramsJourneyIsCaughtByTheHandOnAnyView() throws {
+        let offset = State(wrappedValue: 0.0)
+        _ = offset.traveling(.eased(.milliseconds(320), curve: .linear))
+        bench.mounted { self.panel(offset) }
+        let panel = try XCTUnwrap(bench.element(.rectangle))
+
+        offset.wrappedValue = 240
+        bench.frames(9)
+        let caught = try XCTUnwrap(bench.journey(movedOn: panel)).value[0]
+        XCTAssertGreaterThan(caught, 60, "on its way, past halfway to the middle snap")
+        XCTAssertLessThan(caught, 120)
+
+        bench.hand(.began, on: panel)
+        XCTAssertEqual(try XCTUnwrap(bench.journey(movedOn: panel)).value[0], caught, accuracy: 0.001, "taken where it is shown")
+        XCTAssertEqual(offset.wrappedValue, 120, "the program's journey stopped: bound for the snap nearest")
+        bench.hand(.ended, on: panel)
+        bench.frames(12)
+        XCTAssertEqual(try XCTUnwrap(bench.journey(movedOn: panel)).value, [120], "on it within the motion's own length")
+        XCTAssertEqual(offset.wrappedValue, 120)
+    }
+
+    /// A STATE NOTHING DRAWS IS CARRIED FOR THE HAND ALONE: the view that moves it is its channel's consumer, and
+    /// `.stay` leaves it where the hand left it.
+    func testAStateNothingDrawsIsCarriedForTheHand() throws {
+        let moved = State(wrappedValue: 10.0)
+        bench.mounted {
+            Rectangle()
+                .interaction(.value(moved.projectedValue, axis: \.self, input: .translation(.horizontal)).release(.stay))
+                .node
+        }
+        let pad = try XCTUnwrap(bench.element(.rectangle))
+
+        bench.hand(.began, on: pad)
+        bench.hand(.changed, moved: Point(-60, 0), on: pad)
+        bench.hand(.ended, velocity: Point(-900, 0), on: pad)
+        bench.frames(10)
+
+        XCTAssertEqual(moved.wrappedValue, -50, "as far as the hand went, however fast it let go")
+        XCTAssertEqual(try XCTUnwrap(bench.journey(movedOn: pad)).value, [-50])
+    }
+
+    /// A UNIT OF THE VIEW'S OWN LENGTH is read off where the view stands: a hand across half of it moves the value
+    /// half a unit - and until the view is laid out, nothing.
+    func testAUnitOfTheViewsOwnLengthIsReadOffWhereItStands() throws {
+        let page = State(wrappedValue: 0.0)
+        bench.mounted {
+            Rectangle()
+                .interaction(
+                    .value(page.projectedValue, axis: \.self, input: .translation(.horizontal, unit: .containerLength))
+                        .reversed(true).range(0...3).release(.stay))
+                .node
+        }
+        let (pages, runtime) = (try XCTUnwrap(bench.element(.rectangle)), try XCTUnwrap(bench.runtime))
+        XCTAssertTrue(pages.readsOwnFrame, "it says its frame: the hand's unit is its length")
+
+        bench.hand(.began, on: pages)
+        bench.hand(.changed, moved: Point(-100, 0), on: pages)
+        bench.hand(.ended, on: pages)
+        XCTAssertEqual(page.wrappedValue, 0, "not laid out yet: nothing to measure, nothing moved")
+
+        pages.reportFrame([0, 0, 400, 300, 0, 0, 0, 0], in: runtime)
+        bench.hand(.began, on: pages)
+        bench.hand(.changed, moved: Point(-200, 0), on: pages)
+        bench.hand(.ended, on: pages)
+        bench.frames(4)
+        XCTAssertEqual(page.wrappedValue, 0.5, accuracy: 0.000_1, "half its width, half a unit")
+    }
 }

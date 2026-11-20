@@ -1,9 +1,9 @@
 # Interaction
 
 An `Interaction` says what the user's hand moves on a view, and how. It is a
-value written with the view - `.interaction(_:)` - and read by the view where
-it stands: making one recognizes nothing, reserves nothing and starts no
-clock.
+value written with the view - `.interaction(_:)`, on any view
+(`ViewContract.interaction`) - and read where the view stands: making one
+recognizes nothing, reserves nothing and starts no clock.
 
 ```text
   Interaction ── leaves, in written order
@@ -102,6 +102,23 @@ of another number of the same state meets no hand at all
 The range and the snaps are the hand's alone: the program writes a value
 anywhere.
 
+## On any view
+
+`.interaction(_:)` writes the declaration onto the view's element as a
+program ([a program](../core/contracts.md#a-program)); the differ takes of it
+the values that stand ([what is refused](#what-is-refused)) and hands them to
+the host. The state a value moves is carried as a journey from there on, and
+the view is a consumer of its channel while it stands
+([a channel's life](../core/journeys.md#a-channels-life)) - unless the view
+already wears the state as a property, which is its consumer - so a hand
+moves a state nothing draws, and an engine following its journey reads the
+hand's place frame by frame.
+
+A state has numbers the hand can name where it is a `Double` (`\.self`) or a
+`LayoutParameters`, whose `axes` list them. `.containerLength` is the view's
+own length along the hand's way, read off where it stands, so the view says
+its frame to the host as a layout does. `.frontItem` is a layout's alone.
+
 ## On a motion layout
 
 A motion layout reads the interaction as it is described
@@ -112,11 +129,12 @@ keyframes, the mapping's own range and the segments from `axis(_:range:…)`.
 An axis the interaction moves needs no mapping, and a mapped axis no
 interaction.
 
-A value of the interaction is one of the layout's own parameters: its state
-is told by the identity of the storage the layout's `parameters:` binding
-stands on, and its axis is one of the parameters' `axes`. The layout writes
+A value of the layout's own parameters moves the run: its state is told by
+the identity of the storage the layout's `parameters:` binding stands on, and
+its axis is one of the parameters' `axes`. A value of another state is moved
+as on any view, the layout handing it on untouched. The layout writes
 the values that stand onto its element as the program the host answers the
-hand by (`MotionLayoutContract.interaction`), and keeps of each only what its
+hand by (`ViewContract.interaction`), and keeps of each only what its
 own arithmetic reads: which way a hand moves it, for the front view's unit,
 and its release, for a view the hand throws.
 
@@ -140,10 +158,12 @@ through a render stays where it is.
 
 ## What is refused
 
-A declaration that does not stand moves nothing and is said (`complain`),
-never mended into something near it:
+A declaration that does not stand moves nothing and is said (`complain`,
+`Interaction.standing`), never mended into something near it:
 
-- a value that is no axis of the layout's parameters, or of another state;
+- a value that is no number of its state's `axes`;
+- the view in front for a unit (`.frontItem`) on a view that runs no layout
+  drawing one;
 - two values moving one number - both, as neither is the one the author
   meant;
 - a range with no end; a magnification's range reaching nought, or told to

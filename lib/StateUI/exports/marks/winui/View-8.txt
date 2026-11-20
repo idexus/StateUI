@@ -1,88 +1,89 @@
-# revision 29.2
+# revision 31.2
 Button.area: ✅
+Button.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Button.layoutBody: ✅
 Button.layoutFrameChanged: ✅
-Button.panYChannel: ✓ pan on Button: the relay's report of the press dragged handed to the host, no pointer sent
 Canvas.pointerMoved: ✓ hover on Canvas: the relay's report of the pointer handed to the host, no pointer sent
 Canvas.pointerPressed: ✓ hover on Canvas: the relay's report of the pointer handed to the host, no pointer sent
 Canvas.pointerReleased: ✓ hover on Canvas: the relay's report of the pointer handed to the host, no pointer sent
 Canvas.tapped: ✓ pressDown on Canvas: the relay's report of the press handed to the host, no pointer sent
 Capsule.area: ✅
+Capsule.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Capsule.layoutBody: ✅
 Capsule.layoutFrameChanged: ✅
-Capsule.panYChannel: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
 CheckBox.pointerMoved: ✓ hover on CheckBox: the relay's report of the pointer handed to the host, no pointer sent
 CheckBox.pointerPressed: ✓ hover on CheckBox: the relay's report of the pointer handed to the host, no pointer sent
 CheckBox.pointerReleased: ✓ hover on CheckBox: the relay's report of the pointer handed to the host, no pointer sent
 CheckBox.tapped: ✓ pressDown on CheckBox: the relay's report of the press handed to the host, no pointer sent
 ColorPicker.area: ✅
+ColorPicker.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 ColorPicker.layoutBody: ✅
 ColorPicker.layoutFrameChanged: ✅
-ColorPicker.panYChannel: ✓ pan on ColorPicker: the relay's report of the press dragged handed to the host, no pointer sent
 DatePicker.pointerMoved: ✓ hover on DatePicker: the relay's report of the pointer handed to the host, no pointer sent
 DatePicker.pointerPressed: ✓ hover on DatePicker: the relay's report of the pointer handed to the host, no pointer sent
 DatePicker.pointerReleased: ✓ hover on DatePicker: the relay's report of the pointer handed to the host, no pointer sent
 DatePicker.tapped: ✓ pressDown on DatePicker: the relay's report of the press handed to the host, no pointer sent
 Ellipse.area: ✅
+Ellipse.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Ellipse.layoutBody: ✅
 Ellipse.layoutFrameChanged: ✅
-Ellipse.panYChannel: ✓ pan on Ellipse: the relay's report of the press dragged handed to the host, no pointer sent
 Fill.pointerMoved: ✓ hover on Fill: the relay's report of the pointer handed to the host, no pointer sent
 Fill.pointerPressed: ✓ hover on Fill: the relay's report of the pointer handed to the host, no pointer sent
 Fill.pointerReleased: ✓ hover on Fill: the relay's report of the pointer handed to the host, no pointer sent
 Fill.tapped: ✓ pressDown on Fill: the relay's report of the press handed to the host, no pointer sent
 Grid.area: ✅
+Grid.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Grid.layoutBody: ✅
 Grid.layoutFrameChanged: ✅
-Grid.panYChannel: ✓ pan on Grid: the relay's report of the press dragged handed to the host, no pointer sent
 HStack.pointerMoved: ✓ hover on HStack: the relay's report of the pointer handed to the host, no pointer sent
 HStack.pointerPressed: ✓ hover on HStack: the relay's report of the pointer handed to the host, no pointer sent
 HStack.pointerReleased: ✓ hover on HStack: the relay's report of the pointer handed to the host, no pointer sent
 HStack.tapped: ✓ pressDown on HStack: the relay's report of the press handed to the host, no pointer sent
 Image.area: ✅
+Image.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Image.layoutBody: ✅
 Image.layoutFrameChanged: ✅
-Image.panYChannel: ✓ pan on Image: the relay's report of the press dragged handed to the host, no pointer sent
 ItemsView.pointerMoved: ✓ hover on ItemsView: the relay's report of the pointer handed to the host, no pointer sent
 ItemsView.pointerPressed: ✓ hover on ItemsView: the relay's report of the pointer handed to the host, no pointer sent
 ItemsView.pointerReleased: ✓ hover on ItemsView: the relay's report of the pointer handed to the host, no pointer sent
 ItemsView.tapped: ✓ pressDown on ItemsView: the relay's report of the press handed to the host, no pointer sent
 Line.area: ✅
+Line.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Line.layoutBody: ✅
 Line.layoutFrameChanged: ✅
-Line.panYChannel: ✓ pan on Line: the relay's report of the press dragged handed to the host, no pointer sent
 Link.pointerMoved: ✓ hover on Link: the relay's report of the pointer handed to the host, no pointer sent
 Link.pointerPressed: ✓ hover on Link: the relay's report of the pointer handed to the host, no pointer sent
 Link.pointerReleased: ✓ hover on Link: the relay's report of the pointer handed to the host, no pointer sent
 Link.tapped: ✓ pressDown on Link: the relay's report of the press handed to the host, no pointer sent
 Map.area: 🧩
+Map.interaction: 🧩
 Map.layoutBody: 🧩
 Map.layoutFrameChanged: 🧩
-Map.panYChannel: 🧩
+MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.pointerMoved: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
 MotionLayout.pointerPressed: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
 MotionLayout.pointerReleased: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
 MotionLayout.tapped: ✓ pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent
 Path.area: ✅
+Path.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Path.layoutBody: ✅
 Path.layoutFrameChanged: ✅
-Path.panYChannel: ✓ pan on Path: the relay's report of the press dragged handed to the host, no pointer sent
 Picker.pointerMoved: ✓ hover on Picker: the relay's report of the pointer handed to the host, no pointer sent
 Picker.pointerPressed: ✓ hover on Picker: the relay's report of the pointer handed to the host, no pointer sent
 Picker.pointerReleased: ✓ hover on Picker: the relay's report of the pointer handed to the host, no pointer sent
 Picker.tapped: ✓ pressDown on Picker: the relay's report of the press handed to the host, no pointer sent
 Polygon.area: ✅
+Polygon.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Polygon.layoutBody: ✅
 Polygon.layoutFrameChanged: ✅
-Polygon.panYChannel: ✓ pan on Polygon: the relay's report of the press dragged handed to the host, no pointer sent
 Polyline.pointerMoved: ✓ hover on Polyline: the relay's report of the pointer handed to the host, no pointer sent
 Polyline.pointerPressed: ✓ hover on Polyline: the relay's report of the pointer handed to the host, no pointer sent
 Polyline.pointerReleased: ✓ hover on Polyline: the relay's report of the pointer handed to the host, no pointer sent
 Polyline.tapped: ✓ pressDown on Polyline: the relay's report of the press handed to the host, no pointer sent
 ProgressBar.area: ✅
+ProgressBar.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 ProgressBar.layoutBody: ✅
 ProgressBar.layoutFrameChanged: ✅
-ProgressBar.panYChannel: ✓ pan on ProgressBar: the relay's report of the press dragged handed to the host, no pointer sent
 Rectangle.layoutFrameChanged: ✅
 Rectangle.pointerMoved: ✓ hover on Rectangle: the relay's report of the pointer handed to the host, no pointer sent
 Rectangle.pointerPressed: ✓ hover on Rectangle: the relay's report of the pointer handed to the host, no pointer sent
@@ -90,9 +91,9 @@ Rectangle.pointerReleased: ✓ hover on Rectangle: the relay's report of the poi
 Rectangle.presentationFrameChanged: ✅
 Rectangle.tapped: ✓ pressDown on Rectangle: the relay's report of the press handed to the host, no pointer sent
 ScrollView.area: ✅
+ScrollView.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 ScrollView.layoutBody: ✅
 ScrollView.layoutFrameChanged: ✅
-ScrollView.panYChannel: ✓ pan on ScrollView: the relay's report of the press dragged handed to the host, no pointer sent
 SearchField.pointerMoved: ✓ hover on SearchField: the relay's report of the pointer handed to the host, no pointer sent
 SearchField.pointerPressed: ✓ hover on SearchField: the relay's report of the pointer handed to the host, no pointer sent
 SearchField.pointerReleased: ✓ hover on SearchField: the relay's report of the pointer handed to the host, no pointer sent
@@ -102,9 +103,9 @@ Separator.pointerPressed: ✓ hover on Separator: the relay's report of the poin
 Separator.pointerReleased: ✓ hover on Separator: the relay's report of the pointer handed to the host, no pointer sent
 Separator.tapped: ✓ pressDown on Separator: the relay's report of the press handed to the host, no pointer sent
 Slider.area: ✅
+Slider.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Slider.layoutBody: ✅
 Slider.layoutFrameChanged: ✅
-Slider.panYChannel: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent
 Space.pointerMoved: ✓ hover on Space: the relay's report of the pointer handed to the host, no pointer sent
 Space.pointerPressed: ✓ hover on Space: the relay's report of the pointer handed to the host, no pointer sent
 Space.pointerReleased: ✓ hover on Space: the relay's report of the pointer handed to the host, no pointer sent
@@ -114,37 +115,37 @@ Spinner.pointerPressed: ✓ hover on Spinner: the relay's report of the pointer 
 Spinner.pointerReleased: ✓ hover on Spinner: the relay's report of the pointer handed to the host, no pointer sent
 Spinner.tapped: ✓ pressDown on Spinner: the relay's report of the press handed to the host, no pointer sent
 Stepper.area: ✅
+Stepper.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Stepper.layoutBody: ✅
 Stepper.layoutFrameChanged: ✅
-Stepper.panYChannel: ✓ pan on Stepper: the relay's report of the press dragged handed to the host, no pointer sent
 Switch.pointerMoved: ✓ hover on Switch: the relay's report of the pointer handed to the host, no pointer sent
 Switch.pointerPressed: ✓ hover on Switch: the relay's report of the pointer handed to the host, no pointer sent
 Switch.pointerReleased: ✓ hover on Switch: the relay's report of the pointer handed to the host, no pointer sent
 Switch.tapped: ✓ pressDown on Switch: the relay's report of the press handed to the host, no pointer sent
 Text.area: ✅
+Text.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Text.layoutBody: ✅
 Text.layoutFrameChanged: ✅
-Text.panYChannel: ✓ pan on Text: the relay's report of the press dragged handed to the host, no pointer sent
 TextEditor.area: ✅
+TextEditor.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 TextEditor.layoutBody: ✅
 TextEditor.layoutFrameChanged: ✅
-TextEditor.panYChannel: ✓ pan on TextEditor: the relay's report of the press dragged handed to the host, no pointer sent
 TextField.pointerMoved: ✓ hover on TextField: the relay's report of the pointer handed to the host, no pointer sent
 TextField.pointerPressed: ✓ hover on TextField: the relay's report of the pointer handed to the host, no pointer sent
 TextField.pointerReleased: ✓ hover on TextField: the relay's report of the pointer handed to the host, no pointer sent
 TextField.tapped: ✓ pressDown on TextField: the relay's report of the press handed to the host, no pointer sent
 TimePicker.area: ✅
+TimePicker.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 TimePicker.layoutBody: ✅
 TimePicker.layoutFrameChanged: ✅
-TimePicker.panYChannel: ✓ pan on TimePicker: the relay's report of the press dragged handed to the host, no pointer sent
 VStack.pointerMoved: ✓ hover on VStack: the relay's report of the pointer handed to the host, no pointer sent
 VStack.pointerPressed: ✓ hover on VStack: the relay's report of the pointer handed to the host, no pointer sent
 VStack.pointerReleased: ✓ hover on VStack: the relay's report of the pointer handed to the host, no pointer sent
 VStack.tapped: ✓ pressDown on VStack: the relay's report of the press handed to the host, no pointer sent
 WebView.area: ✅
+WebView.interaction: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.layoutBody: ✅
 WebView.layoutFrameChanged: ✅
-WebView.panYChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 ZStack.pointerMoved: ✓ hover on ZStack: the relay's report of the pointer handed to the host, no pointer sent
 ZStack.pointerPressed: ✓ hover on ZStack: the relay's report of the pointer handed to the host, no pointer sent
 ZStack.pointerReleased: ✓ hover on ZStack: the relay's report of the pointer handed to the host, no pointer sent

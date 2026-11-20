@@ -173,9 +173,6 @@
     /// Where a split view last said its sidebar stands, and onto which state; nil before it said.
     var reportedOverlays: (binding: HostStateBinding, over: Bool)?
 
-    /// Where the states a press dragged carries stood as it began.
-    var dragStart = Point(x: 0, y: 0)
-
     /// A drag between views over the element's view, as the element tells it.
     var dropTarget = DropTarget()
 

@@ -23,6 +23,7 @@ public struct Interaction {
     struct Leaf {
         let state: ObjectIdentifier
         let image: @MainActor () -> HostStorage?
+        let consumer: JourneyConsumer
         let axis: AnyKeyPath
         let lane: Int?
         let input: InteractionInput
@@ -49,7 +50,7 @@ public struct Interaction {
     ///     .value($table, axis: \.zoom, input: .magnification).range(0.5...2)
     ///
     /// - Parameters:
-    ///   - state: the state moved - a motion layout's parameters.
+    ///   - state: the state moved - a `Double`, or a `LayoutParameters` of several numbers.
     ///   - axis: the number of it the input moves, one of its `axes`; `\.self` for a `Double`.
     ///   - input: what of the hand moves it.
     /// - Returns: the interaction.
@@ -58,8 +59,9 @@ public struct Interaction {
     ) -> Interaction {
         let storage = state.storage
         let leaf = Leaf(
-            state: ObjectIdentifier(storage), image: { storage.carryAsJourney() }, axis: axis,
-            lane: Parameters.axes.firstIndex(of: axis), input: input)
+            state: ObjectIdentifier(storage), image: { storage.carryAsJourney() },
+            consumer: JourneyConsumer(of: state.journey), axis: axis, lane: Parameters.axes.firstIndex(of: axis),
+            input: input)
         return Interaction(leaves: [leaf], isSet: false, refused: input.complaint.map { [$0] } ?? [])
     }
 
@@ -156,6 +158,77 @@ extension Interaction {
     init(standing leaves: [Leaf]) {
         self.init(leaves: leaves, isSet: true)
     }
+
+    /// The values that stand on a view - one that measures a front view, where `measuresFront` - and what is wrong
+    /// with the others, as the author is told it: a declaration that does not stand moves nothing.
+    /// Design: docs/design/views/interaction.md#what-is-refused
+    func standing(measuresFront: Bool) -> (leaves: [Leaf], complaints: [String]) {
+        var complaints = refused
+        // Two moving one number are refused together: neither is the one the author meant.
+        var moved: [Number: Int] = [:]
+        for leaf in leaves { if let lane = leaf.lane { moved[Number(state: leaf.state, lane: lane), default: 0] += 1 } }
+        if moved.values.contains(where: { $0 > 1 }) {
+            complaints.append("An interaction moves one number twice. The hand moves nothing of it.")
+        }
+        let standing = leaves.filter { leaf in
+            guard let lane = leaf.lane else {
+                complaints.append(
+                    "An interaction moves a number its state's `axes` do not list. The hand moves nothing of it.")
+                return false
+            }
+            if moved[Number(state: leaf.state, lane: lane)] ?? 0 > 1 { return false }
+            if let complaint = Self.complaint(of: leaf, measuresFront: measuresFront) {
+                complaints.append(complaint)
+                return false
+            }
+            return true
+        }
+        return (standing, complaints)
+    }
+
+    /// One number of a state, which one value alone may move.
+    private struct Number: Hashable {
+        let state: ObjectIdentifier
+        let lane: Int
+    }
+
+    /// What is wrong with one value, if anything, as the author is told it.
+    private static func complaint(of leaf: Leaf, measuresFront: Bool) -> String? {
+        let magnifies = leaf.input.gesture == .magnification
+        if let range = leaf.range {
+            if !range.lowerBound.isFinite || !range.upperBound.isFinite {
+                return "An interaction was given a range with no end. The hand moves nothing of it."
+            }
+            if magnifies, range.lowerBound <= 0 {
+                return "An interaction's magnification was given a range reaching nought, which no spreading of the "
+                    + "fingers reaches. The fingers move nothing."
+            }
+        }
+        if leaf.periodic, magnifies {
+            return "An interaction's magnification was told to come round, which a size never does. The fingers move "
+                + "nothing."
+        }
+        if leaf.periodic, (leaf.range.map { $0.upperBound > $0.lowerBound } ?? false) == false {
+            return "An interaction was told to come round with no range of some length to come round over. The hand "
+                + "moves nothing of it."
+        }
+        if leaf.input.swipes, leaf.snaps == nil {
+            return "An interaction's swipe moves its value one snap a hand, and was given no snaps. The hand moves "
+                + "nothing of it."
+        }
+        if let snaps = leaf.snaps, leaf.range == nil, snaps.unbounded == nil {
+            return "An interaction was given the ends of a range, and no range, to rest at. The hand moves nothing "
+                + "of it."
+        }
+        if case .hand(_, .front, _) = leaf.input.gesture, !measuresFront {
+            return "An interaction's unit is the view in front, and its view runs no layout that draws one: say "
+                + "`.points(_:)` or `.containerLength`. The hand moves nothing of it."
+        }
+        return nil
+    }
+
+    /// The states the values move, each a consumer of its channel while the view stands.
+    var consumers: [JourneyConsumer] { leaves.map(\.consumer) }
 
     /// The interaction as the host is handed it, each state by the number `numbered` gives its image: a value whose
     /// state the host carries as no journey, or that is no number of its state, moves nothing.

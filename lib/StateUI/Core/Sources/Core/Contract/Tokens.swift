@@ -218,8 +218,6 @@ extension NodeType {
     static let choosesOpacity = ColorPickerContract.choosesOpacity.token
     static let color = ColorPickerContract.color.token
     static let panTouchCount = ViewContract.panTouchCount.token
-    static let panXChannel = ViewContract.panXChannel.token
-    static let panYChannel = ViewContract.panYChannel.token
     static let layoutBody = ViewContract.layoutBody.token
     static let parameters = MotionLayoutContract.parameters.token
     static let placeholder = PlaceholderElementContract.placeholder.token

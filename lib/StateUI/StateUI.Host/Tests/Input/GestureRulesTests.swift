@@ -22,8 +22,8 @@ final class GestureRulesTests: XCTestCase {
         var root = HostPatch(id: .manual("root"), type: .vStack)
         root.children = .arranged([
             view("tapped", [:], [.tapped: 1, .pinchUpdated: 2]),
-            view("panned", [.panXChannel: .number(7)], [.pointerMoved: 3]),
-            view("twoFingers", [.panXChannel: .number(7), .panTouchCount: .number(2)], [:]),
+            view("panned", [:], [.panUpdated: 6, .pointerMoved: 3]),
+            view("twoFingers", [.panTouchCount: .number(2)], [.panUpdated: 7]),
             view("deaf", [:], [:]),
             view("held", [.holdDuration: .number(800)], [.held: 4]),
             view("heldUnsaid", [:], [.held: 5]),

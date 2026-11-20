@@ -26,19 +26,10 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
     /// The size a motion layout's program says for it in a width offered; nil where it says none.
     var programSize: (@MainActor (Double?) -> LayoutSize?)?
 
-    /// The hand over the motion layout it stands, where one moves it: whether it took a scroll event.
-    var hand: ((NSEvent) -> Bool)?
     private var items: [AppKitLayoutItem] = []
     private var drawingOrder: [ObjectIdentifier] = []
 
     override var isFlipped: Bool { true }
-
-    /// A scroll the layout's hand does not take goes on to whatever holds the layout.
-    override func scrollWheel(with event: NSEvent) {
-        if hand?(event) == true { return }
-
-        super.scrollWheel(with: event)
-    }
 
     func setItems(_ items: [AppKitLayoutItem]) {
         guard !AppKitLayoutItem.sameArrangement(self.items, items) else { return }

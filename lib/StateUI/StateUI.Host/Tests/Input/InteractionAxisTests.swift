@@ -113,4 +113,19 @@ final class InteractionAxisTests: XCTestCase {
         XCTAssertEqual(thrown.rest(of: thrown.letting(at: 1.2, per: 100, velocity: fast)), 5, "thrown on")
         XCTAssertTrue(axis(release: .stay).stays)
     }
+
+    /// AN APPROACH NEVER TAKES LONGER THAN THE MOTION ITSELF: a part of a unit takes that part of its length, a unit
+    /// the whole of it, and a value a point a unit comes onto a snap sixty points off in the motion's length - not
+    /// sixty of them.
+    func testAnApproachNeverTakesLongerThanTheMotion() throws {
+        let motion = Motion.eased(.milliseconds(300), curve: .linear)
+        XCTAssertEqual(InteractionArithmetic.approach(motion, over: 0.4), .eased(.milliseconds(120), curve: .linear))
+        XCTAssertEqual(InteractionArithmetic.approach(motion, over: -1), motion)
+        XCTAssertEqual(InteractionArithmetic.approach(motion, over: 60), motion)
+        XCTAssertEqual(InteractionArithmetic.approach(motion, over: .nan), .eased(.milliseconds(0), curve: .linear))
+
+        let panel = axis(low: 0, high: 240, snaps: .at([0, 120, 240]), release: .nearest(motion))
+        let let1 = panel.letting(at: 60.5, per: 1, velocity: 0)
+        XCTAssertEqual(try XCTUnwrap(panel.going(let1, to: 120, under: .eased(.milliseconds(900)))).law, motion)
+    }
 }

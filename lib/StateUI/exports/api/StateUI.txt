@@ -1829,6 +1829,7 @@ swift.method @SwiftNever.height(_:): @MainActor func height(_ state: Binding<Dou
 swift.method @SwiftNever.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method @SwiftNever.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method @SwiftNever.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method @SwiftNever.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method @SwiftNever.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method @SwiftNever.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -1938,8 +1939,6 @@ swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ va
 swift.method @SwiftNever.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method @SwiftNever.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method @SwiftNever.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method @SwiftNever.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method @SwiftNever.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -2018,6 +2017,7 @@ swift.method AnyView.height(_:): @MainActor func height(_ state: Binding<Double>
 swift.method AnyView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method AnyView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method AnyView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method AnyView.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method AnyView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method AnyView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -2127,8 +2127,6 @@ swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method AnyView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method AnyView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method AnyView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method AnyView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method AnyView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -2241,6 +2239,7 @@ swift.method Button.iconPosition(_:): @MainActor func iconPosition(_ state: Bind
 swift.method Button.iconSpacing(_:): @MainActor func iconSpacing(_ state: Binding<Double>) -> Button.Modified
 swift.method Button.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Button.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Button.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Button.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Button.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -2374,8 +2373,6 @@ swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Button.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Button.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Button.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Button.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Button.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -2462,6 +2459,7 @@ swift.method Canvas.height(_:): @MainActor func height(_ state: Binding<Double>)
 swift.method Canvas.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Canvas.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Canvas.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Canvas.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Canvas.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Canvas.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -2574,8 +2572,6 @@ swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Canvas.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Canvas.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Canvas.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Canvas.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Canvas.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -2657,6 +2653,7 @@ swift.method Capsule.height(_:): @MainActor func height(_ state: Binding<Double>
 swift.method Capsule.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Capsule.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Capsule.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Capsule.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Capsule.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Capsule.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Capsule.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -2771,8 +2768,6 @@ swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method Capsule.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Capsule.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Capsule.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Capsule.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Capsule.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -2846,6 +2841,7 @@ swift.method CheckBox.height(_:): @MainActor func height(_ state: Binding<Double
 swift.method CheckBox.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method CheckBox.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method CheckBox.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method CheckBox.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method CheckBox.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method CheckBox.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -2965,8 +2961,6 @@ swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ value
 swift.method CheckBox.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method CheckBox.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method CheckBox.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method CheckBox.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method CheckBox.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -3052,6 +3046,7 @@ swift.method ColorPicker.height(_:): @MainActor func height(_ state: Binding<Dou
 swift.method ColorPicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ColorPicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ColorPicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method ColorPicker.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method ColorPicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ColorPicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -3171,8 +3166,6 @@ swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ va
 swift.method ColorPicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ColorPicker.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method ColorPicker.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method ColorPicker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method ColorPicker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -3257,6 +3250,7 @@ swift.method DatePicker.height(_:): @MainActor func height(_ state: Binding<Doub
 swift.method DatePicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method DatePicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DatePicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method DatePicker.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method DatePicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method DatePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -3387,8 +3381,6 @@ swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ val
 swift.method DatePicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method DatePicker.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method DatePicker.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method DatePicker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method DatePicker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -3466,6 +3458,7 @@ swift.method DebugInspector.height(_:): @MainActor func height(_ state: Binding<
 swift.method DebugInspector.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method DebugInspector.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DebugInspector.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspector.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method DebugInspector.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method DebugInspector.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -3575,8 +3568,6 @@ swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_
 swift.method DebugInspector.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method DebugInspector.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspector.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method DebugInspector.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method DebugInspector.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -3646,6 +3637,7 @@ swift.method DebugInspectorButton.height(_:): @MainActor func height(_ state: Bi
 swift.method DebugInspectorButton.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method DebugInspectorButton.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DebugInspectorButton.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method DebugInspectorButton.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspectorButton.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method DebugInspectorButton.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -3755,8 +3747,6 @@ swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackgr
 swift.method DebugInspectorButton.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method DebugInspectorButton.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspectorButton.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method DebugInspectorButton.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method DebugInspectorButton.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -3847,6 +3837,7 @@ swift.method Either.horizontalAlignment(_:): @MainActor func horizontalAlignment
 swift.method Either.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Either.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Either.ignoresInput(_:): @MainActor func ignoresInput(_ value: Bool) -> Self.Modified
+swift.method Either.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Either.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Either.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Either.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -3965,8 +3956,6 @@ swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Either.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Either.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Either.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Either.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Either.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.pivotX(_:): @MainActor func pivotX(_ value: Double) -> Self.Modified
 swift.method Either.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
@@ -4060,6 +4049,7 @@ swift.method Ellipse.height(_:): @MainActor func height(_ state: Binding<Double>
 swift.method Ellipse.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Ellipse.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Ellipse.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Ellipse.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Ellipse.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Ellipse.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Ellipse.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -4174,8 +4164,6 @@ swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method Ellipse.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Ellipse.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Ellipse.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Ellipse.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Ellipse.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -4251,6 +4239,7 @@ swift.method Fill.height(_:): @MainActor func height(_ state: Binding<Double>) -
 swift.method Fill.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Fill.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Fill.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Fill.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Fill.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Fill.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -4364,8 +4353,6 @@ swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ value: Ma
 swift.method Fill.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Fill.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Fill.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Fill.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Fill.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -4460,6 +4447,7 @@ swift.method GalleryView.height(_:): @MainActor func height(_ state: Binding<Dou
 swift.method GalleryView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method GalleryView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method GalleryView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method GalleryView.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method GalleryView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method GalleryView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -4578,8 +4566,6 @@ swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ va
 swift.method GalleryView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method GalleryView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method GalleryView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method GalleryView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method GalleryView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -4652,6 +4638,7 @@ swift.method GeometryReader.height(_:): @MainActor func height(_ state: Binding<
 swift.method GeometryReader.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method GeometryReader.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method GeometryReader.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method GeometryReader.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method GeometryReader.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method GeometryReader.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -4761,8 +4748,6 @@ swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_
 swift.method GeometryReader.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method GeometryReader.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method GeometryReader.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method GeometryReader.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method GeometryReader.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -4838,6 +4823,7 @@ swift.method Grid.horizontalAlignment(_:): @MainActor func horizontalAlignment(_
 swift.method Grid.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Grid.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
+swift.method Grid.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Grid.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Grid.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -4959,8 +4945,6 @@ swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ value: Ma
 swift.method Grid.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Grid.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Grid.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Grid.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Grid.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -5041,6 +5025,7 @@ swift.method Group.height(_:): @MainActor func height(_ state: Binding<Double>) 
 swift.method Group.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Group.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Group.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Group.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Group.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Group.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -5150,8 +5135,6 @@ swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ value: M
 swift.method Group.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Group.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Group.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Group.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Group.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -5223,6 +5206,7 @@ swift.method HStack.horizontalAlignment(_:): @MainActor func horizontalAlignment
 swift.method HStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method HStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
+swift.method HStack.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method HStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method HStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -5345,8 +5329,6 @@ swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method HStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method HStack.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method HStack.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method HStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method HStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -5429,6 +5411,7 @@ swift.method Image.height(_:): @MainActor func height(_ state: Binding<Double>) 
 swift.method Image.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Image.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Image.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Image.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Image.isAnimating(_:): @MainActor func isAnimating(_ state: Binding<Bool>) -> Image.Modified
 swift.method Image.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
@@ -5542,8 +5525,6 @@ swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ value: M
 swift.method Image.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Image.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Image.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Image.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Image.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -5626,6 +5607,7 @@ swift.method ItemsView.height(_:): @MainActor func height(_ state: Binding<Doubl
 swift.method ItemsView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ItemsView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ItemsView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method ItemsView.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method ItemsView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ItemsView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -5758,8 +5740,6 @@ swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ valu
 swift.method ItemsView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ItemsView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method ItemsView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method ItemsView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method ItemsView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -5862,6 +5842,7 @@ swift.method Line.height(_:): @MainActor func height(_ state: Binding<Double>) -
 swift.method Line.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Line.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Line.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Line.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Line.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Line.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Line.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -5976,8 +5957,6 @@ swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ value: Ma
 swift.method Line.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Line.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Line.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Line.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Line.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -6055,6 +6034,7 @@ swift.method Link.height(_:): @MainActor func height(_ state: Binding<Double>) -
 swift.method Link.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Link.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Link.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Link.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Link.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Link.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -6174,8 +6154,6 @@ swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ value: Ma
 swift.method Link.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Link.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Link.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Link.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Link.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -6260,6 +6238,7 @@ swift.method Map.height(_:): @MainActor func height(_ state: Binding<Double>) ->
 swift.method Map.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Map.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Map.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Map.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Map.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Map.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -6379,8 +6358,6 @@ swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ value: Mat
 swift.method Map.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Map.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Map.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Map.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Map.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -6519,6 +6496,7 @@ swift.method ModifiedContent.height(_:): @MainActor func height(_ state: Binding
 swift.method ModifiedContent.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ModifiedContent.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ModifiedContent.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method ModifiedContent.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method ModifiedContent.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ModifiedContent.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -6628,8 +6606,6 @@ swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(
 swift.method ModifiedContent.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ModifiedContent.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method ModifiedContent.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method ModifiedContent.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method ModifiedContent.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -6832,8 +6808,6 @@ swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ v
 swift.method MotionLayout.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method MotionLayout.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method MotionLayout.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method MotionLayout.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method MotionLayout.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -6927,6 +6901,7 @@ swift.method NavigationStack.height(_:): @MainActor func height(_ state: Binding
 swift.method NavigationStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method NavigationStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method NavigationStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method NavigationStack.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method NavigationStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method NavigationStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -7036,8 +7011,6 @@ swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(
 swift.method NavigationStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method NavigationStack.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method NavigationStack.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method NavigationStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method NavigationStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -7124,6 +7097,7 @@ swift.method Path.height(_:): @MainActor func height(_ state: Binding<Double>) -
 swift.method Path.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Path.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Path.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Path.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Path.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Path.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Path.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -7240,8 +7214,6 @@ swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ value: Ma
 swift.method Path.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Path.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Path.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Path.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Path.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -7320,6 +7292,7 @@ swift.method Picker.horizontalAlignment(_:): @MainActor func horizontalAlignment
 swift.method Picker.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method Picker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Picker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Picker.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Picker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Picker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -7448,8 +7421,6 @@ swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Picker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Picker.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Picker.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Picker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Picker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Self.Modified
@@ -7541,6 +7512,7 @@ swift.method Polygon.height(_:): @MainActor func height(_ state: Binding<Double>
 swift.method Polygon.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Polygon.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Polygon.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Polygon.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Polygon.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polygon.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Polygon.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -7657,8 +7629,6 @@ swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method Polygon.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Polygon.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Polygon.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Polygon.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Polygon.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -7742,6 +7712,7 @@ swift.method Polyline.height(_:): @MainActor func height(_ state: Binding<Double
 swift.method Polyline.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Polyline.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Polyline.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Polyline.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Polyline.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polyline.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Polyline.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -7858,8 +7829,6 @@ swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ value
 swift.method Polyline.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Polyline.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Polyline.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Polyline.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Polyline.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -7953,6 +7922,7 @@ swift.method PositionDots.hidesForSinglePage(_:): @MainActor func hidesForSingle
 swift.method PositionDots.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method PositionDots.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method PositionDots.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method PositionDots.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method PositionDots.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method PositionDots.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -8064,8 +8034,6 @@ swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ v
 swift.method PositionDots.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method PositionDots.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method PositionDots.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method PositionDots.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method PositionDots.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -8143,6 +8111,7 @@ swift.method ProgressBar.height(_:): @MainActor func height(_ state: Binding<Dou
 swift.method ProgressBar.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ProgressBar.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ProgressBar.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method ProgressBar.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method ProgressBar.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ProgressBar.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -8255,8 +8224,6 @@ swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ va
 swift.method ProgressBar.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ProgressBar.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method ProgressBar.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method ProgressBar.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method ProgressBar.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -8348,6 +8315,7 @@ swift.method Rectangle.height(_:): @MainActor func height(_ state: Binding<Doubl
 swift.method Rectangle.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Rectangle.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Rectangle.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Rectangle.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Rectangle.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Rectangle.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Rectangle.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -8464,8 +8432,6 @@ swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ valu
 swift.method Rectangle.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Rectangle.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Rectangle.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Rectangle.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Rectangle.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -8552,6 +8518,7 @@ swift.method ScrollView.horizontalAlignment(_:): @MainActor func horizontalAlign
 swift.method ScrollView.horizontalScrollIndicator(_:): @MainActor func horizontalScrollIndicator(_ state: Binding<ScrollIndicatorVisibility>) -> ScrollView.Modified
 swift.method ScrollView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ScrollView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method ScrollView.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method ScrollView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ScrollView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -8681,8 +8648,6 @@ swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ val
 swift.method ScrollView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ScrollView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method ScrollView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method ScrollView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method ScrollView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -8770,6 +8735,7 @@ swift.method SearchField.horizontalTextAlignment(_:): @MainActor func horizontal
 swift.method SearchField.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method SearchField.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
+swift.method SearchField.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method SearchField.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method SearchField.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -8898,8 +8864,6 @@ swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ va
 swift.method SearchField.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method SearchField.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method SearchField.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method SearchField.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method SearchField.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Self.Modified
@@ -8985,6 +8949,7 @@ swift.method Separator.height(_:): @MainActor func height(_ state: Binding<Doubl
 swift.method Separator.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Separator.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Separator.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Separator.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Separator.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Separator.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9097,8 +9062,6 @@ swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ valu
 swift.method Separator.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Separator.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Separator.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Separator.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Separator.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -9183,6 +9146,7 @@ swift.method Slider.height(_:): @MainActor func height(_ state: Binding<Double>)
 swift.method Slider.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Slider.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Slider.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Slider.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Slider.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Slider.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9310,8 +9274,6 @@ swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Slider.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Slider.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Slider.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Slider.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Slider.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -9385,6 +9347,7 @@ swift.method Space.height(_:): @MainActor func height(_ state: Binding<Double>) 
 swift.method Space.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Space.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Space.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Space.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Space.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Space.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9498,8 +9461,6 @@ swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ value: M
 swift.method Space.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Space.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Space.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Space.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Space.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -9574,6 +9535,7 @@ swift.method Spinner.height(_:): @MainActor func height(_ state: Binding<Double>
 swift.method Spinner.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Spinner.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Spinner.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Spinner.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Spinner.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Spinner.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9686,8 +9648,6 @@ swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method Spinner.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Spinner.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Spinner.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Spinner.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Spinner.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -9770,6 +9730,7 @@ swift.method SplitView.height(_:): @MainActor func height(_ state: Binding<Doubl
 swift.method SplitView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method SplitView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method SplitView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method SplitView.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method SplitView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method SplitView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9879,8 +9840,6 @@ swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ valu
 swift.method SplitView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method SplitView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method SplitView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method SplitView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method SplitView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -9972,6 +9931,7 @@ swift.method Stepper.height(_:): @MainActor func height(_ state: Binding<Double>
 swift.method Stepper.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Stepper.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Stepper.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Stepper.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Stepper.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Stepper.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -10093,8 +10053,6 @@ swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method Stepper.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Stepper.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Stepper.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Stepper.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Stepper.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -10310,6 +10268,7 @@ swift.method Switch.height(_:): @MainActor func height(_ state: Binding<Double>)
 swift.method Switch.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Switch.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Switch.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Switch.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Switch.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Switch.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -10429,8 +10388,6 @@ swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method Switch.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Switch.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Switch.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Switch.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Switch.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -10515,6 +10472,7 @@ swift.method TabView.height(_:): @MainActor func height(_ state: Binding<Double>
 swift.method TabView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TabView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TabView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method TabView.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method TabView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TabView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -10624,8 +10582,6 @@ swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method TabView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method TabView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method TabView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method TabView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method TabView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -10705,6 +10661,7 @@ swift.method Text.horizontalAlignment(_:): @MainActor func horizontalAlignment(_
 swift.method Text.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method Text.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Text.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method Text.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method Text.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Text.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -10825,8 +10782,6 @@ swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ value: Ma
 swift.method Text.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Text.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method Text.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method Text.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method Text.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -10921,6 +10876,7 @@ swift.method TextEditor.horizontalTextAlignment(_:): @MainActor func horizontalT
 swift.method TextEditor.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TextEditor.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
+swift.method TextEditor.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method TextEditor.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TextEditor.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11046,8 +11002,6 @@ swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ val
 swift.method TextEditor.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method TextEditor.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method TextEditor.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method TextEditor.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method TextEditor.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Self.Modified
@@ -11138,6 +11092,7 @@ swift.method TextField.horizontalTextAlignment(_:): @MainActor func horizontalTe
 swift.method TextField.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TextField.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
+swift.method TextField.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method TextField.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TextField.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11267,8 +11222,6 @@ swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ valu
 swift.method TextField.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method TextField.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method TextField.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method TextField.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method TextField.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Self.Modified
@@ -11412,6 +11365,7 @@ swift.method TimePicker.height(_:): @MainActor func height(_ state: Binding<Doub
 swift.method TimePicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TimePicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TimePicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method TimePicker.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method TimePicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TimePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11540,8 +11494,6 @@ swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ val
 swift.method TimePicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method TimePicker.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method TimePicker.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method TimePicker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method TimePicker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -11727,6 +11679,7 @@ swift.method VStack.horizontalAlignment(_:): @MainActor func horizontalAlignment
 swift.method VStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method VStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
+swift.method VStack.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method VStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method VStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11848,8 +11801,6 @@ swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method VStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method VStack.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method VStack.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method VStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method VStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -11897,6 +11848,7 @@ swift.method View.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method View.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method View.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method View.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
+swift.method View.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method View.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method View.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method View.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
@@ -11982,8 +11934,6 @@ swift.method View.pageBackground(_:): @MainActor func pageBackground(_ value: Ma
 swift.method View.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method View.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method View.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method View.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method View.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method View.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method View.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method View.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -12140,6 +12090,7 @@ swift.method WebView.height(_:): @MainActor func height(_ state: Binding<Double>
 swift.method WebView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method WebView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method WebView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method WebView.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method WebView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method WebView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -12265,8 +12216,6 @@ swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ value:
 swift.method WebView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method WebView.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method WebView.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method WebView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method WebView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -12364,6 +12313,7 @@ swift.method ZStack.horizontalAlignment(_:): @MainActor func horizontalAlignment
 swift.method ZStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ZStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
+swift.method ZStack.interaction(_:): @MainActor func interaction(_ interaction: Interaction?) -> Self.Modified
 swift.method ZStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ZStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -12485,8 +12435,6 @@ swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ value: 
 swift.method ZStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ZStack.pageTitle(_:): @MainActor func pageTitle(_ state: Binding<String>) -> Self.Modified
 swift.method ZStack.pageTitle(_:): @MainActor func pageTitle(_ value: String) -> Self.Modified
-swift.method ZStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method ZStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -13375,7 +13323,6 @@ swift.type.property MenuToggleContract.name: static var name: String { get }
 swift.type.property Motion.inherited: static let inherited: Motion
 swift.type.property Motion.none: static let none: Motion
 swift.type.property Motion.standard: static let standard: Motion
-swift.type.property MotionLayoutContract.interaction: static let interaction: ElementProgram<MotionLayoutContract, Interaction>
 swift.type.property MotionLayoutContract.itemDrag: static let itemDrag: ElementProperty<MotionLayoutContract, ItemDragStart>
 swift.type.property MotionLayoutContract.itemDragUpdated: static let itemDragUpdated: ElementEvent<MotionLayoutContract, (GesturePhase, Point, Point, Double)>
 swift.type.property MotionLayoutContract.layout: static let layout: ElementProgram<MotionLayoutContract, LayoutProgramDefinition>
@@ -13593,6 +13540,7 @@ swift.type.property ViewContract.gridRowSpan: static let gridRowSpan: ElementPro
 swift.type.property ViewContract.held: static let held: ElementEvent<ViewContract, Void>
 swift.type.property ViewContract.holdDuration: static let holdDuration: ElementProperty<ViewContract, Double>
 swift.type.property ViewContract.horizontalAlignment: static let horizontalAlignment: ElementProperty<ViewContract, Alignment>
+swift.type.property ViewContract.interaction: static let interaction: ElementProgram<ViewContract, Interaction>
 swift.type.property ViewContract.isDraggable: static let isDraggable: ElementProperty<ViewContract, Bool>
 swift.type.property ViewContract.layoutBody: static let layoutBody: ElementProperty<ViewContract, LayoutBody>
 swift.type.property ViewContract.layoutFrameChanged: static let layoutFrameChanged: ElementEvent<ViewContract, [Double]>
@@ -13600,8 +13548,6 @@ swift.type.property ViewContract.margin: static let margin: ElementProperty<View
 swift.type.property ViewContract.name: static let name: String
 swift.type.property ViewContract.panTouchCount: static let panTouchCount: ElementProperty<ViewContract, Int>
 swift.type.property ViewContract.panUpdated: static let panUpdated: ElementEvent<ViewContract, (GesturePhase, Point, Point, Point)>
-swift.type.property ViewContract.panXChannel: static let panXChannel: ElementProperty<ViewContract, Int>
-swift.type.property ViewContract.panYChannel: static let panYChannel: ElementProperty<ViewContract, Int>
 swift.type.property ViewContract.pinchUpdated: static let pinchUpdated: ElementEvent<ViewContract, (GesturePhase, Double, Point, Double)>
 swift.type.property ViewContract.pointerMoved: static let pointerMoved: ElementEvent<ViewContract, Point?>
 swift.type.property ViewContract.pointerPressed: static let pointerPressed: ElementEvent<ViewContract, Point?>

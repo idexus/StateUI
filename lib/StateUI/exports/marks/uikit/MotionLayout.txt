@@ -1,6 +1,5 @@
-# revision 21.1
+# revision 23.1
 MotionLayout: ✅
-MotionLayout.interaction: ✓ notch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.itemDrag: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.itemDragUpdated: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.layout: ✅

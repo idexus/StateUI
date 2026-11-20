@@ -31,10 +31,6 @@ public enum MotionLayoutContract: ElementContract {
     /// whenever the arithmetic was worked out again.
     public static let layout = ElementProgram<Self, LayoutProgramDefinition>("layout", layer: .stateUI)
 
-    /// What the user's hand moves of the layout's parameters, and how: the host answers the hand by it - what it
-    /// hears, the hold, where a value rests let go.
-    public static let interaction = ElementProgram<Self, Interaction>("interaction", layer: .stateUI)
-
     /// Whether the layout turns about its middle where it lays out right to left: its views' places, their move
     /// along and their turn, and the hand over it.
     public static let mirrorsRightToLeft = ElementProperty<Self, Bool>(
@@ -42,6 +38,6 @@ public enum MotionLayoutContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        interaction, itemDrag, itemDragUpdated, layout, mirrorsRightToLeft, parameters,
+        itemDrag, itemDragUpdated, layout, mirrorsRightToLeft, parameters,
     ]
 }

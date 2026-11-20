@@ -77,15 +77,15 @@ extension InteractionAxis {
     /// snap ahead from the hand's speed - under the throw's spring, else as a glide no longer than the throw's
     /// longest - where that brings it onto the next snap no slower than `own` moves a unit, and always so with no
     /// snaps; let go still, thrown back or slower than that, it approaches under its release's motion, else `own`,
-    /// over as much of its length as the way left is of a unit. Nil where it stands there already, or has no law
-    /// to go by.
+    /// over as much of its length as the way left is of a unit, the whole of it at most. Nil where it stands there
+    /// already, or has no law to go by.
     /// Design: docs/design/host/interaction.md#coming-onto-where-it-rests
     public func going(_ letting: Letting, to value: Double, under own: Motion) -> Going? {
         let left = toHand(value) - letting.point
         let motion = approaching ?? own
         let flight = InteractionArithmetic.flight(left, at: letting.velocity, by: throwing)
         let onward = !hasSnaps || !next(from: fromHand(letting.point), to: value)
-            || flight <= abs(left) * Double(motion.milliseconds)
+            || flight <= InteractionArithmetic.share(of: left) * Double(motion.milliseconds)
         let isThrow = throwsOn && letting.throwsFar && left * letting.velocity > 0 && onward
 
         guard abs(left) * letting.per > InteractionArithmetic.settled, motion.kind != .custom || isThrow

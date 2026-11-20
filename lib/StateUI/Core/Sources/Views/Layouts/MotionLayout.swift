@@ -129,40 +129,21 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// declarations, as the author is told it.
     /// Design: docs/design/views/interaction.md#on-a-motion-layout
     private var worked: (hands: [Hand], complaints: [String], moving: [Interaction.Leaf]) {
-        var complaints = (declared?.refused ?? []) + mappings.compactMap { $0.complaint }
+        // What an interaction is refused for on any view is said by the interaction; the layout adds its own.
+        let said = declared?.standing(measuresFront: true)
+        var complaints = (said?.complaints ?? []) + mappings.compactMap { $0.complaint }
         if curve != nil, !mappings.contains(where: { $0.keyframes != nil }) {
             complaints.append("A MotionLayout was given an interpolation and no axis with keyframes: nothing is blended.")
         }
+        // Every value that stands is the hand's, as on any view; those of the layout's own parameters are axes the
+        // run works on.
         let own = ObjectIdentifier(parameters.storage)
-        var moved: [(index: Int, leaf: Interaction.Leaf)] = []
-        for leaf in declared?.leaves ?? [] {
-            guard leaf.state == own, let axis = leaf.axis as? WritableKeyPath<Parameters, Double>,
-                  let index = Parameters.axes.firstIndex(of: axis)
-            else {
-                complaints.append(
-                    "A MotionLayout's interaction moves a number that is no axis of the layout's parameters. The hand "
-                        + "moves nothing of it.")
-                continue
-            }
-            moved.append((index, leaf))
-        }
-        // Two moving one number are refused together: neither is the one the author meant.
-        let twice = Set(Dictionary(grouping: moved, by: \.index).filter { $0.value.count > 1 }.keys)
-        if !twice.isEmpty {
-            complaints.append(
-                "A MotionLayout's interaction moves one number of its parameters twice. The hand moves nothing of it.")
-        }
-
+        let moving = said?.leaves ?? []
         var hands: [Hand] = []
-        var moving: [Interaction.Leaf] = []
-        for (index, leaf) in moved where !twice.contains(index) {
+        for leaf in moving where leaf.state == own {
+            guard let index = leaf.lane else { continue }
             let mapping = mappings.last { $0.stands && Parameters.axes.firstIndex(of: $0.axis) == index }
-            if let complaint = Self.complaint(of: leaf) {
-                complaints.append(complaint)
-                continue
-            }
             hands.append(Self.hand(at: index, moved: leaf, mapped: mapping))
-            moving.append(leaf)
         }
         for mapping in mappings where mapping.stands {
             guard let index = Parameters.axes.firstIndex(of: mapping.axis), !hands.contains(where: { $0.index == index })
@@ -170,37 +151,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             hands.append(Self.hand(at: index, moved: nil, mapped: mapping))
         }
         return (hands, complaints, moving)
-    }
-
-    /// What is wrong with one value an interaction moves, if anything, as the author is told it.
-    private static func complaint(of leaf: Interaction.Leaf) -> String? {
-        let magnifies = leaf.input.gesture == .magnification
-        if let range = leaf.range {
-            if !range.lowerBound.isFinite || !range.upperBound.isFinite {
-                return "An interaction was given a range with no end. The hand moves nothing of it."
-            }
-            if magnifies, range.lowerBound <= 0 {
-                return "An interaction's magnification was given a range reaching nought, which no spreading of the "
-                    + "fingers reaches. The fingers move nothing."
-            }
-        }
-        if leaf.periodic, magnifies {
-            return "An interaction's magnification was told to come round, which a size never does. The fingers move "
-                + "nothing."
-        }
-        if leaf.periodic, (leaf.range.map { $0.upperBound > $0.lowerBound } ?? false) == false {
-            return "An interaction was told to come round with no range of some length to come round over. The hand "
-                + "moves nothing of it."
-        }
-        if leaf.input.swipes, leaf.snaps == nil {
-            return "An interaction's swipe moves its value one snap a hand, and was given no snaps. The hand moves "
-                + "nothing of it."
-        }
-        if let snaps = leaf.snaps, leaf.range == nil, snaps.unbounded == nil {
-            return "An interaction was given the ends of a range, and no range, to rest at. The hand moves nothing "
-                + "of it."
-        }
-        return nil
     }
 
     /// The axis at `index` as the run works on it: moved as `leaf` says, mapped as `mapping` does.
@@ -381,7 +331,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// turning move theirs while the hand goes on with their middle. The views still answer a tap. An interaction
     /// said again takes the other's place.
     ///
-    /// - Parameter interaction: the interaction, each value of it one of the layout's parameters; nil for none.
+    /// - Parameter interaction: the interaction - its values of the layout's parameters move the run, and a value
+    ///   of another state is moved as on any view; nil for none.
     /// - Returns: the layout, moved so by the hand.
     public func interaction(_ interaction: Interaction?) -> Self {
         var copy = self
@@ -698,8 +649,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             element.destroying.append { run.states.drags.orphan() }
             element.setProgram(MotionLayoutContract.layout, definition: definition)
             // The hand is heard on the element itself, over every view, which still answers a tap: what it moves is
-            // the host's to hold, by this program.
-            element.setProgram(MotionLayoutContract.interaction, definition: moving)
+            // the host's to hold, by the program every view has for it.
+            element.setProgram(ViewContract.interaction, definition: moving)
             element.describe(MotionLayoutContract.itemDrag, run.itemStart)
             if run.itemStart != nil {
                 element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still in

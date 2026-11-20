@@ -88,7 +88,6 @@ final class ControlTests: XCTestCase {
 
         // A binding needs somewhere to live; a State is a reference, so this is
         // the same thing an application holds.
-        let followed = State(wrappedValue: 0.0)
         let offset = State(wrappedValue: Point.zero)
         let refreshing = State(false)
         let hasBack = State(false)
@@ -564,10 +563,6 @@ final class ControlTests: XCTestCase {
                         // Harmless on a view in none: an area means something
                         // only to the layout that asks for it.
                         .area(.absolute(Rect(0, 0, 120, 40)))
-                        // A drag written into states rather than reported -
-                        // the path that describes nothing.
-                        .panX(followed.projectedValue)
-                        .panY(followed.projectedValue)
                         .padding(horizontal: 8, vertical: 4)
 
                     // The input tier, which TextField, TextEditor and SearchField all

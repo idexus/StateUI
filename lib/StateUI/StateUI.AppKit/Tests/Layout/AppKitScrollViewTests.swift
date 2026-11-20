@@ -335,11 +335,11 @@ final class AppKitScrollViewTests: XCTestCase {
         // The hand carries the card in front: on the wheel 0.52 of a card a turn,
         // 92 to 128 points as the window draws it. The push goes 80 - past half
         // a turn, short of a whole one.
-        layout.scrollWheel(with: try Self.scroll(phase: .began))
-        layout.scrollWheel(with: try Self.scroll(x: -80, phase: .changed))
+        _ = Self.taken(by: layout, try Self.scroll(phase: .began))
+        _ = Self.taken(by: layout, try Self.scroll(x: -80, phase: .changed))
         // Held still before it lifts: no throw.
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.15))
-        layout.scrollWheel(with: try Self.scroll(phase: .ended))
+        _ = Self.taken(by: layout, try Self.scroll(phase: .ended))
         let swallowed = Self.taken(by: layout, try Self.scroll(x: -30, momentum: .continuous))
 
         let settled = Date(timeIntervalSinceNow: 2)
@@ -360,7 +360,7 @@ final class AppKitScrollViewTests: XCTestCase {
         let renderer = AppKitRenderer.running { GalleryView(0..<7) { number in Text("\(number)") } }
         defer { renderer.finish() }
         let layout = try XCTUnwrap(Self.layout(in: renderer))
-        let reader = try XCTUnwrap(layout.hand)
+        func reader(_ event: NSEvent) -> Bool { Self.taken(by: layout, event) }
 
         XCTAssertTrue(reader(try Self.scroll(phase: .began)), "a gesture begun is the layout's until it moves")
         XCTAssertFalse(reader(try Self.scroll(y: -80, phase: .changed)), "moving down, it is not the run's")
@@ -368,22 +368,57 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertTrue(reader(try Self.scroll(x: -40)), "a wheel along the run is")
     }
 
+    /// A VIEW OF ANY CLASS HEARS A TRACKPAD'S HAND: a rectangle whose interaction moves a state is offered the scroll
+    /// over it, and the state follows the fingers - no layout, and no scroller of AppKit's between.
+    @MainActor
+    func testAViewOfAnyClassHearsATrackpadsHand() throws {
+        let moved = State(wrappedValue: 0.0)
+        let renderer = AppKitRenderer.running {
+            Rectangle()
+                .fill(.red)
+                .width(200)
+                .height(100)
+                .interaction(.value(moved.projectedValue, axis: \.self, input: .translation(.horizontal)).release(.stay))
+        }
+        defer { renderer.finish() }
+        let deadline = Date(timeIntervalSinceNow: 2)
+        var panel: NSView?
+        while panel == nil, Date() < deadline {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+            renderer.runtime.pump.turn()
+            if renderer.frameClock.held { renderer.displayFrameForTesting() }
+            panel = renderer.nativeViews(AppKitShapeView.self).first { AppKitHandScroll.hears($0) }
+        }
+        let view = try XCTUnwrap(panel, "the rectangle hears no hand")
+
+        XCTAssertTrue(AppKitHandScroll.offered(try Self.scroll(phase: .began), over: view))
+        XCTAssertTrue(AppKitHandScroll.offered(try Self.scroll(x: 60, phase: .changed), over: view))
+        XCTAssertTrue(AppKitHandScroll.offered(try Self.scroll(phase: .ended), over: view))
+        let settled = Date(timeIntervalSinceNow: 2)
+        while moved.wrappedValue != 60, Date() < settled {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+            renderer.runtime.pump.turn()
+            renderer.displayFrameForTesting()
+        }
+        XCTAssertEqual(moved.wrappedValue, 60, accuracy: 0.001, "as far as the fingers went, and left there")
+    }
+
     /// The view of the layout a hand moves, once the host stood it.
     @MainActor
     private static func layout(in renderer: AppKitRenderer) -> AppKitZStackView? {
         let deadline = Date(timeIntervalSinceNow: 2)
-        while !renderer.nativeViews(AppKitZStackView.self).contains(where: { $0.hand != nil }), Date() < deadline {
+        while !renderer.nativeViews(AppKitZStackView.self).contains(where: { AppKitHandScroll.hears($0) }), Date() < deadline {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
             renderer.runtime.pump.turn()
             if renderer.frameClock.held { renderer.displayFrameForTesting() }
         }
-        return renderer.nativeViews(AppKitZStackView.self).first { $0.hand != nil }
+        return renderer.nativeViews(AppKitZStackView.self).first { AppKitHandScroll.hears($0) }
     }
 
-    /// Whether `layout` took `event` rather than sending it on.
+    /// Whether a hand over `layout` took `event`, as the host offers it before AppKit dispatches it.
     @MainActor
     private static func taken(by layout: AppKitZStackView, _ event: NSEvent) -> Bool {
-        layout.hand?(event) ?? false
+        AppKitHandScroll.offered(event, over: layout)
     }
 
     /// A trackpad's scroll event moving what is under the fingers by `x` and `y` points, at a step of its gesture

@@ -95,13 +95,9 @@ public enum ViewContract: Tier {
     public static let panUpdated = ElementEvent<Self, (GesturePhase, Point, Point, Point)>(
         "panUpdated", layer: .native)
 
-    /// The number of the state a drag's distance across is written into.
-    public static let panXChannel = ElementProperty<Self, Int>(
-        "panXChannel", layer: .structure, travels: false)
-
-    /// The number of the state a drag's distance down is written into.
-    public static let panYChannel = ElementProperty<Self, Int>(
-        "panYChannel", layer: .structure, travels: false)
+    /// What the user's hand moves on the view, and how: numbers of states the host holds under the hand, moves and
+    /// lets go by.
+    public static let interaction = ElementProgram<Self, Interaction>("interaction", layer: .stateUI)
 
     /// Two fingers moved apart or together: the phase, the scale since the
     /// pinch began, the pinch's center as a fraction of the view, and how fast
@@ -146,5 +142,5 @@ public enum ViewContract: Tier {
         "verticalAlignment", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, filesDropped, layoutFrameChanged, presentationFrameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, isDraggable, margin, panTouchCount, panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, verticalAlignment]
+    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, filesDropped, layoutFrameChanged, presentationFrameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, interaction, isDraggable, margin, panTouchCount, panUpdated, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, verticalAlignment]
 }

@@ -167,7 +167,7 @@ enum WinUIRealization {
         .unrealized(VisualElementContract.ignoresInput, on: SpinnerContract.self, why: hitOnlyWherePainted),
         .partial(DatePickerContract.format,
             missing: "WinUI writes the long and the short day in the user's own way, and the medium as the short."),
-        .partial(MotionLayoutContract.interaction,
+        .partial(ViewContract.interaction,
             missing: "A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, "
             + "its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch."),
         .complete(MotionLayoutContract.itemDrag),
@@ -250,8 +250,7 @@ enum WinUIRealization {
         .notPlanned(ViewContract.panTouchCount, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.held, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.panUpdated, on: WebViewContract.self, reason: webViewTakesTheHand),
-        .notPlanned(ViewContract.panXChannel, on: WebViewContract.self, reason: webViewTakesTheHand),
-        .notPlanned(ViewContract.panYChannel, on: WebViewContract.self, reason: webViewTakesTheHand),
+        .notPlanned(ViewContract.interaction, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.pinchUpdated, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(HoverElementContract.pointerEntered, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(HoverElementContract.pointerExited, on: WebViewContract.self, reason: webViewTakesTheHand),

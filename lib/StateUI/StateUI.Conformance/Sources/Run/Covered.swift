@@ -44,6 +44,18 @@ public struct Covered: Hashable, Sendable, CustomStringConvertible {
         self.init(member: program.name, element: Owner.nodeType.name, tier: nil)
     }
 
+    /// A tier's program, on an element wearing the tier.
+    public init<Tier: Contract, Definition, Element: ElementContract>(
+        _ program: ElementProgram<Tier, Definition>, on element: Element.Type
+    ) {
+        self.init(member: program.name, element: Element.nodeType.name, tier: Tier.name)
+    }
+
+    /// A program on the element named `element` - a tier's, as a tier's case made for each element names it.
+    public init<Owner: Contract, Definition>(_ program: ElementProgram<Owner, Definition>, on element: String) {
+        self.init(member: program.name, element: element, tier: Owner.name == element ? nil : Owner.name)
+    }
+
     /// An element's own event.
     public init<Owner: ElementContract, Payload>(_ event: ElementEvent<Owner, Payload>) {
         self.init(member: event.name, element: Owner.nodeType.name, tier: nil)

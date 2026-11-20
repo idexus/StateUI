@@ -139,7 +139,6 @@ enum GTKRealization {
         .complete(BackgroundElementContract.background, on: FillContract.self),
         .complete(BackgroundElementContract.background, on: SpaceContract.self),
         .complete(BackgroundElementContract.background, on: MotionLayoutContract.self),
-        .complete(MotionLayoutContract.interaction),
         .complete(MotionLayoutContract.itemDrag),
         .complete(MotionLayoutContract.itemDragUpdated),
         .partial(DatePickerContract.format,

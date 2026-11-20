@@ -71,6 +71,7 @@ extension Node {
         swap(&written.driven, &driven)
         swap(&written.motion, &motion)
         swap(&written.events, &events)
+        swap(&written.programs, &programs)
         swap(&written.engines, &engines)
         swap(&written.pageValues, &pageValues)
         swap(&written.aim, &aim)
@@ -97,6 +98,7 @@ extension Node {
         for (name, handlers) in written.events.sorted(by: { $0.key < $1.key }) {
             addHandlers(name, handlers)
         }
+        programs.merge(written.programs) { _, wrote in wrote }
         watches += written.watches
         created += written.created
         destroying += written.destroying

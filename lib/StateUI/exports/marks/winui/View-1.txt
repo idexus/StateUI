@@ -1,4 +1,4 @@
-# revision 29.2
+# revision 31.2
 Button.gridColumn: ✅
 Button.gridRow: ✅
 Button.layoutFrameChanged: ✅
@@ -100,6 +100,7 @@ MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the relay's drag report
 MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.isDraggable: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.margin: ✅

@@ -273,10 +273,13 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     }
 
     override func scrollWheel(with event: NSEvent) {
-        if wheelScroller(for: event) == .enclosing,
-            let enclosingScroller = enclosingScrollView {
-            enclosingScroller.scrollWheel(with: event)
-            return
+        if wheelScroller(for: event) == .enclosing {
+            // What the scroller leaves goes on to a hand above it, then to the scroller that holds it.
+            if AppKitHandScroll.offered(event, over: superview) { return }
+            if let enclosingScroller = enclosingScrollView {
+                enclosingScroller.scrollWheel(with: event)
+                return
+            }
         }
 
         super.scrollWheel(with: event)
