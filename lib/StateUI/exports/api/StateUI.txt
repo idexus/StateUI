@@ -1646,7 +1646,6 @@ swift.init GeometryReader.init(in:content:): @MainActor init<Content>(in space: 
 swift.init GradientStop.init(_:_:): init(_ color: Color, _ offset: Double)
 swift.init Grid.init(): @MainActor init()
 swift.init Grid.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : Views
-swift.init GridTracks.init(_:count:): init(_ length: GridLength, count: Int = 1)
 swift.init Group.init(content:): @MainActor init(@ViewBuilder content: () -> Content)
 swift.init HStack.init(): @MainActor init()
 swift.init HStack.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : Views

@@ -169,6 +169,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **A platform's own icon as a picture is `.platform(_:)`.** `ImageSource.icon(_:)` is `ImageSource.platform(_:)`,
   so a button's icon no longer says the word twice: `.icon(.icon(.share))` is `.icon(.platform(.share))`, and
   `Image(.icon(.star))` is `Image(.platform(.star))`.
+- **A grid's run of rows or columns is made by its factories alone.** `GridTracks(_:count:)` is gone:
+  `GridTracks(.fixed(90), count: 3)` is `.fixed(90, count: 3)`, as `.automatic(count:)`, `.fill(count:)` and
+  `.proportional(_:count:)` say the others.
 
 ### New
 

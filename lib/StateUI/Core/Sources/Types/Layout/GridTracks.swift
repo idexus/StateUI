@@ -15,8 +15,8 @@ public struct GridTracks: Equatable, Sendable {
     /// How many rows or columns the run holds.
     public let count: Int
 
-    /// A run of `count` rows or columns, each `length` long.
-    public init(_ length: GridLength, count: Int = 1) {
+    /// A run of `count` rows or columns, each `length` long: what every factory below makes.
+    init(_ length: GridLength, count: Int = 1) {
         self.length = length
         self.count = count
     }
