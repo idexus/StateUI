@@ -310,11 +310,63 @@ than its box keeps showing its former words until the box holds the new ones. Wh
 read - an `onFrameChanged` handler, a driven frame - every child arrives,
 because each step of a walk would report a room nobody chose. A child that
 joins a layout already standing fades in under the same law, unless a state
-owns its opacity.
+owns its opacity or the child says how it enters.
 
 Visibility motion and layout motion are part of the cross-platform contract,
 but an application relies on them only where [Platform contract](../platform-contract.md)
 shows verified host support.
+
+## A view that enters
+
+A view the tree gains can say how it comes. `.transition(_:)` names the
+effect its entry sets out from, and the view travels from that effect to how
+it stands:
+
+```swift
+import StateUI
+
+struct Details: View {
+    @State private var expanded = false
+
+    var body: some View {
+        VStack {
+            Button("Details").onClicked { expanded.toggle() }
+
+            if expanded {
+                Text("More to read")
+                    .transition(.symmetric(.opacity.combined(with: .translation(y: 12))))
+                    .motion(.spring(response: .milliseconds(260), damping: 0.85))
+            }
+        }
+        .spacing(12)
+    }
+}
+```
+
+A `TransitionEffect` is the view as it is drawn while absent: `.opacity`
+faded out, `.translation(x:y:)` moved from its place, `.scale(_:)` drawn so
+many times as large about its middle. `combined(with:)` puts effects together
+in the order written: a move written after a scale is the move as written,
+and a scale written after a move scales the move with the view. A
+`Transition` holds the effect an entry comes from and the one an exit goes
+to; `symmetric(_:)` is one effect for both.
+
+| What happens | What the view does |
+| --- | --- |
+| it joins a layout already standing | enters from its effect, in place of the fade a joining view comes with |
+| it appears with what holds it - a page shown, a window opened | is simply there; with `.initialAppearance(true)` it enters |
+| a transition is given to it as it stands | nothing moves |
+| the tree drops it | it goes at once |
+
+The entry moves under the view's own `.motion(_:)`, else the application's:
+a transition says no law of its own. Where neither animates, or the user
+asked for less motion, the view is simply there. A number a state drives -
+an opacity carried from a state - stays that state's, and the entry moves
+the others.
+
+Hiding a view with `isVisible(_:)` keeps the view and its state, and crosses
+as [visibility](#visibility-and-layout-motion) does, whatever transition the
+view declares.
 
 ## An engine that animates
 

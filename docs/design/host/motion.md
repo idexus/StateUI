@@ -122,7 +122,7 @@ child stands on the way. Why an arrangement happens decides everything:
 - A patch reached the layout since its last arrangement: it holds something
   different - a row inserted, a card grown - and its children animate to their
   new places, under the layout's own motion or else the application's. A child
-  that joins fades in.
+  that joins enters ([a view that enters](#a-view-that-enters)).
 - No patch: the room itself is moving - a window resized, a sidebar dragged -
   and every child follows exactly, because a child that glides after the
   user's own hand is late on every frame. A layout whose own width changed is
@@ -238,13 +238,66 @@ arrives. A layout bound for a size lays its children out at that size, its
 own box traveling around them: a label filling it would otherwise break at
 the widths the layout passes through.
 
+## A view that enters
+
+A layout tells every child it gives a first place how the child comes
+(`LayoutMotion.place`, a `LayoutEntry`), and the element decides what that
+means for it, once for every host (`MountedElement.enter(_:as:)`):
+
+```text
+                    joining a layout already standing    appearing with its layout
+  a transition      enters from its entry's effect       enters where it says initialAppearance
+  none              fades in under the layout's law      is simply there
+```
+
+A child joins where a patch reached its layout as it stood
+(`Arrangement.joins`), and is told the law that layout's children animate
+under - none where they arrive. One given its first place by any other
+arrangement - its layout's first, a room that moved - appears with it. A
+host asks `entersMoving(presentsOpacity:)` whether the element may come
+moving at all, and hands the entry on with the view (`FadingView`).
+
+An element of no transition fades in from nothing under the layout's law,
+where that animates, its view presents opacity and no state owns it; an
+opacity already on its way keeps its motion.
+
+An element declaring a transition
+([a transition](../views/transitions.md#a-transition)) comes from its
+entry's effect: each number the effect touches is stood where the effect
+puts it and brought onto what the element declares.
+
+```text
+  opacity        what it declares, times the effect's
+  translationX   what it declares, and the effect's move across
+  translationY   what it declares, and the effect's move down
+  scale          what it declares, times the effect's factor
+```
+
+Each goes by the road a property's own animation takes
+(`receiveProperty`), so no host draws an entry by anything it did not draw
+by already. The law is the element's own motion, else the application's
+(`LayoutMotion.law(of:)`) - never the layout's, which says how its children
+change places. A number a state drives is the state's, and one already on
+its way keeps its way. Where nothing moves - no motion, or the user asked for
+less - the element stands as declared.
+
+A message that makes again what the tree showed - a complete one after a
+drift, another root in the standing one's place - makes elements the user
+already saw: the tree marks them as it makes them (`MountedTree.remakes`,
+`MountedElement.isRemade`), and none enters by a transition. The first
+message's are not made again: a transition saying `initialAppearance` enters
+with the window's first page.
+
+The trap is the layout's law deciding whether a child enters. A view with a
+motion of its own, in an application that says none, would then never
+enter; so the layout says only that the child joined, and under what law
+its own children move, and the element reads its transition.
+
 ## Showing and hiding
 
 An element's showing moves by one rule on every host (`MountedElement`'s
-`fadeIn`, `crossVisibility`); the host hands it the view (`FadingView`) and
-what closes the layout over it. A child that joins a standing layout fades
-in from nothing under the layout's motion, where its view presents opacity
-and no state owns it; an opacity already on its way keeps its motion. A
+`crossVisibility`); the host hands it the view (`FadingView`) and
+what closes the layout over it. A
 change of visibility on an element already shown crosses under the
 element's own motion or the application's: hidden, it fades out - standing
 shown the while (`standsShown`), deaf to input (`ignoresInput`, which the

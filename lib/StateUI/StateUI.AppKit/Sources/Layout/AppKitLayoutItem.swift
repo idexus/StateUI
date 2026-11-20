@@ -20,8 +20,8 @@ struct AppKitLayoutItem: LayoutChild {
     /// The element that places the view as its layout animates it; nil for a view no element presents.
     weak var placed: (any PlacedView)?
 
-    /// Fades the view in as it joins a standing layout; nil for a view that simply appears.
-    var fadeIn: ((Motion) -> Void)?
+    /// Brings the view in as it is given its first place; nil for a view that simply appears.
+    var enter: ((LayoutEntry) -> Void)?
 
     /// How the view is drawn over its frame, for a layout that places it.
     var drawing: AppKitViewDrawing?

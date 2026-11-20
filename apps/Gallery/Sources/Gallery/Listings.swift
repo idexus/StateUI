@@ -13470,6 +13470,63 @@ enum Listings {
             }
         }
         """#,
+        "TransitionSample": #"""
+        // Sources/Samples/Animation/TransitionSample.swift
+        static let ways = ["Rising", "Growing", "From the side"]
+
+        /// What a note comes from: faded and lower, faded and smaller, or faded
+        /// and well to the side.
+        static func effect(_ way: Int) -> TransitionEffect {
+            switch way {
+            case 1: .opacity.combined(with: .scale(0.6))
+            case 2: .opacity.combined(with: .translation(x: 160))
+            default: .opacity.combined(with: .translation(y: 24))
+            }
+        }
+
+        @State private var cards: [Int] = []
+        @State private var next = 1
+        @State private var way = 0
+
+        var body: some View {
+            VStack {
+                VStack {
+                    // INSIDE these braces, because that is where `cards` and
+                    // `way` are read: Add builds this closure, and the notes
+                    // left standing keep their views.
+                    DebugInfoLabel()
+
+                    ForEach(cards) { number in
+                        ZStack {
+                            Text("Note \(number)")
+                                .verticalAlignment(.center)
+                        }
+                        .style(.card)
+                        .lineWidth(0)
+                        .height(40)
+                        // HOW IT COMES, as the stack gains it: from the effect to
+                        // how it stands. A note already standing is not moved by
+                        // a transition said again.
+                        .transition(.symmetric(Self.effect(way)))
+                        // UNDER ITS OWN MOTION, whatever carries the notes
+                        // below it to their new places.
+                        .motion(.spring(response: .milliseconds(450), damping: 0.7))
+                    }
+                }
+
+                HStack {
+                    Button("Add").onClicked {
+                        cards.insert(next, at: 0)
+                        next += 1
+                    }
+
+                    Button(Self.ways[way]).onClicked { way = (way + 1) % Self.ways.count }
+
+                    Button("Clear").onClicked { cards.removeAll() }
+                }
+            }
+        }
+        """#,
         "TwoEditors": #"""
         // Sources/Samples/State/AimSample.swift
         /// Whether the two editors stand the other way round.

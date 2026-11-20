@@ -158,6 +158,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the frame's time; `complete(_:as:)` takes a `HostMotionOutcome` in place of a `Bool`, and the movements an engine
   ended come in `HostCycle.finished`. A state followed by an engine or a reading with no property showing it reaches
   the host in `HostPatch.followed`. The host layer does all of it; a host built on `StateUIHost` changes nothing.
+- **For a host: a layout says how a child comes.** `LayoutMotion.place` and `TravelingPlaces.place` take `enter:`
+  in place of `fadeIn:`, handed a `LayoutEntry` - `.joining(under:)` a layout already standing, under the law its
+  children animate by, or `.appearing` with its layout - for every child given its first place;
+  `Arrangement.fades` is `joins`. `MountedElement.fadesIn(presentsOpacity:)` and `fadeIn(_:under:)` are
+  `entersMoving(presentsOpacity:)` and `enter(_:as:)`, which decides the entry: by the view's transition, else the
+  fade. A host built on `StateUIHost` hands the entry on as it handed the law.
 - **For a host: an element leaves in two steps.** `NativeElement.leave()` is `deactivate()`: the element stops
   being the application's, and everything its native half attached outside the tree lets go. A mounted element has
   a `lifecycle` - `.active`, `.exiting`, `.released` - with `deactivate()` and `release()` between them, each said
@@ -202,6 +208,14 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   and a test sends `UserAct.longPress`. "Hold" names only the hand's hold on a value or a view it moves.
 
 ### New
+
+- **A view says how it enters.** `.transition(_:)`, on any view, names the effect the view comes from as the tree
+  gains it: a `TransitionEffect` - `.opacity`, `.translation(x:y:)`, `.scale(_:)`, combined in the order written -
+  in a `Transition`, `init(enter:exit:)` or `symmetric(_:)`. The view travels from the effect to how it stands,
+  under its own `.motion(_:)`, else the application's, in place of the fade a view joining a standing layout
+  otherwise comes with. It enters as it joins what already stands, and with `initialAppearance(true)` as it appears
+  with its page too; given to a view already standing, a transition moves nothing. A view the tree drops goes at
+  once.
 
 - **A gesture taken away ends once, as cancelled, the same on every platform.** A press, a pan, a pinch, a value
   under the hand and a view the hand carries each end as `.cancelled` when the platform takes the touch, a scroller

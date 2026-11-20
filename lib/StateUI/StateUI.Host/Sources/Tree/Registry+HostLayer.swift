@@ -49,6 +49,13 @@ extension Registry {
         everyElementRealizes(VisualElementContract.pivotY)
     }
 
+    /// A view coming by the transition it declares as its layout gives it its first place (`MountedElement.enter`),
+    /// drawn by the opacity, the move and the scale the host already presents.
+    /// Design: docs/design/host/motion.md#a-view-that-enters
+    public func everyElementEntersByItsTransition() {
+        everyElementRealizes(ViewContract.transition)
+    }
+
     /// What assistive technology meets of a view, put together by one rule (`MountedElement.accessibilityWords`):
     /// its identifier where the toolkit gives an accessible one - `identifying` - its label and hint, its kind and
     /// value where a view may say a kind not its own - `sayingKinds` - its heading level, and whether it is met at all.

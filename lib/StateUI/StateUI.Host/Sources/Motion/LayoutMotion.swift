@@ -32,20 +32,21 @@ extension PlacedView {
 
 /// How one arrangement of a layout places its children.
 @_spi(Host) public struct Arrangement {
-    /// The timing children animate and fade in under.
+    /// The timing children animate and fade in under; none where they arrive.
     public var law: Motion
 
     /// Which sides of a changed place animate; none where every child arrives.
     public var lanes: MotionLanes
 
-    /// Whether a child that joins the layout fades in.
-    public var fades: Bool
+    /// Whether a patch reached the layout as it stood: a child given its first place joins it.
+    public var joins: Bool
 
-    /// An arrangement that animates `lanes` under `law`, fading in a joining child when `fades`.
-    public init(law: Motion = .none, lanes: MotionLanes = [], fades: Bool = false) {
+    /// An arrangement that animates `lanes` under `law`; a child given its first place joins a standing layout
+    /// when `joins`.
+    public init(law: Motion = .none, lanes: MotionLanes = [], joins: Bool = false) {
         self.law = law
         self.lanes = lanes
-        self.fades = fades
+        self.joins = joins
     }
 }
 
@@ -93,9 +94,9 @@ extension PlacedView {
     public func arrangement(said: Bool, resized: Bool, motion: HostLayoutMotion?) -> Arrangement {
         let lanes = motion?.lanes ?? .all
 
-        guard said, !lanes.isEmpty, let law = law(of: motion) else { return Arrangement() }
+        guard said, !lanes.isEmpty, let law = law(of: motion) else { return Arrangement(joins: said) }
 
-        return Arrangement(law: law, lanes: resized ? [] : lanes, fades: true)
+        return Arrangement(law: law, lanes: resized ? [] : lanes, joins: true)
     }
 
     /// How a child that is a body is placed in an arrangement whose other children are placed as `arrangement`
@@ -107,10 +108,10 @@ extension PlacedView {
         of body: LayoutBody, said: Bool, resized: Bool, among arrangement: Arrangement
     ) -> Arrangement {
         guard let spring = body.host, !reducesMotion(), spring.follows || (said && !resized)
-        else { return Arrangement() }
+        else { return Arrangement(joins: arrangement.joins) }
 
         let law = Motion.spring(response: .milliseconds(Int64(spring.milliseconds.rounded())), damping: spring.damping)
-        return Arrangement(law: law, lanes: .all, fades: arrangement.fades || said)
+        return Arrangement(law: law, lanes: .all, joins: arrangement.joins)
     }
 
     /// The timing `motion` resolves to, or nil where nothing animates.
@@ -128,7 +129,7 @@ extension PlacedView {
         stated: MotionLanes,
         words: LaidOutWords,
         natural: () -> LayoutSize,
-        fadeIn: ((Motion) -> Void)?,
+        enter: ((LayoutEntry) -> Void)?,
         in arrangement: Arrangement
     ) {
         guard mount != 0 else {
@@ -136,12 +137,12 @@ extension PlacedView {
             return
         }
 
-        // A child with no seat yet is already where it belongs; one joining a standing layout fades in.
+        // A child with no seat yet is already where it belongs, and enters there.
         guard let seat = seats[mount] else {
             seats[mount] = Seat(view: view)
             view.heldWords = nil
             view.placedFrame = target
-            if arrangement.fades { fadeIn?(arrangement.law) }
+            enter?(arrangement.joins ? .joining(under: arrangement.law) : .appearing)
             return
         }
 

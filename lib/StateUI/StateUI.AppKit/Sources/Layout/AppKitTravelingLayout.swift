@@ -66,7 +66,7 @@ class AppKitTravelingLayout: AppKitHitTestView, AppKitDirectedLayout {
         }
         places.place(
             placed, mount: item.mount, at: frame.placed, values: item.values,
-            natural: { item.size(offered: nil) }, fadeIn: item.fadeIn)
+            natural: { item.size(offered: nil) }, enter: item.enter)
     }
 }
 

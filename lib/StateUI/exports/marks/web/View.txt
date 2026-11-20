@@ -1,4 +1,4 @@
-# revision 35.1
+# revision 36.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
 Button.dismissed: ✅
@@ -35,6 +35,7 @@ Button.swipeThreshold: ✅
 Button.swiped: ✅
 Button.tapCount: ✅
 Button.tapped: ✅
+Button.transition: ✅
 Button.verticalAlignment: ✅
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Canvas.area: ✅
@@ -72,6 +73,7 @@ Canvas.swipeThreshold: ✅
 Canvas.swiped: ✅
 Canvas.tapCount: ✅
 Canvas.tapped: ✅
+Canvas.transition: ✅
 Canvas.verticalAlignment: ✅
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Capsule.area: ✅
@@ -109,6 +111,7 @@ Capsule.swipeThreshold: ✅
 Capsule.swiped: ✅
 Capsule.tapCount: ✅
 Capsule.tapped: ✅
+Capsule.transition: ✅
 Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 CheckBox.area: ✅
@@ -146,6 +149,7 @@ CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
+CheckBox.transition: ✅
 CheckBox.verticalAlignment: ✅
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ColorPicker.area: ✅
@@ -183,6 +187,7 @@ ColorPicker.swipeThreshold: ✅
 ColorPicker.swiped: ✅
 ColorPicker.tapCount: ✅
 ColorPicker.tapped: ✅
+ColorPicker.transition: ✅
 ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 DatePicker.area: ✅
@@ -220,6 +225,7 @@ DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
+DatePicker.transition: ✅
 DatePicker.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Ellipse.area: ✅
@@ -257,6 +263,7 @@ Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
+Ellipse.transition: ✅
 Ellipse.verticalAlignment: ✅
 Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Fill.area: ✅
@@ -294,6 +301,7 @@ Fill.swipeThreshold: ✅
 Fill.swiped: ✅
 Fill.tapCount: ✅
 Fill.tapped: ✅
+Fill.transition: ✅
 Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Grid.area: ✅
@@ -331,6 +339,7 @@ Grid.swipeThreshold: ✅
 Grid.swiped: ✅
 Grid.tapCount: ✅
 Grid.tapped: ✅
+Grid.transition: ✅
 Grid.verticalAlignment: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 HStack.area: ✅
@@ -368,6 +377,7 @@ HStack.swipeThreshold: ✅
 HStack.swiped: ✅
 HStack.tapCount: ✅
 HStack.tapped: ✅
+HStack.transition: ✅
 HStack.verticalAlignment: ✅
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Image.area: ✅
@@ -405,6 +415,7 @@ Image.swipeThreshold: ✅
 Image.swiped: ✅
 Image.tapCount: ✅
 Image.tapped: ✅
+Image.transition: ✅
 Image.verticalAlignment: ✅
 ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ItemsView.area: ✅
@@ -442,6 +453,7 @@ ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
+ItemsView.transition: ✅
 ItemsView.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.area: ✅
@@ -479,6 +491,7 @@ Line.swipeThreshold: ✅
 Line.swiped: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
+Line.transition: ✅
 Line.verticalAlignment: ✅
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Link.area: ✅
@@ -516,6 +529,7 @@ Link.swipeThreshold: ✅
 Link.swiped: ✅
 Link.tapCount: ✅
 Link.tapped: ✅
+Link.transition: ✅
 Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
@@ -553,6 +567,7 @@ Map.swipeThreshold: 🧩
 Map.swiped: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
+Map.transition: 🧩
 Map.verticalAlignment: 🧩
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 MotionLayout.area: ✅
@@ -590,6 +605,7 @@ MotionLayout.swipeThreshold: ✅
 MotionLayout.swiped: ✅
 MotionLayout.tapCount: ✅
 MotionLayout.tapped: ✅
+MotionLayout.transition: ✅
 MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Path.area: ✅
@@ -627,6 +643,7 @@ Path.swipeThreshold: ✅
 Path.swiped: ✅
 Path.tapCount: ✅
 Path.tapped: ✅
+Path.transition: ✅
 Path.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.area: ✅
@@ -664,6 +681,7 @@ Picker.swipeThreshold: – The browser's select opens its list at the user's pre
 Picker.swiped: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no long press, drag or swipe of it, and its release only where it was pressed.
 Picker.tapCount: does not apply - its case covers Picker.tapped too, which this host never has
 Picker.tapped: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no long press, drag or swipe of it, and its release only where it was pressed.
+Picker.transition: ✅
 Picker.verticalAlignment: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polygon.area: ✅
@@ -701,6 +719,7 @@ Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
 Polygon.tapCount: ✅
 Polygon.tapped: ✅
+Polygon.transition: ✅
 Polygon.verticalAlignment: ✅
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polyline.area: ✅
@@ -738,6 +757,7 @@ Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
 Polyline.tapCount: ✅
 Polyline.tapped: ✅
+Polyline.transition: ✅
 Polyline.verticalAlignment: ✅
 ProgressBar.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ProgressBar.area: ✅
@@ -775,6 +795,7 @@ ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
+ProgressBar.transition: ✅
 ProgressBar.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Rectangle.area: ✅
@@ -812,6 +833,7 @@ Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
 Rectangle.tapCount: ✅
 Rectangle.tapped: ✅
+Rectangle.transition: ✅
 Rectangle.verticalAlignment: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ScrollView.area: ✅
@@ -849,6 +871,7 @@ ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
 ScrollView.tapCount: ✅
 ScrollView.tapped: ✅
+ScrollView.transition: ✅
 ScrollView.verticalAlignment: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 SearchField.area: ✅
@@ -886,6 +909,7 @@ SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
+SearchField.transition: ✅
 SearchField.verticalAlignment: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Separator.area: ✅
@@ -923,6 +947,7 @@ Separator.swipeThreshold: ✅
 Separator.swiped: ✅
 Separator.tapCount: ✅
 Separator.tapped: ✅
+Separator.transition: ✅
 Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Slider.area: ✅
@@ -960,6 +985,7 @@ Slider.swipeThreshold: ✅
 Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
+Slider.transition: ✅
 Slider.verticalAlignment: ✅
 Space.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Space.area: ✅
@@ -997,6 +1023,7 @@ Space.swipeThreshold: ✅
 Space.swiped: ✅
 Space.tapCount: ✅
 Space.tapped: ✅
+Space.transition: ✅
 Space.verticalAlignment: ✅
 Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Spinner.area: ✅
@@ -1034,6 +1061,7 @@ Spinner.swipeThreshold: ✅
 Spinner.swiped: ✅
 Spinner.tapCount: ✅
 Spinner.tapped: ✅
+Spinner.transition: ✅
 Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Stepper.area: ✅
@@ -1071,6 +1099,7 @@ Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
 Stepper.tapCount: ✅
 Stepper.tapped: ✅
+Stepper.transition: ✅
 Stepper.verticalAlignment: ✅
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Switch.area: ✅
@@ -1108,6 +1137,7 @@ Switch.swipeThreshold: ✅
 Switch.swiped: ✅
 Switch.tapCount: ✅
 Switch.tapped: ✅
+Switch.transition: ✅
 Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Text.area: ✅
@@ -1145,6 +1175,7 @@ Text.swipeThreshold: ✅
 Text.swiped: ✅
 Text.tapCount: ✅
 Text.tapped: ✅
+Text.transition: ✅
 Text.verticalAlignment: ✅
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextEditor.area: ✅
@@ -1182,6 +1213,7 @@ TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
 TextEditor.tapCount: ✅
 TextEditor.tapped: ✅
+TextEditor.transition: ✅
 TextEditor.verticalAlignment: ✅
 TextField.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextField.area: ✅
@@ -1219,6 +1251,7 @@ TextField.swipeThreshold: ✅
 TextField.swiped: ✅
 TextField.tapCount: ✅
 TextField.tapped: ✅
+TextField.transition: ✅
 TextField.verticalAlignment: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TimePicker.area: ✅
@@ -1256,6 +1289,7 @@ TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
 TimePicker.tapCount: ✅
 TimePicker.tapped: ✅
+TimePicker.transition: ✅
 TimePicker.verticalAlignment: ✅
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 VStack.area: ✅
@@ -1293,6 +1327,7 @@ VStack.swipeThreshold: ✅
 VStack.swiped: ✅
 VStack.tapCount: ✅
 VStack.tapped: ✅
+VStack.transition: ✅
 VStack.verticalAlignment: ✅
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 WebView.area: ✅
@@ -1330,6 +1365,7 @@ WebView.swipeThreshold: ✅
 WebView.swiped: ✅
 WebView.tapCount: ✅
 WebView.tapped: ✅
+WebView.transition: ✅
 WebView.verticalAlignment: ✅
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ZStack.area: ✅
@@ -1367,4 +1403,5 @@ ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅
 ZStack.tapCount: ✅
 ZStack.tapped: ✅
+ZStack.transition: ✅
 ZStack.verticalAlignment: ✅

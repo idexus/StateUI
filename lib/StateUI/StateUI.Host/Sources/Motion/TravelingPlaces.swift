@@ -48,10 +48,10 @@
 
     /// Stands `view`, the mounted element `mount`'s, at `place`, or on its way there; its `values` say which sides
     /// it sizes itself and whether it lays out words, `natural` measures it with no width offered - read for words
-    /// as its place sets out - and `fadeIn` fades it in as it joins a standing layout.
+    /// as its place sets out - and `enter` brings it in as it is given its first place.
     public func place(
         _ view: any PlacedView, mount: UInt64, at place: Rect, values: LayoutValues,
-        natural: () -> LayoutSize, fadeIn: ((Motion) -> Void)?
+        natural: () -> LayoutSize, enter: ((LayoutEntry) -> Void)?
     ) {
         guard let layoutMotion else {
             view.placedFrame = place
@@ -67,6 +67,6 @@
         } ?? arrangement
         layoutMotion.place(
             view, mount: mount, at: place, stated: stated, words: values.words, natural: natural,
-            fadeIn: fadeIn, in: arrangement)
+            enter: enter, in: arrangement)
     }
 }

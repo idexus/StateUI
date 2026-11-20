@@ -51,6 +51,7 @@ enum AndroidRegistrations {
         registry.everyElementTakesDroppedFiles()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
+        registry.everyElementEntersByItsTransition()
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(EnabledElementContract.isEnabled)

@@ -98,8 +98,8 @@ extension AppKitElement {
         item.drawing = presentableDrawing
         item.mount = mount
         item.placed = presentableNode
-        if fadesIn {
-            item.fadeIn = { [weak self] motion in self?.fadeIn(under: motion) }
+        if entersMoving {
+            item.enter = { [weak self] entry in self?.enter(entry) }
         }
         return item
     }

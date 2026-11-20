@@ -42,6 +42,7 @@ enum UIKitRegistrations {
         registry.everyElementTakesAccessibilityActions()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
+        registry.everyElementEntersByItsTransition()
         registry.everyElementHearsTheUser()
         registry.everyElementTakesItsKeys()
         registry.everyElementDragsAndDrops()

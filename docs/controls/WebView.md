@@ -41,13 +41,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (93)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>51 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>WKWebView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>49 ✅ · 3 ☑️ · 39 ✓ · 2 –</td><td><code>WKWebView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>70 ✅ · 5 ☑️ · 12 ✓ · 5 –</td><td><code>WebView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>52 ✅ · 13 ✓ · 26 –</td><td><code>WebView2</code>, a backend</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>58 ✅ · 4 ☑️ · 24 ✓ · 7 –</td><td>WebKitGTK <code>WebKitWebView</code>, a backend</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>61 ✅ · 2 ☑️ · 21 ✓ · 6 –</td><td><code>&lt;iframe&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (94)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>52 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>WKWebView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>50 ✅ · 3 ☑️ · 39 ✓ · 2 –</td><td><code>WKWebView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>71 ✅ · 5 ☑️ · 12 ✓ · 5 –</td><td><code>WebView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 13 ✓ · 26 –</td><td><code>WebView2</code>, a backend</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>59 ✅ · 4 ☑️ · 24 ✓ · 7 –</td><td>WebKitGTK <code>WebKitWebView</code>, a backend</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>62 ✅ · 2 ☑️ · 21 ✓ · 6 –</td><td><code>&lt;iframe&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContract.swift`.
@@ -211,6 +211,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on WebView: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on WebView: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

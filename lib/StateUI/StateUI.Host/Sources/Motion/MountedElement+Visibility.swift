@@ -21,7 +21,7 @@
     func setIgnoresInput(_ ignores: Bool)
 }
 
-/// An element's showing, the same on every host: fading in as it joins a standing layout, and a change of its
+/// An element's showing, the same on every host: entering as it is given its first place, and a change of its
 /// visibility crossed - out, fading and then hidden; back from where it stands; in from nothing.
 /// Design: docs/design/host/motion.md#showing-and-hiding
 extension MountedElement {
@@ -35,14 +35,29 @@ extension MountedElement {
         presented(.ignoresInput)?.bool == true
     }
 
-    /// Whether the element fades in as it joins a standing layout: its view `presentsOpacity`, and no state owns it.
-    public func fadesIn(presentsOpacity: Bool) -> Bool {
-        presentsOpacity && driven[.opacity] == nil
+    /// Whether the element may come moving as it is given its first place: by the transition it declares, else
+    /// fading in where its view `presentsOpacity` and no state owns it.
+    public func entersMoving(presentsOpacity: Bool) -> Bool {
+        transition != nil || (presentsOpacity && driven[.opacity] == nil)
     }
 
-    /// Fades the element in on `view` as it joins a layout already standing, under `motion`; an opacity already on its
-    /// way keeps its motion.
-    public func fadeIn(_ view: some FadingView, under motion: Motion) {
+    /// The element enters on `view` as it is given its first place. Declaring a transition, it comes from the
+    /// entry's effect under its own motion: as it joins a layout already standing, and as it appears with its
+    /// layout where the transition says so. Declaring none, it fades in under the law of the layout it joins.
+    /// An element a message made again enters by no transition.
+    /// Design: docs/design/host/motion.md#a-view-that-enters
+    public func enter(_ view: some FadingView, as entry: LayoutEntry) {
+        guard let transition = transition?.host else {
+            if case .joining(let law) = entry, law.animates { fadeIn(view, under: law) }
+            return
+        }
+        guard !isRemade, entry != .appearing || transition.entersInitially else { return }
+
+        enter(by: transition.enter, on: view)
+    }
+
+    /// Fades the element in on `view` under `motion`; an opacity already on its way keeps its motion.
+    private func fadeIn(_ view: some FadingView, under motion: Motion) {
         guard let tree, tree.presentedPropertyValue(mount: mount, property: .opacity) == nil else { return }
 
         tree.receiveProperty(

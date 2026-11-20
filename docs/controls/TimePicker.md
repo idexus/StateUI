@@ -32,13 +32,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (95)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>47 ✅ · 3 ☑️ · 37 ✓ · 8 –</td><td><code>NSDatePicker</code> showing hour and minute</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>41 ✅ · 2 ☑️ · 38 ✓ · 10 –</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>70 ✅ · 6 ☑️ · 13 ✓ · 4 –</td><td><code>TextView</code> opening a <code>TimePickerDialog</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>54 ✅ · 4 ☑️ · 27 ✓ · 6 –</td><td><code>TimePicker</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>58 ✅ · 4 ☑️ · 25 ✓ · 7 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkMenuButton</code>'s <code>GtkPopover</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 21 ✓ · 7 –</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (96)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>48 ✅ · 3 ☑️ · 37 ✓ · 8 –</td><td><code>NSDatePicker</code> showing hour and minute</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>42 ✅ · 2 ☑️ · 38 ✓ · 10 –</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>71 ✅ · 6 ☑️ · 13 ✓ · 4 –</td><td><code>TextView</code> opening a <code>TimePickerDialog</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>55 ✅ · 4 ☑️ · 27 ✓ · 6 –</td><td><code>TimePicker</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>59 ✅ · 4 ☑️ · 25 ✓ · 7 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkMenuButton</code>'s <code>GtkPopover</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>65 ✅ · 2 ☑️ · 21 ✓ · 7 –</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.
@@ -193,6 +193,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on TimePicker: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: tap on TimePicker: the relay's report of the tap handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on TimePicker: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on TimePicker: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

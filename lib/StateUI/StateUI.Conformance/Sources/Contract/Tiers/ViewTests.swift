@@ -11,7 +11,7 @@
 /// and a drop; each case made for every element wearing the tier. And
 /// where a view stands in its window as a scroller's or a list's scroll moves it, and from the safe area at its page's
 /// corner; how a view of a motion layout moves as a body following its place; and what a hand does to a number a
-/// motion layout's interaction names.
+/// motion layout's interaction names; and how a view joining a standing layout comes by its transition.
 @_spi(Host) public enum ViewTests: ConformanceFamily {
     public static let name = "View"
 
@@ -20,7 +20,7 @@
             [
                 margined(element), drawn(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
                 tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), thrown(element), pressTakenAway(element), takenFromTheHand(element), swiped(element), pinched(element), rotated(element), pointed(element),
-                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
+                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element),
             ]
         } + [
             scrolledInItsWindow, scrolledInAList, atItsPagesCorner, carriedToItsPlace, onAFirstBaseline, showsItsPress,
@@ -280,6 +280,63 @@
             s.expect(first < 50, true, "behind its place as it leaps")
             s.expect(farthest > 101, true, "past it, on its spring")
             s.expect(abs(moved() - 100) < 0.5, true, "and onto it")
+        }
+    }
+
+    /// A view joining a layout already standing comes by the transition it declares: drawn where its entry's effect
+    /// moves it as it joins, nearer on every frame of its own motion, and onto its place at the end.
+    @MainActor
+    static func entered(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aViewJoiningEntersFromItsEffect", proves: [
+            Covered(ViewContract.transition, on: element),
+        ], needs: [
+            Covered(ViewContract.presentationFrameChanged, on: element), Covered(ViewContract.layoutFrameChanged, on: element),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let shown = State(wrappedValue: false)
+            let placed = Received<[Double]>()
+            let drawn = Received<[Double]>()
+            s.start(clock: clock) {
+                VStack {
+                    Button("Show").onClicked { shown.wrappedValue = true }.id("show")
+                    if shown.wrappedValue {
+                        reporting(element, placed, [
+                            Write(VisualElementContract.width, 120), Write(VisualElementContract.height, 40),
+                            Write(ViewContract.transition, Transition.symmetric(.translation(x: 80))),
+                            Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
+                        ])
+                        .motion(.eased(.milliseconds(600), curve: .linear))
+                    }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            _ = try s.element("show")
+            s.frames(of: clock, until: 200)
+
+            // The clock stands: the view has joined, and cannot have moved.
+            try s.perform(.activate, on: s.element("show"))
+            let laidOut = { (numbers: [Double]) in FrameReport.size(numbers) == [120, 40] }
+            s.settle { placed.values.last.map(laidOut) == true && drawn.values.last.map(laidOut) == true }
+            let home = placed.values.last.map(FrameReport.place) ?? []
+            // How far across from its place the view is drawn, frame by frame, once it is laid out: at its row
+            // and its size.
+            let entering = {
+                drawn.values.filter { FrameReport.place($0).dropFirst() == home.dropFirst() }
+                    .map { ($0.first ?? .nan) - (home.first ?? .nan) }
+            }
+            s.expect(entering().last.map { $0.rounded() }, 80, "drawn where its entry's effect moves it")
+
+            s.frames(of: clock, until: 1_400)
+            s.settle { drawn.values.last.map(FrameReport.place) == home }
+            let way = entering()
+            s.expect(
+                way.filter { $0 > 1 && $0 < 79 }.count >= 3, true,
+                "on its way under its own motion: \(way.count) heard, \(way.prefix(6).map { ($0 * 10).rounded() / 10 })")
+            s.expect(way == way.sorted(by: >), true, "each place nearer than the last")
+            s.expect(drawn.values.last.map(FrameReport.place), home, "and onto its place")
+            s.expect(placed.values.last.map(FrameReport.place), home, "where its layout put it")
         }
     }
 

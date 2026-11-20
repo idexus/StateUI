@@ -212,15 +212,15 @@ final class AppKitElement: NSObject, NativeElement {
         layout.places.patchArrived()
     }
 
-    /// Whether this element fades in as it joins a standing layout, by the host layer's rule.
-    var fadesIn: Bool {
-        view != nil && element.fadesIn(presentsOpacity: TransitionSurface.presents(.opacity, on: type))
+    /// Whether this element may come moving as it is given its first place, by the host layer's rule.
+    var entersMoving: Bool {
+        view != nil && element.entersMoving(presentsOpacity: TransitionSurface.presents(.opacity, on: type))
     }
 
-    /// Fades this element in as it joins a layout already standing, by the host layer's rule.
-    func fadeIn(under motion: Motion) {
-        guard fadesIn else { return }
-        element.fadeIn(self, under: motion)
+    /// Brings this element in as it is given its first place, by the host layer's rule.
+    func enter(_ entry: LayoutEntry) {
+        guard entersMoving else { return }
+        element.enter(self, as: entry)
     }
 
     /// Presents one display frame of this element's own changed properties.

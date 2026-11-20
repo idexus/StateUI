@@ -43,6 +43,7 @@ enum WinUIRegistrations {
         registry.everyElementRealizes(BackgroundElementContract.background)
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
+        registry.everyElementEntersByItsTransition()
         registry.everyElementHearsTheUser()
         registry.everyElementTakesItsKeys()
         registry.everyElementDragsAndDrops()

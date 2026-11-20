@@ -59,4 +59,5 @@ How each of them realizes these members is on its own page.
 | `onSwiped` (`swiped`) | event | `SwipeDirection` | native |
 | `tapCount` | property | `Int` | structure |
 | `onTapped` (`tapped`) | event |  | native |
+| `transition` | property | `Transition` | stateUI |
 | `verticalAlignment` | property | `Alignment` | native |

@@ -108,7 +108,7 @@ final class GeometryStageTests: XCTestCase {
             places.begin(width: 300)
             var values = LayoutValues()
             (values.width, values.height) = (100, 60)
-            places.place(seat, mount: view.mount, at: place, values: values, natural: { .zero }, fadeIn: nil)
+            places.place(seat, mount: view.mount, at: place, values: values, natural: { .zero }, enter: nil)
         }
         arrange(at: Rect(x: 10, y: 20, width: 100, height: 60))
         view.reportFrame(standing, in: runtime)
@@ -140,7 +140,7 @@ final class GeometryStageTests: XCTestCase {
             places.begin(width: 300)
             var values = LayoutValues()
             (values.width, values.height) = (100, 60)
-            places.place(seat, mount: view.mount, at: place, values: values, natural: { .zero }, fadeIn: nil)
+            places.place(seat, mount: view.mount, at: place, values: values, natural: { .zero }, enter: nil)
         }
         arrange(at: Rect(x: 10, y: 20, width: 100, height: 60))
         view.reportFrame(standing, in: runtime)
@@ -204,7 +204,7 @@ final class GeometryStageTests: XCTestCase {
         func arrange(at place: Rect) {
             places.patchArrived()
             places.begin(width: 300)
-            places.place(seat, mount: stack.mount, at: place, values: LayoutValues(), natural: { .zero }, fadeIn: nil)
+            places.place(seat, mount: stack.mount, at: place, values: LayoutValues(), natural: { .zero }, enter: nil)
         }
         arrange(at: Rect(x: 0, y: 0, width: 300, height: 200))
         view.reportFrame(standing, in: runtime)

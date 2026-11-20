@@ -528,8 +528,12 @@ host.
 - **`DescribedMotion`** is a property's transition a patch describes, keyed by
   element and property; a new one starts where the running one stands, at its
   speed. ([Described motion](../design/host/motion.md#described-motion))
-- **`MountedElement.fadeIn`**, **`crossVisibility`** and **`standsShown`**
-  are an element's showing: a child joining a standing layout fades in, a
+- **`MountedElement.enter(_:as:)`** and **`LayoutEntry`** are an element's
+  coming: a child given its first place enters from its transition's effect
+  under its own motion, or - declaring none - fades in under the law of the
+  layout it joins. ([A view that enters](../design/host/motion.md#a-view-that-enters))
+- **`MountedElement.crossVisibility`** and **`standsShown`**
+  are an element's showing: a
   hidden one fades out still standing shown and then hides as its layout
   closes over it, one shown again mid-fade comes back from where it stands.
   The host hands the view (`FadingView`) and what closes its layout.

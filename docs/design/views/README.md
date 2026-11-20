@@ -28,6 +28,7 @@ hangs off them, `Styles` the styles and `Inspector` the inspector.
 | [measured-layouts.md](measured-layouts.md) | frame reports, bounded arithmetic and the gallery |
 | [motion-layout.md](motion-layout.md) | the motion layout: its element, its run of placements, its parameters and the hand that moves them |
 | [interaction.md](interaction.md) | what the hand moves on a view: the one declaration, its input, unit and release, and how a motion layout reads it |
+| [transitions.md](transitions.md) | how a view comes as the tree gains it: an effect's steps and their fold, a transition and what it moves under |
 | [items.md](items.md) | the items view: identities in order, entries built when a cell asks, a source a build, the empty view |
 | [inspector.md](inspector.md) | the in-app inspector of renders |
 

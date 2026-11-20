@@ -164,7 +164,7 @@ class UIKitLayoutView: UIView, UIKitSteppable {
         }
         places.place(
             placed, mount: item.mount, at: place, values: item.values, natural: { item.size(offered: nil) },
-            fadeIn: item.fadeIn)
+            enter: item.enter)
     }
 }
 #endif

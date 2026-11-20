@@ -17,15 +17,15 @@ extension GTKElement {
         layout.places.patchArrived()
     }
 
-    /// Whether the element fades in as it joins a standing layout, by the host layer's rule.
-    var fadesIn: Bool {
-        view != nil && element.fadesIn(presentsOpacity: GTKTransitionSurface.presents(.opacity, on: type))
+    /// Whether the element may come moving as it is given its first place, by the host layer's rule.
+    var entersMoving: Bool {
+        view != nil && element.entersMoving(presentsOpacity: GTKTransitionSurface.presents(.opacity, on: type))
     }
 
-    /// Fades the element in as it joins a layout already standing, by the host layer's rule.
-    func fadeIn(under motion: Motion) {
-        guard fadesIn, let view else { return }
-        element.fadeIn(view, under: motion)
+    /// Brings the element in as it is given its first place, by the host layer's rule.
+    func enter(_ entry: LayoutEntry) {
+        guard entersMoving, let view else { return }
+        element.enter(view, as: entry)
     }
 
     /// Crosses a change of visibility by the host layer's rule; as a fade out ends, the layout closes over it.

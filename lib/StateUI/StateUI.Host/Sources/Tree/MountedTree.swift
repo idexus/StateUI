@@ -270,6 +270,10 @@
     /// Design: docs/design/host/patches.md#a-complete-message
     private(set) var appliesCompleteMessage = false
 
+    /// Whether the message being applied makes again what the tree showed - a complete one over a root, or
+    /// another root in its place. Design: docs/design/host/motion.md#a-view-that-enters
+    private(set) var remakes = false
+
     /// What the message being applied costs, while an inspector records or the tally is written; nil otherwise.
     var tally: RenderTally?
 
@@ -307,7 +311,9 @@
         let previousPatchReducesMotion = patchReducesMotion
         let previousTally = tally
         let previousComplete = appliesCompleteMessage
+        let previousRemakes = remakes
         appliesCompleteMessage = complete
+        remakes = root != nil && (complete || patch.replace)
         if patchTime == nil { patchTime = now() }
         if patchReducesMotion == nil { patchReducesMotion = reducesMotion() }
         let inspecting = core.inspecting
@@ -323,6 +329,7 @@
             patchReducesMotion = previousPatchReducesMotion
             tally = previousTally
             appliesCompleteMessage = previousComplete
+            remakes = previousRemakes
             consumersChanged()
         }
 

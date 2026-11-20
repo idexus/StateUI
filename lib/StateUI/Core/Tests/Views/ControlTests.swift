@@ -834,7 +834,7 @@ final class ControlTests: XCTestCase {
             // A value the host cannot be handed whole - a gradient among them.
             "icon", "pageIcon", "dash", "points", "options", "columns", "rows",
             "shape", "geometryTransform", "transform", "motion", "release", "interaction", "layoutBody",
-            "layoutBodies",
+            "layoutBodies", "transition",
             "id", "assign", "area",
             // Tiers no view wears: a bar's item, a run of text, a map's marker - and an entry's automation name,
             // whose twin a view's tier carries.

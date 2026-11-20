@@ -46,6 +46,7 @@ enum WebRegistrations {
         registry.everyElementRealizes(VisualElementContract.layoutDirection)
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
+        registry.everyElementEntersByItsTransition()
         registry.everyElementMeetsAssistiveTechnology(identifying: true)
         registry.everyElementShowsItsTooltip()
         registry.everyElementHearsTheUser()

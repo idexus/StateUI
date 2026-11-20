@@ -18,8 +18,8 @@ struct GTKLayoutItem: LayoutChild {
     /// The mounted element whose place its layout animates; 0 for none.
     var mount: UInt64 = 0
 
-    /// Fades the view in as it joins a standing layout; nil for a view that simply appears.
-    var fadeIn: ((Motion) -> Void)?
+    /// Brings the view in as it is given its first place; nil for a view that simply appears.
+    var enter: ((LayoutEntry) -> Void)?
 
     /// The view's size for the width offered it, margin taken out (`LayoutValues.offer`, `sized`).
     func size(offered width: Double?) -> LayoutSize {

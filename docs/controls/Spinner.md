@@ -32,13 +32,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (79)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>36 ✅ · 3 ☑️ · 37 ✓ · 3 –</td><td>spinning <code>NSProgressIndicator</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>38 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td><code>UIActivityIndicatorView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>61 ✅ · 5 ☑️ · 10 ✓ · 2 –</td><td>indeterminate <code>ProgressBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>40 ✅ · 3 ☑️ · 28 ✓ · 7 –</td><td><code>ProgressRing</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>46 ✅ · 4 ☑️ · 22 ✓ · 7 –</td><td><code>GtkSpinner</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>53 ✅ · 2 ☑️ · 21 ✓ · 3 –</td><td>CSS ring with <code>role=progressbar</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (80)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>37 ✅ · 3 ☑️ · 37 ✓ · 3 –</td><td>spinning <code>NSProgressIndicator</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td><code>UIActivityIndicatorView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>62 ✅ · 5 ☑️ · 10 ✓ · 2 –</td><td>indeterminate <code>ProgressBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>41 ✅ · 3 ☑️ · 28 ✓ · 7 –</td><td><code>ProgressRing</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>47 ✅ · 4 ☑️ · 22 ✓ · 7 –</td><td><code>GtkSpinner</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>54 ✅ · 2 ☑️ · 21 ✓ · 3 –</td><td>CSS ring with <code>role=progressbar</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SpinnerContract.swift`.
@@ -190,6 +190,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on Spinner: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on Spinner: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: tap on Spinner: the relay's report of the tap handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Spinner: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Spinner: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on Spinner: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

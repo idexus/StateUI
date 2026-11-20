@@ -218,6 +218,7 @@ extension NodeType {
     static let color = ColorPickerContract.color.token
     static let panTouchCount = ViewContract.panTouchCount.token
     static let layoutBody = ViewContract.layoutBody.token
+    static let transition = ViewContract.transition.token
     static let parameters = MotionLayoutContract.parameters.token
     static let placeholder = PlaceholderElementContract.placeholder.token
     static let placeholderColor = TextInputContract.placeholderColor.token

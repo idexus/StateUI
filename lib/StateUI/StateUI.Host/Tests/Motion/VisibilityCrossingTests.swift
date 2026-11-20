@@ -70,9 +70,9 @@ final class VisibilityCrossingTests: XCTestCase {
         XCTAssertEqual(view.said, ["opacity 0.0"])
 
         let joining = Faded()
-        XCTAssertTrue(element.fadesIn(presentsOpacity: true))
-        XCTAssertFalse(element.fadesIn(presentsOpacity: false))
-        element.fadeIn(joining, under: .eased(.milliseconds(200), curve: .linear))
+        XCTAssertTrue(element.entersMoving(presentsOpacity: true))
+        XCTAssertFalse(element.entersMoving(presentsOpacity: false))
+        element.enter(joining, as: .joining(under: .eased(.milliseconds(200), curve: .linear)))
         XCTAssertEqual(joining.said, [], "its opacity is already on its way")
     }
 

@@ -55,8 +55,8 @@ extension AndroidElement {
 
         var item = AndroidLayoutItem(view: view, values: element.layoutValues, isShown: isShown)
         item.mount = element.mount
-        if fadesIn {
-            item.fadeIn = { [weak self] motion in self?.fadeIn(under: motion) }
+        if entersMoving {
+            item.enter = { [weak self] entry in self?.enter(entry) }
         }
         return item
     }

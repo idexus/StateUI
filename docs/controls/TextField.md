@@ -35,13 +35,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (109)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>61 ✅ · 5 ☑️ · 36 ✓ · 4 –</td><td><code>NSTextField</code> / <code>NSSecureTextField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>66 ✅ · 3 ☑️ · 38 ✓ · 2 –</td><td><code>UITextField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>86 ✅ · 6 ☑️ · 12 ✓ · 3 –</td><td><code>EditText</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>69 ✅ · 6 ☑️ · 27 ✓ · 6 –</td><td><code>TextBox</code> / <code>PasswordBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>67 ✅ · 6 ☑️ · 28 ✓ · 8 –</td><td><code>GtkEntry</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>82 ✅ · 2 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;input type=text&gt;</code> / <code>&lt;input type=password&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (110)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>62 ✅ · 5 ☑️ · 36 ✓ · 4 –</td><td><code>NSTextField</code> / <code>NSSecureTextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>67 ✅ · 3 ☑️ · 38 ✓ · 2 –</td><td><code>UITextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>87 ✅ · 6 ☑️ · 12 ✓ · 3 –</td><td><code>EditText</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>70 ✅ · 6 ☑️ · 27 ✓ · 6 –</td><td><code>TextBox</code> / <code>PasswordBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>68 ✅ · 6 ☑️ · 28 ✓ · 8 –</td><td><code>GtkEntry</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>83 ✅ · 2 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;input type=text&gt;</code> / <code>&lt;input type=password&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextFieldContract.swift`.
@@ -194,6 +194,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on TextField: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on TextField: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: tap on TextField: the relay's report of the tap handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on TextField: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on TextField: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on TextField: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

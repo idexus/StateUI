@@ -18,15 +18,15 @@ extension UIKitElement {
         layout.places.patchArrived()
     }
 
-    /// Whether the element fades in as it joins a standing layout, by the host layer's rule.
-    var fadesIn: Bool {
-        drawing != nil && element.fadesIn(presentsOpacity: TransitionSurface.presents(.opacity, on: type))
+    /// Whether the element may come moving as it is given its first place, by the host layer's rule.
+    var entersMoving: Bool {
+        drawing != nil && element.entersMoving(presentsOpacity: TransitionSurface.presents(.opacity, on: type))
     }
 
-    /// Fades the element in as it joins a layout already standing, by the host layer's rule.
-    func fadeIn(under motion: Motion) {
-        guard fadesIn, let drawing else { return }
-        element.fadeIn(drawing, under: motion)
+    /// Brings the element in as it is given its first place, by the host layer's rule.
+    func enter(_ entry: LayoutEntry) {
+        guard entersMoving, let drawing else { return }
+        element.enter(drawing, as: entry)
     }
 
     /// Crosses a change of visibility by the host layer's rule; as a fade out ends, the layout closes over it.

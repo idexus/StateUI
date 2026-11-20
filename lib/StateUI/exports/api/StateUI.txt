@@ -995,6 +995,10 @@ swift.conformance ToolbarToggleContract: Swift.Sendable
 swift.conformance TrackingElementContract: StateUI.Tier
 swift.conformance TrackingElementContract: StateUI.WornContract
 swift.conformance TrackingElementContract: Swift.Sendable
+swift.conformance Transition: Swift.Equatable
+swift.conformance Transition: Swift.Sendable
+swift.conformance TransitionEffect: Swift.Equatable
+swift.conformance TransitionEffect: Swift.Sendable
 swift.conformance VStack: StateUI.Layout
 swift.conformance VStack: StateUI.Stack
 swift.conformance VStack: StateUI.View
@@ -1790,6 +1794,7 @@ swift.init ToolbarGroup.init(items:): @MainActor init(@ToolbarGroupBuilder items
 swift.init ToolbarLabel.init(_:): @MainActor init(_ text: String)
 swift.init ToolbarToggle.init(_:isOn:): @MainActor init(_ text: String, isOn: Binding<Bool>)
 swift.init ToolbarToggle.init(_:isOn:): @MainActor init(_ text: String, isOn: Bool)
+swift.init Transition.init(enter:exit:): init(enter: TransitionEffect, exit: TransitionEffect)
 swift.init VStack.init(): @MainActor init()
 swift.init VStack.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : Views
 swift.init ViewTransform.init(): init()
@@ -1982,6 +1987,7 @@ swift.method @SwiftNever.titleView(_:): @MainActor func titleView<Content>(@View
 swift.method @SwiftNever.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method @SwiftNever.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method @SwiftNever.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method @SwiftNever.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method @SwiftNever.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -2173,6 +2179,7 @@ swift.method AnyView.titleView(_:): @MainActor func titleView<Content>(@ViewBuil
 swift.method AnyView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method AnyView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method AnyView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method AnyView.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method AnyView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -2432,6 +2439,7 @@ swift.method Button.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge =
 swift.method Button.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Button.tracking(_:): @MainActor func tracking(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Button.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Button.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -2625,6 +2633,7 @@ swift.method Canvas.titleView(_:): @MainActor func titleView<Content>(@ViewBuild
 swift.method Canvas.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Canvas.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Canvas.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Canvas.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Canvas.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -2825,6 +2834,7 @@ swift.method Capsule.titleView(_:): @MainActor func titleView<Content>(@ViewBuil
 swift.method Capsule.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Capsule.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Capsule.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Capsule.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Capsule.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -3023,6 +3033,7 @@ swift.method CheckBox.titleView(_:): @MainActor func titleView<Content>(@ViewBui
 swift.method CheckBox.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method CheckBox.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method CheckBox.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method CheckBox.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method CheckBox.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -3228,6 +3239,7 @@ swift.method ColorPicker.titleView(_:): @MainActor func titleView<Content>(@View
 swift.method ColorPicker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ColorPicker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method ColorPicker.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method ColorPicker.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method ColorPicker.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -3448,6 +3460,7 @@ swift.method DatePicker.titleView(_:): @MainActor func titleView<Content>(@ViewB
 swift.method DatePicker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method DatePicker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method DatePicker.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method DatePicker.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method DatePicker.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -3635,6 +3648,7 @@ swift.method DebugInspector.titleView(_:): @MainActor func titleView<Content>(@V
 swift.method DebugInspector.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method DebugInspector.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspector.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method DebugInspector.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method DebugInspector.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -3817,6 +3831,7 @@ swift.method DebugInspectorButton.titleView(_:): @MainActor func titleView<Conte
 swift.method DebugInspectorButton.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method DebugInspectorButton.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspectorButton.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method DebugInspectorButton.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method DebugInspectorButton.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -4038,6 +4053,7 @@ swift.method Either.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge =
 swift.method Either.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Either.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Either.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Either.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Either.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.translationX(_:): @MainActor func translationX(_ value: Double) -> Self.Modified
 swift.method Either.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -4242,6 +4258,7 @@ swift.method Ellipse.titleView(_:): @MainActor func titleView<Content>(@ViewBuil
 swift.method Ellipse.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Ellipse.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Ellipse.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Ellipse.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Ellipse.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -4435,6 +4452,7 @@ swift.method Fill.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder
 swift.method Fill.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Fill.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Fill.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Fill.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Fill.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -4651,6 +4669,7 @@ swift.method GalleryView.titleView(_:): @MainActor func titleView<Content>(@View
 swift.method GalleryView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method GalleryView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method GalleryView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method GalleryView.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method GalleryView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -4833,6 +4852,7 @@ swift.method GeometryReader.titleView(_:): @MainActor func titleView<Content>(@V
 swift.method GeometryReader.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method GeometryReader.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method GeometryReader.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method GeometryReader.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method GeometryReader.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -5038,6 +5058,7 @@ swift.method Grid.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder
 swift.method Grid.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Grid.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Grid.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Grid.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Grid.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -5226,6 +5247,7 @@ swift.method Group.titleView(_:): @MainActor func titleView<Content>(@ViewBuilde
 swift.method Group.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Group.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Group.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Group.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Group.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -5428,6 +5450,7 @@ swift.method HStack.titleView(_:): @MainActor func titleView<Content>(@ViewBuild
 swift.method HStack.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method HStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method HStack.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method HStack.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method HStack.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -5623,6 +5646,7 @@ swift.method Image.titleView(_:): @MainActor func titleView<Content>(@ViewBuilde
 swift.method Image.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Image.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Image.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Image.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Image.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -5844,6 +5868,7 @@ swift.method ItemsView.titleView(_:): @MainActor func titleView<Content>(@ViewBu
 swift.method ItemsView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ItemsView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method ItemsView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method ItemsView.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method ItemsView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -6063,6 +6088,7 @@ swift.method Line.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder
 swift.method Line.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Line.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Line.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Line.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Line.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -6264,6 +6290,7 @@ swift.method Link.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder
 swift.method Link.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Link.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Link.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Link.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Link.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -6471,6 +6498,7 @@ swift.method Map.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder 
 swift.method Map.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Map.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Map.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Map.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Map.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -6719,6 +6747,7 @@ swift.method ModifiedContent.titleView(_:): @MainActor func titleView<Content>(@
 swift.method ModifiedContent.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ModifiedContent.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method ModifiedContent.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method ModifiedContent.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method ModifiedContent.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -6926,6 +6955,7 @@ swift.method MotionLayout.titleView(_:): @MainActor func titleView<Content>(@Vie
 swift.method MotionLayout.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method MotionLayout.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method MotionLayout.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method MotionLayout.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method MotionLayout.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -7134,6 +7164,7 @@ swift.method NavigationStack.toolbarStyle(_:): @MainActor func toolbarStyle(_ st
 swift.method NavigationStack.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: ToolbarStyle) -> Self.Modified
 swift.method NavigationStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method NavigationStack.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method NavigationStack.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method NavigationStack.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -7338,6 +7369,7 @@ swift.method Path.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder
 swift.method Path.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Path.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Path.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Path.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Path.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -7552,6 +7584,7 @@ swift.method Picker.titleView(_:): @MainActor func titleView<Content>(@ViewBuild
 swift.method Picker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Picker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Picker.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Picker.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Picker.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -7759,6 +7792,7 @@ swift.method Polygon.titleView(_:): @MainActor func titleView<Content>(@ViewBuil
 swift.method Polygon.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Polygon.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Polygon.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Polygon.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Polygon.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -7962,6 +7996,7 @@ swift.method Polyline.titleView(_:): @MainActor func titleView<Content>(@ViewBui
 swift.method Polyline.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Polyline.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Polyline.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Polyline.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Polyline.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -8170,6 +8205,7 @@ swift.method PositionDots.titleView(_:): @MainActor func titleView<Content>(@Vie
 swift.method PositionDots.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method PositionDots.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method PositionDots.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method PositionDots.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method PositionDots.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -8363,6 +8399,7 @@ swift.method ProgressBar.titleView(_:): @MainActor func titleView<Content>(@View
 swift.method ProgressBar.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ProgressBar.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method ProgressBar.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method ProgressBar.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method ProgressBar.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -8574,6 +8611,7 @@ swift.method Rectangle.titleView(_:): @MainActor func titleView<Content>(@ViewBu
 swift.method Rectangle.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Rectangle.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Rectangle.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Rectangle.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Rectangle.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -8795,6 +8833,7 @@ swift.method ScrollView.titleView(_:): @MainActor func titleView<Content>(@ViewB
 swift.method ScrollView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ScrollView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method ScrollView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method ScrollView.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method ScrollView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -9021,6 +9060,7 @@ swift.method SearchField.titleView(_:): @MainActor func titleView<Content>(@View
 swift.method SearchField.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method SearchField.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method SearchField.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method SearchField.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method SearchField.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -9212,6 +9252,7 @@ swift.method Separator.titleView(_:): @MainActor func titleView<Content>(@ViewBu
 swift.method Separator.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Separator.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Separator.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Separator.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Separator.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -9428,6 +9469,7 @@ swift.method Slider.titleView(_:): @MainActor func titleView<Content>(@ViewBuild
 swift.method Slider.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Slider.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Slider.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Slider.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Slider.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -9619,6 +9661,7 @@ swift.method Space.titleView(_:): @MainActor func titleView<Content>(@ViewBuilde
 swift.method Space.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Space.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Space.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Space.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Space.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -9808,6 +9851,7 @@ swift.method Spinner.titleView(_:): @MainActor func titleView<Content>(@ViewBuil
 swift.method Spinner.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Spinner.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Spinner.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Spinner.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Spinner.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -10019,6 +10063,7 @@ swift.method SplitView.toolbarStyle(_:): @MainActor func toolbarStyle(_ state: B
 swift.method SplitView.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: ToolbarStyle) -> Self.Modified
 swift.method SplitView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method SplitView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method SplitView.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method SplitView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -10219,6 +10264,7 @@ swift.method Stepper.titleView(_:): @MainActor func titleView<Content>(@ViewBuil
 swift.method Stepper.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Stepper.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Stepper.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Stepper.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Stepper.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -10351,6 +10397,7 @@ swift.method Styling.tint(_:): @MainActor func tint(_ value: Color) -> Self.Modi
 swift.method Styling.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Styling.tracking(_:): @MainActor func tracking(_ value: Double) -> Self.Modified
 swift.method Styling.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Styling.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Styling.translationX(_:): @MainActor func translationX(_ value: Double) -> Self.Modified
 swift.method Styling.translationY(_:): @MainActor func translationY(_ value: Double) -> Self.Modified
 swift.method Styling.userAgent(_:): @MainActor func userAgent(_ value: String) -> Self.Modified
@@ -10559,6 +10606,7 @@ swift.method Switch.titleView(_:): @MainActor func titleView<Content>(@ViewBuild
 swift.method Switch.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Switch.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Switch.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Switch.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Switch.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -10757,6 +10805,7 @@ swift.method TabView.toolbarStyle(_:): @MainActor func toolbarStyle(_ state: Bin
 swift.method TabView.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: ToolbarStyle) -> Self.Modified
 swift.method TabView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method TabView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method TabView.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method TabView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -10962,6 +11011,7 @@ swift.method Text.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .
 swift.method Text.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Text.tracking(_:): @MainActor func tracking(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method Text.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method Text.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -11188,6 +11238,7 @@ swift.method TextEditor.titleView(_:): @MainActor func titleView<Content>(@ViewB
 swift.method TextEditor.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method TextEditor.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method TextEditor.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method TextEditor.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method TextEditor.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -11413,6 +11464,7 @@ swift.method TextField.titleView(_:): @MainActor func titleView<Content>(@ViewBu
 swift.method TextField.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method TextField.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method TextField.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method TextField.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method TextField.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -11679,6 +11731,7 @@ swift.method TimePicker.titleView(_:): @MainActor func titleView<Content>(@ViewB
 swift.method TimePicker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method TimePicker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method TimePicker.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method TimePicker.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method TimePicker.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -11795,6 +11848,8 @@ swift.method ToolbarToggle.visualState(_:): @MainActor func visualState(_ state:
 swift.method ToolbarToggle.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method TrackingElement.tracking(_:): @MainActor func tracking(_ state: Binding<Double>) -> Self.Modified
 swift.method TrackingElement.tracking(_:): @MainActor func tracking(_ value: Double) -> Self.Modified
+swift.method Transition.initialAppearance(_:): func initialAppearance(_ enabled: Bool) -> Transition
+swift.method TransitionEffect.combined(with:): func combined(with other: TransitionEffect) -> TransitionEffect
 swift.method VStack.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method VStack.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11990,6 +12045,7 @@ swift.method VStack.titleView(_:): @MainActor func titleView<Content>(@ViewBuild
 swift.method VStack.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method VStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method VStack.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method VStack.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method VStack.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -12122,6 +12178,7 @@ swift.method ViewProperties.layoutBody(_:): @MainActor func layoutBody(_ body: L
 swift.method ViewProperties.margin(_:): @MainActor func margin(_ value: Insets) -> Self.Modified
 swift.method ViewProperties.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method ViewProperties.margin(start:top:end:bottom:): @MainActor func margin(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
+swift.method ViewProperties.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method ViewProperties.verticalAlignment(_:): @MainActor func verticalAlignment(_ value: Alignment) -> Self.Modified
 swift.method ViewTransform.rotate(_:): func rotate(_ degrees: Double) -> ViewTransform
 swift.method ViewTransform.scale(_:): func scale(_ factor: Double) -> ViewTransform
@@ -12408,6 +12465,7 @@ swift.method WebView.titleView(_:): @MainActor func titleView<Content>(@ViewBuil
 swift.method WebView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method WebView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method WebView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method WebView.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method WebView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.userAgent(_:): @MainActor func userAgent(_ value: String) -> Self.Modified
@@ -12632,6 +12690,7 @@ swift.method ZStack.titleView(_:): @MainActor func titleView<Content>(@ViewBuild
 swift.method ZStack.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ZStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method ZStack.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method ZStack.transition(_:): @MainActor func transition(_ transition: Transition) -> Self.Modified
 swift.method ZStack.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -12908,6 +12967,8 @@ swift.property Ticker.ticks: @MainActor var ticks: Int { get }
 swift.property TimePicker.body: @MainActor var body: Never { get }
 swift.property TimeZoneName.description: var description: String { get }
 swift.property TimeZoneName.identifier: let identifier: String
+swift.property Transition.enter: let enter: TransitionEffect
+swift.property Transition.exit: let exit: TransitionEffect
 swift.property VStack.body: @MainActor var body: Never { get }
 swift.property View.body: @ViewBuilder @MainActor var body: Self.Body { get }
 swift.property VisualState.name: var name: String { get }
@@ -13103,6 +13164,8 @@ swift.struct ToolbarGroup: @MainActor struct ToolbarGroup
 swift.struct ToolbarGroupContent: struct ToolbarGroupContent
 swift.struct ToolbarLabel: @MainActor struct ToolbarLabel
 swift.struct ToolbarToggle: @MainActor struct ToolbarToggle
+swift.struct Transition: struct Transition
+swift.struct TransitionEffect: struct TransitionEffect
 swift.struct VStack: @MainActor struct VStack
 swift.struct ViewTransform: struct ViewTransform
 swift.struct VisualState: struct VisualState<Target>
@@ -13258,6 +13321,9 @@ swift.type.method ToolbarGroupBuilder.buildEither(second:): @MainActor static fu
 swift.type.method ToolbarGroupBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: [some ToolbarItem]) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: some ToolbarItem) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildOptional(_:): @MainActor static func buildOptional(_ component: ToolbarGroupContent?) -> ToolbarGroupContent
+swift.type.method Transition.symmetric(_:): static func symmetric(_ effect: TransitionEffect) -> Transition
+swift.type.method TransitionEffect.scale(_:): static func scale(_ factor: Double) -> TransitionEffect
+swift.type.method TransitionEffect.translation(x:y:): static func translation(x: Double = 0, y: Double = 0) -> TransitionEffect
 swift.type.method ViewBuilder.buildBlock(_:): @MainActor static func buildBlock<Content>(_ content: Content) -> Content where Content : Views
 swift.type.method ViewBuilder.buildBlock(_:): @MainActor static func buildBlock<each Part>(_ part: repeat each Part) -> Statements<repeat each Part> where repeat each Part : Views
 swift.type.method ViewBuilder.buildEither(first:): @MainActor static func buildEither<First, Second>(first: First) -> Either<First, Second>
@@ -13719,6 +13785,8 @@ swift.type.property ToolbarToggleContract.name: static var name: String { get }
 swift.type.property ToolbarToggleContract.onIcon: static let onIcon: ElementProperty<ToolbarToggleContract, ImageSource>
 swift.type.property TrackingElementContract.name: static let name: String
 swift.type.property TrackingElementContract.tracking: static let tracking: ElementProperty<TrackingElementContract, Double>
+swift.type.property TransitionEffect.identity: static let identity: TransitionEffect
+swift.type.property TransitionEffect.opacity: static let opacity: TransitionEffect
 swift.type.property VStackContract.name: static var name: String { get }
 swift.type.property ViewContract.allowsDrop: static let allowsDrop: ElementProperty<ViewContract, Bool>
 swift.type.property ViewContract.area: static let area: ElementProperty<ViewContract, Area>
@@ -13757,6 +13825,7 @@ swift.type.property ViewContract.swipeThreshold: static let swipeThreshold: Elem
 swift.type.property ViewContract.swiped: static let swiped: ElementEvent<ViewContract, SwipeDirection>
 swift.type.property ViewContract.tapCount: static let tapCount: ElementProperty<ViewContract, Int>
 swift.type.property ViewContract.tapped: static let tapped: ElementEvent<ViewContract, Void>
+swift.type.property ViewContract.transition: static let transition: ElementProperty<ViewContract, Transition>
 swift.type.property ViewContract.verticalAlignment: static let verticalAlignment: ElementProperty<ViewContract, Alignment>
 swift.type.property ViewTransform.identity: static let identity: ViewTransform
 swift.type.property VisualElementContract.accessibilityActionPerformed: static let accessibilityActionPerformed: ElementEvent<VisualElementContract, String>

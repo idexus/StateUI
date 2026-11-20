@@ -19,6 +19,6 @@ class WinUITravelingLayout: WinUILayoutView {
     func place(_ item: WinUILayoutItem, at place: Rect) {
         places.place(
             item.view, mount: item.mount, at: place, values: item.values, natural: { item.size(offered: nil) },
-            fadeIn: item.fadeIn)
+            enter: item.enter)
     }
 }

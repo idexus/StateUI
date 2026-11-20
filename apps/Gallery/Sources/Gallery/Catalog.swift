@@ -162,6 +162,7 @@ final class Catalog {
                 Sample(AnimationSample()),
                 Sample(AnimatedPropertySample()),
                 Sample(AnimatedInputSample()),
+                Sample(TransitionSample()),
                 Sample(ConcurrentAnimationSample()),
                 Sample(AnalogClockSample()),
             ] + Self.drawnByTheHost)

@@ -124,23 +124,36 @@ final class LayoutMotionTests: XCTestCase {
         XCTAssertEqual(fitted.placedFrame.width, 100)
     }
 
-    /// A child that joins a standing layout is at its place at once and fades in under the layout's law; the
-    /// children of a first arrangement are simply there.
-    func testAChildThatJoinsAStandingLayoutFadesIn() {
+    /// A child that joins a standing layout is at its place at once and enters under the layout's law; the
+    /// children of a first arrangement appear with it. A child enters once: placed again, it is told nothing.
+    func testAChildThatJoinsAStandingLayoutEntersUnderItsLaw() {
         let layout = HandWoundLayout()
         let first = Placed()
         layout.arrange([(first, 1, Self.row(0))])
-        XCTAssertEqual(layout.fades, [:], "a first arrangement does not fade")
+        XCTAssertEqual(layout.entries, [1: [.appearing]], "a first arrangement joins nothing")
 
         let joined = Placed()
         layout.arrange([(first, 1, Self.row(0)), (joined, 2, Self.row(1))])
 
         XCTAssertEqual(joined.placedFrame, Self.row(1))
-        XCTAssertEqual(layout.fades, [2: .eased(.milliseconds(200), curve: .linear)])
+        XCTAssertEqual(layout.entries[2], [.joining(under: .eased(.milliseconds(200), curve: .linear))])
         XCTAssertFalse(layout.animator.isMoving, "nothing travels to where it already is")
+
+        layout.arrange([(first, 1, Self.row(0)), (joined, 2, Self.row(1))])
+        XCTAssertEqual(layout.entries, [1: [.appearing], 2: [.joining(under: .eased(.milliseconds(200), curve: .linear))]])
     }
 
-    /// Where the user asks for less movement, every child arrives and none fades in.
+    /// A room that moves with no patch joins nothing: a child given its first place then appears with it.
+    func testAChildPlacedFirstWithNoPatchAppears() {
+        let layout = HandWoundLayout()
+        layout.arrange([(Placed(), 1, Self.row(0))])
+
+        layout.arrange([(Placed(), 1, Self.row(0)), (Placed(), 2, Self.row(1))], patched: false)
+
+        XCTAssertEqual(layout.entries[2], [.appearing])
+    }
+
+    /// Where the user asks for less movement, every child arrives, and one that joins joins under no law.
     func testWithLessMotionEveryChildArrives() {
         let layout = HandWoundLayout()
         layout.reducesMotion = true
@@ -150,7 +163,7 @@ final class LayoutMotionTests: XCTestCase {
         layout.arrange([(moved, 1, Self.row(0)), (Placed(), 2, Self.row(1))])
 
         XCTAssertEqual(moved.placedFrame, Self.row(0))
-        XCTAssertEqual(layout.fades, [:])
+        XCTAssertEqual(layout.entries[2], [.joining(under: .none)])
         XCTAssertFalse(layout.animator.isMoving)
     }
 
@@ -190,7 +203,7 @@ final class LayoutMotionTests: XCTestCase {
         XCTAssertEqual(below.placedFrame.height, 60, "at the height it states")
     }
 
-    /// A layout told to move nothing places its children at once, and a child that joins it is simply there.
+    /// A layout told to move nothing places its children at once, and a child that joins it joins under no law.
     func testALayoutToldToMoveNothingPlacesAtOnce() {
         let layout = HandWoundLayout(motion: HostLayoutMotion(motion: .none, lanes: .all))
         let moved = Placed()
@@ -199,7 +212,7 @@ final class LayoutMotionTests: XCTestCase {
         layout.arrange([(moved, 1, Self.row(0)), (Placed(), 2, Self.row(1))])
 
         XCTAssertEqual(moved.placedFrame, Self.row(0))
-        XCTAssertEqual(layout.fades, [:])
+        XCTAssertEqual(layout.entries[2], [.joining(under: .none)])
         XCTAssertFalse(layout.animator.isMoving)
     }
 
@@ -372,8 +385,8 @@ private final class HandWoundLayout {
     private(set) var motion: LayoutMotion!
     var reducesMotion = false
 
-    /// The children that joined fading in, and the law each fades under.
-    private(set) var fades: [UInt64: Motion] = [:]
+    /// How each child given its first place was told to enter, by mount.
+    private(set) var entries: [UInt64: [LayoutEntry]] = [:]
 
     private var now = 0.0
 
@@ -410,8 +423,8 @@ private final class HandWoundLayout {
             places.place(
                 child.view, mount: child.mount, at: child.place, values: values,
                 natural: { words[child.mount] ?? .zero }
-            ) { [unowned self] law in
-                self.fades[child.mount] = law
+            ) { [unowned self] entry in
+                self.entries[child.mount, default: []].append(entry)
             }
         }
     }

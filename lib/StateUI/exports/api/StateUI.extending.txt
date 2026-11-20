@@ -1351,6 +1351,7 @@ swift.conformance ToolbarToggleContract: StateUI.Contract
 swift.conformance ToolbarToggleContract: StateUI.ElementContract
 swift.conformance TrackingElement: StateUI.PropertyContainer
 swift.conformance TrackingElementContract: StateUI.Contract
+swift.conformance Transition: StateUI.HostRepresentable
 swift.conformance VStack: StateUI.AutomationElement
 swift.conformance VStack: StateUI.BorderElement
 swift.conformance VStack: StateUI.Element
@@ -1676,6 +1677,7 @@ swift.init ToolbarPosition.init(rawValue:): init?(rawValue: Int32)
 swift.init ToolbarStyle.init(carried:): init?(carried: StateCarried)
 swift.init ToolbarStyle.init(propValue:): init?(propValue: PropValue)
 swift.init ToolbarStyle.init(rawValue:): init?(rawValue: Int32)
+swift.init Transition.init(propValue:): init?(propValue: PropValue)
 swift.init ViewTransform.init(propValue:): init?(propValue: PropValue)
 swift.init WebNavigationKind.init(propValue:): init?(propValue: PropValue)
 swift.init WebNavigationKind.init(rawValue:): init?(rawValue: Int32)
@@ -2559,6 +2561,7 @@ swift.property ToolbarPosition.propValue: var propValue: PropValue { get }
 swift.property ToolbarStyle.carried: var carried: StateCarried { get }
 swift.property ToolbarStyle.propValue: var propValue: PropValue { get }
 swift.property ToolbarToggle.node: @MainActor var node: Node
+swift.property Transition.propValue: var propValue: PropValue { get }
 swift.property VStack.node: @MainActor var node: Node
 swift.property VStack.nodes: @MainActor var nodes: [Node] { get }
 swift.property View.node: @MainActor var node: Node { get set }
@@ -2834,6 +2837,8 @@ swift.type.method ToolbarPosition.list(from:): static func list(from value: Prop
 swift.type.method ToolbarPosition.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ToolbarStyle.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ToolbarStyle.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method Transition.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method Transition.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ViewTransform.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ViewTransform.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method WebNavigationKind.list(from:): static func list(from value: PropValue) -> [Self]?

@@ -34,8 +34,8 @@ class WebLayoutView: WebDOMView {
     private var readValues: [() -> LayoutValues] = []
     private var valuesRead: [LayoutValues?] = []
 
-    /// Each child's mounted element, by number, and how it fades in as it joins: what its place travels by.
-    private var travelers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
+    /// Each child's mounted element, by number, and how it enters as it is given its first place: what its place travels by.
+    private var travelers: [(mount: UInt64, enter: ((LayoutEntry) -> Void)?)] = []
 
     /// Where the children travel to their places, and who reads their places on the page; nil while they stand at
     /// once wherever the browser lays them out.
@@ -151,7 +151,7 @@ class WebLayoutView: WebDOMView {
     /// Design: docs/design/platforms/web/layout.md#children-in-order
     func setItems(
         _ items: [(view: WebDOMView, values: () -> LayoutValues)],
-        travelers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
+        travelers: [(mount: UInt64, enter: ((LayoutEntry) -> Void)?)] = []
     ) {
         let views = items.map(\.view)
         if views.count != children.count || !zip(views, children).allSatisfy({ $0 === $1 }) {
@@ -183,10 +183,10 @@ class WebLayoutView: WebDOMView {
 
     /// Stands the child at `index` at `slot`, where the browser laid it out, or on its way there.
     func place(_ child: WebDOMView, at index: Int, slot: Rect) {
-        let traveler = index < travelers.count ? travelers[index] : (mount: 0, fadeIn: nil)
+        let traveler = index < travelers.count ? travelers[index] : (mount: 0, enter: nil)
         places.place(
             child, mount: traveler.mount, at: slot, values: values(at: index),
-            natural: { child.heldWords ?? WebRelay.natural(of: child.node) }, fadeIn: traveler.fadeIn)
+            natural: { child.heldWords ?? WebRelay.natural(of: child.node) }, enter: traveler.enter)
     }
 
     private func placeAll() {

@@ -60,6 +60,10 @@
     /// Whether this page tree is shown, as its phases last told.
     public internal(set) var isPagePresented = false
 
+    /// Whether a message making again what the tree showed made the element - a complete one after a drift, another
+    /// root: it enters by no transition.
+    public let isRemade: Bool
+
     /// Whether the element fades out on its way to being hidden, which it still stands shown for.
     public internal(set) var isFadingOut = false
 
@@ -315,6 +319,7 @@
         menuKey = patch.menuKey
         self.tree = tree
         self.parent = parent
+        isRemade = tree.remakes
         mount = tree.allocateMount()
         native = nil
         tree.mounted(self)

@@ -24,7 +24,7 @@ struct UIKitLayoutItem: LayoutChild {
     /// How the view is drawn over its place, which a placing layout adds its own drawing to.
     weak var drawing: UIKitViewDrawing?
 
-    var fadeIn: ((Motion) -> Void)?
+    var enter: ((LayoutEntry) -> Void)?
 
     init(view: UIView, values: LayoutValues = LayoutValues(), isShown: Bool = true) {
         self.view = view

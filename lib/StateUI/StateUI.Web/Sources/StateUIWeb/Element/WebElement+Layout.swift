@@ -27,7 +27,7 @@ extension WebElement {
         let items = element.arrangedChildren.compactMap(\.web.placedElement)
         layout.setItems(
             items.map { item in (item.view!, { [weak item] in item?.element.layoutValues ?? LayoutValues() }) },
-            travelers: items.map { item in (item.element.mount, { [weak item] motion in item?.fadeIn(under: motion) }) })
+            travelers: items.map { item in (item.element.mount, { [weak item] entry in item?.enter(entry) }) })
     }
 
     /// The element's own size in the room offered, as the browser lays its view out; it tells no first baseline.

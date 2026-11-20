@@ -40,8 +40,8 @@ extension UIKitElement {
         item.mount = element.mount
         item.placed = self
         item.drawing = drawing
-        if fadesIn {
-            item.fadeIn = { [weak self] motion in self?.fadeIn(under: motion) }
+        if entersMoving {
+            item.enter = { [weak self] entry in self?.enter(entry) }
         }
         return item
     }
