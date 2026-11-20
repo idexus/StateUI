@@ -2,7 +2,7 @@
 Button.area: ✅
 Button.dismissed: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Button.layoutFrameChanged: ✅
-Button.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Button.transition: ✅
 Canvas.longPressDuration: ✅
 Canvas.pointerMoved: ✓ hover on Canvas: the view's listening handed the recognizer's states, no touch sent
 Canvas.pointerPressed: ✓ hover on Canvas: the view's listening handed the recognizer's states, no touch sent
@@ -49,7 +49,7 @@ Image.rotationUpdated: ✓ rotate on Image: the view's listening handed the reco
 ItemsView.area: ✅
 ItemsView.dismissed: ✓ pressDown on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.layoutFrameChanged: ✅
-ItemsView.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+ItemsView.transition: ✅
 Line.dragEnded: ✓ dragAndDrop on Line: the drag and drop interactions' handlers called, no drag session
 Line.dragStarting: ✓ dragAndDrop on Line: the drag and drop interactions' handlers called, no drag session
 Line.dragText: ✓ dragAndDrop on Line: the drag and drop interactions' handlers called, no drag session
@@ -88,7 +88,7 @@ Polyline.rotationUpdated: ✓ rotate on Polyline: the view's listening handed th
 ProgressBar.area: ✅
 ProgressBar.dismissed: ✓ pressDown on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.layoutFrameChanged: ✅
-ProgressBar.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+ProgressBar.transition: ✅
 Rectangle.longPressDuration: ✅
 Rectangle.pointerMoved: ✓ hover on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.pointerPressed: ✓ hover on Rectangle: the view's listening handed the recognizer's states, no touch sent
@@ -146,7 +146,7 @@ TimePicker.rotationUpdated: ✓ rotate on TimePicker: the view's listening hande
 VStack.area: ✅
 VStack.dismissed: ✓ pressDown on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.layoutFrameChanged: ✅
-VStack.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+VStack.transition: ✅
 WebView.longPressDuration: ✅
 WebView.pointerMoved: ✓ hover on WebView: the view's listening handed the recognizer's states, no touch sent
 WebView.pointerPressed: ✓ hover on WebView: the view's listening handed the recognizer's states, no touch sent

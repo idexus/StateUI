@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (94)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>50 ✅ · 2 ☑️ · 36 ✓ · 2 –</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>48 ✅ · 4 ☑️ · 38 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>49 ✅ · 3 ☑️ · 38 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>70 ✅ · 6 ☑️ · 12 ✓ · 3 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>54 ✅ · 4 ☑️ · 27 ✓ · 8 –</td><td>custom <code>Panel</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 4 ☑️ · 24 ✓ · 9 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
@@ -201,8 +201,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on MotionLayout: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: tap on MotionLayout: the relay's report of the tap handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">UIKit, Android Views, WinUI 3, GTK 4, Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td></tr>
+<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

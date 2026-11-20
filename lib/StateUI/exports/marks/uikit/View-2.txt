@@ -11,7 +11,7 @@ Capsule.rotationUpdated: ✓ rotate on Capsule: the view's listening handed the 
 CheckBox.area: ✅
 CheckBox.dismissed: ✓ pressDown on CheckBox: the view's listening handed the recognizer's states, no touch sent
 CheckBox.layoutFrameChanged: ✅
-CheckBox.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+CheckBox.transition: ✅
 ColorPicker.longPressDuration: ✅
 ColorPicker.pointerMoved: ✓ hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.pointerPressed: ✓ hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent
@@ -51,7 +51,7 @@ ItemsView.tapped: ✓ pressDown on ItemsView: the view's listening handed the re
 Line.area: ✅
 Line.dismissed: ✓ pressDown on Line: the view's listening handed the recognizer's states, no touch sent
 Line.layoutFrameChanged: ✅
-Line.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Line.transition: ✅
 Link.longPressDuration: ✅
 Link.pointerMoved: ✓ hover on Link: the view's listening handed the recognizer's states, no touch sent
 Link.pointerPressed: ✓ hover on Link: the view's listening handed the recognizer's states, no touch sent
@@ -96,7 +96,7 @@ ScrollView.rotationUpdated: ✓ rotate on ScrollView: the view's listening hande
 SearchField.area: ✅
 SearchField.dismissed: ✓ pressDown on SearchField: the view's listening handed the recognizer's states, no touch sent
 SearchField.layoutFrameChanged: ✅
-SearchField.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+SearchField.transition: ✅
 Separator.dragEnded: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
 Separator.dragStarting: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
 Separator.dragText: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session

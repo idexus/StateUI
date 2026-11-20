@@ -4,7 +4,7 @@ Button.rotationUpdated: ✓ rotate on Button: the view's listening handed the re
 Canvas.area: ✅
 Canvas.dismissed: ✓ pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent
 Canvas.layoutFrameChanged: ✅
-Canvas.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Canvas.transition: ✅
 Capsule.longPressDuration: ✅
 Capsule.pointerMoved: ✓ hover on Capsule: the view's listening handed the recognizer's states, no touch sent
 Capsule.pointerPressed: ✓ hover on Capsule: the view's listening handed the recognizer's states, no touch sent
@@ -88,7 +88,7 @@ ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the view's listening han
 Rectangle.area: ✅
 Rectangle.dismissed: ✓ pressDown on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.layoutFrameChanged: ✅
-Rectangle.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Rectangle.transition: ✅
 ScrollView.longPressDuration: ✅
 ScrollView.pointerMoved: ✓ hover on ScrollView: the view's listening handed the recognizer's states, no touch sent
 ScrollView.pointerPressed: ✓ hover on ScrollView: the view's listening handed the recognizer's states, no touch sent
@@ -134,7 +134,7 @@ Switch.tapped: ✓ tap on Switch: the view's listening handed the recognizer's s
 Text.area: ✅
 Text.dismissed: ✓ pressDown on Text: the view's listening handed the recognizer's states, no touch sent
 Text.layoutFrameChanged: ✅
-Text.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Text.transition: ✅
 Text.verticalAlignment: ✅
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the drop interaction's handler told the driver's files, no drag session
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the drop interaction's handler told the driver's files, no drag session
@@ -152,7 +152,7 @@ VStack.rotationUpdated: ✓ rotate on VStack: the view's listening handed the re
 WebView.area: ✅
 WebView.dismissed: ✓ pressDown on WebView: the view's listening handed the recognizer's states, no touch sent
 WebView.layoutFrameChanged: ✅
-WebView.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+WebView.transition: ✅
 ZStack.longPressDuration: ✅
 ZStack.pointerMoved: ✓ hover on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.pointerPressed: ✓ hover on ZStack: the view's listening handed the recognizer's states, no touch sent

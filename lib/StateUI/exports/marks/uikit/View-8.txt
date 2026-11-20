@@ -9,7 +9,7 @@ Canvas.rotationUpdated: ✓ rotate on Canvas: the view's listening handed the re
 Capsule.area: ✅
 Capsule.dismissed: ✓ pressDown on Capsule: the view's listening handed the recognizer's states, no touch sent
 Capsule.layoutFrameChanged: ✅
-Capsule.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Capsule.transition: ✅
 CheckBox.longPressDuration: ✅
 CheckBox.pointerMoved: ✓ hover on CheckBox: the view's listening handed the recognizer's states, no touch sent
 CheckBox.pointerPressed: ✓ hover on CheckBox: the view's listening handed the recognizer's states, no touch sent
@@ -69,7 +69,7 @@ MotionLayout.area: ✅
 MotionLayout.dismissed: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.layoutFrameChanged: ✅
-MotionLayout.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+MotionLayout.transition: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Path.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Path.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -98,7 +98,7 @@ Rectangle.rotationUpdated: ✓ rotate on Rectangle: the view's listening handed 
 ScrollView.area: ✅
 ScrollView.dismissed: ✓ pressDown on ScrollView: the view's listening handed the recognizer's states, no touch sent
 ScrollView.layoutFrameChanged: ✅
-ScrollView.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+ScrollView.transition: ✅
 SearchField.longPressDuration: ✅
 SearchField.pointerMoved: ✓ hover on SearchField: the view's listening handed the recognizer's states, no touch sent
 SearchField.pointerPressed: ✓ hover on SearchField: the view's listening handed the recognizer's states, no touch sent
@@ -153,4 +153,4 @@ WebView.rotationUpdated: ✓ rotate on WebView: the view's listening handed the 
 ZStack.area: ✅
 ZStack.dismissed: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.layoutFrameChanged: ✅
-ZStack.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+ZStack.transition: ✅

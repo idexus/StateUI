@@ -20,7 +20,7 @@ ColorPicker.rotationUpdated: ✓ rotate on ColorPicker: the view's listening han
 DatePicker.area: ✅
 DatePicker.dismissed: ✓ pressDown on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.layoutFrameChanged: ✅
-DatePicker.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+DatePicker.transition: ✅
 Ellipse.longPressDuration: ✅
 Ellipse.pointerMoved: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.pointerPressed: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
@@ -61,7 +61,7 @@ Link.rotationUpdated: ✓ rotate on Link: the view's listening handed the recogn
 Map.area: ✅
 Map.dismissed: ✓ pressDown on Map: the view's listening handed the recognizer's states, no touch sent
 Map.layoutFrameChanged: ✅
-Map.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Map.transition: ✅
 MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.pinchUpdated: ✓ pinch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.tapped: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
@@ -112,7 +112,7 @@ Slider.rotationUpdated: ✓ rotate on Slider: the view's listening handed the re
 Space.area: ✅
 Space.dismissed: ✓ pressDown on Space: the view's listening handed the recognizer's states, no touch sent
 Space.layoutFrameChanged: ✅
-Space.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Space.transition: ✅
 Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Spinner.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Spinner.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session

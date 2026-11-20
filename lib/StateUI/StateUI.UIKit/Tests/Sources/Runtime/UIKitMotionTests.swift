@@ -152,6 +152,56 @@ final class UIKitMotionTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(Self.components(of: box)).red, 1, accuracy: 0.01)
     }
 
+    /// A row leaving a standing stack by its exit stays drawn where it stood - a subview still, taking no touch,
+    /// fading as its effect says - while the row below it closes over its place; as the exit lands it is gone.
+    @MainActor
+    func testARowLeavingByItsExitIsDrawnUntilItLands() throws {
+        let clock = TestClock()
+        let shown = State(wrappedValue: true)
+        let host = UIKitRenderer.running(clock: clock) {
+            VStack {
+                if shown.wrappedValue {
+                    Rectangle()
+                        .fill(Color(red: 255, green: 0, blue: 0))
+                        .height(40)
+                        .transition(Transition(enter: .identity, exit: .opacity.combined(with: .translation(x: 40))))
+                        .motion(.eased(.milliseconds(1000), curve: .linear))
+                        .id("leaving")
+                }
+                Rectangle()
+                    .fill(Color(red: 0, green: 0, blue: 255))
+                    .height(40)
+                    .id("below")
+            }
+            .motion(.eased(.milliseconds(1000), curve: .linear))
+        }
+        defer { host.finish() }
+        host.layOut()
+        let leaving = try XCTUnwrap(Self.view(of: "leaving", in: host))
+        let below = try XCTUnwrap(Self.view(of: "below", in: host))
+        let (stood, start) = (leaving.center, below.frame.minY)
+        let holder = try XCTUnwrap(leaving.superview)
+
+        shown.wrappedValue = false
+        host.runtime.pump.turn()
+        host.layOut()
+        XCTAssertTrue(leaving.superview === holder, "still drawn in its stack")
+        XCTAssertFalse(leaving.isUserInteractionEnabled, "and takes no touch")
+
+        clock.now = 500
+        host.frame()
+        host.layOut()
+        XCTAssertEqual(leaving.alpha, 0.5, accuracy: 0.05, "half way out")
+        XCTAssertEqual(leaving.center, stood, "no layout places it any more")
+        XCTAssertEqual(start - below.frame.minY, 20, accuracy: 2, "the row below closes meanwhile")
+
+        clock.now = 1000
+        host.frame()
+        host.layOut()
+        XCTAssertNil(leaving.superview, "gone as its exit lands")
+        XCTAssertEqual(start - below.frame.minY, 40, accuracy: 1)
+    }
+
     /// A row joining a standing stack fades in while the row below it slides down to make room, both halfway at half
     /// their time.
     @MainActor

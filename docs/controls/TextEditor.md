@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (107)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>64 ✅ · 4 ☑️ · 36 ✓ · 3 –</td><td><code>NSTextView</code> in an <code>NSScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>63 ✅ · 4 ☑️ · 38 ✓ · 2 –</td><td><code>UITextView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>64 ✅ · 3 ☑️ · 38 ✓ · 2 –</td><td><code>UITextView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>84 ✅ · 7 ☑️ · 12 ✓ · 2 –</td><td>multi-line <code>EditText</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>69 ✅ · 5 ☑️ · 27 ✓ · 6 –</td><td>multi-line <code>TextBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>65 ✅ · 7 ☑️ · 28 ✓ · 7 –</td><td><code>GtkTextView</code> in a <code>GtkScrolledWindow</code></td></tr></tbody>
@@ -190,8 +190,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on TextEditor: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on TextEditor: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: tap on TextEditor: the relay's report of the tap handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on TextEditor: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on TextEditor: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on TextEditor: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">UIKit, Android Views, WinUI 3, GTK 4, Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td></tr>
+<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

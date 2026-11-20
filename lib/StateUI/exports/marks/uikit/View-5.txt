@@ -37,7 +37,7 @@ Fill.rotationUpdated: ✓ rotate on Fill: the view's listening handed the recogn
 Grid.area: ✅
 Grid.dismissed: ✓ pressDown on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.layoutFrameChanged: ✅
-Grid.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Grid.transition: ✅
 HStack.longPressDuration: ✅
 HStack.pointerMoved: ✓ hover on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.pointerPressed: ✓ hover on HStack: the view's listening handed the recognizer's states, no touch sent
@@ -76,7 +76,7 @@ Path.rotationUpdated: ✓ rotate on Path: the view's listening handed the recogn
 Picker.area: ✅
 Picker.dismissed: ✓ pressDown on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.layoutFrameChanged: ✅
-Picker.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Picker.transition: ✅
 Polygon.longPressDuration: ✅
 Polygon.pointerMoved: ✓ hover on Polygon: the view's listening handed the recognizer's states, no touch sent
 Polygon.pointerPressed: ✓ hover on Polygon: the view's listening handed the recognizer's states, no touch sent
@@ -136,7 +136,7 @@ Text.layoutFrameChanged: ✅
 TextEditor.area: ✅
 TextEditor.dismissed: ✓ pressDown on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.layoutFrameChanged: ✅
-TextEditor.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+TextEditor.transition: ✅
 TextField.longPressDuration: ✅
 TextField.pointerMoved: ✓ hover on TextField: the view's listening handed the recognizer's states, no touch sent
 TextField.pointerPressed: ✓ hover on TextField: the view's listening handed the recognizer's states, no touch sent

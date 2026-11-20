@@ -15,7 +15,7 @@ CheckBox.rotationUpdated: ✓ rotate on CheckBox: the view's listening handed th
 ColorPicker.area: ✅
 ColorPicker.dismissed: ✓ pressDown on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.layoutFrameChanged: ✅
-ColorPicker.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+ColorPicker.transition: ✅
 DatePicker.longPressDuration: ✅
 DatePicker.pointerMoved: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.pointerPressed: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
@@ -55,7 +55,7 @@ Line.rotationUpdated: ✓ rotate on Line: the view's listening handed the recogn
 Link.area: ✅
 Link.dismissed: ✓ pressDown on Link: the view's listening handed the recognizer's states, no touch sent
 Link.layoutFrameChanged: ✅
-Link.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Link.transition: ✅
 Map.longPressDuration: ✅
 Map.pointerMoved: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 Map.pointerPressed: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
@@ -107,7 +107,7 @@ Separator.tapped: ✓ pressDown on Separator: the view's listening handed the re
 Slider.area: ✅
 Slider.dismissed: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.layoutFrameChanged: ✅
-Slider.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Slider.transition: ✅
 Space.longPressDuration: ✅
 Space.pointerMoved: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
 Space.pointerPressed: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent

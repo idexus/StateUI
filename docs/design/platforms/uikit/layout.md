@@ -12,6 +12,27 @@ stands each child by its bounds and center, on its way there where the
 layout moves. A change that alters a size is measured again up to the
 window; one that does not - a color, a value - measures nothing.
 
+## A view kept as it leaves
+
+A stack, a grid and a ZStack keep a child that left
+(`UIKitElement.keepsExits`). The tree hands a layout its active children as
+items and, apart from them, the views of those kept as they leave
+([a view kept as it leaves](../../host/tree.md#a-view-kept-as-it-leaves));
+the layout is told the kept first (`keep(_:)`), then its items. A leaving view is
+no item's: it stays a subview at its last bounds and center, over the items'
+views, while its opacity, its move and its scale travel to its exit's
+effect and the rows around it close over its place under the layout's own
+motion. Found leaving, it takes no touch - a touch reaches what stands
+behind it - and assistive technology meets nothing of it. A view kept no
+more is taken out as its holder is arranged again, which the tree asks as
+the exit ends.
+
+The trap is the early return of an arrangement of the same items: an exit
+ending changes no item, so the views kept are said apart from the items and
+before them. A second way to set a layout's items is another: a scroller
+sets its own, and a call past it would stand its children in the wrong
+view - there is one `setItems`.
+
 ## A control born with a size
 
 UIKit makes some controls at a size of their own - a stepper, a spinner, a

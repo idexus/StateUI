@@ -27,7 +27,7 @@ DatePicker.rotationUpdated: ✓ rotate on DatePicker: the view's listening hande
 Ellipse.area: ✅
 Ellipse.dismissed: ✓ pressDown on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.layoutFrameChanged: ✅
-Ellipse.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Ellipse.transition: ✅
 Fill.longPressDuration: ✅
 Fill.pointerMoved: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
 Fill.pointerPressed: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
@@ -105,7 +105,7 @@ SearchField.tapped: ✓ pressDown on SearchField: the view's listening handed th
 Separator.area: ✅
 Separator.dismissed: ✓ pressDown on Separator: the view's listening handed the recognizer's states, no touch sent
 Separator.layoutFrameChanged: ✅
-Separator.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Separator.transition: ✅
 Slider.horizontalAlignment: ✅
 Slider.interaction: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.layoutBody: ✅
@@ -120,7 +120,7 @@ Spinner.layoutFrameChanged: ✅
 Stepper.area: ✅
 Stepper.dismissed: ✓ pressDown on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.layoutFrameChanged: ✅
-Stepper.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Stepper.transition: ✅
 Switch.longPressDuration: ✅
 Switch.pointerMoved: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.pointerPressed: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent

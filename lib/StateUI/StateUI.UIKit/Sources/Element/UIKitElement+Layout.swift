@@ -21,7 +21,26 @@ extension UIKitElement {
         guard let layout = view as? UIKitLayoutView else { return }
         layout.direction = element.layoutDirection
         layout.laidOut = { [weak host] in host?.runtime.frames.laidOut() }
+        if keepsExits { layout.keep(leavingViews()) }
         layout.setItems(element.arrangedChildren.compactMap { $0.uiKit.layoutItem })
+    }
+
+    /// The views of the children kept as they leave, each made deaf to input and taken out of what assistive
+    /// technology meets as it is found leaving.
+    /// Design: docs/design/platforms/uikit/layout.md#a-view-kept-as-it-leaves
+    private func leavingViews() -> [UIView] {
+        element.presentedChildren.filter { $0.lifecycle == .exiting }.compactMap { child -> UIView? in
+            guard let view = child.uiKit.view else { return nil }
+            view.isUserInteractionEnabled = !child.ignoresInput
+            view.accessibilityElementsHidden = true
+            return view
+        }
+    }
+
+    /// A stack, a grid and a ZStack keep a child that left: its view stands until the tree releases it.
+    /// Design: docs/design/platforms/uikit/layout.md#a-view-kept-as-it-leaves
+    var keepsExits: Bool {
+        view is UIKitStackView || view is UIKitGridView || view is UIKitZStackView
     }
 
     /// The element's own size and first baseline in the room offered, as its layout item measures them: what a

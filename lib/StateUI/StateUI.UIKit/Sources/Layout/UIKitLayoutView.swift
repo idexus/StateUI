@@ -24,6 +24,9 @@ class UIKitLayoutView: UIView, UIKitSteppable {
 
     private(set) var items: [UIKitLayoutItem] = []
 
+    /// The views of children kept as they leave: drawn where they stood, and no item's.
+    private var leaving: [UIView] = []
+
     /// What the layout says once it has placed its children: whoever reads a frame may have moved.
     var laidOut: (() -> Void)?
 
@@ -47,14 +50,27 @@ class UIKitLayoutView: UIView, UIKitSteppable {
         fatalError("UIKitLayoutView is made in code")
     }
 
-    /// The children, in the tree's order: views that left are taken out, new ones put in.
+    /// Says the views of children kept as they leave, before the items are set: one kept no more is taken out, and
+    /// the kept stand where they stood - no item's, so no layout pass places them.
+    /// Design: docs/design/platforms/uikit/layout.md#a-view-kept-as-it-leaves
+    func keep(_ leaving: [UIView]) {
+        for gone in self.leaving
+        where !leaving.contains(where: { $0 === gone }) && !items.contains(where: { $0.view === gone }) {
+            gone.removeFromSuperview()
+        }
+        self.leaving = leaving
+    }
+
+    /// The children, in the tree's order: views that left are taken out - but those kept as they leave - and new
+    /// ones put in.
     func setItems(_ items: [UIKitLayoutItem]) {
         guard items.count != self.items.count || !zip(items, self.items).allSatisfy({ $0.arranges(like: $1) })
         else { return }
 
         let hosts = [self, box.backdropView?.contentView]
         for gone in self.items
-        where hosts.contains(where: { $0 === gone.view.superview }) && !items.contains(where: { $0.view === gone.view }) {
+        where hosts.contains(where: { $0 === gone.view.superview }) && !items.contains(where: { $0.view === gone.view })
+            && !leaving.contains(where: { $0 === gone.view }) {
             gone.view.removeFromSuperview()
         }
         self.items = items
