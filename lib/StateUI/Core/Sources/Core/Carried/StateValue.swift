@@ -110,7 +110,7 @@ extension Rect: LaneValue {
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 4 else { return nil }
 
-        self.init(lanes[0], lanes[1], lanes[2], lanes[3])
+        self.init(x: lanes[0], y: lanes[1], width: lanes[2], height: lanes[3])
     }
 
     /// Four.

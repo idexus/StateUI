@@ -53,7 +53,7 @@ final class JourneyTests: XCTestCase {
     /// WHERE A THROW REACHES: as far as the value's speed for the motion's length over how steeply the motion sets
     /// out - a glide as `cubicOut` does, an eased motion on its curve; standing still, or under no motion, where it is.
     func testWhereAThrowReaches() throws {
-        let offset = State(wrappedValue: Point(0, 0))
+        let offset = State(wrappedValue: Point(x: 0, y: 0))
         let journey = offset.projectedValue.journey
         XCTAssertNil(journey.reach(.glide(longest: .milliseconds(900))), "nothing shows it: nothing carries it")
 
@@ -73,10 +73,10 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(glided.y, 20 - 300 * 0.9 / 3, accuracy: 0.1)
         let eased = try XCTUnwrap(journey.reach(.eased(.milliseconds(400), curve: .linear)))
         XCTAssertEqual(eased.x, 100 + 600 * 0.4, accuracy: 0.1)
-        XCTAssertEqual(journey.reach(.none), Point(100, 20), "no motion carries it")
+        XCTAssertEqual(journey.reach(.none), Point(x: 100, y: 20), "no motion carries it")
 
         XCTAssertTrue(frame([0, 0]))
-        XCTAssertEqual(journey.reach(.glide(longest: .milliseconds(900))), Point(100, 20), "still, where it is")
+        XCTAssertEqual(journey.reach(.glide(longest: .milliseconds(900))), Point(x: 100, y: 20), "still, where it is")
     }
 
     /// A STATE NOTHING SHOWS IS WHERE IT IS WRITTEN; SHOWN, A WRITE MOVES THE DESTINATION ALONE. With no element
@@ -134,24 +134,24 @@ final class JourneyTests: XCTestCase {
     /// A MOVE LAYS ONLY THE LANES IT CHANGES, so the host leaves another lane's travel as it was; a move to where
     /// every lane is going already lays them all, a fresh journey its waiter hears end.
     func testAMoveLaysOnlyTheLanesItChanges() throws {
-        let offset = State(wrappedValue: Point(0, 0))
+        let offset = State(wrappedValue: Point(x: 0, y: 0))
         Renders().render(ScrollView { Text("a") }.scrollOffset(offset.projectedValue).node)
         let image = try XCTUnwrap(offset.storage.walkedImage())
         typealias Lanes = JourneyLanes<Point>
         let y = HostStorage.bit(of: Lanes.range(of: .destination).lowerBound + 1)
 
         let beforeMove = image.pendingMask
-        offset.projectedValue.journey.move(to: Point(10, 0))
+        offset.projectedValue.journey.move(to: Point(x: 10, y: 0))
         XCTAssertEqual(image.pendingMask & ~beforeMove & y, 0, "the lane it does not change, left alone")
 
-        offset.projectedValue.journey.move(to: Point(10, 0))
+        offset.projectedValue.journey.move(to: Point(x: 10, y: 0))
         XCTAssertNotEqual(image.pendingMask & y, 0, "every lane laid again where none changes")
     }
 
     /// A LAW GIVEN TO A MOVE IS THAT MOVE'S ALONE: the value travels under it, its own law standing, and the next
     /// write that names no law - an assignment, or a move without one - travels under the value's own again.
     func testALawGivenToAMoveIsThatMovesAlone() throws {
-        let offset = State(wrappedValue: Point(0, 0), motion: .spring())
+        let offset = State(wrappedValue: Point(x: 0, y: 0), motion: .spring())
         Renders().render(ScrollView { Text("a") }.scrollOffset(offset.projectedValue).node)
         let image = try XCTUnwrap(offset.storage.walkedImage())
         let slow = Motion.eased(.milliseconds(2000))
@@ -162,15 +162,15 @@ final class JourneyTests: XCTestCase {
             return self.law(crossing: image)
         }
 
-        offset.projectedValue.journey.move(to: Point(0, 5), slow)
+        offset.projectedValue.journey.move(to: Point(x: 0, y: 5), slow)
         XCTAssertEqual(crossing(), slow, "the move travels under the law it was given")
         XCTAssertEqual(offset.projectedValue.journey.motion, .spring(), "the value's own law stands")
 
-        offset.wrappedValue = Point(0, 0)
+        offset.wrappedValue = Point(x: 0, y: 0)
         XCTAssertEqual(crossing(), .spring(), "an assignment travels under the value's own")
 
-        offset.projectedValue.journey.move(to: Point(0, 5), slow)
-        offset.projectedValue.journey.move(to: Point(0, 1))
+        offset.projectedValue.journey.move(to: Point(x: 0, y: 5), slow)
+        offset.projectedValue.journey.move(to: Point(x: 0, y: 1))
         XCTAssertEqual(crossing(), .spring(), "and so does a move that names none")
     }
 
@@ -206,11 +206,11 @@ final class JourneyTests: XCTestCase {
     /// `.none` given to a move is the law that does not move, never "no law given": the value travels under it, not
     /// under its own.
     func testAMoveGivenNoMotionTravelsUnderNone() throws {
-        let offset = State(wrappedValue: Point(0, 0), motion: .spring())
+        let offset = State(wrappedValue: Point(x: 0, y: 0), motion: .spring())
         Renders().render(ScrollView { Text("a") }.scrollOffset(offset.projectedValue).node)
         let image = try XCTUnwrap(offset.storage.walkedImage())
 
-        offset.projectedValue.journey.move(to: Point(0, 5), .none)
+        offset.projectedValue.journey.move(to: Point(x: 0, y: 5), .none)
         Renderer.shared.board.cycle(now: 16, reducesMotion: false)
 
         XCTAssertEqual(law(crossing: image), Motion.none, "the law it was given, `.none`")
@@ -307,16 +307,16 @@ final class JourneyTests: XCTestCase {
     /// The journey of a state the host carries AS THE VALUE - a feed, a plain number - has no sample: there are
     /// no lanes to walk. A move writes the value and says why nothing moved.
     func testTheJourneyOfAFedStateHasNoSample() {
-        let room = State(wrappedValue: Rect(0, 0, 0, 0))
+        let room = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
 
         _ = room.number
-        room.wrappedValue = Rect(1, 2, 3, 4)
+        room.wrappedValue = Rect(x: 1, y: 2, width: 3, height: 4)
 
         let journey = room.projectedValue.journey
 
         XCTAssertNil(journey.sample)
-        XCTAssertEqual(journey.move(to: Rect(5, 6, 7, 8)).outcome, .notStarted(.unsupportedValue))
-        XCTAssertEqual(room.wrappedValue, Rect(5, 6, 7, 8), "the value is written all the same")
+        XCTAssertEqual(journey.move(to: Rect(x: 5, y: 6, width: 7, height: 8)).outcome, .notStarted(.unsupportedValue))
+        XCTAssertEqual(room.wrappedValue, Rect(x: 5, y: 6, width: 7, height: 8), "the value is written all the same")
         XCTAssertNil(room.projectedValue.journeyImage, "and it stays carried as the value")
     }
 

@@ -230,7 +230,7 @@ final class AppKitDriver: HostDriver {
         if property == .fill, let shape = (element.native as? AppKitElement)?.view as? AppKitShapeView {
             // A figure made of a blur or glass shows AppKit's own view of it; a painted one, what it draws.
             if let surface = shape.surface { return Self.material(surface)?.propValue }
-            let middle = Point(Double(shape.bounds.midX), Double(shape.bounds.midY))
+            let middle = Point(x: Double(shape.bounds.midX), y: Double(shape.bounds.midY))
             return try color(of: element, at: middle).map { Material.color($0).propValue }
         }
         if property == PageElementContract.title.token, let tabs = element.parent, tabs.type == .tabView { return try tabTitle(of: element, in: tabs) }

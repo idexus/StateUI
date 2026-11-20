@@ -13,7 +13,7 @@ final class GalleryViewHandTests: XCTestCase {
     private let bench = LayoutBench()
 
     /// The room the galleries are laid out in.
-    private let room = Rect(0, 0, 352, 400)
+    private let room = Rect(x: 0, y: 0, width: 352, height: 400)
 
     /// How far the hand travels for one card: as far as the card in front goes on the wheel, at its stated size.
     private let reach = 176.0 * 0.52
@@ -34,7 +34,7 @@ final class GalleryViewHandTests: XCTestCase {
 
         // Ten moves within the card in front, a few points each.
         for step in 1...10 {
-            bench.hand(.changed, moved: Point(-4, 0))
+            bench.hand(.changed, moved: Point(x: -4, y: 0))
 
             XCTAssertEqual(HostBoundary.tally.built, built, "move \(step) of the hand built a body")
         }
@@ -46,7 +46,7 @@ final class GalleryViewHandTests: XCTestCase {
         bench.laid({ self.gallery(5).arrangement(.deck).position(shown.projectedValue).node }, room: room)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-20 * reach, 0))
+        bench.hand(.changed, moved: Point(x: -20 * reach, y: 0))
         XCTAssertEqual(shown.wrappedValue, 1, "one card, not the last")
     }
 
@@ -57,9 +57,9 @@ final class GalleryViewHandTests: XCTestCase {
         bench.laid({ self.gallery(5).position(shown.projectedValue).node }, room: room)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(.nan, .nan))
-        bench.hand(.changed, moved: Point(.infinity, 0))
-        bench.hand(.ended, velocity: Point(.nan, .infinity))
+        bench.hand(.changed, moved: Point(x: .nan, y: .nan))
+        bench.hand(.changed, moved: Point(x: .infinity, y: 0))
+        bench.hand(.ended, velocity: Point(x: .nan, y: .infinity))
         XCTAssertEqual(shown.wrappedValue, 0)
     }
 
@@ -71,16 +71,16 @@ final class GalleryViewHandTests: XCTestCase {
         bench.laid({ self.gallery(5).position(shown.projectedValue).node }, room: room)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-2.6 * reach, 0))
+        bench.hand(.changed, moved: Point(x: -2.6 * reach, y: 0))
         XCTAssertEqual(shown.wrappedValue, 3)
 
-        bench.hand(.changed, moved: Point(-0.3 * reach, 0))
+        bench.hand(.changed, moved: Point(x: -0.3 * reach, y: 0))
         XCTAssertEqual(shown.wrappedValue, 3, "a move between two cards names nothing new")
 
-        bench.hand(.changed, moved: Point(2.5 * reach, 0))
+        bench.hand(.changed, moved: Point(x: 2.5 * reach, y: 0))
         XCTAssertEqual(shown.wrappedValue, 0)
 
-        bench.hand(.changed, moved: Point(-20 * reach, 0))
+        bench.hand(.changed, moved: Point(x: -20 * reach, y: 0))
         XCTAssertEqual(shown.wrappedValue, 4, "a card past the last is the last")
     }
 
@@ -91,7 +91,7 @@ final class GalleryViewHandTests: XCTestCase {
         bench.laid({ self.gallery(5).position(shown.projectedValue).node }, room: room)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-4 * reach, 0))
+        bench.hand(.changed, moved: Point(x: -4 * reach, y: 0))
         bench.hand(.ended)
         XCTAssertEqual(shown.wrappedValue, 4)
 
@@ -108,7 +108,7 @@ final class GalleryViewHandTests: XCTestCase {
         bench.laid({ self.gallery(5).node }, room: room)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-1.4 * reach, 0))
+        bench.hand(.changed, moved: Point(x: -1.4 * reach, y: 0))
         bench.hand(.ended)
         XCTAssertEqual(try XCTUnwrap(bench.journey).destination[0], 1, accuracy: 0.001, "the nearer card")
 
@@ -134,8 +134,8 @@ final class GalleryViewHandTests: XCTestCase {
             }, room: room)
 
             bench.hand(.began)
-            bench.hand(.changed, moved: Point(-0.1 * reach, 0))
-            bench.hand(.ended, velocity: Point(-200, 0))
+            bench.hand(.changed, moved: Point(x: -0.1 * reach, y: 0))
+            bench.hand(.ended, velocity: Point(x: -200, y: 0))
 
             XCTAssertEqual(shown.wrappedValue, card, "thrown \(throwing.map { "\($0.kind)" } ?? "as a gallery is")")
         }

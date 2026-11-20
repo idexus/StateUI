@@ -92,8 +92,8 @@ final class ControlTests: XCTestCase {
         let refreshing = State(false)
         let hasBack = State(false)
         let hasForward = State(false)
-        let placed = State(wrappedValue: Rect(0, 0, 0, 0))
-        let drawn = State(wrappedValue: Rect(0, 0, 0, 0))
+        let placed = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
+        let drawn = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
         let chosen = State<String?>(wrappedValue: "two")
         let turn = State(wrappedValue: 0.0)
         let dial = State(wrappedValue: ControlDial())
@@ -309,7 +309,7 @@ final class ControlTests: XCTestCase {
                 ZStack {
                     Rectangle()
                         .fill(.cornflowerBlue)
-                        .area(.proportional(Rect(0, 0, 1, 0.5)))
+                        .area(.proportional(Rect(x: 0, y: 0, width: 1, height: 0.5)))
 
                     Text("Bottom right")
                         .horizontalAlignment(.end)
@@ -359,7 +359,7 @@ final class ControlTests: XCTestCase {
                     Text($0)
                         .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.6))
                 } placements: { context, phase in
-                    [Placement(Rect(phase, 0, context.bounds.width / 2, context.bounds.height)), Placement(Rect(context.bounds.width / 2, 0, 10, 10))]
+                    [Placement(Rect(x: phase, y: 0, width: context.bounds.width / 2, height: context.bounds.height)), Placement(Rect(x: context.bounds.width / 2, y: 0, width: 10, height: 10))]
                 }
                 .interaction(
                     .value(turn.traveling(.spring(response: .milliseconds(240))), input: .translation(.horizontal, unit: .points(90))).reversed(true).range(0...1).snaps(.every(1))
@@ -380,7 +380,7 @@ final class ControlTests: XCTestCase {
             // A pan and two fingers over the motion layout: a rotation and a magnification, each driving its axis.
             ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
                 MotionLayout(["one", "two"], parameters: dial.projectedValue) { Text($0) } placements: { context, dial in
-                    [Placement(Rect(dial.turn, 0, context.bounds.width / 2 * dial.size, context.bounds.height)), Placement(.zero)]
+                    [Placement(Rect(x: dial.turn, y: 0, width: context.bounds.width / 2 * dial.size, height: context.bounds.height)), Placement(.zero)]
                 }
                 .interaction(
                     .simultaneous([
@@ -441,7 +441,7 @@ final class ControlTests: XCTestCase {
             ControlCase("Capsule", source: "Capsule.swift", Capsule()),
 
             ControlCase("Line", source: "Line.swift",
-                Line(from: Point(0, 0), to: Point(240, 40))),
+                Line(from: Point(x: 0, y: 0), to: Point(x: 240, y: 40))),
 
             ControlCase("Path", source: "Path.swift",
                 Path("M 0,40 L 20,0 L 40,40 Z")
@@ -452,13 +452,13 @@ final class ControlTests: XCTestCase {
                     .geometryTransform(Self.leaned)),
 
             ControlCase("Polygon", source: "Polygon.swift",
-                Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])
-                    .points([Point(20, 0), Point(40, 40), Point(0, 40)])
+                Polygon([Point(x: 20, y: 0), Point(x: 40, y: 40), Point(x: 0, y: 40)])
+                    .points([Point(x: 20, y: 0), Point(x: 40, y: 40), Point(x: 0, y: 40)])
                     .fillRule(.nonzero)),
 
             ControlCase("Polyline", source: "Polyline.swift",
-                Polyline([Point(0, 30), Point(20, 5), Point(40, 25)])
-                    .points([Point(0, 30), Point(20, 5), Point(40, 25)])
+                Polyline([Point(x: 0, y: 30), Point(x: 20, y: 5), Point(x: 40, y: 25)])
+                    .points([Point(x: 0, y: 30), Point(x: 20, y: 5), Point(x: 40, y: 25)])
                     .fillRule(.evenOdd)),
 
             // A canvas, and the instructions it draws - every one of them, since
@@ -516,11 +516,11 @@ final class ControlTests: XCTestCase {
                         .fill(.radialGradient([
                             GradientStop(.white, 0),
                             GradientStop(.steelBlue, 1),
-                        ], center: Point(0.3, 0.3), radius: 0.8))
+                        ], center: Point(x: 0.3, y: 0.3), radius: 0.8))
                         .stroke(.linearGradient([
                             GradientStop(.gold, 0),
                             GradientStop(.tomato, 1),
-                        ], from: Point(0, 0), to: Point(1, 1)))
+                        ], from: Point(x: 0, y: 0), to: Point(x: 1, y: 1)))
                         .lineWidth(2)
                         .dash([4, 2])
                         .dashPhase(1)
@@ -562,7 +562,7 @@ final class ControlTests: XCTestCase {
                         // The other layout that asks a child where it goes.
                         // Harmless on a view in none: an area means something
                         // only to the layout that asks for it.
-                        .area(.absolute(Rect(0, 0, 120, 40)))
+                        .area(.absolute(Rect(x: 0, y: 0, width: 120, height: 40)))
                         .padding(horizontal: 8, vertical: 4)
 
                     // The input tier, which TextField, TextEditor and SearchField all
@@ -1340,7 +1340,7 @@ final class ControlTests: XCTestCase {
             .scrollOffset(scrolled.projectedValue)
             .node)
 
-        slid(scrolled.number, to: Point(0, 120))
+        slid(scrolled.number, to: Point(x: 0, y: 120))
 
         XCTAssertEqual(scrolled.wrappedValue.y, 120)
     }

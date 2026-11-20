@@ -16,7 +16,7 @@ extension MotionLayout.Run {
         return states.slot.program(
             revision: UInt64(description), measure: measure, frontItemUnit: front
         ) { width, height in
-            let room = Rect(0, 0, width, height)
+            let room = Rect(x: 0, y: 0, width: width, height: height)
             if states.room.wrappedValue != room { states.room.wrappedValue = room }
         }
     }

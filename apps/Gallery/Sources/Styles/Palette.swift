@@ -51,8 +51,8 @@ enum Palette {
             GradientStop(Color(light: AppColors.violet, dark: AppColors.violetDeep), 0),
             GradientStop(Color(light: AppColors.swiftOrangeDeep, dark: AppColors.swiftOrange), 1),
         ],
-        from: Point(0, 0),
-        to: Point(1, 1))
+        from: Point(x: 0, y: 0),
+        to: Point(x: 1, y: 1))
 
     // MARK: Text
 

@@ -60,9 +60,9 @@
                 }
                 let (back, front) = (try s.element("back"), try s.element("front"))
 
-                s.expect(try s.reaches(front, at: Point(10, 10)), true, "the later child, where it stands")
-                s.expect(try s.reaches(back, at: Point(10, 10)), false, "not the one under it there")
-                s.expect(try s.reaches(back, at: Point(40, 30)), true, "the earlier one beside it")
+                s.expect(try s.reaches(front, at: Point(x: 10, y: 10)), true, "the later child, where it stands")
+                s.expect(try s.reaches(back, at: Point(x: 10, y: 10)), false, "not the one under it there")
+                s.expect(try s.reaches(back, at: Point(x: 40, y: 30)), true, "the earlier one beside it")
             },
             ConformanceCase("aChildWhoseAreaGoesFillsTheRoom", proves: [Covered(ZStackContract.self)], needs: [
                 Covered(ViewContract.area, on: "Rectangle"), Covered(ClickElementContract.clicked, on: ButtonContract.self),
@@ -73,7 +73,7 @@
                     VStack {
                         ZStack {
                             let child = Rectangle().fill(.blue)
-                            (placed.wrappedValue ? child.area(.absolute(Rect(10, 20, 30, 15))) : child)
+                            (placed.wrappedValue ? child.area(.absolute(Rect(x: 10, y: 20, width: 30, height: 15))) : child)
                                 .onEvent(ViewContract.layoutFrameChanged) { frames.values.append($0) }.id("child")
                         }
                         .width(60).height(40)

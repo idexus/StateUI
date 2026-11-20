@@ -380,8 +380,8 @@ let wash = Brush.linearGradient(
         GradientStop(.cornflowerBlue, 0),
         GradientStop(.indigo, 1),
     ],
-    from: Point(0, 0),
-    to: Point(1, 1))
+    from: Point(x: 0, y: 0),
+    to: Point(x: 1, y: 1))
 
 VStack {
     Text("Gradient")
@@ -426,8 +426,8 @@ or glass cut to the figure, `Capsule().fill(.blur(.thin))` - or a state;
 Rectangle()
     .fill(.linearGradient(
         [GradientStop(.cornflowerBlue, 0), GradientStop(.indigo, 1)],
-        from: Point(0, 0),
-        to: Point(1, 0)))
+        from: Point(x: 0, y: 0),
+        to: Point(x: 1, y: 0)))
     .cornerRadius(14)
     .stroke(.white)
     .lineWidth(2)

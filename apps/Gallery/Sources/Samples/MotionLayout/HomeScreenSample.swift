@@ -216,7 +216,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         // about its middle as far as the cell lets it: drawn, it covers its
         // own cell and no other, so a press takes the icon under it.
         return Placement(
-            Rect(x + (width - 84) / 2, y + (height - 96) / 2, 84, 96),
+            Rect(x: x + (width - 84) / 2, y: y + (height - 96) / 2, width: 84, height: 96),
             transform: .scale(min(width / 84, height / 96)))
     }
 
@@ -226,7 +226,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         let x = room.width / 2 + (Double(page) - Double(pages - 1) / 2) * 16
 
         return Placement(
-            Rect(x - 4, room.height / 2 - 4, 8, 8),
+            Rect(x: x - 4, y: room.height / 2 - 4, width: 8, height: 8),
             opacity: 0.25 + 0.75 * max(1 - abs(board - Double(page)), 0))
     }
 

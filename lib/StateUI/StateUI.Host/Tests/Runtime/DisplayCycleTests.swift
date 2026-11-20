@@ -239,7 +239,7 @@ private struct ReadTravelApplication: Application {
 
 private struct ReadTravelPage: View {
     @State(motion: .eased(.milliseconds(200), curve: .linear)) private var level = 0.0
-    @State private var room = Rect(0, 0, 0, 0)
+    @State private var room = Rect(x: 0, y: 0, width: 0, height: 0)
 
     var body: some View {
         VStack {

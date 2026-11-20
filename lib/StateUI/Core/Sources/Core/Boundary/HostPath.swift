@@ -192,7 +192,7 @@ private struct HostPathParser {
 
         case "H":
             guard let values = take(1) else { return false }
-            let point = Point(relative ? current.x + values[0] : values[0], current.y)
+            let point = Point(x: relative ? current.x + values[0] : values[0], y: current.y)
             result.append(.line(point))
             current = point
             clearControls()
@@ -200,7 +200,7 @@ private struct HostPathParser {
 
         case "V":
             guard let values = take(1) else { return false }
-            let point = Point(current.x, relative ? current.y + values[0] : values[0])
+            let point = Point(x: current.x, y: relative ? current.y + values[0] : values[0])
             result.append(.line(point))
             current = point
             clearControls()
@@ -295,11 +295,11 @@ private struct HostPathParser {
     }
 
     private func resolved(_ x: Double, _ y: Double, relative: Bool) -> Point {
-        relative ? Point(current.x + x, current.y + y) : Point(x, y)
+        relative ? Point(x: current.x + x, y: current.y + y) : Point(x: x, y: y)
     }
 
     private func reflected(_ point: Point) -> Point {
-        Point(2 * current.x - point.x, 2 * current.y - point.y)
+        Point(x: 2 * current.x - point.x, y: 2 * current.y - point.y)
     }
 
     private mutating func clearControls() {

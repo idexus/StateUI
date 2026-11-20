@@ -49,7 +49,7 @@ final class FrameReportsTests: XCTestCase {
         let view = try XCTUnwrap(runtime.tree.root?.first(id: .manual("measured")))
         view.reportFrame(standing, in: runtime)
         runtime.pump.turn()
-        XCTAssertEqual(Measuring.first.wrappedValue, Rect(10, 20, 100, 60))
+        XCTAssertEqual(Measuring.first.wrappedValue, Rect(x: 10, y: 20, width: 100, height: 60))
         return (runtime, view)
     }
 
@@ -62,7 +62,7 @@ final class FrameReportsTests: XCTestCase {
         XCTAssertTrue(runtime.tree.root?.first(id: .manual("measured")) === view, "the same element")
         view.reportFrame(standing, in: runtime)
         runtime.pump.turn()
-        XCTAssertEqual(Measuring.second.wrappedValue, Rect(10, 20, 100, 60))
+        XCTAssertEqual(Measuring.second.wrappedValue, Rect(x: 10, y: 20, width: 100, height: 60))
     }
 
     /// A handler of the frame's changes added since hears where the view stands, the view standing still.
@@ -72,7 +72,7 @@ final class FrameReportsTests: XCTestCase {
         runtime.pump.turn()
         view.reportFrame(standing, in: runtime)
         runtime.pump.turn()
-        XCTAssertEqual(Measuring.heard, [Rect(10, 20, 100, 60)])
+        XCTAssertEqual(Measuring.heard, [Rect(x: 10, y: 20, width: 100, height: 60)])
     }
 
     /// The same reader hears the same report no more: what the application wrote onto the state stands, and where

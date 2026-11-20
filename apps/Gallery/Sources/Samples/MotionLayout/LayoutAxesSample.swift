@@ -122,17 +122,17 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
 
         switch part {
         case .words(let strip):
-            return Placement(Rect(16, top + Double(strip) * row + 4, room.width - 32, 16))
+            return Placement(Rect(x: 16, y: top + Double(strip) * row + 4, width: room.width - 32, height: 16))
         case .frame(let strip):
             return Placement(Rect(
-                room.width / 2 - width / 2 - 4, top + Double(strip) * row + 20, width + 8, height + 8))
+                x: room.width / 2 - width / 2 - 4, y: top + Double(strip) * row + 20, width: width + 8, height: height + 8))
         case .card(let strip, let index):
             let along = Double(index) - strips[keyPath: Strips.axes[strip]]
             let comesRound = strip >= 3
             let step = comesRound ? along - ((along + 2) / 4).rounded(.down) * 4 : along
 
             return Placement(
-                Rect(room.width / 2 + step * (width + 10) - width / 2, top + Double(strip) * row + 24, width, height),
+                Rect(x: room.width / 2 + step * (width + 10) - width / 2, y: top + Double(strip) * row + 24, width: width, height: height),
                 opacity: comesRound ? min(max((2 - abs(step)) * 2, 0), 1) : 1,
                 zIndex: 1)
         }

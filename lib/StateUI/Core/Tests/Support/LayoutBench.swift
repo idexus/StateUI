@@ -115,7 +115,7 @@ final class LayoutBench {
     /// Renders `tree`, feeds the layout the room `room` as the host does, and turns the board until the arithmetic
     /// has answered: the run of placements the layout's own area carries.
     func laid(
-        _ renders: Renders, _ tree: () -> Node, room: Rect = Rect(10, 20, 300, 200),
+        _ renders: Renders, _ tree: () -> Node, room: Rect = Rect(x: 10, y: 20, width: 300, height: 200),
         file: StaticString = #filePath, line: UInt = #line
     ) -> (patch: HostPatch, run: [Placement]) {
         let patch = renders.render(tree())

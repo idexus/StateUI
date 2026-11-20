@@ -46,7 +46,7 @@ final class LayoutParametersTests: XCTestCase {
         let orbit = State(wrappedValue: Orbit())
         let renders = Renders()
         func tree() -> Node {
-            MotionLayout([1], parameters: orbit.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+            MotionLayout([1], parameters: orbit.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(x: 0, y: 0, width: 10, height: 10))] }
                 .node
         }
 
@@ -66,7 +66,7 @@ final class LayoutParametersTests: XCTestCase {
         func tree() -> Node {
             MotionLayout([1], parameters: orbit.projectedValue) { Text("\($0)") } placements: { _, phase in
                 handed.phases.append(phase)
-                return [Placement(Rect(0, 0, 10, 10))]
+                return [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
             }
             .node
         }
@@ -94,7 +94,7 @@ final class LayoutParametersTests: XCTestCase {
         {
             MotionLayout([1], parameters: orbit.projectedValue) { Text("\($0)") } placements: { _, phase in
                 handed?.phases.append(phase)
-                return [Placement(Rect(0, 0, 10, 10))]
+                return [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
             }
             .interaction(
                 .value(orbit.projectedValue, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)

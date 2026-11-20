@@ -49,7 +49,7 @@ final class AppKitHandReader {
     /// A scroll event over the layout: a gesture's step, its momentum, or a wheel's notches - a wheel that turns
     /// notch by notch tells no precise deltas. Whether the layout took it.
     func scrolled(_ event: NSEvent) -> Bool {
-        let moved = Point(Double(event.scrollingDeltaX), Double(event.scrollingDeltaY))
+        let moved = Point(x: Double(event.scrollingDeltaX), y: Double(event.scrollingDeltaY))
         // The event's own time is on the frame clock's: seconds since the system started.
         let time = event.timestamp * 1_000
 
@@ -129,8 +129,8 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
 
     /// The pointer pressed moved to `point` of the view, as the drag tells it.
     func moved(to point: Point) {
-        let total = Point(point.x - down.x, point.y - down.y)
-        reader?.hand(.changed, moved: Point(total.x - last.x, total.y - last.y))
+        let total = Point(x: point.x - down.x, y: point.y - down.y)
+        reader?.hand(.changed, moved: Point(x: total.x - last.x, y: total.y - last.y))
         last = total
         dragged = true
     }
@@ -163,7 +163,7 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
         guard let at = view.drawnPoint(fromWindow: now).map(view.topLeft),
               let from = view.drawnPoint(fromWindow: NSPoint(x: now.x - moved.x, y: now.y - moved.y)).map(view.topLeft)
         else { return takenAway(at: phase) }
-        let total = Point(at.x - from.x, at.y - from.y)
+        let total = Point(x: at.x - from.x, y: at.y - from.y)
 
         switch state {
         case .began:
@@ -171,10 +171,10 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
             last = total
             dragged = true
         case .changed:
-            reader?.hand(.changed, moved: Point(total.x - last.x, total.y - last.y))
+            reader?.hand(.changed, moved: Point(x: total.x - last.x, y: total.y - last.y))
             last = total
         case .ended:
-            released(speed: Point(Double(speed.x), Double(view.isFlipped ? speed.y : -speed.y)))
+            released(speed: Point(x: Double(speed.x), y: Double(view.isFlipped ? speed.y : -speed.y)))
         case .cancelled, .failed:
             gesture.told(.cancelled)
             reader?.hand(.cancelled, moved: .zero)

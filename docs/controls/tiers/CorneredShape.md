@@ -5,7 +5,7 @@
 A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
 
 ```swift
-Polygon([Point(0, 40), Point(20, 0), Point(40, 40)])
+Polygon([Point(x: 0, y: 40), Point(x: 20, y: 0), Point(x: 40, y: 40)])
     .stroke(.black)
     .lineWidth(6)
     .lineJoin(.round)

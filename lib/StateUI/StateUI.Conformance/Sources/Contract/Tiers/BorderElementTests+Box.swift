@@ -36,8 +36,8 @@ extension BorderElementTests {
         ]) { s in
             s.start { VStack { Specimens.view(element, room + [Write(BackgroundElementContract.background, .color(.red))]) } }
             let layout = try s.specimen(element)
-            try s.settle { try s.shows(.red, on: layout, at: Point(30, 20)) }
-            s.expect(try s.color(of: layout, at: Point(30, 20)), shows: .red, "inside its box")
+            try s.settle { try s.shows(.red, on: layout, at: Point(x: 30, y: 20)) }
+            s.expect(try s.color(of: layout, at: Point(x: 30, y: 20)), shows: .red, "inside its box")
         }
     }
 
@@ -49,9 +49,9 @@ extension BorderElementTests {
         ]) { s in
             s.start { VStack { Specimens.view(element, room + outline(width: 2)) } }
             let layout = try s.specimen(element)
-            try s.settle { try s.shows(.red, on: layout, at: Point(1, 20)) }
-            s.expect(try s.color(of: layout, at: Point(1, 20)), shows: .red, "at its edge")
-            s.expect(bare(try s.color(of: layout, at: Point(30, 20)), inside: element), true, "nothing of it inside")
+            try s.settle { try s.shows(.red, on: layout, at: Point(x: 1, y: 20)) }
+            s.expect(try s.color(of: layout, at: Point(x: 1, y: 20)), shows: .red, "at its edge")
+            s.expect(bare(try s.color(of: layout, at: Point(x: 30, y: 20)), inside: element), true, "nothing of it inside")
         }
     }
 
@@ -69,8 +69,8 @@ extension BorderElementTests {
                 }
             }
             let layout = try s.specimen(element)
-            let inward = Point(5, 20)
-            try s.settle { try s.shows(.red, on: layout, at: Point(1, 20)) }
+            let inward = Point(x: 5, y: 20)
+            try s.settle { try s.shows(.red, on: layout, at: Point(x: 1, y: 20)) }
             s.expect(bare(try s.color(of: layout, at: inward), inside: element), true, "two wide stops short of it")
 
             try s.perform(.activate, on: s.element("change"))
@@ -98,7 +98,7 @@ extension BorderElementTests {
                 }
             }
             let layout = try s.specimen(element)
-            let (corner, top) = (Point(1, 1), Point(25, 1))
+            let (corner, top) = (Point(x: 1, y: 1), Point(x: 25, y: 1))
             try s.settle { try s.shows(.red, on: layout, at: top) }
             s.expect(try s.color(of: layout, at: corner), shows: .red, "a rectangle's corner")
             s.expect(try s.color(of: layout, at: top), shows: .red, "and its top")
@@ -107,7 +107,7 @@ extension BorderElementTests {
             try s.settle { try s.color(of: layout, at: top) == nil }
             s.expect(try s.color(of: layout, at: corner), nil, "an ellipse leaves its corner bare")
             s.expect(try s.color(of: layout, at: top), nil, "and the top a capsule's would cover")
-            s.expect(try s.color(of: layout, at: Point(60, 1)), shows: .red, "its outline drawn on the oval's top")
+            s.expect(try s.color(of: layout, at: Point(x: 60, y: 1)), shows: .red, "its outline drawn on the oval's top")
         }
     }
 
@@ -131,10 +131,10 @@ extension BorderElementTests {
                 }
             }
             let layout = try s.specimen(element)
-            let top = Point(25, 1)
+            let top = Point(x: 25, y: 1)
             try s.settle { try s.shows(.red, on: layout, at: top) }
             s.expect(try s.color(of: layout, at: top), shows: .red, "40 high, its top runs straight there")
-            s.expect(try s.color(of: layout, at: Point(1, 1)), nil, "its corner left bare")
+            s.expect(try s.color(of: layout, at: Point(x: 1, y: 1)), nil, "its corner left bare")
 
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.color(of: layout, at: top) == nil }

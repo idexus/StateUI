@@ -20,7 +20,7 @@ extension UIKitDriver {
         renderer?.layOut()
         let view = (native.controller as? UIKitPageController)?.view ?? shown
         let at = view.convert(CGPoint(x: point.x, y: point.y), from: shown)
-        let point = Point(at.x, at.y)
+        let point = Point(x: at.x, y: at.y)
         let size = view.bounds.size
         let (width, height) = (Int(size.width.rounded(.up)), Int(size.height.rounded(.up)))
         guard point.x >= 0, point.y >= 0, point.x < size.width, point.y < size.height, width > 0, height > 0,

@@ -28,7 +28,7 @@
 
         fingers[finger] = point
         let count = Double(fingers.count)
-        return Point((point.x - last.x) / count, (point.y - last.y) / count)
+        return Point(x: (point.x - last.x) / count, y: (point.y - last.y) / count)
     }
 
     /// A finger lifted: the middle moves nowhere.

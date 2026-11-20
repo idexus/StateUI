@@ -104,7 +104,7 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
         let down = abs(step) * (-6 * pile + width * 0.12 * deal.spread)
 
         return Placement(
-            Rect(room.width / 2 - width / 2 + across, room.height / 2 - height / 2 + down, width, height),
+            Rect(x: room.width / 2 - width / 2 + across, y: room.height / 2 - height / 2 + down, width: width, height: height),
             transform: .rotate(step * 10 * deal.spread).scale(1 - min(abs(step), 3) * 0.06),
             zIndex: 100 - Int(min(abs(step), 9) * 10))
     }

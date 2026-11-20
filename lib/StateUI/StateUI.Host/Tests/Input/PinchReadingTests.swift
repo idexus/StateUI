@@ -55,27 +55,27 @@ final class PinchReadingTests: XCTestCase {
     func testTwoPointersAreAPinchAndARotation() throws {
         var fingers = TwoFingers()
 
-        XCTAssertNil(fingers.moved(Point(0, 0), Point(10, 0)), "first standing")
-        let spread = try XCTUnwrap(fingers.moved(Point(0, 0), Point(20, 0)))
+        XCTAssertNil(fingers.moved(Point(x: 0, y: 0), Point(x: 10, y: 0)), "first standing")
+        let spread = try XCTUnwrap(fingers.moved(Point(x: 0, y: 0), Point(x: 20, y: 0)))
         XCTAssertEqual(spread.scale, 2, accuracy: 1e-9)
         XCTAssertEqual(spread.degrees, 0, accuracy: 1e-9)
 
-        let turned = try XCTUnwrap(fingers.moved(Point(0, 0), Point(0, 20)))
+        let turned = try XCTUnwrap(fingers.moved(Point(x: 0, y: 0), Point(x: 0, y: 20)))
         XCTAssertEqual(turned.degrees, 90, accuracy: 1e-9, "right to down is clockwise")
 
-        _ = fingers.moved(Point(0, 0), Point(-20, 1))
-        let across = try XCTUnwrap(fingers.moved(Point(0, 0), Point(-20, -1)))
+        _ = fingers.moved(Point(x: 0, y: 0), Point(x: -20, y: 1))
+        let across = try XCTUnwrap(fingers.moved(Point(x: 0, y: 0), Point(x: -20, y: -1)))
         XCTAssertEqual(across.degrees, 2 * atan2(1, 20) * 180 / .pi, accuracy: 1e-9, "the short way past 180")
 
         fingers.lifted()
-        XCTAssertNil(fingers.moved(Point(0, 0), Point(40, 0)), "afresh after a lift")
+        XCTAssertNil(fingers.moved(Point(x: 0, y: 0), Point(x: 40, y: 0)), "afresh after a lift")
     }
 
     /// A WHEEL TURNED AS A PINCH begins with its first turn, steps with each, and is let go once it has stood still
     /// as long as a wheel's pause - a wheel tells no lift.
     func testAWheelTurnedAsAPinchIsLetGoWhenItStandsStill() {
         var wheel = WheelPinch()
-        let at = Point(0.5, 0.5)
+        let at = Point(x: 0.5, y: 0.5)
 
         XCTAssertEqual(wheel.turned(1.1, at: at, now: 0), [.pinch(.began, scale: 1, at: at), .pinch(.changed, scale: 1.1, at: at)])
         XCTAssertEqual(wheel.turned(1.1, at: at, now: 30), [.pinch(.changed, scale: 1.1, at: at)])
@@ -89,19 +89,19 @@ final class PinchReadingTests: XCTestCase {
     /// lifts - two turning about their middle hold it still, two moving together carry it.
     func testTheFingersAreOneHandAtTheirMiddle() {
         var middle = PointerMiddle()
-        middle.down(1, at: Point(0, 0))
-        XCTAssertEqual(middle.moved(1, to: Point(10, 0)), Point(10, 0), "one finger is the hand")
+        middle.down(1, at: Point(x: 0, y: 0))
+        XCTAssertEqual(middle.moved(1, to: Point(x: 10, y: 0)), Point(x: 10, y: 0), "one finger is the hand")
 
-        middle.down(2, at: Point(110, 0))
+        middle.down(2, at: Point(x: 110, y: 0))
         XCTAssertEqual(middle.count, 2, "a finger landing moves nothing")
-        XCTAssertEqual(middle.moved(1, to: Point(10, -20)), Point(0, -10))
-        XCTAssertEqual(middle.moved(2, to: Point(110, 20)), Point(0, 10), "turned about their middle: still")
-        XCTAssertEqual(middle.moved(1, to: Point(30, -20)), Point(10, 0))
-        XCTAssertEqual(middle.moved(2, to: Point(130, 20)), Point(10, 0), "together: carried")
+        XCTAssertEqual(middle.moved(1, to: Point(x: 10, y: -20)), Point(x: 0, y: -10))
+        XCTAssertEqual(middle.moved(2, to: Point(x: 110, y: 20)), Point(x: 0, y: 10), "turned about their middle: still")
+        XCTAssertEqual(middle.moved(1, to: Point(x: 30, y: -20)), Point(x: 10, y: 0))
+        XCTAssertEqual(middle.moved(2, to: Point(x: 130, y: 20)), Point(x: 10, y: 0), "together: carried")
 
         middle.up(1)
-        XCTAssertEqual(middle.moved(2, to: Point(140, 20)), Point(10, 0), "a finger lifted: the one left is the hand")
-        XCTAssertEqual(middle.moved(1, to: Point(0, 0)), .zero, "a finger not down moves nothing")
+        XCTAssertEqual(middle.moved(2, to: Point(x: 140, y: 20)), Point(x: 10, y: 0), "a finger lifted: the one left is the hand")
+        XCTAssertEqual(middle.moved(1, to: Point(x: 0, y: 0)), .zero, "a finger not down moves nothing")
     }
 
     /// A ROTATION TOLD FROM WHERE IT BEGAN IS SAID AS ITS STEPS.
@@ -119,14 +119,14 @@ final class PinchReadingTests: XCTestCase {
     /// middle is 90 degrees clockwise, no spread; twice as far from it, twice the spread.
     func testMirroredFingersTurnAndSpreadAboutTheMiddle() {
         var fingers = MirroredFingers()
-        let middle = Point(100, 100)
+        let middle = Point(x: 100, y: 100)
 
-        XCTAssertNil(fingers.moved(Point(150, 100), about: middle), "as they first stand")
-        let turned = fingers.moved(Point(100, 150), about: middle)
+        XCTAssertNil(fingers.moved(Point(x: 150, y: 100), about: middle), "as they first stand")
+        let turned = fingers.moved(Point(x: 100, y: 150), about: middle)
         XCTAssertEqual(turned?.degrees ?? 0, 90, accuracy: 0.000_1)
         XCTAssertEqual(turned?.scale ?? 0, 1, accuracy: 0.000_1)
 
-        let spread = fingers.moved(Point(100, 200), about: middle)
+        let spread = fingers.moved(Point(x: 100, y: 200), about: middle)
         XCTAssertEqual(spread?.scale ?? 0, 2, accuracy: 0.000_1)
         XCTAssertEqual(spread?.degrees ?? 1, 0, accuracy: 0.000_1)
     }

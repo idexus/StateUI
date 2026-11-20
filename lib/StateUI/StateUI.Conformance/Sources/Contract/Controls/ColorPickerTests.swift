@@ -49,11 +49,11 @@
                     .horizontalAlignment(.start)
                 }
                 let shape = try s.element("shape")
-                try s.settle { try s.shows(.red, on: shape, at: Point(50, 30)) }
+                try s.settle { try s.shows(.red, on: shape, at: Point(x: 50, y: 30)) }
 
                 try s.perform(.pickColor(.blue), on: s.element("picker"))
-                try s.settle { try s.shows(.blue, on: shape, at: Point(50, 30)) }
-                s.expect(try s.color(of: shape, at: Point(50, 30)), shows: .blue, "the shape wears the color chosen")
+                try s.settle { try s.shows(.blue, on: shape, at: Point(x: 50, y: 30)) }
+                s.expect(try s.color(of: shape, at: Point(x: 50, y: 30)), shows: .blue, "the shape wears the color chosen")
                 s.expect(tint.wrappedValue, .blue, "and the state holds it")
             },
             ConformanceCase("theOpacityChosenIsKeptOnlyWhereThePickerChoosesIt", proves: [

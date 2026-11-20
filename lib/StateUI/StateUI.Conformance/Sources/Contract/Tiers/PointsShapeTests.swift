@@ -18,20 +18,20 @@
                 s.start {
                     VStack {
                         Polygon(moved.wrappedValue
-                                ? [Point(40, 0), Point(40, 40), Point(0, 40)]
-                                : [Point(0, 0), Point(40, 0), Point(0, 40)])
+                                ? [Point(x: 40, y: 0), Point(x: 40, y: 40), Point(x: 0, y: 40)]
+                                : [Point(x: 0, y: 0), Point(x: 40, y: 0), Point(x: 0, y: 40)])
                             .fill(.blue).contentMode(.center).width(40).height(40).id("shape")
                         Button("Move").onClicked { moved.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)
                 }
                 let shape = try s.element("shape")
-                try s.settle { try s.shows(.blue, on: shape, at: Point(8, 8)) }
-                s.expect(try s.color(of: shape, at: Point(32, 32)), nil, "outside its points")
+                try s.settle { try s.shows(.blue, on: shape, at: Point(x: 8, y: 8)) }
+                s.expect(try s.color(of: shape, at: Point(x: 32, y: 32)), nil, "outside its points")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.shows(.blue, on: shape, at: Point(32, 32)) }
-                s.expect(try s.color(of: shape, at: Point(8, 8)), nil, "the points the tree moved")
+                try s.settle { try s.shows(.blue, on: shape, at: Point(x: 32, y: 32)) }
+                s.expect(try s.color(of: shape, at: Point(x: 8, y: 8)), nil, "the points the tree moved")
             },
             ConformanceCase("Polygon.aFigureCrossingItselfIsFilledByItsRule", proves: [
                 Covered(PointsShapeContract.fillRule, on: PolygonContract.self), Covered(PointsShapeContract.points, on: PolygonContract.self),
@@ -46,12 +46,12 @@
                     .horizontalAlignment(.start)
                 }
                 let shape = try s.element("shape")
-                try s.settle { try s.shows(.blue, on: shape, at: Point(2, 2)) }
-                s.expect(try s.color(of: shape, at: Point(20, 20)), nil, "even and odd: the middle, gone round twice, empty")
+                try s.settle { try s.shows(.blue, on: shape, at: Point(x: 2, y: 2)) }
+                s.expect(try s.color(of: shape, at: Point(x: 20, y: 20)), nil, "even and odd: the middle, gone round twice, empty")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.shows(.blue, on: shape, at: Point(20, 20)) }
-                s.expect(try s.color(of: shape, at: Point(20, 20)), shows: .blue, "nonzero: the middle filled")
+                try s.settle { try s.shows(.blue, on: shape, at: Point(x: 20, y: 20)) }
+                s.expect(try s.color(of: shape, at: Point(x: 20, y: 20)), shows: .blue, "nonzero: the middle filled")
             },
             ConformanceCase("Polyline.aPolylineIsDrawnThroughItsPoints", proves: [
                 Covered(PointsShapeContract.points, on: PolylineContract.self),
@@ -67,14 +67,14 @@
                     .horizontalAlignment(.start)
                 }
                 let shape = try s.element("shape")
-                try s.settle { try s.shows(.red, on: shape, at: Point(20, 10)) }
-                s.expect(try s.color(of: shape, at: Point(20, 10)), shows: .red, "through its points")
-                s.expect(try s.color(of: shape, at: Point(20, 30)), nil, "nowhere else")
+                try s.settle { try s.shows(.red, on: shape, at: Point(x: 20, y: 10)) }
+                s.expect(try s.color(of: shape, at: Point(x: 20, y: 10)), shows: .red, "through its points")
+                s.expect(try s.color(of: shape, at: Point(x: 20, y: 30)), nil, "nowhere else")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.shows(.red, on: shape, at: Point(20, 30)) }
-                s.expect(try s.color(of: shape, at: Point(20, 30)), shows: .red, "through the points the tree moved")
-                s.expect(try s.color(of: shape, at: Point(20, 10)), nil, "the points the tree moved")
+                try s.settle { try s.shows(.red, on: shape, at: Point(x: 20, y: 30)) }
+                s.expect(try s.color(of: shape, at: Point(x: 20, y: 30)), shows: .red, "through the points the tree moved")
+                s.expect(try s.color(of: shape, at: Point(x: 20, y: 10)), nil, "the points the tree moved")
             },
             ConformanceCase("Polyline.aFilledPolylineCrossingItselfIsFilledByItsRule", proves: [
                 Covered(PointsShapeContract.fillRule, on: PolylineContract.self),
@@ -89,12 +89,12 @@
                     .horizontalAlignment(.start)
                 }
                 let shape = try s.element("shape")
-                try s.settle { try s.shows(.blue, on: shape, at: Point(2, 2)) }
-                s.expect(try s.color(of: shape, at: Point(20, 20)), nil, "even and odd: the middle empty")
+                try s.settle { try s.shows(.blue, on: shape, at: Point(x: 2, y: 2)) }
+                s.expect(try s.color(of: shape, at: Point(x: 20, y: 20)), nil, "even and odd: the middle empty")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.shows(.blue, on: shape, at: Point(20, 20)) }
-                s.expect(try s.color(of: shape, at: Point(20, 20)), shows: .blue, "nonzero: the middle filled")
+                try s.settle { try s.shows(.blue, on: shape, at: Point(x: 20, y: 20)) }
+                s.expect(try s.color(of: shape, at: Point(x: 20, y: 20)), shows: .blue, "nonzero: the middle filled")
             },
         ]
     }

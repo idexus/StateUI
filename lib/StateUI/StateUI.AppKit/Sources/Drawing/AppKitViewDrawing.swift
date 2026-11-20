@@ -68,7 +68,7 @@ final class AppKitViewDrawing {
         let (width, height) = (Double(view.bounds.width), Double(view.bounds.height))
         var matrix = own.matrix(width: width, height: height)
         if let placement { matrix = matrix * placement.matrix(width: width, height: height) }
-        return matrix.unapplied(to: drawn.x, drawn.y).map { Point($0.x, $0.y) }
+        return matrix.unapplied(to: drawn.x, drawn.y).map { Point(x: $0.x, y: $0.y) }
     }
 
     private var composes: Bool {

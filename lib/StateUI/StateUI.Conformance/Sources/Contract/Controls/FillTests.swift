@@ -35,14 +35,14 @@
             }
             let fill = try s.element("fill")
 
-            try s.settle { try s.shows(.red, on: fill, at: Point(50, 20)) }
-            s.expect(try s.color(of: fill, at: Point(50, 20)), shows: .red, "its middle, its material")
+            try s.settle { try s.shows(.red, on: fill, at: Point(x: 50, y: 20)) }
+            s.expect(try s.color(of: fill, at: Point(x: 50, y: 20)), shows: .red, "its middle, its material")
             s.expect(
-                try s.color(of: fill, at: Point(2, 2)), shows: .red, "its corner: a fill given no shape is a rectangle")
+                try s.color(of: fill, at: Point(x: 2, y: 2)), shows: .red, "its corner: a fill given no shape is a rectangle")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.shows(.blue, on: fill, at: Point(50, 20)) }
-            s.expect(try s.color(of: fill, at: Point(50, 20)), shows: .blue, "the material the tree wrote")
+            try s.settle { try s.shows(.blue, on: fill, at: Point(x: 50, y: 20)) }
+            s.expect(try s.color(of: fill, at: Point(x: 50, y: 20)), shows: .blue, "the material the tree wrote")
         }
     }
 

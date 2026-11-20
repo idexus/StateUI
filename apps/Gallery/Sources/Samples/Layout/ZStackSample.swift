@@ -31,7 +31,7 @@ private struct Areas: ExampleContent {
                 // The panel fills the area it names: the right half of the
                 // room, or 120 by 60 at 16, 16 whatever the room's size.
                 Fill(Color(hex: 0x1E88E5))
-                    .area(proportional ? .proportional(Rect(0.5, 0, 0.5, 1)) : .absolute(Rect(16, 16, 120, 60)))
+                    .area(proportional ? .proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1)) : .absolute(Rect(x: 16, y: 16, width: 120, height: 60)))
 
                 // Its natural size, where its alignments put it.
                 Badge(text: "start", color: Color(hex: 0xE53935))
@@ -45,7 +45,7 @@ private struct Areas: ExampleContent {
                 // A badge in the panel's area at its own size, at the area's
                 // top end - right to left, the area and the badge turned.
                 Badge(text: "in the area", color: Color(hex: 0x8E24AA))
-                    .area(proportional ? .proportional(Rect(0.5, 0, 0.5, 1)) : .absolute(Rect(16, 16, 120, 60)))
+                    .area(proportional ? .proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1)) : .absolute(Rect(x: 16, y: 16, width: 120, height: 60)))
                     .horizontalAlignment(.end)
                     .verticalAlignment(.start)
             }

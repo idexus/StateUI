@@ -175,8 +175,8 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         let height = width * 1.4
 
         return Placement(
-            Rect(room.width / 2 - width / 2 + step * width * 0.62,
-                 room.height / 2 - height / 2 + abs(step) * width * 0.1, width, height),
+            Rect(x: room.width / 2 - width / 2 + step * width * 0.62,
+                 y: room.height / 2 - height / 2 + abs(step) * width * 0.1, width: width, height: height),
             transform: .rotate(step * 8).scale(1 - min(abs(step), 3) * 0.05),
             zIndex: 100 - Int(min(abs(step), 9) * 10))
     }
@@ -200,8 +200,8 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         let out = leaving ? (outward ? abs(step) / 0.8 : (1 - abs(step)) / 0.2) : 0
 
         return Placement(
-            Rect(room.width / 2 - width / 2 + side * (behind * 14 + out * width * 1.05),
-                 room.height / 2 - height / 2 + behind * 3, width, height),
+            Rect(x: room.width / 2 - width / 2 + side * (behind * 14 + out * width * 1.05),
+                 y: room.height / 2 - height / 2 + behind * 3, width: width, height: height),
             transform: .rotate(side * (behind * 2.5 + out * 12)).scale(1 - behind * 0.03),
             opacity: min(max(5 - abs(step), 0), 1),
             zIndex: leaving && outward ? 200 : Int(100 - behind * 10))

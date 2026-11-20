@@ -83,7 +83,7 @@ final class PlacedRunTests: XCTestCase {
     /// A ROOM IS A FEED: the host writes it, this side reads it, and no mode
     /// is offered because a view's frame is the layout's answer.
     func testAFrameIsRegisteredAsAFeedTheHostWrites() {
-        let room = State(wrappedValue: Rect(0, 0, 0, 0))
+        let room = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
         let renders = Renders()
 
         let patch = renders.render(Rectangle().frame(into: room.projectedValue).id("box").node)
@@ -96,8 +96,8 @@ final class PlacedRunTests: XCTestCase {
     /// EACH STAGE IS A FEED OF ITS OWN: where the layout puts a view and where it is drawn are two states the host
     /// writes, and a view read at one stage names that member alone.
     func testEachStageOfAFrameIsItsOwnFeed() {
-        let room = State(wrappedValue: Rect(0, 0, 0, 0))
-        let drawn = State(wrappedValue: Rect(0, 0, 0, 0))
+        let room = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
+        let drawn = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
         let renders = Renders()
 
         let both = renders.render(
@@ -124,7 +124,7 @@ final class PlacedRunTests: XCTestCase {
         func run(_ at: Double) -> [Int] {
             PlacedRun((0..<3).map { index in
                 Placement(
-                    Rect(0, 0, 40, 40),
+                    Rect(x: 0, y: 0, width: 40, height: 40),
                     zIndex: 1000 - Int(abs(Double(index) - at) * 100))
             })
             .placements.map(\.zIndex)

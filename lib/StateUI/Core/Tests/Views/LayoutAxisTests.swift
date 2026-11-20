@@ -43,7 +43,7 @@ final class LayoutAxisTests: XCTestCase {
             declared(
                 MotionLayout([0], parameters: table.traveling(motion)) { Text("\($0)") } placements: { _, table in
                     handed.tables.append(table)
-                    return [Placement(Rect(0, 0, 40, 40))]
+                    return [Placement(Rect(x: 0, y: 0, width: 40, height: 40))]
                 }
             )
             .node
@@ -202,7 +202,7 @@ final class LayoutAxisTests: XCTestCase {
     /// One layout of one view, moved as `interaction` says.
     private func moved(_ dial: State<Table>, _ interaction: Interaction) -> MotionLayout<[Int], Int, Table> {
         MotionLayout([0], parameters: dial.projectedValue) { Text("\($0)") } placements: { _, _ in
-            [Placement(Rect(0, 0, 40, 40))]
+            [Placement(Rect(x: 0, y: 0, width: 40, height: 40))]
         }
         .interaction(interaction)
     }

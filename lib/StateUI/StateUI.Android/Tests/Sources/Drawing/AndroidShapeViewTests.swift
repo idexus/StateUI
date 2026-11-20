@@ -50,7 +50,7 @@ final class AndroidShapeViewTests: XCTestCase {
     func testDrawnGeometryFitsItsRoom() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Polygon([Point(0, 10), Point(5, 0), Point(10, 10)]).fill(.red)
+                Polygon([Point(x: 0, y: 10), Point(x: 5, y: 0), Point(x: 10, y: 10)]).fill(.red)
                     .width(40).height(20).horizontalAlignment(.start)
             }
             host.layOut()

@@ -18,10 +18,10 @@ final class Bench {
     private let clock = BenchClock()
 
     /// Where the last child a run placed went, kept so the release build places every child.
-    var placedAt = Rect(0, 0, 0, 0)
+    var placedAt = Rect(x: 0, y: 0, width: 0, height: 0)
 
     /// Runs `application` in `room`: its window, the first render, and a second of frames for its arrival.
-    init<Declared: Application>(_ application: @autoclosure @escaping () -> Declared, room: Rect = Rect(0, 0, 390, 700)) {
+    init<Declared: Application>(_ application: @autoclosure @escaping () -> Declared, room: Rect = Rect(x: 0, y: 0, width: 390, height: 700)) {
         self.room = room
         Renderer.shared.setApplication(application())
         runtime = HostRuntime(
@@ -69,7 +69,7 @@ final class Bench {
 
     /// The hand over `element` at `phase`, moving what is under it by `moved` - lifted at `speed`, pressed at `point`.
     func hand(
-        _ phase: GesturePhase, on element: MountedElement, moved: Point = Point(0, 0), speed: Point? = nil,
+        _ phase: GesturePhase, on element: MountedElement, moved: Point = Point(x: 0, y: 0), speed: Point? = nil,
         at point: Point? = nil
     ) {
         element.hear(.hand(phase, moved: moved, speed: speed, at: clock.time, point: point), in: runtime)

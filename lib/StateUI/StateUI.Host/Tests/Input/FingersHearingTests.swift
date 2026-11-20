@@ -19,18 +19,18 @@ final class FingersHearingTests: XCTestCase {
         XCTAssertFalse(dial.hearing.contains(.rotations), "no rotation asked for")
 
         dial.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
-        dial.hear(.hand(.changed, moved: Point(-40, 0), speed: nil), in: runtime)
+        dial.hear(.hand(.changed, moved: Point(x: -40, y: 0), speed: nil), in: runtime)
         frames(runtime, clock, until: 32)
         XCTAssertEqual(handed.last?.turn ?? 0, 0.4, accuracy: 0.001, "the hand moves the run")
 
-        dial.hear(.pinch(.began, scale: 1, at: Point(0.5, 0.5)), in: runtime)
-        dial.hear(.pinch(.changed, scale: 2, at: Point(0.5, 0.5)), in: runtime)
-        dial.hear(.hand(.changed, moved: Point(-60, 0), speed: nil), in: runtime)
+        dial.hear(.pinch(.began, scale: 1, at: Point(x: 0.5, y: 0.5)), in: runtime)
+        dial.hear(.pinch(.changed, scale: 2, at: Point(x: 0.5, y: 0.5)), in: runtime)
+        dial.hear(.hand(.changed, moved: Point(x: -60, y: 0), speed: nil), in: runtime)
         frames(runtime, clock, until: 64)
         XCTAssertEqual(handed.last?.zoom ?? 0, 2, accuracy: 0.001, "the fingers spread their axis")
         XCTAssertEqual(handed.last?.turn ?? 0, 1, accuracy: 0.001, "while the hand goes on")
 
-        dial.hear(.pinch(.ended, scale: 1, at: Point(0.5, 0.5)), in: runtime)
+        dial.hear(.pinch(.ended, scale: 1, at: Point(x: 0.5, y: 0.5)), in: runtime)
         dial.hear(.hand(.ended, moved: .zero, speed: .zero), in: runtime)
         frames(runtime, clock, until: 1_000)
         XCTAssertEqual(handed.last?.turn ?? 0, 1, accuracy: 0.001)
@@ -43,7 +43,7 @@ final class FingersHearingTests: XCTestCase {
         let (runtime, clock) = running()
         let dial = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
 
-        for _ in 0..<8 { dial.hear(.wheelPinch(scale: WheelPinch.notch, at: Point(0.5, 0.5)), in: runtime) }
+        for _ in 0..<8 { dial.hear(.wheelPinch(scale: WheelPinch.notch, at: Point(x: 0.5, y: 0.5)), in: runtime) }
         frames(runtime, clock, until: 48)
         let zoom = handed.last?.zoom ?? 0
         XCTAssertGreaterThan(zoom, 2, "eight notches a tenth each: 2.14, past the largest target")
@@ -61,14 +61,14 @@ final class FingersHearingTests: XCTestCase {
         let dial = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
         XCTAssertTrue(dial.hearsMirroredFingers)
 
-        let middle = Point(150, 100)
-        dial.hear(.mirrored(.began, at: Point(250, 100), middle: middle), in: runtime)
-        dial.hear(.mirrored(.changed, at: Point(300, 100), middle: middle), in: runtime)
+        let middle = Point(x: 150, y: 100)
+        dial.hear(.mirrored(.began, at: Point(x: 250, y: 100), middle: middle), in: runtime)
+        dial.hear(.mirrored(.changed, at: Point(x: 300, y: 100), middle: middle), in: runtime)
         frames(runtime, clock, until: 48)
         XCTAssertEqual(handed.last?.zoom ?? 0, 1.5, accuracy: 0.001, "half as far again from the middle")
         XCTAssertEqual(handed.last?.turn ?? 0, 0, accuracy: 0.001, "the hand stays")
 
-        dial.hear(.mirrored(.ended, at: Point(300, 100), middle: middle), in: runtime)
+        dial.hear(.mirrored(.ended, at: Point(x: 300, y: 100), middle: middle), in: runtime)
         frames(runtime, clock, until: 1_000)
         XCTAssertEqual(handed.last?.zoom ?? 0, 2, accuracy: 0.001, "onto the end nearer by the logarithm")
     }
@@ -147,7 +147,7 @@ private struct FingersPage: View {
     var body: some View {
         MotionLayout([0, 1, 2, 3, 4], parameters: $dial) { Text("\($0)") } placements: { _, dial in
             handed.append(dial)
-            return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
+            return (0..<5).map { _ in Placement(Rect(x: 0, y: 0, width: 10, height: 10)) }
         }
         .interaction(
             .simultaneous([
@@ -171,7 +171,7 @@ private struct TurnedPage: View {
     var body: some View {
         MotionLayout([0, 1, 2, 3, 4], parameters: $dial) { Text("\($0)") } placements: { _, dial in
             handed.append(dial)
-            return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
+            return (0..<5).map { _ in Placement(Rect(x: 0, y: 0, width: 10, height: 10)) }
         }
         .interaction(
             .value($dial, axis: \.zoom, input: .rotation(degreesPerUnit: 90)).range(-2...2)

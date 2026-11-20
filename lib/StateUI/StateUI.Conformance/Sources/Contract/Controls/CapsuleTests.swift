@@ -29,17 +29,17 @@
                 }
                 let shape = try s.element("shape")
 
-                try s.settle { try s.shows(.red, on: shape, at: Point(50, 20)) }
-                s.expect(try s.color(of: shape, at: Point(50, 20)), shows: .red, "its middle")
-                s.expect(try s.color(of: shape, at: Point(4, 20)), shows: .red, "its left end, round to its middle")
-                s.expect(try s.color(of: shape, at: Point(3, 3)), nil, "its corner, beyond its round end")
-                s.expect(try s.color(of: shape, at: Point(25, 2)), shows: .red, "its long side, straight where an oval curves")
+                try s.settle { try s.shows(.red, on: shape, at: Point(x: 50, y: 20)) }
+                s.expect(try s.color(of: shape, at: Point(x: 50, y: 20)), shows: .red, "its middle")
+                s.expect(try s.color(of: shape, at: Point(x: 4, y: 20)), shows: .red, "its left end, round to its middle")
+                s.expect(try s.color(of: shape, at: Point(x: 3, y: 3)), nil, "its corner, beyond its round end")
+                s.expect(try s.color(of: shape, at: Point(x: 25, y: 2)), shows: .red, "its long side, straight where an oval curves")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.shows(.red, on: shape, at: Point(20, 80)) }
-                s.expect(try s.color(of: shape, at: Point(20, 4)), shows: .red, "its top end, round to its middle")
-                s.expect(try s.color(of: shape, at: Point(3, 3)), nil, "its corner, beyond its round end")
-                s.expect(try s.color(of: shape, at: Point(2, 25)), shows: .red, "its long side, straight where an oval curves")
+                try s.settle { try s.shows(.red, on: shape, at: Point(x: 20, y: 80)) }
+                s.expect(try s.color(of: shape, at: Point(x: 20, y: 4)), shows: .red, "its top end, round to its middle")
+                s.expect(try s.color(of: shape, at: Point(x: 3, y: 3)), nil, "its corner, beyond its round end")
+                s.expect(try s.color(of: shape, at: Point(x: 2, y: 25)), shows: .red, "its long side, straight where an oval curves")
             },
         ]
     }

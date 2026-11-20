@@ -1701,7 +1701,6 @@ swift.init PersistentKey.init(_:): init(_ name: String)
 swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Binding<Item>, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
 swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Binding<Item?>, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
 swift.init Placement.init(_:transform:opacity:shade:zIndex:): init(_ bounds: Rect, transform: ViewTransform = .identity, opacity: Double = 1, shade: Double = 0, zIndex: Int = 0)
-swift.init Point.init(_:_:): init(_ x: Double, _ y: Double)
 swift.init Point.init(x:y:): init(x: Double, y: Double)
 swift.init Polygon.init(_:): @MainActor init(_ points: [Point])
 swift.init Polyline.init(_:): @MainActor init(_ points: [Point])
@@ -1709,7 +1708,6 @@ swift.init PositionDots.init(): @MainActor init()
 swift.init PositionDots.init(_:content:): @MainActor init<Items, Content>(_ items: Items, @ViewBuilder content: (Items.Element) -> Content) where Items : RandomAccessCollection, Content : View
 swift.init ProgressBar.init(_:): @MainActor init(_ progress: Double)
 swift.init ProgressBar.init(_:): @MainActor init(_ state: Binding<Double>)
-swift.init Rect.init(_:_:_:_:): init(_ x: Double, _ y: Double, _ width: Double, _ height: Double)
 swift.init Rect.init(x:y:width:height:): init(x: Double, y: Double, width: Double, height: Double)
 swift.init Rectangle.init(): @MainActor init()
 swift.init SceneKey.init(_:): init(_ name: String)
@@ -12951,8 +12949,8 @@ swift.type.method Binding.multi(_:_:_:_:_:_:_:): @MainActor static func multi<A,
 swift.type.method Binding.multi(_:_:_:_:_:_:_:_:): @MainActor static func multi<A, B, C, D, E, F, G, H>(_ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>, _ f: Binding<F>, _ g: Binding<G>, _ h: Binding<H>) -> MultiBinding<Value, (A, B, C, D, E, F, G, H)> where A : StateValue, B : StateValue, C : StateValue, D : StateValue, E : StateValue, F : StateValue, G : StateValue, H : StateValue
 swift.type.method Binding.multi(_:_:_:_:_:_:_:_:_:): @MainActor static func multi<A, B, C, D, E, F, G, H, I>(_ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>, _ f: Binding<F>, _ g: Binding<G>, _ h: Binding<H>, _ i: Binding<I>) -> MultiBinding<Value, (A, B, C, D, E, F, G, H, I)> where A : StateValue, B : StateValue, C : StateValue, D : StateValue, E : StateValue, F : StateValue, G : StateValue, H : StateValue, I : StateValue
 swift.type.method Binding.multi(_:_:_:_:_:_:_:_:_:_:): @MainActor static func multi<A, B, C, D, E, F, G, H, I, J>(_ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>, _ f: Binding<F>, _ g: Binding<G>, _ h: Binding<H>, _ i: Binding<I>, _ j: Binding<J>) -> MultiBinding<Value, (A, B, C, D, E, F, G, H, I, J)> where A : StateValue, B : StateValue, C : StateValue, D : StateValue, E : StateValue, F : StateValue, G : StateValue, H : StateValue, I : StateValue, J : StateValue
-swift.type.method Brush.linearGradient(_:from:to:): static func linearGradient(_ stops: [GradientStop], from start: Point = Point(0, 0), to end: Point = Point(0, 1)) -> Brush
-swift.type.method Brush.radialGradient(_:center:radius:): static func radialGradient(_ stops: [GradientStop], center: Point = Point(0.5, 0.5), radius: Double = 0.5) -> Brush
+swift.type.method Brush.linearGradient(_:from:to:): static func linearGradient(_ stops: [GradientStop], from start: Point = Point(x: 0, y: 0), to end: Point = Point(x: 0, y: 1)) -> Brush
+swift.type.method Brush.radialGradient(_:center:radius:): static func radialGradient(_ stops: [GradientStop], center: Point = Point(x: 0.5, y: 0.5), radius: Double = 0.5) -> Brush
 swift.type.method Complaints.route(to:): static func route(to hear: (@Sendable (String) -> Void)?)
 swift.type.method Draw.fillArc(x:y:width:height:startAngle:endAngle:clockwise:): static func fillArc(x: Double, y: Double, width: Double, height: Double, startAngle: Double, endAngle: Double, clockwise: Bool) -> DrawCommand
 swift.type.method Draw.fillColor(_:): static func fillColor(_ value: Color) -> DrawCommand

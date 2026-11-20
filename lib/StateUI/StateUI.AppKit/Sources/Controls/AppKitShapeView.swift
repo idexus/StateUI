@@ -210,7 +210,7 @@ final class AppKitShapeView: AppKitHitTestView {
 
         let drawn = path.bounds
         let placed = ShapeArithmetic.placement(
-            of: Rect(Double(drawn.minX), Double(drawn.minY), Double(drawn.width), Double(drawn.height)),
+            of: Rect(x: Double(drawn.minX), y: Double(drawn.minY), width: Double(drawn.width), height: Double(drawn.height)),
             in: LayoutSize(width: Double(bounds.width), height: Double(bounds.height)), aspect: aspect,
             transform: geometryTransform)
         return moved(path, by: placed)
@@ -257,7 +257,7 @@ final class AppKitShapeView: AppKitHitTestView {
 
     /// Points - x and y in turn - joined by lines as the host layer joins them, closed where the shape is.
     private static func pointsPath(_ values: [Double], closed: Bool) -> NSBezierPath {
-        let points = stride(from: 0, to: values.count - 1, by: 2).map { Point(values[$0], values[$0 + 1]) }
+        let points = stride(from: 0, to: values.count - 1, by: 2).map { Point(x: values[$0], y: values[$0 + 1]) }
         let path = CGMutablePath()
         append(ShapeArithmetic.curves(through: points, closed: closed), to: path)
         return NSBezierPath(cgPath: path)

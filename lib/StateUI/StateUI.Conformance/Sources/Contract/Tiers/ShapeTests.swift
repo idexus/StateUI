@@ -69,18 +69,18 @@
             }
             let shape = try s.specimen(element)
             let stroked = element == "Line" || element == "Polyline"
-            let probe = stroked ? Point(70, 35) : Point(75, 5)
+            let probe = stroked ? Point(x: 70, y: 35) : Point(x: 75, y: 5)
             let fills = element == "Rectangle" || element == "Ellipse" || element == "Capsule"
-            let inside = stroked || fills ? Point(40, 20) : Point(55, 5)
+            let inside = stroked || fills ? Point(x: 40, y: 20) : Point(x: 55, y: 5)
             try s.settle { try s.shows(.red, on: shape, at: inside) }
             if fills {
-                s.expect(try s.color(of: shape, at: Point(40, 20)), shows: .red, "filling its room")
+                s.expect(try s.color(of: shape, at: Point(x: 40, y: 20)), shows: .red, "filling its room")
             } else {
                 s.expect(try s.color(of: shape, at: probe), nil, "fitted, its proportions kept")
             }
 
             try s.perform(.activate, on: s.element("change"))
-            let across = fills ? Point(40, 20) : probe
+            let across = fills ? Point(x: 40, y: 20) : probe
             try s.settle { try s.shows(.red, on: shape, at: across) }
             s.expect(try s.color(of: shape, at: across), shows: .red, "stretched across its room")
         }
@@ -105,7 +105,7 @@
                 ], beside: [Button("Move").onClicked { moved.wrappedValue = true }.id("change")])
             }
             let shape = try s.specimen(element)
-            let before = line ? Point(20, 20) : Point(8, 20)
+            let before = line ? Point(x: 20, y: 20) : Point(x: 8, y: 20)
             try s.settle { try s.shows(.red, on: shape, at: before) }
 
             try s.perform(.activate, on: s.element("change"))
@@ -119,9 +119,9 @@
     static func small(_ element: String) -> [any Worn] {
         switch element {
         case "Line":
-            [Write(LineContract.from, Point(0, 0)), Write(LineContract.to, Point(10, 10))]
-        case "Polygon": [Write(PointsShapeContract.points, [Point(0, 0), Point(10, 0), Point(10, 10)])]
-        case "Polyline": [Write(PointsShapeContract.points, [Point(0, 0), Point(10, 10)])]
+            [Write(LineContract.from, Point(x: 0, y: 0)), Write(LineContract.to, Point(x: 10, y: 10))]
+        case "Polygon": [Write(PointsShapeContract.points, [Point(x: 0, y: 0), Point(x: 10, y: 0), Point(x: 10, y: 10)])]
+        case "Polyline": [Write(PointsShapeContract.points, [Point(x: 0, y: 0), Point(x: 10, y: 10)])]
         case "Path": [Write(PathContract.data, "M 0 0 L 10 0 L 10 10 Z")]
         default: []
         }
@@ -132,11 +132,11 @@
     static func figure(_ element: String) -> [any Worn] {
         switch element {
         case "Line":
-            [Write(LineContract.from, Point(0, 20)), Write(LineContract.to, Point(40, 20))]
+            [Write(LineContract.from, Point(x: 0, y: 20)), Write(LineContract.to, Point(x: 40, y: 20))]
         case "Polygon":
-            [Write(PointsShapeContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40)])]
+            [Write(PointsShapeContract.points, [Point(x: 0, y: 0), Point(x: 40, y: 0), Point(x: 40, y: 40), Point(x: 0, y: 40)])]
         case "Polyline":
-            [Write(PointsShapeContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40), Point(0, 0)])]
+            [Write(PointsShapeContract.points, [Point(x: 0, y: 0), Point(x: 40, y: 0), Point(x: 40, y: 40), Point(x: 0, y: 40), Point(x: 0, y: 0)])]
         case "Path":
             [Write(PathContract.data, "M 0 0 L 40 0 L 40 40 L 0 40 Z"), Write(ContentModeElementContract.contentMode, ContentMode.stretch)]
         default:
@@ -152,6 +152,6 @@
 
     /// A point on `element`'s outline, eight wide.
     static func onOutline(_ element: String) -> Point {
-        element == "Line" ? Point(20, 20) : Point(20, 2)
+        element == "Line" ? Point(x: 20, y: 20) : Point(x: 20, y: 2)
     }
 }

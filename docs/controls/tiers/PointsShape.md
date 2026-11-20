@@ -5,7 +5,7 @@
 What a shape drawn through a list of points has: the points, and which parts of a self-crossing outline count as inside it - a polygon's, joined last back to first, and a polyline's, left open.
 
 ```swift
-Polygon([Point(20, 0), Point(40, 40), Point(0, 15), Point(40, 15), Point(0, 40)])
+Polygon([Point(x: 20, y: 0), Point(x: 40, y: 40), Point(x: 0, y: 15), Point(x: 40, y: 15), Point(x: 0, y: 40)])
     .fillRule(.evenOdd)
     .fill(.gold)
 ```

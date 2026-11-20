@@ -18,7 +18,7 @@ final class UIKitDrawingOrderTests: XCTestCase {
                 Rectangle()
                     .fill(.red)
             } placements: { _, _ in
-                (0..<3).map { Placement(Rect(Double($0) * 50, 0, 80, 80), zIndex: $0 == 1 ? 2 : 0) }
+                (0..<3).map { Placement(Rect(x: Double($0) * 50, y: 0, width: 80, height: 80), zIndex: $0 == 1 ? 2 : 0) }
             }
             .width(300)
             .height(100)

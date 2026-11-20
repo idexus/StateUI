@@ -17,7 +17,7 @@ final class LayoutBench {
     /// and runs the frames that lay it out; where it puts its views.
     @discardableResult
     func laid(
-        _ tree: @escaping () -> Node, room: Rect? = Rect(10, 20, 300, 200),
+        _ tree: @escaping () -> Node, room: Rect? = Rect(x: 10, y: 20, width: 300, height: 200),
         file: StaticString = #filePath, line: UInt = #line
     ) -> [Placement] {
         mounted(tree)

@@ -181,9 +181,9 @@ struct FrameReport {
     /// windowY, safeX, safeY; any other count is nil.
     init?(_ numbers: [Double]) {
         guard numbers.count == 8 else { return nil }
-        frame = Rect(numbers[0], numbers[1], numbers[2], numbers[3])
-        global = Rect(numbers[4], numbers[5], numbers[2], numbers[3])
-        safeArea = Rect(numbers[6], numbers[7], numbers[2], numbers[3])
+        frame = Rect(x: numbers[0], y: numbers[1], width: numbers[2], height: numbers[3])
+        global = Rect(x: numbers[4], y: numbers[5], width: numbers[2], height: numbers[3])
+        safeArea = Rect(x: numbers[6], y: numbers[7], width: numbers[2], height: numbers[3])
     }
 
     /// The rectangle a space means.

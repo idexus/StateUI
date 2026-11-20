@@ -227,7 +227,7 @@ final class AppKitRenderer {
 /// place travels to.
 extension AppKitElement: PlacedView {
     var placedFrame: Rect {
-        get { view?.frame.placed ?? Rect(0, 0, 0, 0) }
+        get { view?.frame.placed ?? Rect(x: 0, y: 0, width: 0, height: 0) }
         set {
             view?.frame = NSRect(placed: newValue)
             isPlaced = true

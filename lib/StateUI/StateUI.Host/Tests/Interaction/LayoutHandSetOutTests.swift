@@ -29,7 +29,7 @@ final class LayoutHandSetOutTests: XCTestCase {
         MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at, from in
             handed.phases.append(at)
             handed.froms.append(from)
-            return [Placement(Rect(0, 0, 10, 10))]
+            return [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
         }
         .axis(range: 0...6, segments: .every(1))
         .interaction(
@@ -47,11 +47,11 @@ final class LayoutHandSetOutTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-60, 0))
+        bench.hand(.changed, moved: Point(x: -60, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 1.6, accuracy: 0.001)
         XCTAssertEqual(handed.froms.last, 1, "on")
 
-        bench.hand(.changed, moved: Point(130, 0))
+        bench.hand(.changed, moved: Point(x: 130, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 0.3, accuracy: 0.001)
         XCTAssertEqual(handed.froms.last, 1, "back past it, from the same place")
     }
@@ -65,15 +65,15 @@ final class LayoutHandSetOutTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-130, 0))
+        bench.hand(.changed, moved: Point(x: -130, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 2.3, accuracy: 0.001)
         XCTAssertEqual(handed.froms.last, 2, "past 2")
 
-        bench.hand(.changed, moved: Point(80, 0))
+        bench.hand(.changed, moved: Point(x: 80, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 1.5, accuracy: 0.001)
         XCTAssertEqual(handed.froms.last, 2, "back, but 1 not passed")
 
-        bench.hand(.changed, moved: Point(60, 0))
+        bench.hand(.changed, moved: Point(x: 60, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 0.9, accuracy: 0.001)
         XCTAssertEqual(handed.froms.last, 1, "past 1 the other way")
     }
@@ -96,7 +96,7 @@ final class LayoutHandSetOutTests: XCTestCase {
         XCTAssertEqual(handed.phases.last ?? 0, shown, accuracy: 0.001, "taken where it is shown")
         XCTAssertEqual(handed.froms.last, 1, "from where it set out")
 
-        bench.hand(.changed, moved: Point(-(2 - shown) * 100 - 10, 0))
+        bench.hand(.changed, moved: Point(x: -(2 - shown) * 100 - 10, y: 0))
         XCTAssertEqual(handed.froms.last, 2, "until it passes the next")
     }
 
@@ -108,7 +108,7 @@ final class LayoutHandSetOutTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.ended, velocity: Point(-1_500, 0))
+        bench.hand(.ended, velocity: Point(x: -1_500, y: 0))
         bench.cycle()
         XCTAssertGreaterThan(handed.phases.last ?? 0, 0, "thrown")
         XCTAssertEqual(handed.froms.last, 0, "from where the hand took it")
@@ -126,7 +126,7 @@ final class LayoutHandSetOutTests: XCTestCase {
     func testANewSetOutIsAChange() throws {
         let phase = State(wrappedValue: 1.0)
         func tree() -> Node {
-            MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
+            MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(x: from * 100, y: 0, width: 10, height: 10))] }
                 .axis(range: 0...3, segments: .every(1))
                 .interaction(
                     .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))
@@ -138,7 +138,7 @@ final class LayoutHandSetOutTests: XCTestCase {
         let stood = bench.answer
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-120, 0))
+        bench.hand(.changed, moved: Point(x: -120, y: 0))
         bench.cycle()
 
         XCTAssertEqual(stood.views[0].target.bounds.x, 100, accuracy: 0.001, "where it stood")
@@ -153,7 +153,7 @@ final class LayoutHandSetOutTests: XCTestCase {
     func testWhereTheMotionSetOutAsksAgainOnlyAnArithmeticHandedIt() {
         /// Two views a hundred points across a unit of the phase, the first down by its square.
         func poses(_ phase: Double) -> [Placement] {
-            [Placement(Rect(phase * 100, phase * phase * 10, 10, 10)), Placement(Rect(phase * 100 + 10, 0, 10, 10))]
+            [Placement(Rect(x: phase * 100, y: phase * phase * 10, width: 10, height: 10)), Placement(Rect(x: phase * 100 + 10, y: 0, width: 10, height: 10))]
         }
         for readsFrom in [false, true] {
             let (phase, handed) = (State(wrappedValue: 0.0), Handed())
@@ -179,7 +179,7 @@ final class LayoutHandSetOutTests: XCTestCase {
             bench.laid(built)
 
             bench.hand(.began)
-            for _ in 0..<8 { bench.hand(.changed, moved: Point(-20, 0)) }
+            for _ in 0..<8 { bench.hand(.changed, moved: Point(x: -20, y: 0)) }
 
             let asked = handed.phases.filter { $0 == 1 }.count
             XCTAssertEqual(asked, readsFrom ? 2 : 1, "asked at 1 \(readsFrom ? "again as the hand passes it" : "once")")

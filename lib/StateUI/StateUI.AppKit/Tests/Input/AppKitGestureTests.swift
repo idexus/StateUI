@@ -112,7 +112,7 @@ final class AppKitGestureTests: XCTestCase {
         let zoom = State(wrappedValue: 1.0)
         let renderer = AppKitRenderer.running {
             MotionLayout([0, 1], parameters: zoom.projectedValue) { Text("\($0)") } placements: { _, at in
-                [Placement(Rect(0, 0, 10 * at, 10)), Placement(Rect(20, 0, 10, 10))]
+                [Placement(Rect(x: 0, y: 0, width: 10 * at, height: 10)), Placement(Rect(x: 20, y: 0, width: 10, height: 10))]
             }
             .interaction(
                 .value(zoom.projectedValue, input: .magnification).range(1...3).snaps([2])
@@ -126,9 +126,9 @@ final class AppKitGestureTests: XCTestCase {
         XCTAssertTrue(AppKitMirroredRecognizer.takes([.option]))
         XCTAssertFalse(AppKitMirroredRecognizer.takes([]), "a press without ⌥ is the hand's")
 
-        let middle = Point(150, 100)
-        mirrored.mirrored(.began, at: Point(200, 100), middle: middle)
-        mirrored.mirrored(.changed, at: Point(250, 100), middle: middle)
+        let middle = Point(x: 150, y: 100)
+        mirrored.mirrored(.began, at: Point(x: 200, y: 100), middle: middle)
+        mirrored.mirrored(.changed, at: Point(x: 250, y: 100), middle: middle)
         for _ in 0..<150 {
             guard zoom.wrappedValue != 2 else { break }
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))

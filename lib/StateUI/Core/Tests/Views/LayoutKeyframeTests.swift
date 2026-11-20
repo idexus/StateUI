@@ -34,8 +34,8 @@ final class LayoutKeyframeTests: XCTestCase {
     /// Two views: the first a hundred points across a unit of the phase and down by its square, the second ten
     /// points beside it, drawn over it at 7.
     private static func poses(_ phase: Double, gap: Double = 10) -> [Placement] {
-        [Placement(Rect(phase * 100, phase * phase * 10, 10, 10)),
-         Placement(Rect(phase * 100 + gap, 0, 10, 10), zIndex: 7)]
+        [Placement(Rect(x: phase * 100, y: phase * phase * 10, width: 10, height: 10)),
+         Placement(Rect(x: phase * 100 + gap, y: 0, width: 10, height: 10), zIndex: 7)]
     }
 
     /// The two views over `phase`, its axis declared as the test says.
@@ -242,7 +242,7 @@ final class LayoutKeyframeTests: XCTestCase {
         func built() -> Node {
             MotionLayout([0], parameters: square.projectedValue) { Text("\($0)") } placements: { _, at in
                 asked.squares.append(at)
-                return [Placement(Rect(100 * (at.x * at.x + at.y * at.y), 0, 10, 10))]
+                return [Placement(Rect(x: 100 * (at.x * at.x + at.y * at.y), y: 0, width: 10, height: 10))]
             }
             .axis(\.x, range: 0...1, keyframes: .endpoints)
             .axis(\.y, range: 0...1, keyframes: .endpoints)
@@ -268,7 +268,7 @@ final class LayoutKeyframeTests: XCTestCase {
         func built() -> Node {
             MotionLayout([0], parameters: square.projectedValue) { Text("\($0)") } placements: { _, at in
                 asked.squares.append(at)
-                return [Placement(Rect(100 * at.x, 100 * at.y, 10, 10))]
+                return [Placement(Rect(x: 100 * at.x, y: 100 * at.y, width: 10, height: 10))]
             }
             .axis(\.x, range: 0...1, keyframes: .endpoints)
             .interaction(
@@ -286,7 +286,7 @@ final class LayoutKeyframeTests: XCTestCase {
         let last = asked.squares.suffix(2)
         XCTAssertEqual(Set(last.map(\.x)), [0, 1])
         XCTAssertEqual(last.map(\.y), [0.3, 0.3])
-        XCTAssertEqual(bench.shown(renders.renderFromScratch(built()))[0].bounds, Rect(50, 30, 10, 10))
+        XCTAssertEqual(bench.shown(renders.renderFromScratch(built()))[0].bounds, Rect(x: 50, y: 30, width: 10, height: 10))
     }
 
     // MARK: - What is wrong

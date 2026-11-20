@@ -77,7 +77,7 @@ struct HomePage: View {
     /// DRIVEN, so the host writes it on its own frames and nothing is built
     /// again for it. Two things read it: the engine below, which is what sizes
     /// the run, and the entrance, which waits for it to hold still.
-    @State private var room = Rect(0, 0, 0, 0)
+    @State private var room = Rect(x: 0, y: 0, width: 0, height: 0)
 
     /// The library's home opening: the panel and its button go through it, so a tap both hear opens it once.
     @State private var opening = Gate(.ignoreWhileRunning)
@@ -97,7 +97,7 @@ struct HomePage: View {
 
     /// The room as the cycle before this one saw it, which is what "held
     /// still" is measured against.
-    @State private var held = Rect(0, 0, 0, 0)
+    @State private var held = Rect(x: 0, y: 0, width: 0, height: 0)
 
     /// How long the room has held still, in seconds - started over by
     /// every cycle that sees it move.

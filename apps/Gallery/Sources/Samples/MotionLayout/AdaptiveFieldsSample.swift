@@ -70,7 +70,7 @@ struct AdaptiveFieldsSample: SampleContent, ExampleContent {
             let share = sideBySide ? (width - gap * Double(own.count - 1)) / Double(own.count) : width
             // A FIELD OFFERED A WIDTH says how tall it stands in it.
             let height = field.sizeThatFits(width: share).height
-            plan.placements.append(Placement(Rect(across, down, share, height)))
+            plan.placements.append(Placement(Rect(x: across, y: down, width: share, height: height)))
             plan.size.height = max(plan.size.height, down + height)
             if sideBySide { across += share + gap } else { down += height + gap }
         }

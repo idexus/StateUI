@@ -116,7 +116,7 @@ struct LightTableSample: SampleContent, ExampleContent {
         let y = room.height / 2 + (Double(row) - table.y) * pitch
 
         return Placement(
-            Rect(x - side / 2, y - side / 2, side, side),
+            Rect(x: x - side / 2, y: y - side / 2, width: side, height: side),
             transform: .rotate(table.turn * 360))
     }
     // listing: end

@@ -100,7 +100,7 @@ import StateUIFoundation
             let spread = recent.reduce(0) { $0 + $1.spread }
             let turned = recent.reduce(0) { $0 + $1.degrees }
             moves = []
-            return [Report(.ended, speed: recent.isEmpty ? .zero : Point(spread / span * 1_000, turned / span * 1_000))]
+            return [Report(.ended, speed: recent.isEmpty ? .zero : Point(x: spread / span * 1_000, y: turned / span * 1_000))]
         }
     }
 }

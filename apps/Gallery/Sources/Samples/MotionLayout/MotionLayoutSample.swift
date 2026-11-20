@@ -382,7 +382,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
         return Placement(
             // Scaled about its middle to how big it is drawn - its words scale
             // with it rather than wrapping anew.
-            Rect(across - cardWide / 2, foot - cardTall * drawn / 2 - cardTall / 2, cardWide, cardTall),
+            Rect(x: across - cardWide / 2, y: foot - cardTall * drawn / 2 - cardTall / 2, width: cardWide, height: cardTall),
             transform: .scale(drawn),
             // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
             // layout was given by `.shade(_:)` - nothing at all without one -
@@ -400,10 +400,10 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
 
         return Placement(
             Rect(
-                room.width / 2 + (Double(index) - Double(count - 1) / 2) * 13 - 3,
-                room.height - 16,
-                6,
-                6),
+                x: room.width / 2 + (Double(index) - Double(count - 1) / 2) * 13 - 3,
+                y: room.height - 16,
+                width: 6,
+                height: 6),
             // THE RING COMES ROUND: how far a card is from the front is taken
             // the short way, a turn on or back.
             opacity: 0.25 + 0.75 * chosen((Double(index) - at).remainder(dividingBy: Double(count))),

@@ -50,7 +50,7 @@ enum BarItemElementCases {
             let background = { try s.held(BackgroundElementContract.background, on: item) }
             try s.settle { try background() == .color(.steelBlue) }
 
-            try s.perform(.hover(at: Point(8, 8)), on: item)
+            try s.perform(.hover(at: Point(x: 8, y: 8)), on: item)
             try s.settle { try background() == .color(.firebrick) }
             s.expect(try background(), .color(.firebrick), "its pointer-over background")
 

@@ -676,8 +676,8 @@ final class AppKitContainerTests: XCTestCase {
     func testAZStackStandsChildrenInTheirAreas() throws {
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.children = .arranged([
-            box("fixed", [.area: Area.absolute(Rect(10, 20, 30, 40)).propValue]),
-            box("proportional", [.area: Area.proportional(Rect(0.375, 0.5, 0.25, 0.5)).propValue]),
+            box("fixed", [.area: Area.absolute(Rect(x: 10, y: 20, width: 30, height: 40)).propValue]),
+            box("proportional", [.area: Area.proportional(Rect(x: 0.375, y: 0.5, width: 0.25, height: 0.5)).propValue]),
         ])
         let renderer = arranged(layout, in: NSSize(width: 200, height: 100))
         defer { renderer.finish() }
@@ -698,7 +698,7 @@ final class AppKitContainerTests: XCTestCase {
         layout.properties = [.padding: .numbers([10, 5, 20, 15])]
         layout.children = .arranged([
             box("whole", [:]),
-            box("fixed", [.area: Area.absolute(Rect(10, 20, 30, 40)).propValue]),
+            box("fixed", [.area: Area.absolute(Rect(x: 10, y: 20, width: 30, height: 40)).propValue]),
         ])
         let renderer = arranged(layout, in: NSSize(width: 200, height: 100))
         defer { renderer.finish() }
@@ -720,8 +720,8 @@ final class AppKitContainerTests: XCTestCase {
                 ZStack().background(.red)
                 ZStack().background(.linearGradient(
                     [GradientStop(.red, 0), GradientStop(.blue, 1)],
-                    from: Point(0, 0),
-                    to: Point(1, 0)))
+                    from: Point(x: 0, y: 0),
+                    to: Point(x: 1, y: 0)))
             }
         }
         defer { renderer.finish() }

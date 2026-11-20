@@ -35,11 +35,11 @@ see [a kind first](vocabularies.md#a-kind-first).
 ## Geometry in fractions
 
 A gradient's points are fractions of the thing being painted, not device
-units: `Point(0, 0)` is its top left corner and `Point(1, 1)` its bottom
+units: `Point(x: 0, y: 0)` is its top left corner and `Point(x: 1, y: 1)` its bottom
 right, so one brush paints any size the same way. A linear gradient left
-without points runs from `Point(0, 0)` to `Point(0, 1)`, straight down. A
+without points runs from `Point(x: 0, y: 0)` to `Point(x: 0, y: 1)`, straight down. A
 radial gradient's center is a fraction of the painted thing and its radius a
-fraction of its size, from `Point(0.5, 0.5)` and 0.5 unless said.
+fraction of its size, from `Point(x: 0.5, y: 0.5)` and 0.5 unless said.
 
 A radial gradient is a circle on every host: its radius is that fraction of
 the painted thing's larger side, reaching as far across as down

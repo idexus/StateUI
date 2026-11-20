@@ -5,7 +5,7 @@
 A straight line between two points, in device units from the top left of the space the line is given.
 
 ```swift
-Line(from: Point(0, 0), to: Point(240, 0))
+Line(from: Point(x: 0, y: 0), to: Point(x: 240, y: 0))
     .stroke(.lightGray)
     .lineWidth(1)
 ```

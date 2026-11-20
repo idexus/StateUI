@@ -7,7 +7,7 @@
 /// Where one view goes and how it is turned: what a `MotionLayout`'s
 /// arithmetic answers for each of its views.
 ///
-///     Placement(Rect(x, 0, 120, 170), transform: .turn(40).scale(0.8), zIndex: 2)
+///     Placement(Rect(x: x, y: 0, width: 120, height: 170), transform: .turn(40).scale(0.8), zIndex: 2)
 ///
 /// Every field but the bounds defaults to the view as it was drawn, so a
 /// layout that only positions its views says `Placement(rect)`. The fields are
@@ -44,7 +44,7 @@ public struct Placement: Equatable, Sendable {
     /// A placement, and how the view is turned in it.
     ///
     ///     Placement(
-    ///         Rect(x, 0, 176, 248),
+    ///         Rect(x: x, y: 0, width: 176, height: 248),
     ///         transform: .turn(-40).scale(0.86),
     ///         opacity: 0.7,
     ///         zIndex: 2)

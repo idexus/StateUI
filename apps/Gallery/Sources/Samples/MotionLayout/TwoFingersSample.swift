@@ -76,7 +76,7 @@ struct TwoFingersSample: SampleContent, ExampleContent {
         let y = room.height / 2 + sin(angle) * radius
 
         return Placement(
-            Rect(x - width / 2, y - height / 2, width, height),
+            Rect(x: x - width / 2, y: y - height / 2, width: width, height: height),
             transform: .rotate(angle * 180 / .pi + 90),
             zIndex: Int(y))
     }

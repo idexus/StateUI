@@ -25,18 +25,18 @@ final class HomeScreenSampleTests: XCTestCase {
     /// under it, and a neighbor drawn over the cell would take it instead.
     @MainActor
     func testAnIconIsDrawnWithinItsOwnCell() {
-        for room in [Rect(0, 0, 390, 700), Rect(0, 0, 1400, 1000), Rect(0, 0, 600, 300)] {
+        for room in [Rect(x: 0, y: 0, width: 390, height: 700), Rect(x: 0, y: 0, width: 1400, height: 1000), Rect(x: 0, y: 0, width: 600, height: 300)] {
             let fit = Fit.of(room)
             let (width, height) = ((room.width - 16) / Double(fit.columns), (room.height - 16) / Double(fit.rows))
             let scale = min(width / 84, height / 96)
             for slot in 0..<fit.perBoard {
                 let placed = HomeScreenSample.place(slot, 0, room, fit)
-                let cell = Rect(8 + Double(slot % fit.columns) * width, 8 + Double(slot / fit.columns) * height,
-                                width, height)
+                let cell = Rect(x: 8 + Double(slot % fit.columns) * width, y: 8 + Double(slot / fit.columns) * height,
+                                width: width, height: height)
                 XCTAssertEqual(placed.transform, .scale(scale), "larger as far as the cell lets it")
                 let (across, down) = (placed.bounds.width * scale, placed.bounds.height * scale)
-                let drawn = Rect(placed.bounds.x + (placed.bounds.width - across) / 2,
-                                 placed.bounds.y + (placed.bounds.height - down) / 2, across, down)
+                let drawn = Rect(x: placed.bounds.x + (placed.bounds.width - across) / 2,
+                                 y: placed.bounds.y + (placed.bounds.height - down) / 2, width: across, height: down)
                 XCTAssertTrue(
                     drawn.x >= cell.x - 1e-9 && drawn.y >= cell.y - 1e-9
                         && drawn.x + drawn.width <= cell.x + cell.width + 1e-9

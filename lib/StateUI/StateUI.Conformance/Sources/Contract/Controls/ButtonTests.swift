@@ -97,7 +97,7 @@
                 let platform = State(wrappedValue: false)
                 s.start { LeavingStyle(platform: platform.projectedValue) }
                 let (styled, bare) = (try s.element("styled"), try s.element("bare"))
-                try s.settle { try s.shows(.red, on: styled, at: Point(4, 8)) }
+                try s.settle { try s.shows(.red, on: styled, at: Point(x: 4, y: 8)) }
 
                 platform.wrappedValue = true
                 let sizes = { () throws -> [Double] in
@@ -105,9 +105,9 @@
                     return [one.width - other.width, one.height - other.height]
                 }
                 try s.settle {
-                    try !s.shows(.red, on: styled, at: Point(4, 8)) && sizes().allSatisfy { abs($0) < 0.5 }
+                    try !s.shows(.red, on: styled, at: Point(x: 4, y: 8)) && sizes().allSatisfy { abs($0) < 0.5 }
                 }
-                s.expect(try s.shows(.red, on: styled, at: Point(4, 8)), false, "the style's fill gone")
+                s.expect(try s.shows(.red, on: styled, at: Point(x: 4, y: 8)), false, "the style's fill gone")
                 let apart = try sizes()
                 s.expect(apart[0], 0, within: 0.5, "as wide as one that never wore it")
                 s.expect(apart[1], 0, within: 0.5, "as tall")

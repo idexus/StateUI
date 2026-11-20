@@ -14,7 +14,7 @@ final class UIKitScrollViewTests: XCTestCase {
     /// which would pull it back within reach.
     @MainActor
     func testAStretchPastTheEdgeStandsAsTheUserPullsIt() throws {
-        let offset = State(wrappedValue: Point(0, 0))
+        let offset = State(wrappedValue: Point(x: 0, y: 0))
         let host = UIKitRenderer.running {
             VStack {
                 ScrollView {

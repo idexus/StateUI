@@ -49,13 +49,13 @@
                 .verticalAlignment(.start)
             }
             let room = try s.element("room")
-            try s.settle { try s.shows(.red, on: room, at: Point(45, 45)) }
-            s.expect(try s.color(of: room, at: Point(45, 45)), shows: .red, "past its edge, shown")
+            try s.settle { try s.shows(.red, on: room, at: Point(x: 45, y: 45)) }
+            s.expect(try s.color(of: room, at: Point(x: 45, y: 45)), shows: .red, "past its edge, shown")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.color(of: room, at: Point(45, 45)) == nil }
-            s.expect(try s.color(of: room, at: Point(45, 45)), nil, "cut once it clips")
-            s.expect(try s.color(of: room, at: Point(35, 35)), shows: .red, "inside, still shown")
+            try s.settle { try s.color(of: room, at: Point(x: 45, y: 45)) == nil }
+            s.expect(try s.color(of: room, at: Point(x: 45, y: 45)), nil, "cut once it clips")
+            s.expect(try s.color(of: room, at: Point(x: 35, y: 35)), shows: .red, "inside, still shown")
         }
     }
 
@@ -88,11 +88,11 @@
                 .verticalAlignment(.start)
             }
             let beneath = try s.element("beneath")
-            s.expect(try s.reaches(beneath, at: Point(60, 60)), false, "the layout over it takes the press")
+            s.expect(try s.reaches(beneath, at: Point(x: 60, y: 60)), false, "the layout over it takes the press")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.reaches(beneath, at: Point(60, 60)) }
-            s.expect(try s.reaches(beneath, at: Point(60, 60)), true, "let through where it holds nothing")
+            try s.settle { try s.reaches(beneath, at: Point(x: 60, y: 60)) }
+            s.expect(try s.reaches(beneath, at: Point(x: 60, y: 60)), true, "let through where it holds nothing")
         }
     }
 }
@@ -304,7 +304,7 @@ private struct Shifting: View {
                         .fill(.red)
                         .id("specimen")
                 } placements: { _, _ in
-                    [Placement(Rect(far ? 160 : 0, far ? 160 : 0, 40, 40))]
+                    [Placement(Rect(x: far ? 160 : 0, y: far ? 160 : 0, width: 40, height: 40))]
                 }
                 .motion(law)))
         default: dressing.dress(VStack { held }.motion(law))

@@ -28,7 +28,7 @@ final class LayoutShownTests: XCTestCase {
     private func tree(_ phase: State<Double>, _ read: Read) -> Node {
         ZStack {
             MotionLayout([0, 1, 2], parameters: phase.traveling(.eased(.milliseconds(160), curve: .linear))) { Text("\($0)") } placements: { _, at in
-                (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+                (0..<3).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 10, height: 10)) }
             }
             .interaction(
                 .value(phase.traveling(.eased(.milliseconds(160), curve: .linear)), input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))
@@ -50,7 +50,7 @@ final class LayoutShownTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-60, 0))
+        bench.hand(.changed, moved: Point(x: -60, y: 0))
 
         XCTAssertEqual(phase.wrappedValue, 1, "the target named")
         XCTAssertEqual(phase.projectedValue.journey.sample?.value ?? 0, 0.6, accuracy: 0.001, "where the hand holds the run")
@@ -65,10 +65,10 @@ final class LayoutShownTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-20, 0))
+        bench.hand(.changed, moved: Point(x: -20, y: 0))
         bench.cycle()
         XCTAssertEqual(read.values.last ?? 0, 0.2, accuracy: 0.001)
-        bench.hand(.changed, moved: Point(-20, 0))
+        bench.hand(.changed, moved: Point(x: -20, y: 0))
         bench.cycle()
         XCTAssertEqual(read.values.last ?? 0, 0.4, accuracy: 0.001)
 

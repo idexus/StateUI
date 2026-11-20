@@ -3,16 +3,16 @@ import StateUI
 /// Content built from the space it was given, and frames reported on request.
 struct GeometryReaderSample: SampleContent, ExampleContent {
     // listing: GeometryReaderSample
-    @State private var slot = Rect(0, 0, 0, 0)
-    @State private var window = Rect(0, 0, 0, 0)
-    @State private var safe = Rect(0, 0, 0, 0)
+    @State private var slot = Rect(x: 0, y: 0, width: 0, height: 0)
+    @State private var window = Rect(x: 0, y: 0, width: 0, height: 0)
+    @State private var safe = Rect(x: 0, y: 0, width: 0, height: 0)
 
     @State private var width = 220.0
 
     // The rectangle fed into a state: the first, or the second while the
     // switch says so. A state handed over reads it as it is handed over.
-    @State private var first = Rect(0, 0, 0, 0)
-    @State private var second = Rect(0, 0, 0, 0)
+    @State private var first = Rect(x: 0, y: 0, width: 0, height: 0)
+    @State private var second = Rect(x: 0, y: 0, width: 0, height: 0)
     @State private var feedsSecond = false
     // listing: end
 
@@ -159,8 +159,8 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
 /// around what is drawn of it.
 struct FrameStages: ExampleContent {
     // listing: FrameStages
-    @State private var placed = Rect(0, 0, 0, 0)
-    @State private var drawn = Rect(0, 0, 0, 0)
+    @State private var placed = Rect(x: 0, y: 0, width: 0, height: 0)
+    @State private var drawn = Rect(x: 0, y: 0, width: 0, height: 0)
 
     @State private var larger = false
     @State private var far = false

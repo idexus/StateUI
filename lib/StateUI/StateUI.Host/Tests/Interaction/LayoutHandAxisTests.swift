@@ -44,7 +44,7 @@ final class LayoutHandAxisTests: XCTestCase {
             declared(
                 MotionLayout([0], parameters: table.traveling(motion)) { Text("\($0)") } placements: { _, table in
                     handed.tables.append(table)
-                    return [Placement(Rect(0, 0, 40, 40))]
+                    return [Placement(Rect(x: 0, y: 0, width: 40, height: 40))]
                 }
             )
             .node
@@ -61,15 +61,15 @@ final class LayoutHandAxisTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-140, 0))
+        bench.hand(.changed, moved: Point(x: -140, y: 0))
         XCTAssertEqual(handed.tables.last?.x ?? 0, 1.4, accuracy: 0.001)
         XCTAssertEqual(table.wrappedValue.x, 1.4, accuracy: 0.001, "going where the hand holds it")
 
-        bench.hand(.changed, moved: Point(-200, 0))
+        bench.hand(.changed, moved: Point(x: -200, y: 0))
         XCTAssertGreaterThan(handed.tables.last?.x ?? 0, 3, "past the end under the hand")
         XCTAssertEqual(table.wrappedValue.x, 3, "going no farther than its range")
 
-        bench.hand(.changed, moved: Point(200, 0))
+        bench.hand(.changed, moved: Point(x: 200, y: 0))
         bench.hand(.ended)
         bench.frames()
         XCTAssertEqual(table.wrappedValue.x, 1.4, accuracy: 0.001)
@@ -89,8 +89,8 @@ final class LayoutHandAxisTests: XCTestCase {
 
             // Two units a second: 3.2 points, three hundredths of a unit, a frame.
             bench.hand(.began)
-            for _ in 0..<10 { bench.hand(.changed, moved: Point(-3.2, 0)) }
-            bench.hand(.ended, velocity: Point(-200, 0))
+            for _ in 0..<10 { bench.hand(.changed, moved: Point(x: -3.2, y: 0)) }
+            bench.hand(.ended, velocity: Point(x: -200, y: 0))
 
             var shown = [handed.tables.last?.x ?? 0]
             for _ in 0..<40 {
@@ -122,8 +122,8 @@ final class LayoutHandAxisTests: XCTestCase {
 
         // Across, and a little down: thrown across, let go still down.
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-140, -30))
-        bench.hand(.ended, velocity: Point(-300, -10))
+        bench.hand(.changed, moved: Point(x: -140, y: -30))
+        bench.hand(.ended, velocity: Point(x: -300, y: -10))
 
         // The lanes are the axes in their order: x the first, turn the fourth.
         let lanes = try XCTUnwrap(bench.journey)
@@ -144,7 +144,7 @@ final class LayoutHandAxisTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-100, 0))
+        bench.hand(.changed, moved: Point(x: -100, y: 0))
         XCTAssertEqual(handed.tables.last?.x ?? 0, 3.3, accuracy: 0.001, "a unit past gives three tenths")
 
         bench.hand(.ended)
@@ -160,14 +160,14 @@ final class LayoutHandAxisTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-20, 0))
+        bench.hand(.changed, moved: Point(x: -20, y: 0))
         // A unit a second, for 400 ms over the cubic's steepness at its start, three: two fifteenths on.
-        bench.hand(.ended, velocity: Point(-100, 0))
+        bench.hand(.ended, velocity: Point(x: -100, y: 0))
         bench.frames(60)
         XCTAssertEqual(table.wrappedValue.x, 0.2 + 0.4 / 3, accuracy: 0.001)
 
         bench.hand(.began)
-        bench.hand(.ended, velocity: Point(-3_000, 0))
+        bench.hand(.ended, velocity: Point(x: -3_000, y: 0))
         bench.frames(60)
         XCTAssertEqual(table.wrappedValue.x, 3, "held to the end")
     }
@@ -181,13 +181,13 @@ final class LayoutHandAxisTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-140, 0))
+        bench.hand(.changed, moved: Point(x: -140, y: 0))
         bench.hand(.ended)
         bench.frames()
         XCTAssertEqual(table.wrappedValue.x, 0)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-160, 0))
+        bench.hand(.changed, moved: Point(x: -160, y: 0))
         bench.hand(.ended)
         bench.frames()
         XCTAssertEqual(table.wrappedValue.x, 3)
@@ -205,7 +205,7 @@ final class LayoutHandAxisTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-250, 0))
+        bench.hand(.changed, moved: Point(x: -250, y: 0))
         XCTAssertEqual(handed.tables.last?.turn ?? 0, 2.5, accuracy: 0.001, "no end to give less past")
 
         bench.hand(.ended)
@@ -223,7 +223,7 @@ final class LayoutHandAxisTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-90, 0))
+        bench.hand(.changed, moved: Point(x: -90, y: 0))
         bench.hand(.ended)
         bench.frames()
         XCTAssertEqual(table.wrappedValue.turn, 1)
@@ -247,7 +247,7 @@ final class LayoutHandAxisTests: XCTestCase {
         XCTAssertEqual(bench.layout?.handWay, .horizontal, "one way, however many numbers it moves")
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-140, 0))
+        bench.hand(.changed, moved: Point(x: -140, y: 0))
         XCTAssertEqual(handed.tables.last?.x ?? 0, 1.4, accuracy: 0.001)
         XCTAssertEqual(handed.tables.last?.sky ?? 0, 0.7, accuracy: 0.001)
 
@@ -288,7 +288,7 @@ final class LayoutHandAxisTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(730, 0))
+        bench.hand(.changed, moved: Point(x: 730, y: 0))
         bench.hand(.ended)
         bench.frames(10)
 

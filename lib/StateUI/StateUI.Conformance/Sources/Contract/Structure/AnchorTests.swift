@@ -63,7 +63,7 @@
                 // A page's root fills the sheet, under its bar too: pressed in its middle.
                 @MainActor func reached(_ id: String) throws -> Bool {
                     guard let root = try? s.element(id), let place = try? s.place(of: root) else { return false }
-                    return try s.reaches(root, at: Point(place.width / 2, place.height / 2))
+                    return try s.reaches(root, at: Point(x: place.width / 2, y: place.height / 2))
                 }
                 // A sheet still entering its window - the platform's presentation - is waited for.
                 try s.settle { try reached("root") }

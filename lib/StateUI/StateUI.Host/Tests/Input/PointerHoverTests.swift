@@ -12,11 +12,11 @@ final class PointerHoverTests: XCTestCase {
     func testAFingerHoversOverNothing() throws {
         let (runtime, view) = try running()
 
-        view.hear(.pointer(.pointerEntered, Point(4, 4), byFinger: true), in: runtime)
-        view.hear(.pointer(.pointerMoved, Point(6, 4), byFinger: true), in: runtime)
-        view.hear(.pointer(.pointerPressed, Point(6, 4), byFinger: true), in: runtime)
-        view.hear(.pointer(.pointerReleased, Point(6, 40), byFinger: true), in: runtime)
-        view.hear(.pointer(.pointerExited, Point(6, 40), byFinger: true), in: runtime)
+        view.hear(.pointer(.pointerEntered, Point(x: 4, y: 4), byFinger: true), in: runtime)
+        view.hear(.pointer(.pointerMoved, Point(x: 6, y: 4), byFinger: true), in: runtime)
+        view.hear(.pointer(.pointerPressed, Point(x: 6, y: 4), byFinger: true), in: runtime)
+        view.hear(.pointer(.pointerReleased, Point(x: 6, y: 40), byFinger: true), in: runtime)
+        view.hear(.pointer(.pointerExited, Point(x: 6, y: 40), byFinger: true), in: runtime)
         for _ in 0..<5 { runtime.pump.turn() }
 
         XCTAssertEqual(heard, ["pressed", "released"], "a finger presses and lets go, and hovers over nothing")
@@ -25,9 +25,9 @@ final class PointerHoverTests: XCTestCase {
     func testAMouseComesOverMovesAndLeaves() throws {
         let (runtime, view) = try running()
 
-        view.hear(.pointer(.pointerEntered, Point(4, 4)), in: runtime)
-        view.hear(.pointer(.pointerMoved, Point(6, 4)), in: runtime)
-        view.hear(.pointer(.pointerExited, Point(6, 40)), in: runtime)
+        view.hear(.pointer(.pointerEntered, Point(x: 4, y: 4)), in: runtime)
+        view.hear(.pointer(.pointerMoved, Point(x: 6, y: 4)), in: runtime)
+        view.hear(.pointer(.pointerExited, Point(x: 6, y: 40)), in: runtime)
         for _ in 0..<5 { runtime.pump.turn() }
 
         XCTAssertEqual(heard, ["entered", "moved", "exited"])

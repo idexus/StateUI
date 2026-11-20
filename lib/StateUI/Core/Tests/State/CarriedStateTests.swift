@@ -1030,7 +1030,7 @@ final class CarriedStateTests: XCTestCase {
     /// is which ROAD it takes, not whether it works: the whole has an image, and
     /// a part of it is a proxy, which no driven modifier accepts.
     func testAPartOfACarriedStateIsNotDriven() {
-        let room = State(wrappedValue: Rect(0, 0, 0, 0))
+        let room = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
 
         let whole: Binding<Rect> = room.projectedValue
         let part: StatePart<Double> = whole.width

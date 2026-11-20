@@ -172,7 +172,7 @@
             Covered(BackgroundElementContract.background, on: PageContract.self),
         ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let stops = [GradientStop(.red, 0), GradientStop(.red, 0.3), GradientStop(.blue, 0.7), GradientStop(.blue, 1)]
-            let value = State(wrappedValue: Material.gradient(.linearGradient(stops, from: Point(0, 0), to: Point(1, 0))))
+            let value = State(wrappedValue: Material.gradient(.linearGradient(stops, from: Point(x: 0, y: 0), to: Point(x: 1, y: 0))))
             s.start {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {
                     Text("Root")
@@ -184,7 +184,7 @@
             try s.settle { try s.place(of: PageTests.pushedPage(s)).width > 0 }
             let place = try s.place(of: page)
             // Low on the page, beside nothing its view shows.
-            let (left, right) = (Point(place.width * 0.1, place.height * 0.85), Point(place.width * 0.9, place.height * 0.85))
+            let (left, right) = (Point(x: place.width * 0.1, y: place.height * 0.85), Point(x: place.width * 0.9, y: place.height * 0.85))
             try s.settle { try s.shows(.red, on: PageTests.pushedPage(s), at: [left, right]) == [true, false] }
             s.expect(try s.colors(of: page, at: [left])[0], shows: .red, "one end's color at its side")
             s.expect(try s.colors(of: page, at: [right])[0], shows: .blue, "the other's at the other")

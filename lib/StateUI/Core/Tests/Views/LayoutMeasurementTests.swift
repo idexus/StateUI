@@ -80,7 +80,7 @@ final class LayoutMeasurementTests: XCTestCase {
             MotionLayout(["a", "b"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { context, _ in
                 context.subviews.map { view in
                     let size = view.sizeThatFits(width: 120, height: 40)
-                    return Placement(Rect(0, 0, size.width, view.firstBaseline(width: 120, height: 40) ?? 0))
+                    return Placement(Rect(x: 0, y: 0, width: size.width, height: view.firstBaseline(width: 120, height: 40) ?? 0))
                 }
             }
             .node
@@ -88,7 +88,7 @@ final class LayoutMeasurementTests: XCTestCase {
         bench.program?.measuredBy(measure(noting: asked))
         bench.cycle()
 
-        XCTAssertEqual(bench.placed.map(\.bounds), [Rect(0, 0, 10, 15), Rect(0, 0, 20, 15)])
+        XCTAssertEqual(bench.placed.map(\.bounds), [Rect(x: 0, y: 0, width: 10, height: 15), Rect(x: 0, y: 0, width: 20, height: 15)])
         XCTAssertEqual(asked.rooms, [[0, 120, 40], [1, 120, 40]], "once a view: the baseline asked nothing more")
     }
 

@@ -10,11 +10,11 @@ final class HostPathTests: XCTestCase {
         let path = try XCTUnwrap(HostPath(svg: "M 10,20 30,40 l 5,-10 h 10 v 5 z"))
 
         XCTAssertEqual(path.commands, [
-            .move(Point(10, 20)),
-            .line(Point(30, 40)),
-            .line(Point(35, 30)),
-            .line(Point(45, 30)),
-            .line(Point(45, 35)),
+            .move(Point(x: 10, y: 20)),
+            .line(Point(x: 30, y: 40)),
+            .line(Point(x: 35, y: 30)),
+            .line(Point(x: 45, y: 30)),
+            .line(Point(x: 45, y: 35)),
             .close,
         ])
     }
@@ -25,10 +25,10 @@ final class HostPathTests: XCTestCase {
 
         XCTAssertEqual(path.commands, [
             .move(.zero),
-            .cubic(control1: Point(10, 0), control2: Point(20, 10), end: Point(30, 10)),
-            .cubic(control1: Point(40, 10), control2: Point(50, 20), end: Point(60, 10)),
-            .quadratic(control: Point(70, 0), end: Point(80, 10)),
-            .quadratic(control: Point(90, 20), end: Point(100, 10)),
+            .cubic(control1: Point(x: 10, y: 0), control2: Point(x: 20, y: 10), end: Point(x: 30, y: 10)),
+            .cubic(control1: Point(x: 40, y: 10), control2: Point(x: 50, y: 20), end: Point(x: 60, y: 10)),
+            .quadratic(control: Point(x: 70, y: 0), end: Point(x: 80, y: 10)),
+            .quadratic(control: Point(x: 90, y: 20), end: Point(x: 100, y: 10)),
         ])
     }
 
@@ -36,14 +36,14 @@ final class HostPathTests: XCTestCase {
         let path = try XCTUnwrap(HostPath(svg: "M1e1 -.5 A 20 10 30 1 0 50 60"))
 
         XCTAssertEqual(path.commands, [
-            .move(Point(10, -0.5)),
+            .move(Point(x: 10, y: -0.5)),
             .arc(
                 radiusX: 20,
                 radiusY: 10,
                 rotation: 30,
                 largeArc: true,
                 sweep: false,
-                end: Point(50, 60)),
+                end: Point(x: 50, y: 60)),
         ])
     }
 
@@ -52,11 +52,11 @@ final class HostPathTests: XCTestCase {
     func testArcFlagsWrittenTogetherAreReadOneDigitEach() throws {
         XCTAssertEqual(try XCTUnwrap(HostPath(svg: "M0 0a1 1 0 011 1")).commands, [
             .move(.zero),
-            .arc(radiusX: 1, radiusY: 1, rotation: 0, largeArc: false, sweep: true, end: Point(1, 1)),
+            .arc(radiusX: 1, radiusY: 1, rotation: 0, largeArc: false, sweep: true, end: Point(x: 1, y: 1)),
         ])
         XCTAssertEqual(try XCTUnwrap(HostPath(svg: "M0 0A5 5 0 1110 10,5 5 0 0,0 0 0")).commands, [
             .move(.zero),
-            .arc(radiusX: 5, radiusY: 5, rotation: 0, largeArc: true, sweep: true, end: Point(10, 10)),
+            .arc(radiusX: 5, radiusY: 5, rotation: 0, largeArc: true, sweep: true, end: Point(x: 10, y: 10)),
             .arc(radiusX: 5, radiusY: 5, rotation: 0, largeArc: false, sweep: false, end: .zero),
         ])
         XCTAssertNil(HostPath(svg: "M0 0a1 1 0 211 1"), "a flag is 0 or 1")
@@ -101,7 +101,7 @@ final class HostPathTests: XCTestCase {
         }
         var wrong: [String] = []
         for radius in [1e-300, 1e-200, 1e-6, 1, 1e6, 1e200, 1e300, Double.greatestFiniteMagnitude, 5e-324] {
-            for end in [Point(2, 0), Point(2, 2), Point(0, 2), Point(-1e-3, 5)] {
+            for end in [Point(x: 2, y: 0), Point(x: 2, y: 2), Point(x: 0, y: 2), Point(x: -1e-3, y: 5)] {
                 for (rotation, large, sweep) in [(0.0, false, true), (45, true, false), (1e300, true, true)] {
                     let curves = drawn(radius, to: end, rotation: rotation, large: large, sweep: sweep)
                     let ending: Point? = switch curves.last {
@@ -115,10 +115,10 @@ final class HostPathTests: XCTestCase {
             }
         }
         XCTAssertEqual(wrong, [])
-        let (tiny, small) = (numbers(drawn(1e-300, to: Point(2, 0))), numbers(drawn(1e-6, to: Point(2, 0))))
+        let (tiny, small) = (numbers(drawn(1e-300, to: Point(x: 2, y: 0))), numbers(drawn(1e-6, to: Point(x: 2, y: 0))))
         XCTAssertEqual(tiny.count, small.count)
         for (one, other) in zip(tiny, small) { XCTAssertEqual(one, other, accuracy: 1e-9, "scaled up to just reach") }
-        XCTAssertEqual(drawn(1e300, to: Point(2, 0)), [.line(Point(2, 0))], "flatter than any display shows")
+        XCTAssertEqual(drawn(1e300, to: Point(x: 2, y: 0)), [.line(Point(x: 2, y: 0))], "flatter than any display shows")
         XCTAssertNotNil(HostPath(svg: "M0 0 A1e-200 1e-200 0 0 1 2 2")?.arcsAsCubics)
     }
 
@@ -133,8 +133,8 @@ final class HostPathTests: XCTestCase {
                     for step in 1...16 {
                         let t = Double(step) / 16, s = 1 - t
                         points.append(Point(
-                            s * s * s * at.x + 3 * s * s * t * a.x + 3 * s * t * t * b.x + t * t * t * end.x,
-                            s * s * s * at.y + 3 * s * s * t * a.y + 3 * s * t * t * b.y + t * t * t * end.y))
+                            x: s * s * s * at.x + 3 * s * s * t * a.x + 3 * s * t * t * b.x + t * t * t * end.x,
+                            y: s * s * s * at.y + 3 * s * s * t * a.y + 3 * s * t * t * b.y + t * t * t * end.y))
                     }
                     at = end
                 case .line(let end):
@@ -149,7 +149,7 @@ final class HostPathTests: XCTestCase {
                 for sweep in [false, true] {
                     let named = "r \(radius) chord \(chord) squash \(squash) rotation \(rotation) sweep \(sweep)"
                     func drawn(large: Bool) -> [Point] {
-                        sampled(HostPath.arc(from: .zero, to: Point(chord, 0), radiusX: radius, radiusY: radius * squash,
+                        sampled(HostPath.arc(from: .zero, to: Point(x: chord, y: 0), radiusX: radius, radiusY: radius * squash,
                                              rotation: rotation, largeArc: large, sweep: sweep))
                     }
                     let short = drawn(large: false)
@@ -160,7 +160,7 @@ final class HostPathTests: XCTestCase {
                     let (width, height) = (xs.max()! - xs.min()!, ys.max()! - ys.min()!)
                     let across = rotation == 0 ? squash : 1 / squash
                     XCTAssertEqual(height / width, across, accuracy: 1e-3, "the long way's frame: \(named)")
-                    let center = Point((xs.max()! + xs.min()!) / 2, (ys.max()! + ys.min()!) / 2)
+                    let center = Point(x: (xs.max()! + xs.min()!) / 2, y: (ys.max()! + ys.min()!) / 2)
                     let off = long.map { point in
                         abs(hypot((point.x - center.x) / (width / 2), (point.y - center.y) / (height / 2)) - 1)
                     }
@@ -177,13 +177,13 @@ final class HostPathTests: XCTestCase {
         let drawn = path.arcsAsCubics
 
         XCTAssertEqual(drawn.count, 4)
-        XCTAssertEqual(drawn.first, HostCurveCommand.move(Point(0, 0)))
+        XCTAssertEqual(drawn.first, HostCurveCommand.move(Point(x: 0, y: 0)))
         guard case .cubic(_, _, let middle) = drawn[1], case .cubic(_, _, let end) = drawn[2] else {
             return XCTFail("\(drawn)")
         }
         XCTAssertEqual(middle.x, 1, accuracy: 1e-9)
         XCTAssertEqual(abs(middle.y), 1, accuracy: 1e-9)
-        XCTAssertEqual(end, Point(2, 0))
-        XCTAssertEqual(drawn.last, .line(Point(3, 0)))
+        XCTAssertEqual(end, Point(x: 2, y: 0))
+        XCTAssertEqual(drawn.last, .line(Point(x: 3, y: 0)))
     }
 }

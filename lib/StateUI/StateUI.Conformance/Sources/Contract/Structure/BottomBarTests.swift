@@ -47,7 +47,7 @@
                 Covered(BottomBarContract.self),
             ], needs: [Covered(ScrollViewContract.scrollOffset)]) { s in
                 let tall = State(wrappedValue: 40.0)
-                let offset = State(wrappedValue: Point(0, 0))
+                let offset = State(wrappedValue: Point(x: 0, y: 0))
                 s.start(reducesMotion: true) {
                     Grid {
                         ScrollView {
@@ -70,13 +70,13 @@
                 let scroller = try s.element("scroller")
                 let standing = { try s.held(ScrollViewContract.scrollOffset, on: scroller)?.y ?? -1 }
 
-                offset.wrappedValue = Point(0, 100)
+                offset.wrappedValue = Point(x: 0, y: 100)
                 try s.settle { try standing() == 100 }
                 tall.wrappedValue = 70
                 try s.settle { try standsTall(s.place(of: s.element("bar")), 70) }
                 s.expect(try standing(), 100, "one short of its end where it was")
 
-                offset.wrappedValue = Point(0, 10_000)
+                offset.wrappedValue = Point(x: 0, y: 10_000)
                 try s.settle { try standing() > 100 }
                 let end = try standing()
                 tall.wrappedValue = 130

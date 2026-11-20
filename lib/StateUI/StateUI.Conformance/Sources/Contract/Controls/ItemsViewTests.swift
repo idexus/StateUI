@@ -163,7 +163,7 @@
                 s.settle { (try? item(0, in: s)) != nil }
                 s.expect(count.wrappedValue, 30, "nothing asked for at the start")
 
-                try s.perform(.scroll(to: Point(0, 100_000)), on: list)
+                try s.perform(.scroll(to: Point(x: 0, y: 100_000)), on: list)
                 s.settle { count.wrappedValue == 60 }
                 s.turn()
                 s.expect(count.wrappedValue, 60, "thirty more, asked for once")
@@ -186,7 +186,7 @@
                 }
                 s.settle { (try? item(0, in: s)) != nil }
                 for more in [60, 90, 120, 150] {
-                    try s.perform(.scroll(to: Point(0, 100_000)), on: try s.element("list"))
+                    try s.perform(.scroll(to: Point(x: 0, y: 100_000)), on: try s.element("list"))
                     s.settle { count.wrappedValue == more }
                 }
 

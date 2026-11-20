@@ -8,7 +8,7 @@
 ///         return context.subviews.map { view in
 ///             let size = view.sizeThatFits(height: context.bounds.height)
 ///             defer { across += size.width + 8 }
-///             return Placement(Rect(across, 0, size.width, size.height))
+///             return Placement(Rect(x: across, y: 0, width: size.width, height: size.height))
 ///         }
 ///     }
 ///

@@ -201,7 +201,7 @@ final class AppKitMeasurementTests: XCTestCase {
         card.properties[.opacity] = .number(1)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.layout = AppKitRenderer.programForTesting(slot: 95) {
-            PlacedRun([Placement(Rect(0, 0, 100, 60), transform: .rotate(30))])
+            PlacedRun([Placement(Rect(x: 0, y: 0, width: 100, height: 60), transform: .rotate(30))])
         }
         layout.children = .arranged([card])
         renderer.applyForTesting(layout)
@@ -243,7 +243,7 @@ final class AppKitMeasurementTests: XCTestCase {
         card.properties[.opacity] = .number(1)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.properties[VisualElementContract.height.token] = .number(120)
-        let held = HeldRun(PlacedRun([Placement(Rect(0, 0, 100, 60))]))
+        let held = HeldRun(PlacedRun([Placement(Rect(x: 0, y: 0, width: 100, height: 60))]))
         layout.layout = AppKitRenderer.programForTesting(slot: 96) { held.run }
         layout.children = .arranged([card])
         var caption = HostPatch(id: .manual("caption"), type: .text)
@@ -263,7 +263,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let arrangements = nativeOuter.arrangementCountForTesting
         let measurements = nativeCaption.nativeMeasurementCountForTesting
 
-        held.run = PlacedRun([Placement(Rect(80, 20, 100, 60))])
+        held.run = PlacedRun([Placement(Rect(x: 80, y: 20, width: 100, height: 60))])
         renderer.presentLayoutForTesting(96)
         nativeOuter.layoutSubtreeIfNeeded()
 

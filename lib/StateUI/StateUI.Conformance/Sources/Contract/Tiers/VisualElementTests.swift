@@ -113,9 +113,9 @@
                 .verticalAlignment(.start)
             }
             let moved = try s.element("moved")
-            try s.settle { try s.reaches(moved, at: Point(80, 10)) }
-            s.expect(try s.reaches(moved, at: Point(80, 10)), true, "where it is drawn")
-            s.expect(try s.reaches(moved, at: Point(20, 10)), false, "where it was placed and nothing is drawn")
+            try s.settle { try s.reaches(moved, at: Point(x: 80, y: 10)) }
+            s.expect(try s.reaches(moved, at: Point(x: 80, y: 10)), true, "where it is drawn")
+            s.expect(try s.reaches(moved, at: Point(x: 20, y: 10)), false, "where it was placed and nothing is drawn")
         }
     }
 
@@ -138,17 +138,17 @@
                 .verticalAlignment(.start)
             }
             let view = try s.element("fading")
-            try s.settle { try s.reaches(view, at: Point(40, 20)) }
-            s.expect(try s.reaches(view, at: Point(40, 20)), true, "a press reaches it")
+            try s.settle { try s.reaches(view, at: Point(x: 40, y: 20)) }
+            s.expect(try s.reaches(view, at: Point(x: 40, y: 20)), true, "a press reaches it")
 
             try s.perform(.activate, on: s.element("hide"))
-            try s.settle { try s.reaches(view, at: Point(40, 20)) == false }
+            try s.settle { try s.reaches(view, at: Point(x: 40, y: 20)) == false }
             s.expect(try s.held(VisualElementContract.isVisible, on: view), true, "still drawn as it fades")
-            s.expect(try s.reaches(view, at: Point(40, 20)), false, "and reached by no press")
+            s.expect(try s.reaches(view, at: Point(x: 40, y: 20)), false, "and reached by no press")
 
             try s.perform(.activate, on: s.element("show"))
-            try s.settle { try s.reaches(view, at: Point(40, 20)) }
-            s.expect(try s.reaches(view, at: Point(40, 20)), true, "shown again as it fades, a press reaches it")
+            try s.settle { try s.reaches(view, at: Point(x: 40, y: 20)) }
+            s.expect(try s.reaches(view, at: Point(x: 40, y: 20)), true, "shown again as it fades, a press reaches it")
         }
     }
 
@@ -614,12 +614,12 @@
                 .verticalAlignment(.start)
             }
             let view = try s.element("specimen")
-            try s.settle { try s.reaches(view, at: Point(40, 20)) }
-            s.expect(try s.reaches(view, at: Point(40, 20)), true, "a press reaches it")
+            try s.settle { try s.reaches(view, at: Point(x: 40, y: 20)) }
+            s.expect(try s.reaches(view, at: Point(x: 40, y: 20)), true, "a press reaches it")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.reaches(view, at: Point(40, 20)) == false }
-            s.expect(try s.reaches(view, at: Point(40, 20)), false, "and goes through it once it ignores input")
+            try s.settle { try s.reaches(view, at: Point(x: 40, y: 20)) == false }
+            s.expect(try s.reaches(view, at: Point(x: 40, y: 20)), false, "and goes through it once it ignores input")
         }
     }
 
@@ -629,12 +629,12 @@
     static func painted(_ element: String) -> [any Worn] {
         let red = Brush.solidColor(.red)
         let redFill = Material.color(.red)
-        let figure = [Point(20, 5), Point(60, 5), Point(60, 35), Point(20, 35)]
+        let figure = [Point(x: 20, y: 5), Point(x: 60, y: 5), Point(x: 60, y: 35), Point(x: 20, y: 35)]
         let atItsSize = Write(ContentModeElementContract.contentMode, ContentMode.center)
         return switch element {
         case "Rectangle", "Ellipse", "Capsule": [Write(FilledShapeContract.fill, redFill)]
         case "Line": [
-            Write(LineContract.from, Point(0, 20)), Write(LineContract.to, Point(80, 20)),
+            Write(LineContract.from, Point(x: 0, y: 20)), Write(LineContract.to, Point(x: 80, y: 20)),
             Write(ShapeContract.stroke, red), Write(ShapeContract.lineWidth, 8),
         ]
         case "Polygon": [Write(PointsShapeContract.points, figure), Write(FilledShapeContract.fill, redFill), atItsSize]

@@ -488,7 +488,7 @@ class AndroidView {
 
     /// Whether a layout has placed the view: StateUI's, or Android's giving it a size.
     var isLaidOut: Bool {
-        let standing = laidOut == nil ? standingFrame : Rect(0, 0, 0, 0)
+        let standing = laidOut == nil ? standingFrame : Rect(x: 0, y: 0, width: 0, height: 0)
         return MountedElement.isLaidOut(placed: laidOut != nil, width: standing.width, height: standing.height)
     }
 

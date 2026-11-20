@@ -341,7 +341,7 @@ ZStack {
 
     Rectangle()
         .fill(.orange)
-        .area(.proportional(Rect(0.5, 0, 0.5, 1)))
+        .area(.proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1)))
 }
 .height(240)
 ```
@@ -349,7 +349,7 @@ ZStack {
 `.absolute(_:)` names an area by a `Rect` in device-independent units
 from the top left of the room inside the stack's padding;
 `.proportional(_:)` names one by a `Rect` in fractions of that room, so
-`.proportional(Rect(0.5, 0, 0.5, 1))` is its right half whatever the stack's size
+`.proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1))` is its right half whatever the stack's size
 (left to right; a right-to-left stack mirrors the area, so there it is the
 left half). A child fills its area unless its size or alignment says otherwise. A later
 child is drawn over an earlier one, and `zIndex` reorders them without moving
@@ -394,7 +394,7 @@ the offset from there carries the viewport on to a resting place of the
 author's own:
 
 ```swift
-@State private var offset = Point(0, 0)
+@State private var offset = Point(x: 0, y: 0)
 let cards = Text("Cards")
 
 ScrollView { cards }
@@ -403,7 +403,7 @@ ScrollView { cards }
     .onScrollStopped {
         let stands = $offset.journey.sample?.value ?? offset
         let card = (stands.x / 320).rounded()
-        offset = Point(card * 320, 0)
+        offset = Point(x: card * 320, y: 0)
     }
 ```
 
@@ -750,7 +750,7 @@ struct Shelf: View {
             names.indices.map { index in
                 let width = context.bounds.width / Double(names.count)
 
-                return Placement(Rect(Double(index) * width, 0, width, context.bounds.height))
+                return Placement(Rect(x: Double(index) * width, y: 0, width: width, height: context.bounds.height))
             }
         }
         .height(60)
@@ -793,7 +793,7 @@ struct Carousel: View {
                     let step = Double(index) - turn
 
                     return Placement(
-                        Rect(context.bounds.width / 2 - 60 + step * 140, 0, 120, context.bounds.height),
+                        Rect(x: context.bounds.width / 2 - 60 + step * 140, y: 0, width: 120, height: context.bounds.height),
                         transform: .scale(1 - min(abs(step), 1) * 0.2),
                         zIndex: -Int(abs(step) * 10))
                 }
@@ -846,7 +846,7 @@ struct Drawer: View {
         MotionLayout(["Notes"], parameters: $open) { name in
             Text(name)
         } placements: { context, open in
-            [Placement(Rect(0, context.bounds.height - 60 - open * 200, context.bounds.width, 260))]
+            [Placement(Rect(x: 0, y: context.bounds.height - 60 - open * 200, width: context.bounds.width, height: 260))]
         }
         // Pulled up, it opens; let go, it is open or closed.
         .interaction(
@@ -908,7 +908,7 @@ struct TurningCards: View {
             Text(name)
         } placements: { context, turn in
             names.indices.map { index in
-                Placement(Rect(context.bounds.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, 160))
+                Placement(Rect(x: context.bounds.width / 2 - 60 + (Double(index) - turn) * 140, y: 0, width: 120, height: 160))
             }
         }
         .interaction(
@@ -953,7 +953,7 @@ struct Hand: View {
                 Text(name)
             } placements: { context, _ in
                 names.indices.map { index in
-                    Placement(Rect(context.bounds.width / 2 - 60 + Double(index) * gap, 0, 120, context.bounds.height))
+                    Placement(Rect(x: context.bounds.width / 2 - 60 + Double(index) * gap, y: 0, width: 120, height: context.bounds.height))
                 }
             }
             .layoutBodies(.onChange(response: .milliseconds(300), damping: 0.8))
@@ -996,7 +996,7 @@ struct Swaying: View {
                 .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
         } placements: { context, turn in
             (0..<4).map { index in
-                Placement(Rect(context.bounds.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, context.bounds.height))
+                Placement(Rect(x: context.bounds.width / 2 - 60 + (Double(index) - turn) * 140, y: 0, width: 120, height: context.bounds.height))
             }
         }
         .interaction(
@@ -1036,7 +1036,7 @@ struct Pile: View {
                 let behind = leaving ? 0 : abs(step)
 
                 return Placement(
-                    Rect(context.bounds.width / 2 - 70 + out * 160, 10 + behind * 6, 140, 180),
+                    Rect(x: context.bounds.width / 2 - 70 + out * 160, y: 10 + behind * 6, width: 140, height: 180),
                     transform: .rotate(out * 12).scale(1 - min(behind, 3) * 0.04),
                     zIndex: leaving && abs(step) > 0.5 ? -100 : -Int(behind * 10))
             }
@@ -1084,7 +1084,7 @@ struct Boards: View {
                     let width = context.bounds.width / 3
 
                     return Placement(
-                        Rect((Double(page) - board) * context.bounds.width + Double(slot) * width, 0, width, context.bounds.height))
+                        Rect(x: (Double(page) - board) * context.bounds.width + Double(slot) * width, y: 0, width: width, height: context.bounds.height))
                 }
             }
             .interaction(
@@ -1099,7 +1099,7 @@ struct Boards: View {
             } placements: { context, board in
                 [0, 1].map { page in
                     Placement(
-                        Rect(context.bounds.width / 2 - 12 + Double(page) * 16, 4, 8, 8),
+                        Rect(x: context.bounds.width / 2 - 12 + Double(page) * 16, y: 4, width: 8, height: 8),
                         opacity: 0.3 + 0.7 * max(1 - abs(board - Double(page)), 0))
                 }
             }
@@ -1135,7 +1135,7 @@ struct Board: View {
             Text(name)
         } placements: { context, _ in
             names.indices.map { index in
-                Placement(Rect(Double(index) * context.bounds.width / 4, 0, context.bounds.width / 4, context.bounds.height))
+                Placement(Rect(x: Double(index) * context.bounds.width / 4, y: 0, width: context.bounds.width / 4, height: context.bounds.height))
             }
         }
         .itemDrag(begins: .longPress)
@@ -1180,7 +1180,7 @@ struct Ring: View {
                 let step = (Double(index) - turn).remainder(dividingBy: Double(names.count))
 
                 return Placement(
-                    Rect(context.bounds.width / 2 - 60 + step * 140, 0, 120, context.bounds.height),
+                    Rect(x: context.bounds.width / 2 - 60 + step * 140, y: 0, width: 120, height: context.bounds.height),
                     opacity: 1 - min(abs(step) / 3, 1))
             }
         }
@@ -1220,7 +1220,7 @@ struct Planets: View {
                     let size = 60 * orbit.zoom
                     let step = Double(index) - orbit.turn
 
-                    return Placement(Rect(context.bounds.width / 2 - size / 2 + step * size * 1.5, 0, size, size))
+                    return Placement(Rect(x: context.bounds.width / 2 - size / 2 + step * size * 1.5, y: 0, width: size, height: size))
                 }
             }
             .interaction(
@@ -1277,10 +1277,10 @@ struct Compass: View {
                 let radius = 80 * dial.size
 
                 return Placement(Rect(
-                    context.bounds.width / 2 + cos(angle) * radius - 30,
-                    context.bounds.height / 2 + sin(angle) * radius - 12,
-                    60,
-                    24))
+                    x: context.bounds.width / 2 + cos(angle) * radius - 30,
+                    y: context.bounds.height / 2 + sin(angle) * radius - 12,
+                    width: 60,
+                    height: 24))
             }
         }
         .interaction(.simultaneous([
@@ -1332,10 +1332,10 @@ struct Contacts: View {
                 let size = 120 * sheet.zoom
 
                 return Placement(Rect(
-                    context.bounds.width / 2 + (Double(column) - sheet.x) * size - size / 2,
-                    context.bounds.height / 2 + (Double(row) - sheet.y) * size - size / 2,
-                    size,
-                    size))
+                    x: context.bounds.width / 2 + (Double(column) - sheet.x) * size - size / 2,
+                    y: context.bounds.height / 2 + (Double(row) - sheet.y) * size - size / 2,
+                    width: size,
+                    height: size))
             }
         }
         .interaction(.simultaneous([
@@ -1381,17 +1381,17 @@ struct Arrangements: View {
     }
 
     private func row(in room: Rect) -> [Placement] {
-        names.indices.map { Placement(Rect(Double($0) * 64, room.height / 2 - 20, 60, 40)) }
+        names.indices.map { Placement(Rect(x: Double($0) * 64, y: room.height / 2 - 20, width: 60, height: 40)) }
     }
 
     private func column(in room: Rect) -> [Placement] {
-        names.indices.map { Placement(Rect(room.width / 2 - 30, Double($0) * 48, 60, 40)) }
+        names.indices.map { Placement(Rect(x: room.width / 2 - 30, y: Double($0) * 48, width: 60, height: 40)) }
     }
 
     private func pile(in room: Rect) -> [Placement] {
         names.indices.map { index in
             Placement(
-                Rect(room.width / 2 - 30 + Double(index) * 4, room.height / 2 - 20 - Double(index) * 4, 60, 40),
+                Rect(x: room.width / 2 - 30 + Double(index) * 4, y: room.height / 2 - 20 - Double(index) * 4, width: 60, height: 40),
                 transform: .rotate(Double(index) * 6 - 12),
                 zIndex: index)
         }
@@ -1418,8 +1418,8 @@ struct Rearranged: View {
             } placements: { context, arrangement in
                 names.indices.map { index in
                     Int(arrangement) == 0
-                        ? Placement(Rect(Double(index) * 64, context.bounds.height / 2 - 20, 60, 40))
-                        : Placement(Rect(context.bounds.width / 2 - 30, Double(index) * 48, 60, 40))
+                        ? Placement(Rect(x: Double(index) * 64, y: context.bounds.height / 2 - 20, width: 60, height: 40))
+                        : Placement(Rect(x: context.bounds.width / 2 - 30, y: Double(index) * 48, width: 60, height: 40))
                 }
             }
             .axis(range: 0...1, keyframes: .every(1))
@@ -1509,7 +1509,7 @@ struct Fields: View {
         var (across, down, height) = (0.0, 0.0, 0.0)
         for (field, own) in zip(fields, own) {
             let size = sideBySide ? own : field.sizeThatFits(width: width)
-            placements.append(Placement(Rect(across, down, size.width, size.height)))
+            placements.append(Placement(Rect(x: across, y: down, width: size.width, height: size.height)))
             height = max(height, down + size.height)
             if sideBySide { across += size.width + 12 } else { down += size.height + 12 }
         }

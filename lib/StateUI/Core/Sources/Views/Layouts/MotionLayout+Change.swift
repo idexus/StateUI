@@ -14,7 +14,7 @@ extension MotionLayout.Run {
         guard memory.description != description || memory.from != from, let last = memory.parameters
         else { return (memory, [:]) }
 
-        let room = Rect(0, 0, memory.room.width, memory.room.height)
+        let room = Rect(x: 0, y: 0, width: memory.room.width, height: memory.room.height)
         let before = pose(in: room, at: last, from: from)
         var discrete: [Int: Placement] = [:]
         for (index, slot) in slots.enumerated() where memory.poses[slot.identity] != before[index] {

@@ -15,12 +15,12 @@ final class GalleryThrowBenchmarks: XCTestCase {
         let bench = Bench(GalleryApplication())
         let run = try bench.element(.motionLayout)
 
-        bench.hand(.began, on: run, at: Point(195, 350))
+        bench.hand(.began, on: run, at: Point(x: 195, y: 350))
         for _ in 0..<5 {
             bench.frame()
-            bench.hand(.changed, on: run, moved: Point(-40, 0))
+            bench.hand(.changed, on: run, moved: Point(x: -40, y: 0))
         }
-        bench.hand(.ended, on: run, speed: Point(-2_400, 0))
+        bench.hand(.ended, on: run, speed: Point(x: -2_400, y: 0))
         let work = bench.measure("gallery, a run of cards thrown, a frame", steps: 30) { _ in
             bench.frame()
         }

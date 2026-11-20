@@ -5,7 +5,7 @@
 What every drawn shape has: the line along it, how it fits its room, and a transform of its own drawing.
 
 ```swift
-Line(from: Point(0, 0), to: Point(120, 0))
+Line(from: Point(x: 0, y: 0), to: Point(x: 120, y: 0))
     .stroke(.black)
     .lineWidth(2)
     .dash([4, 2])

@@ -164,7 +164,7 @@ extension MotionLayout {
             let parameters = live()
             let from = setOut(at: parameters)
             let (memory, discrete) = changed(from: from)
-            let poses = pose(in: Rect(0, 0, room.width, room.height), at: parameters, from: from)
+            let poses = pose(in: Rect(x: 0, y: 0, width: room.width, height: room.height), at: parameters, from: from)
             let holding = show(
                 poses, after: memory, discrete: discrete, at: now, parameters: parameters, from: from, room: room)
             // The views the host still moves onto their places are no rest either: it says when they stand.
@@ -299,7 +299,7 @@ extension MotionLayout {
             let neutral = Placement(.zero)
             func held(_ number: Double, _ standIn: Double) -> Double { number.isFinite ? number : standIn }
             return Placement(
-                Rect(held(bounds.x, 0), held(bounds.y, 0), held(bounds.width, 0), held(bounds.height, 0)),
+                Rect(x: held(bounds.x, 0), y: held(bounds.y, 0), width: held(bounds.width, 0), height: held(bounds.height, 0)),
                 transform: ViewTransform(
                     x: held(turn.x, 0), y: held(turn.y, 0), rotation: held(turn.rotation, 0),
                     width: held(turn.width, 1), height: held(turn.height, 1)),
@@ -317,7 +317,7 @@ extension MotionLayout {
             let laid = states.room.wrappedValue
             guard laid.width > 0, laid.height > 0 else { return nil }
 
-            let room = Rect(0, 0, laid.width, laid.height)
+            let room = Rect(x: 0, y: 0, width: laid.width, height: laid.height)
             let length = across ? room.width : room.height
             let shown = live()
             func middle(_ placement: Placement) -> Double {

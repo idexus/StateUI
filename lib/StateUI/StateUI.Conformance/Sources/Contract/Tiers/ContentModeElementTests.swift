@@ -46,13 +46,13 @@
                 .verticalAlignment(.start)
             }
             let image = try s.element("image")
-            try s.settle { try filled.allSatisfy { try s.color(of: image, at: Point($0.0, $0.1)) != nil } }
+            try s.settle { try filled.allSatisfy { try s.color(of: image, at: Point(x: $0.0, y: $0.1)) != nil } }
 
             for point in filled {
-                s.expect(try s.color(of: image, at: Point(point.0, point.1)) != nil, true, "drawn at \(point)")
+                s.expect(try s.color(of: image, at: Point(x: point.0, y: point.1)) != nil, true, "drawn at \(point)")
             }
             for point in empty {
-                s.expect(try s.color(of: image, at: Point(point.0, point.1)), nil, "empty at \(point)")
+                s.expect(try s.color(of: image, at: Point(x: point.0, y: point.1)), nil, "empty at \(point)")
             }
         }
     }

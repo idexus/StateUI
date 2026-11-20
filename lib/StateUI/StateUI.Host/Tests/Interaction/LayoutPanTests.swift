@@ -43,7 +43,7 @@ final class LayoutPanTests: XCTestCase {
         let zoom = Interaction.value(moved, axis: \.zoom, input: .magnification).range(1...2).snaps(.endpoints)
         return MotionLayout([0, 1], parameters: moved) { Text("\($0)") } placements: { _, board in
             handed.boards.append(board)
-            return [Placement(Rect(-board.x * 100, -board.y * 100, 40, 40)), Placement(.zero)]
+            return [Placement(Rect(x: -board.x * 100, y: -board.y * 100, width: 40, height: 40)), Placement(.zero)]
         }
         .interaction(
             .simultaneous((downFirst ? [down, across] : [across, down]) + [zoom])
@@ -70,7 +70,7 @@ final class LayoutPanTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-140, -60))
+        bench.hand(.changed, moved: Point(x: -140, y: -60))
         XCTAssertEqual(handed.boards.last?.x ?? 0, 1.4, accuracy: 0.001)
         XCTAssertEqual(handed.boards.last?.y ?? 0, 0.6, accuracy: 0.001)
 
@@ -88,10 +88,10 @@ final class LayoutPanTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-20, -10))
+        bench.hand(.changed, moved: Point(x: -20, y: -10))
         // 600 points a second across is six units: half a second's light friction carries it to the far square; the
         // same throw down is not one.
-        bench.hand(.ended, velocity: Point(-600, -10))
+        bench.hand(.ended, velocity: Point(x: -600, y: -10))
         bench.frames(60)
         XCTAssertEqual(board.wrappedValue, Board(x: 1, y: 0), "across thrown on, down let go still")
     }
@@ -104,8 +104,8 @@ final class LayoutPanTests: XCTestCase {
             func built() -> Node { tree(board, handed, downFirst: downFirst) }
             bench.laid(built)
             bench.hand(.began)
-            bench.hand(.changed, moved: Point(-20, -30))
-            bench.hand(.ended, velocity: Point(-600, 0))
+            bench.hand(.changed, moved: Point(x: -20, y: -30))
+            bench.hand(.ended, velocity: Point(x: -600, y: 0))
             handed.boards.removeAll()
             bench.frames(8)
             return handed.boards
@@ -123,7 +123,7 @@ final class LayoutPanTests: XCTestCase {
         func built() -> Node { tree(board, handed) }
         bench.laid(built)
 
-        bench.step(Point(-1, -2))
+        bench.step(Point(x: -1, y: -2))
         bench.frames()
         XCTAssertEqual(board.wrappedValue, Board(x: 1, y: 2))
     }
@@ -134,7 +134,7 @@ final class LayoutPanTests: XCTestCase {
         func built() -> Node { tree(board, handed) }
         bench.laid(built)
 
-        bench.step(Point(.nan, .infinity))
+        bench.step(Point(x: .nan, y: .infinity))
         bench.frames()
         XCTAssertEqual(board.wrappedValue, Board())
     }
@@ -147,7 +147,7 @@ final class LayoutPanTests: XCTestCase {
 
         bench.pinch(.began)
         bench.pinch(.changed, scale: .infinity, degrees: .nan)
-        bench.pinch(.ended, velocity: Point(.nan, .infinity))
+        bench.pinch(.ended, velocity: Point(x: .nan, y: .infinity))
         bench.frames()
         XCTAssertEqual(board.wrappedValue, Board())
     }
@@ -160,7 +160,7 @@ final class LayoutPanTests: XCTestCase {
 
         bench.hand(.began)
         bench.pinch(.began)
-        bench.hand(.changed, moved: Point(-100, 0))
+        bench.hand(.changed, moved: Point(x: -100, y: 0))
         bench.pinch(.changed, scale: 2)
         XCTAssertEqual(handed.boards.last?.x ?? 0, 1, accuracy: 0.001)
         XCTAssertEqual(handed.boards.last?.zoom ?? 0, 2, accuracy: 0.001)
@@ -177,7 +177,7 @@ final class LayoutPanTests: XCTestCase {
         func layout(down: Orientation) -> MotionLayout<[Int], Int, Board> {
             MotionLayout([0], parameters: board.projectedValue) { Text("\($0)") } placements: { _, board in
                 handed.boards.append(board)
-                return [Placement(Rect(0, 0, 40, 40))]
+                return [Placement(Rect(x: 0, y: 0, width: 40, height: 40))]
             }
             .interaction(.simultaneous([
                 .value(board.projectedValue, axis: \.x, input: .translation(.horizontal, unit: .frontItem))

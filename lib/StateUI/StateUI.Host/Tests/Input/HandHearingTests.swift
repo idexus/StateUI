@@ -19,12 +19,12 @@ final class HandHearingTests: XCTestCase {
         XCTAssertEqual(ring.interactionProgram?.values.count, 1, "it answers the hand by its program")
 
         ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
-        ring.hear(.hand(.changed, moved: Point(-140, 0), speed: nil), in: runtime)
+        ring.hear(.hand(.changed, moved: Point(x: -140, y: 0), speed: nil), in: runtime)
         frames(runtime, clock, until: 32)
         XCTAssertEqual(handed.last ?? 0, 1.4, accuracy: 0.001, "the run where the hand holds it")
 
         // 1,000 points a second to the left is 10 cards a second: about a card and a third on.
-        ring.hear(.hand(.ended, moved: .zero, speed: Point(-1_000, 0)), in: runtime)
+        ring.hear(.hand(.ended, moved: .zero, speed: Point(x: -1_000, y: 0)), in: runtime)
         frames(runtime, clock, until: 6_000)
         XCTAssertEqual(handed.last ?? 0, 3, accuracy: 0.001, "the target nearest where the throw would end")
     }
@@ -41,14 +41,14 @@ final class HandHearingTests: XCTestCase {
 
         // One move, then a frame: what a frame works out.
         var before = handed.count
-        ring.hear(.hand(.changed, moved: Point(-3, 0), speed: nil), in: runtime)
+        ring.hear(.hand(.changed, moved: Point(x: -3, y: 0), speed: nil), in: runtime)
         frames(runtime, clock, until: 48)
         let once = handed.count - before
 
         // Ten moves before the next frame, short of halfway to the next card: none worked out until it, and then
         // no more than for one.
         before = handed.count
-        for _ in 0..<10 { ring.hear(.hand(.changed, moved: Point(-3, 0), speed: nil), in: runtime) }
+        for _ in 0..<10 { ring.hear(.hand(.changed, moved: Point(x: -3, y: 0), speed: nil), in: runtime) }
         XCTAssertEqual(handed.count, before, "worked out for none of them yet")
 
         frames(runtime, clock, until: 64)
@@ -62,7 +62,7 @@ final class HandHearingTests: XCTestCase {
         let (runtime, clock) = running()
         let ring = try ring(in: runtime)
 
-        ring.hear(.wheel(Point(-140, 0)), in: runtime)
+        ring.hear(.wheel(Point(x: -140, y: 0)), in: runtime)
         frames(runtime, clock, until: 64)
         XCTAssertTrue(runtime.handPace.isOpen, "a wheel moving is open")
         XCTAssertEqual(handed.last ?? 0, 1.4, accuracy: 0.001)
@@ -78,12 +78,12 @@ final class HandHearingTests: XCTestCase {
         let (runtime, clock) = running()
         let ring = try ring(in: runtime)
 
-        XCTAssertTrue(ring.hear(.notch(Point(-1, 0)), in: runtime))
+        XCTAssertTrue(ring.hear(.notch(Point(x: -1, y: 0)), in: runtime))
         frames(runtime, clock, until: 1_000)
         XCTAssertEqual(handed.last ?? 0, 1, accuracy: 0.001, "the next card")
 
-        ring.hear(.notch(Point(-1, 0)), in: runtime)
-        ring.hear(.notch(Point(-1, 0)), in: runtime)
+        ring.hear(.notch(Point(x: -1, y: 0)), in: runtime)
+        ring.hear(.notch(Point(x: -1, y: 0)), in: runtime)
         frames(runtime, clock, until: 2_000)
         XCTAssertEqual(handed.last ?? 0, 3, accuracy: 0.001, "a card a notch")
     }
@@ -96,7 +96,7 @@ final class HandHearingTests: XCTestCase {
             let ring = try ring(in: runtime)
 
             ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
-            ring.hear(.hand(.changed, moved: Point(140, 0), speed: nil), in: runtime)
+            ring.hear(.hand(.changed, moved: Point(x: 140, y: 0), speed: nil), in: runtime)
             frames(runtime, clock, until: 32)
 
             if mirrors {
@@ -113,8 +113,8 @@ final class HandHearingTests: XCTestCase {
         let (runtime, clock) = running(RightToLeftApplication(mirrors: true))
         let ring = try ring(in: runtime)
 
-        ring.hear(.hand(.began, moved: .zero, speed: nil, point: Point(295, 5)), in: runtime)
-        ring.hear(.hand(.changed, moved: Point(0, 30), speed: nil, point: Point(295, 35)), in: runtime)
+        ring.hear(.hand(.began, moved: .zero, speed: nil, point: Point(x: 295, y: 5)), in: runtime)
+        ring.hear(.hand(.changed, moved: Point(x: 0, y: 30), speed: nil, point: Point(x: 295, y: 35)), in: runtime)
         frames(runtime, clock, until: 64)
 
         let drag = try XCTUnwrap(dragged.first)
@@ -153,10 +153,10 @@ final class HandHearingTests: XCTestCase {
         let card = try XCTUnwrap(ring.first(type: .text))
         let size = LayoutSize(width: 10, height: 10)
 
-        for pressed in [ring, card] { pressed.hear(.press(.began, at: Point(5, 5), size: size, byFinger: true), in: runtime) }
+        for pressed in [ring, card] { pressed.hear(.press(.began, at: Point(x: 5, y: 5), size: size, byFinger: true), in: runtime) }
         ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
-        ring.hear(.hand(.changed, moved: Point(-140, 0), speed: nil), in: runtime)
-        for pressed in [ring, card] { pressed.hear(.press(.ended, at: Point(5, 5), size: size, byFinger: true), in: runtime) }
+        ring.hear(.hand(.changed, moved: Point(x: -140, y: 0), speed: nil), in: runtime)
+        for pressed in [ring, card] { pressed.hear(.press(.ended, at: Point(x: 5, y: 5), size: size, byFinger: true), in: runtime) }
         ring.hear(.hand(.ended, moved: .zero, speed: nil), in: runtime)
         frames(runtime, clock, until: 600)
 
@@ -171,11 +171,11 @@ final class HandHearingTests: XCTestCase {
         let card = try XCTUnwrap(ring.first(type: .text))
         let size = LayoutSize(width: 10, height: 10)
 
-        card.hear(.press(.began, at: Point(5, 5), size: size, byFinger: true), in: runtime)
+        card.hear(.press(.began, at: Point(x: 5, y: 5), size: size, byFinger: true), in: runtime)
         ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
         ring.hear(.hand(.changed, moved: .zero, speed: nil), in: runtime)
         ring.hear(.hand(.ended, moved: .zero, speed: nil), in: runtime)
-        card.hear(.press(.ended, at: Point(5, 5), size: size, byFinger: true), in: runtime)
+        card.hear(.press(.ended, at: Point(x: 5, y: 5), size: size, byFinger: true), in: runtime)
         frames(runtime, clock, until: 600)
 
         XCTAssertEqual(tapped, 1, "the hand moved nothing: the card's press taps")
@@ -211,7 +211,7 @@ private struct HandPage: View {
     var body: some View {
         MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)") } placements: { _, phase in
             handed.append(phase)
-            return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
+            return (0..<5).map { _ in Placement(Rect(x: 0, y: 0, width: 10, height: 10)) }
         }
         .interaction(
             .value($turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
@@ -229,7 +229,7 @@ private struct TappedHandPage: View {
 
     var body: some View {
         MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)").onTapped { tapped += 1 } } placements: { _, _ in
-            (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
+            (0..<5).map { _ in Placement(Rect(x: 0, y: 0, width: 10, height: 10)) }
         }
         .interaction(
             .value($turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
@@ -250,7 +250,7 @@ private struct RightToLeftPage: View {
     var body: some View {
         MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)") } placements: { _, phase in
             handed.append(phase)
-            return (0..<5).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
+            return (0..<5).map { Placement(Rect(x: Double($0) * 20, y: 0, width: 10, height: 10)) }
         }
         .interaction(
             .value($turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))

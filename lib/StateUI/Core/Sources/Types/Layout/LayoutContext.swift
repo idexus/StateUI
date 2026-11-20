@@ -5,7 +5,7 @@
 ///
 ///     placements: { context, turn in
 ///         context.subviews.indices.map { index in
-///             Placement(Rect(Double(index) * 90 - turn * 90, 0, 80, context.bounds.height))
+///             Placement(Rect(x: Double(index) * 90 - turn * 90, y: 0, width: 80, height: context.bounds.height))
 ///         }
 ///     }
 /// Design: docs/design/views/motion-layout.md#measuring-a-view

@@ -127,7 +127,7 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
         let behind = max(-step, 0)
 
         return Placement(
-            Rect(left, (room.height - height) / 2, width, height),
+            Rect(x: left, y: (room.height - height) / 2, width: width, height: height),
             transform: .scale(1 - min(behind, 3) * 0.04),
             opacity: min(max(1.6 - behind * 0.6, 0), 1) * min(max(3 - step, 0), 1),
             zIndex: index)

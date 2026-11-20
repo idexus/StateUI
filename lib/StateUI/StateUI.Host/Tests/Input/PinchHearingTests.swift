@@ -13,7 +13,7 @@ final class PinchHearingTests: XCTestCase {
     /// and the next pinch starts again at 1.
     func testAPinchIsToldFromItsStart() throws {
         let (runtime, box) = try running()
-        let middle = Point(0.5, 0.5)
+        let middle = Point(x: 0.5, y: 0.5)
 
         let steps: [(GesturePhase, Double)] = [(.began, 1), (.changed, 1.2), (.changed, 1.5), (.ended, 1), (.began, 1),
                                                (.changed, 2)]
@@ -27,7 +27,7 @@ final class PinchHearingTests: XCTestCase {
     /// end alone; the handler hears it begin first, so the size it held then is known.
     func testAPinchWhoseBeginningNoPlatformToldBeginsItself() throws {
         let (runtime, box) = try running()
-        let middle = Point(0.5, 0.5)
+        let middle = Point(x: 0.5, y: 0.5)
 
         for (phase, scale) in [(GesturePhase.changed, 1.02), (.ended, 1), (.changed, 1.5)] {
             box.hear(.pinch(phase, scale: scale, at: middle), in: runtime)

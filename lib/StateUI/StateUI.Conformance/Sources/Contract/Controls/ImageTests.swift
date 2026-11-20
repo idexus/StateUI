@@ -32,8 +32,8 @@
                 s.expect(frames.values.last.map(FrameReport.place), [0, 0, 4, 2], "the bytes' pixels")
                 // A host may draw the pixels a frame after it has read their size.
                 let image = try s.element("image")
-                try s.settle { try s.color(of: image, at: Point(2, 1)) != nil }
-                s.expect(try s.color(of: image, at: Point(2, 1)), shows: Color(red: 255, green: 0, blue: 0), "the bytes' color")
+                try s.settle { try s.color(of: image, at: Point(x: 2, y: 1)) != nil }
+                s.expect(try s.color(of: image, at: Point(x: 2, y: 1)), shows: Color(red: 255, green: 0, blue: 0), "the bytes' color")
             },
             ConformanceCase("anIconOfThePlatformsIsDrawn", proves: [
                 Covered(ImageContract.source),
@@ -44,7 +44,7 @@
                         .verticalAlignment(.start)
                 }
                 let image = try s.element("image")
-                let grid = stride(from: 1.0, to: 32, by: 2).flatMap { x in stride(from: 1.0, to: 32, by: 2).map { Point(x, $0) } }
+                let grid = stride(from: 1.0, to: 32, by: 2).flatMap { x in stride(from: 1.0, to: 32, by: 2).map { Point(x: x, y: $0) } }
                 try s.settle { try s.colors(of: image, at: grid).contains { $0 != nil } }
                 s.expect(try s.colors(of: image, at: grid).contains { $0 != nil }, true, "the platform's plus drawn")
             },
@@ -109,7 +109,7 @@
                 let image = try s.element("image")
                 s.settle { !frames.values.isEmpty }
 
-                s.expect(try s.color(of: image, at: Point(0, 0)), nil, "nothing drawn")
+                s.expect(try s.color(of: image, at: Point(x: 0, y: 0)), nil, "nothing drawn")
             },
             ConformanceCase("aPictureTheTreeChangesToOneTheApplicationDoesNotHaveTakesNoRoom", proves: [
                 Covered(ImageContract.source),

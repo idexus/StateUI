@@ -261,7 +261,7 @@ final class AppKitMirroredRecognizer: NSGestureRecognizer {
     private func said(_ phase: GesturePhase, at: Point) {
         guard let view else { return }
         let (width, height) = (Double(view.bounds.width), Double(view.bounds.height))
-        mirrored(phase, at: at, middle: Point(width / 2, height / 2))
+        mirrored(phase, at: at, middle: Point(x: width / 2, y: height / 2))
     }
 }
 

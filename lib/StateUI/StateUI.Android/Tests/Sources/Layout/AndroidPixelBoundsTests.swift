@@ -44,14 +44,14 @@ final class AndroidPixelBoundsTests: XCTestCase {
     }
 
     func testFramesRoundOutwardWithinTheirNativeBounds() {
-        let frame = AndroidPixels.frame(Rect(0.2, -1.25, 3.3, 2), density: 2.625)
+        let frame = AndroidPixels.frame(Rect(x: 0.2, y: -1.25, width: 3.3, height: 2), density: 2.625)
         XCTAssertEqual([frame.left, frame.top, frame.right, frame.bottom], [0, -4, 10, 2])
-        for rectangle in [Rect(0, 0, 1e100, 1), Rect(Double(Int32.max) - 1, 0, 4, 1), Rect(1e100, 0, 4, 1)] {
+        for rectangle in [Rect(x: 0, y: 0, width: 1e100, height: 1), Rect(x: Double(Int32.max) - 1, y: 0, width: 4, height: 1), Rect(x: 1e100, y: 0, width: 4, height: 1)] {
             let frame = AndroidPixels.frame(rectangle, density: 1)
             XCTAssertEqual(frame.right, frame.left, "an unrepresentable extent is empty")
             XCTAssertEqual(frame.bottom - frame.top, 1)
         }
-        let empty = AndroidPixels.frame(Rect(0, 0, .nan, .infinity), density: 2)
+        let empty = AndroidPixels.frame(Rect(x: 0, y: 0, width: .nan, height: .infinity), density: 2)
         XCTAssertEqual([empty.left, empty.top, empty.right, empty.bottom], [0, 0, 0, 0])
     }
 
@@ -85,7 +85,7 @@ final class AndroidPixelBoundsTests: XCTestCase {
                 Java.new(JavaAPI.view, JavaAPI.newView, .object(TestContext.context.reference))
             }
             for coordinate in [Int32.min, Int32.max, -4] {
-                view.layout(Rect(Double(coordinate) / view.density, 0, 0, 0))
+                view.layout(Rect(x: Double(coordinate) / view.density, y: 0, width: 0, height: 0))
                 XCTAssertEqual(Java.callInt(view.reference, JavaAPI.getLeft), coordinate)
                 XCTAssertEqual(Java.callInt(view.reference, JavaAPI.getRight), coordinate)
             }

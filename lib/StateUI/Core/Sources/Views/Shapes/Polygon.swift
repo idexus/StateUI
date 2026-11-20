@@ -3,7 +3,7 @@
 
 /// A closed outline through a list of points.
 ///
-///     Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])
+///     Polygon([Point(x: 20, y: 0), Point(x: 40, y: 40), Point(x: 0, y: 40)])
 ///         .fill(.steelBlue)
 ///
 /// The last point is joined back to the first,

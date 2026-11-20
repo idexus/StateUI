@@ -82,8 +82,8 @@ final class AppKitDrawnInputTests: XCTestCase {
         over.scaleX = -1
         for (drawing, own) in zip(drawings, [toAPoint, toALine, small, over]) { drawing.own = own }
 
-        XCTAssertNil(drawings[0].undrawn(Point(5, 5)), "a plane flattened to a point has no inverse")
-        XCTAssertNil(drawings[1].undrawn(Point(55, 5)), "nor one flattened to a line")
+        XCTAssertNil(drawings[0].undrawn(Point(x: 5, y: 5)), "a plane flattened to a point has no inverse")
+        XCTAssertNil(drawings[1].undrawn(Point(x: 55, y: 5)), "nor one flattened to a line")
         XCTAssertTrue(parent.hitTest(NSPoint(x: 5, y: 5)) === parent, "nothing of the flattened view lands there")
         XCTAssertTrue(parent.hitTest(NSPoint(x: 10, y: 10)) === parent, "not even at its point: it shows nothing")
         XCTAssertTrue(parent.hitTest(NSPoint(x: 55, y: 5)) === parent, "a view flattened to a line")

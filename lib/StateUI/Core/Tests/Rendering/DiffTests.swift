@@ -187,7 +187,7 @@ final class DiffTests: XCTestCase {
     func testAPlaceForAnotherLayoutIsSaid() {
         Renders().render(VStack {
             Text("row").gridRow(1)
-            Text("area").area(.proportional(Rect(0, 0, 1, 1)))
+            Text("area").area(.proportional(Rect(x: 0, y: 0, width: 1, height: 1)))
         }.node)
         Renders().render(Grid { Text("in a grid").gridColumn(1) }.node)
 

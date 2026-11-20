@@ -170,7 +170,7 @@ final class ElementReleaseTests: XCTestCase {
     /// The image of a state a FRAME FEED is written into.
     func testAFrameFeedGoesWithTheElement() {
         XCTAssertTrue(released { renders in
-            let room = State(Rect(0, 0, 0, 0))
+            let room = State(Rect(x: 0, y: 0, width: 0, height: 0))
 
             renders.render(stack([Held().frame(into: room.projectedValue).node], id: "root"))
             return room.storage.image ?? Carried()

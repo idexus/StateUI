@@ -44,8 +44,8 @@
                     let sheet = try s.element("sheet")
                     // A sheet still entering its window - the platform's presentation - is waited for, not read as
                     // unreachable.
-                    try s.settle { try s.reaches(sheet, at: Point(20, 20)) }
-                    return try s.reaches(sheet, at: Point(20, 20))
+                    try s.settle { try s.reaches(sheet, at: Point(x: 20, y: 20)) }
+                    return try s.reaches(sheet, at: Point(x: 20, y: 20))
                 }
 
                 // A sheet over the first page, taken away; the window arranged anew - a sidebar beside a stack -

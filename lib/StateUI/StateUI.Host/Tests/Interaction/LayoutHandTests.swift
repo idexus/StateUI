@@ -37,7 +37,7 @@ final class LayoutHandTests: XCTestCase {
         bench.laid(tree)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-40, 0))
+        bench.hand(.changed, moved: Point(x: -40, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 0.4, accuracy: 0.001, "where the hand holds it: left moves it on")
         XCTAssertEqual(phase.wrappedValue, 0.5, "0.4 is nearer 0.5 than 0.2")
         let held = try XCTUnwrap(bench.journey)
@@ -45,7 +45,7 @@ final class LayoutHandTests: XCTestCase {
         XCTAssertEqual(held.destination[0], 0.5, "bound for the snap named, not sent there")
         XCTAssertEqual(held.velocity[0], 0)
 
-        bench.hand(.changed, moved: Point(35, 0))
+        bench.hand(.changed, moved: Point(x: 35, y: 0))
         XCTAssertEqual(phase.wrappedValue, 0, "0.05 is nearest 0")
     }
 
@@ -60,9 +60,9 @@ final class LayoutHandTests: XCTestCase {
                 handed.phases.append(at)
                 // The view in front moves half the room's width a unit; the one behind it, a tenth as far.
                 return [
-                    Placement(Rect(-at * context.bounds.width / 10, 0, 10, 10)),
-                    Placement(Rect(-at * context.bounds.width / 2, 0, 10, 10), zIndex: 1),
-                    Placement(Rect(0, 0, 10, 10), zIndex: 2),
+                    Placement(Rect(x: -at * context.bounds.width / 10, y: 0, width: 10, height: 10)),
+                    Placement(Rect(x: -at * context.bounds.width / 2, y: 0, width: 10, height: 10), zIndex: 1),
+                    Placement(Rect(x: 0, y: 0, width: 10, height: 10), zIndex: 2),
                 ]
             }
             .interaction(
@@ -73,7 +73,7 @@ final class LayoutHandTests: XCTestCase {
         bench.laid(tree)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-150, 0))
+        bench.hand(.changed, moved: Point(x: -150, y: 0))
 
         XCTAssertEqual(handed.phases.last ?? 0, 1, accuracy: 0.001, "half the room's 300 is a unit")
     }
@@ -84,7 +84,7 @@ final class LayoutHandTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         func tree() -> Node {
             MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { context, at in
-                (0..<3).map { Placement(Rect((Double($0) - at) * context.bounds.width / 2, 0, 10, 10)) }
+                (0..<3).map { Placement(Rect(x: (Double($0) - at) * context.bounds.width / 2, y: 0, width: 10, height: 10)) }
             }
             .interaction(
                 .value(phase.projectedValue, input: .translation(.horizontal, unit: .frontItem)).reversed(true).range(0...2).snaps(.every(1))
@@ -94,8 +94,8 @@ final class LayoutHandTests: XCTestCase {
         bench.laid(tree, room: nil)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-80, 0))
-        bench.hand(.ended, velocity: Point(-2_000, 0))
+        bench.hand(.changed, moved: Point(x: -80, y: 0))
+        bench.hand(.ended, velocity: Point(x: -2_000, y: 0))
 
         XCTAssertEqual(phase.wrappedValue, 0, "no card named, none thrown to")
     }
@@ -132,7 +132,7 @@ final class LayoutHandTests: XCTestCase {
         bench.laid(tree)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-40, 0))
+        bench.hand(.changed, moved: Point(x: -40, y: 0))
         bench.hand(.ended)
         XCTAssertEqual(phase.wrappedValue, 0.5, "the nearest target")
 
@@ -153,9 +153,9 @@ final class LayoutHandTests: XCTestCase {
         bench.laid(tree)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-10, 0))
+        bench.hand(.changed, moved: Point(x: -10, y: 0))
         // 1500 points a second to the left is 15 units a second, which the throw carries 2 units on.
-        bench.hand(.ended, velocity: Point(-1_500, 0))
+        bench.hand(.ended, velocity: Point(x: -1_500, y: 0))
         XCTAssertEqual(phase.wrappedValue, 2, "0.1 and 2 on is nearest 2, named at once")
 
         let start = handed.phases.count
@@ -170,7 +170,7 @@ final class LayoutHandTests: XCTestCase {
                       "never faster than the hand let go")
 
         bench.hand(.began)
-        bench.hand(.ended, velocity: Point(-100_000, 0))
+        bench.hand(.ended, velocity: Point(x: -100_000, y: 0))
         XCTAssertEqual(phase.wrappedValue, 6, "the last target, however hard the throw")
     }
 
@@ -181,7 +181,7 @@ final class LayoutHandTests: XCTestCase {
             Renderer.shared.clearStates()
             let phase = State(wrappedValue: 0.0)
             func tree() -> Node {
-                MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+                MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(x: 0, y: 0, width: 10, height: 10))] }
                     .interaction(
                         .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...6).snaps(.every(1))
                             .release(.projected(throwing)))
@@ -190,8 +190,8 @@ final class LayoutHandTests: XCTestCase {
 
             bench.laid(tree)
             bench.hand(.began)
-            bench.hand(.changed, moved: Point(-10, 0))
-            bench.hand(.ended, velocity: Point(-300, 0))
+            bench.hand(.changed, moved: Point(x: -10, y: 0))
+            bench.hand(.ended, velocity: Point(x: -300, y: 0))
 
             XCTAssertEqual(phase.wrappedValue, 3, "3 units a second for a second: 0.1 and 3 on, \(throwing.kind)")
         }
@@ -207,9 +207,9 @@ final class LayoutHandTests: XCTestCase {
         bench.laid(tree)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-105, 0))
+        bench.hand(.changed, moved: Point(x: -105, y: 0))
         // 120 points a second carries the run 0.16 on: from 1.05 to 1.21, still nearest 1, behind the hand.
-        bench.hand(.ended, velocity: Point(-120, 0))
+        bench.hand(.ended, velocity: Point(x: -120, y: 0))
         XCTAssertEqual(phase.wrappedValue, 1, "the nearest")
 
         let start = handed.phases.count
@@ -228,18 +228,18 @@ final class LayoutHandTests: XCTestCase {
         bench.laid(tree)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(10, 0))
+        bench.hand(.changed, moved: Point(x: 10, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, -0.05, accuracy: 0.005, "half as far at first")
-        bench.hand(.changed, moved: Point(90, 0))
+        bench.hand(.changed, moved: Point(x: 90, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, -0.3, accuracy: 0.001, "a unit of the hand, less than half")
-        bench.hand(.changed, moved: Point(1_000, 0))
+        bench.hand(.changed, moved: Point(x: 1_000, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, -0.66, accuracy: 0.001, "eleven, short of three quarters")
 
-        bench.hand(.changed, moved: Point(-1_100, 0))
+        bench.hand(.changed, moved: Point(x: -1_100, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 0, accuracy: 0.001, "back the way it came, back at the end")
 
         // From the first target across the last: a whole unit to the end, then less and less of what is left.
-        bench.hand(.changed, moved: Point(-160, 0))
+        bench.hand(.changed, moved: Point(x: -160, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 1.2143, accuracy: 0.001, "only the way past the end gives")
 
         bench.hand(.ended)
@@ -254,7 +254,7 @@ final class LayoutHandTests: XCTestCase {
         func tree() -> Node {
             MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 handed.phases.append(at)
-                return [Placement(Rect(0, 0, 10, 10))]
+                return [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
             }
             .interaction(
                 .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...7).snaps(.every(1)).periodic(true)
@@ -265,7 +265,7 @@ final class LayoutHandTests: XCTestCase {
         bench.laid(tree)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-120, 0))
+        bench.hand(.changed, moved: Point(x: -120, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 7.2, accuracy: 0.001, "on past the last card, at full speed")
         XCTAssertEqual(phase.wrappedValue, 7, "the first card, a turn on")
 
@@ -279,7 +279,7 @@ final class LayoutHandTests: XCTestCase {
     ) -> Node {
         MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
             handed?.phases.append(at)
-            return [Placement(Rect(0, 0, 10, 10))]
+            return [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
         }
         .interaction(
             .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)
@@ -295,19 +295,19 @@ final class LayoutHandTests: XCTestCase {
 
         bench.laid(tree)
 
-        bench.step(Point(-1, 0))
+        bench.step(Point(x: -1, y: 0))
         XCTAssertEqual(phase.wrappedValue, 0.2, "a notch moving what is under the hand to the left steps it on")
         let sent = try XCTUnwrap(bench.journey)
         XCTAssertEqual(sent.destination[0], 0.2, accuracy: 0.001, "a journey of the phase")
         XCTAssertEqual(sent.value[0], 0, accuracy: 0.001, "from where it stood")
 
-        bench.step(Point(-2, 0))
+        bench.step(Point(x: -2, y: 0))
         XCTAssertEqual(phase.wrappedValue, 1, "two on from where it is going")
 
-        bench.step(Point(-1, 0))
+        bench.step(Point(x: -1, y: 0))
         XCTAssertEqual(phase.wrappedValue, 1, "held to the last")
 
-        bench.step(Point(1, 0))
+        bench.step(Point(x: 1, y: 0))
         XCTAssertEqual(phase.wrappedValue, 0.5, "and back")
     }
 
@@ -315,7 +315,7 @@ final class LayoutHandTests: XCTestCase {
     func testANotchStepsARunThatComesRoundATurnOn() throws {
         let phase = State(wrappedValue: 3.0)
         func tree() -> Node {
-            MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+            MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(x: 0, y: 0, width: 10, height: 10))] }
                 .interaction(
                     .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1)).periodic(true)
                         .release(.projected(.eased(.milliseconds(400)))))
@@ -323,10 +323,10 @@ final class LayoutHandTests: XCTestCase {
         }
         bench.laid(tree)
 
-        bench.step(Point(-1, 0))
+        bench.step(Point(x: -1, y: 0))
         XCTAssertEqual(phase.wrappedValue, 4, "a turn on, the first again")
 
-        bench.step(Point(2, 0))
+        bench.step(Point(x: 2, y: 0))
         XCTAssertEqual(phase.wrappedValue, 2, "back across the turn")
     }
 
@@ -337,7 +337,7 @@ final class LayoutHandTests: XCTestCase {
         bench.laid(tree)
 
         bench.hand(.began)
-        bench.step(Point(-1, 0))
+        bench.step(Point(x: -1, y: 0))
 
         XCTAssertEqual(phase.wrappedValue, 0)
     }
@@ -349,10 +349,10 @@ final class LayoutHandTests: XCTestCase {
         func tree() -> Node { handTree(phase, range: 0...1.5, snaps: nil) }
         bench.laid(tree)
 
-        bench.step(Point(-1, 0))
+        bench.step(Point(x: -1, y: 0))
         XCTAssertEqual(phase.wrappedValue, 1, accuracy: 0.001, "a hundred points, a unit")
 
-        bench.step(Point(-1, 0))
+        bench.step(Point(x: -1, y: 0))
         XCTAssertEqual(phase.wrappedValue, 1.5, accuracy: 0.001, "held to the end")
     }
 

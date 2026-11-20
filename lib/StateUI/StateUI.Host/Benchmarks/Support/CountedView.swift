@@ -62,7 +62,7 @@ final class CountedView: NativeElement, FrameReporter {
 
     func reportFrame() {
         element.reportFrame(
-            MountedElement.frameNumbers(place: bench.room, corner: Point(0, 0), content: Point(0, 0)),
+            MountedElement.frameNumbers(place: bench.room, corner: Point(x: 0, y: 0), content: Point(x: 0, y: 0)),
             in: bench.runtime)
     }
 

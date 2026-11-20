@@ -144,7 +144,7 @@ extension MountedElement {
             let heard = handReading.notches(notches, way: handWay)
             if let steps = heard.steps {
                 let along = alongRun(steps)
-                runtime.interactions.notches(Point(along[0], along[1]), on: self)
+                runtime.interactions.notches(Point(x: along[0], y: along[1]), on: self)
                 runtime.displayCycle.drain(now: runtime.clock.now())
             }
             return heard.taken
@@ -184,7 +184,7 @@ extension MountedElement {
         if phase == .began { pinchSpeed = SpeedReading() }
         let before = phase == .began ? 1 : pinchFromStart ?? 1
         let spread = before * scale
-        pinchSpeed.moved(Point(spread - before, 0), at: now)
+        pinchSpeed.moved(Point(x: spread - before, y: 0), at: now)
         let speed = phase == .cancelled ? 0 : pinchSpeed.speed(at: now).x
         pinchFromStart = phase == .ended || phase == .cancelled ? nil : spread
         send(.pinchUpdated, [.enumeration(phase.rawValue), .number(spread), .numbers([at.x, at.y]), .number(speed)],
@@ -199,7 +199,7 @@ extension MountedElement {
         let now = runtime.clock.now()
         if phase == .began { rotationSpeed = SpeedReading() }
         let angle = (phase == .began ? 0 : rotationFromStart ?? 0) + degrees
-        rotationSpeed.moved(Point(degrees, 0), at: now)
+        rotationSpeed.moved(Point(x: degrees, y: 0), at: now)
         let speed = phase == .cancelled ? 0 : rotationSpeed.speed(at: now).x
         rotationFromStart = phase == .ended || phase == .cancelled ? nil : angle
         send(.rotationUpdated, [.enumeration(phase.rawValue), .number(angle), .number(speed)], in: runtime)
@@ -226,7 +226,7 @@ extension MountedElement {
     /// one stream; the hand stays, their middle standing still.
     /// Design: docs/design/host/runtime.md#two-fingers-from-one-pointer
     private func mirrored(_ phase: GesturePhase, at: Point, middle: Point, in runtime: HostRuntime) {
-        let share = Point(0.5, 0.5)
+        let share = Point(x: 0.5, y: 0.5)
         switch phase {
         case .began:
             mirroredFingers.lifted()
@@ -298,7 +298,7 @@ extension MountedElement {
         for report in fingers {
             runtime.interactions.fingers(
                 report.phase, scale: report.scale, degrees: report.degrees * turn,
-                speed: Point(report.speed.x, report.speed.y * turn), on: self)
+                speed: Point(x: report.speed.x, y: report.speed.y * turn), on: self)
         }
     }
 
@@ -311,7 +311,7 @@ extension MountedElement {
         for report in reports {
             if report.phase == .changed, let last = handOutbox.last, last.phase == .changed, last.item == report.item {
                 handOutbox[handOutbox.count - 1] = HandReading.Report(
-                    .changed, moved: Point(last.moved.x + report.moved.x, last.moved.y + report.moved.y),
+                    .changed, moved: Point(x: last.moved.x + report.moved.x, y: last.moved.y + report.moved.y),
                     speed: report.speed, item: report.item, at: report.at, still: max(last.still, report.still))
             } else {
                 handOutbox.append(report)
@@ -335,7 +335,7 @@ extension MountedElement {
             }
             let (moved, speed) = (alongRun(report.moved), alongRun(report.speed))
             runtime.interactions.hand(
-                report.phase, moved: Point(moved[0], moved[1]), speed: Point(speed[0], speed[1]), on: self)
+                report.phase, moved: Point(x: moved[0], y: moved[1]), speed: Point(x: speed[0], y: speed[1]), on: self)
         }
     }
 
@@ -407,7 +407,7 @@ extension MountedElement {
         if phase == .began { (panFromStart, panSpeed) = (Point(x: 0, y: 0), SpeedReading()) }
         panUnderWay = !Self.ends(phase)
         if phase == .changed {
-            panSpeed.moved(Point(x - panFromStart.x, y - panFromStart.y), at: now)
+            panSpeed.moved(Point(x: x - panFromStart.x, y: y - panFromStart.y), at: now)
             panFromStart = Point(x: x, y: y)
         }
         let speed = phase == .began || phase == .cancelled ? Point(x: 0, y: 0) : panSpeed.speed(at: now)

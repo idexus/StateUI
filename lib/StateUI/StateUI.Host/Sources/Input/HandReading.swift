@@ -209,7 +209,7 @@
 
     /// The hand holding a view moved it by `moved` at `time`, `now` on the frames' clock.
     private mutating func itemDragUpdated(_ moved: Point, at time: Double, now: Double) -> [Report] {
-        itemAt = Point(itemAt.x + moved.x, itemAt.y + moved.y)
+        itemAt = Point(x: itemAt.x + moved.x, y: itemAt.y + moved.y)
         itemMovedAt = now
         stood = 0
         return self.moved(moved, at: time).map { $0.holding(at: itemAt) }
@@ -231,9 +231,9 @@
         guard let way, Self.claims(notches, way: way) else { return (false, nil) }
 
         turned = Point(
-            turned.x + (way == .vertical ? 0 : notches.x), turned.y + (way == .horizontal ? 0 : notches.y))
-        let whole = Point(turned.x.rounded(.towardZero), turned.y.rounded(.towardZero))
-        turned = Point(turned.x - whole.x, turned.y - whole.y)
+            x: turned.x + (way == .vertical ? 0 : notches.x), y: turned.y + (way == .horizontal ? 0 : notches.y))
+        let whole = Point(x: turned.x.rounded(.towardZero), y: turned.y.rounded(.towardZero))
+        turned = Point(x: turned.x - whole.x, y: turned.y - whole.y)
         guard whole != .zero else { return (true, nil) }
 
         return (true, whole)

@@ -39,15 +39,15 @@ final class GeometryReaderTests: XCTestCase {
     }
 
     func testTheParentSpaceIsTheFrameAsTheParentPlacedIt() {
-        XCTAssertEqual(frame(in: .parent), Rect(10, 20, 300, 400))
+        XCTAssertEqual(frame(in: .parent), Rect(x: 10, y: 20, width: 300, height: 400))
     }
 
     func testTheGlobalSpaceMovesTheOriginToTheWindow() {
-        XCTAssertEqual(frame(in: .global), Rect(110, 220, 300, 400))
+        XCTAssertEqual(frame(in: .global), Rect(x: 110, y: 220, width: 300, height: 400))
     }
 
     func testTheSafeAreaSpaceMovesItPastTheInsets() {
-        XCTAssertEqual(frame(in: .safeArea), Rect(110, 176, 300, 400))
+        XCTAssertEqual(frame(in: .safeArea), Rect(x: 110, y: 176, width: 300, height: 400))
     }
 
     func testTheDefaultSpaceIsTheParent() {
@@ -61,7 +61,7 @@ final class GeometryReaderTests: XCTestCase {
 
         renders.fire(patch.events?[.layoutFrameChanged] ?? -1, with: payload)
 
-        XCTAssertEqual(heard.frames.last, Rect(10, 20, 300, 400))
+        XCTAssertEqual(heard.frames.last, Rect(x: 10, y: 20, width: 300, height: 400))
     }
 
     /// Two handlers on one view hear one report each, in writing order -
@@ -78,7 +78,7 @@ final class GeometryReaderTests: XCTestCase {
 
         renders.fire(patch.events?[.layoutFrameChanged] ?? -1, with: payload)
 
-        XCTAssertEqual(heard.frames, [Rect(10, 20, 300, 400), Rect(110, 220, 300, 400)])
+        XCTAssertEqual(heard.frames, [Rect(x: 10, y: 20, width: 300, height: 400), Rect(x: 110, y: 220, width: 300, height: 400)])
     }
 
     /// A scroll moves the window origin and nothing else - the report goes
@@ -102,9 +102,9 @@ final class GeometryReaderTests: XCTestCase {
         // What a scroll sends: the same parent frame, a moved window origin.
         renders.fire(id, with: [.numbers([10, 20, 300, 400, 110, 470, 110, 426])])
 
-        XCTAssertEqual(parents.frames, [Rect(10, 20, 300, 400)],
+        XCTAssertEqual(parents.frames, [Rect(x: 10, y: 20, width: 300, height: 400)],
             "the parent-space handler heard a scroll that never changed its answer")
-        XCTAssertEqual(windows.frames, [Rect(110, 220, 300, 400), Rect(110, 470, 300, 400)])
+        XCTAssertEqual(windows.frames, [Rect(x: 110, y: 220, width: 300, height: 400), Rect(x: 110, y: 470, width: 300, height: 400)])
     }
 
     // MARK: - The stage
@@ -123,11 +123,11 @@ final class GeometryReaderTests: XCTestCase {
                 .node)
 
         renders.fire(patch.events?[.layoutFrameChanged] ?? -1, with: payload)
-        XCTAssertEqual(placed.frames, [Rect(10, 20, 300, 400)])
+        XCTAssertEqual(placed.frames, [Rect(x: 10, y: 20, width: 300, height: 400)])
         XCTAssertTrue(drawn.frames.isEmpty, "the layout's frame reached the presentation's handler")
 
         renders.fire(patch.events?[.presentationFrameChanged] ?? -1, with: [.numbers([14, 20, 300, 400, 114, 220, 114, 176])])
-        XCTAssertEqual(drawn.frames, [Rect(14, 20, 300, 400)])
+        XCTAssertEqual(drawn.frames, [Rect(x: 14, y: 20, width: 300, height: 400)])
         XCTAssertEqual(placed.frames.count, 1, "a step of the way is no frame of the layout's")
     }
 

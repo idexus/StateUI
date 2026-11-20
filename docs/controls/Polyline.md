@@ -5,7 +5,7 @@
 An open outline through a list of points - a chart line, a signature, a zigzag.
 
 ```swift
-Polyline([Point(0, 30), Point(20, 5), Point(40, 25), Point(60, 0)])
+Polyline([Point(x: 0, y: 30), Point(x: 20, y: 5), Point(x: 40, y: 25), Point(x: 60, y: 0)])
     .stroke(.cornflowerBlue)
     .lineWidth(2)
 ```

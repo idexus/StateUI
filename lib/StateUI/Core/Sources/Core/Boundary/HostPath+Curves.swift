@@ -56,8 +56,8 @@ extension HostPath {
     /// Design: docs/design/views/controls.md#canvas-and-path
     public var arcsAsCubics: [HostCurveCommand] {
         var drawn: [HostCurveCommand] = []
-        var current = Point(0, 0)
-        var start = Point(0, 0)
+        var current = Point(x: 0, y: 0)
+        var start = Point(x: 0, y: 0)
 
         for command in commands {
             switch command {
@@ -126,8 +126,8 @@ extension HostPath {
         let centerX = side * rx * alongV
         let centerY = side * -ry * alongU
         let center = Point(
-            cosine * centerX - sine * centerY + (start.x + end.x) / 2,
-            sine * centerX + cosine * centerY + (start.y + end.y) / 2)
+            x: cosine * centerX - sine * centerY + (start.x + end.x) / 2,
+            y: sine * centerX + cosine * centerY + (start.y + end.y) / 2)
 
         func turn(_ fromX: Double, _ fromY: Double, _ toX: Double, _ toY: Double) -> Double {
             atan2(fromX * toY - fromY * toX, fromX * toX + fromY * toY)
@@ -143,11 +143,11 @@ extension HostPath {
 
         func point(_ at: Double) -> Point {
             Point(
-                center.x + rx * cos(at) * cosine - ry * sin(at) * sine,
-                center.y + rx * cos(at) * sine + ry * sin(at) * cosine)
+                x: center.x + rx * cos(at) * cosine - ry * sin(at) * sine,
+                y: center.y + rx * cos(at) * sine + ry * sin(at) * cosine)
         }
         func slope(_ at: Double) -> Point {
-            Point(-rx * sin(at) * cosine - ry * cos(at) * sine, -rx * sin(at) * sine + ry * cos(at) * cosine)
+            Point(x: -rx * sin(at) * cosine - ry * cos(at) * sine, y: -rx * sin(at) * sine + ry * cos(at) * cosine)
         }
 
         let count = max(1, Int((abs(delta) / (.pi / 2)).rounded(.up)))
@@ -161,8 +161,8 @@ extension HostPath {
             let b = index == count - 1 ? end : point(to)
             let (outgoing, incoming) = (slope(from), slope(to))
             segments.append(.cubic(
-                control1: Point(a.x + reachOut * outgoing.x, a.y + reachOut * outgoing.y),
-                control2: Point(b.x - reachOut * incoming.x, b.y - reachOut * incoming.y),
+                control1: Point(x: a.x + reachOut * outgoing.x, y: a.y + reachOut * outgoing.y),
+                control2: Point(x: b.x - reachOut * incoming.x, y: b.y - reachOut * incoming.y),
                 end: b))
             from = to
         }

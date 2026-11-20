@@ -17,7 +17,7 @@
     /// the two fingers spread - a scale - and turned, in degrees clockwise, since the last time; nil as they first
     /// stand, or with the press on the middle.
     public mutating func moved(_ point: Point, about middle: Point) -> (scale: Double, degrees: Double)? {
-        fingers.moved(point, Point(2 * middle.x - point.x, 2 * middle.y - point.y))
+        fingers.moved(point, Point(x: 2 * middle.x - point.x, y: 2 * middle.y - point.y))
     }
 
     /// The press lifted: the next begins afresh.

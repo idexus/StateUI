@@ -30,10 +30,10 @@
                 }
                 let canvas = try s.element("canvas")
 
-                try s.settle { try s.shows(.red, on: canvas, at: Point(10, 20)) }
-                s.expect(try s.color(of: canvas, at: Point(10, 20)), shows: .red, "the first fill")
-                s.expect(try s.color(of: canvas, at: Point(60, 20)), shows: .blue, "the later fill over it")
-                s.expect(try s.color(of: canvas, at: Point(95, 20)), nil, "nothing past both")
+                try s.settle { try s.shows(.red, on: canvas, at: Point(x: 10, y: 20)) }
+                s.expect(try s.color(of: canvas, at: Point(x: 10, y: 20)), shows: .red, "the first fill")
+                s.expect(try s.color(of: canvas, at: Point(x: 60, y: 20)), shows: .blue, "the later fill over it")
+                s.expect(try s.color(of: canvas, at: Point(x: 95, y: 20)), nil, "nothing past both")
             },
             ConformanceCase("aWholeTurnFillsTheWholeOval", proves: [Covered(CanvasContract.drawing)]) { s in
                 s.start {
@@ -52,11 +52,11 @@
                 }
                 let canvas = try s.element("canvas")
 
-                try s.settle { try s.shows(.red, on: canvas, at: Point(20, 20)) }
-                for point in [Point(20, 20), Point(20, 4), Point(4, 20), Point(70, 20), Point(70, 36)] {
+                try s.settle { try s.shows(.red, on: canvas, at: Point(x: 20, y: 20)) }
+                for point in [Point(x: 20, y: 20), Point(x: 20, y: 4), Point(x: 4, y: 20), Point(x: 70, y: 20), Point(x: 70, y: 36)] {
                     s.expect(try s.color(of: canvas, at: point), shows: .red, "a whole turn, at \(point.x), \(point.y)")
                 }
-                s.expect(try s.color(of: canvas, at: Point(2, 2)), nil, "the oval's corner stands empty")
+                s.expect(try s.color(of: canvas, at: Point(x: 2, y: 2)), nil, "the oval's corner stands empty")
             },
             ConformanceCase("aDrawingTheTreeChangesIsDrawnAgain", proves: [
                 Covered(CanvasContract.drawing),
@@ -75,11 +75,11 @@
                     .verticalAlignment(.start)
                 }
                 let canvas = try s.element("canvas")
-                try s.settle { try s.shows(.red, on: canvas, at: Point(20, 20)) }
+                try s.settle { try s.shows(.red, on: canvas, at: Point(x: 20, y: 20)) }
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.shows(.blue, on: canvas, at: Point(20, 20)) }
-                s.expect(try s.color(of: canvas, at: Point(20, 20)), shows: .blue)
+                try s.settle { try s.shows(.blue, on: canvas, at: Point(x: 20, y: 20)) }
+                s.expect(try s.color(of: canvas, at: Point(x: 20, y: 20)), shows: .blue)
             },
             ConformanceCase("aDrawingTheTreeEmptiesLeavesTheCanvasBare", proves: [
                 Covered(CanvasContract.drawing),
@@ -100,11 +100,11 @@
                     .verticalAlignment(.start)
                 }
                 let canvas = try s.element("canvas")
-                try s.settle { try s.shows(.red, on: canvas, at: Point(20, 20)) }
+                try s.settle { try s.shows(.red, on: canvas, at: Point(x: 20, y: 20)) }
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.color(of: canvas, at: Point(20, 20)) == nil }
-                s.expect(try s.color(of: canvas, at: Point(20, 20)), nil, "a drawing of nothing leaves nothing drawn")
+                try s.settle { try s.color(of: canvas, at: Point(x: 20, y: 20)) == nil }
+                s.expect(try s.color(of: canvas, at: Point(x: 20, y: 20)), nil, "a drawing of nothing leaves nothing drawn")
             },
         ]
     }

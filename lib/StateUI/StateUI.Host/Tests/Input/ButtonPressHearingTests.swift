@@ -14,14 +14,14 @@ final class ButtonPressHearingTests: XCTestCase {
     func testAPressLetGoOverTheViewTapsAndLightsItWhileOver() throws {
         let (runtime, row) = try running()
 
-        row.hear(.press(.began, at: Point(50, 20), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.began, at: Point(x: 50, y: 20), size: size, byFinger: true), in: runtime)
         settle(runtime)
         XCTAssertEqual(states, ["Pressed"], "lit as it is pressed")
-        row.hear(.press(.changed, at: Point(50, 90), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.changed, at: Point(x: 50, y: 90), size: size, byFinger: true), in: runtime)
         settle(runtime)
-        row.hear(.press(.changed, at: Point(50, 30), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.changed, at: Point(x: 50, y: 30), size: size, byFinger: true), in: runtime)
         settle(runtime)
-        row.hear(.press(.ended, at: Point(50, 30), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.ended, at: Point(x: 50, y: 30), size: size, byFinger: true), in: runtime)
         settle(runtime)
 
         XCTAssertEqual(states, ["Pressed", "Normal", "Pressed", "Normal"], "out as it leaves, lit as it comes back")
@@ -31,9 +31,9 @@ final class ButtonPressHearingTests: XCTestCase {
     func testAPressLetGoAwayTapsNothing() throws {
         let (runtime, row) = try running()
 
-        row.hear(.press(.began, at: Point(50, 20), size: size, byFinger: true), in: runtime)
-        row.hear(.press(.changed, at: Point(50, 90), size: size, byFinger: true), in: runtime)
-        row.hear(.press(.ended, at: Point(50, 90), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.began, at: Point(x: 50, y: 20), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.changed, at: Point(x: 50, y: 90), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.ended, at: Point(x: 50, y: 90), size: size, byFinger: true), in: runtime)
         settle(runtime)
 
         XCTAssertEqual(taps, 0)
@@ -43,9 +43,9 @@ final class ButtonPressHearingTests: XCTestCase {
     func testAHoldTakesThePress() throws {
         let (runtime, row) = try running()
 
-        row.hear(.press(.began, at: Point(50, 20), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.began, at: Point(x: 50, y: 20), size: size, byFinger: true), in: runtime)
         row.hear(.hold, in: runtime)
-        row.hear(.press(.ended, at: Point(50, 20), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.ended, at: Point(x: 50, y: 20), size: size, byFinger: true), in: runtime)
         settle(runtime)
 
         XCTAssertEqual(taps, 0, "a held press is no tap")
@@ -59,24 +59,24 @@ final class ButtonPressHearingTests: XCTestCase {
         let (runtime, row) = try running(ScrolledRowApplication())
         let now = runtime.clock.now()
 
-        row.hear(.press(.began, at: Point(50, 20), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.began, at: Point(x: 50, y: 20), size: size, byFinger: true), in: runtime)
         settle(runtime)
         XCTAssertEqual(states, [], "not lit at once")
         runtime.handPace.pace(now: now + ButtonPress.scrollerWait, in: runtime)
         settle(runtime)
         XCTAssertEqual(states, ["Pressed"], "lit once it stood")
-        row.hear(.press(.ended, at: Point(50, 20), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.ended, at: Point(x: 50, y: 20), size: size, byFinger: true), in: runtime)
         settle(runtime)
         XCTAssertEqual(taps, 1)
 
         states = []
-        row.hear(.press(.began, at: Point(50, 20), size: size, byFinger: true), in: runtime)
-        row.hear(.press(.cancelled, at: Point(50, 20), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.began, at: Point(x: 50, y: 20), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.cancelled, at: Point(x: 50, y: 20), size: size, byFinger: true), in: runtime)
         runtime.handPace.pace(now: now + 1, in: runtime)
         settle(runtime)
         XCTAssertEqual(states, [], "a scroll took it before it lit")
 
-        row.hear(.press(.began, at: Point(50, 20), size: size, byFinger: false), in: runtime)
+        row.hear(.press(.began, at: Point(x: 50, y: 20), size: size, byFinger: false), in: runtime)
         settle(runtime)
         XCTAssertEqual(states, ["Pressed"], "a mouse's press lights at once")
     }

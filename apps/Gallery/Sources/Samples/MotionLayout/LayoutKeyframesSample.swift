@@ -122,9 +122,9 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
             let angle = Double(index) / Double(Self.cards.count) * 2 * .pi
             return Placement(
                 Rect(
-                    room.width / 2 + sin(angle) * radius - width / 2,
-                    room.height / 2 - cos(angle) * radius - height / 2,
-                    width, height),
+                    x: room.width / 2 + sin(angle) * radius - width / 2,
+                    y: room.height / 2 - cos(angle) * radius - height / 2,
+                    width: width, height: height),
                 transform: .scale(0.62))
         }
     }
@@ -136,9 +136,9 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
         return Self.cards.indices.map { index in
             let (row, column) = index.quotientAndRemainder(dividingBy: 3)
             return Placement(Rect(
-                room.width / 3 * (Double(column) + 0.5) - width / 2,
-                room.height / 3 * (Double(row) + 0.5) - height / 2,
-                width, height))
+                x: room.width / 3 * (Double(column) + 0.5) - width / 2,
+                y: room.height / 3 * (Double(row) + 0.5) - height / 2,
+                width: width, height: height))
         }
     }
 
@@ -149,7 +149,7 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
         return Self.cards.indices.map { index in
             let step = Double(index) - Double(Self.cards.count - 1) / 2
             return Placement(
-                Rect(room.width / 2 - width / 2 + step * 3, room.height / 2 - height / 2 - step * 2, width, height),
+                Rect(x: room.width / 2 - width / 2 + step * 3, y: room.height / 2 - height / 2 - step * 2, width: width, height: height),
                 transform: .rotate(step * 4).scale(1.1),
                 zIndex: index)
         }

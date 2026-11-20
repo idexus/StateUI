@@ -233,7 +233,7 @@ final class MotionTests: XCTestCase {
 
         func row(_ y: Double, _ opacity: Double) -> Node {
             ZStack { Text("x") }
-                .area(.absolute(Rect(0, y, 1, 40)))
+                .area(.absolute(Rect(x: 0, y: y, width: 1, height: 40)))
                 .opacity(opacity)
                 .id("row")
                 .node
@@ -443,7 +443,7 @@ final class MotionTests: XCTestCase {
     /// feed, at either stage, on the layout, on the view itself or on a view beside it - travels as the same
     /// change does where nothing is read.
     func testAFrameReadChangesNoMotion() {
-        let fed = State(wrappedValue: Rect(0, 0, 0, 0))
+        let fed = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
         let rooms: [(String, (Double) -> Node)] = [
             ("nothing read", { width in
                 VStack { ZStack { Text("x") }.width(width).id("held") }.id("room").node

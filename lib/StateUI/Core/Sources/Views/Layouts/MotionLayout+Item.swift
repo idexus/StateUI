@@ -91,7 +91,7 @@ extension MotionLayout.Run {
             slots.first { $0.identity == under.0 }?.item[keyPath: path]
         }
         let drag = ItemDrag(
-            phase: gesture, id: slot.item[keyPath: path], at: hand.at, room: Rect(0, 0, room.width, room.height),
+            phase: gesture, id: slot.item[keyPath: path], at: hand.at, room: Rect(x: 0, y: 0, width: room.width, height: room.height),
             still: .milliseconds(still), velocity: velocity, over: over)
         states.drags.starting(dragged.map { $0.given(drag) })()
     }
@@ -102,7 +102,7 @@ extension MotionLayout.Run {
         let memory = states.shown.wrappedValue
         guard let parameters = memory.parameters else { return memory.poses }
 
-        let poses = pose(in: Rect(0, 0, memory.room.width, memory.room.height), at: parameters, from: memory.from ?? parameters)
+        let poses = pose(in: Rect(x: 0, y: 0, width: memory.room.width, height: memory.room.height), at: parameters, from: memory.from ?? parameters)
         return Dictionary(zip(slots.map(\.identity), poses), uniquingKeysWith: { first, _ in first })
     }
 

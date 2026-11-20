@@ -281,8 +281,8 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = try await Aim(TextField.self).focus()"),
         Road(
             name: "a fill inside a line",
-            closed: "_ = Line(from: Point(0, 0), to: Point(40, 0)).fill(.red)",
-            open: "_ = Polyline([Point(0, 0), Point(40, 0)]).fill(.red)"),
+            closed: "_ = Line(from: Point(x: 0, y: 0), to: Point(x: 40, y: 0)).fill(.red)",
+            open: "_ = Polyline([Point(x: 0, y: 0), Point(x: 40, y: 0)]).fill(.red)"),
         Road(
             name: "a corner's join on an ellipse",
             closed: "_ = Ellipse().lineJoin(.round)",

@@ -25,11 +25,11 @@
                 }
                 let button = try s.element("button")
 
-                try s.perform(.pressDown(at: Point(60, 20)), on: button)
+                try s.perform(.pressDown(at: Point(x: 60, y: 20)), on: button)
                 s.settle { heard.values == ["pressed"] }
                 s.expect(heard.values, ["pressed"], "heard as it goes down, before it is let go")
 
-                try s.perform(.lift(at: Point(60, 20)), on: button)
+                try s.perform(.lift(at: Point(x: 60, y: 20)), on: button)
                 s.settle { heard.values.count == 2 }
                 s.expect(heard.values, ["pressed", "released"])
             },
@@ -48,11 +48,11 @@
                 }
                 let slider = try s.element("slider")
 
-                try s.perform(.pressDown(at: Point(100, 10)), on: slider)
+                try s.perform(.pressDown(at: Point(x: 100, y: 10)), on: slider)
                 s.settle { heard.values == ["started"] }
                 s.expect(heard.values, ["started"], "heard as it starts, before it ends")
-                try s.perform(.drag(to: Point(150, 10)), on: slider)
-                try s.perform(.lift(at: Point(150, 10)), on: slider)
+                try s.perform(.drag(to: Point(x: 150, y: 10)), on: slider)
+                try s.perform(.lift(at: Point(x: 150, y: 10)), on: slider)
                 s.settle { heard.values.count == 2 }
                 s.expect(heard.values, ["started", "completed"])
             },
@@ -70,11 +70,11 @@
             let background = { try s.held(BackgroundElementContract.background, on: button) }
             try s.settle { try background() == .color(.steelBlue) }
 
-            try s.perform(.pressDown(at: Point(8, 8)), on: button)
+            try s.perform(.pressDown(at: Point(x: 8, y: 8)), on: button)
             try s.settle { try background() == .color(.firebrick) }
             s.expect(try background(), .color(.firebrick), "its pressed background while the press holds")
 
-            try s.perform(.lift(at: Point(8, 8)), on: button)
+            try s.perform(.lift(at: Point(x: 8, y: 8)), on: button)
             try s.settle { try background() == .color(.steelBlue) }
             s.expect(try background(), .color(.steelBlue), "its own again")
         }

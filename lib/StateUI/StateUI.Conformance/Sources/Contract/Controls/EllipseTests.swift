@@ -23,10 +23,10 @@
                 }.horizontalAlignment(.start) }
                 let shape = try s.element("shape")
 
-                try s.settle { try s.shows(.red, on: shape, at: Point(50, 30)) }
-                s.expect(try s.color(of: shape, at: Point(50, 30)), shows: .red, "its middle")
-                s.expect(try s.color(of: shape, at: Point(5, 30)), shows: .red, "its left, inside the curve")
-                s.expect(try s.color(of: shape, at: Point(3, 3)), nil, "its corner, beyond the curve")
+                try s.settle { try s.shows(.red, on: shape, at: Point(x: 50, y: 30)) }
+                s.expect(try s.color(of: shape, at: Point(x: 50, y: 30)), shows: .red, "its middle")
+                s.expect(try s.color(of: shape, at: Point(x: 5, y: 30)), shows: .red, "its left, inside the curve")
+                s.expect(try s.color(of: shape, at: Point(x: 3, y: 3)), nil, "its corner, beyond the curve")
             },
         ]
     }

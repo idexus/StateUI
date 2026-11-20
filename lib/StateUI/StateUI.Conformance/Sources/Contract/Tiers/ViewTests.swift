@@ -77,11 +77,11 @@
             let background = { try s.held(BackgroundElementContract.background, on: row) }
             try s.settle { try background() == .color(.steelBlue) }
 
-            try s.perform(.pressDown(at: Point(40, 20)), on: row)
+            try s.perform(.pressDown(at: Point(x: 40, y: 20)), on: row)
             try s.settle { try background() == .color(.firebrick) }
             s.expect(try background(), .color(.firebrick), "its pressed look while the press holds")
 
-            try s.perform(.lift(at: Point(40, 20)), on: row)
+            try s.perform(.lift(at: Point(x: 40, y: 20)), on: row)
             try s.settle { try background() == .color(.steelBlue) }
             s.expect(try background(), .color(.steelBlue), "its own look again")
         }
@@ -121,7 +121,7 @@
             s.frames(of: clock, until: 400)
             let before = frames.values.last ?? []
 
-            try s.perform(.scroll(to: Point(0, 200)), on: s.element("scroller"))
+            try s.perform(.scroll(to: Point(x: 0, y: 200)), on: s.element("scroller"))
             s.turn()
             s.frames(of: clock, until: 800)
             let moved = FrameReport.inWindow(before, movedUp: 200)
@@ -158,7 +158,7 @@
             s.frames(of: clock, until: 400)
             let before = frames.values.last ?? []
 
-            try s.perform(.scroll(to: Point(0, 100)), on: s.element("list"))
+            try s.perform(.scroll(to: Point(x: 0, y: 100)), on: s.element("list"))
             s.turn()
             s.frames(of: clock, until: 800)
             let moved = FrameReport.inWindow(before, movedUp: 100)
@@ -249,7 +249,7 @@
                         ])
                     } placements: { _, at in
                         laid.values.append(at)
-                        return [Placement(Rect(at * 100, 0, 40, 40))]
+                        return [Placement(Rect(x: at * 100, y: 0, width: 40, height: 40))]
                     }
                     .width(200).height(40)
                     // The place leaps a hundred on.
@@ -443,20 +443,20 @@
             let step = State(wrappedValue: 0)
             let frames = Received<[Double]>()
             let worn: [[any Worn]] = [
-                [Write(ViewContract.area, Area.absolute(Rect(10, 20, 30, 40))),
+                [Write(ViewContract.area, Area.absolute(Rect(x: 10, y: 20, width: 30, height: 40))),
                  Write(ViewContract.horizontalAlignment, Alignment.fill)],
-                [Write(ViewContract.area, Area.proportional(Rect(0.5, 0.5, 0.5, 0.5))),
+                [Write(ViewContract.area, Area.proportional(Rect(x: 0.5, y: 0.5, width: 0.5, height: 0.5))),
                  Write(ViewContract.horizontalAlignment, Alignment.fill)],
-                [Write(ViewContract.area, Area.absolute(Rect(-10, -5, 80, 60))),
+                [Write(ViewContract.area, Area.absolute(Rect(x: -10, y: -5, width: 80, height: 60))),
                  Write(VisualElementContract.width, 30), Write(VisualElementContract.height, 40),
                  Write(ViewContract.horizontalAlignment, Alignment.start), Write(ViewContract.verticalAlignment, Alignment.end)],
-                [Write(ViewContract.area, Area.absolute(Rect(-10, -5, 80, 60))),
+                [Write(ViewContract.area, Area.absolute(Rect(x: -10, y: -5, width: 80, height: 60))),
                  Write(VisualElementContract.width, 30), Write(VisualElementContract.height, 40),
                  Write(ViewContract.horizontalAlignment, Alignment.start), Write(ViewContract.verticalAlignment, Alignment.end)],
-                [Write(ViewContract.area, Area.absolute(Rect(20, 30, 40, 40))),
+                [Write(ViewContract.area, Area.absolute(Rect(x: 20, y: 30, width: 40, height: 40))),
                  Write(VisualElementContract.width, 60), Write(VisualElementContract.maximumHeight, 20),
                  Write(ViewContract.horizontalAlignment, Alignment.start)],
-                [Write(ViewContract.area, Area.absolute(Rect(0, 0, 40, 40))),
+                [Write(ViewContract.area, Area.absolute(Rect(x: 0, y: 0, width: 40, height: 40))),
                  Write(VisualElementContract.minimumWidth, 60), Write(ViewContract.horizontalAlignment, Alignment.start)],
             ]
             s.start {
@@ -590,16 +590,16 @@
             }
             let view = try s.element("specimen")
 
-            try s.perform(.pressDown(at: Point(40, 20)), on: view)
-            try s.perform(.drag(to: Point(40, 100)), on: view)
-            try s.perform(.lift(at: Point(40, 100)), on: view)
+            try s.perform(.pressDown(at: Point(x: 40, y: 20)), on: view)
+            try s.perform(.drag(to: Point(x: 40, y: 100)), on: view)
+            try s.perform(.lift(at: Point(x: 40, y: 100)), on: view)
             s.turn()
             s.expect(heard.values, [], "let go away from the view: no tap")
 
-            try s.perform(.pressDown(at: Point(40, 20)), on: view)
-            try s.perform(.drag(to: Point(40, 100)), on: view)
-            try s.perform(.drag(to: Point(40, 20)), on: view)
-            try s.perform(.lift(at: Point(40, 20)), on: view)
+            try s.perform(.pressDown(at: Point(x: 40, y: 20)), on: view)
+            try s.perform(.drag(to: Point(x: 40, y: 100)), on: view)
+            try s.perform(.drag(to: Point(x: 40, y: 20)), on: view)
+            try s.perform(.lift(at: Point(x: 40, y: 20)), on: view)
             s.settle { heard.values == ["tapped"] }
             s.expect(heard.values, ["tapped"], "back over the view before it lets go: a tap")
         }
@@ -679,7 +679,7 @@
                         Write(ViewContract.panTouchCount, 1),
                         HearFour(ViewContract.panUpdated) { phase, total, velocity, at in
                             heard.values.append("\(phase) \(Int(total.x)) \(Int(total.y))")
-                            began.values.append(Point(at.x - total.x, at.y - total.y))
+                            began.values.append(Point(x: at.x - total.x, y: at.y - total.y))
                             if phase == .ended { lifted.values.append(velocity) }
                         },
                     ])
@@ -688,7 +688,7 @@
                 .horizontalAlignment(.start)
             }
 
-            try s.perform(.pan(by: Point(-60, 20)), on: s.element("specimen"))
+            try s.perform(.pan(by: Point(x: -60, y: 20)), on: s.element("specimen"))
             s.settle { heard.values.last?.hasPrefix("ended") == true }
             s.expect(heard.values.first, "began 0 0", "heard as it begins")
             s.expect(heard.values.contains("changed -60 20"), true, "changed, with how far it went")
@@ -696,7 +696,7 @@
             // How fast is the case's clock's - every step at one time, read over a frame; which way is the hand's.
             s.expect(lifted.values.last.map { $0.x < 0 && $0.y > 0 }, true, "lifted going left and down")
             // Where the press is, less how far it came, is where it began - one place, on the view.
-            let start = began.values.first ?? Point(-1, -1)
+            let start = began.values.first ?? Point(x: -1, y: -1)
             s.expect(began.values.allSatisfy { abs($0.x - start.x) < 1 && abs($0.y - start.y) < 1 }, true,
                      "where the press is moves with it: \(began.values)")
             s.expect((0...100).contains(start.x) && (0...100).contains(start.y), true,
@@ -722,7 +722,7 @@
             }
             s.frames(of: clock, until: 64)
 
-            try s.perform(.sweep(by: Point(-60, 0), speed: .zero), on: s.element("specimen"))
+            try s.perform(.sweep(by: Point(x: -60, y: 0), speed: .zero), on: s.element("specimen"))
             s.frames(of: clock, until: clock.now + 320)
             s.expect(x.wrappedValue, -50, "the state moved as far as the hand went, and left there")
             s.expect(x.projectedValue.journey.sample?.value, -50, "shown there, standing still")
@@ -749,11 +749,11 @@
             }
             let view = try s.element("specimen")
 
-            try s.perform(.pan(by: Point(20, 0)), on: view)
-            try s.perform(.pan(by: Point(0, -80)), on: view)
+            try s.perform(.pan(by: Point(x: 20, y: 0)), on: view)
+            try s.perform(.pan(by: Point(x: 0, y: -80)), on: view)
             s.turn()
             s.expect(heard.values, [], "short of the threshold, or a way it does not listen for")
-            try s.perform(.pan(by: Point(-80, 0)), on: view)
+            try s.perform(.pan(by: Point(x: -80, y: 0)), on: view)
             s.settle { !heard.values.isEmpty }
             s.expect(heard.values, [.left])
         }
@@ -778,7 +778,7 @@
                 .horizontalAlignment(.start)
             }
 
-            try s.perform(.pinch(scale: 1.5, at: Point(0.25, 0.75)), on: s.element("specimen"))
+            try s.perform(.pinch(scale: 1.5, at: Point(x: 0.25, y: 0.75)), on: s.element("specimen"))
             s.settle { heard.values.contains("1.5 at 0.25,0.75") }
             s.expect(heard.values.contains("1.5 at 0.25,0.75"), true, "its scale and its place, \(heard.values)")
         }
@@ -805,7 +805,7 @@
                 .horizontalAlignment(.start)
             }
 
-            try s.perform(.rotate(degrees: 30, at: Point(0.5, 0.5)), on: s.element("specimen"))
+            try s.perform(.rotate(degrees: 30, at: Point(x: 0.5, y: 0.5)), on: s.element("specimen"))
             s.settle { heard.values.last?.hasPrefix("ended") == true }
             s.expect(heard.values.first, "began 0", "heard as they begin")
             s.expect(heard.values.contains("changed 30"), true, "turned as far as they went, \(heard.values)")
@@ -846,9 +846,9 @@
             }
             let view = try s.element("specimen")
 
-            try s.perform(.hover(at: Point(10, 12)), on: view)
-            try s.perform(.pressDown(at: Point(10, 12)), on: view)
-            try s.perform(.lift(at: Point(10, 12)), on: view)
+            try s.perform(.hover(at: Point(x: 10, y: 12)), on: view)
+            try s.perform(.pressDown(at: Point(x: 10, y: 12)), on: view)
+            try s.perform(.lift(at: Point(x: 10, y: 12)), on: view)
             try s.perform(.leave, on: view)
             s.settle { heard.values.last == "exited" }
             s.expect(heard.values, ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"])

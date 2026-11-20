@@ -36,7 +36,7 @@ final class LayoutPinchTests: XCTestCase {
     private func tree(_ dial: State<Dial>, _ handed: Handed, itemDrag: Bool = false) -> Node {
         var layout = MotionLayout([0, 1, 2, 3], parameters: dial.traveling(.eased(.milliseconds(160), curve: .linear))) { Text("\($0)") } placements: { _, dial in
             handed.dials.append(dial)
-            return (0..<4).map { _ in Placement(Rect(0, 0, 40, 40)) }
+            return (0..<4).map { _ in Placement(Rect(x: 0, y: 0, width: 40, height: 40)) }
         }
         .interaction(
             .simultaneous([
@@ -136,7 +136,7 @@ final class LayoutPinchTests: XCTestCase {
         bench.pinch(.began)
         bench.pinch(.changed, degrees: 18)
         // 360 degrees a second is four units: a light friction carries it some half a unit on, past halfway.
-        bench.pinch(.ended, velocity: Point(0, 360))
+        bench.pinch(.ended, velocity: Point(x: 0, y: 360))
         bench.frames()
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 1, accuracy: 0.000_1, "flicked on")
 
@@ -156,12 +156,12 @@ final class LayoutPinchTests: XCTestCase {
         let (layout, runtime) = (try XCTUnwrap(bench.layout), try XCTUnwrap(bench.runtime))
 
         // A press standing still a long press's time holds the view under it.
-        layout.hear(.hand(.began, moved: .zero, speed: nil, point: Point(20, 20)), in: runtime)
+        layout.hear(.hand(.began, moved: .zero, speed: nil, point: Point(x: 20, y: 20)), in: runtime)
         bench.frames(40)
         XCTAssertTrue(layout.holdsItem)
 
-        layout.hear(.pinch(.began, scale: 1, at: Point(0.5, 0.5)), in: runtime)
-        layout.hear(.pinch(.changed, scale: 2, at: Point(0.5, 0.5)), in: runtime)
+        layout.hear(.pinch(.began, scale: 1, at: Point(x: 0.5, y: 0.5)), in: runtime)
+        layout.hear(.pinch(.changed, scale: 2, at: Point(x: 0.5, y: 0.5)), in: runtime)
         layout.hear(.rotation(.changed, degrees: 90), in: runtime)
         bench.frames(4)
 

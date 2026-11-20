@@ -13,12 +13,12 @@ final class GestureSpeedTests: XCTestCase {
     /// frame at least; nought once nothing moved in it.
     func testASpeedIsWhatMovedInTheLastTenthOfASecond() {
         var reading = SpeedReading()
-        reading.moved(Point(10, -5), at: 0)
-        XCTAssertEqual(reading.speed(at: 0), Point(625, -312.5), "one move, over a frame")
-        reading.moved(Point(10, 0), at: 16)
-        reading.moved(Point(10, 0), at: 32)
-        XCTAssertEqual(reading.speed(at: 32), Point(937.5, -156.25), "30 across in 32 milliseconds")
-        XCTAssertEqual(reading.speed(at: 200), Point(0, 0), "nothing moved in the last tenth")
+        reading.moved(Point(x: 10, y: -5), at: 0)
+        XCTAssertEqual(reading.speed(at: 0), Point(x: 625, y: -312.5), "one move, over a frame")
+        reading.moved(Point(x: 10, y: 0), at: 16)
+        reading.moved(Point(x: 10, y: 0), at: 32)
+        XCTAssertEqual(reading.speed(at: 32), Point(x: 937.5, y: -156.25), "30 across in 32 milliseconds")
+        XCTAssertEqual(reading.speed(at: 200), Point(x: 0, y: 0), "nothing moved in the last tenth")
     }
 
     /// A PAN TELLS ITS TOTALS AND ITS SPEED: each report how far it came and how fast it goes, its end the totals it
@@ -43,7 +43,7 @@ final class GestureSpeedTests: XCTestCase {
         let (runtime, box, clock) = try running()
         for (at, phase, scale) in [(0.0, GesturePhase.began, 1.0), (16, .changed, 1.2), (32, .ended, 1)] {
             clock.time = at
-            box.hear(.pinch(phase, scale: scale, at: Point(0.5, 0.5)), in: runtime)
+            box.hear(.pinch(phase, scale: scale, at: Point(x: 0.5, y: 0.5)), in: runtime)
         }
         runtime.pump.turn()
 

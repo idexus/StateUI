@@ -14,16 +14,16 @@ final class HomeScreenBenchmarks: XCTestCase {
     func testAHeldIconMovedAcrossTheBoard() throws {
         let bench = Bench(HomeApplication())
         let board = try bench.element(.motionLayout)
-        let cell = Point((bench.room.width - 16) / 4, (bench.room.height - 16) / 5)
+        let cell = Point(x: (bench.room.width - 16) / 4, y: (bench.room.height - 16) / 5)
 
-        bench.hand(.began, on: board, at: Point(8 + cell.x / 2, 8 + cell.y / 2))
+        bench.hand(.began, on: board, at: Point(x: 8 + cell.x / 2, y: 8 + cell.y / 2))
         bench.frames(for: 600)
         let work = bench.measure("home screen, a held icon moved a cell", steps: 12) { step in
             let across = step % 4 == 3
-            bench.hand(.changed, on: board, moved: across ? Point(-cell.x * 3, cell.y) : Point(cell.x, 0))
+            bench.hand(.changed, on: board, moved: across ? Point(x: -cell.x * 3, y: cell.y) : Point(x: cell.x, y: 0))
             bench.frames(for: 100)
         }
-        bench.hand(.ended, on: board, speed: Point(0, 0))
+        bench.hand(.ended, on: board, speed: Point(x: 0, y: 0))
         bench.frames(for: 1_000)
 
         XCTAssertEqual(work, Work(
@@ -85,7 +85,7 @@ private struct HomeBoard: View {
         let x = (Double(page) - board) * room.width + 8 + Double(cell % 4) * width
         let y = 8 + Double(cell / 4) * height
         return Placement(
-            Rect(x + (width - 84) / 2, y + (height - 96) / 2, 84, 96), transform: .scale(min(width / 84, height / 96)))
+            Rect(x: x + (width - 84) / 2, y: y + (height - 96) / 2, width: 84, height: 96), transform: .scale(min(width / 84, height / 96)))
     }
 }
 

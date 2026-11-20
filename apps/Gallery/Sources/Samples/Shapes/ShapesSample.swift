@@ -14,8 +14,8 @@ struct ShapesSample: SampleContent, ExampleContent {
     /// A pentagram: five points, each joined to the one two along, so the
     /// outline crosses itself - which is the whole point of a fill rule.
     private static let star = [
-        Point(28, 0), Point(44.5, 50.6), Point(1.4, 19.3),
-        Point(54.6, 19.3), Point(11.5, 50.6),
+        Point(x: 28, y: 0), Point(x: 44.5, y: 50.6), Point(x: 1.4, y: 19.3),
+        Point(x: 54.6, y: 19.3), Point(x: 11.5, y: 50.6),
     ]
 
     var body: some View {
@@ -71,21 +71,21 @@ struct ShapesSample: SampleContent, ExampleContent {
             // Two rows of three: six shapes side by side stand wider than a phone.
             VStack {
                 HStack {
-                    Line(from: Point(0, 0), to: Point(56, 56))
+                    Line(from: Point(x: 0, y: 0), to: Point(x: 56, y: 56))
                         .stroke(Palette.accent)
                         .lineWidth(4)
                         .lineCap(.round)
                         .width(56)
                         .height(56)
 
-                    Line(from: Point(0, 28), to: Point(56, 28))
+                    Line(from: Point(x: 0, y: 28), to: Point(x: 56, y: 28))
                         .stroke(Palette.accent)
                         .lineWidth(4)
                         .dash([3, 2])
                         .width(56)
                         .height(56)
 
-                    Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
+                    Polyline([Point(x: 0, y: 44), Point(x: 14, y: 12), Point(x: 30, y: 34), Point(x: 56, y: 4)])
                         .stroke(Palette.accent)
                         .lineWidth(4)
                         .lineJoin(.round)
@@ -129,7 +129,7 @@ struct ShapesSample: SampleContent, ExampleContent {
             // The same dashes twice, half a pattern apart: the offset, like
             // the pattern itself, is counted in stroke widths.
             VStack {
-                Line(from: Point(0, 4), to: Point(200, 4))
+                Line(from: Point(x: 0, y: 4), to: Point(x: 200, y: 4))
                     .stroke(Palette.accent)
                     .lineWidth(4)
                     .dash([3, 2])
@@ -137,7 +137,7 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .width(200)
                     .height(8)
 
-                Line(from: Point(0, 4), to: Point(200, 4))
+                Line(from: Point(x: 0, y: 4), to: Point(x: 200, y: 4))
                     .stroke(Palette.accent)
                     .lineWidth(4)
                     .dash([3, 2])
@@ -154,7 +154,7 @@ struct ShapesSample: SampleContent, ExampleContent {
             // edges on until they cross, and the limit is how long that join
             // may be, in stroke widths; past it the point is cut flat.
             HStack {
-                Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
+                Polyline([Point(x: 10, y: 4), Point(x: 28, y: 48), Point(x: 46, y: 4)])
                     .stroke(Palette.accent)
                     .lineWidth(8)
                     .lineJoin(.miter)
@@ -162,7 +162,7 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .width(56)
                     .height(72)
 
-                Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
+                Polyline([Point(x: 10, y: 4), Point(x: 28, y: 48), Point(x: 46, y: 4)])
                     .stroke(Palette.accent)
                     .lineWidth(8)
                     .lineJoin(.miter)

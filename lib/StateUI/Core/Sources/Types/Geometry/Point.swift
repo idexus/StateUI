@@ -16,18 +16,12 @@ public struct Point: Equatable, Sendable {
     /// How far down, from the top edge, read the same way.
     public var y: Double
 
-    /// A point.
+    /// A point `x` across and `y` down.
+    ///
+    ///     Polygon([Point(x: 20, y: 0), Point(x: 40, y: 40), Point(x: 0, y: 40)])
     public init(x: Double, y: Double) {
         self.x = x
         self.y = y
-    }
-
-    /// The same without labels, for a list where the labels would drown the
-    /// numbers.
-    ///
-    ///     Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])
-    public init(_ x: Double, _ y: Double) {
-        self.init(x: x, y: y)
     }
 
     /// The origin: both numbers 0.
@@ -36,7 +30,7 @@ public struct Point: Equatable, Sendable {
     ///
     /// As a place it is the top left corner; as a distance - a drag so far, a
     /// scroller's offset - it is no distance at all.
-    public static let zero = Point(0, 0)
+    public static let zero = Point(x: 0, y: 0)
 }
 
 extension Point: HostRepresentable {
@@ -65,6 +59,6 @@ extension Point: HostRepresentable {
     public static func list(from value: PropValue) -> [Point]? {
         guard let numbers = value.numbers, numbers.count.isMultiple(of: 2) else { return nil }
 
-        return stride(from: 0, to: numbers.count, by: 2).map { Point(numbers[$0], numbers[$0 + 1]) }
+        return stride(from: 0, to: numbers.count, by: 2).map { Point(x: numbers[$0], y: numbers[$0 + 1]) }
     }
 }

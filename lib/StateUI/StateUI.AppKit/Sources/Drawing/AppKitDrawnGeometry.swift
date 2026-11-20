@@ -63,7 +63,7 @@ extension NSView {
     private func undrawnLocal(_ point: NSPoint) -> NSPoint? {
         guard let drawing = AppKitViewDrawing.of(self), drawing.drawsAway else { return point }
         let top = isFlipped ? point.y : bounds.height - point.y
-        guard let local = drawing.undrawn(Point(Double(point.x), Double(top))) else { return nil }
+        guard let local = drawing.undrawn(Point(x: Double(point.x), y: Double(top))) else { return nil }
         return NSPoint(x: local.x, y: isFlipped ? local.y : Double(bounds.height) - local.y)
     }
 }

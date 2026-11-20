@@ -38,7 +38,7 @@ final class InteractionSessionsTests: XCTestCase {
                     .range(0...4).snaps(.every(1)))
         }
         return MotionLayout([0], parameters: moved) { Text("\($0)") } placements: { _, _ in
-            [Placement(Rect(0, 0, 10, 10))]
+            [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
         }
         .interaction(.simultaneous(values).release(.nearest(linear)).programWrites(policy))
     }
@@ -53,9 +53,9 @@ final class InteractionSessionsTests: XCTestCase {
         let runtime = try XCTUnwrap(bench.runtime)
 
         bench.hand(.began, on: first)
-        bench.hand(.changed, moved: Point(40, 0), on: first)
+        bench.hand(.changed, moved: Point(x: 40, y: 0), on: first)
         bench.hand(.began, on: second)
-        bench.hand(.changed, moved: Point(200, 0), on: second)
+        bench.hand(.changed, moved: Point(x: 200, y: 0), on: second)
         XCTAssertEqual(try XCTUnwrap(bench.journey).value[0], 0.4, accuracy: 0.000_1, "the first hand's, alone")
         XCTAssertTrue(runtime.interactions.holds(first))
         XCTAssertFalse(runtime.interactions.holds(second))
@@ -64,7 +64,7 @@ final class InteractionSessionsTests: XCTestCase {
         bench.hand(.ended, on: first)
         bench.frames(30)
         bench.hand(.began, on: second)
-        bench.hand(.changed, moved: Point(140, 0), on: second)
+        bench.hand(.changed, moved: Point(x: 140, y: 0), on: second)
         XCTAssertEqual(try XCTUnwrap(bench.journey).value[0], 1.4, accuracy: 0.000_1, "let go, the second takes it")
     }
 
@@ -77,12 +77,12 @@ final class InteractionSessionsTests: XCTestCase {
         let (layout, runtime) = (try XCTUnwrap(bench.layout), try XCTUnwrap(bench.runtime))
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(140, 60))
+        bench.hand(.changed, moved: Point(x: 140, y: 60))
         orbit.wrappedValue.turn = 4
         bench.cycle()
         XCTAssertFalse(runtime.interactions.holds(layout), "the gesture ended there")
 
-        bench.hand(.changed, moved: Point(-300, -300))
+        bench.hand(.changed, moved: Point(x: -300, y: -300))
         let going = try XCTUnwrap(bench.journey)
         XCTAssertGreaterThan(going.value[0], 1.4, "on its way from under the hand to where the program sent it")
         XCTAssertEqual(going.destination, [4, 1], "the turn the program's, the tilt onto the snap it was bound for")
@@ -92,7 +92,7 @@ final class InteractionSessionsTests: XCTestCase {
         XCTAssertEqual(orbit.wrappedValue, Orbit(turn: 4, tilt: 1))
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-100, 0))
+        bench.hand(.changed, moved: Point(x: -100, y: 0))
         XCTAssertEqual(try XCTUnwrap(bench.journey).value[0], 3, accuracy: 0.000_1, "a new gesture moves again")
     }
 
@@ -104,11 +104,11 @@ final class InteractionSessionsTests: XCTestCase {
         let (layout, runtime) = (try XCTUnwrap(bench.layout), try XCTUnwrap(bench.runtime))
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(140, 0))
+        bench.hand(.changed, moved: Point(x: 140, y: 0))
         orbit.wrappedValue.tilt = 3
         bench.frames(4)
         XCTAssertTrue(runtime.interactions.holds(layout), "the hand holds on")
-        bench.hand(.changed, moved: Point(20, 0))
+        bench.hand(.changed, moved: Point(x: 20, y: 0))
 
         let held = try XCTUnwrap(bench.journey)
         XCTAssertEqual(held.value[0], 1.6, accuracy: 0.000_1, "the turn under the hand")
@@ -130,7 +130,7 @@ final class InteractionSessionsTests: XCTestCase {
         let (layout, runtime) = (try XCTUnwrap(bench.layout), try XCTUnwrap(bench.runtime))
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(140, 0))
+        bench.hand(.changed, moved: Point(x: 140, y: 0))
         orbit.wrappedValue.turn = 4
         bench.cycle()
         orbit.wrappedValue.turn = 3
@@ -138,7 +138,7 @@ final class InteractionSessionsTests: XCTestCase {
         XCTAssertTrue(runtime.interactions.holds(layout), "the hand keeps it")
         XCTAssertEqual(orbit.wrappedValue.turn, 3, "the state is going where the program sent it")
 
-        bench.hand(.changed, moved: Point(-100, 0))
+        bench.hand(.changed, moved: Point(x: -100, y: 0))
         XCTAssertEqual(try XCTUnwrap(bench.journey).value[0], 0.4, accuracy: 0.000_1, "under the hand still")
         XCTAssertEqual(orbit.wrappedValue.turn, 3, "the hand names no snap over the program's")
 
@@ -158,14 +158,14 @@ final class InteractionSessionsTests: XCTestCase {
         let state = try XCTUnwrap(layout.driven[.parameters]?.state)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(140, 60))
+        bench.hand(.changed, moved: Point(x: 140, y: 60))
         XCTAssertEqual(runtime.stateChannels.held(state), [0, 1])
 
         tilts = false
         bench.render()
         XCTAssertEqual(runtime.stateChannels.held(state), [0], "the turn stays under the hand")
 
-        bench.hand(.changed, moved: Point(20, 300))
+        bench.hand(.changed, moved: Point(x: 20, y: 300))
         XCTAssertEqual(try XCTUnwrap(bench.journey).value[0], 1.6, accuracy: 0.000_1, "and goes on with it")
         bench.frames(40)
         XCTAssertEqual(try XCTUnwrap(bench.journey).value[1], 1, accuracy: 0.000_1, "the tilt on the snap it was bound for")
@@ -186,7 +186,7 @@ final class InteractionSessionsTests: XCTestCase {
         let state = try XCTUnwrap(kept.driven[.parameters]?.state)
 
         bench.hand(.began, on: leaving)
-        bench.hand(.changed, moved: Point(140, 0), on: leaving)
+        bench.hand(.changed, moved: Point(x: 140, y: 0), on: leaving)
         XCTAssertEqual(runtime.stateChannels.held(state), [0])
 
         stands = false
@@ -196,7 +196,7 @@ final class InteractionSessionsTests: XCTestCase {
         XCTAssertEqual(orbit.wrappedValue.turn, 1, "onto the snap it was bound for")
 
         bench.hand(.began, on: kept)
-        bench.hand(.changed, moved: Point(100, 0), on: kept)
+        bench.hand(.changed, moved: Point(x: 100, y: 0), on: kept)
         XCTAssertEqual(try XCTUnwrap(bench.journey).value[0], 2, accuracy: 0.000_1, "the view that stayed takes it")
     }
 
@@ -224,12 +224,12 @@ final class InteractionSessionsTests: XCTestCase {
         XCTAssertEqual(panel.handWay, .horizontal)
 
         bench.hand(.began, on: panel)
-        bench.hand(.changed, moved: Point(70, 0), on: panel)
+        bench.hand(.changed, moved: Point(x: 70, y: 0), on: panel)
         let held = try XCTUnwrap(bench.journey(movedOn: panel))
         XCTAssertEqual(held.value, [70], "under the hand: it grows as the hand moves right")
         XCTAssertEqual(offset.wrappedValue, 120, "bound for the snap nearest")
 
-        bench.hand(.changed, moved: Point(400, 0), on: panel)
+        bench.hand(.changed, moved: Point(x: 400, y: 0), on: panel)
         XCTAssertLessThan(try XCTUnwrap(bench.journey(movedOn: panel)).value[0], 241, "less and less past its end")
 
         bench.hand(.ended, on: panel)
@@ -273,8 +273,8 @@ final class InteractionSessionsTests: XCTestCase {
         let pad = try XCTUnwrap(bench.element(.rectangle))
 
         bench.hand(.began, on: pad)
-        bench.hand(.changed, moved: Point(-60, 0), on: pad)
-        bench.hand(.ended, velocity: Point(-900, 0), on: pad)
+        bench.hand(.changed, moved: Point(x: -60, y: 0), on: pad)
+        bench.hand(.ended, velocity: Point(x: -900, y: 0), on: pad)
         bench.frames(10)
 
         XCTAssertEqual(moved.wrappedValue, -50, "as far as the hand went, however fast it let go")
@@ -296,13 +296,13 @@ final class InteractionSessionsTests: XCTestCase {
         XCTAssertTrue(pages.readsOwnFrame, "it says its frame: the hand's unit is its length")
 
         bench.hand(.began, on: pages)
-        bench.hand(.changed, moved: Point(-100, 0), on: pages)
+        bench.hand(.changed, moved: Point(x: -100, y: 0), on: pages)
         bench.hand(.ended, on: pages)
         XCTAssertEqual(page.wrappedValue, 0, "not laid out yet: nothing to measure, nothing moved")
 
         pages.reportFrame([0, 0, 400, 300, 0, 0, 0, 0], in: runtime)
         bench.hand(.began, on: pages)
-        bench.hand(.changed, moved: Point(-200, 0), on: pages)
+        bench.hand(.changed, moved: Point(x: -200, y: 0), on: pages)
         bench.hand(.ended, on: pages)
         bench.frames(4)
         XCTAssertEqual(page.wrappedValue, 0.5, accuracy: 0.000_1, "half its width, half a unit")

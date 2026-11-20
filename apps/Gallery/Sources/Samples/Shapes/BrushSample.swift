@@ -19,9 +19,9 @@ struct BrushSample: SampleContent, ExampleContent {
 
     /// Across, down, and corner to corner - the three the button cycles.
     private static let ends: [(point: Point, name: String)] = [
-        (Point(1, 0), "Point(1, 0)"),
-        (Point(0, 1), "Point(0, 1)"),
-        (Point(1, 1), "Point(1, 1)"),
+        (Point(x: 1, y: 0), "Point(x: 1, y: 0)"),
+        (Point(x: 0, y: 1), "Point(x: 0, y: 1)"),
+        (Point(x: 1, y: 1), "Point(x: 1, y: 1)"),
     ]
 
     var body: some View {
@@ -32,7 +32,7 @@ struct BrushSample: SampleContent, ExampleContent {
             SectionTitle("Along a line")
 
             Rectangle()
-                .fill(.linearGradient(Self.stops, from: Point(0, 0), to: Self.ends[end].point))
+                .fill(.linearGradient(Self.stops, from: Point(x: 0, y: 0), to: Self.ends[end].point))
                 .cornerRadius(12)
                 .contentMode(.stretch)   // fills the room, proportions and all
                 .height(80)
@@ -46,7 +46,7 @@ struct BrushSample: SampleContent, ExampleContent {
             Ellipse()
                 .fill(.radialGradient(
                     [GradientStop(.white, 0), GradientStop(.steelBlue, 1)],
-                    center: Point(0.35, 0.3),
+                    center: Point(x: 0.35, y: 0.3),
                     radius: 0.75))
                 .width(96)
                 .height(96)
@@ -62,7 +62,7 @@ struct BrushSample: SampleContent, ExampleContent {
             .style(.card)
             .lineWidth(4)
             .shape(.roundedRectangle(10))
-            .stroke(.linearGradient(Self.stops, from: Point(0, 0), to: Point(1, 0)))
+            .stroke(.linearGradient(Self.stops, from: Point(x: 0, y: 0), to: Point(x: 1, y: 0)))
 
             // Not a shape at all: `.background` takes a brush, so any view can
             // carry one.
@@ -73,7 +73,7 @@ struct BrushSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .padding(16)
-            .background(.linearGradient(Self.stops, from: Point(0, 0), to: Point(1, 1)))
+            .background(.linearGradient(Self.stops, from: Point(x: 0, y: 0), to: Point(x: 1, y: 1)))
         }
         .spacing(12)
     }
@@ -82,7 +82,7 @@ struct BrushSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("A gradient's points are fractions of the thing being painted, not device "
-                + "units: `Point(0, 0)` is its top left corner and `Point(1, 1)` its bottom "
+                + "units: `Point(x: 0, y: 0)` is its top left corner and `Point(x: 1, y: 1)` its bottom "
                 + "right. So the axis follows the box's own corners rather than a fixed "
                 + "angle, whatever the box's size.")
                 .fontSize(12)

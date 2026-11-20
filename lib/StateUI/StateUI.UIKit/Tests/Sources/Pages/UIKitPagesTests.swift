@@ -604,7 +604,7 @@ final class UIKitPagesTests: XCTestCase {
     /// its first row stands clear of the bar at the offset the tree calls nothing.
     @MainActor
     func testAPagesScrollerUnderTheBarKeepsItsFirstRowClear() throws {
-        let offset = State(wrappedValue: Point(0, 0))
+        let offset = State(wrappedValue: Point(x: 0, y: 0))
         let host = UIKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue) }
@@ -619,9 +619,9 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertGreaterThan(top, 0, "the bar's depth kept clear")
         let start = Double(try XCTUnwrap(scroller()?.contentOffset.y))
         XCTAssertEqual(start, -top, accuracy: 0.5, "its first row clear of the bar")
-        XCTAssertEqual(offset.wrappedValue, Point(0, 0), "where the tree calls nothing")
+        XCTAssertEqual(offset.wrappedValue, Point(x: 0, y: 0), "where the tree calls nothing")
 
-        offset.wrappedValue = Point(0, 100)
+        offset.wrappedValue = Point(x: 0, y: 100)
         host.settle { abs(Double(scroller()?.contentOffset.y ?? 0) - (100 - top)) < 0.5 }
         let moved = Double(try XCTUnwrap(scroller()?.contentOffset.y))
         XCTAssertEqual(moved, 100 - top, accuracy: 0.5, "counted from its first row")

@@ -61,11 +61,11 @@
             ConformanceCase("anOffsetTheTreeWritesMovesItWithinReach", proves: [
                 Covered(ScrollViewContract.scrollOffset),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
-                let offset = State(wrappedValue: Point(0, 0))
+                let offset = State(wrappedValue: Point(x: 0, y: 0))
                 s.start(reducesMotion: true) {
                     VStack {
-                        Button("Down").onClicked { offset.wrappedValue = Point(0, 300) }.id("down")
-                        Button("Past").onClicked { offset.wrappedValue = Point(0, 5000) }.id("past")
+                        Button("Down").onClicked { offset.wrappedValue = Point(x: 0, y: 300) }.id("down")
+                        Button("Past").onClicked { offset.wrappedValue = Point(x: 0, y: 5000) }.id("past")
                         ScrollView {
                             Rectangle()
                                 .fill(.red)
@@ -80,18 +80,18 @@
                 let scroller = try s.element("scroller")
 
                 try s.perform(.activate, on: s.element("down"))
-                try s.settle { try s.held(ScrollViewContract.scrollOffset, on: scroller) == Point(0, 300) }
-                s.expect(try s.held(ScrollViewContract.scrollOffset, on: scroller), Point(0, 300))
+                try s.settle { try s.held(ScrollViewContract.scrollOffset, on: scroller) == Point(x: 0, y: 300) }
+                s.expect(try s.held(ScrollViewContract.scrollOffset, on: scroller), Point(x: 0, y: 300))
 
                 try s.perform(.activate, on: s.element("past"))
-                try s.settle { try s.held(ScrollViewContract.scrollOffset, on: scroller) == Point(0, 1500) }
-                s.expect(try s.held(ScrollViewContract.scrollOffset, on: scroller), Point(0, 1500), "no further than its end")
+                try s.settle { try s.held(ScrollViewContract.scrollOffset, on: scroller) == Point(x: 0, y: 1500) }
+                s.expect(try s.held(ScrollViewContract.scrollOffset, on: scroller), Point(x: 0, y: 1500), "no further than its end")
             },
             ConformanceCase("theUsersScrollLandsOnTheFrameAndRestsOnce", proves: [
                 Covered(ScrollViewContract.scrollOffset), Covered(ScrollViewContract.scrollStopped),
             ]) { s in
                 let clock = TestClock()
-                let offset = State(wrappedValue: Point(0, 0))
+                let offset = State(wrappedValue: Point(x: 0, y: 0))
                 let rests = Received<Int>()
                 s.start(clock: clock) {
                     VStack {
@@ -109,18 +109,18 @@
                 }
                 let scroller = try s.element("scroller")
 
-                try s.perform(.scroll(to: Point(0, 200)), on: scroller)
+                try s.perform(.scroll(to: Point(x: 0, y: 200)), on: scroller)
                 s.turn()
                 s.frames(of: clock, until: 400)
 
-                s.expect(offset.wrappedValue, Point(0, 200), "on the state, where it went")
+                s.expect(offset.wrappedValue, Point(x: 0, y: 200), "on the state, where it went")
                 s.expect(rests.values, [1], "at rest once")
             },
             ConformanceCase("theUsersScrollAcrossLandsOnTheState", proves: [
                 Covered(ScrollViewContract.scrollOffset), Covered(ScrollViewContract.axes),
             ]) { s in
                 let clock = TestClock()
-                let offset = State(wrappedValue: Point(0, 0))
+                let offset = State(wrappedValue: Point(x: 0, y: 0))
                 s.start(clock: clock) {
                     VStack {
                         ScrollView {
@@ -138,11 +138,11 @@
                 }
                 let scroller = try s.element("scroller")
 
-                try s.perform(.scroll(to: Point(300, 0)), on: scroller)
+                try s.perform(.scroll(to: Point(x: 300, y: 0)), on: scroller)
                 s.turn()
                 s.frames(of: clock, until: 400)
 
-                s.expect(offset.wrappedValue, Point(300, 0))
+                s.expect(offset.wrappedValue, Point(x: 300, y: 0))
             },
             Aspects.holds(ScrollViewContract.verticalScrollIndicator, on: "ScrollView", .visible, then: .never),
             Aspects.holds(ScrollViewContract.horizontalScrollIndicator, on: "ScrollView", .visible, then: .never,

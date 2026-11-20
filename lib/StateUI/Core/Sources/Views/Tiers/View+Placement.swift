@@ -51,7 +51,7 @@ extension ViewProperties {
     /// The part of the enclosing ZStack's room the view stands in, in device
     /// units or in fractions of the room; the whole room without it.
     ///
-    ///     Text("Right half").area(.proportional(Rect(0.5, 0, 0.5, 1)))
+    ///     Text("Right half").area(.proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1)))
     public func area(_ value: Area) -> Modified { setValue(ViewContract.area, value) }
 }
 

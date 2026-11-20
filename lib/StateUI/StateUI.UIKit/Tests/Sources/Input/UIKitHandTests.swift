@@ -26,7 +26,7 @@ final class UIKitHandTests: XCTestCase {
                 Rectangle()
                     .fill(.red)
             } placements: { _, at in
-                (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 80, 80)) }
+                (0..<3).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 80, height: 80)) }
             }
             .interaction(
                 .value(turn.projectedValue, input: .translation(.horizontal, unit: .frontItem))

@@ -400,7 +400,7 @@ final class ChangesTests: XCTestCase {
 
         // What the host writes when a scroll - a gliding one included - moves
         // the offset. Nothing fires yet: no render has compared anything.
-        slid(offset.number, to: Point(0, 250))
+        slid(offset.number, to: Point(x: 0, y: 250))
         XCTAssertEqual(offset.wrappedValue.y, 250)
         XCTAssertTrue(log.lines.isEmpty, "the watch fired before any render compared")
 
@@ -423,7 +423,7 @@ final class ChangesTests: XCTestCase {
         renders.render(VStack { ScrollView { Text("long") }.scrollOffset(offset.projectedValue) }.node)
 
         Renderer.shared.clearInvalidation()
-        slid(offset.number, to: Point(0, 250))
+        slid(offset.number, to: Point(x: 0, y: 250))
 
         XCTAssertEqual(offset.wrappedValue.y, 250)
         XCTAssertTrue(Renderer.shared.needsRender, "the body that reads the offset is asked")
@@ -439,7 +439,7 @@ final class ChangesTests: XCTestCase {
         let offset = State(Point.zero)
 
         renders.render(VStack { ScrollView { Text("wide") }.scrollOffset(offset.projectedValue) }.node)
-        slid(offset.number, to: Point(120, 40))
+        slid(offset.number, to: Point(x: 120, y: 40))
 
         XCTAssertEqual(offset.wrappedValue.x, 120, "the horizontal half did not reach its state")
         XCTAssertEqual(offset.wrappedValue.y, 40, "the vertical half did not reach its state")

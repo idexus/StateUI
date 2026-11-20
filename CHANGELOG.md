@@ -147,7 +147,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
   // now
   } placements: { context, turn in
-      names.indices.map { Placement(Rect(Double($0) * 80 - turn, 0, 72, context.bounds.height)) }
+      names.indices.map {
+          Placement(Rect(x: Double($0) * 80 - turn, y: 0, width: 72, height: context.bounds.height))
+      }
   }
   ```
 - **For a host: a report says who wrote, and a movement's end says how.** `HostBoundary.report(_:through:origin:)`
@@ -172,6 +174,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **A grid's run of rows or columns is made by its factories alone.** `GridTracks(_:count:)` is gone:
   `GridTracks(.fixed(90), count: 3)` is `.fixed(90, count: 3)`, as `.automatic(count:)`, `.fill(count:)` and
   `.proportional(_:count:)` say the others.
+- **A rectangle and a point are written with their labels.** `Rect(_:_:_:_:)` and `Point(_:_:)` are gone:
+  `Rect(0, 0, 120, 40)` is `Rect(x: 0, y: 0, width: 120, height: 40)` and `Point(20, 0)` is `Point(x: 20, y: 0)`,
+  the one spelling each has.
 
 ### New
 

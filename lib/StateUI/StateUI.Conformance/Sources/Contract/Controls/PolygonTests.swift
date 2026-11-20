@@ -17,7 +17,7 @@
 
     /// A square gone round, then its middle gone round the same way again: its middle wound twice.
     static let woundTwice = [
-        Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40), Point(0, 0),
-        Point(10, 10), Point(30, 10), Point(30, 30), Point(10, 30), Point(10, 10),
+        Point(x: 0, y: 0), Point(x: 40, y: 0), Point(x: 40, y: 40), Point(x: 0, y: 40), Point(x: 0, y: 0),
+        Point(x: 10, y: 10), Point(x: 30, y: 10), Point(x: 30, y: 30), Point(x: 10, y: 30), Point(x: 10, y: 10),
     ]
 }

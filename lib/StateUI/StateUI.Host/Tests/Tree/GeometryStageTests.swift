@@ -71,8 +71,8 @@ final class GeometryStageTests: XCTestCase {
         view.reportFrame(standing, in: runtime)
         runtime.pump.turn()
 
-        XCTAssertEqual(Staged.layout.wrappedValue, Rect(10, 20, 100, 60))
-        XCTAssertEqual(Staged.presentation.wrappedValue, Rect(10, 20, 100, 60))
+        XCTAssertEqual(Staged.layout.wrappedValue, Rect(x: 10, y: 20, width: 100, height: 60))
+        XCTAssertEqual(Staged.presentation.wrappedValue, Rect(x: 10, y: 20, width: 100, height: 60))
         XCTAssertEqual(Staged.heardLayout, [standing])
         XCTAssertEqual(Staged.heardPresentation, [standing])
     }
@@ -90,8 +90,8 @@ final class GeometryStageTests: XCTestCase {
         view.reportFrame(standing, in: runtime)
         runtime.pump.turn()
 
-        XCTAssertEqual(Staged.layout.wrappedValue, Rect(10, 20, 100, 60), "where its layout puts it")
-        XCTAssertEqual(Staged.presentation.wrappedValue, Rect(40, 20, 100, 60), "where it is drawn")
+        XCTAssertEqual(Staged.layout.wrappedValue, Rect(x: 10, y: 20, width: 100, height: 60), "where its layout puts it")
+        XCTAssertEqual(Staged.presentation.wrappedValue, Rect(x: 40, y: 20, width: 100, height: 60), "where it is drawn")
         XCTAssertEqual(Staged.heardLayout.count, 1, "the layout's rectangle said once")
         XCTAssertEqual(Staged.heardPresentation.last, [40, 20, 100, 60, 140, 120, 140, 80])
     }
@@ -120,9 +120,9 @@ final class GeometryStageTests: XCTestCase {
         view.reportFrame(standing, in: runtime)
         runtime.pump.turn()
 
-        XCTAssertEqual(Staged.layout.wrappedValue, Rect(10, 60, 100, 60), "its destination, at once")
+        XCTAssertEqual(Staged.layout.wrappedValue, Rect(x: 10, y: 60, width: 100, height: 60), "its destination, at once")
         XCTAssertEqual(Staged.heardLayout.last, [10, 60, 100, 60, 110, 160, 110, 120], "its corner where it will stand")
-        XCTAssertEqual(Staged.presentation.wrappedValue, Rect(10, 20, 100, 60), "where it stands now")
+        XCTAssertEqual(Staged.presentation.wrappedValue, Rect(x: 10, y: 20, width: 100, height: 60), "where it stands now")
         XCTAssertEqual(Staged.heardLayout.count, 2)
         XCTAssertEqual(Staged.heardPresentation.count, 1, "it has not moved yet")
     }

@@ -35,10 +35,10 @@ enum LayoutBlend {
     /// layout with no shade left without one.
     private static func pose(_ poses: [Placement], along: ([Double]) -> Double) -> Placement {
         let bounds = Rect(
-            along(poses.map(\.bounds.x)),
-            along(poses.map(\.bounds.y)),
-            max(along(poses.map(\.bounds.width)), 0),
-            max(along(poses.map(\.bounds.height)), 0))
+            x: along(poses.map(\.bounds.x)),
+            y: along(poses.map(\.bounds.y)),
+            width: max(along(poses.map(\.bounds.width)), 0),
+            height: max(along(poses.map(\.bounds.height)), 0))
 
         let shade = poses.allSatisfy { $0.shade == Placement.unshaded }
             ? Placement.unshaded

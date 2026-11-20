@@ -22,8 +22,8 @@ final class BrushTests: XCTestCase {
     func testALinearGradientCarriesItsPointsThenItsStops() {
         let brush = Brush.linearGradient(
             [GradientStop(.gold, 0), GradientStop(.tomato, 1)],
-            from: Point(0, 0),
-            to: Point(1, 0.5))
+            from: Point(x: 0, y: 0),
+            to: Point(x: 1, y: 0.5))
 
         XCTAssertEqual(brush.propValue, .values([
             .enumeration(2),
@@ -42,8 +42,8 @@ final class BrushTests: XCTestCase {
             Rectangle()
                 .fill(.linearGradient(
                     [GradientStop(.gold, 0), GradientStop(.tomato, 1)],
-                    from: Point(0, 0),
-                    to: diagonal ? Point(1, 1) : Point(1, 0)))
+                    from: Point(x: 0, y: 0),
+                    to: diagonal ? Point(x: 1, y: 1) : Point(x: 1, y: 0)))
                 .node
                 .built
         }
@@ -63,7 +63,7 @@ final class BrushTests: XCTestCase {
     func testARadialGradientCarriesItsCenterAndRadius() {
         let brush = Brush.radialGradient(
             [GradientStop(.white, 0.25)],
-            center: Point(0.3, 0.7),
+            center: Point(x: 0.3, y: 0.7),
             radius: 0.8)
 
         XCTAssertEqual(brush.propValue, .values([

@@ -383,7 +383,7 @@ class WebLayoutView: WebDOMView {
         view.style("opacity", placement.drawnOpacity >= 1 ? nil : WebCSS.number(placement.drawnOpacity))
         view.drawInRun(
             run.drawing(of: index), size: LayoutSize(width: place.width, height: place.height),
-            at: Point(fromRight ? -place.x : place.x, place.y))
+            at: Point(x: fromRight ? -place.x : place.x, y: place.y))
         (view as? WebLayoutView)?.setShadeOpacity(placement.drawnShade)
     }
 

@@ -285,7 +285,7 @@ private struct DealingPage: View {
                 .onClicked { cards.append(cards.count) }
             MotionLayout(cards, parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in
                 dealtRuns += 1
-                return (0..<count).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
+                return (0..<count).map { Placement(Rect(x: Double($0) * 20, y: 0, width: 10, height: 10)) }
             }
         }
     }

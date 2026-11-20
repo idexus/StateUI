@@ -25,7 +25,7 @@ final class LayoutFollowerTests: XCTestCase {
                 Text("\(index)")
             }
         } placements: { _, at in
-            [Placement(Rect(at * 100, 0, 10, 10)), Placement(Rect(at * 100, 20, 10, 10))]
+            [Placement(Rect(x: at * 100, y: 0, width: 10, height: 10)), Placement(Rect(x: at * 100, y: 20, width: 10, height: 10))]
         }
         .node
     }
@@ -61,7 +61,7 @@ final class LayoutFollowerTests: XCTestCase {
                     Text("\(index)")
                 }
             } placements: { _, at in
-                [Placement(Rect(at * 100, 0, 10, 10))]
+                [Placement(Rect(x: at * 100, y: 0, width: 10, height: 10))]
             }
             return (shaded ? layout.shade { Rectangle() } : layout).node
         }

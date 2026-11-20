@@ -29,13 +29,13 @@ final class LayoutItemDragTests: XCTestCase {
     ) -> Node {
         let names = order?.wrappedValue ?? ["A", "B", "C"]
         let places: [String: Placement] = [
-            "A": Placement(Rect(0, 0, 100, 100)),
-            "B": Placement(Rect(50, 0, 100, 100), zIndex: 1),
-            "C": Placement(Rect(200, 0, 50, 50), transform: .rotate(45)),
+            "A": Placement(Rect(x: 0, y: 0, width: 100, height: 100)),
+            "B": Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1),
+            "C": Placement(Rect(x: 200, y: 0, width: 50, height: 50), transform: .rotate(45)),
         ]
         let layout = MotionLayout(names, parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
             names.enumerated().map { index, name in
-                order == nil ? places[name] ?? Placement(.zero) : Placement(Rect(Double(index) * 60, 120, 50, 50))
+                order == nil ? places[name] ?? Placement(.zero) : Placement(Rect(x: Double(index) * 60, y: 120, width: 50, height: 50))
             }
         }
         .itemDrag(begins: .longPress)
@@ -63,16 +63,16 @@ final class LayoutItemDragTests: XCTestCase {
         func tree() -> Node { cards(told) }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(75, 50))
+        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
         XCTAssertEqual(told.drags.last?.id, "B", "B over A")
-        bench.item(renders, tree, .ended, at: Point(75, 50))
+        bench.item(renders, tree, .ended, at: Point(x: 75, y: 50))
         for _ in 0..<20 { bench.cycle() }
 
         // An eighth of a turn stands C's corner ten points above its square: a point there is C's.
-        bench.item(renders, tree, .began, at: Point(225, -8))
+        bench.item(renders, tree, .began, at: Point(x: 225, y: -8))
         XCTAssertEqual(told.drags.last?.id, "C", "turned as it is drawn")
-        XCTAssertEqual(told.drags.last?.at, Point(225, -8))
-        XCTAssertEqual(told.drags.last?.room, Rect(0, 0, 300, 200))
+        XCTAssertEqual(told.drags.last?.at, Point(x: 225, y: -8))
+        XCTAssertEqual(told.drags.last?.room, Rect(x: 0, y: 0, width: 300, height: 200))
     }
 
     /// A HELD VIEW KEEPS TO THE HAND, drawn over every other; the others stand.
@@ -82,14 +82,14 @@ final class LayoutItemDragTests: XCTestCase {
         func tree() -> Node { cards(told) }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(75, 50))
-        bench.item(renders, tree, .changed, at: Point(105, 90))
+        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 105, y: 90))
         let run = shown(renders, tree)
 
-        XCTAssertEqual(run[1].bounds, Rect(80, 40, 100, 100), "B moved as the hand moved")
+        XCTAssertEqual(run[1].bounds, Rect(x: 80, y: 40, width: 100, height: 100), "B moved as the hand moved")
         XCTAssertGreaterThan(run[1].zIndex, max(run[0].zIndex, run[2].zIndex), "over every other")
-        XCTAssertEqual(run[0].bounds, Rect(0, 0, 100, 100), "A stands")
-        XCTAssertEqual(told.drags.map(\.at), [Point(75, 50), Point(105, 90)], "told as it takes it and moves it")
+        XCTAssertEqual(run[0].bounds, Rect(x: 0, y: 0, width: 100, height: 100), "A stands")
+        XCTAssertEqual(told.drags.map(\.at), [Point(x: 75, y: 50), Point(x: 105, y: 90)], "told as it takes it and moves it")
     }
 
     /// A HELD VIEW IS DRAWN OVER EVERY OTHER HOWEVER HIGH THEY STAND - the highest rank an integer holds, several
@@ -98,8 +98,8 @@ final class LayoutItemDragTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node {
             let places = [
-                Placement(Rect(0, 0, 100, 100), zIndex: .max), Placement(Rect(50, 0, 100, 100), zIndex: .max),
-                Placement(Rect(200, 0, 50, 50), zIndex: .max - 1),
+                Placement(Rect(x: 0, y: 0, width: 100, height: 100), zIndex: .max), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: .max),
+                Placement(Rect(x: 200, y: 0, width: 50, height: 50), zIndex: .max - 1),
             ]
             return MotionLayout(["A", "B", "C"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) }
                 placements: { _, _ in places }
@@ -108,8 +108,8 @@ final class LayoutItemDragTests: XCTestCase {
         }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(25, 50))
-        bench.item(renders, tree, .changed, at: Point(35, 50))
+        bench.item(renders, tree, .began, at: Point(x: 25, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 35, y: 50))
         let ranks = Placement.drawingOrder(of: shown(renders, tree))
 
         XCTAssertEqual(ranks, [2, 1, 0], "A held over B, B over C as they stood")
@@ -123,8 +123,8 @@ final class LayoutItemDragTests: XCTestCase {
         func tree() -> Node { cards(told, order) }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(25, 145))
-        bench.item(renders, tree, .changed, at: Point(95, 145))
+        bench.item(renders, tree, .began, at: Point(x: 25, y: 145))
+        bench.item(renders, tree, .changed, at: Point(x: 95, y: 145))
         order.wrappedValue = ["B", "A", "C"]
         _ = renders.render(tree())
         for _ in 0..<3 { bench.cycle() }
@@ -144,12 +144,12 @@ final class LayoutItemDragTests: XCTestCase {
         func tree() -> Node { cards(told) }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(75, 50))
-        bench.item(renders, tree, .changed, at: Point(155, 50))
+        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 155, y: 50))
         let held = bench.answer
         XCTAssertEqual(held.views[1].held?.bounds.x ?? -1, 130, accuracy: 0.001, "where the hand holds it")
 
-        bench.item(renders, tree, .ended, at: Point(155, 50))
+        bench.item(renders, tree, .ended, at: Point(x: 155, y: 50))
         _ = shown(renders, tree)
         let released = bench.answer.views[1]
 
@@ -168,17 +168,17 @@ final class LayoutItemDragTests: XCTestCase {
         func tree() -> Node { cards(told, dismissing: true) }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(75, 50))
-        bench.item(renders, tree, .changed, at: Point(75, 20))
-        bench.item(renders, tree, .ended, at: Point(75, 20))
+        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 75, y: 20))
+        bench.item(renders, tree, .ended, at: Point(x: 75, y: 20))
         for _ in 0..<40 { bench.cycle() }
         _ = await settle()
         XCTAssertEqual(told.dismissed, [], "short of the dismissal")
         XCTAssertEqual(shown(renders, tree)[1].bounds.y, 0, accuracy: 0.001, "back at its place")
 
-        bench.item(renders, tree, .began, at: Point(75, 50))
-        bench.item(renders, tree, .changed, at: Point(75, -10))
-        bench.item(renders, tree, .ended, at: Point(75, -10))
+        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 75, y: -10))
+        bench.item(renders, tree, .ended, at: Point(x: 75, y: -10))
         bench.cycle()
         let flying = shown(renders, tree)[1].bounds.y
         for _ in 0..<40 { bench.cycle() }
@@ -196,7 +196,7 @@ final class LayoutItemDragTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node {
             MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
-                [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), zIndex: 1)]
+                [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
             .itemDrag(begins: .longPress)
             .onItemDragged { told.drags.append($0) }
@@ -208,10 +208,10 @@ final class LayoutItemDragTests: XCTestCase {
         }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(75, 50))
+        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
         XCTAssertEqual(told.drags.map(\.id), ["B", "B"], "both hear the hand take it")
-        bench.item(renders, tree, .changed, at: Point(75, -10))
-        bench.item(renders, tree, .ended, at: Point(75, -10))
+        bench.item(renders, tree, .changed, at: Point(x: 75, y: -10))
+        bench.item(renders, tree, .ended, at: Point(x: 75, y: -10))
         for _ in 0..<40 { bench.cycle() }
         _ = await settle()
 
@@ -226,7 +226,7 @@ final class LayoutItemDragTests: XCTestCase {
         var awaited: [GesturePhase] = []
         func tree() -> Node {
             MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
-                [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), zIndex: 1)]
+                [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
             .itemDrag(begins: .longPress)
             .onItemDragged { told.drags.append($0) }
@@ -238,9 +238,9 @@ final class LayoutItemDragTests: XCTestCase {
         }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(75, 50))
-        bench.item(renders, tree, .changed, at: Point(80, 50))
-        bench.item(renders, tree, .changed, at: Point(85, 50))
+        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 80, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 85, y: 50))
         _ = await settle()
 
         XCTAssertEqual(told.drags.map(\.phase), [.began, .changed, .changed], "the step hears every move")
@@ -253,7 +253,7 @@ final class LayoutItemDragTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node {
             MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
-                [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), zIndex: 1)]
+                [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
             .itemDrag(begins: .longPress)
             .onItemDismissed(directions: .up, threshold: 50, policy: .ignoreWhileRunning) { _ in
@@ -265,9 +265,9 @@ final class LayoutItemDragTests: XCTestCase {
         }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(75, 50))
-        bench.item(renders, tree, .changed, at: Point(75, -10))
-        bench.item(renders, tree, .ended, at: Point(75, -10))
+        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 75, y: -10))
+        bench.item(renders, tree, .ended, at: Point(x: 75, y: -10))
         for _ in 0..<40 { bench.cycle() }
         _ = await settle()
 
@@ -283,7 +283,7 @@ final class LayoutItemDragTests: XCTestCase {
         let gate = Gate(.ignoreWhileRunning)
         func tree() -> Node {
             let layout = MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
-                [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), zIndex: 1)]
+                [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
             .itemDrag(begins: .longPress)
             return (hears.wrappedValue
@@ -292,9 +292,9 @@ final class LayoutItemDragTests: XCTestCase {
         }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(75, 50))
-        bench.item(renders, tree, .changed, at: Point(75, -10))
-        bench.item(renders, tree, .ended, at: Point(75, -10))
+        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 75, y: -10))
+        bench.item(renders, tree, .ended, at: Point(x: 75, y: -10))
         for _ in 0..<40 { bench.cycle() }
         _ = await settle()
         XCTAssertTrue(gate.isBusy, "the handler runs")
@@ -315,7 +315,7 @@ final class LayoutItemDragTests: XCTestCase {
         var heard = 0
         func tree() -> Node {
             MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
-                [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), zIndex: 1)]
+                [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), zIndex: 1)]
             }
             .itemDrag(begins: .longPress)
             .onItemDismissed(directions: .up, threshold: 50, gate: gate) { _ in
@@ -326,9 +326,9 @@ final class LayoutItemDragTests: XCTestCase {
         }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(75, 50))
-        bench.item(renders, tree, .changed, at: Point(75, -10))
-        bench.item(renders, tree, .ended, at: Point(75, -10))
+        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 75, y: -10))
+        bench.item(renders, tree, .ended, at: Point(x: 75, y: -10))
         for _ in 0..<40 { bench.cycle() }
         // The dismissal is told after the frame; the layout leaves before it is.
         _ = renders.render(VStack {}.node)
@@ -347,10 +347,10 @@ final class LayoutItemDragTests: XCTestCase {
         func tree() -> Node { cards(told, awaiting: true) }
         _ = bench.laid(renders, tree)
 
-        for start in [Point(75, 50), Point(25, 50)] {
+        for start in [Point(x: 75, y: 50), Point(x: 25, y: 50)] {
             bench.item(renders, tree, .began, at: start)
-            bench.item(renders, tree, .changed, at: Point(start.x, -10))
-            bench.item(renders, tree, .ended, at: Point(start.x, -10))
+            bench.item(renders, tree, .changed, at: Point(x: start.x, y: -10))
+            bench.item(renders, tree, .ended, at: Point(x: start.x, y: -10))
             for _ in 0..<40 { bench.cycle() }
             _ = await settle()
         }
@@ -366,7 +366,7 @@ final class LayoutItemDragTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node {
             MotionLayout(["A", "B"], parameters: turn.projectedValue) { Text($0) } placements: { _, _ in
-                [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), transform: .scale(lift.wrappedValue))]
+                [Placement(Rect(x: 0, y: 0, width: 100, height: 100)), Placement(Rect(x: 50, y: 0, width: 100, height: 100), transform: .scale(lift.wrappedValue))]
             }
             .itemDrag(begins: .longPress)
             .onItemDragged { told.drags.append($0) }
@@ -375,15 +375,15 @@ final class LayoutItemDragTests: XCTestCase {
         }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(125, 50))
-        bench.item(renders, tree, .changed, at: Point(155, 90))
+        bench.item(renders, tree, .began, at: Point(x: 125, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 155, y: 90))
         lift.wrappedValue = 1.2
         bench.cycle()
         let held = shown(renders, tree)[1]
 
         XCTAssertEqual(held.transform, .scale(1.2), "lifted as its place says")
-        XCTAssertEqual(held.bounds, Rect(80, 40, 100, 100), "under the hand")
-        bench.item(renders, tree, .ended, at: Point(155, 90))
+        XCTAssertEqual(held.bounds, Rect(x: 80, y: 40, width: 100, height: 100), "under the hand")
+        bench.item(renders, tree, .ended, at: Point(x: 155, y: 90))
         XCTAssertEqual(told.drags.map(\.phase), [.began, .changed, .ended])
     }
 
@@ -394,8 +394,8 @@ final class LayoutItemDragTests: XCTestCase {
         func tree() -> Node { cards(told) }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(75, 50))
-        bench.item(renders, tree, .changed, at: Point(75, 50), still: 500)
+        bench.item(renders, tree, .began, at: Point(x: 75, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 75, y: 50), still: 500)
 
         XCTAssertEqual(told.drags.last?.still, .milliseconds(500))
     }
@@ -408,16 +408,16 @@ final class LayoutItemDragTests: XCTestCase {
         func tree() -> Node { cards(told) }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(25, 50))
-        bench.item(renders, tree, .changed, at: Point(125, 50), velocity: Point(300, 0))
-        bench.item(renders, tree, .changed, at: Point(225, 25), velocity: Point(200, -50))
-        bench.item(renders, tree, .changed, at: Point(400, 300))
-        bench.item(renders, tree, .ended, at: Point(400, 300), velocity: Point(-500, 0))
+        bench.item(renders, tree, .began, at: Point(x: 25, y: 50))
+        bench.item(renders, tree, .changed, at: Point(x: 125, y: 50), velocity: Point(x: 300, y: 0))
+        bench.item(renders, tree, .changed, at: Point(x: 225, y: 25), velocity: Point(x: 200, y: -50))
+        bench.item(renders, tree, .changed, at: Point(x: 400, y: 300))
+        bench.item(renders, tree, .ended, at: Point(x: 400, y: 300), velocity: Point(x: -500, y: 0))
 
         XCTAssertEqual(told.drags.map(\.id), ["A", "A", "A", "A", "A"])
         XCTAssertEqual(told.drags.map(\.over), [nil, "B", "C", nil, nil], "B over A's place, C turned, then none")
         XCTAssertEqual(told.drags.map(\.velocity), [
-            Point(0, 0), Point(300, 0), Point(200, -50), Point(0, 0), Point(-500, 0),
+            Point(x: 0, y: 0), Point(x: 300, y: 0), Point(x: 200, y: -50), Point(x: 0, y: 0), Point(x: -500, y: 0),
         ])
     }
 
@@ -430,7 +430,7 @@ final class LayoutItemDragTests: XCTestCase {
         func tree() -> Node {
             let names = order.wrappedValue
             return MotionLayout(names, parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
-                names.indices.map { Placement(Rect(Double($0) * 60, 0, 50, 50)) }
+                names.indices.map { Placement(Rect(x: Double($0) * 60, y: 0, width: 50, height: 50)) }
             }
             .itemDrag(begins: .longPress)
             .onItemDragged { drag in
@@ -445,10 +445,10 @@ final class LayoutItemDragTests: XCTestCase {
         }
         _ = bench.laid(renders, tree)
 
-        bench.item(renders, tree, .began, at: Point(25, 25))
-        bench.item(renders, tree, .changed, at: Point(85, 25))
+        bench.item(renders, tree, .began, at: Point(x: 25, y: 25))
+        bench.item(renders, tree, .changed, at: Point(x: 85, y: 25))
         XCTAssertEqual(order.wrappedValue, ["B", "A", "C"], "over B, A takes its place")
-        bench.item(renders, tree, .changed, at: Point(86, 25))
+        bench.item(renders, tree, .changed, at: Point(x: 86, y: 25))
         XCTAssertEqual(told.drags.last?.over, nil, "B goes to A's old place: under the hand stands A's own")
         XCTAssertEqual(order.wrappedValue, ["B", "A", "C"])
     }

@@ -17,9 +17,9 @@ final class LayoutShiftTests: XCTestCase {
     /// as a view draws it - moved, turned and sized.
     func testAShiftShowsTheViewWhereItStood() {
         let shown = host(Placement(
-            Rect(10, 20, 100, 60), transform: .scale(1.5).rotate(30).translate(4, -6), opacity: 0.4, shade: 0.2,
+            Rect(x: 10, y: 20, width: 100, height: 60), transform: .scale(1.5).rotate(30).translate(4, -6), opacity: 0.4, shade: 0.2,
             zIndex: 3))
-        let place = host(Placement(Rect(200, 40, 80, 80), transform: .rotate(-20), opacity: 1, shade: 0.5, zIndex: 7))
+        let place = host(Placement(Rect(x: 200, y: 40, width: 80, height: 80), transform: .rotate(-20), opacity: 1, shade: 0.5, zIndex: 7))
 
         let laid = LayoutShift(from: shown, to: place).applied(to: place)
 
@@ -36,7 +36,7 @@ final class LayoutShiftTests: XCTestCase {
 
     /// NO SHIFT IS THE PLACE ITSELF.
     func testNoShiftIsThePlace() {
-        let place = host(Placement(Rect(5, 5, 50, 50), transform: .scale(2), opacity: 0.7))
+        let place = host(Placement(Rect(x: 5, y: 5, width: 50, height: 50), transform: .scale(2), opacity: 0.7))
 
         XCTAssertEqual(LayoutShift.none.applied(to: place), place)
         XCTAssertEqual(LayoutShift(from: place, to: place), .none)
@@ -45,15 +45,15 @@ final class LayoutShiftTests: XCTestCase {
     /// A TURN GOES THE SHORT WAY: from 170 degrees to -170 is twenty degrees on, not three hundred and forty back.
     func testATurnGoesTheShortWay() {
         let shift = LayoutShift(
-            from: host(Placement(Rect(0, 0, 10, 10), transform: .rotate(170))),
-            to: host(Placement(Rect(0, 0, 10, 10), transform: .rotate(-170))))
+            from: host(Placement(Rect(x: 0, y: 0, width: 10, height: 10), transform: .rotate(170))),
+            to: host(Placement(Rect(x: 0, y: 0, width: 10, height: 10), transform: .rotate(-170))))
 
         XCTAssertEqual(shift.lanes[LayoutShift.turn], -20, accuracy: 0.000_001)
     }
 
     /// A CHILD JOINING FADES IN: where it lands, from nothing to its own opacity.
     func testAViewJoiningFadesIn() {
-        let place = host(Placement(Rect(0, 0, 10, 10), opacity: 0.8))
+        let place = host(Placement(Rect(x: 0, y: 0, width: 10, height: 10), opacity: 0.8))
 
         let laid = LayoutShift.joining(place).applied(to: place)
 
@@ -63,8 +63,8 @@ final class LayoutShiftTests: XCTestCase {
 
     /// A SHADE THE LAYOUT DRAWS NONE OF IS NOT BLENDED: a place without one keeps it, whatever was shown.
     func testAnUnshadedPlaceKeepsItsShade() {
-        let shown = host(Placement(Rect(0, 0, 10, 10), shade: 0.6))
-        let place = host(Placement(Rect(0, 0, 10, 10), shade: Placement.unshaded))
+        let shown = host(Placement(Rect(x: 0, y: 0, width: 10, height: 10), shade: 0.6))
+        let place = host(Placement(Rect(x: 0, y: 0, width: 10, height: 10), shade: Placement.unshaded))
 
         XCTAssertEqual(LayoutShift(from: shown, to: place).applied(to: place).shade, HostPlacement.unshaded)
     }

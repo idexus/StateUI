@@ -43,7 +43,7 @@ final class LayoutHandParametersTests: XCTestCase {
         bench.laid(tree)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-140, 0))
+        bench.hand(.changed, moved: Point(x: -140, y: 0))
 
         XCTAssertEqual(handed.phases.last, Orbit(turn: 1.4, zoom: 2))
         XCTAssertEqual(orbit.wrappedValue, Orbit(turn: 1, zoom: 2), "the turn passed named, the zoom untouched")
@@ -62,7 +62,7 @@ final class LayoutHandParametersTests: XCTestCase {
         let zoom = try XCTUnwrap(handed.phases.last?.zoom)
         XCTAssertGreaterThan(zoom, 1, "on its way")
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-140, 0))
+        bench.hand(.changed, moved: Point(x: -140, y: 0))
 
         let shown = try XCTUnwrap(handed.phases.last)
         XCTAssertEqual(shown.turn, 1.4, accuracy: 0.000_1, "the hand's turn")
@@ -80,7 +80,7 @@ final class LayoutHandParametersTests: XCTestCase {
         bench.frames(4)
         let zoom = try XCTUnwrap(bench.journey?.value[1])
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-140, 0))
+        bench.hand(.changed, moved: Point(x: -140, y: 0))
 
         let journey = try XCTUnwrap(bench.journey)
         XCTAssertEqual(journey.value[0], 1.4, accuracy: 0.000_1, "the turn under the hand")
@@ -97,7 +97,7 @@ final class LayoutHandParametersTests: XCTestCase {
         bench.laid(tree)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-100, 0))
+        bench.hand(.changed, moved: Point(x: -100, y: 0))
 
         XCTAssertEqual(handed.phases.last?.turn ?? 0, 3.3, accuracy: 0.001)
     }
@@ -112,7 +112,7 @@ final class LayoutHandParametersTests: XCTestCase {
         bench.laid(tree)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-140, 0))
+        bench.hand(.changed, moved: Point(x: -140, y: 0))
         bench.hand(.ended)
 
         XCTAssertEqual(try XCTUnwrap(bench.journey).destination, [1, 1.3])
@@ -127,7 +127,7 @@ final class LayoutHandParametersTests: XCTestCase {
         {
             MotionLayout([1], parameters: orbit.traveling(.eased(.milliseconds(320), curve: .linear))) { Text("\($0)") } placements: { _, phase in
                 handed?.phases.append(phase)
-                return [Placement(Rect(0, 0, 10, 10))]
+                return [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
             }
             .interaction(
                 .value(orbit.projectedValue, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)

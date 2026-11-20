@@ -200,7 +200,7 @@ final class AndroidGestureTests: XCTestCase {
                         .fill(.red)
                         .onTapped { tapped.values.append(card) }
                 } placements: { _, phase in
-                    (0..<4).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, 100)) }
+                    (0..<4).map { Placement(Rect(x: (Double($0) - phase) * 100, y: 0, width: 100, height: 100)) }
                 }
                 .interaction(
                     .value(turn.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...3).snaps(.every(1))

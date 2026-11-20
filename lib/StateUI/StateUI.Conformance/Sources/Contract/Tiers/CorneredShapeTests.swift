@@ -74,13 +74,13 @@
 
     /// A point just inside the outer side of a corner, eight wide, that a mitre covers and a bevel leaves bare.
     static func cornerTip(_ element: String) -> Point {
-        element == "Rectangle" ? Point(0, 0) : Point(35, 5)
+        element == "Rectangle" ? Point(x: 0, y: 0) : Point(x: 35, y: 5)
     }
 
     /// A point inside the outer side of a corner, sixteen wide, that a mitre covers and a limit of one leaves bare: past
     /// the reach the limit allows by more than a pixel at any scale.
     /// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colors
     static func pastTheLimit(_ element: String) -> Point {
-        element == "Rectangle" ? Point(0, 0) : Point(38.5, 1.5)
+        element == "Rectangle" ? Point(x: 0, y: 0) : Point(x: 38.5, y: 1.5)
     }
 }

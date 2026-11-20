@@ -91,15 +91,15 @@ extension ShapeTests {
     /// A figure of points set eight in from the room, so its corners' outer side stands inside it.
     @MainActor
     static func inset(_ element: String) -> [any Worn] {
-        let square = [Point(8, 8), Point(32, 8), Point(32, 32), Point(8, 32)]
+        let square = [Point(x: 8, y: 8), Point(x: 32, y: 8), Point(x: 32, y: 32), Point(x: 8, y: 32)]
         let atItsSize = Write(ContentModeElementContract.contentMode, ContentMode.center)
         return switch element {
         case "Line": [
-            Write(LineContract.from, Point(0, 20)),
-            Write(LineContract.to, Point(40, 20)),
+            Write(LineContract.from, Point(x: 0, y: 20)),
+            Write(LineContract.to, Point(x: 40, y: 20)),
         ]
         case "Polygon": [Write(PointsShapeContract.points, square), atItsSize]
-        case "Polyline": [Write(PointsShapeContract.points, square + [Point(8, 8)]), atItsSize]
+        case "Polyline": [Write(PointsShapeContract.points, square + [Point(x: 8, y: 8)]), atItsSize]
         case "Path": [Write(PathContract.data, "M 8 8 L 32 8 L 32 32 L 8 32 Z"), atItsSize]
         default: []
         }
@@ -115,15 +115,15 @@ extension ShapeTests {
     /// The points along `element`'s outline the run is read at.
     static func points(along element: String, width: Double) -> [Point] {
         switch element {
-        case "Line": return (2...38).map { Point(Double($0), 20) }
-        case "Rectangle": return (Int(width) + 2...38 - Int(width)).map { Point(Double($0), width / 2) }
+        case "Line": return (2...38).map { Point(x: Double($0), y: 20) }
+        case "Rectangle": return (Int(width) + 2...38 - Int(width)).map { Point(x: Double($0), y: width / 2) }
         case "Ellipse", "Capsule":
             let radius = 20 - width / 2
             return (8...32).map { x in
                 let across = Double(x) - 20
-                return Point(Double(x), 20 - (radius * radius - across * across).squareRoot())
+                return Point(x: Double(x), y: 20 - (radius * radius - across * across).squareRoot())
             }
-        default: return (10...30).map { Point(Double($0), 8) }
+        default: return (10...30).map { Point(x: Double($0), y: 8) }
         }
     }
 }

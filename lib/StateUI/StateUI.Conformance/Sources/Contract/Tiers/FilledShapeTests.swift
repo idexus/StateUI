@@ -36,12 +36,12 @@
             ]
             s.start {
                 Specimens.page("Rectangle", [
-                    Write(FilledShapeContract.fill, Material.gradient(.linearGradient(stops, from: Point(0, 0), to: Point(1, 0)))),
+                    Write(FilledShapeContract.fill, Material.gradient(.linearGradient(stops, from: Point(x: 0, y: 0), to: Point(x: 1, y: 0)))),
                     Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 20),
                 ])
             }
             let shape = try s.specimen("Rectangle")
-            let (early, late) = (Point(20, 10), Point(80, 10))
+            let (early, late) = (Point(x: 20, y: 10), Point(x: 80, y: 10))
             try s.settle { try s.shows(.red, on: shape, at: [early, late]) == [true, false] }
             s.expect(try s.colors(of: shape, at: [early])[0], shows: .red, "a fifth of the way")
             s.expect(try s.colors(of: shape, at: [late])[0], shows: .blue, "four fifths of the way")
@@ -62,7 +62,7 @@
                 ], beside: [Button("Blue").onClicked { blue.wrappedValue = true }.id("change")])
             }
             let shape = try s.specimen(element)
-            let inside = Point(20, 20)
+            let inside = Point(x: 20, y: 20)
             try s.settle { try s.shows(.red, on: shape, at: inside) }
             s.expect(try s.color(of: shape, at: inside), shows: .red)
 

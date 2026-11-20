@@ -23,7 +23,7 @@ final class ProgramMeasureTests: XCTestCase {
         let layout = try bench.laidOut(300, 100)
 
         XCTAssertEqual(layout.placement?.placements.map(\.bounds), [
-            Rect(0, 0, 10, 20), Rect(18, 0, 30, 20), Rect(56, 0, 20, 20),
+            Rect(x: 0, y: 0, width: 10, height: 20), Rect(x: 18, y: 0, width: 30, height: 20), Rect(x: 56, y: 0, width: 20, height: 20),
         ])
     }
 
@@ -48,7 +48,7 @@ final class ProgramMeasureTests: XCTestCase {
         try bench.click("Longer")
 
         XCTAssertEqual(layout.placement?.placements.map(\.bounds), [
-            Rect(0, 0, 40, 20), Rect(48, 0, 30, 20), Rect(86, 0, 20, 20),
+            Rect(x: 0, y: 0, width: 40, height: 20), Rect(x: 48, y: 0, width: 30, height: 20), Rect(x: 86, y: 0, width: 20, height: 20),
         ])
     }
 
@@ -84,14 +84,14 @@ final class ProgramMeasureTests: XCTestCase {
         let layout = try bench.laidOut(300, 100)
         let mounted = layout.children.map(\.mount)
         XCTAssertEqual(layout.placement?.placements.map(\.bounds), [
-            Rect(0, 0, 10, 20), Rect(18, 0, 30, 20), Rect(56, 0, 20, 20),
+            Rect(x: 0, y: 0, width: 10, height: 20), Rect(x: 18, y: 0, width: 30, height: 20), Rect(x: 56, y: 0, width: 20, height: 20),
         ])
 
         layout.layoutProgram?.layOut(50, 100)
         bench.settle()
 
         XCTAssertEqual(layout.placement?.placements.map(\.bounds), [
-            Rect(0, 0, 10, 20), Rect(0, 28, 30, 20), Rect(0, 56, 20, 20),
+            Rect(x: 0, y: 0, width: 10, height: 20), Rect(x: 0, y: 28, width: 30, height: 20), Rect(x: 0, y: 56, width: 20, height: 20),
         ])
         XCTAssertEqual(layout.children.map(\.mount), mounted, "no view was made again")
     }
@@ -170,7 +170,7 @@ private struct RowPage: View {
             Text(words[index])
         } placements: { context, _ in
             rowRuns += 1
-            guard measures else { return context.subviews.map { _ in Placement(Rect(0, 0, 10, 10)) } }
+            guard measures else { return context.subviews.map { _ in Placement(Rect(x: 0, y: 0, width: 10, height: 10)) } }
             let sizes = context.subviews.map { view in
                 if asksTwice { _ = view.sizeThatFits(width: offers) }
                 return view.sizeThatFits(width: offers)
@@ -181,7 +181,7 @@ private struct RowPage: View {
             var (across, down) = (0.0, 0.0)
             return sizes.map { size in
                 defer { if stacked { down += size.height + 8 } else { across += size.width + 8 } }
-                return Placement(Rect(across, down, size.width, size.height))
+                return Placement(Rect(x: across, y: down, width: size.width, height: size.height))
             }
         }
     }

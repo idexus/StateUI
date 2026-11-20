@@ -55,7 +55,7 @@ extension ControlDictionary {
             """#),
 
         (CanvasContract.self, #"""
-            @State var dot = Point(40, 40)
+            @State var dot = Point(x: 40, y: 40)
 
             Canvas {
                 Draw.fillColor(.cornflowerBlue)
@@ -174,7 +174,7 @@ extension ControlDictionary {
             """#),
 
         (LineContract.self, #"""
-            Line(from: Point(0, 0), to: Point(240, 0))
+            Line(from: Point(x: 0, y: 0), to: Point(x: 240, y: 0))
                 .stroke(.lightGray)
                 .lineWidth(1)
             """#),
@@ -346,12 +346,12 @@ extension ControlDictionary {
             """#),
 
         (PolygonContract.self, #"""
-            Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])
+            Polygon([Point(x: 20, y: 0), Point(x: 40, y: 40), Point(x: 0, y: 40)])
                 .fill(.steelBlue)
             """#),
 
         (PolylineContract.self, #"""
-            Polyline([Point(0, 30), Point(20, 5), Point(40, 25), Point(60, 0)])
+            Polyline([Point(x: 0, y: 30), Point(x: 20, y: 5), Point(x: 40, y: 25), Point(x: 60, y: 0)])
                 .stroke(.cornflowerBlue)
                 .lineWidth(2)
             """#),
@@ -630,7 +630,7 @@ extension ControlDictionary {
                 Text(name)
             } placements: { context, phase in
                 (0..<3).map { index in
-                    Placement(Rect((Double(index) - phase) * 120 + context.bounds.width / 2 - 50, 0, 100, context.bounds.height))
+                    Placement(Rect(x: (Double(index) - phase) * 120 + context.bounds.width / 2 - 50, y: 0, width: 100, height: context.bounds.height))
                 }
             }
             .interaction(
@@ -703,7 +703,7 @@ extension ControlDictionary {
             """#),
 
         (ShapeContract.self, #"""
-            Line(from: Point(0, 0), to: Point(120, 0))
+            Line(from: Point(x: 0, y: 0), to: Point(x: 120, y: 0))
                 .stroke(.black)
                 .lineWidth(2)
                 .dash([4, 2])
@@ -719,7 +719,7 @@ extension ControlDictionary {
             """#),
 
         (CorneredShapeContract.self, #"""
-            Polygon([Point(0, 40), Point(20, 0), Point(40, 40)])
+            Polygon([Point(x: 0, y: 40), Point(x: 20, y: 0), Point(x: 40, y: 40)])
                 .stroke(.black)
                 .lineWidth(6)
                 .lineJoin(.round)
@@ -903,7 +903,7 @@ extension ControlDictionary {
             """#),
 
         (PointsShapeContract.self, #"""
-            Polygon([Point(20, 0), Point(40, 40), Point(0, 15), Point(40, 15), Point(0, 40)])
+            Polygon([Point(x: 20, y: 0), Point(x: 40, y: 40), Point(x: 0, y: 15), Point(x: 40, y: 15), Point(x: 0, y: 40)])
                 .fillRule(.evenOdd)
                 .fill(.gold)
             """#),

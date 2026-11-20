@@ -29,7 +29,7 @@ final class LayoutProgramTests: XCTestCase {
             runs.count += 1
             runs.rooms.append(context.bounds)
             return context.subviews.map { view in
-                Placement(Rect(0, 0, measures ? view.sizeThatFits().width : 10, 10))
+                Placement(Rect(x: 0, y: 0, width: measures ? view.sizeThatFits().width : 10, height: 10))
             }
         }
         .node
@@ -69,7 +69,7 @@ final class LayoutProgramTests: XCTestCase {
 
         program.layOut(300, 200)
         bench.cycle()
-        XCTAssertEqual(runs.rooms.last, Rect(0, 0, 300, 200))
+        XCTAssertEqual(runs.rooms.last, Rect(x: 0, y: 0, width: 300, height: 200))
         XCTAssertEqual(program.answered().views.count, 2)
 
         let ran = runs.count
@@ -79,7 +79,7 @@ final class LayoutProgramTests: XCTestCase {
 
         program.layOut(320, 200)
         bench.cycle()
-        XCTAssertEqual(runs.rooms.last, Rect(0, 0, 320, 200))
+        XCTAssertEqual(runs.rooms.last, Rect(x: 0, y: 0, width: 320, height: 200))
     }
 
     /// A MEASURE SAID AGAIN WORKS OUT A LAYOUT THAT MEASURED, and leaves one that measured nothing as it stood.
@@ -122,7 +122,7 @@ final class LayoutProgramTests: XCTestCase {
         } placements: { _, _ in
             let sample = tilt.projectedValue.journey.sample
             read.samples.append(sample?.value)
-            return [Placement(Rect(sample?.value ?? 0, 0, 10, 10))]
+            return [Placement(Rect(x: sample?.value ?? 0, y: 0, width: 10, height: 10))]
         }
         .following(tilt.projectedValue.journey)
         .node

@@ -13,13 +13,13 @@ final class HandRecognitionTests: XCTestCase {
     func testAHandAsksAtTheDistanceAndSaysEveryMoveOnceTaken() {
         var hand = HandRecognition(distance: .eachAxis(x: 4, y: 4))
 
-        XCTAssertEqual(hand.down(1, at: Point(100, 100), inView: Point(10, 20)), .began(at: Point(10, 20)))
-        XCTAssertEqual(hand.moved(1, to: Point(103, 100)), .nothing, "within the distance")
-        XCTAssertEqual(hand.moved(1, to: Point(106, 101)), .asks(Point(6, 1)), "past it: how far it went")
+        XCTAssertEqual(hand.down(1, at: Point(x: 100, y: 100), inView: Point(x: 10, y: 20)), .began(at: Point(x: 10, y: 20)))
+        XCTAssertEqual(hand.moved(1, to: Point(x: 103, y: 100)), .nothing, "within the distance")
+        XCTAssertEqual(hand.moved(1, to: Point(x: 106, y: 101)), .asks(Point(x: 6, y: 1)), "past it: how far it went")
         hand.answered(taken: true)
         XCTAssertTrue(hand.isTaken)
-        XCTAssertEqual(hand.moved(1, to: Point(110, 101)), .moved(Point(4, 0)))
-        XCTAssertEqual(hand.moved(1, to: Point(110, 101)), .nothing, "a move of nothing says nothing")
+        XCTAssertEqual(hand.moved(1, to: Point(x: 110, y: 101)), .moved(Point(x: 4, y: 0)))
+        XCTAssertEqual(hand.moved(1, to: Point(x: 110, y: 101)), .nothing, "a move of nothing says nothing")
         XCTAssertEqual(hand.up(1, letGo: true), .ended(letGo: true))
         XCTAssertFalse(hand.isTaken)
     }
@@ -28,14 +28,14 @@ final class HandRecognitionTests: XCTestCase {
     /// many are down, and a finger lifting leaves the hand to the others.
     func testFingersMoveTheHandAtTheirMiddle() {
         var hand = HandRecognition(distance: .radius(4))
-        _ = hand.down(1, at: Point(0, 0), inView: Point(0, 0))
-        _ = hand.moved(1, to: Point(10, 0))
+        _ = hand.down(1, at: Point(x: 0, y: 0), inView: Point(x: 0, y: 0))
+        _ = hand.moved(1, to: Point(x: 10, y: 0))
         hand.answered(taken: true)
 
-        XCTAssertEqual(hand.down(2, at: Point(50, 50), inView: Point(50, 50)), .nothing, "joined")
-        XCTAssertEqual(hand.moved(2, to: Point(54, 50)), .moved(Point(2, 0)), "a step over two fingers")
+        XCTAssertEqual(hand.down(2, at: Point(x: 50, y: 50), inView: Point(x: 50, y: 50)), .nothing, "joined")
+        XCTAssertEqual(hand.moved(2, to: Point(x: 54, y: 50)), .moved(Point(x: 2, y: 0)), "a step over two fingers")
         XCTAssertEqual(hand.up(1, letGo: true), .nothing, "the other still down")
-        XCTAssertEqual(hand.moved(2, to: Point(58, 50)), .moved(Point(4, 0)))
+        XCTAssertEqual(hand.moved(2, to: Point(x: 58, y: 50)), .moved(Point(x: 4, y: 0)))
         XCTAssertEqual(hand.up(2, letGo: false), .ended(letGo: false), "taken away")
     }
 
@@ -43,16 +43,16 @@ final class HandRecognitionTests: XCTestCase {
     /// press waiting to hold a view lets it go; the platform's measure decides the distance.
     func testAHandLeftSaysItsEndAlone() {
         var hand = HandRecognition(distance: .radius(4))
-        _ = hand.down(1, at: Point(0, 0), inView: Point(0, 0))
-        XCTAssertEqual(hand.moved(1, to: Point(2.8, 2.8)), .nothing, "within the radius")
-        XCTAssertEqual(hand.moved(1, to: Point(3, 3)), .asks(Point(3, 3)), "past it along the diagonal")
+        _ = hand.down(1, at: Point(x: 0, y: 0), inView: Point(x: 0, y: 0))
+        XCTAssertEqual(hand.moved(1, to: Point(x: 2.8, y: 2.8)), .nothing, "within the radius")
+        XCTAssertEqual(hand.moved(1, to: Point(x: 3, y: 3)), .asks(Point(x: 3, y: 3)), "past it along the diagonal")
         hand.answered(taken: false)
-        XCTAssertEqual(hand.moved(1, to: Point(30, 3)), .nothing)
+        XCTAssertEqual(hand.moved(1, to: Point(x: 30, y: 3)), .nothing)
         XCTAssertEqual(hand.up(1, letGo: true), .ended(letGo: true))
         XCTAssertEqual(hand.up(1, letGo: true), .nothing, "nothing down")
 
         var boxed = HandRecognition(distance: .eachAxis(x: 4, y: 4))
-        _ = boxed.down(1, at: Point(0, 0), inView: Point(0, 0))
-        XCTAssertEqual(boxed.moved(1, to: Point(3.5, 3.5)), .nothing, "within the box along both axes, past the radius")
+        _ = boxed.down(1, at: Point(x: 0, y: 0), inView: Point(x: 0, y: 0))
+        XCTAssertEqual(boxed.moved(1, to: Point(x: 3.5, y: 3.5)), .nothing, "within the box along both axes, past the radius")
     }
 }

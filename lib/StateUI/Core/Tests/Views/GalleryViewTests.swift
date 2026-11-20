@@ -66,7 +66,7 @@ final class GalleryViewTests: XCTestCase {
 
     /// The room the last `laid` laid out in - what `placements` feeds, so a
     /// test that states a room reads the cards that room put there.
-    private var room = Rect(0, 0, 352, 400)
+    private var room = Rect(x: 0, y: 0, width: 352, height: 400)
 
     /// Where the clock the engines run on stands, so two turns in one test are
     /// two different instants - a cycle asked for the moment it already
@@ -89,7 +89,7 @@ final class GalleryViewTests: XCTestCase {
         width: Double = 352,
         height: Double = 400
     ) -> (patch: HostPatch, whole: HostPatch) {
-        room = Rect(0, 0, width, height)
+        room = Rect(x: 0, y: 0, width: width, height: height)
 
         let first = renders.render(tree())
         program = board(first).program ?? program
@@ -282,10 +282,10 @@ final class GalleryViewTests: XCTestCase {
 
         // 352 wide is room for exactly one card at half of it: 176 by 248 in
         // the middle.
-        assertCard(showing, 0, Rect(88, 76, 176, 248))
+        assertCard(showing, 0, Rect(x: 88, y: 76, width: 176, height: 248))
 
         // And the next one stands just over half a card out.
-        assertCard(showing, 1, Rect(179.52, 76, 176, 248))
+        assertCard(showing, 1, Rect(x: 179.52, y: 76, width: 176, height: 248))
     }
 
     /// A ROW puts them side by side, and no wider than the room however many
@@ -294,8 +294,8 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).arrangement(.row).node }).patch
 
-        assertCard(showing, 0, Rect(88, 76, 176, 248))
-        assertCard(showing, 1, Rect(200.64, 76, 176, 248))
+        assertCard(showing, 0, Rect(x: 88, y: 76, width: 176, height: 248))
+        assertCard(showing, 1, Rect(x: 200.64, y: 76, width: 176, height: 248))
     }
 
     /// A FAN leans them out and sinks them, so the neighbor sits LOWER as
@@ -304,8 +304,8 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).arrangement(.fan).node }).patch
 
-        assertCard(showing, 0, Rect(88, 76, 176, 248))
-        assertCard(showing, 1, Rect(158.4, 92.12, 176, 248))
+        assertCard(showing, 0, Rect(x: 88, y: 76, width: 176, height: 248))
+        assertCard(showing, 1, Rect(x: 158.4, y: 92.12, width: 176, height: 248))
     }
 
     /// A DECK stands the cards one behind another: the card in front whole and
@@ -315,8 +315,8 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).arrangement(.deck).node }).patch
 
-        assertCard(showing, 0, Rect(88, 76, 176, 248))
-        assertCard(showing, 1, Rect(102, 79, 176, 248))
+        assertCard(showing, 0, Rect(x: 88, y: 76, width: 176, height: 248))
+        assertCard(showing, 1, Rect(x: 102, y: 79, width: 176, height: 248))
     }
 
     /// A SMALL ROOM shows the same gallery smaller rather than a slice of a
@@ -331,7 +331,7 @@ final class GalleryViewTests: XCTestCase {
 
         // The rectangle is the size the card was told, in the middle of the
         // room: 176 by 248 about (132, 200).
-        assertCard(showing, 0, Rect(44, 76, 176, 248))
+        assertCard(showing, 0, Rect(x: 44, y: 76, width: 176, height: 248))
 
         // And 264 * 0.5 / 176 is three quarters of a card, under the middle
         // card's own 1.1.
@@ -375,7 +375,7 @@ final class GalleryViewTests: XCTestCase {
         let showing = laid(
             renders, { self.gallery(3).node }, width: 1000, height: 575.36).patch
 
-        assertCard(showing, 0, Rect(412, 163.68, 176, 248))
+        assertCard(showing, 0, Rect(x: 412, y: 163.68, width: 176, height: 248))
         XCTAssertEqual(scale(showing, 0), 1.1 * 1.375, accuracy: 0.001)
     }
 
@@ -388,7 +388,7 @@ final class GalleryViewTests: XCTestCase {
 
         // Half of 352 is 176, which is 1.76 cards, and 400 within 116 is 3.45
         // - so the ceiling answers, and a 100-square card is drawn at 137.5.
-        assertCard(showing, 0, Rect(126, 150, 100, 100))
+        assertCard(showing, 0, Rect(x: 126, y: 150, width: 100, height: 100))
         XCTAssertEqual(scale(showing, 0), 1.1 * 1.375, accuracy: 0.001)
     }
 

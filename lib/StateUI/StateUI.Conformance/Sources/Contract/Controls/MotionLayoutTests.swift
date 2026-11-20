@@ -27,7 +27,7 @@
                                 .fill(index == 0 ? .red : .blue)
                                 .onEvent(ViewContract.layoutFrameChanged) { (index == 0 ? first : second).values.append($0) }
                         } placements: { _, _ in
-                            [Placement(Rect(0, 0, 20, 10)), Placement(Rect(30, 10, 20, 20))]
+                            [Placement(Rect(x: 0, y: 0, width: 20, height: 10)), Placement(Rect(x: 30, y: 10, width: 20, height: 20))]
                         }
                         .width(60).height(40)
                     }
@@ -59,7 +59,7 @@
                                 .fill(.red)
                         } placements: { context, _ in
                             rooms.values.append(context.bounds)
-                            return [Placement(Rect(0, 0, 10, 10))]
+                            return [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
                         }
                         .width(width.projectedValue).height(40)
                     }
@@ -67,12 +67,12 @@
                     .verticalAlignment(.start)
                 }
 
-                s.settle { rooms.values.last == Rect(0, 0, 60, 40) }
-                s.expect(rooms.values.last, Rect(0, 0, 60, 40), "the room it was given, from its own top left")
+                s.settle { rooms.values.last == Rect(x: 0, y: 0, width: 60, height: 40) }
+                s.expect(rooms.values.last, Rect(x: 0, y: 0, width: 60, height: 40), "the room it was given, from its own top left")
 
                 width.wrappedValue = 90
-                s.settle { rooms.values.last == Rect(0, 0, 90, 40) }
-                s.expect(rooms.values.last, Rect(0, 0, 90, 40), "and the new room it was given")
+                s.settle { rooms.values.last == Rect(x: 0, y: 0, width: 90, height: 40) }
+                s.expect(rooms.values.last, Rect(x: 0, y: 0, width: 90, height: 40), "and the new room it was given")
             },
             ConformanceCase("itHasNoSizeOfItsOwn", proves: [Covered(MotionLayoutContract.self)]) { s in
                 let (above, below) = (Received<[Double]>(), Received<[Double]>())
@@ -140,7 +140,7 @@
                             return context.subviews.map { view in
                                 let size = view.sizeThatFits()
                                 defer { across += size.width + 6 }
-                                return Placement(Rect(across, 0, size.width, size.height))
+                                return Placement(Rect(x: across, y: 0, width: size.width, height: size.height))
                             }
                         }
                         .width(200).height(60)
@@ -182,7 +182,7 @@
                         } placements: { context, _ in
                             context.subviews.map { view in
                                 let size = view.sizeThatFits()
-                                return Placement(Rect(0, 0, size.width, size.height))
+                                return Placement(Rect(x: 0, y: 0, width: size.width, height: size.height))
                             }
                         }
                         .width(300).height(60)
@@ -224,7 +224,7 @@
                         } placements: { context, _ in
                             context.subviews.map { view in
                                 let size = view.sizeThatFits()
-                                return Placement(Rect(0, 0, size.width, size.height))
+                                return Placement(Rect(x: 0, y: 0, width: size.width, height: size.height))
                             }
                         }
                         // As large as its tallest view.
@@ -281,7 +281,7 @@
                             var (across, down) = (0.0, 0.0)
                             return sizes.map { size in
                                 defer { if stacked { down += size.height + 10 } else { across += size.width + 10 } }
-                                return Placement(Rect(across, down, size.width, size.height))
+                                return Placement(Rect(x: across, y: down, width: size.width, height: size.height))
                             }
                         }
                         .width(width.projectedValue).height(140)
@@ -317,7 +317,7 @@
                                 .fill(index == 0 ? .red : .blue)
                                 .onEvent(ViewContract.layoutFrameChanged) { (index == 0 ? first : second).values.append($0) }
                         } placements: { _, _ in
-                            [Placement(Rect(0, 0, 20, 10)), Placement(Rect(30, 10, 20, 20))]
+                            [Placement(Rect(x: 0, y: 0, width: 20, height: 10)), Placement(Rect(x: 30, y: 10, width: 20, height: 20))]
                         }
                         .mirrorsRightToLeft(true)
                         .width(60).height(40)
@@ -351,7 +351,7 @@
                                 .fill(.red)
                         } placements: { _, phase in
                             handed.values.append(phase)
-                            return [Placement(Rect(phase * 10, 0, 20, 20))]
+                            return [Placement(Rect(x: phase * 10, y: 0, width: 20, height: 20))]
                         }
                         .width(100).height(40)
                         Button("Go").onClicked(policy: .ignoreWhileRunning) {
@@ -389,7 +389,7 @@
                                 .fill(.red)
                         } placements: { _, phase in
                             handed.values.append(phase)
-                            return [Placement(Rect(phase.turn * 10, 0, 20 * phase.zoom, 20))]
+                            return [Placement(Rect(x: phase.turn * 10, y: 0, width: 20 * phase.zoom, height: 20))]
                         }
                         .width(100).height(40)
                         Button("Turn").onClicked(policy: .ignoreWhileRunning) {
@@ -427,7 +427,7 @@
                 let layout = try HandLayouts.hand(s, clock: clock, phase: phase, mirrored: true)
 
                 // 140 points to the right is 1.4 targets on in the mirror: let go still, it rests on the nearest.
-                try s.perform(.sweep(by: Point(140, 0), speed: .zero), on: layout)
+                try s.perform(.sweep(by: Point(x: 140, y: 0), speed: .zero), on: layout)
                 s.frames(of: clock, until: 1_600)
 
                 s.expect(phase.wrappedValue, 1, "on, the hand going the mirror's way")
@@ -444,7 +444,7 @@
                                 .fill(.red)
                         } placements: { _, at in
                             handed.values.append(at)
-                            return [Placement(Rect(at * 60, 0, 20, 20))]
+                            return [Placement(Rect(x: at * 60, y: 0, width: 20, height: 20))]
                         }
                         .axis(range: 0...1, keyframes: .every(1))
                         .width(100).height(40)
@@ -458,7 +458,7 @@
                 let layout = try s.element(ofType: .motionLayout)
 
                 // Declared with keyframes and no input: the hand passes it by, the program moves it.
-                try s.perform(.sweep(by: Point(-140, 0), speed: Point(-600, 0)), on: layout)
+                try s.perform(.sweep(by: Point(x: -140, y: 0), speed: Point(x: -600, y: 0)), on: layout)
                 s.frames(of: clock, until: 1_600)
                 s.expect(arrangement.wrappedValue, 0, "no hand moves an axis of keyframes alone")
 
@@ -474,11 +474,11 @@
                 let layout = try itemLayout(s, clock: clock, phase: phase, begins: .longPress, told: told)
 
                 // The middle view stands from 30 to 50 across: a press on it held past a long press is its.
-                try s.perform(.pressDown(at: Point(40, 20)), on: layout)
+                try s.perform(.pressDown(at: Point(x: 40, y: 20)), on: layout)
                 s.frames(of: clock, until: clock.now + 600)
-                try s.perform(.drag(to: Point(70, 30)), on: layout)
+                try s.perform(.drag(to: Point(x: 70, y: 30)), on: layout)
                 s.frames(of: clock, until: clock.now + 48)
-                try s.perform(.lift(at: Point(70, 30)), on: layout)
+                try s.perform(.lift(at: Point(x: 70, y: 30)), on: layout)
                 s.frames(of: clock, until: clock.now + 600)
 
                 s.expect(told.values.first, "1 at 40,20", "the view under the press, where it went down")
@@ -491,10 +491,10 @@
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
                 let layout = try itemLayout(s, clock: clock, phase: phase, begins: .perpendicular, told: told)
 
-                try s.perform(.pressDown(at: Point(40, 15)), on: layout)
-                try s.perform(.drag(to: Point(42, 35)), on: layout)
+                try s.perform(.pressDown(at: Point(x: 40, y: 15)), on: layout)
+                try s.perform(.drag(to: Point(x: 42, y: 35)), on: layout)
                 s.frames(of: clock, until: clock.now + 48)
-                try s.perform(.lift(at: Point(42, 35)), on: layout)
+                try s.perform(.lift(at: Point(x: 42, y: 35)), on: layout)
                 s.frames(of: clock, until: clock.now + 600)
 
                 s.expect(told.values.first, "1 at 40,15", "the view under the press")
@@ -505,10 +505,10 @@
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
                 let layout = try itemLayout(s, clock: clock, phase: phase, begins: .perpendicular, told: told, dismissing: true)
 
-                try s.perform(.pressDown(at: Point(40, 15)), on: layout)
-                try s.perform(.drag(to: Point(40, 38)), on: layout)
+                try s.perform(.pressDown(at: Point(x: 40, y: 15)), on: layout)
+                try s.perform(.drag(to: Point(x: 40, y: 38)), on: layout)
                 s.frames(of: clock, until: clock.now + 48)
-                try s.perform(.lift(at: Point(40, 38)), on: layout)
+                try s.perform(.lift(at: Point(x: 40, y: 38)), on: layout)
                 s.frames(of: clock, until: clock.now + 1_000)
                 s.settle { told.values.last == "1 dismissed" }
 
@@ -534,7 +534,7 @@ private func itemLayout(
                 Rectangle()
                     .fill(.red)
             } placements: { _, at in
-                (0..<3).map { Placement(Rect((Double($0) - at) * 30, 10, 20, 20)) }
+                (0..<3).map { Placement(Rect(x: (Double($0) - at) * 30, y: 10, width: 20, height: 20)) }
             }
             .interaction(
                 .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...2).snaps(.every(1))

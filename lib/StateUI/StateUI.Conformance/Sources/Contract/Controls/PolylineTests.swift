@@ -18,6 +18,6 @@
     /// A run down the left side to `y`, across the room at `y`, and down the right side: as tall and wide as the
     /// room its figure stands in, so the points read are the room's own.
     static func across(at y: Double) -> [Point] {
-        [Point(0, 0), Point(0, y), Point(40, y), Point(40, 40)]
+        [Point(x: 0, y: 0), Point(x: 0, y: y), Point(x: 40, y: y), Point(x: 40, y: 40)]
     }
 }

@@ -630,10 +630,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// the arithmetic. The fit is a scale, so the card's content shrinks with it.
     private func card(_ room: Rect, up: Double, across: Double) -> Rect {
         Rect(
-            room.width / 2 + across - cardWidth / 2,
-            room.height / 2 + up - cardHeight / 2,
-            cardWidth,
-            cardHeight)
+            x: room.width / 2 + across - cardWidth / 2,
+            y: room.height / 2 + up - cardHeight / 2,
+            width: cardWidth,
+            height: cardHeight)
     }
 
     /// The items and their card face, behind a class.

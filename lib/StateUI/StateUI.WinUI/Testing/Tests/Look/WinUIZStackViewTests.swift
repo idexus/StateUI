@@ -59,7 +59,7 @@ final class WinUIZStackViewTests: XCTestCase {
                     } placements: { context, phase in
                         phase < 1
                             ? [Placement(context.bounds), Placement(context.bounds)]
-                            : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
+                            : [Placement(Rect(x: 10, y: 20, width: 30, height: 40), zIndex: 1), Placement(Rect(x: 0, y: 0, width: 50, height: 50), opacity: 0.5)]
                     }
                     .height(200)
 

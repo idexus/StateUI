@@ -14,7 +14,7 @@ final class DisabledBranchTests: XCTestCase {
         let inner = try element("inner", in: runtime)
 
         inner.hear(.tap(run: 1), in: runtime)
-        inner.hear(.pointer(.pointerEntered, Point(1, 1)), in: runtime)
+        inner.hear(.pointer(.pointerEntered, Point(x: 1, y: 1)), in: runtime)
         inner.hear(.hold, in: runtime)
         for _ in 0..<5 { runtime.pump.turn() }
 
@@ -64,21 +64,21 @@ final class DisabledBranchTests: XCTestCase {
     func testWhatBeganOnAViewEndsAsItIsDisabled() throws {
         let runtime = running(LockingApplication.self)
         let pad = try element("pad", in: runtime)
-        pad.hear(.pointer(.pointerEntered, Point(1, 1)), in: runtime)
+        pad.hear(.pointer(.pointerEntered, Point(x: 1, y: 1)), in: runtime)
         pad.hear(.drag(.began, x: 0, y: 0, from: .zero), in: runtime)
-        pad.hear(.pinch(.began, scale: 1, at: Point(0.5, 0.5)), in: runtime)
+        pad.hear(.pinch(.began, scale: 1, at: Point(x: 0.5, y: 0.5)), in: runtime)
         try element("lock", in: runtime).hear(.tap(run: 1), in: runtime)
         for _ in 0..<5 { runtime.pump.turn() }
         XCTAssertFalse(pad.isEffectivelyEnabled)
 
         pad.hear(.drag(.ended, x: 90, y: 0, from: .zero), in: runtime)
-        pad.hear(.pinch(.ended, scale: 2, at: Point(0.5, 0.5)), in: runtime)
-        pad.hear(.pointer(.pointerExited, Point(50, 50)), in: runtime)
-        pad.hear(.pointer(.pointerExited, Point(50, 50)), in: runtime)
+        pad.hear(.pinch(.ended, scale: 2, at: Point(x: 0.5, y: 0.5)), in: runtime)
+        pad.hear(.pointer(.pointerExited, Point(x: 50, y: 50)), in: runtime)
+        pad.hear(.pointer(.pointerExited, Point(x: 50, y: 50)), in: runtime)
         pad.hear(.drag(.began, x: 0, y: 0, from: .zero), in: runtime)
         pad.hear(.drag(.cancelled, x: 0, y: 0, from: .zero), in: runtime)
-        pad.hear(.pinch(.ended, scale: 1, at: Point(0.5, 0.5)), in: runtime)
-        pad.hear(.pointer(.pointerEntered, Point(1, 1)), in: runtime)
+        pad.hear(.pinch(.ended, scale: 1, at: Point(x: 0.5, y: 0.5)), in: runtime)
+        pad.hear(.pointer(.pointerEntered, Point(x: 1, y: 1)), in: runtime)
         for _ in 0..<5 { runtime.pump.turn() }
 
         XCTAssertEqual(heard, ["entered", "pan began", "pinch began", "pan cancelled", "pinch cancelled", "exited"])

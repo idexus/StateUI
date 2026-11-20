@@ -35,7 +35,7 @@ final class ProgramBodiesTests: XCTestCase {
                     Text("\(item)")
                 }
             } placements: { _, at in
-                shown.indices.map { Placement(Rect((Double($0) - at) * apart, 0, 10, 10)) }
+                shown.indices.map { Placement(Rect(x: (Double($0) - at) * apart, y: 0, width: 10, height: 10)) }
             }
             .layoutBodies(bodies)
             .onSettled { _ in settled?.count += 1 }

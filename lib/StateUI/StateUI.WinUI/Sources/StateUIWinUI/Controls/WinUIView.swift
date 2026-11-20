@@ -628,7 +628,7 @@ extension WinUIView: PlacedView {
 
     /// Whether a layout has placed the view: StateUI's, or WinUI's giving it a size.
     var isLaidOut: Bool {
-        let frame = placed == nil ? laidOutFrame : Rect(0, 0, 0, 0)
+        let frame = placed == nil ? laidOutFrame : Rect(x: 0, y: 0, width: 0, height: 0)
         return MountedElement.isLaidOut(placed: placed != nil, width: frame.width, height: frame.height)
     }
 }

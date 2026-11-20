@@ -19,7 +19,7 @@ final class MaterialChannelTests: XCTestCase {
             .color(Color(hex: 0x512BD4)),
             .gradient(.linearGradient(
                 [GradientStop(Color(hex: 0x7C5CFC), 0), GradientStop(Color(hex: 0xE879A9), 1)],
-                from: Point(0, 0), to: Point(1, 1))),
+                from: Point(x: 0, y: 0), to: Point(x: 1, y: 1))),
             .blur(.thin),
             .blur(.thick.tint(Color(hex: 0x512BD4).opacity(0.15))),
             .glass(Glass.clear.tint(Color(hex: 0x0F766E)).isInteractive(true)),

@@ -47,20 +47,20 @@ final class LayoutArithmeticTests: XCTestCase {
 
         let size = StackArithmetic.size(of: row, axis: .horizontal, spacing: 5, padding: Insets(0), width: nil)
         let places = StackArithmetic.places(
-            of: row, axis: .horizontal, spacing: 5, padding: Insets(0), in: Rect(0, 0, 200, 10),
+            of: row, axis: .horizontal, spacing: 5, padding: Insets(0), in: Rect(x: 0, y: 0, width: 200, height: 10),
             direction: .leftToRight)
         XCTAssertEqual(size, LayoutSize(width: 60, height: 10))
-        XCTAssertEqual(places[1], Rect(25, 0, 140, 10), "the 200 less the boxes' 50 and the two spacings' 10")
-        XCTAssertEqual(places[2], Rect(170, 0, 30, 10), "the last box stands at the far end")
+        XCTAssertEqual(places[1], Rect(x: 25, y: 0, width: 140, height: 10), "the 200 less the boxes' 50 and the two spacings' 10")
+        XCTAssertEqual(places[2], Rect(x: 170, y: 0, width: 30, height: 10), "the last box stands at the far end")
 
         let column = [space, Child(width: 10, height: 20), space]
         let shared = StackArithmetic.places(
-            of: column, axis: .vertical, spacing: 0, padding: Insets(0), in: Rect(0, 0, 10, 100),
+            of: column, axis: .vertical, spacing: 0, padding: Insets(0), in: Rect(x: 0, y: 0, width: 10, height: 100),
             direction: .leftToRight)
-        XCTAssertEqual(shared[1], Rect(0, 40, 10, 20), "two spaces share the room alike")
+        XCTAssertEqual(shared[1], Rect(x: 0, y: 40, width: 10, height: 20), "two spaces share the room alike")
 
         let tight = StackArithmetic.places(
-            of: row, axis: .horizontal, spacing: 5, padding: Insets(0), in: Rect(0, 0, 40, 10),
+            of: row, axis: .horizontal, spacing: 5, padding: Insets(0), in: Rect(x: 0, y: 0, width: 40, height: 10),
             direction: .leftToRight)
         XCTAssertEqual(tight[1]?.width, 0, "no room left, none taken")
 
@@ -68,7 +68,7 @@ final class LayoutArithmeticTests: XCTestCase {
         stated.values.width = 12
         let fixed = StackArithmetic.places(
             of: [Child(width: 20, height: 10), stated], axis: .horizontal, spacing: 0, padding: Insets(0),
-            in: Rect(0, 0, 200, 10), direction: .leftToRight)
+            in: Rect(x: 0, y: 0, width: 200, height: 10), direction: .leftToRight)
         XCTAssertEqual(fixed[1]?.width, 12, "a length it states wins over growing")
     }
 
@@ -90,13 +90,13 @@ final class LayoutArithmeticTests: XCTestCase {
 
         let size = StackArithmetic.size(of: items, axis: .vertical, spacing: 5, padding: Insets(2), width: nil)
         let places = StackArithmetic.places(
-            of: items, axis: .vertical, spacing: 5, padding: Insets(2), in: Rect(0, 0, 100, 50),
+            of: items, axis: .vertical, spacing: 5, padding: Insets(2), in: Rect(x: 0, y: 0, width: 100, height: 50),
             direction: .leftToRight)
 
         XCTAssertEqual(size, LayoutSize(width: 24, height: 29))
-        XCTAssertEqual(places[0], Rect(2, 2, 96, 10), "a filling child takes the slot's width")
+        XCTAssertEqual(places[0], Rect(x: 2, y: 2, width: 96, height: 10), "a filling child takes the slot's width")
         XCTAssertNil(places[1])
-        XCTAssertEqual(places[2], Rect(40, 17, 20, 10), "a centered child stands in the middle")
+        XCTAssertEqual(places[2], Rect(x: 40, y: 17, width: 20, height: 10), "a centered child stands in the middle")
     }
 
     // MARK: - Right to left
@@ -110,11 +110,11 @@ final class LayoutArithmeticTests: XCTestCase {
         let items = [first, Child(width: 30, height: 10)]
 
         let places = StackArithmetic.places(
-            of: items, axis: .horizontal, spacing: 5, padding: Insets(start: 2, top: 0, end: 0, bottom: 0), in: Rect(0, 0, 100, 10),
+            of: items, axis: .horizontal, spacing: 5, padding: Insets(start: 2, top: 0, end: 0, bottom: 0), in: Rect(x: 0, y: 0, width: 100, height: 10),
             direction: .rightToLeft)
 
-        XCTAssertEqual(places[0], Rect(75, 0, 20, 10), "the first child against the right edge, inside padding and margin")
-        XCTAssertEqual(places[1], Rect(40, 0, 30, 10), "the next one to its left, the spacing between")
+        XCTAssertEqual(places[0], Rect(x: 75, y: 0, width: 20, height: 10), "the first child against the right edge, inside padding and margin")
+        XCTAssertEqual(places[1], Rect(x: 40, y: 0, width: 30, height: 10), "the next one to its left, the spacing between")
     }
 
     /// A column keeps its order down; a child aligned to its start stands at the right.
@@ -126,11 +126,11 @@ final class LayoutArithmeticTests: XCTestCase {
         end.values.horizontal = 2
 
         let places = StackArithmetic.places(
-            of: [start, end], axis: .vertical, spacing: 0, padding: Insets(0), in: Rect(0, 0, 100, 20),
+            of: [start, end], axis: .vertical, spacing: 0, padding: Insets(0), in: Rect(x: 0, y: 0, width: 100, height: 20),
             direction: .rightToLeft)
 
-        XCTAssertEqual(places[0], Rect(80, 0, 20, 10))
-        XCTAssertEqual(places[1], Rect(0, 10, 20, 10))
+        XCTAssertEqual(places[0], Rect(x: 80, y: 0, width: 20, height: 10))
+        XCTAssertEqual(places[1], Rect(x: 0, y: 10, width: 20, height: 10))
     }
 
     /// Right to left, a grid's column 0 is the rightmost, and its rows are where they were.
@@ -143,7 +143,7 @@ final class LayoutArithmeticTests: XCTestCase {
 
         let places = GridArithmetic.places(
             of: [first, second], rows: [], columns: [.fixed(20), .fixed(30)],
-            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(0, 0, 100, 10),
+            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(x: 0, y: 0, width: 100, height: 10),
             direction: .rightToLeft)
 
         XCTAssertEqual(places.map { $0?.x }, [80, 50])
@@ -161,7 +161,7 @@ final class LayoutArithmeticTests: XCTestCase {
         for track in [GridLength.proportional(.nan), .proportional(.infinity), .fixed(.infinity), .fixed(.nan)] {
             let places = GridArithmetic.places(
                 of: [first, second], rows: [track], columns: [track, .fill], rowSpacing: 0, columnSpacing: 0,
-                padding: Insets(0), in: Rect(0, 0, 100, 10), direction: .leftToRight)
+                padding: Insets(0), in: Rect(x: 0, y: 0, width: 100, height: 10), direction: .leftToRight)
             XCTAssertEqual(places.map { $0?.x }, [0, 50], "\(track)")
             XCTAssertEqual(places.map { $0?.width }, [50, 50], "\(track)")
         }
@@ -188,7 +188,7 @@ final class LayoutArithmeticTests: XCTestCase {
                 width: 100)
             let places = GridArithmetic.places(
                 of: children, rows: [], columns: [], rowSpacing: 0, columnSpacing: 0, padding: Insets(0),
-                in: Rect(0, 0, 100, 100), direction: .leftToRight)
+                in: Rect(x: 0, y: 0, width: 100, height: 100), direction: .leftToRight)
             XCTAssertTrue(size.width.isFinite && size.height.isFinite)
             XCTAssertEqual(places.count, children.count)
             XCTAssertTrue(places.allSatisfy { $0 != nil }, "every child stands somewhere")
@@ -196,7 +196,7 @@ final class LayoutArithmeticTests: XCTestCase {
 
         let places = GridArithmetic.places(
             of: [above], rows: [.fixed(30)], columns: [.fixed(40)], rowSpacing: 0, columnSpacing: 0,
-            padding: Insets(0), in: Rect(0, 0, 100, 100), direction: .leftToRight)
+            padding: Insets(0), in: Rect(x: 0, y: 0, width: 100, height: 100), direction: .leftToRight)
         XCTAssertEqual(places.first??.y, 0, "a row before the first is the first")
     }
 
@@ -205,17 +205,17 @@ final class LayoutArithmeticTests: XCTestCase {
     @MainActor
     func testAZStackRightToLeftCountsItsAreasFromTheRight() {
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(Rect(10, 5, 40, 30))
+        badge.values.area = .absolute(Rect(x: 10, y: 5, width: 40, height: 30))
         badge.values.horizontal = 0
         badge.values.vertical = 0
         var half = Child(width: 20, height: 10)
-        half.values.area = .proportional(Rect(0, 0, 0.5, 1))
+        half.values.area = .proportional(Rect(x: 0, y: 0, width: 0.5, height: 1))
 
         let places = ZStackArithmetic.places(
-            of: [badge, half], in: Rect(0, 0, 100, 50), padding: Insets(0), direction: .rightToLeft)
+            of: [badge, half], in: Rect(x: 0, y: 0, width: 100, height: 50), padding: Insets(0), direction: .rightToLeft)
 
-        XCTAssertEqual(places[0], Rect(70, 5, 20, 10))
-        XCTAssertEqual(places[1], Rect(50, 0, 50, 50), "a proportion from 0 is the right half")
+        XCTAssertEqual(places[0], Rect(x: 70, y: 5, width: 20, height: 10))
+        XCTAssertEqual(places[1], Rect(x: 50, y: 0, width: 50, height: 50), "a proportion from 0 is the right half")
     }
 
     /// A picture beside a button's words leaves half of what the two and their gap do not fill on each side, so they
@@ -235,9 +235,9 @@ final class LayoutArithmeticTests: XCTestCase {
         child.values.horizontal = 0
         child.values.margin = Insets(start: 4, top: 0, end: 0, bottom: 0)
 
-        let room = Rect(0, 0, 100, 10)
-        XCTAssertEqual(SingleChildArithmetic.place(of: child, in: room, direction: .rightToLeft), Rect(76, 0, 20, 10))
-        XCTAssertEqual(SingleChildArithmetic.place(of: child, in: room, direction: .leftToRight), Rect(4, 0, 20, 10))
+        let room = Rect(x: 0, y: 0, width: 100, height: 10)
+        XCTAssertEqual(SingleChildArithmetic.place(of: child, in: room, direction: .rightToLeft), Rect(x: 76, y: 0, width: 20, height: 10))
+        XCTAssertEqual(SingleChildArithmetic.place(of: child, in: room, direction: .leftToRight), Rect(x: 4, y: 0, width: 20, height: 10))
     }
 
     /// Fixed tracks take their length, automatic tracks their child, proportional tracks share the rest.
@@ -253,7 +253,7 @@ final class LayoutArithmeticTests: XCTestCase {
 
         let places = GridArithmetic.places(
             of: [fixed, automatic, shared], rows: [], columns: columns,
-            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(0, 0, 100, 10), direction: .leftToRight)
+            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(x: 0, y: 0, width: 100, height: 10), direction: .leftToRight)
 
         XCTAssertEqual(places.map { $0?.x }, [0, 20, 50])
         XCTAssertEqual(places.map { $0?.width }, [20, 30, 50])
@@ -310,10 +310,10 @@ final class LayoutArithmeticTests: XCTestCase {
         let size = StackArithmetic.size(
             of: row, axis: .horizontal, spacing: 10, lines: lines, padding: padding, width: 158)
         XCTAssertEqual(size, LayoutSize(width: 138, height: 64), "lines of 130 and 110, 20 and 30 tall, 6 apart")
-        let bounds = Rect(0, 0, 158, 64)
+        let bounds = Rect(x: 0, y: 0, width: 158, height: 64)
         let places = StackArithmetic.places(
             of: row, axis: .horizontal, spacing: 10, lines: lines, padding: padding, in: bounds, direction: .leftToRight)
-        XCTAssertEqual(places, [Rect(4, 4, 60, 20), Rect(74, 4, 60, 20), Rect(4, 30, 60, 30), Rect(74, 30, 40, 10)])
+        XCTAssertEqual(places, [Rect(x: 4, y: 4, width: 60, height: 20), Rect(x: 74, y: 4, width: 60, height: 20), Rect(x: 4, y: 30, width: 60, height: 30), Rect(x: 74, y: 30, width: 40, height: 10)])
         XCTAssertEqual(
             StackArithmetic.size(of: row, axis: .horizontal, spacing: 10, lines: lines, padding: padding, width: nil),
             LayoutSize(width: 258, height: 38), "offered no width, on one line")
@@ -326,9 +326,9 @@ final class LayoutArithmeticTests: XCTestCase {
         space.values.grows = true
         let spread = StackArithmetic.places(
             of: [Child(width: 200, height: 10), Child(width: 60, height: 10), space, Child(width: 30, height: 10)],
-            axis: .horizontal, spacing: 10, lines: lines, padding: Insets(0), in: Rect(0, 0, 150, 40),
+            axis: .horizontal, spacing: 10, lines: lines, padding: Insets(0), in: Rect(x: 0, y: 0, width: 150, height: 40),
             direction: .leftToRight)
-        XCTAssertEqual(spread[0], Rect(0, 0, 200, 10), "wider than the room, alone on its line")
+        XCTAssertEqual(spread[0], Rect(x: 0, y: 0, width: 200, height: 10), "wider than the room, alone on its line")
         XCTAssertEqual(spread[2].map { [$0.x, $0.y, $0.width] }, [70, 16, 40], "the space takes what its own line leaves")
         XCTAssertEqual(spread[3]?.x, 120)
     }
@@ -337,7 +337,7 @@ final class LayoutArithmeticTests: XCTestCase {
     /// end - right to left, the end the left - and a line a growing child fills stands as it fills.
     func testAWrappedRowsLinesStandWhereItsLineAlignmentSays() {
         let row = [Child(width: 60, height: 20), Child(width: 60, height: 20), Child(width: 60, height: 20)]
-        let bounds = Rect(0, 0, 130, 46)
+        let bounds = Rect(x: 0, y: 0, width: 130, height: 46)
         func places(_ alignment: TextAlignment, _ direction: LayoutDirection = .leftToRight) -> [Double?] {
             StackArithmetic.places(
                 of: row, axis: .horizontal, spacing: 10, lines: .wrapped(spacing: 6, alignment: alignment),
@@ -361,7 +361,7 @@ final class LayoutArithmeticTests: XCTestCase {
         let row = Self.row(title: 300, note: 100)
 
         let places = StackArithmetic.places(
-            of: row, axis: .horizontal, spacing: 10, padding: Insets(0), in: Rect(0, 0, 300, 100),
+            of: row, axis: .horizontal, spacing: 10, padding: Insets(0), in: Rect(x: 0, y: 0, width: 300, height: 100),
             direction: .leftToRight)
 
         XCTAssertEqual(places.map { $0?.width }, [150, 50, 80], "200 left for the words, shared 3 to 1")
@@ -374,7 +374,7 @@ final class LayoutArithmeticTests: XCTestCase {
     func testARowWithRoomKeepsItsWordsWhole() {
         let places = StackArithmetic.places(
             of: Self.row(title: 300, note: 100), axis: .horizontal, spacing: 10, padding: Insets(0),
-            in: Rect(0, 0, 600, 100), direction: .leftToRight)
+            in: Rect(x: 0, y: 0, width: 600, height: 100), direction: .leftToRight)
 
         XCTAssertEqual(places.map { $0?.width }, [300, 100, 80])
     }
@@ -392,7 +392,7 @@ final class LayoutArithmeticTests: XCTestCase {
         for room in stride(from: 100.0, through: 700, by: 23) {
             _ = StackArithmetic.size(of: measured, axis: .horizontal, spacing: 10, padding: Insets(0), width: room)
             _ = StackArithmetic.places(
-                of: placed, axis: .horizontal, spacing: 10, padding: Insets(0), in: Rect(0, 0, room, 100),
+                of: placed, axis: .horizontal, spacing: 10, padding: Insets(0), in: Rect(x: 0, y: 0, width: room, height: 100),
                 direction: .leftToRight)
             XCTAssertEqual(measured[0].offers?.widths.last, placed[0].offers?.widths.last, "the title at \(room)")
         }
@@ -425,12 +425,12 @@ final class LayoutArithmeticTests: XCTestCase {
 
         let places = GridArithmetic.places(
             of: [icon, words], rows: [.automatic], columns: columns,
-            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(0, 0, 120, 200), direction: .leftToRight)
+            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(x: 0, y: 0, width: 120, height: 200), direction: .leftToRight)
         let size = GridArithmetic.size(
             of: [icon, words], rows: [.automatic], columns: columns,
             rowSpacing: 0, columnSpacing: 0, padding: Insets(0), width: 120)
 
-        XCTAssertEqual(places[1], Rect(20, 0, 100, 30), "three lines of words at the column's 100")
+        XCTAssertEqual(places[1], Rect(x: 20, y: 0, width: 100, height: 30), "three lines of words at the column's 100")
         XCTAssertEqual(size.height, 30)
         XCTAssertEqual(size.width, 320, "its natural width is still its words on one line")
     }
@@ -456,7 +456,7 @@ final class LayoutArithmeticTests: XCTestCase {
             for width in [room, min(room, size.width)] {
                 let places = GridArithmetic.places(
                     of: items, rows: [.automatic], columns: columns, rowSpacing: 0, columnSpacing: 0,
-                    padding: Insets(0), in: Rect(0, 0, width, size.height), direction: .leftToRight)
+                    padding: Insets(0), in: Rect(x: 0, y: 0, width: width, height: size.height), direction: .leftToRight)
                 XCTAssertEqual(
                     places.compactMap { $0?.height }.max(), size.height,
                     "offered \(room), placed at \(width): words as tall as measured")
@@ -491,7 +491,7 @@ final class LayoutArithmeticTests: XCTestCase {
                 rowSpacing: 10, columnSpacing: 14, padding: Insets(0))
             let places = GridArithmetic.places(
                 of: grid.items, rows: grid.rows, columns: grid.columns, rowSpacing: 10, columnSpacing: 14,
-                padding: Insets(0), in: Rect(0, 0, size.width, size.height), direction: .leftToRight)
+                padding: Insets(0), in: Rect(x: 0, y: 0, width: size.width, height: size.height), direction: .leftToRight)
             for (child, place) in zip(grid.items, places) {
                 XCTAssertGreaterThanOrEqual(place?.width ?? 0, child.natural.width, grid.name)
                 XCTAssertGreaterThanOrEqual(place?.height ?? 0, child.natural.height, grid.name)
@@ -513,20 +513,20 @@ final class LayoutArithmeticTests: XCTestCase {
         corner.values.horizontal = 2
         corner.values.vertical = 2
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(Rect(10, 5, 40, 30))
+        badge.values.area = .absolute(Rect(x: 10, y: 5, width: 40, height: 30))
         badge.values.horizontal = 0
         badge.values.vertical = 0
         var half = Child(width: 20, height: 10)
-        half.values.area = .proportional(Rect(0.5, 0, 0.5, 1))
+        half.values.area = .proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1))
         let items = [Child(width: 20, height: 10), corner, badge, half, Child(width: 20, height: 10, shown: false)]
 
         let places = ZStackArithmetic.places(
-            of: items, in: Rect(0, 0, 100, 50), padding: Insets(4), direction: .leftToRight)
+            of: items, in: Rect(x: 0, y: 0, width: 100, height: 50), padding: Insets(4), direction: .leftToRight)
 
-        XCTAssertEqual(places[0], Rect(4, 4, 92, 42), "the whole room within the padding")
-        XCTAssertEqual(places[1], Rect(76, 36, 20, 10), "its natural size, at the room's far corner")
-        XCTAssertEqual(places[2], Rect(14, 9, 20, 10), "points from the room's top left, the child at its start")
-        XCTAssertEqual(places[3], Rect(50, 4, 46, 42), "the right half of the room")
+        XCTAssertEqual(places[0], Rect(x: 4, y: 4, width: 92, height: 42), "the whole room within the padding")
+        XCTAssertEqual(places[1], Rect(x: 76, y: 36, width: 20, height: 10), "its natural size, at the room's far corner")
+        XCTAssertEqual(places[2], Rect(x: 14, y: 9, width: 20, height: 10), "points from the room's top left, the child at its start")
+        XCTAssertEqual(places[3], Rect(x: 50, y: 4, width: 46, height: 42), "the right half of the room")
         XCTAssertNil(places[4])
     }
 
@@ -537,9 +537,9 @@ final class LayoutArithmeticTests: XCTestCase {
         var margined = Child(width: 30, height: 10)
         margined.values.margin = Insets(start: 5, top: 0, end: 5, bottom: 0)
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(Rect(10, 5, 40, 30))
+        badge.values.area = .absolute(Rect(x: 10, y: 5, width: 40, height: 30))
         var half = Child(width: 30, height: 20)
-        half.values.area = .proportional(Rect(0.5, 0, 0.5, 0.5))
+        half.values.area = .proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 0.5))
 
         XCTAssertEqual(ZStackArithmetic.size(of: [margined], padding: Insets(2), width: nil), LayoutSize(width: 44, height: 14))
         XCTAssertEqual(ZStackArithmetic.size(of: [badge], padding: Insets(0), width: nil), LayoutSize(width: 50, height: 35))
@@ -553,7 +553,7 @@ final class LayoutArithmeticTests: XCTestCase {
     @MainActor
     func testAMotionLayoutHasNoSizeOfItsOwn() {
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(Rect(10, 5, 40, 30))
+        badge.values.area = .absolute(Rect(x: 10, y: 5, width: 40, height: 30))
         let views = [Child(width: 30, height: 20), badge]
 
         XCTAssertEqual(ZStackArithmetic.size(of: views, padding: Insets(0), width: 100, motionLayout: true), LayoutSize(width: 0, height: 0))
@@ -567,8 +567,8 @@ final class LayoutArithmeticTests: XCTestCase {
         child.values.margin = Insets(10)
 
         XCTAssertEqual(
-            SingleChildArithmetic.place(of: child, in: Rect(0, 0, 100, 40), direction: .leftToRight),
-            Rect(10, 10, 80, 20))
+            SingleChildArithmetic.place(of: child, in: Rect(x: 0, y: 0, width: 100, height: 40), direction: .leftToRight),
+            Rect(x: 10, y: 10, width: 80, height: 20))
     }
 
     /// Every layout offers a child the room it stands in less the child's margin, once: the child answers for
@@ -581,8 +581,8 @@ final class LayoutArithmeticTests: XCTestCase {
         child.values.horizontal = 0
         child.offers = offers
         var half = child
-        half.values.area = .proportional(Rect(0, 0, 0.5, 1))
-        let room = Rect(0, 0, 100, 100)
+        half.values.area = .proportional(Rect(x: 0, y: 0, width: 0.5, height: 1))
+        let room = Rect(x: 0, y: 0, width: 100, height: 100)
 
         func offered(_ layout: () -> Void) -> [Double?] {
             offers.widths = []

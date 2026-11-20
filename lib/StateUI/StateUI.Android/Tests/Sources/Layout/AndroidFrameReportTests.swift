@@ -141,7 +141,7 @@ final class AndroidFrameReportTests: XCTestCase {
                     Rectangle()
                         .fill(.red)
                 } placements: { context, _ in
-                    [Placement(Rect(context.bounds.width / 2 - 10, 0, 20, 20))]
+                    [Placement(Rect(x: context.bounds.width / 2 - 10, y: 0, width: 20, height: 20))]
                 }
             }
             host.followDrawing()

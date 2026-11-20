@@ -20,7 +20,7 @@ final class WebHandTests: XCTestCase {
         let turn = State(wrappedValue: 0.0)
         let host = WebRenderer.running {
             MotionLayout([0, 1, 2], parameters: turn.projectedValue) { Text("\($0)") } placements: { context, phase in
-                (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, context.bounds.height)) }
+                (0..<3).map { Placement(Rect(x: (Double($0) - phase) * 100, y: 0, width: 100, height: context.bounds.height)) }
             }
             .interaction(
                 .value(turn.projectedValue, input: .translation(.horizontal, unit: .frontItem))
@@ -43,7 +43,7 @@ final class WebHandTests: XCTestCase {
         let turn = State(wrappedValue: 0.0)
         let host = WebRenderer.running {
             MotionLayout([0, 1, 2], parameters: turn.projectedValue) { Text("\($0)") } placements: { context, phase in
-                (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, context.bounds.height)) }
+                (0..<3).map { Placement(Rect(x: (Double($0) - phase) * 100, y: 0, width: 100, height: context.bounds.height)) }
             }
             .interaction(
                 .value(turn.projectedValue, input: .translation(.horizontal, unit: .frontItem))
@@ -82,7 +82,7 @@ final class WebHandTests: XCTestCase {
         let zoom = State(wrappedValue: 1.0)
         let host = WebRenderer.running {
             MotionLayout([0, 1, 2], parameters: zoom.projectedValue) { Text("\($0)") } placements: { context, at in
-                (0..<3).map { Placement(Rect(Double($0) * 100, 0, 100 * at, context.bounds.height)) }
+                (0..<3).map { Placement(Rect(x: Double($0) * 100, y: 0, width: 100 * at, height: context.bounds.height)) }
             }
             .interaction(
                 .value(zoom.projectedValue, input: .magnification).range(1...3).snaps([2])

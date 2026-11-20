@@ -102,10 +102,10 @@ final class ContractTests: XCTestCase {
     func testAListCrossesInItsValuesForm() {
         XCTAssertEqual([1.0, 2.5].propValue, .numbers([1, 2.5]))
         XCTAssertEqual(["a", "b"].propValue, .strings(["a", "b"]))
-        XCTAssertEqual([Point(1, 2), Point(3, 4)].propValue, .numbers([1, 2, 3, 4]))
+        XCTAssertEqual([Point(x: 1, y: 2), Point(x: 3, y: 4)].propValue, .numbers([1, 2, 3, 4]))
 
         XCTAssertEqual([Double](propValue: .numbers([1, 2])), [1, 2])
-        XCTAssertEqual([Point](propValue: .numbers([1, 2, 3, 4])), [Point(1, 2), Point(3, 4)])
+        XCTAssertEqual([Point](propValue: .numbers([1, 2, 3, 4])), [Point(x: 1, y: 2), Point(x: 3, y: 4)])
         XCTAssertNil([Point](propValue: .numbers([1, 2, 3])), "an odd run is not points")
         XCTAssertNil([String](propValue: .numbers([1])))
     }
@@ -184,8 +184,8 @@ final class ContractTests: XCTestCase {
             Material.color(.tomato), Material.gradient(.linearGradient([GradientStop(.gold, 0)])),
             Material.blur(.thin.tint(.indigo)), Material.glass(.clear.tint(.indigo).isInteractive(true)),
             Material(light: nil, dark: .blur(.thick)), Blur.Thickness.ultraThick, Glass.Clarity.clear,
-            Insets(start: 1, top: 2, end: 3, bottom: 4), Rect(1, 2, 3, 4), Point(5, 6),
-            [Point(1, 2), Point(3, 4)] as [Point], [1, 2.5] as [Double], ["a", "b"] as [String],
+            Insets(start: 1, top: 2, end: 3, bottom: 4), Rect(x: 1, y: 2, width: 3, height: 4), Point(x: 5, y: 6),
+            [Point(x: 1, y: 2), Point(x: 3, y: 4)] as [Point], [1, 2.5] as [Double], ["a", "b"] as [String],
             ImageSource("logo.png"), ImageSource(light: "logo.png", dark: "logo_dark.png"),
             ViewTransform.rotate(15).scaleX(1.2),
             SafeAreaEdges.all, SafeAreaEdges([.start, .bottom]),
@@ -203,7 +203,7 @@ final class ContractTests: XCTestCase {
             ButtonMenuKind.held, ToolbarStyle.rounded,
             TextDecorations(rawValue: 1),
             KeyboardShortcut("s"), KeyboardShortcut(.f5, modifiers: [.primary, .shift, .alt]),
-            Area.absolute(Rect(0, 0, 120, 40)), Area.proportional(Rect(0.5, 0, 0.5, 1)), SwipeDirections.all,
+            Area.absolute(Rect(x: 0, y: 0, width: 120, height: 40)), Area.proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1)), SwipeDirections.all,
             Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase.uppercase,
             InputPurpose(rawValue: 1)!, SubmitLabel(rawValue: 1)!, ScrollAxes.horizontal,
             MarkerKind(rawValue: 1)!, ContentMode(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
@@ -260,7 +260,7 @@ final class ContractTests: XCTestCase {
         let given: Point?? = MemberValues.decode([.numbers([1, 2])], as: Point?.self)
 
         XCTAssertEqual(omitted, .some(nil))
-        XCTAssertEqual(given, .some(Point(1, 2)))
+        XCTAssertEqual(given, .some(Point(x: 1, y: 2)))
         XCTAssertNil(MemberValues.decode([], as: Point.self), "a value the contract requires")
         XCTAssertEqual(MemberValues.decode([.number(1)], as: Int.self, String?.self).map { "\($0.0) \($0.1 ?? "-")" },
                        "1 -")

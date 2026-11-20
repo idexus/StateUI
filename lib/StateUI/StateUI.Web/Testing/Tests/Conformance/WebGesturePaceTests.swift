@@ -56,7 +56,7 @@ private enum OwnClock: ConformanceFamily {
     static var cases: [ConformanceCase] {
         [ConformanceCase("turned", proves: [Covered(ViewContract.rotationUpdated, on: "Rectangle")]) { s in
             s.start { Rectangle().fill(.red).width(100).height(100).id("specimen") }
-            try s.perform(.rotate(degrees: 30, at: Point(0.5, 0.5)), on: s.element("specimen"))
+            try s.perform(.rotate(degrees: 30, at: Point(x: 0.5, y: 0.5)), on: s.element("specimen"))
         }]
     }
 }

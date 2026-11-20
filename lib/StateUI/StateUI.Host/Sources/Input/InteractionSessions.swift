@@ -171,7 +171,7 @@ import StateUIFoundation
 
     /// The point a toolkit told, each coordinate that is no finite number nought.
     private static func told(_ point: Point) -> Point {
-        Point(point.x.isFinite ? point.x : 0, point.y.isFinite ? point.y : 0)
+        Point(x: point.x.isFinite ? point.x : 0, y: point.y.isFinite ? point.y : 0)
     }
 
     // MARK: - The hold

@@ -52,7 +52,7 @@ final class AppKitViewDrawingTests: XCTestCase {
         var own = box(rotation: 10)
         own.properties[.opacity] = .number(0.5)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
-        let run = PlacedRun([Placement(Rect(0, 0, 100, 60), transform: .rotate(30), opacity: 0.5)])
+        let run = PlacedRun([Placement(Rect(x: 0, y: 0, width: 100, height: 60), transform: .rotate(30), opacity: 0.5)])
         layout.layout = AppKitRenderer.programForTesting(slot: 95) { run }
         layout.children = .arranged([own])
         renderer.applyForTesting(tree(layout))

@@ -21,7 +21,7 @@ final class LayoutHandSettleTests: XCTestCase {
     private func tree(_ phase: State<Double>, _ told: Told) -> Node {
         let moved = phase.traveling(.eased(.milliseconds(160)))
         return MotionLayout([0, 1, 2, 3], parameters: moved) { Text("\($0)") } placements: { _, at in
-            (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+            (0..<4).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 10, height: 10)) }
         }
         .interaction(
             .value(moved, input: .translation(.horizontal, unit: .points(100)))
@@ -39,8 +39,8 @@ final class LayoutHandSettleTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-60, 0))
-        bench.hand(.ended, velocity: Point(-1_200, 0))
+        bench.hand(.changed, moved: Point(x: -60, y: 0))
+        bench.hand(.ended, velocity: Point(x: -1_200, y: 0))
         bench.frames(3)
         await bench.settle()
         XCTAssertEqual(told.phases, [], "not while it goes on")
@@ -62,7 +62,7 @@ final class LayoutHandSettleTests: XCTestCase {
         await bench.settle()
         XCTAssertEqual(told.phases, [], "taken on a snap, and held there")
 
-        bench.hand(.changed, moved: Point(-100, 0))
+        bench.hand(.changed, moved: Point(x: -100, y: 0))
         bench.frames(20)
         await bench.settle()
         XCTAssertEqual(told.phases, [], "moved onto the next snap, and held there")

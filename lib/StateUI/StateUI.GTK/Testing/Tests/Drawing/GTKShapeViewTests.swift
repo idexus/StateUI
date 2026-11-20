@@ -65,13 +65,13 @@ final class GTKShapeViewTests: XCTestCase {
     /// A polygon is filled inside its points, and a line outlined from end to end, in the middle of its room.
     func testAPolygonAndALineAreDrawnFromTheirPoints() throws {
         let polygon = try drawn(width: 20, height: 20, at: [(10, 10)]) {
-            Polygon([Point(0, 0), Point(10, 0), Point(10, 10), Point(0, 10)])
+            Polygon([Point(x: 0, y: 0), Point(x: 10, y: 0), Point(x: 10, y: 10), Point(x: 0, y: 10)])
                 .fill(Color(hex: 0x0000FF)).width(20).height(20)
         }
         XCTAssertEqual(polygon, [Self.blue])
 
         let line = try drawn(width: 40, height: 10, at: [(20, 5), (20, 0.5)]) {
-            Line(from: Point(0, 0), to: Point(40, 0)).stroke(Color(hex: 0xFF0000)).lineWidth(4).width(40).height(10)
+            Line(from: Point(x: 0, y: 0), to: Point(x: 40, y: 0)).stroke(Color(hex: 0xFF0000)).lineWidth(4).width(40).height(10)
         }
         XCTAssertEqual(line, [Self.red, 0])
     }
@@ -82,7 +82,7 @@ final class GTKShapeViewTests: XCTestCase {
             Rectangle()
                 .fill(.linearGradient(
                     [GradientStop(Color(hex: 0xFF0000), 0), GradientStop(Color(hex: 0x0000FF), 1)],
-                    from: Point(0, 0), to: Point(1, 0)))
+                    from: Point(x: 0, y: 0), to: Point(x: 1, y: 0)))
                 .width(100)
                 .height(20)
         }
@@ -97,7 +97,7 @@ final class GTKShapeViewTests: XCTestCase {
             Rectangle()
                 .fill(.linearGradient(
                     [GradientStop(Color(hex: 0x0000FF), 1), GradientStop(Color(hex: 0xFF0000), 0)],
-                    from: Point(0, 0), to: Point(1, 0)))
+                    from: Point(x: 0, y: 0), to: Point(x: 1, y: 0)))
                 .width(100)
                 .height(20)
         }
@@ -117,13 +117,13 @@ final class GTKShapeViewTests: XCTestCase {
     /// Dashes and gaps are outline widths, and an offset of half the pattern puts dashes where the gaps were.
     func testDashesAreOutlineWidths() throws {
         let plain = try drawn(width: 200, height: 8, at: [(6, 4), (16, 4), (26, 4)]) {
-            Line(from: Point(0, 4), to: Point(200, 4)).stroke(Color(hex: 0xFF0000)).lineWidth(4)
+            Line(from: Point(x: 0, y: 4), to: Point(x: 200, y: 4)).stroke(Color(hex: 0xFF0000)).lineWidth(4)
                 .dash([3, 2]).width(200).height(8)
         }
         XCTAssertEqual(plain, [Self.red, 0, Self.red], "a dash of 12, a gap of 8")
 
         let shifted = try drawn(width: 200, height: 8, at: [(6, 4), (16, 4)]) {
-            Line(from: Point(0, 4), to: Point(200, 4)).stroke(Color(hex: 0xFF0000)).lineWidth(4)
+            Line(from: Point(x: 0, y: 4), to: Point(x: 200, y: 4)).stroke(Color(hex: 0xFF0000)).lineWidth(4)
                 .dash([3, 2]).dashPhase(2.5).width(200).height(8)
         }
         XCTAssertEqual(shifted, [0, Self.red], "half a pattern on")

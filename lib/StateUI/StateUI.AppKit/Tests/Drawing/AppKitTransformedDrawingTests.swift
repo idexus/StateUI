@@ -35,8 +35,8 @@ final class AppKitTransformedDrawingTests: XCTestCase {
                         .fill(.red)
                 } placements: { context, _ in
                     [
-                        Placement(Rect(context.bounds.width - 40, 10, 80, 80), transform: .rotate(30)),
-                        Placement(Rect(context.bounds.width - 40, 110, 80, 80)),
+                        Placement(Rect(x: context.bounds.width - 40, y: 10, width: 80, height: 80), transform: .rotate(30)),
+                        Placement(Rect(x: context.bounds.width - 40, y: 110, width: 80, height: 80)),
                     ]
                 }
             }

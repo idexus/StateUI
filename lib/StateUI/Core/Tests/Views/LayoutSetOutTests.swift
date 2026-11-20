@@ -28,7 +28,7 @@ final class LayoutSetOutTests: XCTestCase {
         MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at, from in
             handed.phases.append(at)
             handed.froms.append(from)
-            return [Placement(Rect(0, 0, 10, 10))]
+            return [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
         }
         .axis(range: 0...6, segments: .every(1))
         .interaction(

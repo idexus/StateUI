@@ -1854,14 +1854,14 @@ final class CatalogTests: XCTestCase {
         frame()
 
         // Mail, the first icon, lifted: the one icon built again.
-        XCTAssertTrue(renders.fire(moved, with: MemberValues.encode(GesturePhase.began, Point(51, 66), Point.zero, 0.0)))
+        XCTAssertTrue(renders.fire(moved, with: MemberValues.encode(GesturePhase.began, Point(x: 51, y: 66), Point.zero, 0.0)))
         renders.render(tree(), changed: Renderer.shared.pendingChanges)
         let (sample, icons) = (renders.builds["HomeScreenSample"] ?? 0, renders.builds(of: "HomeTile"))
         XCTAssertEqual(icons.count, 48)
 
         // Moved to the third place: a new order.
         XCTAssertTrue(
-            renders.fire(moved, with: MemberValues.encode(GesturePhase.changed, Point(223, 66), Point.zero, 0.0)))
+            renders.fire(moved, with: MemberValues.encode(GesturePhase.changed, Point(x: 223, y: 66), Point.zero, 0.0)))
         renders.render(tree(), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(renders.builds["HomeScreenSample"], sample + 1, "the body built for the new order")

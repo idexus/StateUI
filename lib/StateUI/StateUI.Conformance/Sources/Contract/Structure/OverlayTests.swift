@@ -23,13 +23,13 @@
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("notice")) == true }
                 let over = try s.element("notice")
                 // A view coming into a layer standing already fades in: pressed once it stands.
-                try s.settle { try s.reaches(over, at: Point(40, 10)) }
-                s.expect(try s.reaches(over, at: Point(40, 10)), true, "the overlay takes a press on it")
+                try s.settle { try s.reaches(over, at: Point(x: 40, y: 10)) }
+                s.expect(try s.reaches(over, at: Point(x: 40, y: 10)), true, "the overlay takes a press on it")
                 // The notice's middle, and a point below it, on the rectangle filling the page - wherever the host
                 // lays its overlays, over the page or over the whole window.
                 let (stands, page) = (try s.place(of: over), try s.place(of: beneath))
-                let underNotice = Point(stands.x + stands.width / 2 - page.x, stands.y + stands.height / 2 - page.y)
-                let beside = Point(underNotice.x, underNotice.y + 60)
+                let underNotice = Point(x: stands.x + stands.width / 2 - page.x, y: stands.y + stands.height / 2 - page.y)
+                let beside = Point(x: underNotice.x, y: underNotice.y + 60)
                 s.expect(try s.reaches(beneath, at: beside), true, "a press beside it reaches the page")
                 s.expect(try s.reaches(beneath, at: underNotice), false, "a press on it reaches nothing beneath")
 
@@ -66,9 +66,9 @@
                 }
                 s.settle { (try? s.element("notice")) != nil }
                 let notice = try s.element("notice")
-                try s.settle { try s.isShown("sheet") && s.reaches(notice, at: Point(40, 20)) }
+                try s.settle { try s.isShown("sheet") && s.reaches(notice, at: Point(x: 40, y: 20)) }
                 s.expect(try s.isShown("sheet"), true, "the sheet shows")
-                s.expect(try s.reaches(notice, at: Point(40, 20)), true, "its overlay takes a press over it")
+                s.expect(try s.reaches(notice, at: Point(x: 40, y: 20)), true, "its overlay takes a press over it")
             },
             ConformanceCase("aWindowsOverlayStandsUnderItsSheets", proves: [
                 Covered(OverlayContract.self),
@@ -86,7 +86,7 @@
                 let sheet = try s.element("sheet")
                 let middle = { (element: MountedElement) throws -> Point in
                     let place = try s.place(of: element)
-                    return Point(place.width / 2, place.height / 2)
+                    return Point(x: place.width / 2, y: place.height / 2)
                 }
                 try s.settle { try s.reaches(sheet, at: middle(sheet)) }
                 s.expect(try s.reaches(sheet, at: middle(sheet)), true, "the sheet over the window's overlay takes the press")
@@ -114,8 +114,8 @@
                 let (inner, outer) = (try s.element("inner"), try s.element("outer"))
                 try s.settle { try s.held(VisualElementContract.isVisible, on: inner) == true }
 
-                s.expect(try s.reaches(inner, at: Point(10, 10)), true, "the inner one takes the press")
-                s.expect(try s.reaches(outer, at: Point(10, 10)), false, "the outer one stands under it")
+                s.expect(try s.reaches(inner, at: Point(x: 10, y: 10)), true, "the inner one takes the press")
+                s.expect(try s.reaches(outer, at: Point(x: 10, y: 10)), false, "the outer one stands under it")
             },
         ]
     }

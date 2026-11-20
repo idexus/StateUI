@@ -20,7 +20,7 @@ enum HandLayouts {
                     Rectangle()
                         .fill(.red)
                 } placements: { _, at in
-                    (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
+                    (0..<3).map { Placement(Rect(x: (Double($0) - at) * 50 + 40, y: 0, width: 20, height: 20)) }
                 }
                 .interaction(
                     .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(0...5).snaps(.every(1))
@@ -56,7 +56,7 @@ enum HandLayouts {
                     Rectangle()
                         .fill(.red)
                 } placements: { _, at in
-                    (0..<3).map { Placement(Rect((Double($0) - at.x) * 50 + 40, 60 - at.y * 50, 20, 20)) }
+                    (0..<3).map { Placement(Rect(x: (Double($0) - at.x) * 50 + 40, y: 60 - at.y * 50, width: 20, height: 20)) }
                 }
                 .interaction(
                     .simultaneous([
@@ -87,7 +87,7 @@ enum HandLayouts {
                     Rectangle()
                         .fill(.red)
                 } placements: { _, at in
-                    (0..<3).map { Placement(Rect(Double($0) * 80 + 20, 60, 40 * at, 40)) }
+                    (0..<3).map { Placement(Rect(x: Double($0) * 80 + 20, y: 60, width: 40 * at, height: 40)) }
                 }
                 .interaction(
                     .value(phase.projectedValue, input: input).range(0.5...2).snaps([1])

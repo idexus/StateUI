@@ -46,7 +46,7 @@ final class LayoutChangeTests: XCTestCase {
         let apart = gap?.wrappedValue ?? 100
         let count = items.wrappedValue.count
         return MotionLayout(items.wrappedValue, parameters: (phase ?? turn).projectedValue) { Text("\($0)") } placements: { _, at in
-            (0..<count).map { Placement(Rect((Double($0) - at) * apart, 0, 10, 10)) }
+            (0..<count).map { Placement(Rect(x: (Double($0) - at) * apart, y: 0, width: 10, height: 10)) }
         }
         .layoutBodies(bodies)
         .node
@@ -101,7 +101,7 @@ final class LayoutChangeTests: XCTestCase {
         func tree() -> Node {
             let count = items.wrappedValue.count
             return MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
-                (0..<count).map { Placement(Rect(Double($0) * 100, 0, 10, 10)) }
+                (0..<count).map { Placement(Rect(x: Double($0) * 100, y: 0, width: 10, height: 10)) }
             }
             .node
         }
@@ -120,7 +120,7 @@ final class LayoutChangeTests: XCTestCase {
         func tree() -> Node {
             let count = items.wrappedValue.count
             return MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
-                (0..<count).map { Placement(Rect(Double($0) * 100, 0, 10, 10)) }
+                (0..<count).map { Placement(Rect(x: Double($0) * 100, y: 0, width: 10, height: 10)) }
             }
             .node
         }
@@ -225,7 +225,7 @@ final class LayoutChangeTests: XCTestCase {
         let items = State(wrappedValue: [0, 1])
         func tree() -> Node {
             MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Text("\($0)") } placements: { context, _ in
-                [Placement(Rect(0, 0, context.bounds.width, 10)), Placement(Rect(context.bounds.width, 0, 10, 10))]
+                [Placement(Rect(x: 0, y: 0, width: context.bounds.width, height: 10)), Placement(Rect(x: context.bounds.width, y: 0, width: 10, height: 10))]
             }
             .layoutBodies(.onChange(response: .milliseconds(160)))
             .node

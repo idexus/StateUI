@@ -3,7 +3,7 @@
 
 /// A rectangle: a position and a size, in one value.
 ///
-///     Placement(Rect(0, 0, 120, 40))
+///     Placement(Rect(x: 0, y: 0, width: 120, height: 40))
 ///
 /// Where a placement stands a view, and what a frame report carries back, in
 /// device units.
@@ -20,26 +20,20 @@ public struct Rect: Equatable, Sendable, HostRepresentable {
     /// How tall.
     public var height: Double
 
-    /// In that order: x, y, width, height. What `Rect(0, 0, 120, 40)` means.
-    public init(_ x: Double, _ y: Double, _ width: Double, _ height: Double) {
+    /// A rectangle whose left edge is at `x` and top edge at `y`, `width` wide and `height` tall.
+    ///
+    ///     Rect(x: 0, y: 0, width: 1, height: 0.5)
+    public init(x: Double, y: Double, width: Double, height: Double) {
         self.x = x
         self.y = y
         self.width = width
         self.height = height
     }
 
-    /// The same, said out loud - which a rectangle of four bare numbers usually
-    /// wants:
-    ///
-    ///     Rect(x: 0, y: 0, width: 1, height: 0.5)
-    public init(x: Double, y: Double, width: Double, height: Double) {
-        self.init(x, y, width, height)
-    }
-
     /// No size at the origin - what a room stands at before it is measured.
     ///
     ///     @State private var room = Rect.zero
-    public static let zero = Rect(0, 0, 0, 0)
+    public static let zero = Rect(x: 0, y: 0, width: 0, height: 0)
 
     /// As a host is handed it: an array, in the initializer's order.
     public var propValue: PropValue {
@@ -51,6 +45,6 @@ public struct Rect: Equatable, Sendable, HostRepresentable {
     public init?(propValue: PropValue) {
         guard let numbers = propValue.numbers, numbers.count == 4 else { return nil }
 
-        self.init(numbers[0], numbers[1], numbers[2], numbers[3])
+        self.init(x: numbers[0], y: numbers[1], width: numbers[2], height: numbers[3])
     }
 }

@@ -26,7 +26,7 @@ final class LayoutSettleTests: XCTestCase {
     private func tree(_ phase: State<Double>, _ items: State<[Int]>, _ told: Told) -> Node {
         let count = items.wrappedValue.count
         return MotionLayout(items.wrappedValue, parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
-            (0..<count).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+            (0..<count).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 10, height: 10)) }
         }
         .layoutBodies(.onChange(response: .milliseconds(160)))
         .onSettled { told.phases.append($0) }
@@ -40,7 +40,7 @@ final class LayoutSettleTests: XCTestCase {
         var heard: [Int] = []
         func built() -> Node {
             MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
-                (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+                (0..<4).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 10, height: 10)) }
             }
             .onSettled(policy: .ignoreWhileRunning) { _ in
                 heard.append(1)
@@ -66,7 +66,7 @@ final class LayoutSettleTests: XCTestCase {
         let gate = Gate(.ignoreWhileRunning)
         func built() -> Node {
             let layout = MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
-                (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+                (0..<4).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 10, height: 10)) }
             }
             return (hears.wrappedValue
                 ? layout.onSettled(gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
@@ -96,7 +96,7 @@ final class LayoutSettleTests: XCTestCase {
         var heard = 0
         func built() -> Node {
             let layout = MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
-                (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+                (0..<4).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 10, height: 10)) }
             }
             return (hears.wrappedValue
                 ? layout.onSettled(gate: gate) { _ in
@@ -125,7 +125,7 @@ final class LayoutSettleTests: XCTestCase {
         let (phase, told, renders) = (State(wrappedValue: 0.0), Told(), Renders())
         func built() -> Node {
             MotionLayout([0, 1, 2, 3], parameters: phase.traveling(.eased(.milliseconds(160)))) { Text("\($0)") } placements: { _, at in
-                (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+                (0..<4).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 10, height: 10)) }
             }
             .onSettled { told.phases.append($0) }
             .onSettled { told.phases.append($0 + 10) }

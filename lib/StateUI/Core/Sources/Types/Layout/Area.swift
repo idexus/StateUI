@@ -4,17 +4,17 @@
 /// The part of a `ZStack`'s room a child stands in: a rectangle in device
 /// units or in fractions of the room.
 ///
-///     Text("Badge").area(.absolute(Rect(16, 16, 120, 40)))
+///     Text("Badge").area(.absolute(Rect(x: 16, y: 16, width: 120, height: 40)))
 ///     Rectangle()
 ///         .fill(.red)
-///         .area(.proportional(Rect(0.5, 0, 0.5, 1)))
+///         .area(.proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1)))
 ///
 /// A child that names no area stands in the whole room.
 public enum Area: Equatable, Sendable, HostRepresentable {
     /// A rectangle in device units from the room's top left.
     case absolute(Rect)
 
-    /// A rectangle in fractions of the room: `.proportional(Rect(0.5, 0, 0.5, 1))` is its right half.
+    /// A rectangle in fractions of the room: `.proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1))` is its right half.
     case proportional(Rect)
 
     /// Which of the two kinds an area is, as the number that crosses.
@@ -44,7 +44,7 @@ public enum Area: Equatable, Sendable, HostRepresentable {
               case .numbers(let numbers) = parts[1], numbers.count == 4
         else { return nil }
 
-        let area = Rect(numbers[0], numbers[1], numbers[2], numbers[3])
+        let area = Rect(x: numbers[0], y: numbers[1], width: numbers[2], height: numbers[3])
         switch kind {
         case .absolute: self = .absolute(area)
         case .proportional: self = .proportional(area)

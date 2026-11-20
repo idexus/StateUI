@@ -137,7 +137,7 @@ enum Listings {
                 let share = sideBySide ? (width - gap * Double(own.count - 1)) / Double(own.count) : width
                 // A FIELD OFFERED A WIDTH says how tall it stands in it.
                 let height = field.sizeThatFits(width: share).height
-                plan.placements.append(Placement(Rect(across, down, share, height)))
+                plan.placements.append(Placement(Rect(x: across, y: down, width: share, height: height)))
                 plan.size.height = max(plan.size.height, down + height)
                 if sideBySide { across += share + gap } else { down += height + gap }
             }
@@ -936,7 +936,7 @@ enum Listings {
             let behind = max(-step, 0)
 
             return Placement(
-                Rect(left, (room.height - height) / 2, width, height),
+                Rect(x: left, y: (room.height - height) / 2, width: width, height: height),
                 transform: .scale(1 - min(behind, 3) * 0.04),
                 opacity: min(max(1.6 - behind * 0.6, 0), 1) * min(max(3 - step, 0), 1),
                 zIndex: index)
@@ -1227,7 +1227,7 @@ enum Listings {
                     // The panel fills the area it names: the right half of the
                     // room, or 120 by 60 at 16, 16 whatever the room's size.
                     Fill(Color(hex: 0x1E88E5))
-                        .area(proportional ? .proportional(Rect(0.5, 0, 0.5, 1)) : .absolute(Rect(16, 16, 120, 60)))
+                        .area(proportional ? .proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1)) : .absolute(Rect(x: 16, y: 16, width: 120, height: 60)))
 
                     // Its natural size, where its alignments put it.
                     Badge(text: "start", color: Color(hex: 0xE53935))
@@ -1241,7 +1241,7 @@ enum Listings {
                     // A badge in the panel's area at its own size, at the area's
                     // top end - right to left, the area and the badge turned.
                     Badge(text: "in the area", color: Color(hex: 0x8E24AA))
-                        .area(proportional ? .proportional(Rect(0.5, 0, 0.5, 1)) : .absolute(Rect(16, 16, 120, 60)))
+                        .area(proportional ? .proportional(Rect(x: 0.5, y: 0, width: 0.5, height: 1)) : .absolute(Rect(x: 16, y: 16, width: 120, height: 60)))
                         .horizontalAlignment(.end)
                         .verticalAlignment(.start)
                 }
@@ -1672,9 +1672,9 @@ enum Listings {
 
         /// Across, down, and corner to corner - the three the button cycles.
         private static let ends: [(point: Point, name: String)] = [
-            (Point(1, 0), "Point(1, 0)"),
-            (Point(0, 1), "Point(0, 1)"),
-            (Point(1, 1), "Point(1, 1)"),
+            (Point(x: 1, y: 0), "Point(x: 1, y: 0)"),
+            (Point(x: 0, y: 1), "Point(x: 0, y: 1)"),
+            (Point(x: 1, y: 1), "Point(x: 1, y: 1)"),
         ]
 
         var body: some View {
@@ -1685,7 +1685,7 @@ enum Listings {
                 SectionTitle("Along a line")
 
                 Rectangle()
-                    .fill(.linearGradient(Self.stops, from: Point(0, 0), to: Self.ends[end].point))
+                    .fill(.linearGradient(Self.stops, from: Point(x: 0, y: 0), to: Self.ends[end].point))
                     .contentMode(.stretch)   // fills the room, proportions and all
                     .height(80)
 
@@ -1698,7 +1698,7 @@ enum Listings {
                 Ellipse()
                     .fill(.radialGradient(
                         [GradientStop(.white, 0), GradientStop(.steelBlue, 1)],
-                        center: Point(0.35, 0.3),
+                        center: Point(x: 0.35, y: 0.3),
                         radius: 0.75))
                     .width(96)
                     .height(96)
@@ -1711,7 +1711,7 @@ enum Listings {
                 }
                 .style(.card)
                 .lineWidth(4)
-                .stroke(.linearGradient(Self.stops, from: Point(0, 0), to: Point(1, 0)))
+                .stroke(.linearGradient(Self.stops, from: Point(x: 0, y: 0), to: Point(x: 1, y: 0)))
 
                 // Not a shape at all: `.background` takes a brush, so any view can
                 // carry one.
@@ -2133,8 +2133,8 @@ enum Listings {
             let height = width * 1.4
 
             return Placement(
-                Rect(room.width / 2 - width / 2 + step * width * 0.62,
-                     room.height / 2 - height / 2 + abs(step) * width * 0.1, width, height),
+                Rect(x: room.width / 2 - width / 2 + step * width * 0.62,
+                     y: room.height / 2 - height / 2 + abs(step) * width * 0.1, width: width, height: height),
                 transform: .rotate(step * 8).scale(1 - min(abs(step), 3) * 0.05),
                 zIndex: 100 - Int(min(abs(step), 9) * 10))
         }
@@ -2158,8 +2158,8 @@ enum Listings {
             let out = leaving ? (outward ? abs(step) / 0.8 : (1 - abs(step)) / 0.2) : 0
 
             return Placement(
-                Rect(room.width / 2 - width / 2 + side * (behind * 14 + out * width * 1.05),
-                     room.height / 2 - height / 2 + behind * 3, width, height),
+                Rect(x: room.width / 2 - width / 2 + side * (behind * 14 + out * width * 1.05),
+                     y: room.height / 2 - height / 2 + behind * 3, width: width, height: height),
                 transform: .rotate(side * (behind * 2.5 + out * 12)).scale(1 - behind * 0.03),
                 opacity: min(max(5 - abs(step), 0), 1),
                 zIndex: leaving && outward ? 200 : Int(100 - behind * 10))
@@ -3949,8 +3949,8 @@ enum Listings {
         """#,
         "FrameStages": #"""
         // Sources/Samples/Layout/GeometryReaderSample.swift
-        @State private var placed = Rect(0, 0, 0, 0)
-        @State private var drawn = Rect(0, 0, 0, 0)
+        @State private var placed = Rect(x: 0, y: 0, width: 0, height: 0)
+        @State private var drawn = Rect(x: 0, y: 0, width: 0, height: 0)
 
         @State private var larger = false
         @State private var far = false
@@ -4886,16 +4886,16 @@ enum Listings {
         """#,
         "GeometryReaderSample": #"""
         // Sources/Samples/Layout/GeometryReaderSample.swift
-        @State private var slot = Rect(0, 0, 0, 0)
-        @State private var window = Rect(0, 0, 0, 0)
-        @State private var safe = Rect(0, 0, 0, 0)
+        @State private var slot = Rect(x: 0, y: 0, width: 0, height: 0)
+        @State private var window = Rect(x: 0, y: 0, width: 0, height: 0)
+        @State private var safe = Rect(x: 0, y: 0, width: 0, height: 0)
 
         @State private var width = 220.0
 
         // The rectangle fed into a state: the first, or the second while the
         // switch says so. A state handed over reads it as it is handed over.
-        @State private var first = Rect(0, 0, 0, 0)
-        @State private var second = Rect(0, 0, 0, 0)
+        @State private var first = Rect(x: 0, y: 0, width: 0, height: 0)
+        @State private var second = Rect(x: 0, y: 0, width: 0, height: 0)
         @State private var feedsSecond = false
 
         var body: some View {
@@ -5425,7 +5425,7 @@ enum Listings {
             // about its middle as far as the cell lets it: drawn, it covers its
             // own cell and no other, so a press takes the icon under it.
             return Placement(
-                Rect(x + (width - 84) / 2, y + (height - 96) / 2, 84, 96),
+                Rect(x: x + (width - 84) / 2, y: y + (height - 96) / 2, width: 84, height: 96),
                 transform: .scale(min(width / 84, height / 96)))
         }
 
@@ -5435,7 +5435,7 @@ enum Listings {
             let x = room.width / 2 + (Double(page) - Double(pages - 1) / 2) * 16
 
             return Placement(
-                Rect(x - 4, room.height / 2 - 4, 8, 8),
+                Rect(x: x - 4, y: room.height / 2 - 4, width: 8, height: 8),
                 opacity: 0.25 + 0.75 * max(1 - abs(board - Double(page)), 0))
         }
 
@@ -6390,17 +6390,17 @@ enum Listings {
 
             switch part {
             case .words(let strip):
-                return Placement(Rect(16, top + Double(strip) * row + 4, room.width - 32, 16))
+                return Placement(Rect(x: 16, y: top + Double(strip) * row + 4, width: room.width - 32, height: 16))
             case .frame(let strip):
                 return Placement(Rect(
-                    room.width / 2 - width / 2 - 4, top + Double(strip) * row + 20, width + 8, height + 8))
+                    x: room.width / 2 - width / 2 - 4, y: top + Double(strip) * row + 20, width: width + 8, height: height + 8))
             case .card(let strip, let index):
                 let along = Double(index) - strips[keyPath: Strips.axes[strip]]
                 let comesRound = strip >= 3
                 let step = comesRound ? along - ((along + 2) / 4).rounded(.down) * 4 : along
 
                 return Placement(
-                    Rect(room.width / 2 + step * (width + 10) - width / 2, top + Double(strip) * row + 24, width, height),
+                    Rect(x: room.width / 2 + step * (width + 10) - width / 2, y: top + Double(strip) * row + 24, width: width, height: height),
                     opacity: comesRound ? min(max((2 - abs(step)) * 2, 0), 1) : 1,
                     zIndex: 1)
             }
@@ -6540,9 +6540,9 @@ enum Listings {
                 let angle = Double(index) / Double(Self.cards.count) * 2 * .pi
                 return Placement(
                     Rect(
-                        room.width / 2 + sin(angle) * radius - width / 2,
-                        room.height / 2 - cos(angle) * radius - height / 2,
-                        width, height),
+                        x: room.width / 2 + sin(angle) * radius - width / 2,
+                        y: room.height / 2 - cos(angle) * radius - height / 2,
+                        width: width, height: height),
                     transform: .scale(0.62))
             }
         }
@@ -6554,9 +6554,9 @@ enum Listings {
             return Self.cards.indices.map { index in
                 let (row, column) = index.quotientAndRemainder(dividingBy: 3)
                 return Placement(Rect(
-                    room.width / 3 * (Double(column) + 0.5) - width / 2,
-                    room.height / 3 * (Double(row) + 0.5) - height / 2,
-                    width, height))
+                    x: room.width / 3 * (Double(column) + 0.5) - width / 2,
+                    y: room.height / 3 * (Double(row) + 0.5) - height / 2,
+                    width: width, height: height))
             }
         }
 
@@ -6567,7 +6567,7 @@ enum Listings {
             return Self.cards.indices.map { index in
                 let step = Double(index) - Double(Self.cards.count - 1) / 2
                 return Placement(
-                    Rect(room.width / 2 - width / 2 + step * 3, room.height / 2 - height / 2 - step * 2, width, height),
+                    Rect(x: room.width / 2 - width / 2 + step * 3, y: room.height / 2 - height / 2 - step * 2, width: width, height: height),
                     transform: .rotate(step * 4).scale(1.1),
                     zIndex: index)
             }
@@ -6691,7 +6691,7 @@ enum Listings {
             let down = abs(step) * (-6 * pile + width * 0.12 * deal.spread)
 
             return Placement(
-                Rect(room.width / 2 - width / 2 + across, room.height / 2 - height / 2 + down, width, height),
+                Rect(x: room.width / 2 - width / 2 + across, y: room.height / 2 - height / 2 + down, width: width, height: height),
                 transform: .rotate(step * 10 * deal.spread).scale(1 - min(abs(step), 3) * 0.06),
                 zIndex: 100 - Int(min(abs(step), 9) * 10))
         }
@@ -6929,7 +6929,7 @@ enum Listings {
             let y = room.height / 2 + (Double(row) - table.y) * pitch
 
             return Placement(
-                Rect(x - side / 2, y - side / 2, side, side),
+                Rect(x: x - side / 2, y: y - side / 2, width: side, height: side),
                 transform: .rotate(table.turn * 360))
         }
         """#,
@@ -8449,7 +8449,7 @@ enum Listings {
             return Placement(
                 // Scaled about its middle to how big it is drawn - its words scale
                 // with it rather than wrapping anew.
-                Rect(across - cardWide / 2, foot - cardTall * drawn / 2 - cardTall / 2, cardWide, cardTall),
+                Rect(x: across - cardWide / 2, y: foot - cardTall * drawn / 2 - cardTall / 2, width: cardWide, height: cardTall),
                 transform: .scale(drawn),
                 // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
                 // layout was given by `.shade(_:)` - nothing at all without one -
@@ -8467,10 +8467,10 @@ enum Listings {
 
             return Placement(
                 Rect(
-                    room.width / 2 + (Double(index) - Double(count - 1) / 2) * 13 - 3,
-                    room.height - 16,
-                    6,
-                    6),
+                    x: room.width / 2 + (Double(index) - Double(count - 1) / 2) * 13 - 3,
+                    y: room.height - 16,
+                    width: 6,
+                    height: 6),
                 // THE RING COMES ROUND: how far a card is from the front is taken
                 // the short way, a turn on or back.
                 opacity: 0.25 + 0.75 * chosen((Double(index) - at).remainder(dividingBy: Double(count))),
@@ -9036,7 +9036,7 @@ enum Listings {
         /// - Parameter y: how far down each strip is sent.
         private func move(to y: Double) async throws {
             for strip in [$described, $paced, $driven] {
-                try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300))).result()
+                try await strip.journey.move(to: Point(x: 0, y: y), .eased(.milliseconds(300))).result()
             }
         }
         """#,
@@ -10506,7 +10506,7 @@ enum Listings {
                         let stands = $offset.journey.sample?.value ?? offset
                         let tile = max((stands.x / 160).rounded(), 0)
                         rested = Int(tile) + 1
-                        offset = Point(tile * 160, 0)
+                        offset = Point(x: tile * 160, y: 0)
                     }
                     .gridRow(0)
 
@@ -11099,8 +11099,8 @@ enum Listings {
         /// A pentagram: five points, each joined to the one two along, so the
         /// outline crosses itself - which is the whole point of a fill rule.
         private static let star = [
-            Point(28, 0), Point(44.5, 50.6), Point(1.4, 19.3),
-            Point(54.6, 19.3), Point(11.5, 50.6),
+            Point(x: 28, y: 0), Point(x: 44.5, y: 50.6), Point(x: 1.4, y: 19.3),
+            Point(x: 54.6, y: 19.3), Point(x: 11.5, y: 50.6),
         ]
 
         var body: some View {
@@ -11156,21 +11156,21 @@ enum Listings {
                 // Two rows of three: six shapes side by side stand wider than a phone.
                 VStack {
                     HStack {
-                        Line(from: Point(0, 0), to: Point(56, 56))
+                        Line(from: Point(x: 0, y: 0), to: Point(x: 56, y: 56))
                             .stroke(Palette.accent)
                             .lineWidth(4)
                             .lineCap(.round)
                             .width(56)
                             .height(56)
 
-                        Line(from: Point(0, 28), to: Point(56, 28))
+                        Line(from: Point(x: 0, y: 28), to: Point(x: 56, y: 28))
                             .stroke(Palette.accent)
                             .lineWidth(4)
                             .dash([3, 2])
                             .width(56)
                             .height(56)
 
-                        Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
+                        Polyline([Point(x: 0, y: 44), Point(x: 14, y: 12), Point(x: 30, y: 34), Point(x: 56, y: 4)])
                             .stroke(Palette.accent)
                             .lineWidth(4)
                             .lineJoin(.round)
@@ -11214,7 +11214,7 @@ enum Listings {
                 // The same dashes twice, half a pattern apart: the offset, like
                 // the pattern itself, is counted in stroke widths.
                 VStack {
-                    Line(from: Point(0, 4), to: Point(200, 4))
+                    Line(from: Point(x: 0, y: 4), to: Point(x: 200, y: 4))
                         .stroke(Palette.accent)
                         .lineWidth(4)
                         .dash([3, 2])
@@ -11222,7 +11222,7 @@ enum Listings {
                         .width(200)
                         .height(8)
 
-                    Line(from: Point(0, 4), to: Point(200, 4))
+                    Line(from: Point(x: 0, y: 4), to: Point(x: 200, y: 4))
                         .stroke(Palette.accent)
                         .lineWidth(4)
                         .dash([3, 2])
@@ -11239,7 +11239,7 @@ enum Listings {
                 // edges on until they cross, and the limit is how long that join
                 // may be, in stroke widths; past it the point is cut flat.
                 HStack {
-                    Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
+                    Polyline([Point(x: 10, y: 4), Point(x: 28, y: 48), Point(x: 46, y: 4)])
                         .stroke(Palette.accent)
                         .lineWidth(8)
                         .lineJoin(.miter)
@@ -11247,7 +11247,7 @@ enum Listings {
                         .width(56)
                         .height(72)
 
-                    Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
+                    Polyline([Point(x: 10, y: 4), Point(x: 28, y: 48), Point(x: 46, y: 4)])
                         .stroke(Palette.accent)
                         .lineWidth(8)
                         .lineJoin(.miter)
@@ -13505,7 +13505,7 @@ enum Listings {
             let y = room.height / 2 + sin(angle) * radius
 
             return Placement(
-                Rect(x - width / 2, y - height / 2, width, height),
+                Rect(x: x - width / 2, y: y - height / 2, width: width, height: height),
                 transform: .rotate(angle * 180 / .pi + 90),
                 zIndex: Int(y))
         }

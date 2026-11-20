@@ -25,7 +25,7 @@
         guard let first = recent.first else { return .zero }
 
         let span = max(time - first.time, HandReading.frame)
-        let went = recent.reduce(Point.zero) { Point($0.x + $1.moved.x, $0.y + $1.moved.y) }
-        return Point(went.x / span * 1_000, went.y / span * 1_000)
+        let went = recent.reduce(Point.zero) { Point(x: $0.x + $1.moved.x, y: $0.y + $1.moved.y) }
+        return Point(x: went.x / span * 1_000, y: went.y / span * 1_000)
     }
 }

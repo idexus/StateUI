@@ -26,7 +26,7 @@ final class LayoutSwipeTests: XCTestCase {
     private func row(_ phase: State<Double>, _ handed: Handed) -> Node {
         MotionLayout([0, 1, 2, 3, 4], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
             handed.phases.append(at)
-            return (0..<5).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+            return (0..<5).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 10, height: 10)) }
         }
         .interaction(
             .value(phase.projectedValue, input: .swipe(.horizontal, unit: .points(100))).reversed(true).range(0...4).snaps(.every(1))
@@ -42,10 +42,10 @@ final class LayoutSwipeTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-500, 0))
+        bench.hand(.changed, moved: Point(x: -500, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 2, accuracy: 0.000_1, "one on, not five")
 
-        bench.hand(.changed, moved: Point(900, 0))
+        bench.hand(.changed, moved: Point(x: 900, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 0, accuracy: 0.000_1, "one back from where it took it")
 
         bench.hand(.ended)
@@ -60,14 +60,14 @@ final class LayoutSwipeTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-10, 0))
-        bench.hand(.ended, velocity: Point(-100_000, 0))
+        bench.hand(.changed, moved: Point(x: -10, y: 0))
+        bench.hand(.ended, velocity: Point(x: -100_000, y: 0))
         XCTAssertEqual(phase.wrappedValue, 2, "the next, not the last")
 
         for _ in 0..<400 { bench.cycle() }
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-80, 0))
-        bench.hand(.ended, velocity: Point(2_000, 0))
+        bench.hand(.changed, moved: Point(x: -80, y: 0))
+        bench.hand(.ended, velocity: Point(x: 2_000, y: 0))
         XCTAssertEqual(phase.wrappedValue, 2, "thrown back from 2.8, to where it took it")
     }
 
@@ -78,7 +78,7 @@ final class LayoutSwipeTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-40, 0))
+        bench.hand(.changed, moved: Point(x: -40, y: 0))
         bench.hand(.ended)
 
         XCTAssertEqual(phase.wrappedValue, 1, "short of halfway, back")
@@ -91,20 +91,20 @@ final class LayoutSwipeTests: XCTestCase {
         func built() -> Node { row(phase, Handed()) }
         bench.laid(built)
 
-        bench.step(Point(-1, 0))
-        bench.step(Point(-1, 0))
-        bench.step(Point(-2, 0))
+        bench.step(Point(x: -1, y: 0))
+        bench.step(Point(x: -1, y: 0))
+        bench.step(Point(x: -2, y: 0))
         XCTAssertEqual(phase.wrappedValue, 2, "a burst of notches is one swipe")
 
         bench.cycle()
-        bench.step(Point(-1, 0))
+        bench.step(Point(x: -1, y: 0))
         XCTAssertEqual(phase.wrappedValue, 2, "on its way, the run still goes: the wheel waits")
-        bench.step(Point(1, 0))
+        bench.step(Point(x: 1, y: 0))
         XCTAssertEqual(phase.wrappedValue, 2, "either way")
 
         bench.frames(60)
-        bench.step(Point(1, 0))
-        bench.step(Point(1, 0))
+        bench.step(Point(x: 1, y: 0))
+        bench.step(Point(x: 1, y: 0))
         XCTAssertEqual(phase.wrappedValue, 1, "at rest, the next burst swipes on, one target")
     }
 
@@ -116,7 +116,7 @@ final class LayoutSwipeTests: XCTestCase {
         func built() -> Node {
             MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 handed.phases.append(at)
-                return (0..<3).map { _ in Placement(Rect(0, 0, 10, 10)) }
+                return (0..<3).map { _ in Placement(Rect(x: 0, y: 0, width: 10, height: 10)) }
             }
             .interaction(
                 .value(phase.projectedValue, input: .swipe(.horizontal, unit: .containerLength)).reversed(true).range(0...2).snaps(.every(1))
@@ -126,10 +126,10 @@ final class LayoutSwipeTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        bench.hand(.changed, moved: Point(-150, 0))
+        bench.hand(.changed, moved: Point(x: -150, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 0.5, accuracy: 0.001, "half the room's 300 points, half a page")
 
-        bench.hand(.changed, moved: Point(-2_000, 0))
+        bench.hand(.changed, moved: Point(x: -2_000, y: 0))
         XCTAssertEqual(handed.phases.last ?? 0, 1, accuracy: 0.001, "a page a hand")
     }
 
@@ -144,7 +144,7 @@ final class LayoutSwipeTests: XCTestCase {
                 // Two hundred points a unit for half a unit either side of 1, fifty beyond.
                 let away = abs(at - 1)
                 let x = away <= 0.5 ? away * 200 : 100 + (away - 0.5) * 50
-                return [Placement(Rect(at > 1 ? -x : x, 0, 10, 10))]
+                return [Placement(Rect(x: at > 1 ? -x : x, y: 0, width: 10, height: 10))]
             }
             .interaction(
                 .value(phase.projectedValue, input: .swipe(.horizontal, unit: .frontItem)).reversed(true).range(0...3).snaps(.every(1))
@@ -154,7 +154,7 @@ final class LayoutSwipeTests: XCTestCase {
         bench.laid(built)
 
         bench.hand(.began)
-        for _ in 0..<15 { bench.hand(.changed, moved: Point(-10, 0)) }
+        for _ in 0..<15 { bench.hand(.changed, moved: Point(x: -10, y: 0)) }
 
         XCTAssertEqual(handed.phases.last ?? 0, 1.75, accuracy: 0.001, "150 points at 200 a unit")
     }

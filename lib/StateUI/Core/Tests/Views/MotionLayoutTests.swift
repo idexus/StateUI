@@ -93,12 +93,12 @@ final class MotionLayoutTests: XCTestCase {
             MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { context, phase in
                 handed.rooms.append(context.bounds)
                 handed.phases.append(phase)
-                return [Placement(Rect(0, 0, 10, 10)), Placement(Rect(20, 0, 10, 10))]
+                return [Placement(Rect(x: 0, y: 0, width: 10, height: 10)), Placement(Rect(x: 20, y: 0, width: 10, height: 10))]
             }
             .node
         })
 
-        XCTAssertEqual(handed.rooms.last, Rect(0, 0, 300, 200))
+        XCTAssertEqual(handed.rooms.last, Rect(x: 0, y: 0, width: 300, height: 200))
         XCTAssertEqual(handed.phases.last, 0)
     }
 
@@ -107,7 +107,7 @@ final class MotionLayoutTests: XCTestCase {
         let turn = State(wrappedValue: 0.0)
         let (_, run) = bench.laid(Renders(), {
             MotionLayout([1, 2], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in
-                [Placement(Rect(0, 0, 10, 10), zIndex: 5), Placement(Rect(20, 0, 10, 10))]
+                [Placement(Rect(x: 0, y: 0, width: 10, height: 10), zIndex: 5), Placement(Rect(x: 20, y: 0, width: 10, height: 10))]
             }
             .interaction(
                 .value(turn.projectedValue, input: .translation(.horizontal, unit: .points(100)))
@@ -115,7 +115,7 @@ final class MotionLayoutTests: XCTestCase {
             .node
         })
 
-        XCTAssertEqual(run.map(\.bounds), [Rect(0, 0, 10, 10), Rect(20, 0, 10, 10)])
+        XCTAssertEqual(run.map(\.bounds), [Rect(x: 0, y: 0, width: 10, height: 10), Rect(x: 20, y: 0, width: 10, height: 10)])
     }
 
     /// THE HAND IS HEARD ON THE ELEMENT ITSELF, over every view: what it moves, and which way, is the element's own
@@ -123,7 +123,7 @@ final class MotionLayoutTests: XCTestCase {
     func testTheHandIsHeardOnTheElementItself() throws {
         let turn = State(wrappedValue: 0.0)
         let patch = Renders().render(
-            MotionLayout([1], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+            MotionLayout([1], parameters: turn.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(x: 0, y: 0, width: 10, height: 10))] }
                 .interaction(
                     .value(turn.projectedValue, input: .translation(.vertical, unit: .points(100)))
                         .reversed(true).range(0...1).snaps(.every(1)))
@@ -138,7 +138,7 @@ final class MotionLayoutTests: XCTestCase {
     func testAAxisValuesAsWrittenUnlessItMirrorsRightToLeft() throws {
         func layout(_ mirrors: Bool?) throws -> HostPatch {
             var layout = MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in
-                [Placement(Rect(0, 0, 10, 10))]
+                [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
             }
             if let mirrors { layout = layout.mirrorsRightToLeft(mirrors) }
             return try XCTUnwrap(Renders().render(layout.node).first(.motionLayout))
@@ -152,24 +152,24 @@ final class MotionLayoutTests: XCTestCase {
     /// AN ANSWER OF THE WRONG LENGTH IS SAID AND MADE TO FIT: one placement a view, the rest at the top left.
     func testAnAnswerOfTheWrongLengthIsSaidAndMadeToFit() {
         let (_, run) = bench.laid(Renders(), {
-            MotionLayout([1, 2, 3], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(5, 5, 10, 10))] }.node
+            MotionLayout([1, 2, 3], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(x: 5, y: 5, width: 10, height: 10))] }.node
         })
 
-        XCTAssertEqual(run.prefix(3).map(\.bounds), [Rect(5, 5, 10, 10), .zero, .zero])
+        XCTAssertEqual(run.prefix(3).map(\.bounds), [Rect(x: 5, y: 5, width: 10, height: 10), .zero, .zero])
         XCTAssertTrue(hasComplained("placements answered 1 placements for 3 views"))
     }
 
     /// A NUMBER THAT IS NOT FINITE IS SAID AND STANDS NEUTRAL: an answer the arithmetic got wrong - a division by
     /// nothing, an infinity - reaches no host; each such number is the one a placement at the top left holds.
     func testANumberThatIsNotFiniteIsSaidAndStandsNeutral() {
-        var turned = Placement(Rect(5, .nan, .infinity, 10))
+        var turned = Placement(Rect(x: 5, y: .nan, width: .infinity, height: 10))
         turned.opacity = .nan
         let placed = turned
         let (_, run) = bench.laid(Renders(), {
             MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [placed] }.node
         })
 
-        XCTAssertEqual(run.first?.bounds, Rect(5, 0, 0, 10))
+        XCTAssertEqual(run.first?.bounds, Rect(x: 5, y: 0, width: 0, height: 10))
         XCTAssertEqual(run.first?.opacity, 1)
         XCTAssertTrue(hasComplained("A MotionLayout's placements answered a number that is not finite"))
     }
@@ -182,7 +182,7 @@ final class MotionLayoutTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
         func tree() -> Node {
-            MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+            MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(x: 0, y: 0, width: 10, height: 10))] }
                 .node
         }
 
@@ -207,7 +207,7 @@ final class MotionLayoutTests: XCTestCase {
         func tree() -> Node {
             MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, phase in
                 handed.phases.append(phase)
-                return [Placement(Rect(phase * 10, 0, 10, 10))]
+                return [Placement(Rect(x: phase * 10, y: 0, width: 10, height: 10))]
             }
             .node
         }
@@ -236,7 +236,7 @@ final class MotionLayoutTests: XCTestCase {
     ) -> Node {
         MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
             handed?.phases.append(at)
-            return [Placement(Rect(0, 0, 10, 10))]
+            return [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
         }
         .interaction(
             .value(phase.projectedValue, input: .translation(.horizontal, unit: .points(100))).reversed(true).range(range).snaps(snaps)

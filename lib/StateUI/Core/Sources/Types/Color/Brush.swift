@@ -11,7 +11,7 @@
 ///     .background(.linearGradient([
 ///         GradientStop(.cornflowerBlue, 0),
 ///         GradientStop(.indigo, 1),
-///     ], from: Point(0, 0), to: Point(1, 1)))
+///     ], from: Point(x: 0, y: 0), to: Point(x: 1, y: 1)))
 ///
 /// A brush is where a gradient goes: `.background` takes one color or one of
 /// these.
@@ -51,11 +51,11 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
     ///     .linearGradient([
     ///         GradientStop(.gold, 0),
     ///         GradientStop(.tomato, 1),
-    ///     ], from: Point(0, 0), to: Point(1, 0))
+    ///     ], from: Point(x: 0, y: 0), to: Point(x: 1, y: 0))
     ///
     /// The points are fractions of the thing being painted, not device units:
-    /// `Point(0, 0)` is its top left corner and `Point(1, 1)` its bottom right.
-    /// Left unwritten they are `Point(0, 0)` and `Point(0, 1)`, which runs the
+    /// `Point(x: 0, y: 0)` is its top left corner and `Point(x: 1, y: 1)` its bottom right.
+    /// Left unwritten they are `Point(x: 0, y: 0)` and `Point(x: 0, y: 1)`, which runs the
     /// gradient straight down.
     ///
     /// - Parameters:
@@ -64,8 +64,8 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
     ///   - to: where it ends.
     public static func linearGradient(
         _ stops: [GradientStop],
-        from start: Point = Point(0, 0),
-        to end: Point = Point(0, 1)
+        from start: Point = Point(x: 0, y: 0),
+        to end: Point = Point(x: 0, y: 1)
     ) -> Brush {
         Brush(
             .linearGradient,
@@ -78,7 +78,7 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
     ///     .radialGradient([
     ///         GradientStop(.white, 0),
     ///         GradientStop(.steelBlue, 1),
-    ///     ], center: Point(0.3, 0.3), radius: 0.8)
+    ///     ], center: Point(x: 0.3, y: 0.3), radius: 0.8)
     ///
     /// The center is a fraction of the thing being painted and the radius a
     /// fraction of its size.
@@ -89,7 +89,7 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
     ///   - radius: how far out it reaches.
     public static func radialGradient(
         _ stops: [GradientStop],
-        center: Point = Point(0.5, 0.5),
+        center: Point = Point(x: 0.5, y: 0.5),
         radius: Double = 0.5
     ) -> Brush {
         Brush(.radialGradient, geometry: [center.x, center.y, radius], stops: stops)

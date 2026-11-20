@@ -18,10 +18,10 @@
 ///             let radius = min(room.width, room.height) / 2 - 40
 ///
 ///             return Placement(Rect(
-///                 room.width / 2 + cos(angle) * radius - 24,
-///                 room.height / 2 + sin(angle) * radius - 24,
-///                 48,
-///                 48))
+///                 x: room.width / 2 + cos(angle) * radius - 24,
+///                 y: room.height / 2 + sin(angle) * radius - 24,
+///                 width: 48,
+///                 height: 48))
 ///         }
 ///     }
 ///     .interaction(
@@ -900,5 +900,5 @@ struct LayoutShown<Parameters: LayoutParameters>: Equatable {
 
 private extension Point {
     /// The point a host told, each coordinate that is no finite number nought.
-    var told: Point { Point(x.isFinite ? x : 0, y.isFinite ? y : 0) }
+    var told: Point { Point(x: x.isFinite ? x : 0, y: y.isFinite ? y : 0) }
 }

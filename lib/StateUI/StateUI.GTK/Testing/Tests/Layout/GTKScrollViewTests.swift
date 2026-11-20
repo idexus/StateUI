@@ -64,11 +64,11 @@ final class GTKScrollViewTests: XCTestCase {
     /// A write moves GTK's scroller there; one past the end stops at the end.
     func testAnOffsetTheTreeWritesMovesTheScrollerWithinReach() throws {
         try onUIThread {
-            let offset = State(wrappedValue: Point(0, 0))
+            let offset = State(wrappedValue: Point(x: 0, y: 0))
             let host = GTKRenderer.running(reducesMotion: true) {
                 VStack {
-                    Button("Down").onClicked { offset.wrappedValue = Point(0, 300) }
-                    Button("Past").onClicked { offset.wrappedValue = Point(0, 5000) }
+                    Button("Down").onClicked { offset.wrappedValue = Point(x: 0, y: 300) }
+                    Button("Past").onClicked { offset.wrappedValue = Point(x: 0, y: 5000) }
                     ScrollView { Text("tall").height(2000) }
                         .scrollOffset(offset.projectedValue)
                         .height(500)
@@ -78,13 +78,13 @@ final class GTKScrollViewTests: XCTestCase {
             let scroll = try XCTUnwrap(host.views(GTKScrollView.self).first)
 
             buttons[0].click()
-            host.settle { scroll.offset == Point(0, 300) }
-            XCTAssertEqual(scroll.offset, Point(0, 300))
-            XCTAssertEqual(scroll.scroller.standing.offset, Point(0, 300))
+            host.settle { scroll.offset == Point(x: 0, y: 300) }
+            XCTAssertEqual(scroll.offset, Point(x: 0, y: 300))
+            XCTAssertEqual(scroll.scroller.standing.offset, Point(x: 0, y: 300))
 
             buttons[1].click()
-            host.settle { scroll.offset == Point(0, 1500) }
-            XCTAssertEqual(scroll.offset, Point(0, 1500))
+            host.settle { scroll.offset == Point(x: 0, y: 1500) }
+            XCTAssertEqual(scroll.offset, Point(x: 0, y: 1500))
         }
     }
 
@@ -93,7 +93,7 @@ final class GTKScrollViewTests: XCTestCase {
     func testTheUsersScrollingReachesItsStateOnTheFrameAndRestsOnce() throws {
         try onUIThread {
             let clock = TestClock()
-            let offset = State(wrappedValue: Point(0, 0))
+            let offset = State(wrappedValue: Point(x: 0, y: 0))
             let rests = Received<Int>()
             let host = GTKRenderer.running(clock: clock) {
                 ScrollView { Text("tall").height(2000) }
@@ -103,13 +103,13 @@ final class GTKScrollViewTests: XCTestCase {
             }
             let scroll = try XCTUnwrap(host.views(GTKScrollView.self).first)
 
-            scroll.scroller.move(to: Point(0, 200))
-            host.settle { scroll.offset == Point(0, 200) }
-            XCTAssertEqual(offset.wrappedValue, Point(0, 0), "said on the display's frame")
+            scroll.scroller.move(to: Point(x: 0, y: 200))
+            host.settle { scroll.offset == Point(x: 0, y: 200) }
+            XCTAssertEqual(offset.wrappedValue, Point(x: 0, y: 0), "said on the display's frame")
 
             clock.now = 16
             host.frame()
-            XCTAssertEqual(offset.projectedValue.journey.sample?.value, Point(0, 200))
+            XCTAssertEqual(offset.projectedValue.journey.sample?.value, Point(x: 0, y: 200))
 
             clock.now = 100
             host.frame()

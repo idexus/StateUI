@@ -84,18 +84,18 @@ final class LayoutInterpolationTests: XCTestCase {
 
     /// THE BOUNDS GO ALONG THE CURVE, view by view in the views' order.
     func testTheBoundsGoAlongTheCurve() {
-        let at0 = [Placement(Rect(0, 0, 10, 10)), Placement(Rect(100, 0, 10, 10))]
-        let at1 = [Placement(Rect(100, 50, 30, 10)), Placement(Rect(0, 0, 10, 10))]
+        let at0 = [Placement(Rect(x: 0, y: 0, width: 10, height: 10)), Placement(Rect(x: 100, y: 0, width: 10, height: 10))]
+        let at1 = [Placement(Rect(x: 100, y: 50, width: 30, height: 10)), Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
 
         let blended = LayoutBlend.blend([at0, at1], at: 0.25, segment: 0, knots: [0, 1], curve: .linear)
-        XCTAssertEqual(blended[0].bounds, Rect(25, 12.5, 15, 10))
-        XCTAssertEqual(blended[1].bounds, Rect(75, 0, 10, 10))
+        XCTAssertEqual(blended[0].bounds, Rect(x: 25, y: 12.5, width: 15, height: 10))
+        XCTAssertEqual(blended[1].bounds, Rect(x: 75, y: 0, width: 10, height: 10))
     }
 
     /// A TURN GOES THE SHORT WAY from keyframe to keyframe: 170° to -170° passes 180°, not nought.
     func testATurnGoesTheShortWay() {
-        let at0 = [Placement(Rect(0, 0, 10, 10), transform: .rotate(170))]
-        let at1 = [Placement(Rect(0, 0, 10, 10), transform: .rotate(-170))]
+        let at0 = [Placement(Rect(x: 0, y: 0, width: 10, height: 10), transform: .rotate(170))]
+        let at1 = [Placement(Rect(x: 0, y: 0, width: 10, height: 10), transform: .rotate(-170))]
 
         let blended = LayoutBlend.blend([at0, at1], at: 0.5, segment: 0, knots: [0, 1], curve: .linear)
         XCTAssertEqual(abs(blended[0].transform.rotation), 180, accuracy: 1e-9)
@@ -104,8 +104,8 @@ final class LayoutInterpolationTests: XCTestCase {
     /// A TRANSFORM AT EVERY KEYFRAME STAYS AS IT IS, not taken apart and put together a rounding off.
     func testOneTransformAtEveryKeyframeStaysAsItIs() {
         let transform = ViewTransform.rotate(33).scale(0.7)
-        let at0 = [Placement(Rect(0, 0, 10, 10), transform: transform)]
-        let at1 = [Placement(Rect(50, 0, 10, 10), transform: transform)]
+        let at0 = [Placement(Rect(x: 0, y: 0, width: 10, height: 10), transform: transform)]
+        let at1 = [Placement(Rect(x: 50, y: 0, width: 10, height: 10), transform: transform)]
 
         let blended = LayoutBlend.blend([at0, at1], at: 0.3, segment: 0, knots: [0, 1], curve: .linear)
         XCTAssertEqual(blended[0].transform, transform)
@@ -115,7 +115,7 @@ final class LayoutInterpolationTests: XCTestCase {
     /// without one.
     func testOpacityAndShadeStayInside() {
         let runs = [0.0, 1, 1, 0].map { opacity in
-            [Placement(Rect(0, 0, 10, 10), opacity: opacity, shade: opacity)]
+            [Placement(Rect(x: 0, y: 0, width: 10, height: 10), opacity: opacity, shade: opacity)]
         }
         let curve = LayoutCurve.catmullRom
         XCTAssertGreaterThan(curve.value(at: 1.5, segment: 1, knots: knots, values: [0, 1, 1, 0]), 1, "it swings past")
@@ -145,8 +145,8 @@ final class LayoutInterpolationTests: XCTestCase {
 
     /// A CURVE OF ONE'S OWN is the blend's curve as the library's are.
     func testACurveOfOnesOwnBlends() {
-        let at0 = [Placement(Rect(0, 0, 10, 10))]
-        let at1 = [Placement(Rect(80, 0, 10, 10))]
+        let at0 = [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
+        let at1 = [Placement(Rect(x: 80, y: 0, width: 10, height: 10))]
 
         let blended = LayoutBlend.blend([at0, at1], at: 0.1, segment: 0, knots: [0, 1], curve: Halfway())
         XCTAssertEqual(blended[0].bounds.x, 40)

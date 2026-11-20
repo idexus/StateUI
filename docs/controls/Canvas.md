@@ -5,7 +5,7 @@
 A canvas to draw on, one instruction at a time.
 
 ```swift
-@State var dot = Point(40, 40)
+@State var dot = Point(x: 40, y: 40)
 
 Canvas {
     Draw.fillColor(.cornflowerBlue)

@@ -166,7 +166,7 @@ final class AppKitBarTests: XCTestCase {
     /// its first row stands clear of it at the offset the tree calls nothing.
     @MainActor
     func testAPagesScrollerUnderTheToolbarKeepsItsFirstRowClear() throws {
-        let offset = State(wrappedValue: Point(0, 0))
+        let offset = State(wrappedValue: Point(x: 0, y: 0))
         let renderer = AppKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue).id("scroll") }
@@ -184,9 +184,9 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertGreaterThan(top, 0, "a toolbar over the page")
         XCTAssertEqual(scroll.contentInsets.top, top, "its depth kept clear")
         XCTAssertEqual(scroll.contentView.bounds.origin.y, -top, accuracy: 0.5, "its first row clear of it")
-        XCTAssertEqual(offset.wrappedValue, Point(0, 0), "where the tree calls nothing")
+        XCTAssertEqual(offset.wrappedValue, Point(x: 0, y: 0), "where the tree calls nothing")
 
-        offset.wrappedValue = Point(0, 100)
+        offset.wrappedValue = Point(x: 0, y: 100)
         for _ in 0..<100 {
             guard abs(scroll.contentView.bounds.origin.y - (100 - top)) > 0.5 else { break }
             RunLoop.current.run(until: Date().addingTimeInterval(0.02))
@@ -202,7 +202,7 @@ final class AppKitBarTests: XCTestCase {
     /// is hard.
     @MainActor
     func testTheToolbarShowsItsEdgeWhileRowsPassUnderIt() throws {
-        let (offset, edge) = (State(wrappedValue: Point(0, 0)), State(wrappedValue: ScrollEdge.automatic))
+        let (offset, edge) = (State(wrappedValue: Point(x: 0, y: 0)), State(wrappedValue: ScrollEdge.automatic))
         let renderer = AppKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue).id("scroll") }
@@ -228,7 +228,7 @@ final class AppKitBarTests: XCTestCase {
         content.layoutSubtreeIfNeeded()
         XCTAssertEqual(band()?.isHidden, true, "the rows at their start")
 
-        offset.wrappedValue = Point(0, 300)
+        offset.wrappedValue = Point(x: 0, y: 300)
         settle { band()?.isHidden == false }
         XCTAssertEqual(band()?.isHidden, false, "a blur once they pass under")
         XCTAssertEqual(line()?.isHidden, true, "no line for the automatic edge")

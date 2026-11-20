@@ -22,9 +22,9 @@ final class PagePointerTests: XCTestCase {
         _ = WindowPresentation().show(try XCTUnwrap(runtime.tree.root?.windows.first), in: runtime.lifecycle)
         let element = { (id: String) in try XCTUnwrap(runtime.tree.root?.first(id: .manual(id))) }
         let (row, left) = (try element("row"), try element("left"))
-        row.hear(.pointer(.pointerEntered, Point(1, 1)), in: runtime)
-        left.hear(.pointer(.pointerEntered, Point(1, 1)), in: runtime)
-        left.hear(.pointer(.pointerExited, Point(1, 1)), in: runtime)
+        row.hear(.pointer(.pointerEntered, Point(x: 1, y: 1)), in: runtime)
+        left.hear(.pointer(.pointerEntered, Point(x: 1, y: 1)), in: runtime)
+        left.hear(.pointer(.pointerExited, Point(x: 1, y: 1)), in: runtime)
         for _ in 0..<5 { runtime.pump.turn() }
         exited = []
 

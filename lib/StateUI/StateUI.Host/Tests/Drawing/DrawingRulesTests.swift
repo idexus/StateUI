@@ -131,7 +131,7 @@ final class DrawingRulesTests: XCTestCase {
         let stops = [HostBrush.Stop(offset: 0, color: red), HostBrush.Stop(offset: 1, color: blue)]
         let authored = Brush.radialGradient(
             [GradientStop(Color(red: 255, green: 0, blue: 0), 0), GradientStop(Color(red: 0, green: 0, blue: 255), 1)],
-            center: Point(0.25, 0.75), radius: 0.4)
+            center: Point(x: 0.25, y: 0.75), radius: 0.4)
 
         let brush = HostBrush(authored.propValue)
         XCTAssertEqual(brush, .radial(center: Point(x: 0.25, y: 0.75), radius: 0.4, stops: stops))
@@ -238,19 +238,19 @@ final class DrawingRulesTests: XCTestCase {
     /// line down with the stops where they stand.
     func testALinesGradientStandsOnCSSsLine() {
         let stops = [HostBrush.Stop(offset: 0, color: red), HostBrush.Stop(offset: 1, color: blue)]
-        let across = CSSGradientLine(from: Point(0, 0), to: Point(1, 0), stops: stops, width: 400, height: 50)
+        let across = CSSGradientLine(from: Point(x: 0, y: 0), to: Point(x: 1, y: 0), stops: stops, width: 400, height: 50)
         XCTAssertEqual(across.angle, 90)
         XCTAssertEqual(across.places, [0, 1])
 
-        let middle = CSSGradientLine(from: Point(0.25, 0), to: Point(0.75, 0), stops: stops, width: 400, height: 50)
+        let middle = CSSGradientLine(from: Point(x: 0.25, y: 0), to: Point(x: 0.75, y: 0), stops: stops, width: 400, height: 50)
         XCTAssertEqual(middle.places, [0.25, 0.75], "the stripes between the points, the colors held past them")
 
-        let corner = CSSGradientLine(from: Point(0, 0), to: Point(1, 1), stops: stops, width: 200, height: 100)
+        let corner = CSSGradientLine(from: Point(x: 0, y: 0), to: Point(x: 1, y: 1), stops: stops, width: 200, height: 100)
         XCTAssertEqual(corner.angle ?? 0, 116.565, accuracy: 0.001, "square to the stripes in pixels, not fractions")
         XCTAssertEqual(corner.places[0], 0, accuracy: 1e-9)
         XCTAssertEqual(corner.places[1], 1, accuracy: 1e-9)
 
-        let none = CSSGradientLine(from: Point(0.5, 0.5), to: Point(0.5, 0.5), stops: stops, width: 200, height: 100)
+        let none = CSSGradientLine(from: Point(x: 0.5, y: 0.5), to: Point(x: 0.5, y: 0.5), stops: stops, width: 200, height: 100)
         XCTAssertNil(none.angle)
         XCTAssertEqual(none.places, [0, 1])
     }
@@ -260,7 +260,7 @@ final class DrawingRulesTests: XCTestCase {
     func testAGradientsBandIsAsDarkAsItsStops() {
         func gradient(_ colors: [Color], radial: Bool = false) -> HostValue {
             let stops = colors.enumerated().map { GradientStop($0.element, Double($0.offset) / Double(colors.count - 1)) }
-            return Material.gradient(radial ? .radialGradient(stops) : .linearGradient(stops, to: Point(1, 0)))
+            return Material.gradient(radial ? .radialGradient(stops) : .linearGradient(stops, to: Point(x: 1, y: 0)))
                 .propValue
         }
         XCTAssertEqual(BandWords.light(on: gradient([.purple, .orange])), true)

@@ -11,7 +11,7 @@ MotionLayout(["Mural", "Nebula", "Ridge"], parameters: $turn) { name in
     Text(name)
 } placements: { context, phase in
     (0..<3).map { index in
-        Placement(Rect((Double(index) - phase) * 120 + context.bounds.width / 2 - 50, 0, 100, context.bounds.height))
+        Placement(Rect(x: (Double(index) - phase) * 120 + context.bounds.width / 2 - 50, y: 0, width: 100, height: context.bounds.height))
     }
 }
 .interaction(

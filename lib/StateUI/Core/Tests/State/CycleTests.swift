@@ -315,7 +315,7 @@ final class CycleTests: XCTestCase {
         trip(true)
         trip(false)
         trip(Point(x: 3, y: -4))
-        trip(Rect(1, 2, 3, 4))
+        trip(Rect(x: 1, y: 2, width: 3, height: 4))
         trip(Insets(start: 1, top: 2, end: 3, bottom: 4))
         trip(Color(hex: 0x40C0FF, opacity: 0.5))
         trip("a caption, ż and 漢")
@@ -392,14 +392,14 @@ final class CycleTests: XCTestCase {
     /// Dirt is per LANE: a rectangle whose width moved says so about the width
     /// and about nothing else.
     func testDirtIsPerLane() {
-        var slot = StateImage.bytes(of: Rect(0, 0, 10, 10).carried)
+        var slot = StateImage.bytes(of: Rect(x: 0, y: 0, width: 10, height: 10).carried)
 
         XCTAssertEqual(
-            HostStorage.lay(StateImage.bytes(of: Rect(0, 0, 20, 10).carried), into: &slot),
+            HostStorage.lay(StateImage.bytes(of: Rect(x: 0, y: 0, width: 20, height: 10).carried), into: &slot),
             1 << 2)
 
         XCTAssertEqual(
-            HostStorage.lay(StateImage.bytes(of: Rect(5, 0, 20, 10).carried), into: &slot),
+            HostStorage.lay(StateImage.bytes(of: Rect(x: 5, y: 0, width: 20, height: 10).carried), into: &slot),
             1 << 0)
     }
 
@@ -865,7 +865,7 @@ final class CycleTests: XCTestCase {
     func testAHostWriteWakesAnEngineFollowingAPlainState() {
         let ran = Ran()
         let renders = Renders()
-        let room = State(wrappedValue: Rect(0, 0, 0, 0))
+        let room = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
 
         renders.render(Text("room").frame(into: room.projectedValue).engine(following: room.projectedValue) { cycle in
             ran.note("room", cycle)
@@ -881,7 +881,7 @@ final class CycleTests: XCTestCase {
         board.cycle(now: 48, reducesMotion: false)
 
         XCTAssertEqual(ran.order.count, 2, "the host's report woke it")
-        XCTAssertEqual(room.wrappedValue, Rect(0, 0, 3, 3))
+        XCTAssertEqual(room.wrappedValue, Rect(x: 0, y: 0, width: 3, height: 3))
     }
 
     /// A CONVERSION'S SOURCE WRITTEN BY THE HOST re-runs the forward engine:

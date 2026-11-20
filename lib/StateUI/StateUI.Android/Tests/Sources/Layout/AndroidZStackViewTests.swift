@@ -56,10 +56,10 @@ final class AndroidZStackViewTests: XCTestCase {
                 ZStack {
                     Rectangle()
                         .fill(.red)
-                        .area(.absolute(Rect(10, 20, 30, 40)))
+                        .area(.absolute(Rect(x: 10, y: 20, width: 30, height: 40)))
                     Rectangle()
                         .fill(.blue)
-                        .area(.proportional(Rect(0.5, 0.5, 0.5, 0.5)))
+                        .area(.proportional(Rect(x: 0.5, y: 0.5, width: 0.5, height: 0.5)))
                 }
             }
 
@@ -86,7 +86,7 @@ final class AndroidZStackViewTests: XCTestCase {
                     } placements: { context, phase in
                         phase < 1
                             ? [Placement(context.bounds), Placement(context.bounds)]
-                            : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
+                            : [Placement(Rect(x: 10, y: 20, width: 30, height: 40), zIndex: 1), Placement(Rect(x: 0, y: 0, width: 50, height: 50), opacity: 0.5)]
                     }
                     .height(200)
 
@@ -155,7 +155,7 @@ final class AndroidZStackViewTests: XCTestCase {
                         .fill(.red)
                     Rectangle()
                         .fill(.blue)
-                        .area(.absolute(Rect(10, 20, 30, 40)))
+                        .area(.absolute(Rect(x: 10, y: 20, width: 30, height: 40)))
                 }
                 .padding(start: 10, top: 5, end: 20, bottom: 15)
             }
