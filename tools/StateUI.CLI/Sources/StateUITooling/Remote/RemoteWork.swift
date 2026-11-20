@@ -200,8 +200,8 @@ public struct RemoteWork: Sendable {
     }
 
     /// Runs `host`'s conformance families `selection` takes on the machine `device` names - the checkout at `checkout`
-    /// copied there - held to the marks there, or recorded: the host's marks then fetched into `checkout` and its
-    /// documents rendered here from them, a phase of its own.
+    /// copied there - held to the marks there, or recorded: the host's marks and what it declares then fetched into
+    /// `checkout`, and its documents rendered here from them, a phase of its own.
     func conformance(
         _ host: HostFamily, selection: ConformanceSelection, record: Bool, device: String?, checkout: URL, reporter: BuildReporter
     ) async throws -> SuiteResult {
@@ -213,11 +213,17 @@ public struct RemoteWork: Sendable {
             try JSONValue(encoding: ConformanceRequest(host: host, selection: selection, record: record, folderUri: reached.places.uri(of: there))),
             reporter: reporter).decode(SuiteResult.self)
         guard record else { return ran }
-        let marks = ["lib", "StateUI", "exports", "marks", host.rawValue]
-        let home = marks.reduce(checkout) { $0.appendingPathComponent($1) }
-        try FileManager.default.createDirectory(at: home, withIntermediateDirectories: true)
-        _ = try await reached.served.session { session in
-            try await FolderTransfer.fetch(reached.places.join([there] + marks), into: home, over: session, progress: reporter.progress)
+        let exports = ["lib", "StateUI", "exports"]
+        let marks = exports + ["marks", host.rawValue]
+        let home = exports.reduce(checkout) { $0.appendingPathComponent($1) }
+        let marksHome = marks.reduce(checkout) { $0.appendingPathComponent($1) }
+        try FileManager.default.createDirectory(at: marksHome, withIntermediateDirectories: true)
+        try await reached.served.session { session in
+            _ = try await FolderTransfer.fetch(reached.places.join([there] + marks), into: marksHome, over: session, progress: reporter.progress)
+            // The run wrote what the host declares beside its marks: left there, the next copy would write over it.
+            _ = try await FolderTransfer.fetch(
+                reached.places.join([there] + exports), files: ["\(host.rawValue).txt"], into: home, over: session,
+                progress: reporter.progress)
         }
         var rendered = try await Handbook(checkout: checkout, tools: ToolResolver()).documents(update: true, reporter: reporter)
         rendered.name += " here from the marks fetched"

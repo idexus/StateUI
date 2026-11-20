@@ -3,6 +3,7 @@
 
 import Foundation
 @testable import StateUITooling
+import StateUIToolingProtocol
 import XCTest
 
 final class TestRunTests: XCTestCase {
@@ -26,10 +27,22 @@ final class ConformanceRunTests: XCTestCase {
         XCTAssertEqual(ConformanceRun.filter(for: .android, families: nil), "AndroidConformanceTests,AndroidDeclarationExportTests")
         XCTAssertEqual(ConformanceRun.filter(for: .web, families: nil), "WebConformanceTests")
         XCTAssertEqual(ConformanceRun.filter(for: .winui, families: ["Button", "VisualElement"]),
-                       "WinUIConformanceTests/test(Button|VisualElement)[0-9]*$")
+                       "WinUIConformanceTests/test(Button|VisualElement)[0-9]*$|WinUIDeclarationExportTests")
         XCTAssertEqual(ConformanceRun.filter(for: .android, families: ["Slider", "Text"]),
-                       "AndroidConformanceTests.testSlider,AndroidConformanceTests.testText")
+                       "AndroidConformanceTests.testSlider,AndroidConformanceTests.testText,AndroidDeclarationExportTests")
         XCTAssertEqual(ConformanceRun.filter(for: .web, families: ["Button"]), "Button")
+    }
+
+    /// WHAT A HOST DECLARES IS HELD BY EVERY RUN OF ITS FAMILIES, a few of them as all: a member that left a contract
+    /// leaves the host's declaration in the run that proves the change, whichever families it takes.
+    func testEveryRunOfFamiliesHoldsWhatItsHostDeclares() {
+        for host in [HostFamily.appkit, .uikit, .android, .winui, .gtk] {
+            for families in [nil, ["View"], ["MotionLayout", "View"]] as [[String]?] {
+                XCTAssertTrue(
+                    ConformanceRun.filter(for: host, families: families).contains("\(host.folder)DeclarationExportTests"),
+                    "\(host.folder) run of \(families?.joined(separator: ", ") ?? "every family")")
+            }
+        }
     }
 
     /// A verdict file taken off a device is of its family, a part's too.

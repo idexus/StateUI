@@ -161,6 +161,12 @@ helper gives its family. On UIKit and Android a family's name selects the
 tests whose names hold it, so `Button` takes `ButtonMenu` along: a family
 more, whole, never one less.
 
+What a host declares it realizes - `lib/StateUI/exports/<host>.txt`, which
+the Web writes none of - is held with its families, whichever a run takes,
+and recorded with them (`<Host>DeclarationExportTests` in the run's filter):
+a member that left a contract leaves the declaration in the run that proves
+the change.
+
 A host this machine works on another - GTK and WinUI on a Mac, a host a
 machine paired runs - makes its run there ([Work on another
 machine](service.md#work-on-another-machine)): `--device` names the guest or
@@ -168,8 +174,9 @@ the machine, the checkout is copied there and that machine's stateui runs the
 families in its copy (`repository/conformance` with the copy's `folderUri`),
 holding them to the marks copied with it. Recorded, the host's
 `lib/StateUI/exports/marks/<host>` is fetched home - what the copy lacks
-removed - and the documents rendered here from it, a phase after that
-machine's; nothing else of its copy returns.
+removed - with what the host declares, `lib/StateUI/exports/<host>.txt`, and
+the documents rendered here from them, a phase after that machine's; nothing
+else of its copy returns.
 
 An editor asks for the same run as an operation, `repository/conformance`:
 the host, the selection - `{"changed": true}`, `{"families": [...]}` or

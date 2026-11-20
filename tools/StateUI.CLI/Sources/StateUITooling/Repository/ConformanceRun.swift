@@ -53,24 +53,18 @@ public struct ConformanceRun: Sendable {
 
     /// What a host's suite is filtered by for `families` - every family where none are named: `swift test`'s
     /// expression on a desktop host, each family's test and its parts; the names the test application looks for on
-    /// UIKit and Android; the families by name on the Web.
+    /// UIKit and Android; the families by name on the Web. What the host declares it realizes -
+    /// `exports/<host>.txt`, which the Web writes none of - is held with them, whichever they are.
     static func filter(for host: HostFamily, families: [String]?) -> String {
         let tests = "\(host.folder)ConformanceTests"
-        // Every family, and what the host declares it realizes - `exports/<host>.txt` - with them.
-        guard let families else {
-            switch host {
-            case .web: return tests
-            case .uikit, .android: return "\(tests),\(host.folder)DeclarationExportTests"
-            default: return "\(tests)|\(host.folder)DeclarationExportTests"
-            }
-        }
+        let declared = "\(host.folder)DeclarationExportTests"
         switch host {
-        case .uikit, .android:
-            return families.map { "\(tests).test\($0)" }.joined(separator: ",")
         case .web:
-            return families.joined(separator: ",")
+            return families?.joined(separator: ",") ?? tests
+        case .uikit, .android:
+            return ((families?.map { "\(tests).test\($0)" } ?? [tests]) + [declared]).joined(separator: ",")
         default:
-            return "\(tests)/test(\(families.joined(separator: "|")))[0-9]*$"
+            return "\(families.map { "\(tests)/test(\($0.joined(separator: "|")))[0-9]*$" } ?? tests)|\(declared)"
         }
     }
 }

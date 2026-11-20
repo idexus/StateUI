@@ -109,7 +109,8 @@ Windows keeps no such mark: its files say none (`executable` absent), and
 what it writes takes its own. A path names a file inside its folder alone: none empty,
 absolute, with `.`, `..` or a backslash, and none passing a link there - written,
 read or removed, a path through a linked folder or a linked file is refused, as
-what lies past the link is another folder's. An offset, a length or a size below
+what lies past the link is another folder's. A fetch of files named brings
+those alone: what stands beside them, on either side, is left as it is. An offset, a length or a size below
 zero is a refused request: the service answers it and stays for its other
 clients. These are queries, answered at once:
 a folder of the checkout's 4,476 files is some 27 MB.

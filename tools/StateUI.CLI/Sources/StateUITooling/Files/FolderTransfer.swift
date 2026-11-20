@@ -55,13 +55,16 @@ enum FolderTransfer {
         return counts
     }
 
-    /// Fetches the files of `remote`, a folder of the session's machine, into `root`.
+    /// Fetches the files of `remote`, a folder of the session's machine, into `root` - `files` alone where named, what
+    /// stands beside them on either side left as it is.
     static func fetch(
-        _ remote: String, into root: URL, over session: ServedTool.Session, progress: @Sendable (String) -> Void
+        _ remote: String, files: [String]? = nil, into root: URL, over session: ServedTool.Session,
+        progress: @Sendable (String) -> Void
     ) async throws -> Counts {
+        let named = files.map(Set.init)
         let there = try await session.query("folder/survey", try JSONValue(encoding: FolderSurveyRequest(root: remote)))
-            .decode(FolderSurvey.self).files
-        let local = try FolderFiles.every(under: root).sorted().compactMap { try FolderFiles.listed($0, in: root) }
+            .decode(FolderSurvey.self).files.filter { named?.contains($0.path) ?? true }
+        let local = try (named ?? FolderFiles.every(under: root)).sorted().compactMap { try FolderFiles.listed($0, in: root) }
         let (changed, extra, counts) = differences(there, local)
         progress("fetching \(changed.count) of \(there.count) files from \(remote)")
         for entry in changed {

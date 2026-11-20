@@ -88,6 +88,25 @@ final class FolderTransferTests: XCTestCase {
         XCTAssertNil(data("key.js", in: target))
     }
 
+    /// FETCHING FILES NAMED BRINGS THEM ALONE: the one a run there wrote comes home, what stands beside it there
+    /// stays there, and what this machine holds beside it is left as it stands.
+    func testFetchingFilesNamedBringsThemAlone() async throws {
+        let (there, home) = (try folder(), try folder())
+        try write(Data("declared anew".utf8), "gtk.txt", in: there)
+        try write(Data("its marks".utf8), "marks/gtk/Button.txt", in: there)
+        try write(Data("declared before".utf8), "gtk.txt", in: home)
+        try write(Data("another host's".utf8), "appkit.txt", in: home)
+
+        let counts = try await overService {
+            try await FolderTransfer.fetch(there.path, files: ["gtk.txt"], into: home, over: $0, progress: { _ in })
+        }
+
+        XCTAssertEqual(counts, FolderTransfer.Counts(carried: 1, removed: 0, unchanged: 0))
+        XCTAssertEqual(data("gtk.txt", in: home), Data("declared anew".utf8))
+        XCTAssertEqual(data("appkit.txt", in: home), Data("another host's".utf8), "what stands beside it here")
+        XCTAssertNil(data("marks/gtk/Button.txt", in: home), "what stands beside it there")
+    }
+
     /// A file named but gone, or a link, is not carried and its copy there goes; one that cannot be read stops the
     /// transfer, its copy there kept - never taken for a file gone.
     func testAFileThatCannotBeReadStopsTheTransfer() async throws {
