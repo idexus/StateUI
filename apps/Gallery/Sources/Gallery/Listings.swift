@@ -2362,6 +2362,255 @@ enum Listings {
             }
         }
         """#,
+        "CommonBoardSample": #"""
+        // Sources/Samples/MotionLayout/CommonBoardSample.swift
+        /// One card: its name, which is its identity, and its color.
+        struct Card: Hashable {
+            let name: String
+            let color: Color
+        }
+
+        static let all = [
+            Card(name: "Mural", color: Color(hex: 0x7C3AED)),
+            Card(name: "Nebula", color: Color(hex: 0x2563EB)),
+            Card(name: "Ridge", color: Color(hex: 0x0D9488)),
+            Card(name: "Bloom", color: Color(hex: 0xD97706)),
+            Card(name: "Tide", color: Color(hex: 0xDB2777)),
+            Card(name: "Grove", color: Color(hex: 0x16A34A)),
+        ]
+
+        /// The cards on the board, in order, and those closed, the last closed last.
+        @State private var cards = Self.all
+        @State private var closed: [Card] = []
+
+        /// Which card is in front - its law is the state's own, and the hand's.
+        @State(motion: .spring(response: .milliseconds(420), damping: 0.82)) private var turn = 0.0
+
+        /// Whether the cards stand as a grid, the card the hand holds, the card
+        /// opened, and the board's name, an ordinary field beside it all.
+        @State private var asGrid = false
+        @State private var held: String?
+        @State private var opened: Card?
+        @State private var name = "My board"
+
+        /// What was done last, and how what it started ended.
+        @State private var said = "Throw the cards"
+
+        /// THE BOARD the changes are aimed at: the scope the card and its detail
+        /// are tied in.
+        @Aim(VStack.self) private var board
+
+        var body: some View {
+            VStack {
+                // AN ORDINARY FIELD beside the board: what is typed, and the
+                // cursor, stay through every change below.
+                TextField($name)
+
+                VStack {
+                    if let opened {
+                        detail(of: opened)
+                    } else {
+                        deck
+                    }
+                }
+                // THE SCOPE: the card and its detail are one to the eye in it.
+                .transitionScope("board")
+                .aim(board)
+                .height(300)
+
+                // WHAT WAITS FOR A CHANGE STANDS OUTSIDE IT: a view the change
+                // takes away - a card opened, the detail closed - takes with it
+                // every run it began, and a wait in it would never be answered.
+                HStack {
+                    Button("Open").onClicked(policy: .runConcurrently) {
+                        guard opened == nil, let front = front else { return }
+                        try await change("Opened \(front.name)") { opened = front }
+                    }
+
+                    Button("Back").onClicked(policy: .runConcurrently) {
+                        guard let card = opened else { return }
+                        try await change("Back from \(card.name)") { opened = nil }
+                    }
+
+                    Button("Close").onClicked(policy: .runConcurrently) {
+                        guard opened == nil, let front = front else { return }
+                        try await change("Closed \(front.name)") { close(front) }
+                    }
+
+                    // UNDO: the card last closed joins the board again where it stood.
+                    Button("Undo").onClicked(policy: .runConcurrently) {
+                        guard let card = closed.last else { return }
+                        try await change("Brought back \(card.name)") { bringBack(card) }
+                    }
+                }
+                .horizontalAlignment(.center)
+
+                // THE LAYOUT CHANGES: the same cards, another arithmetic - each
+                // travels from where it stood.
+                SwitchRow("As a grid", $asGrid)
+
+                // A SCROLLER OF THE PLATFORM'S OWN beside the hand: the cards
+                // closed, any of them brought back by a press.
+                ScrollView {
+                    HStack {
+                        ForEach(closed, id: \.name) { card in
+                            // The button leaves with its card: it waits for nothing.
+                            Button(card.name).onClicked {
+                                bringBack(card)
+                                said = "Brought back \(card.name)"
+                            }
+                        }
+                    }
+                }
+                .axes(.horizontal)
+                .height(44)
+
+                // Where a throw or the hand settles: the card the turn is bound for.
+                Text("In front · \(front?.name ?? "none")")
+
+                Text(said)
+            }
+        }
+
+        /// The cards, placed as a deck around the one in front or as a grid.
+        private var deck: some View {
+            let (count, grid) = (cards.count, asGrid)
+            return MotionLayout(cards, id: \.name, parameters: $turn) { card in
+                BoardCard(card: card, held: held == card.name) {
+                    opened = card
+                    said = "Opened \(card.name)"
+                }
+            } placements: { context, turn in
+                (0..<count).map { grid ? Self.cell($0, context.bounds) : Self.place($0, turn, context.bounds) }
+            }
+            // GRAB, THROW, GRAB AGAIN: the hand turns the deck, and a throw is
+            // carried on and settles on a card. As a grid, the hand has nothing to turn.
+            .interaction(grid ? nil :
+                .value($turn, input: .translation(.horizontal, unit: .frontItem))
+                    .reversed(true)
+                    .range(0...Double(max(count - 1, 0)))
+                    .snaps(.every(1))
+                    .release(.projected(.spring(response: .milliseconds(420), damping: 0.82))))
+            // HELD STILL, A CARD IS THE HAND'S: the card under it gives it its place.
+            .onItemDragged { drag in
+                switch drag.phase {
+                case .began:
+                    held = drag.id
+                case .ended, .cancelled:
+                    held = nil
+                    said = "Moved \(drag.id)"
+                default:
+                    if let over = drag.over, let place = cards.firstIndex(where: { $0.name == over }) {
+                        move(drag.id, to: place)
+                    }
+                }
+            }
+            // The cards reaching new places - a move, a card closed or come back,
+            // the grid - travel on a spring of their own.
+            .layoutBodies(.onChange(response: .milliseconds(360), damping: 0.8))
+            .height(300)
+        }
+
+        /// The card opened, large: it grows from the card it was.
+        private func detail(of card: Card) -> some View {
+            VStack {
+                Rectangle()
+                    .fill(card.color)
+                    .height(200)
+                    .sharedTransition(card.name)
+                    // Slow enough to see the way.
+                    .motion(.eased(.milliseconds(600), curve: .sineInOut))
+
+                Text(card.name)
+                    .fontWeight(.semibold)
+            }
+        }
+
+        /// Makes `update` a change of the board and says how what it started ended.
+        private func change(_ words: String, _ update: () -> Void) async throws {
+            let change = try board.presentationChange(update)
+            said = "\(words) · under way"
+            let result = try await change.settled()
+            said = "\(words) · \(result == .settled ? "settled" : "\(result)")"
+        }
+
+        /// The card in front, as the turn stands.
+        private var front: Card? {
+            cards.isEmpty ? nil : cards[min(max(Int(turn.rounded()), 0), cards.count - 1)]
+        }
+
+        /// The card `card` closed: the others close up, the one in front staying in front.
+        private func close(_ card: Card) {
+            guard cards.count > 1, let leaving = cards.firstIndex(of: card) else { return }
+            let shown = min(max(Int(turn.rounded()), 0), cards.count - 1)
+            cards.remove(at: leaving)
+            closed.append(card)
+            $turn.journey.move(to: Double(min(leaving < shown ? shown - 1 : shown, cards.count - 1)))
+        }
+
+        /// The card `card` back on the board, where it stood among the cards still on it.
+        private func bringBack(_ card: Card) {
+            closed.removeAll { $0 == card }
+            let order = Self.all.filter { $0 == card || cards.contains($0) }
+            cards = order
+        }
+
+
+        /// The card `name` taken to `place`, the others making room.
+        private func move(_ name: String, to place: Int) {
+            guard let from = cards.firstIndex(where: { $0.name == name }), from != place else { return }
+            let card = cards.remove(at: from)
+            cards.insert(card, at: place)
+        }
+
+        /// A deck: the card in front in the middle, those after it under it to
+        /// the right, smaller the farther they go.
+        private static func place(_ index: Int, _ turn: Double, _ room: Rect) -> Placement {
+            let step = Double(index) - turn
+            let width = min(room.width * 0.42, 170)
+            let height = min(width * 1.35, room.height)
+            let far = min(abs(step), 3)
+            return Placement(
+                Rect(x: room.width / 2 - width / 2 + step * width * 0.62, y: (room.height - height) / 2,
+                     width: width, height: height),
+                transform: .scale(1 - far * 0.08),
+                opacity: min(max(3.4 - abs(step), 0), 1),
+                zIndex: 100 - Int((abs(step) * 10).rounded()))
+        }
+
+        /// A grid of three columns, the cards in their order.
+        private static func cell(_ index: Int, _ room: Rect) -> Placement {
+            let gap = 10.0
+            let width = (room.width - gap * 2) / 3
+            let height = min(width * 1.2, (room.height - gap) / 2)
+            return Placement(Rect(
+                x: Double(index % 3) * (width + gap), y: Double(index / 3) * (height + gap),
+                width: width, height: height))
+        }
+
+        /// One card: its color and name, lifted while the hand holds it, opened by a press.
+        struct BoardCard: View {
+            let card: Card
+            let held: Bool
+            let open: @MainActor @Sendable () throws -> Void
+
+            var body: some View {
+                ZStack {
+                    Rectangle()
+                        .fill(card.color)
+                    Text(card.name)
+                        .fontWeight(.semibold)
+                }
+                // TIED TO ITS DETAIL by its name: opened, the detail grows from it.
+                .sharedTransition(card.name)
+                .motion(.eased(.milliseconds(600), curve: .sineInOut))
+                .scale(held ? 1.1 : 1)
+                // THE HAND TAKES THE CARD ITSELF once a press has stood still on it.
+                .interaction(.drag(.both, begins: .longPress))
+                .onTapped { try open() }
+            }
+        }
+        """#,
         "ComplaintsSample": #"""
         // Sources/Samples/Fundamentals/ComplaintsSample.swift
         /// What the library said while the page showed, oldest first.

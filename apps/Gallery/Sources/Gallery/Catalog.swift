@@ -284,6 +284,7 @@ final class Catalog {
                 Sample(AppSwitcherSample()),
                 Sample(TwoFingersSample()),
                 Sample(LightTableSample()),
+                Sample(CommonBoardSample()),
             ])
     }
 
