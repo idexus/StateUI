@@ -5887,10 +5887,15 @@ enum Listings {
 
         /// An icon's app, over the boards: its surface grows out of the icon and
         /// goes back into it; its words come in as it lands, never squeezed on the
-        /// way; a press on the bar at its foot closes it.
+        /// way; pulled up by the bar at its foot, or pressed there, it closes.
         struct HomeApp: View {
             let icon: HomeIcon
             @Binding var opened: String?
+
+            /// How far the hand has pulled the app up by its bar - none at rest,
+            /// back there on a spring - and how large it is drawn meanwhile.
+            @State(motion: .spring(response: .milliseconds(380), damping: 0.86)) private var pull = 0.0
+            @State(motion: .none) private var size = 1.0
 
             /// How what is on the surface comes in: faded in as the app appears.
             static let landing = Transition(enter: .opacity, exit: .identity).initialAppearance(true)
@@ -5929,7 +5934,9 @@ enum Listings {
                     .transition(Self.landing)
                     .motion(Self.slowlyThenAtOnce)
 
-                    // THE BAR AT ITS FOOT, coming in with the words: a press closes the app.
+                    // THE BAR AT ITS FOOT, coming in with the words. HELD, IT TAKES
+                    // THE APP UP WITH THE HAND; let go high enough, or thrown up,
+                    // the app goes back into its icon from where it is drawn.
                     ZStack {
                         Rectangle()
                             .fill(.white)
@@ -5943,7 +5950,23 @@ enum Listings {
                     .verticalAlignment(.end)
                     .transition(Self.landing)
                     .motion(Self.slowlyThenAtOnce)
+                    .onPanUpdated { pan in
+                        switch pan.phase {
+                        case .changed: $pull.journey.snap(to: min(pan.total.y, 0))
+                        case .ended where pan.total.y < -120 || pan.velocity.y < -800: opened = nil
+                        default: pull = 0
+                        }
+                    }
                     .onTapped { opened = nil }
+                }
+                .translationY($pull)
+                .scale($size)
+                // SMALLER THE FARTHER IT IS PULLED, toward the bar the hand holds,
+                // wherever the pull stands on its way: inside the boards' room.
+                .pivotY(1)
+                .engine(following: $pull.journey) { _ in
+                    guard let pulled = $pull.journey.sample?.value else { return }
+                    size = max(0.4, 1 + min(pulled, 0) / 450)
                 }
             }
         }
