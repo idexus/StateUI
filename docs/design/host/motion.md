@@ -461,7 +461,8 @@ would stand; a view half way through its own entry is drawn elsewhere, and
 the partner must set out from what the user sees. A view drawn under what
 holds it - an app the hand pulls up and shrinks by its own root - is drawn
 there too: a host says each corner with no transform in it
-([a corner in the window](runtime.md#a-corner-in-the-window)), so the host
+([a corner in the window](runtime.md#a-corner-in-the-window),
+`Rectangle.aTransformMovesWhatIsDrawnNotItsFrame` on every host), so the host
 layer lays each holder's transform, up to the scope, over the rectangle, about
 that holder's own pivot (`HostDrawingTransform.bounds(of:within:)`).
 

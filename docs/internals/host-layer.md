@@ -366,9 +366,10 @@ measures only its native views.
   ([Stacks](../design/host/layout.md#stacks), [grids](../design/host/layout.md#grids),
   [tracks](../design/host/layout.md#tracks), [layers](../design/host/layout.md#layers),
   [one child](../design/host/layout.md#one-child))
-- **`ZStackArithmetic.drawingOrder`** and **`HostPlacement`**'s `place`,
-  `drawnOpacity` and `drawnShade` say where a placing run stands a ZStack's
-  children, how opaque it draws them, and in what order.
+- **`DrawingOrder`** says in what order any layout draws its children - a
+  run's ranks, else the tree's, a child a shared entry carries last - and
+  **`HostPlacement`**'s `place`, `drawnOpacity` and `drawnShade` where a
+  placing run stands a ZStack's children and how opaque it draws them.
   ([A placing run](../design/host/layout.md#a-placing-run))
 - **`SafeAreaArithmetic`** gives the room a page's content stands in
   (`room`): the safe area, reaching the window's edge on each edge its own

@@ -155,11 +155,13 @@ keep its room until the exit ended, and the stack would jump as it did.
 
 A ZStack whose run turns its drawing order - two cards swapping ranks as a
 motion layout's run passes halfway between them - sets its `subviews` in the
-new order (`ZStackArithmetic.drawingOrder`), which moves each child it keeps
+new order (`DrawingOrder`), which moves each child it keeps
 without taking it out. A child taken out and added again leaves the window
 for a moment, and AppKit cancels a gesture under way on it: a pointer drag of
 the scroller lying over the cards would end at the first swap, and the run go
-back to the target it left.
+back to the target it left. A stack and a grid set theirs the same way while a
+shared entry carries a child in front, and back in the tree's order as it
+lands.
 
 ## Scroll bars
 
