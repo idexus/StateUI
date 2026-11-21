@@ -67,7 +67,9 @@ final class AndroidZStackView: AndroidTravelingLayout {
     /// reaches them in too, with nothing moved and nothing laid out again.
     private func holdInDrawingOrder() {
         let ordered = ZStackArithmetic.drawingOrder(of: items.count, placedBy: placement?.placements ?? [])
-        setDrawingOrder(ordered == Array(items.indices) ? nil : ordered)
+        // The views kept as they leave stand after the items', and are drawn over them.
+        setDrawingOrder(
+            ordered == Array(items.indices) ? nil : ordered + Array(items.count..<(items.count + leaving.count)))
     }
 
     /// Stands each child where the run says, drawn as it says.

@@ -73,8 +73,10 @@ extension MountedElement {
         let headingLevel = max(0, value(.accessibilityHeading)?.enumeration ?? 0)
         let saysWords = label != nil || hint != nil || role != nil || said != nil || !actions.isEmpty || headingLevel > 0
             || events[.tapped] != nil
-        let presence = value(.accessibilityPresence).flatMap(AccessibilityPresence.init(propValue:))
-            ?? (saysWords ? .element : nil)
+        // A view kept as it leaves is met no more, with everything in it.
+        let presence = lifecycle == .exiting ? .hiddenWithContents
+            : value(.accessibilityPresence).flatMap(AccessibilityPresence.init(propValue:))
+                ?? (saysWords ? .element : nil)
         return AccessibilityWords(
             identifier: string(.accessibilityIdentifier), label: label, hint: hint, role: role, value: said,
             actions: actions, headingLevel: headingLevel, presence: presence)

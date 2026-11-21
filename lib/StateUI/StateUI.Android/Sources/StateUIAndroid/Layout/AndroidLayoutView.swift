@@ -36,6 +36,12 @@ class AndroidLayoutView: AndroidView {
     /// The views the group holds, in the order it draws them, back to front.
     private var held: [AndroidView] = []
 
+    /// The views of children kept as they leave: held after the items', and laid out by nobody; whether they
+    /// changed since the group last held its children.
+    /// Design: docs/design/platforms/android/layout.md#a-view-kept-as-it-leaves
+    private(set) var leaving: [AndroidView] = []
+    private var keptChanged = false
+
     init() {
         super.init { number in
             Java.new(
@@ -56,18 +62,29 @@ class AndroidLayoutView: AndroidView {
         Java.call(reference, JavaAPI.watchLayout, .object(listener.reference), .bool(hearing.contains(.hand)))
     }
 
+    /// Says the views of children kept as they leave, before the items are set: the group holds them on, after
+    /// its items' views, and lets go of one kept no more.
+    /// Design: docs/design/platforms/android/layout.md#a-view-kept-as-it-leaves
+    func keep(_ leaving: [AndroidView]) {
+        guard !Self.same(leaving, self.leaving) else { return }
+
+        self.leaving = leaving
+        keptChanged = true
+    }
+
     /// Puts `items` in the group, in order, where they differ from the children it holds; whether they did.
     @discardableResult
     func setItems(_ items: [AndroidLayoutItem]) -> Bool {
-        guard items.count != self.items.count
+        let changed = items.count != self.items.count
             || !zip(items, self.items).allSatisfy({ $0.arranges(like: $1) })
-        else { return false }
+        guard changed || keptChanged else { return false }
 
-        let rehold = !Self.same(items.map(\.view), self.items.map(\.view))
-        self.items = items
+        let rehold = keptChanged || !Self.same(items.map(\.view), self.items.map(\.view))
+        keptChanged = false
+        if changed { self.items = items }
         if rehold { holdChildren() }
-        invalidateMeasurements()
-        return true
+        if changed { invalidateMeasurements() }
+        return changed
     }
 
     /// The views the group holds for its items: every item's, unless a layout shows only some.
@@ -75,9 +92,11 @@ class AndroidLayoutView: AndroidView {
         items.map(\.view)
     }
 
-    /// Holds the views `heldViews()` answers, where they differ from those it holds.
+    /// Holds the views `heldViews()` answers and, after them, those kept as they leave, where they differ from
+    /// those it holds.
     func holdChildren() {
-        setChildren(heldViews())
+        let own = heldViews()
+        setChildren(own + leaving.filter { kept in !own.contains { $0 === kept } })
     }
 
     /// Holds `views` in the group in this order, the one it draws them and hands them touches in.

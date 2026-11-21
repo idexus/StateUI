@@ -23,7 +23,26 @@ extension AndroidElement {
         let layout = view as? AndroidLayoutView
         layout?.direction = element.layoutDirection
         (view as? AndroidSplitView)?.framesDetail = element.arrangedChildren.dropFirst().first?.type == .page
+        if keepsExits { layout?.keep(leavingViews()) }
         layout?.setItems(element.arrangedChildren.compactMap { $0.android.layoutItem })
+    }
+
+    /// The views of the children kept as they leave, each made deaf to touches and taken out of what assistive
+    /// technology meets as it is found leaving.
+    /// Design: docs/design/platforms/android/layout.md#a-view-kept-as-it-leaves
+    private func leavingViews() -> [AndroidView] {
+        element.presentedChildren.filter { $0.lifecycle == .exiting }.compactMap { child -> AndroidView? in
+            guard let view = child.android.view else { return nil }
+            view.setIgnoresInput(child.ignoresInput)
+            view.setAccessibility(child.accessibilityWords) { _ in false }
+            return view
+        }
+    }
+
+    /// A stack, a grid and a ZStack keep a child that left: its view stands until the tree releases it.
+    /// Design: docs/design/platforms/android/layout.md#a-view-kept-as-it-leaves
+    var keepsExits: Bool {
+        view is AndroidTravelingLayout
     }
 
     /// A label's spans as runs of its words, as the host layer reads them; without spans, its own words, once they

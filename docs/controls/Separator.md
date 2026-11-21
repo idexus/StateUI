@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 <thead><tr><th>Host</th><th>Created</th><th>Members (78)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>37 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td>an <code>NSBox</code> separator</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>37 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td>a hairline <code>UIView</code> in the separator color</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 6 ☑️ · 10 ✓ · 2 –</td><td>a <code>View</code> in the theme's list divider</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>60 ✅ · 5 ☑️ · 10 ✓ · 2 –</td><td>a <code>View</code> in the theme's list divider</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>39 ✅ · 4 ☑️ · 28 ✓ · 6 –</td><td>a line in <code>DividerStrokeColorDefaultBrush</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>44 ✅ · 5 ☑️ · 22 ✓ · 7 –</td><td>a <code>GtkSeparator</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>51 ✅ · 3 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;hr&gt;</code></td></tr></tbody>
@@ -187,8 +187,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on Separator: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on Separator: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: tap on Separator: the relay's report of the tap handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Separator: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Separator: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on Separator: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td></tr>
+<tr><td colspan="9">WinUI 3, GTK 4, Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

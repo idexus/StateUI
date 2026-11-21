@@ -17,6 +17,28 @@ before it is placed, as Android expects of every view it lays out; one laid
 out at that size already, with nothing in it asking to be laid out again, is
 only moved there.
 
+## A view kept as it leaves
+
+A stack, a grid and a ZStack keep a child that left
+(`AndroidElement.keepsExits`). The tree hands a layout its active children
+as items and, apart from them, the views of those kept as they leave
+([a view kept as it leaves](../../host/tree.md#a-view-kept-as-it-leaves));
+the layout is told the kept first (`keep(_:)`), then its items, and its
+group holds both - the items' views, then the kept (`holdChildren`). A kept
+view is no item's, so nothing lays it out again: it stands at the frame it
+last had while its opacity, its move and its scale travel to its exit's
+effect and the rows around it close over its place. Found leaving, it takes
+no touch - one goes to whatever stands behind it - and assistive technology
+meets nothing of it. As its exit ends the tree arranges its holder again,
+and the group holds it no more. A ZStack drawing its children in an order of
+its own draws the kept after them.
+
+The trap is the early return of an arrangement of the same items: an exit
+ending changes no item, so a change of the kept alone holds the children
+again. There is one `setItems`: a scroller, a split view and a stack of
+pages set their own, and a second way past them would hold their children
+in the wrong group.
+
 ## Points and pixels
 
 The arithmetic works in points; the views in pixels. The host converts at the

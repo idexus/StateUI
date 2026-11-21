@@ -36,6 +36,7 @@ final class AndroidLayoutMotionTests: XCTestCase {
             ("testWithLessMotionEveryChildArrives", testWithLessMotionEveryChildArrives),
             ("testAStackClosesOverARowOnceItsFadeLands", testAStackClosesOverARowOnceItsFadeLands),
             ("testARowShownAgainMidFadeComesBackFromWhereItStands", testARowShownAgainMidFadeComesBackFromWhereItStands),
+            ("testARowLeavingByItsExitIsDrawnUntilItLands", testARowLeavingByItsExitIsDrawnUntilItLands),
         ]
     }
 
@@ -54,6 +55,57 @@ final class AndroidLayoutMotionTests: XCTestCase {
             return row
         })
         return stack
+    }
+
+    /// A row leaving a standing stack by its exit stays drawn where it stood - held by its stack still, deaf to
+    /// touches, fading as its effect says - while the row below it closes over its place; as the exit lands the
+    /// stack holds it no more.
+    func testARowLeavingByItsExitIsDrawnUntilItLands() throws {
+        try onMainActor {
+            let clock = TestClock()
+            let host = AndroidRenderer.bare(clock: clock)
+            let leaving = Transition(enter: .identity, exit: .opacity.combined(with: .translation(x: 40)))
+            func rows(_ order: [String]) -> HostPatch {
+                var stack = HostPatch(id: .manual("stack"), type: .vStack)
+                stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
+                stack.children = .arranged(order.map { name in
+                    var row = HostPatch(id: .manual(name), type: .text)
+                    row.properties = [
+                        .text: .string(name), VisualElementContract.width.token: .number(100),
+                        VisualElementContract.height.token: .number(40),
+                    ]
+                    if name == "b" { row.properties[.transition] = leaving.propValue }
+                    row.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
+                    return row
+                })
+                return stack
+            }
+            host.apply(rows(["a", "b", "c"]))
+            let layout = try XCTUnwrap(host.view(id: .manual("stack")) as? AndroidLayoutView)
+            layout.layOut(width: 600, height: 400)
+            let gone = try XCTUnwrap(host.view(id: .manual("b")))
+            let below = try XCTUnwrap(host.view(id: .manual("c")))
+            let (stood, start) = (gone.frame, below.frame.y)
+
+            host.apply(rows(["a", "c"]))
+            layout.layOut(width: 600, height: 400)
+            XCTAssertTrue(layout.leaving.contains { $0 === gone }, "still held by its stack")
+            XCTAssertTrue(gone.frame == stood, "where it stood")
+
+            clock.now = 100
+            host.frame()
+            layout.layOut(width: 600, height: 400)
+            XCTAssertEqual(gone.opacity, 0.5, accuracy: 1e-6, "half way out")
+            XCTAssertTrue(gone.frame == stood, "no layout places it any more")
+            XCTAssertEqual(
+                Double(start - below.frame.y), Double(start - stood.y) / 2, accuracy: 2, "the row below closes meanwhile")
+
+            clock.now = 200
+            host.frame()
+            layout.layOut(width: 600, height: 400)
+            XCTAssertTrue(layout.leaving.isEmpty, "held no more as its exit lands")
+            XCTAssertEqual(below.frame.y, stood.y, "and the row below stands in its place")
+        }
     }
 
     /// A label whose width travels lays its words out at the width it is bound for: midway, its view is already as
