@@ -36,6 +36,7 @@ extension MountedElement {
         // Where each number is drawn now is where it sets out: a motion on its way goes on from there. The place
         // its layout gave it is read here, before it is that layout's no more.
         let placed = tree.layoutMotion.placed(mount)
+        exitPlace = placed?.place
         let moved = effect.move(of: placed?.place, in: placed?.room)
         let ends: [(Prop, Double, Double)] = [
             (.opacity, 1, effect.opacity), (.translationX, 0, moved.x), (.translationY, 0, moved.y),
@@ -54,19 +55,20 @@ extension MountedElement {
                 landed: { [weak self] in self?.exitLanded() })
             if started { exitsRunning += 1 }
         }
-        if exitsRunning == 0 { endExit(.finished) }
+        if exitsRunning == 0 { endExit(.finished, arranging: true) }
         return true
     }
 
     /// One of the numbers the exit moves came to its end, landed or cut short.
     private func exitLanded() {
         exitsRunning -= 1
-        if exitsRunning <= 0, !isAbsorbed { endExit(.finished) }
+        if exitsRunning <= 0, !isAbsorbed { endExit(.finished, arranging: true) }
     }
 
     /// The exit ends as `result`, once: the element is released, what kept it forgets it and arranges its views
-    /// without it - the arrangement that takes its view out.
-    func endExit(_ result: PresentationOperation.Result) {
+    /// without it - the arrangement that takes its view out, left to the patch arranging it where `arranging` is
+    /// false.
+    func endExit(_ result: PresentationOperation.Result, arranging: Bool) {
         guard lifecycle == .exiting, let parent, parent.keptExits.contains(where: { $0 === self }) else { return }
 
         let presented = parent.presentedChildren
@@ -74,7 +76,41 @@ extension MountedElement {
         parent.orderPresented(after: presented)
         tree?.exits.ended(self, as: result)
         release()
-        if parent.lifecycle == .active { parent.native.arrangeChildren() }
+        if arranging, parent.lifecycle == .active { parent.native.arrangeChildren() }
+    }
+
+    /// How a view was drawn as it left, for the one of its id that comes back: each number its exit moved, with
+    /// its speed, and where its layout had placed it.
+    struct Returned {
+        var numbers: [Prop: (value: Double, velocity: [Double])] = [:]
+        var place: Rect?
+    }
+
+    /// The numbers an entry and an exit move.
+    static let presenceProperties: [(property: Prop, unsaid: Double)] = [
+        (.opacity, 1), (.translationX, 0), (.translationY, 0), (.scale, 1),
+    ]
+
+    /// A child that comes as the one of its id and type is leaving takes that one's place in the drawing: the
+    /// leaving one ends, interrupted, and the new one - another life, with handlers of its own - is handed how
+    /// that one was drawn. Only a name an author gave matches: nothing is guessed by position.
+    /// Design: docs/design/host/tree.md#the-same-view-coming-back
+    func takeBack(_ children: [MountedElement], heldBefore before: [MountedElement]) {
+        guard !keptExits.isEmpty, let tree else { return }
+
+        for child in children where child.id.isManual && !before.contains(where: { $0 === child }) {
+            guard let leaving = keptExits.first(where: { $0.id == child.id && $0.type == child.type && !$0.isAbsorbed })
+            else { continue }
+
+            var returned = Returned(place: leaving.exitPlace)
+            for (property, unsaid) in Self.presenceProperties {
+                let standing = tree.standingProperty(mount: leaving.mount, property: property)
+                let value = standing?.value.number ?? leaving.resolvedValue(property)?.number ?? unsaid
+                returned.numbers[property] = (value, standing?.velocity ?? [])
+            }
+            child.returned = returned
+            leaving.endExit(.interrupted, arranging: false)
+        }
     }
 
     /// An element holding this one leaves: the exit is that element's leaving's part - it runs no end of its own,

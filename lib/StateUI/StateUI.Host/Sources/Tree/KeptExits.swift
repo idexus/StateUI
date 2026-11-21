@@ -39,7 +39,7 @@
 
         let window = element.enclosing(type: .window)?.mount ?? 0
         while let oldest = kept.first(where: { $0.window == window }), !fits(mounts, in: window) {
-            oldest.element.endExit(.limited)
+            oldest.element.endExit(.limited, arranging: true)
             kept.removeAll { $0.element === oldest.element }
         }
         kept.append(Kept(element: element, window: window, mounts: mounts, latest: now + Self.timeLimit))
@@ -61,11 +61,11 @@
 
     /// Ends as limited every view kept past its time at `now`.
     func expire(now: Double) {
-        for late in kept where late.latest <= now { late.element.endExit(.limited) }
+        for late in kept where late.latest <= now { late.element.endExit(.limited, arranging: true) }
     }
 
     /// Ends every view kept as `result`.
     func endAll(_ result: PresentationOperation.Result) {
-        for each in kept { each.element.endExit(result) }
+        for each in kept { each.element.endExit(result, arranging: true) }
     }
 }

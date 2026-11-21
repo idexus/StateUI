@@ -17,7 +17,7 @@
     public enum Result: Equatable, Sendable {
         /// It came where its effect leads.
         case finished
-        /// A hand took the view on its way.
+        /// A hand took the view on its way, or the same view came back as it left.
         case interrupted
         /// The view, or the room it stood in, went first.
         case cancelled

@@ -48,6 +48,10 @@ extension MountedElement {
     /// An element a message made again enters by no transition.
     /// Design: docs/design/host/motion.md#a-view-that-enters
     public func enter(_ view: some FadingView, as entry: LayoutEntry) {
+        if let returned {
+            self.returned = nil
+            return comeBack(as: returned, on: view)
+        }
         guard let transition = transition?.host else {
             if case .joining(let law) = entry, law.animates { fadeIn(view, under: law) }
             return

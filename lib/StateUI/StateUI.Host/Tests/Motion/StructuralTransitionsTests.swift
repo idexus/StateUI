@@ -151,6 +151,66 @@ final class StructuralTransitionsTests: XCTestCase {
         XCTAssertEqual(b.lifecycle, .released)
     }
 
+    /// THE SAME VIEW COMING BACK AS IT LEAVES TAKES OVER HOW THE LEAVING ONE WAS DRAWN: another element, the
+    /// leaving one ended as interrupted, its numbers going on from where they stood and at their speed onto what
+    /// it declares - while a view of no name of its own, or of another type, comes as any other.
+    func testTheSameViewComingBackTakesOverHowItWasDrawn() {
+        let bench = Bench()
+        let comes = Transition(enter: .translation(y: 40), exit: .opacity.combined(with: .translation(y: 12)))
+        bench.show([Bench.text("a"), Bench.text("b", comes)], complete: true)
+        let leaving = bench.root.children[1]
+        bench.show([Bench.text("a")])
+        bench.frame(at: 100)
+        XCTAssertEqual(bench.shown(.opacity, of: leaving) ?? .nan, 0.5, accuracy: 0.001)
+
+        bench.show([Bench.text("a"), Bench.text("b", comes)])
+        let back = bench.root.children[1]
+        XCTAssertFalse(back === leaving, "another element, with handlers of its own")
+        XCTAssertEqual(leaving.lifecycle, .released, "the leaving one is over")
+        XCTAssertEqual(bench.ended.map(\.result), [.interrupted])
+        XCTAssertTrue(bench.root.presentedChildren.elementsEqual(bench.root.children, by: ===), "one view of it stands")
+
+        back.enter(Entering(), as: .joining(under: .none))
+        XCTAssertEqual(bench.shown(.opacity, of: back) ?? .nan, 0.5, accuracy: 0.001, "from where the leaving one was drawn")
+        XCTAssertEqual(bench.shown(.translationY, of: back) ?? .nan, 6, accuracy: 0.001, "not from its entry's effect")
+
+        bench.frame(at: 200)
+        XCTAssertGreaterThan(bench.shown(.opacity, of: back) ?? 0, 0.5, "and on its way back in")
+        bench.frame(at: 300)
+        XCTAssertEqual(back.number(.opacity) ?? 1, 1, "onto what it declares")
+        XCTAssertNil(bench.shown(.translationY, of: back))
+
+        // A view an author gave no name, and one of another type under the same name, come as any other.
+        let unnamed = Bench()
+        var auto = HostPatch(id: .auto(7), type: .text)
+        auto.properties = [.transition: comes.propValue]
+        unnamed.show([Bench.text("a"), auto], complete: true)
+        let first = unnamed.root.children[1]
+        unnamed.show([Bench.text("a")])
+        unnamed.show([Bench.text("a"), auto])
+        XCTAssertEqual(first.lifecycle, .exiting, "no name: nothing is guessed by its number")
+        XCTAssertNil(unnamed.root.children[1].returned)
+
+        let typed = Bench()
+        typed.show([Bench.text("a"), Bench.text("b", comes)], complete: true)
+        let text = typed.root.children[1]
+        typed.show([Bench.text("a")])
+        var other = HostPatch(id: .manual("b"), type: .rectangle)
+        other.properties = [.transition: comes.propValue]
+        typed.show([Bench.text("a"), other])
+        XCTAssertEqual(text.lifecycle, .exiting, "another type: an exit and an entry apart")
+        XCTAssertNil(typed.root.children[1].returned)
+    }
+
+    /// A view recording nothing, for an entry.
+    private final class Entering: FadingView {
+        var isShown = true
+        var opacity = 1.0
+        func setShown(_ shown: Bool) {}
+        func setOpacity(_ opacity: Double) { self.opacity = opacity }
+        func setIgnoresInput(_ ignores: Bool) {}
+    }
+
     /// A SUBTREE AN ENGINE RUNS IN IS NOT KEPT: a web view's process or a map's would run on while it is drawn.
     func testASubtreeAnEngineRunsInIsNotKept() {
         for engine in [NodeType.webView, .map] {

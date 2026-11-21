@@ -83,6 +83,11 @@ Where nothing keeps it, it is released at once - as on every host whose
 layouts drop what they are not handed; a host says in its realization that
 it draws no exit, and the matrix shows it.
 
+A view that comes back under the same `.id(_:)` while it is still leaving
+goes on from how the leaving one is drawn
+([the same view coming back](../host/tree.md#the-same-view-coming-back)):
+its entry's effect is not played over a view still on the page.
+
 Hiding a view with `isVisible(_:)` keeps the view and its state, and is no
 leaving: it crosses by the rule of
 [showing and hiding](../host/motion.md#showing-and-hiding), whatever

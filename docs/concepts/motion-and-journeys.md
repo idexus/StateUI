@@ -361,12 +361,18 @@ to; `symmetric(_:)` is one effect for both.
 | it appears with what holds it - a page shown, a window opened | is simply there; with `.initialAppearance(true)` it enters |
 | a transition is given to it as it stands | nothing moves |
 | the tree drops it | it is the application's no more at once, and drawn until it has gone to its exit's effect |
+| it comes back, under the same `.id(_:)`, while it is still leaving | a new view goes on from where the leaving one is drawn, at its speed |
 
 Both move under the view's own `.motion(_:)`, else the application's: a
 transition says no law of its own. Where neither animates, or the user
 asked for less motion, the view is simply there, or gone. A number a state
 drives - an opacity carried from a state - stays that state's on the way
 in, and the entry moves the others.
+
+A view that comes back is another view: its state starts anew and its
+handlers are its own. What goes on is the drawing alone, and only for a view
+an author named - `.id("details")` - so a line toggled off and on again
+neither stands twice nor jumps.
 
 A view that has left hears nothing and tells nothing while its exit is
 drawn: its handlers, its bindings and its place in the layout ended as the

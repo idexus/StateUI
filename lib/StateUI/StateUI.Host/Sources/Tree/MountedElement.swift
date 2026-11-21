@@ -158,6 +158,11 @@
     var exitsRunning = 0
     var isAbsorbed = false
 
+    /// Where its layout had placed it as it left, and - for a view come back as the one of its id was leaving -
+    /// how that one was drawn then. Design: docs/design/host/tree.md#the-same-view-coming-back
+    var exitPlace: Rect?
+    var returned: Returned?
+
     /// Whether a view standing in the element may be thrown out of it: the room it leaves is this element's.
     private(set) var holdsDismissing = false
 
@@ -643,6 +648,7 @@
         self.children = children
         self.slots = slots
         dismissingChanged()
+        takeBack(children, heldBefore: before)
         leave(before, presented: presented)
         if described { arrangedByRender(from: before) }
     }

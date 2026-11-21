@@ -462,7 +462,8 @@
         standing: HostValue?,
         target: HostValue?,
         motion: Motion?,
-        landed: (() -> Void)? = nil
+        landed: (() -> Void)? = nil,
+        velocity: [Double] = []
     ) -> Bool {
         let started = describedMotion.receive(
             key: DescribedKey(mount: mount, property: property),
@@ -470,10 +471,16 @@
             target: target,
             motion: motion,
             landed: landed,
+            velocity: velocity,
             now: patchTime ?? now(),
             reducesMotion: patchReducesMotion ?? reducesMotion())
         onAnimation()
         return started
+    }
+
+    /// Where a running animation of `property` on the element `mount` stands now, and how fast; nil where none runs.
+    func standingProperty(mount: UInt64, property: Prop) -> (value: HostValue, velocity: [Double])? {
+        describedMotion.standing(of: DescribedKey(mount: mount, property: property), now: time)
     }
 
     /// The value a running animation draws for `property` on the element `mount`.

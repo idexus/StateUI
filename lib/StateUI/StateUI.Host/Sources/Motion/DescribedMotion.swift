@@ -63,12 +63,13 @@
         target: HostValue?,
         motion: Motion?,
         landed: (() -> Void)? = nil,
+        velocity: [Double] = [],
         now: Double,
         reducesMotion: Bool
     ) -> Bool {
         var source = standing
         var carriedLanes: [Double] = []
-        var carriedVelocity: [Double] = []
+        var carriedVelocity = velocity
 
         if let running = transitions.removeValue(forKey: key) {
             if let animation = animator.animation(for: .described(key)) {
@@ -107,6 +108,13 @@
             plan: plan, velocity: animation.velocity, landed: landed)
         animator.start(animation, for: .described(key))
         return true
+    }
+
+    /// Where the animation of `key` stands at `now` and how fast its lanes go; nil where none runs.
+    public func standing(of key: DescribedKey, now: Double) -> (value: HostValue, velocity: [Double])? {
+        guard let running = transitions[key] else { return nil }
+        if let animation = animator.animation(for: .described(key)) { _ = running.follow(animation.position(at: now)) }
+        return (running.presented, running.velocity)
     }
 
     /// Takes the values an animator advance gave for the animations, in key order.

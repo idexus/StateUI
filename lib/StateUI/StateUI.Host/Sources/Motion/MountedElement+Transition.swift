@@ -39,4 +39,28 @@ extension MountedElement {
         }
         view.setOpacity(value(.opacity)?.number ?? 1)
     }
+
+    /// The element comes back as the view of its id was leaving: each number goes on from where that one was
+    /// drawn, at its speed, onto what the element declares - its move from where that one stood, should its
+    /// layout place it elsewhere - under its own motion, else the application's; with nothing to move by it
+    /// stands as declared.
+    /// Design: docs/design/host/tree.md#the-same-view-coming-back
+    func comeBack(as returned: Returned, on view: some FadingView) {
+        guard let tree else { return }
+
+        let law = tree.layoutMotion.law(of: motion)
+        let place = tree.layoutMotion.placed(mount)?.place
+        let across = returned.place.flatMap { old in place.map { old.x - $0.x } } ?? 0
+        let down = returned.place.flatMap { old in place.map { old.y - $0.y } } ?? 0
+        for (property, unsaid) in Self.presenceProperties where driven[property] == nil {
+            guard let drawn = returned.numbers[property] else { continue }
+            let declared = resolvedValue(property)?.number ?? unsaid
+            let standing = drawn.value + (property == .translationX ? across : property == .translationY ? down : 0)
+            guard standing != declared || !drawn.velocity.isEmpty else { continue }
+            tree.receiveProperty(
+                mount: mount, property: property, standing: .number(standing), target: .number(declared), motion: law,
+                velocity: drawn.velocity)
+        }
+        view.setOpacity(value(.opacity)?.number ?? 1)
+    }
 }
