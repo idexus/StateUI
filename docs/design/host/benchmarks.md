@@ -133,3 +133,21 @@ native halves alive with what stood after the first. Every change is
 answered, and a runtime let go keeps no half. A table an owner gains joins
 that owner's count, so the rounds and the leak walk name the owner the day it
 forgets to let go.
+
+## A generated run
+
+`GeneratedSequenceTests` draws a run of the same board from a seed: a
+destination written and written again, a movement stopped, the hand's press,
+moves, lift and loss, a view removed and written again - alone and under a
+presentation change - another room, less motion turned on and off, the window
+closed and made anew, time moved by uneven lengths. Three seeds run twice
+each, and the two traces - what each step did, the line's journey, every view
+its scope draws with how it is drawn, the row's places, what the runtime
+holds, how each change ended - are the same step for step.
+
+After every step the rules of a step hold: a frame writes no state; every
+number shown is one; a view that leaves is deaf, no child of its holder, in no
+hand, and within the budget; with less motion nothing travels and nothing is
+kept leaving; a window closed leaves nothing moving; a change is answered
+once. At the end everything rests, every change is answered, and the runtime
+let go keeps no half.
