@@ -15,8 +15,8 @@ the modules in. Each is a phase of the result, so tests that pass beside an
 API that differs read as what they are, and the command fails if any phase
 did. Nothing is written: `STATEUI_UPDATE_EXPORTS`, `STATEUI_UPDATE_DOCS`,
 `STATEUI_STALE_ONLY` and `STATEUI_FILTER` are taken out of what the suite
-inherits - recording marks and exports is a request of its own (the
-migration's M11), never a variable left in a shell. The suite builds a test
+inherits - recording marks and exports is a request of its own, never a
+variable left in a shell. The suite builds a test
 application, so it waits for the machine's one application build. AppKit's,
 UIKit's, Android's, GTK's and the Web's suites run this way (`appkit.yml`,
 `uikit.yml`, `android.yml`, `gtk.yml`, `web.yml`); WinUI's moves with its
