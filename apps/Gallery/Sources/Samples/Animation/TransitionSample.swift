@@ -7,14 +7,14 @@ struct TransitionSample: SampleContent, ExampleContent {
     static let summary = "Add a note, then remove one: each comes from, and goes to, where its transition says."
 
     // listing: TransitionSample
-    static let ways = ["Rising", "Growing", "From the side"]
+    static let ways = ["Rising", "Growing", "From outside"]
 
     /// What a note comes from and goes to: faded and lower, faded and
-    /// smaller, or faded and well to the side.
+    /// smaller, or wholly out of the stack to the right.
     static func effect(_ way: Int) -> TransitionEffect {
         switch way {
         case 1: .opacity.combined(with: .scale(0.6))
-        case 2: .opacity.combined(with: .translation(x: 160))
+        case 2: .outside(.right)
         default: .opacity.combined(with: .translation(y: 24))
         }
     }
@@ -84,8 +84,8 @@ struct TransitionSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("Add a note. It comes from where its transition says - lower, "
-                + "smaller, or from the side - on a spring of its own, while the "
-                + "notes under it make room.")
+                + "smaller, or from outside the stack - on a spring of its own, "
+                + "while the notes under it make room.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -11,8 +11,8 @@ class GTKTravelingLayout: GTKLayoutView {
     /// Where the children travel to their places.
     let places = TravelingPlaces()
 
-    func beginArrangement(width: Double) {
-        places.begin(width: width)
+    func beginArrangement(width: Double, height: Double) {
+        places.begin(width: width, height: height)
     }
 
     /// Stands `item` at `place`, or on its way there.

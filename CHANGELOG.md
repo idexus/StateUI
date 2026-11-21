@@ -158,6 +158,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the frame's time; `complete(_:as:)` takes a `HostMotionOutcome` in place of a `Bool`, and the movements an engine
   ended come in `HostCycle.finished`. A state followed by an engine or a reading with no property showing it reaches
   the host in `HostPatch.followed`. The host layer does all of it; a host built on `StateUIHost` changes nothing.
+- **For a host: a layout says its room.** `TravelingPlaces.begin(width:)` is `begin(width:height:)`: a view
+  entering or leaving wholly out of its room is moved by the room its layout placed it in.
 - **For a host: a layout says how a child comes.** `LayoutMotion.place` and `TravelingPlaces.place` take `enter:`
   in place of `fadeIn:`, handed a `LayoutEntry` - `.joining(under:)` a layout already standing, under the law its
   children animate by, or `.appearing` with its layout - for every child given its first place;
@@ -219,7 +221,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 - **A view says how it comes and goes.** `.transition(_:)`, on any view, names the effect the view comes from as
   the tree gains it and the one it goes to as the tree drops it: a `TransitionEffect` - `.opacity`,
-  `.translation(x:y:)`, `.scale(_:)`, combined in the order written - in a `Transition`, `init(enter:exit:)` or
+  `.translation(x:y:)`, `.scale(_:)`, `.outside(_:)` out of its room, combined in the order written - in a
+  `Transition`, `init(enter:exit:)` or
   `symmetric(_:)`. The view travels from the effect to how it stands, under its own `.motion(_:)`, else the
   application's, in place of the fade a view joining a standing layout otherwise comes with. It enters as it joins
   what already stands, and with `initialAppearance(true)` as it appears with its page too; given to a view already

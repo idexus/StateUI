@@ -27,6 +27,7 @@ final class TransitionTests: XCTestCase {
         XCTAssertEqual(twice.host.translation, Point(x: 16, y: 24))
         XCTAssertEqual(twice.host.scale, 4)
         XCTAssertEqual(twice.host.opacity, 0)
+        XCTAssertEqual(TransitionEffect.outside(.up).combined(with: .outside(.left)).host.outside, .left, "the last way out")
     }
 
     /// A STEP THAT IS NO NUMBER IS NO STEP, and said.
@@ -38,12 +39,12 @@ final class TransitionTests: XCTestCase {
         XCTAssertTrue(hasComplained("A TransitionEffect's scale is no number of nought or more"))
     }
 
-    /// A TRANSITION CROSSES AS ITS NUMBERS AND COMES BACK DRAWING THE SAME: the entry's four, the exit's four, and
+    /// A TRANSITION CROSSES AS ITS NUMBERS AND COMES BACK DRAWING THE SAME: the entry's five, the exit's five, and
     /// whether it enters as it first appears.
     func testATransitionCrossesAsItsNumbers() throws {
         let transition = Transition(
-            enter: .opacity.combined(with: .translation(y: 12)), exit: .scale(0.8).combined(with: .translation(x: -6)))
-        XCTAssertEqual(transition.propValue, .numbers([0, 0, 12, 1, 1, -6, 0, 0.8, 0]))
+            enter: .opacity.combined(with: .translation(y: 12)), exit: .scale(0.8).combined(with: .outside(.up)))
+        XCTAssertEqual(transition.propValue, .numbers([0, 0, 12, 1, 0, 1, 0, 0, 0.8, 4, 0]))
 
         let back = try XCTUnwrap(Transition(propValue: transition.propValue))
         XCTAssertEqual(back.host.enter, transition.host.enter)
@@ -54,7 +55,24 @@ final class TransitionTests: XCTestCase {
         XCTAssertTrue(initially.host.entersInitially)
         XCTAssertEqual(Transition.symmetric(.opacity).enter, Transition.symmetric(.opacity).exit)
         XCTAssertNil(Transition(propValue: .numbers([0, 0, 12])), "another run of numbers is none")
-        XCTAssertNil(Transition(propValue: .numbers(Array(repeating: .nan, count: 9))))
+        XCTAssertNil(Transition(propValue: .numbers(Array(repeating: .nan, count: 11))))
+    }
+
+    /// AN EFFECT OUT OF THE ROOM MOVES THE WHOLE VIEW PAST THE ROOM'S EDGE THAT WAY: by its far edge to the left
+    /// and up, by what is left of the room to the right and down - its own move with it - and by nothing that way
+    /// where nobody said a room.
+    func testAnEffectOutOfTheRoomMovesTheWholeViewPastItsEdge() {
+        let place = Rect(x: 20, y: 30, width: 100, height: 40)
+        let room = LayoutSize(width: 300, height: 200)
+        XCTAssertEqual(TransitionEffect.outside(.left).host.move(of: place, in: room), Point(x: -120, y: 0))
+        XCTAssertEqual(TransitionEffect.outside(.right).host.move(of: place, in: room), Point(x: 280, y: 0))
+        XCTAssertEqual(TransitionEffect.outside(.up).host.move(of: place, in: room), Point(x: 0, y: -70))
+        XCTAssertEqual(TransitionEffect.outside(.down).host.move(of: place, in: room), Point(x: 0, y: 170))
+        XCTAssertEqual(
+            TransitionEffect.translation(x: 5, y: 2).combined(with: .outside(.left)).host.move(of: place, in: room),
+            Point(x: -115, y: 2))
+        XCTAssertEqual(TransitionEffect.outside(.down).host.move(of: nil, in: nil), Point(x: 0, y: 0))
+        XCTAssertEqual(TransitionEffect.translation(x: 5).host.move(of: nil, in: nil), Point(x: 5, y: 0))
     }
 
     /// THE ELEMENT THAT DECLARES A TRANSITION CARRIES IT IN ITS PATCH, and one that declares none carries nothing.

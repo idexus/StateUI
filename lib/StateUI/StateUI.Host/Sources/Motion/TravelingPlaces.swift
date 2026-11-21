@@ -34,9 +34,13 @@
         patched = true
     }
 
-    /// Starts an arrangement `width` wide, deciding once for every child how it is placed: what a patch said
-    /// travels, what a new width gave arrives.
-    public func begin(width: Double) {
+    /// The room the arrangement under way lays out in.
+    private var room = LayoutSize(width: 0, height: 0)
+
+    /// Starts an arrangement in a room `width` by `height`, deciding once for every child how it is placed: what a
+    /// patch said travels, what a new width gave arrives.
+    public func begin(width: Double, height: Double) {
+        room = LayoutSize(width: width, height: height)
         said = patched && arrangedWidth != nil
         resized = arrangedWidth.map { abs($0 - width) > 0.5 } ?? false
         patched = false
@@ -67,6 +71,6 @@
         } ?? arrangement
         layoutMotion.place(
             view, mount: mount, at: place, stated: stated, words: values.words, natural: natural,
-            enter: enter, in: arrangement)
+            enter: enter, in: arrangement, room: room)
     }
 }

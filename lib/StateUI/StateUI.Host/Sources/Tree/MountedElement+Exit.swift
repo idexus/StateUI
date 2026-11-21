@@ -33,10 +33,13 @@ extension MountedElement {
               let law = tree.layoutMotion.law(of: motion), tree.exits.admit(self, at: tree.time)
         else { return false }
 
-        // Where each number is drawn now is where it sets out: a motion on its way goes on from there.
+        // Where each number is drawn now is where it sets out: a motion on its way goes on from there. The place
+        // its layout gave it is read here, before it is that layout's no more.
+        let placed = tree.layoutMotion.placed(mount)
+        let moved = effect.move(of: placed?.place, in: placed?.room)
         let ends: [(Prop, Double, Double)] = [
-            (.opacity, 1, effect.opacity), (.translationX, 0, effect.translation.x),
-            (.translationY, 0, effect.translation.y), (.scale, 1, effect.scale),
+            (.opacity, 1, effect.opacity), (.translationX, 0, moved.x), (.translationY, 0, moved.y),
+            (.scale, 1, effect.scale),
         ].map { property, unsaid, part in
             let declared = resolvedValue(property)?.number ?? unsaid
             return (property, declared, property == .opacity || property == .scale ? declared * part : declared + part)

@@ -413,7 +413,7 @@ private final class HandWoundLayout {
         bodies: [UInt64: LayoutBody] = [:]
     ) {
         if patched { places.patchArrived() }
-        places.begin(width: width)
+        places.begin(width: width, height: 200)
         for child in children {
             var values = LayoutValues()
             values.width = measured.contains(child.mount) ? nil : 100

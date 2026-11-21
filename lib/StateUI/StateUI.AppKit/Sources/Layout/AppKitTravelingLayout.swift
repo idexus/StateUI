@@ -55,7 +55,7 @@ class AppKitTravelingLayout: AppKitHitTestView, AppKitDirectedLayout {
 
     /// Starts an arrangement, deciding once for every child how it is placed.
     func beginArrangement() {
-        places.begin(width: Double(arrangementBounds.width))
+        places.begin(width: Double(arrangementBounds.width), height: Double(arrangementBounds.height))
     }
 
     /// Stands `item` at `frame`, or on its way there; an item no element places arrives at once.

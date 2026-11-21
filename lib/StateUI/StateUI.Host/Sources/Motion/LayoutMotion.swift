@@ -58,6 +58,9 @@ extension PlacedView {
         weak var view: (any PlacedView)?
         var standing: Rect?
         var destination = Rect(x: 0, y: 0, width: 0, height: 0)
+        /// The place its layout last gave the child, and the room that layout laid out in.
+        var placed = Rect(x: 0, y: 0, width: 0, height: 0)
+        var room: LayoutSize?
         /// The natural size of the words a traveling child lays out; nil for one laying out none.
         var words: LayoutSize?
         /// Whether the child holds its new words back, its box growing with its former ones.
@@ -130,7 +133,8 @@ extension PlacedView {
         words: LaidOutWords,
         natural: () -> LayoutSize,
         enter: ((LayoutEntry) -> Void)?,
-        in arrangement: Arrangement
+        in arrangement: Arrangement,
+        room: LayoutSize?
     ) {
         guard mount != 0 else {
             view.placedFrame = target
@@ -139,7 +143,9 @@ extension PlacedView {
 
         // A child with no seat yet is already where it belongs, and enters there.
         guard let seat = seats[mount] else {
-            seats[mount] = Seat(view: view)
+            var seat = Seat(view: view)
+            (seat.placed, seat.room) = (target, room)
+            seats[mount] = seat
             view.heldWords = nil
             view.placedFrame = target
             enter?(arrangement.joins ? .joining(under: arrangement.law) : .appearing)
@@ -147,6 +153,8 @@ extension PlacedView {
         }
 
         seats[mount]?.view = view
+        seats[mount]?.placed = target
+        seats[mount]?.room = room
         let key = AnimationTarget.placed(mount)
         let destination = Self.lanes(target)
         let running = animator.animation(for: key)
@@ -221,6 +229,12 @@ extension PlacedView {
     public func travel(of mount: UInt64) -> (standing: Rect, destination: Rect)? {
         guard let seat = seats[mount], let standing = seat.standing else { return nil }
         return (seat.frame(standing), seat.destination)
+    }
+
+    /// The place its layout last gave the child `mount`, and the room that layout laid out in; nil for a child no
+    /// layout placed.
+    public func placed(_ mount: UInt64) -> (place: Rect, room: LayoutSize?)? {
+        seats[mount].map { ($0.placed, $0.room) }
     }
 
     /// Forgets the place of an element that leaves the tree.

@@ -141,6 +141,32 @@ final class StructuralEntryTests: XCTestCase {
         XCTAssertNil(shown(.translationY, of: remade, in: runtime))
     }
 
+    /// A view its layout placed, for the layout motion's seat.
+    private final class Seated: PlacedView {
+        var placedFrame = Rect(x: 0, y: 0, width: 0, height: 0)
+        var heldWords: LayoutSize?
+    }
+
+    /// AN EFFECT OUT OF ITS ROOM ENTERS FROM WHOLLY OUTSIDE THE ROOM ITS LAYOUT PLACED IT IN, and from where it
+    /// stands where no layout placed it.
+    func testAnEffectOutOfItsRoomEntersFromOutsideTheRoomItWasPlacedIn() {
+        let transition = Transition.symmetric(.outside(.right))
+        let (runtime, _, element) = label([.transition: transition.propValue])
+        element.enter(Joining(), as: .joining(under: .none))
+        XCTAssertNil(shown(.translationX, of: element, in: runtime), "no layout placed it: no room to stand out of")
+
+        let (placing, _, placed) = label([.transition: transition.propValue])
+        let places = TravelingPlaces()
+        places.layoutMotion = placing.layoutMotion
+        places.begin(width: 300, height: 200)
+        places.place(
+            Seated(), mount: placed.mount, at: Rect(x: 20, y: 30, width: 100, height: 40), values: LayoutValues(),
+            natural: { .zero }, enter: nil)
+        placed.enter(Joining(), as: .joining(under: .none))
+        XCTAssertEqual(shown(.translationX, of: placed, in: placing), 280, "its near edge at the room's far one")
+        XCTAssertNil(shown(.translationY, of: placed, in: placing))
+    }
+
     /// WHERE NOTHING MOVES, A CHILD STANDS AS DECLARED AT ONCE: less motion, or an application that moves nothing
     /// and a view of no motion of its own.
     func testWhereNothingMovesAChildStandsAtOnce() {

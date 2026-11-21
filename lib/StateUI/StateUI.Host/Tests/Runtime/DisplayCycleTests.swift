@@ -86,11 +86,11 @@ final class DisplayCycleTests: XCTestCase {
         let travels = Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all)
         runtime.layoutMotion.place(
             child, mount: 2, at: Rect(x: 0, y: 0, width: 10, height: 10), stated: [], words: .none, natural: { .zero },
-            enter: nil, in: travels)
+            enter: nil, in: travels, room: nil)
         XCTAssertFalse(runtime.clock.held, "a child standing at its place does not move")
         runtime.layoutMotion.place(
             child, mount: 2, at: Rect(x: 0, y: 50, width: 10, height: 10), stated: [], words: .none, natural: { .zero },
-            enter: nil, in: travels)
+            enter: nil, in: travels, room: nil)
         XCTAssertTrue(runtime.clock.held, "a child on its way to its place holds it")
         runtime.displayCycle.frame(now: 400)
         XCTAssertFalse(runtime.clock.held)

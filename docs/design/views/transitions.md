@@ -26,6 +26,7 @@ combined in the order written:
   .opacity               faded out wholly
   .translation(x:y:)     moved from its place, in points
   .scale(_:)             drawn so many times as large about its middle
+  .outside(_:)           wholly out of the room that holds it, one way
 ```
 
 The order matters between a move and a scale, as it does in any drawing: a
@@ -37,7 +38,14 @@ what a host draws (`TransitionEffect.host`, a `HostTransitionEffect`):
   opacity       what the view's opacity is multiplied by: 0 where a step fades it, else 1
   translation   each move added as written; each scale multiplies the moves before it
   scale         the factors multiplied
+  outside       the last way out written; none where no step says one
 ```
+
+The way out is no number of the effect's own: how far takes a view wholly
+out depends on where it stands and how large its room is, which only the
+layout that placed it knows. The host layer works the move out as the view
+enters or leaves (`HostTransitionEffect.move(of:in:)`): to the left and up
+by the view's far edge, to the right and down by what is left of the room.
 
 So a host is handed three things it already draws by, and no list of steps:
 the fold is the core's, once, and two hosts cannot order it differently.
@@ -54,7 +62,7 @@ view's motion, which is not the effect's to say.
 A transition holds two effects, as an entry and an exit need not mirror
 each other; `symmetric(_:)` is the one effect both ways. It is a property
 of the view (`ViewContract.transition`, of the layer StateUI composes): it
-crosses in the patch as nine numbers - the entry's fold, the exit's, and
+crosses in the patch as eleven numbers - the entry's fold, the exit's, and
 whether it enters as it first appears - and the host layer reads it back
 from the element (`MountedElement.transition`).
 

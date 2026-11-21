@@ -148,7 +148,7 @@ class UIKitLayoutView: UIView, UIKitSteppable {
         box.paint(on: self)
         followChildrenHost()
         let room = arrangementRoom ?? bounds.size
-        places.begin(width: room.width)
+        places.begin(width: room.width, height: room.height)
         arrange(in: Rect(x: 0, y: 0, width: room.width, height: room.height))
         laidOut?()
     }

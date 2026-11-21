@@ -123,6 +123,34 @@ final class StructuralTransitionsTests: XCTestCase {
         }
     }
 
+    /// A view its layout placed, for the layout motion's seat.
+    private final class Seated: PlacedView {
+        var placedFrame = Rect(x: 0, y: 0, width: 0, height: 0)
+        var heldWords: LayoutSize?
+    }
+
+    /// AN EXIT OUT OF ITS ROOM TAKES THE VIEW WHOLLY OUT OF THE ROOM ITS LAYOUT PLACED IT IN: the place is read as
+    /// it leaves, before its layout forgets it.
+    func testAnExitOutOfItsRoomTakesTheViewWhollyOut() {
+        let bench = Bench()
+        let leaving = Transition(enter: .identity, exit: .outside(.left))
+        bench.show([Bench.text("a"), Bench.text("b", leaving)], complete: true)
+        let b = bench.root.children[1]
+        let places = TravelingPlaces()
+        places.layoutMotion = bench.runtime.layoutMotion
+        places.begin(width: 300, height: 200)
+        places.place(
+            Seated(), mount: b.mount, at: Rect(x: 20, y: 30, width: 100, height: 40), values: LayoutValues(),
+            natural: { .zero }, enter: nil)
+
+        bench.show([Bench.text("a")])
+        XCTAssertEqual(b.lifecycle, .exiting)
+        bench.frame(at: 100)
+        XCTAssertEqual(bench.shown(.translationX, of: b) ?? .nan, -60, accuracy: 0.001, "half way to its far edge past the room's")
+        bench.frame(at: 200)
+        XCTAssertEqual(b.lifecycle, .released)
+    }
+
     /// A SUBTREE AN ENGINE RUNS IN IS NOT KEPT: a web view's process or a map's would run on while it is drawn.
     func testASubtreeAnEngineRunsInIsNotKept() {
         for engine in [NodeType.webView, .map] {

@@ -277,8 +277,13 @@ Each goes by the road a property's own animation takes
 (`receiveProperty`), so no host draws an entry by anything it did not draw
 by already. The law is the element's own motion, else the application's
 (`LayoutMotion.law(of:)`) - never the layout's, which says how its children
-change places. A number a state drives is the state's, and one already on
-its way keeps its way. Where nothing moves - no motion, or the user asked for
+change places. An effect out of its room moves the element as far as takes
+it wholly out of the room its layout placed it in: a layout says its room as
+it begins an arrangement (`TravelingPlaces.begin(width:height:)`), and layout
+motion keeps it with the child's place (`LayoutMotion.placed`); a view no
+layout placed has no room to stand out of, and moves by nothing that way. A
+number a state drives is the state's, and one already on its way keeps its
+way. Where nothing moves - no motion, or the user asked for
 less - the element stands as declared.
 
 A message that makes again what the tree showed - a complete one after a

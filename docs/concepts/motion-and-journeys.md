@@ -348,7 +348,8 @@ struct Details: View {
 
 A `TransitionEffect` is the view as it is drawn while absent: `.opacity`
 faded out, `.translation(x:y:)` moved from its place, `.scale(_:)` drawn so
-many times as large about its middle. `combined(with:)` puts effects together
+many times as large about its middle, `.outside(_:)` wholly out of the room
+that holds it, one way. `combined(with:)` puts effects together
 in the order written: a move written after a scale is the move as written,
 and a scale written after a move scales the move with the view. A
 `Transition` holds the effect an entry comes from and the one an exit goes

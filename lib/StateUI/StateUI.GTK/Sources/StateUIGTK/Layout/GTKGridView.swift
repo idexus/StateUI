@@ -43,7 +43,7 @@ final class GTKGridView: GTKTravelingLayout {
     }
 
     override func arrange(in bounds: Rect) {
-        beginArrangement(width: bounds.width)
+        beginArrangement(width: bounds.width, height: bounds.height)
         let places = GridArithmetic.places(
             of: items, rows: rows, columns: columns,
             rowSpacing: rowSpacing, columnSpacing: columnSpacing, padding: padding, in: bounds, direction: direction)

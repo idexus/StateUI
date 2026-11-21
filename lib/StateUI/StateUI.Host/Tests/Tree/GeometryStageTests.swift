@@ -105,7 +105,7 @@ final class GeometryStageTests: XCTestCase {
         places.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
         func arrange(at place: Rect) {
             places.patchArrived()
-            places.begin(width: 300)
+            places.begin(width: 300, height: 200)
             var values = LayoutValues()
             (values.width, values.height) = (100, 60)
             places.place(seat, mount: view.mount, at: place, values: values, natural: { .zero }, enter: nil)
@@ -137,7 +137,7 @@ final class GeometryStageTests: XCTestCase {
         places.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
         func arrange(at place: Rect) {
             places.patchArrived()
-            places.begin(width: 300)
+            places.begin(width: 300, height: 200)
             var values = LayoutValues()
             (values.width, values.height) = (100, 60)
             places.place(seat, mount: view.mount, at: place, values: values, natural: { .zero }, enter: nil)
@@ -203,7 +203,7 @@ final class GeometryStageTests: XCTestCase {
         places.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
         func arrange(at place: Rect) {
             places.patchArrived()
-            places.begin(width: 300)
+            places.begin(width: 300, height: 200)
             places.place(seat, mount: stack.mount, at: place, values: LayoutValues(), natural: { .zero }, enter: nil)
         }
         arrange(at: Rect(x: 0, y: 0, width: 300, height: 200))

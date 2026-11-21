@@ -72,19 +72,19 @@ final class PlacesRulesTests: XCTestCase {
         var values = LayoutValues()
         values.width = 10
 
-        places.begin(width: 100)
+        places.begin(width: 100, height: 100)
         places.place(
             child, mount: 1, at: Rect(x: 0, y: 0, width: 10, height: 10), values: values, natural: { .zero },
             enter: nil)
         XCTAssertEqual(child.placedFrame, Rect(x: 0, y: 0, width: 10, height: 10), "no motion: at once")
 
         places.layoutMotion = motion
-        places.begin(width: 100)
+        places.begin(width: 100, height: 100)
         places.place(
             child, mount: 1, at: Rect(x: 0, y: 0, width: 10, height: 10), values: values, natural: { .zero },
             enter: nil)
         places.patchArrived()
-        places.begin(width: 100)
+        places.begin(width: 100, height: 100)
         places.place(
             child, mount: 1, at: Rect(x: 50, y: 0, width: 10, height: 10), values: values, natural: { .zero },
             enter: nil)

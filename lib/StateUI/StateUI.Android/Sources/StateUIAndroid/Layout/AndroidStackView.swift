@@ -42,7 +42,7 @@ final class AndroidStackView: AndroidTravelingLayout {
     }
 
     override func arrange(in bounds: Rect) {
-        beginArrangement(width: bounds.width)
+        beginArrangement(width: bounds.width, height: bounds.height)
         let places = StackArithmetic.places(
             of: items, axis: axis, spacing: spacing, lines: lines, padding: padding, in: bounds, direction: direction)
         for (item, place) in zip(items, places) {

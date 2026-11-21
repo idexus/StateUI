@@ -175,7 +175,9 @@ A kept child stays found by its mount, so a frame's values reach its view,
 and nothing else of the tree finds it. Each number its exit touches -
 opacity, the move across and down, scale - sets out from where it is drawn
 now, a motion on its way going on from there, and travels to what the
-effect says by the road a property's own animation takes. As the last
+effect says by the road a property's own animation takes - an effect out of
+its room, as far as takes it wholly out, by the place and the room read as
+it leaves, before its layout forgets them. As the last
 lands its exit ends: what kept it forgets it, the element is released, and
 what kept it arranges its views without it - the arrangement that takes its
 view out, so a host has nothing more to be told.

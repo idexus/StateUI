@@ -13322,6 +13322,7 @@ swift.type.method ToolbarGroupBuilder.buildExpression(_:): @MainActor static fun
 swift.type.method ToolbarGroupBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: some ToolbarItem) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildOptional(_:): @MainActor static func buildOptional(_ component: ToolbarGroupContent?) -> ToolbarGroupContent
 swift.type.method Transition.symmetric(_:): static func symmetric(_ effect: TransitionEffect) -> Transition
+swift.type.method TransitionEffect.outside(_:): static func outside(_ direction: SwipeDirection) -> TransitionEffect
 swift.type.method TransitionEffect.scale(_:): static func scale(_ factor: Double) -> TransitionEffect
 swift.type.method TransitionEffect.translation(x:y:): static func translation(x: Double = 0, y: Double = 0) -> TransitionEffect
 swift.type.method ViewBuilder.buildBlock(_:): @MainActor static func buildBlock<Content>(_ content: Content) -> Content where Content : Views

@@ -53,7 +53,7 @@ public struct Transition: Equatable, Sendable {
 }
 
 extension Transition: HostRepresentable {
-    /// The entry's four numbers, the exit's four, and 1 where the view enters as it first appears.
+    /// The entry's five numbers, the exit's five, and 1 where the view enters as it first appears.
     public var propValue: PropValue {
         .numbers(enter.host.numbers + exit.host.numbers + [entersInitially ? 1 : 0])
     }
@@ -61,12 +61,12 @@ extension Transition: HostRepresentable {
     /// The transition back from its numbers, its effects' steps in one order; nil for anything else.
     /// - Parameter propValue: what crossed.
     public init?(propValue: PropValue) {
-        guard case .numbers(let numbers) = propValue, numbers.count == 9,
-              let enter = HostTransitionEffect(numbers: numbers[0..<4]),
-              let exit = HostTransitionEffect(numbers: numbers[4..<8])
+        guard case .numbers(let numbers) = propValue, numbers.count == 11,
+              let enter = HostTransitionEffect(numbers: numbers[0..<5]),
+              let exit = HostTransitionEffect(numbers: numbers[5..<10])
         else { return nil }
 
-        self.init(enter: TransitionEffect(enter), exit: TransitionEffect(exit), entersInitially: numbers[8] == 1)
+        self.init(enter: TransitionEffect(enter), exit: TransitionEffect(exit), entersInitially: numbers[10] == 1)
     }
 }
 

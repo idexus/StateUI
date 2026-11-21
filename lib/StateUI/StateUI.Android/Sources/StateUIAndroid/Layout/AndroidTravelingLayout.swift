@@ -11,9 +11,9 @@ class AndroidTravelingLayout: AndroidLayoutView {
     /// How the children travel to their places, by the host layer's rule.
     let places = TravelingPlaces()
 
-    /// Starts an arrangement `width` points wide, deciding once for every child how it is placed.
-    func beginArrangement(width: Double) {
-        places.begin(width: width)
+    /// Starts an arrangement in a room `width` by `height` points, deciding once for every child how it is placed.
+    func beginArrangement(width: Double, height: Double) {
+        places.begin(width: width, height: height)
     }
 
     /// Stands `item` at `place`, or on its way there.

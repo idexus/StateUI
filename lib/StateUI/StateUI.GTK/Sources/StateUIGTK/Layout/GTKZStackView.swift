@@ -55,7 +55,7 @@ final class GTKZStackView: GTKTravelingLayout {
             return apply(run, in: bounds)
         }
 
-        beginArrangement(width: bounds.width)
+        beginArrangement(width: bounds.width, height: bounds.height)
         for item in items { item.view.setPlacedDrawing(nil, opacity: 1) }
         let room = Rect(x: 0, y: 0, width: bounds.width, height: bounds.height)
         let places = ZStackArithmetic.places(of: items, in: room, padding: padding, direction: direction)

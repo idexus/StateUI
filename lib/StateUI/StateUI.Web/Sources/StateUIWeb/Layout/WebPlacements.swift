@@ -85,7 +85,7 @@ final class WebPlacements {
         var read = WebRelay.places(pairs)[...]
         for layout in layouts {
             let room = read.removeFirst()
-            layout.places.begin(width: room?.width ?? 0)
+            layout.places.begin(width: room?.width ?? 0, height: room?.height ?? 0)
             for (index, child) in layout.children.enumerated() {
                 child.slot = child.frame(laidOut: read.removeFirst())
                 moved[ObjectIdentifier(child)] = child
