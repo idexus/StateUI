@@ -78,10 +78,12 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     static let opening = Motion.spring(response: .milliseconds(450), damping: 0.86)
 
     /// How the app and its icon change places at the end of a close: slowly,
-    /// then all at once - and how the app follows the hand pulling it, a step
-    /// behind, so it goes on at the hand's speed once let go.
+    /// then all at once; how the app goes onto its icon; and how it follows
+    /// the hand pulling it - a short spring a step behind, still moving at the
+    /// hand's speed as the hand lets go, so the close goes on from there.
     static let late = Motion.eased(.milliseconds(400), curve: .cubicIn)
-    static let following = Motion.eased(.milliseconds(40), curve: .linear)
+    static let closing = Motion.spring(response: .milliseconds(380), damping: 0.9)
+    static let following = Motion.spring(response: .milliseconds(80), damping: 1)
 
     /// The icons, in order.
     @State private var icons = Self.all
@@ -350,7 +352,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         .accessibilityIdentifier("home.app")
     }
 
-    /// The hand on the app's bar: the app follows it up, smaller the farther;
+    /// The hand on the app's bar: the app follows it, smaller the farther up;
     /// let go high enough, or thrown up, it closes; let go lower, it goes back.
     private func pulled(_ pan: PanUpdate) async throws {
         guard !closing else { return }
@@ -360,13 +362,14 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         case .changed:
             let lift = min(pan.total.y, 0)
             let size = max(0.4, 1 + lift / 450)
+            $appX.journey.move(to: pan.total.x, Self.following)
             $appY.journey.move(to: lift, Self.following)
             $appWide.journey.move(to: size, Self.following)
             $appTall.journey.move(to: size, Self.following)
         case .ended where pan.total.y < -120 || pan.velocity.y < -800:
             try await close()
         default:
-            (appY, appWide, appTall) = (0, 1, 1)
+            (appX, appY, appWide, appTall) = (0, 0, 1, 1)
         }
     }
 
@@ -381,10 +384,10 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         }
         closing = true
         let room = appRoom
-        $appX.journey.move(to: icon.x + icon.width / 2 - room.x - room.width / 2)
-        $appY.journey.move(to: icon.y + icon.height - room.y - room.height)
-        $appWide.journey.move(to: icon.width / room.width)
-        $appTall.journey.move(to: icon.height / room.height)
+        $appX.journey.move(to: icon.x + icon.width / 2 - room.x - room.width / 2, Self.closing)
+        $appY.journey.move(to: icon.y + icon.height - room.y - room.height, Self.closing)
+        $appWide.journey.move(to: icon.width / room.width, Self.closing)
+        $appTall.journey.move(to: icon.height / room.height, Self.closing)
         _ = try await $appShown.journey.move(to: 0).result()
 
         opened = nil
