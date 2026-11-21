@@ -4,7 +4,8 @@ import StateUI
 struct HomeScreenSample: SampleContent, ExampleContent {
     static let id = "homeScreen"
     static let title = "Home screen"
-    static let summary = "Boards of icons as many as the room fits - a swipe turns one; a held icon moves the others."
+    static let summary = "Boards of icons as many as the room fits - a swipe turns one; a held icon moves the others; "
+        + "a pressed one opens its app."
 
     // listing: HomeScreenSample
     /// One icon: its name, which is its identity, its glyph and its color.
@@ -73,6 +74,9 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     /// How the boards turn - and the dots with them: one state, one motion.
     static let turning = Motion.spring(response: .milliseconds(380), damping: 0.86)
 
+    /// How an icon grows into its app, and the app back into the icon.
+    static let opening = Motion.spring(response: .milliseconds(450), damping: 0.86)
+
     /// The icons, in order.
     @State private var icons = Self.all
 
@@ -87,6 +91,9 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     /// description, and every icon travels to its new place.
     @State private var room = Rect.zero
     @State private var fit = Fit()
+
+    /// The icon whose app is open, by its name.
+    @State private var opened: String?
     // listing: end
 
     // The boards are turned by the hand of their own, so the example is not
@@ -109,8 +116,8 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                 // two they go straight - as the arithmetic says they do.
                 MotionLayout(icons, id: \.name, parameters: $board) { icon in
                     // A VIEW OF ITS OWN: a new order builds no icon again,
-                    // only the one lifted or let go.
-                    HomeTile(icon: icon, lifted: lifted == icon.name)
+                    // only the one lifted or let go, opened or closed.
+                    HomeTile(icon: icon, lifted: lifted == icon.name, open: opened == icon.name, opened: $opened)
                 } placements: { context, board in
                     (0..<count).map { Self.place($0, board, context.bounds, fit) }
                 }
@@ -164,9 +171,17 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             }
             .height(16)
             .gridRow(1)
+
+            // AN ICON OPENED: its app over the boards, grown out of the icon.
+            if let app = icons.first(where: { $0.name == opened }) {
+                HomeApp(icon: app, opened: $opened)
+                    .gridRow(0)
+            }
         }
         .rows(.fill, .automatic)
         .rowSpacing(8)
+        // THE SCOPE: an icon and its app are one to the eye in it.
+        .transitionScope("home")
     }
 
     /// The grid the room fits now, written where it changed - the board in
@@ -232,36 +247,51 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     /// One icon: its glyph on a light disc on a rounded square of its color -
     /// the glyph in the platform's own color, which shows on the disc in a
     /// light theme and a dark one alike - and its name under it; larger while
-    /// the hand holds it.
+    /// the hand holds it; pressed, its app opens out of it.
     struct HomeTile: View {
         let icon: HomeIcon
         let lifted: Bool
+        let open: Bool
+        @Binding var opened: String?
 
         var body: some View {
             VStack {
-                ZStack {
-                    Rectangle()
-                        .fill(icon.color)
-                        .cornerRadius(14)
-
-                    Rectangle()
-                        .fill(.white)
-                        .cornerRadius(21)
-                        .opacity(0.3)
-                        .width(42)
-                        .height(42)
+                if open {
+                    // WHILE ITS APP IS OPEN, THE SQUARE IS THE APP'S: its
+                    // place here stands empty.
+                    Space()
+                        .width(60)
+                        .height(60)
                         .horizontalAlignment(.center)
-                        .verticalAlignment(.center)
+                } else {
+                    ZStack {
+                        Rectangle()
+                            .fill(icon.color)
+                            .cornerRadius(14)
 
-                    Image(.platform(icon.glyph))
-                        .width(26)
-                        .height(26)
-                        .horizontalAlignment(.center)
-                        .verticalAlignment(.center)
+                        Rectangle()
+                            .fill(.white)
+                            .cornerRadius(21)
+                            .opacity(0.3)
+                            .width(42)
+                            .height(42)
+                            .horizontalAlignment(.center)
+                            .verticalAlignment(.center)
+
+                        Image(.platform(icon.glyph))
+                            .width(26)
+                            .height(26)
+                            .horizontalAlignment(.center)
+                            .verticalAlignment(.center)
+                    }
+                    .width(60)
+                    .height(60)
+                    .horizontalAlignment(.center)
+                    // TIED TO ITS APP by the icon's name: the app grows out
+                    // of the square, and goes back into it.
+                    .sharedTransition(icon.name)
+                    .motion(HomeScreenSample.opening)
                 }
-                .width(60)
-                .height(60)
-                .horizontalAlignment(.center)
 
                 Text(icon.name)
                     .fontSize(12)
@@ -277,6 +307,80 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             // it: said here, in the icon's own body, so a new order still
             // builds no icon again.
             .interaction(.drag(.both, begins: .longPress))
+            // A PRESS THE HAND DID NOT TAKE OPENS THE ICON'S APP.
+            .onTapped { opened = icon.name }
+            .accessibilityIdentifier("home.icon.\(icon.name)")
+        }
+    }
+
+    /// An icon's app, over the boards: its surface grows out of the icon and
+    /// goes back into it; its words come in as it lands, never squeezed on the
+    /// way; a press on the bar at its foot closes it.
+    struct HomeApp: View {
+        let icon: HomeIcon
+        @Binding var opened: String?
+
+        /// How what is on the surface comes in: faded in as the app appears.
+        static let landing = Transition(enter: .opacity, exit: .identity).initialAppearance(true)
+        static let slowlyThenAtOnce = Motion.eased(.milliseconds(450), curve: .cubicIn)
+
+        var body: some View {
+            ZStack {
+                // THE SURFACE, tied to the icon's square by the icon's name.
+                Rectangle()
+                    .fill(icon.color)
+                    .cornerRadius(24)
+                    .sharedTransition(icon.name)
+                    .motion(HomeScreenSample.opening)
+
+                // THE WORDS come in slowly, then all at once: unseen while the
+                // surface is still small.
+                VStack {
+                    ZStack {
+                        Rectangle()
+                            .fill(.white)
+                            .cornerRadius(48)
+                            .opacity(0.3)
+                        Image(.platform(icon.glyph))
+                            .width(48)
+                            .height(48)
+                            .horizontalAlignment(.center)
+                            .verticalAlignment(.center)
+                    }
+                    .width(96)
+                    .height(96)
+                    .horizontalAlignment(.center)
+
+                    Text(icon.name)
+                        .fontSize(24)
+                        .fontWeight(.semibold)
+                        .textColor(.white)
+                        .horizontalAlignment(.center)
+                }
+                .spacing(12)
+                .verticalAlignment(.center)
+                .transition(Self.landing)
+                .motion(Self.slowlyThenAtOnce)
+
+                // THE BAR AT ITS FOOT, coming in with the words: a press closes the app.
+                ZStack {
+                    Rectangle()
+                        .fill(.white)
+                        .cornerRadius(3)
+                        .opacity(0.7)
+                        .width(120)
+                        .height(6)
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
+                }
+                .height(40)
+                .verticalAlignment(.end)
+                .transition(Self.landing)
+                .motion(Self.slowlyThenAtOnce)
+                .onTapped { opened = nil }
+                .accessibilityIdentifier("home.app.bar")
+            }
+            .accessibilityIdentifier("home.app")
         }
     }
     // listing: end
@@ -284,7 +388,8 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         Text("Swipe the boards either way - one board a swipe, however far your hand goes. "
             + "Hold an icon until it lifts, then move it over another: the others make room. Hold it at an edge, or "
-            + "push it there fast, to turn the board. "
+            + "push it there fast, to turn the board. Press an icon: its app grows out of it; press the bar at the "
+            + "app's foot to close it. "
             + "Turn the phone or resize the window: the boards hold as many icons as fit, six by six at most.")
             .fontSize(12)
             .textColor(Palette.subtle)

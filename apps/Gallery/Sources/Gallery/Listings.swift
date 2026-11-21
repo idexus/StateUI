@@ -5662,6 +5662,9 @@ enum Listings {
         /// How the boards turn - and the dots with them: one state, one motion.
         static let turning = Motion.spring(response: .milliseconds(380), damping: 0.86)
 
+        /// How an icon grows into its app, and the app back into the icon.
+        static let opening = Motion.spring(response: .milliseconds(450), damping: 0.86)
+
         /// The icons, in order.
         @State private var icons = Self.all
 
@@ -5677,6 +5680,9 @@ enum Listings {
         @State private var room = Rect.zero
         @State private var fit = Fit()
 
+        /// The icon whose app is open, by its name.
+        @State private var opened: String?
+
         var body: some View {
             let (count, fit) = (icons.count, self.fit)
             let boards = max((count + fit.perBoard - 1) / fit.perBoard, 1)
@@ -5689,8 +5695,8 @@ enum Listings {
                     // two they go straight - as the arithmetic says they do.
                     MotionLayout(icons, id: \.name, parameters: $board) { icon in
                         // A VIEW OF ITS OWN: a new order builds no icon again,
-                        // only the one lifted or let go.
-                        HomeTile(icon: icon, lifted: lifted == icon.name)
+                        // only the one lifted or let go, opened or closed.
+                        HomeTile(icon: icon, lifted: lifted == icon.name, open: opened == icon.name, opened: $opened)
                     } placements: { context, board in
                         (0..<count).map { Self.place($0, board, context.bounds, fit) }
                     }
@@ -5743,8 +5749,16 @@ enum Listings {
                 }
                 .height(16)
                 .gridRow(1)
+
+                // AN ICON OPENED: its app over the boards, grown out of the icon.
+                if let app = icons.first(where: { $0.name == opened }) {
+                    HomeApp(icon: app, opened: $opened)
+                        .gridRow(0)
+                }
             }
             .rows(.fill, .automatic)
+            // THE SCOPE: an icon and its app are one to the eye in it.
+            .transitionScope("home")
         }
 
         /// The grid the room fits now, written where it changed - the board in
@@ -5810,34 +5824,49 @@ enum Listings {
         /// One icon: its glyph on a light disc on a rounded square of its color -
         /// the glyph in the platform's own color, which shows on the disc in a
         /// light theme and a dark one alike - and its name under it; larger while
-        /// the hand holds it.
+        /// the hand holds it; pressed, its app opens out of it.
         struct HomeTile: View {
             let icon: HomeIcon
             let lifted: Bool
+            let open: Bool
+            @Binding var opened: String?
 
             var body: some View {
                 VStack {
-                    ZStack {
-                        Rectangle()
-                            .fill(icon.color)
-
-                        Rectangle()
-                            .fill(.white)
-                            .opacity(0.3)
-                            .width(42)
-                            .height(42)
+                    if open {
+                        // WHILE ITS APP IS OPEN, THE SQUARE IS THE APP'S: its
+                        // place here stands empty.
+                        Space()
+                            .width(60)
+                            .height(60)
                             .horizontalAlignment(.center)
-                            .verticalAlignment(.center)
+                    } else {
+                        ZStack {
+                            Rectangle()
+                                .fill(icon.color)
 
-                        Image(.platform(icon.glyph))
-                            .width(26)
-                            .height(26)
-                            .horizontalAlignment(.center)
-                            .verticalAlignment(.center)
+                            Rectangle()
+                                .fill(.white)
+                                .opacity(0.3)
+                                .width(42)
+                                .height(42)
+                                .horizontalAlignment(.center)
+                                .verticalAlignment(.center)
+
+                            Image(.platform(icon.glyph))
+                                .width(26)
+                                .height(26)
+                                .horizontalAlignment(.center)
+                                .verticalAlignment(.center)
+                        }
+                        .width(60)
+                        .height(60)
+                        .horizontalAlignment(.center)
+                        // TIED TO ITS APP by the icon's name: the app grows out
+                        // of the square, and goes back into it.
+                        .sharedTransition(icon.name)
+                        .motion(HomeScreenSample.opening)
                     }
-                    .width(60)
-                    .height(60)
-                    .horizontalAlignment(.center)
 
                     Text(icon.name)
                         .horizontalAlignment(.center)
@@ -5851,6 +5880,71 @@ enum Listings {
                 // it: said here, in the icon's own body, so a new order still
                 // builds no icon again.
                 .interaction(.drag(.both, begins: .longPress))
+                // A PRESS THE HAND DID NOT TAKE OPENS THE ICON'S APP.
+                .onTapped { opened = icon.name }
+            }
+        }
+
+        /// An icon's app, over the boards: its surface grows out of the icon and
+        /// goes back into it; its words come in as it lands, never squeezed on the
+        /// way; a press on the bar at its foot closes it.
+        struct HomeApp: View {
+            let icon: HomeIcon
+            @Binding var opened: String?
+
+            /// How what is on the surface comes in: faded in as the app appears.
+            static let landing = Transition(enter: .opacity, exit: .identity).initialAppearance(true)
+            static let slowlyThenAtOnce = Motion.eased(.milliseconds(450), curve: .cubicIn)
+
+            var body: some View {
+                ZStack {
+                    // THE SURFACE, tied to the icon's square by the icon's name.
+                    Rectangle()
+                        .fill(icon.color)
+                        .sharedTransition(icon.name)
+                        .motion(HomeScreenSample.opening)
+
+                    // THE WORDS come in slowly, then all at once: unseen while the
+                    // surface is still small.
+                    VStack {
+                        ZStack {
+                            Rectangle()
+                                .fill(.white)
+                                .opacity(0.3)
+                            Image(.platform(icon.glyph))
+                                .width(48)
+                                .height(48)
+                                .horizontalAlignment(.center)
+                                .verticalAlignment(.center)
+                        }
+                        .width(96)
+                        .height(96)
+                        .horizontalAlignment(.center)
+
+                        Text(icon.name)
+                            .fontWeight(.semibold)
+                            .horizontalAlignment(.center)
+                    }
+                    .verticalAlignment(.center)
+                    .transition(Self.landing)
+                    .motion(Self.slowlyThenAtOnce)
+
+                    // THE BAR AT ITS FOOT, coming in with the words: a press closes the app.
+                    ZStack {
+                        Rectangle()
+                            .fill(.white)
+                            .opacity(0.7)
+                            .width(120)
+                            .height(6)
+                            .horizontalAlignment(.center)
+                            .verticalAlignment(.center)
+                    }
+                    .height(40)
+                    .verticalAlignment(.end)
+                    .transition(Self.landing)
+                    .motion(Self.slowlyThenAtOnce)
+                    .onTapped { opened = nil }
+                }
             }
         }
         """#,
