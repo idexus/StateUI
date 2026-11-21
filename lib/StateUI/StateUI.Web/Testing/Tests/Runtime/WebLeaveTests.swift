@@ -94,6 +94,62 @@ final class WebLeaveTests: XCTestCase {
         XCTAssertEqual(WebRelay.listenerCount, before.1, "and its listener")
     }
 
+    /// A VIEW KEPT AS IT LEAVES STANDS WHERE IT WAS DRAWN, OUT OF ITS STACK'S FLOW, until its exit lands: the view
+    /// under it is laid out in its place at once, the leaving one fades deaf to input and met by no assistive
+    /// technology - and with its exit landed it is on the page no more, and its view is let go of.
+    /// Design: docs/design/platforms/web/layout.md#a-view-kept-as-it-leaves
+    func testAViewKeptAsItLeavesStandsWhereItWasDrawn() throws {
+        WebRenderer.shared?.finish()
+        let (shown, clock) = (State(wrappedValue: true), TestClock())
+        let quick = Motion.eased(.milliseconds(200), curve: .linear)
+        let host = WebRenderer.running(clock: clock) {
+            VStack {
+                Text("above").height(40).id("above")
+                if shown.wrappedValue {
+                    Text("leaving").height(60).motion(quick)
+                        .transition(Transition(enter: .identity, exit: .opacity)).id("leaving")
+                }
+                Text("below").height(40).id("below")
+            }
+            .padding(horizontal: 30, vertical: 20)
+        }
+        func node(_ name: String) throws -> Int32 {
+            try XCTUnwrap((host.runtime.tree.root?.first(id: .manual(name))?.native as? WebElement)?.view?.node, name)
+        }
+        host.settle { (try? node("below")) != nil }
+        for _ in 0..<3 { host.step() }
+        let (leaving, below) = (try node("leaving"), try node("below"))
+        let box = "(({ left, top, width, height }) => [left, top, width, height].map(Math.round).join(' '))"
+            + "(e.getBoundingClientRect())"
+        let stood = try WebBrowser.evaluate(box, on: leaving)
+        let slot = try XCTUnwrap(WebBrowser.number("e.offsetTop", on: below))
+        try WebBrowser.run("globalThis.kept = e", on: leaving)
+        let alive = WebDOMView.liveCount
+
+        shown.wrappedValue = false
+        host.step()
+        XCTAssertEqual(try WebBrowser.evaluate("getComputedStyle(e).position", on: leaving), "absolute")
+        XCTAssertEqual(try WebBrowser.evaluate(box, on: leaving), stood, "drawn where it stood, as large")
+        XCTAssertEqual(
+            try WebBrowser.evaluate("[getComputedStyle(e).pointerEvents, e.getAttribute('aria-hidden'), e.inert].join(' ')", on: leaving),
+            "none true true", "deaf, and met no more")
+        XCTAssertEqual(try XCTUnwrap(WebBrowser.number("e.offsetTop", on: below)), slot - 60, accuracy: 0.5,
+                       "the view under it is laid out where the leaving one stood")
+
+        clock.now += 100
+        host.frame()
+        XCTAssertEqual(try XCTUnwrap(WebBrowser.number("getComputedStyle(e).opacity", on: leaving)), 0.5, accuracy: 0.05)
+        XCTAssertEqual(try WebBrowser.evaluate(box, on: leaving), stood, "and stands there on its way out")
+
+        clock.now += 150
+        host.frame()
+        for _ in 0..<2 { host.step() }
+        XCTAssertEqual(try WebBrowser.evaluate("kept.isConnected", on: 0), "false", "its exit landed: off the page")
+        XCTAssertEqual(WebDOMView.liveCount, alive - 1, "and its view is let go of")
+        try WebBrowser.run("delete globalThis.kept")
+        host.finish()
+    }
+
     /// A DOM element's number, let go of, is no other element's: what reaches a view that went - an act that waited -
     /// reaches nothing, not the element made after it.
     func testAReleasedElementsNumberIsNoOneElses() throws {

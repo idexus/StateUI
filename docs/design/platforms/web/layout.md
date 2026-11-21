@@ -133,6 +133,37 @@ new place and nothing travels; read from a measurement kept since the last
 change, a child the browser moved meanwhile - an image arriving, the room
 resized - sets out from where it no longer is.
 
+## A view kept as it leaves
+
+A stack, a grid and a ZStack keep a child that left
+([a view kept as it leaves](../../host/tree.md#a-view-kept-as-it-leaves)).
+The browser places their children by flow, so a view that only stayed in
+the element would go on taking its room. As its holder is arranged without
+it, the relay stands it out of the flow where it is drawn
+(`stateui_web_stand_out`): `position: absolute`, at the size it was laid
+out, and at the corner that draws it where it stood.
+
+That corner is measured, never worked out. Which ancestor an absolute
+position is counted from depends on what stands above - a positioned
+element, one a traveling place moves, a grid's area - and a difference of
+two rectangles on the screen is scaled by a scaled ancestor. So the element
+is put at nought and at a hundred pixels, and the two rectangles it is drawn
+in say how far a pixel of its position moves it on the screen, across and
+down; where it was drawn before follows from that. Three reads, once a
+view.
+
+It stands so until its release: `pointer-events: none`, `inert` and
+`aria-hidden`, so nothing is pressed, focused or met in it or under it, and
+the numbers of its exit - opacity, a move, a scale - reach it as any frame's
+do. The element's deactivation leaves its views on the page where it
+`staysDrawn`; its release (`releasePresentation`) lets each of them go, the
+kept one and everything under it, and the element is off the page with its
+number.
+
+The trap is standing it out after its holder's children moved: the flow has
+closed over its place by then, and it would be drawn where its sibling now
+stands. It is stood out first, as the holder's arrangement begins.
+
 ## A placing run
 
 A ZStack whose children a placing run stands - a layout program's - stands each

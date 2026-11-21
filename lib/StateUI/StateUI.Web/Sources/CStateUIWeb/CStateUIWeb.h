@@ -38,6 +38,10 @@ STATEUI_WEB(insert) void stateui_web_insert(int32_t parent, int32_t child, int32
 /// Takes the element out of its parent, keeping its number.
 STATEUI_WEB(detach) void stateui_web_detach(int32_t element);
 
+/// Stands the element out of its layout's flow where it is drawn, at the size it is laid out, deaf to input and out
+/// of what assistive technology meets.
+STATEUI_WEB(stand_out) void stateui_web_stand_out(int32_t element);
+
 /// The element's words.
 STATEUI_WEB(set_text) void stateui_web_set_text(int32_t element, const char *text, int32_t length);
 

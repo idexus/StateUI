@@ -80,6 +80,11 @@
     /// Design: docs/design/host/tree.md#leaving
     func deactivate()
 
+    /// Nothing of the element is drawn any more: a host whose view could not go as the element was deactivated -
+    /// it `staysDrawn` - lets it go now. Told once, to such an element alone.
+    /// Design: docs/design/host/tree.md#a-view-kept-as-it-leaves
+    func releasePresentation()
+
     /// Where the view stands now, as a frame report says it - its place in what holds it, its corner in its window
     /// and from the window's content; nil in no window, or before a layout placed it.
     /// Design: docs/design/host/runtime.md#where-a-view-stands
@@ -109,6 +114,9 @@
 
     /// A view keeps no child that left: what it drops is gone at once.
     public var keepsExits: Bool { false }
+
+    /// A view its holder's arrangement takes out has nothing more to let go.
+    public func releasePresentation() {}
 
     /// A native half with no view on a page stands nowhere.
     public func frameNumbers() -> [Double]? { nil }

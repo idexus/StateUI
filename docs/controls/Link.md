@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 6 ☑️ · 13 ✓ · 4 –</td><td>a <code>TextView</code> in the theme's link color, underlined</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 3 ☑️ · 28 ✓ · 6 –</td><td><code>HyperlinkButton</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 4 ☑️ · 25 ✓ · 7 –</td><td><code>GtkLinkButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>62 ✅ · 3 ☑️ · 22 ✓ · 3 –</td><td><code>&lt;a href&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>63 ✅ · 2 ☑️ · 22 ✓ · 3 –</td><td><code>&lt;a href&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/LinkContract.swift`.
@@ -188,8 +188,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on Link: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on Link: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: tap on Link: the relay's report of the tap handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Link: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Link: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on Link: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

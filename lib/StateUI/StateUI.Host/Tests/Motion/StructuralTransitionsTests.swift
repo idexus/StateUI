@@ -118,6 +118,52 @@ final class StructuralTransitionsTests: XCTestCase {
         XCTAssertNotEqual(a.accessibilityWords.presence, .hiddenWithContents)
     }
 
+    /// A VIEW KEPT AS IT LEAVES SAYS, WITH EVERYTHING UNDER IT, THAT IT STAYS DRAWN, and each is told once that
+    /// nothing of it is drawn any more, as the exit lands; a view gone at once says neither.
+    func testAKeptViewStaysDrawnUntilItsPresentationIsReleased() {
+        let bench = Bench()
+        var card = HostPatch(id: .manual("card"), type: .vStack)
+        card.properties = [.transition: Self.fading.propValue]
+        card.children = .arranged([Bench.text("words")])
+        bench.show([Bench.text("a"), card, Bench.text("plain")], complete: true)
+        let (kept, plain) = (bench.root.children[1], bench.root.children[2])
+        let leaving = [kept, kept.children[0], plain]
+
+        bench.show([Bench.text("a")])
+        XCTAssertEqual(leaving.map(\.staysDrawn), [true, true, false])
+        XCTAssertEqual(leaving.map { view($0).released }, [0, 0, 0], "drawn on, and one gone at once is told nothing")
+
+        bench.frame(at: 200)
+        XCTAssertEqual(leaving.map { view($0).released }, [1, 1, 0], "the exit landed")
+        bench.frame(at: 400)
+        XCTAssertEqual(leaving.map { view($0).released }, [1, 1, 0], "once")
+    }
+
+    /// A NUMBER OF AN EXIT THAT LANDED STANDS AT ITS END until the view is released: a spring brings a fade home
+    /// sooner than a move, and while the move still travels the view is not drawn as it was declared again.
+    func testANumberOfAnExitThatLandedStandsAtItsEnd() {
+        let bench = Bench(motion: .spring(response: .milliseconds(300), damping: 1))
+        bench.show([Bench.text("a"), Bench.text("b", Self.fading)], complete: true)
+        let b = bench.root.children[1]
+        bench.show([Bench.text("a")])
+
+        var time = 0.0
+        while bench.shown(.opacity, of: b) != nil, time < KeptExits.timeLimit {
+            time += 16
+            bench.frame(at: time)
+        }
+        XCTAssertEqual(b.lifecycle, .exiting, "the fade is home, the move still travels")
+        XCTAssertNotNil(bench.shown(.translationY, of: b))
+        XCTAssertEqual(b.number(.opacity), 0, "and the fade stands where it landed")
+
+        while b.lifecycle == .exiting, time < KeptExits.timeLimit {
+            XCTAssertEqual(b.number(.opacity), 0, "at \(time) ms")
+            time += 16
+            bench.frame(at: time)
+        }
+        XCTAssertEqual(bench.ended.map(\.result), [.finished])
+    }
+
     /// WHERE NOTHING KEEPS IT, A CHILD LEAVES AT ONCE: a view keeping none, no transition, an exit that changes
     /// nothing, less motion, and nothing to move by.
     func testWhereNothingKeepsItAChildLeavesAtOnce() {

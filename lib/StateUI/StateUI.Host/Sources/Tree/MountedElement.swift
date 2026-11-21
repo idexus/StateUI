@@ -148,6 +148,10 @@
     /// Design: docs/design/host/tree.md#leaving
     public private(set) var lifecycle = ElementLifecycle.active
 
+    /// Whether the element's view goes on being drawn though it is the application's no more: it is kept as it
+    /// leaves, or stands under one that is. What its native half reads as it is told to deactivate.
+    public private(set) var staysDrawn = false
+
     /// The children kept as they leave, each drawn until its exit ends, and the order the element's views stand in
     /// with them - nil while it keeps none. Design: docs/design/host/tree.md#a-view-kept-as-it-leaves
     var keptExits: [MountedElement] = []
@@ -157,6 +161,9 @@
     /// its exit over.
     var exitsRunning = 0
     var isAbsorbed = false
+
+    /// Where each number its exit moves ends: what the view is drawn with once that number landed, until its release.
+    var exitEnds: [Prop: Double] = [:]
 
     /// Where its layout had placed it as it left, and - for a view come back as the one of its id was leaving -
     /// how that one was drawn then. Design: docs/design/host/tree.md#the-same-view-coming-back
@@ -787,6 +794,7 @@
         deactivate()
         lifecycle = .released
         for child in held + keptExits { child.release() }
+        if staysDrawn { native.releasePresentation() }
         keptExits = []
         presentedOrder = nil
         tree?.released(self)
@@ -802,6 +810,7 @@
     /// Lets go of what ties the element and everything under it to the runtime; the element itself `kept` where
     /// its view goes on being drawn. A view kept under it as it left is its own leaving's part from here on.
     private func detach(kept: Bool) {
+        staysDrawn = kept || parent?.staysDrawn == true
         madeOrLeftByRender()
         if let tree {
             for state in wornStates { tree.stateChannels.detach(state) }
@@ -1019,7 +1028,8 @@
         if driven[property].map({ $0.mode != .in }) == true {
             shown = resolvedValue(property)
         } else {
-            shown = tree?.presentedPropertyValue(mount: mount, property: property) ?? resolvedValue(property)
+            shown = tree?.presentedPropertyValue(mount: mount, property: property)
+                ?? exitEnds[property].map(HostValue.number) ?? resolvedValue(property)
         }
         guard let value = GeometryArithmetic.value(shown, for: property), !value.holdsNonFiniteNumber else { return nil }
         return value

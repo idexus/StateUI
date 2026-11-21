@@ -43,6 +43,10 @@ final class NoView: NativeElement {
     var deactivated = 0
     func deactivate() { deactivated += 1 }
 
+    /// How many times the element was told nothing of it is drawn any more.
+    var released = 0
+    func releasePresentation() { released += 1 }
+
     /// Whether its view keeps a child that left.
     var keepsExits = false
 

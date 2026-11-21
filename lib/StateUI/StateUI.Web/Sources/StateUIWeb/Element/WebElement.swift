@@ -116,8 +116,17 @@ final class WebElement: NativeElement {
         host?.placements.beforeChange(along: layoutsUp)
         bottomBar?.release()
         bottomBar = nil
+        // A view drawn on as it leaves stays on the page, which its holder stands it out of, until its release.
+        // Design: docs/design/platforms/web/layout.md#a-view-kept-as-it-leaves
+        if !element.staysDrawn { view?.release() }
+    }
+
+    func releasePresentation() {
         view?.release()
     }
+
+    /// A stack, a grid and a ZStack keep a child that left: its view stands out of their flow until its release.
+    var keepsExits: Bool { (view as? WebLayoutView)?.keepsLeaving ?? false }
 
     /// An event the view raised, with what it carries.
     func send(_ event: Event, _ values: [HostValue]) {

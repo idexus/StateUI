@@ -128,6 +128,14 @@ the other in the same transaction (`leave`), and nothing keeps a control
 alive after the tree drops it - but a view kept as it leaves, between the
 two steps ([a view kept as it leaves](#a-view-kept-as-it-leaves)).
 
+An element says whether its view goes on being drawn as it is deactivated
+(`staysDrawn`): it is kept as it leaves, or stands under one that is. A
+host whose toolkit takes a view away only by letting it go - the Web's,
+where a DOM element off the page is the element released - reads it there,
+keeps the view, and lets it go when told the presentation is over
+(`NativeElement.releasePresentation`), which only such an element is told,
+once. A host whose arrangement takes the view out has nothing to do then.
+
 What an element answers by itself is guarded by its life, once, where the
 effect begins: `hear`, `send` - a link's own opening and a return's handing
 the keyboard on with it - a user's change carried into a state, a scroll, a
@@ -177,7 +185,9 @@ opacity, the move across and down, scale - sets out from where it is drawn
 now, a motion on its way going on from there, and travels to what the
 effect says by the road a property's own animation takes - an effect out of
 its room, as far as takes it wholly out, by the place and the room read as
-it leaves, before its layout forgets them. As the last
+it leaves, before its layout forgets them. A number that landed stands at
+its end while the others travel - a spring brings a fade home sooner than a
+move - and never as the view declared it. As the last
 lands its exit ends: what kept it forgets it, the element is released, and
 what kept it arranges its views without it - the arrangement that takes its
 view out, so a host has nothing more to be told.

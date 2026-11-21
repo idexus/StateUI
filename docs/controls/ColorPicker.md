@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td colspan="3">Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>52 ✅ · 3 ☑️ · 27 ✓ · 6 –</td><td><code>DropDownButton</code> showing the color, its <code>Flyout</code> a <code>ColorPicker</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 4 ☑️ · 24 ✓ · 7 –</td><td><code>GtkColorDialogButton</code> opening a <code>GtkColorDialog</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 3 ☑️ · 21 ✓ · 4 –</td><td><code>&lt;input type=color&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>61 ✅ · 2 ☑️ · 21 ✓ · 4 –</td><td><code>&lt;input type=color&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ColorPickerContract.swift`.
@@ -221,8 +221,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on ColorPicker: the view's listening handed the recognizer's states, no touch sent<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.<br>WinUI 3: only through the host's own: tap on ColorPicker: the relay's report of the tap handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">–</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on ColorPicker: the view's listening handed the recognizer's states, no touch sent<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.<br>WinUI 3: only through the host's own: pressDown on ColorPicker: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.<br>Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
 </table>

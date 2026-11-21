@@ -58,6 +58,8 @@ extension MountedElement {
         parent.keptExits.append(self)
         for (property, declared, target) in ends {
             let standing = tree.presentedPropertyValue(mount: mount, property: property)?.number ?? declared
+            // A number that landed stands at its end while the others travel, not as the view declared it.
+            if target != declared { exitEnds[property] = target }
             guard standing != target else { continue }
             let started = tree.receiveProperty(
                 mount: mount, property: property, standing: .number(standing), target: .number(target), motion: law,
@@ -117,7 +119,8 @@ extension MountedElement {
             var returned = Returned(place: leaving.exitPlace)
             for (property, unsaid) in Self.presenceProperties {
                 let standing = tree.standingProperty(mount: leaving.mount, property: property)
-                let value = standing?.value.number ?? leaving.resolvedValue(property)?.number ?? unsaid
+                let value = standing?.value.number ?? leaving.exitEnds[property]
+                    ?? leaving.resolvedValue(property)?.number ?? unsaid
                 returned.numbers[property] = (value, standing?.velocity ?? [])
             }
             child.returned = returned

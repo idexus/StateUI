@@ -41,7 +41,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 5 ☑️ · 10 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>47 ✅ · 3 ☑️ · 29 ✓ · 4 –</td><td>custom <code>Panel</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>51 ✅ · 3 ☑️ · 22 ✓ · 7 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 3 ☑️ · 21 ✓ · 3 –</td><td>CSS grid, one shared cell</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>57 ✅ · 2 ☑️ · 21 ✓ · 3 –</td><td>CSS grid, one shared cell</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/FillContract.swift`.
@@ -190,8 +190,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on Fill: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on Fill: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: tap on Fill: the relay's report of the tap handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Fill: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Fill: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on Fill: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

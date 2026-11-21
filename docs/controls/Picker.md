@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>73 ✅ · 6 ☑️ · 13 ✓ · 5 –</td><td><code>android.widget.Spinner</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>66 ✅ · 3 ☑️ · 27 ✓ · 6 –</td><td><code>ComboBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>61 ✅ · 4 ☑️ · 24 ✓ · 13 –</td><td><code>GtkDropDown</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 2 ☑️ · 20 ✓ · 16 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>57 ✅ · 1 ☑️ · 20 ✓ · 16 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract.swift`.
@@ -198,8 +198,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on Picker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on Picker: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: tap on Picker: the relay's report of the tap handed to the host, no pointer sent<br>Web: cannot its case covers Picker.tapped too, which this host never has</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Picker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Picker: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on Picker: the relay's report of the press handed to the host, no pointer sent<br>Web: The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no long press, drag or swipe of it, and its release only where it was pressed.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

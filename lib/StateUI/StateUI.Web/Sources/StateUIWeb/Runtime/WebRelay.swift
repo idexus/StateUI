@@ -121,6 +121,11 @@ enum WebRelay {
         stateui_web_detach(element)
     }
 
+    /// Stands the element out of its layout's flow where it is drawn, deaf and met by no assistive technology.
+    static func standOut(_ element: Int32) {
+        stateui_web_stand_out(element)
+    }
+
     static func setText(_ element: Int32, _ text: String) {
         utf8(text) { stateui_web_set_text(element, $0, $1) }
     }

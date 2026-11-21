@@ -37,6 +37,13 @@ class WebLayoutView: WebDOMView {
     /// Each child's mounted element, by number, and how it enters as it is given its first place: what its place travels by.
     private var travelers: [(mount: UInt64, enter: ((LayoutEntry) -> Void)?)] = []
 
+    /// The views of the children kept as they leave, standing out of the flow where they were drawn.
+    /// Design: docs/design/platforms/web/layout.md#a-view-kept-as-it-leaves
+    private var leaving: [WebDOMView] = []
+
+    /// Whether the layout keeps a child that left: a stack, a grid and a ZStack do, a room of one child does not.
+    var keepsLeaving: Bool { arrangement != .single }
+
     /// Where the children travel to their places, and who reads their places on the page; nil while they stand at
     /// once wherever the browser lays them out.
     let places = TravelingPlaces()
@@ -151,15 +158,20 @@ class WebLayoutView: WebDOMView {
     /// Design: docs/design/platforms/web/layout.md#children-in-order
     func setItems(
         _ items: [(view: WebDOMView, values: () -> LayoutValues)],
-        travelers: [(mount: UInt64, enter: ((LayoutEntry) -> Void)?)] = []
+        travelers: [(mount: UInt64, enter: ((LayoutEntry) -> Void)?)] = [], leaving kept: [WebDOMView] = []
     ) {
+        // A child kept as it leaves stands out of the flow where it is drawn, before anything around it moves.
+        for view in kept where !view.isReleased && !leaving.contains(where: { $0 === view }) {
+            WebRelay.standOut(view.node)
+        }
+        leaving = kept.filter { !$0.isReleased }
         let views = items.map(\.view)
         if views.count != children.count || !zip(views, children).allSatisfy({ $0 === $1 }) {
             for (index, view) in views.enumerated() { WebRelay.insert(view.node, into: node, at: index) }
         }
         // A child let go of first - a page popped - is gone from the page already, and its number names nothing.
         for gone in children where !gone.isReleased && gone.placingLayout === self
-            && !items.contains(where: { $0.view === gone }) {
+            && !items.contains(where: { $0.view === gone }) && !leaving.contains(where: { $0 === gone }) {
             WebRelay.detach(gone.node)
             gone.placingLayout = nil
         }
