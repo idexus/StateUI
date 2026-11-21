@@ -73,7 +73,11 @@ final class PresentationChangeTests: XCTestCase {
 
     /// EVERY RESULT CROSSES AS ITSELF.
     func testEveryResultCrossesAsItself() async throws {
-        let results: [PresentationResult] = [.settled, .notPresented, .interrupted([.superseded]), .interrupted([.detached])]
+        let results: [PresentationResult] = [
+            .settled, .notPresented, .interrupted([.superseded]), .interrupted([.detached]),
+            .interrupted([.unsupported]), .interrupted([.limited]),
+            .interrupted([.superseded, .detached, .unsupported, .limited]),
+        ]
         for result in results {
             let (change, record) = try made()
             HostBoundary.answer(record.applied, applied: .notPresented)

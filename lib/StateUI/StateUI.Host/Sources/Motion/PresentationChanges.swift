@@ -16,6 +16,8 @@
         case superseded
         /// Its view left.
         case detached
+        /// Its view's exit was cut short by the budget of views kept as they leave.
+        case limited
     }
 
     /// A movement a change watches: a property on its way, or an element's place.
@@ -55,6 +57,9 @@
 
     /// The elements whose children were given places since the last frame ended.
     private var arranged: Set<UInt64> = []
+
+    /// How the exit of an element being released ended, by its mount: what its movements end as.
+    private var exits: [UInt64: End] = [:]
 
     /// Changes answered through `core`.
     public init(core: CoreLink) {
@@ -114,16 +119,44 @@
         if let holder = element.parent { arranged.insert(holder.mount) }
     }
 
-    /// The movement `member` ended as `end`: every change it was a member of has one fewer to wait for.
+    /// The movement `member` ended as `end` - or, its element released as its exit ended, as that exit did:
+    /// every change it was a member of has one fewer to wait for.
     func ended(_ member: Member, as end: End) {
+        var end = end
+        if end == .detached, case .described(let key) = member, let exit = exits[key.mount] { end = exit }
         for group in opened + waiting where group.members.remove(member) != nil {
             switch end {
             case .rested: break
             case .superseded: group.reasons.append(.superseded)
             case .detached: group.reasons.append(.detached)
+            case .limited: group.reasons.append(.limited)
             }
         }
         settle()
+    }
+
+    /// The exit of the element `mount` ends as `result`, before the element is released: what its movements
+    /// still under way end as. `released` says the release is over.
+    func exitEnds(_ mount: UInt64, as result: PresentationOperation.Result) {
+        switch result {
+        case .finished: exits[mount] = .rested
+        case .interrupted: exits[mount] = .superseded
+        case .limited: exits[mount] = .limited
+        case .cancelled, .detached: exits[mount] = .detached
+        }
+    }
+
+    func released(_ mount: UInt64) {
+        exits[mount] = nil
+    }
+
+    /// `element` left by an exit nothing draws - `reason` says why: every change whose patch is being applied over
+    /// it hears so, the movement born and ended in one step.
+    func refused(_ element: MountedElement, _ reason: PresentationInterruption) {
+        guard !opened.isEmpty else { return }
+
+        let above = Self.mounts(from: element)
+        for group in opened where above.contains(group.root) { group.reasons.append(reason) }
     }
 
     /// The render's patch is applied: the changes it opened are answered so, and wait for their members and for

@@ -28,10 +28,19 @@ extension MountedElement {
     /// makes the tree again, no engine runs under it, and the window's budget holds. False where it is to leave
     /// at once.
     func exit(from parent: MountedElement) -> Bool {
-        guard lifecycle == .active, let tree, !tree.remakes, parent.native.keepsExits,
-              let effect = transition?.host.exit, !effect.isIdentity, !holdsAnEngine,
-              let law = tree.layoutMotion.law(of: motion), tree.exits.admit(self, at: tree.time)
+        guard lifecycle == .active, let tree, !tree.remakes, let effect = transition?.host.exit, !effect.isIdentity,
+              let law = tree.layoutMotion.law(of: motion)
         else { return false }
+        // An exit declared and not drawn is said to whoever waits for what the patch started.
+        // Design: docs/design/host/motion.md#a-change-and-what-it-started
+        guard parent.native.keepsExits, !holdsAnEngine else {
+            tree.changes.refused(self, .unsupported)
+            return false
+        }
+        guard tree.exits.admit(self, at: tree.time) else {
+            tree.changes.refused(self, .limited)
+            return false
+        }
 
         // Where each number is drawn now is where it sets out: a motion on its way goes on from there. The place
         // its layout gave it is read here, before it is that layout's no more.
@@ -75,7 +84,9 @@ extension MountedElement {
         parent.keptExits.removeAll { $0 === self }
         parent.orderPresented(after: presented)
         tree?.exits.ended(self, as: result)
+        tree?.changes.exitEnds(mount, as: result)
         release()
+        tree?.changes.released(mount)
         if arranging, parent.lifecycle == .active { parent.native.arrangeChildren() }
     }
 

@@ -31,6 +31,12 @@ public enum PresentationInterruption: Equatable, Sendable {
     /// The view it moved left, or the window showing it did.
     case detached
 
+    /// A view left by an exit nothing draws where it stood: it went at once.
+    case unsupported
+
+    /// A view's exit was cut short: too many views leaving at once, or one leaving for too long.
+    case limited
+
     /// The reasons in the order a result names them.
-    static let declared: [PresentationInterruption] = [.superseded, .detached]
+    static let declared: [PresentationInterruption] = [.superseded, .detached, .unsupported, .limited]
 }

@@ -36,13 +36,15 @@ final class PresentationChangesTests: XCTestCase {
         let clock = WoundClock()
         let runtime: HostRuntime
 
-        init() {
+        /// A bench whose views keep a child that left where `keeps`, the application moving in `milliseconds`.
+        init(keeps: Bool = true, motion milliseconds: Int = 200) {
             runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in
                 let view = NoView()
                 view.animatesProperties = true
+                view.keepsExits = keeps
                 return view
             }, log: { _ in })
-            runtime.layoutMotion.applicationMotion = .eased(.milliseconds(200), curve: .linear)
+            runtime.layoutMotion.applicationMotion = .eased(.milliseconds(milliseconds), curve: .linear)
             show(panel: 1, beside: 1, lines: ["line"], complete: true)
             place("line", at: 0)
         }
@@ -71,10 +73,19 @@ final class PresentationChangesTests: XCTestCase {
             if let panelTime {
                 panelPatch.transitions = [.opacity: HostTransition(motion: .eased(.milliseconds(panelTime), curve: .linear))]
             }
-            if let lines { panelPatch.children = .arranged(lines.map { HostPatch(id: .manual($0), type: .text) }) }
+            if let lines {
+                panelPatch.children = .arranged(lines.map { name in
+                    var line = HostPatch(id: .manual(name), type: .text)
+                    // A line named "going" leaves by fading.
+                    if name == "going" { line.properties = [.transition: Self.fades.propValue] }
+                    return line
+                })
+            }
             root.children = .arranged([panelPatch, Self.text("beside", beside, in: besideTime)])
             tree.apply(root, complete: complete)
         }
+
+        static let fades = Transition(enter: .identity, exit: .opacity)
 
         var panel: MountedElement { tree.root!.children[0] }
 
@@ -168,6 +179,49 @@ final class PresentationChangesTests: XCTestCase {
 
         bench.frame(at: 400)
         XCTAssertEqual(change.answered.settled, .settled)
+    }
+
+    /// A CHANGE WAITS FOR THE EXIT OF A VIEW ITS PATCH DROPPED: the view is the application's no more at once, and
+    /// the change is settled as its exit lands.
+    func testAChangeWaitsForTheExitOfAViewItDropped() {
+        let bench = Bench()
+        bench.show(panel: nil, beside: nil, lines: ["line", "going"])
+
+        let change = bench.change { bench.show(panel: nil, beside: nil, lines: ["line"]) }
+        bench.frame(at: 50)
+        bench.frame(at: 100)
+        XCTAssertNil(change.answered.settled, "the view is fading out")
+
+        bench.frame(at: 250)
+        XCTAssertEqual(change.answered.settled, .settled)
+    }
+
+    /// AN EXIT NOTHING DRAWS IS SAID: where the view holding it keeps no child that left, the change ends
+    /// `.unsupported`; cut short by the budget of kept views, `.limited`; and the same view coming back as it
+    /// leaves supersedes it.
+    func testAnExitNotDrawnToItsEndIsSaidWhy() {
+        let unkept = Bench(keeps: false)
+        unkept.show(panel: nil, beside: nil, lines: ["line", "going"])
+        let refused = unkept.change { unkept.show(panel: nil, beside: nil, lines: ["line"]) }
+        unkept.frame(at: 16)
+        unkept.frame(at: 32)
+        XCTAssertEqual(refused.answered.settled, .interrupted([.unsupported]))
+
+        let slow = Bench(motion: 3_000)
+        slow.show(panel: nil, beside: nil, lines: ["line", "going"])
+        let limited = slow.change { slow.show(panel: nil, beside: nil, lines: ["line"]) }
+        slow.frame(at: 1_000)
+        XCTAssertNil(limited.answered.settled, "kept, and fading")
+        slow.frame(at: KeptExits.timeLimit + 100)
+        XCTAssertEqual(limited.answered.settled, .interrupted([.limited]))
+
+        let returning = Bench()
+        returning.show(panel: nil, beside: nil, lines: ["line", "going"])
+        let left = returning.change { returning.show(panel: nil, beside: nil, lines: ["line"]) }
+        returning.frame(at: 50)
+        returning.show(panel: nil, beside: nil, lines: ["line", "going"])
+        returning.frame(at: 66)
+        XCTAssertEqual(left.answered.settled, .interrupted([.superseded]), "the view came back before it had gone")
     }
 
     /// A CHANGE'S LAYOUT WINDOW ENDS WITH THE SECOND FRAME AFTER IT: a patch that reached the view and moved nothing

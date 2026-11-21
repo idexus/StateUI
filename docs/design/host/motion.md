@@ -117,14 +117,21 @@ host layer keeps one group for each (`PresentationChanges`, the tree's
                       the second frame after the patch, nothing is
   a member ends       at rest: nothing said of it
                       another destination for the same property or place: `.superseded`
-                      its element released: `.detached`
+                      its element released: `.detached` - or, released as its exit ended, as that
+                      exit did: the same view come back `.superseded`, the budget `.limited`
+  a view is dropped   declaring an exit nothing draws there: `.unsupported`, or `.limited` where the
+                      budget takes none in - said to the open groups, born and ended in one step
   the last one ends   `settled` is answered: `.settled`, or `.interrupted` with the reasons gathered
 ```
 
 A member is a described motion - a property the patch moved under the
-view's motion, an entry's numbers among them - or a place on its way
-(`LayoutMotion`). Each tells its birth and its end (`born`, `ended`), which
-is all a group hears.
+view's motion, an entry's numbers and a kept exit's among them - or a place
+on its way (`LayoutMotion`). Each tells its birth and its end (`born`,
+`ended`), which is all a group hears. A kept exit's numbers are born as the
+patch drops the view, so the view that left is waited for until its exit
+lands ([a view kept as it leaves](tree.md#a-view-kept-as-it-leaves)); how
+the exit ended is said before the element is released (`exitEnds`), so its
+numbers end as it did and not as a view that merely left.
 
 A place sets out in the toolkit's layout pass, after the patch is applied
 and the group has answered `applied`. So a group keeps a layout window: the
