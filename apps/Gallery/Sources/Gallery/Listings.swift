@@ -2408,7 +2408,11 @@ enum Listings {
 
                 VStack {
                     if let opened {
-                        detail(of: opened)
+                        // Pulled down, it goes back as Back takes it.
+                        BoardDetail(card: opened) {
+                            self.opened = nil
+                            said = "Back from \(opened.name)"
+                        }
                     } else {
                         deck
                     }
@@ -2443,6 +2447,7 @@ enum Listings {
                         try await change("Brought back \(card.name)") { bringBack(card) }
                     }
                 }
+                .wraps(true)
                 .horizontalAlignment(.center)
 
                 // THE LAYOUT CHANGES: the same cards, another arithmetic - each
@@ -2511,19 +2516,55 @@ enum Listings {
             .height(300)
         }
 
-        /// The card opened, large: it grows from the card it was.
-        private func detail(of card: Card) -> some View {
-            VStack {
-                Rectangle()
-                    .fill(card.color)
-                    .height(200)
-                    .sharedTransition(card.name)
-                    // Slow enough to see the way.
-                    .motion(.eased(.milliseconds(600), curve: .sineInOut))
+        /// The card opened, large: it grows from the card it was. Pulled down, it
+        /// follows the hand, smaller the farther; let go far enough, or thrown
+        /// down, it goes back into its card from where the hand left it; let go
+        /// sooner, it stands again.
+        struct BoardDetail: View {
+            let card: Card
+            let close: @MainActor @Sendable () -> Void
 
-                Text(card.name)
-                    .fontWeight(.semibold)
-                    .horizontalAlignment(.center)
+            /// Where the hand draws the detail: moved down, and smaller.
+            @State(motion: .spring(response: .milliseconds(320), damping: 0.88)) private var down = 0.0
+            @State(motion: .spring(response: .milliseconds(320), damping: 0.88)) private var size = 1.0
+
+            var body: some View {
+                VStack {
+                    Rectangle()
+                        .fill(card.color)
+                        .height(200)
+                        .sharedTransition(card.name)
+                        // Slow enough to see the way.
+                        .motion(.eased(.milliseconds(600), curve: .sineInOut))
+                        .onPanUpdated { pan in pulled(pan) }
+
+                    Text(card.name)
+                        .fontWeight(.semibold)
+                        .horizontalAlignment(.center)
+                }
+                // THE DETAIL AS THE HAND DRAWS IT: gone back, it goes on from
+                // there into its card at the speed it had.
+                .translationY($down)
+                .scaleX($size)
+                .scaleY($size)
+            }
+
+            /// The hand on the detail: a short spring a step behind it, still
+            /// moving at the hand's speed as the hand lets go.
+            private func pulled(_ pan: PanUpdate) {
+                let following = Motion.spring(response: .milliseconds(80), damping: 1)
+                switch pan.phase {
+                case .began:
+                    break
+                case .changed:
+                    let pull = max(pan.total.y, 0)
+                    $down.journey.move(to: pull, following)
+                    $size.journey.move(to: max(0.5, 1 - pull / 600), following)
+                case .ended where pan.total.y > 120 || pan.velocity.y > 800:
+                    close()
+                default:
+                    (down, size) = (0, 1)
+                }
             }
         }
 
@@ -2607,9 +2648,8 @@ enum Listings {
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                 }
-                // TIED TO ITS DETAIL by its name: opened, the detail grows from it.
-                // Back, the card comes with its deck, which its arithmetic has not
-                // placed yet: it is no partner, and the change says so.
+                // TIED TO ITS DETAIL by its name: opened, the detail grows from it;
+                // back, the detail shrinks into it as its deck comes.
                 .sharedTransition(card.name)
                 .motion(.eased(.milliseconds(600), curve: .sineInOut))
                 .scale(held ? 1.1 : 1)

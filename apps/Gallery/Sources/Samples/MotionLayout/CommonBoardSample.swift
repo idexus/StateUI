@@ -1,12 +1,12 @@
 import StateUI
 
 /// The whole motion model on one board: cards thrown and held, moved, closed and brought back, laid out
-/// another way, opened into their detail and back - beside a field and a scroller of the platform's own.
+/// another way, opened into their detail and pulled back - beside a field and a scroller of the platform's own.
 struct CommonBoardSample: SampleContent, ExampleContent {
     static let id = "commonBoard"
     static let title = "A board of cards"
-    static let summary = "Throw the cards, hold one to move it, close one and bring it back, lay them out "
-        + "as a grid, open one."
+    static let summary = "Throw and move the cards, close and bring one back, show them as a grid, open one and "
+        + "pull it down."
 
     // listing: CommonBoardSample
     /// One card: its name, which is its identity, and its color.
@@ -63,7 +63,11 @@ struct CommonBoardSample: SampleContent, ExampleContent {
 
             VStack {
                 if let opened {
-                    detail(of: opened)
+                    // Pulled down, it goes back as Back takes it.
+                    BoardDetail(card: opened) {
+                        self.opened = nil
+                        said = "Back from \(opened.name)"
+                    }
                 } else {
                     deck
                 }
@@ -103,6 +107,7 @@ struct CommonBoardSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("board.undo")
             }
             .spacing(8)
+            .wraps(true)
             .horizontalAlignment(.center)
 
             // THE LAYOUT CHANGES: the same cards, another arithmetic - each
@@ -181,24 +186,60 @@ struct CommonBoardSample: SampleContent, ExampleContent {
         .accessibilityIdentifier("board.deck")
     }
 
-    /// The card opened, large: it grows from the card it was.
-    private func detail(of card: Card) -> some View {
-        VStack {
-            Rectangle()
-                .fill(card.color)
-                .cornerRadius(16)
-                .height(200)
-                .sharedTransition(card.name)
-                // Slow enough to see the way.
-                .motion(.eased(.milliseconds(600), curve: .sineInOut))
-                .accessibilityIdentifier("board.detail")
+    /// The card opened, large: it grows from the card it was. Pulled down, it
+    /// follows the hand, smaller the farther; let go far enough, or thrown
+    /// down, it goes back into its card from where the hand left it; let go
+    /// sooner, it stands again.
+    struct BoardDetail: View {
+        let card: Card
+        let close: @MainActor @Sendable () -> Void
 
-            Text(card.name)
-                .fontSize(20)
-                .fontWeight(.semibold)
-                .horizontalAlignment(.center)
+        /// Where the hand draws the detail: moved down, and smaller.
+        @State(motion: .spring(response: .milliseconds(320), damping: 0.88)) private var down = 0.0
+        @State(motion: .spring(response: .milliseconds(320), damping: 0.88)) private var size = 1.0
+
+        var body: some View {
+            VStack {
+                Rectangle()
+                    .fill(card.color)
+                    .cornerRadius(16)
+                    .height(200)
+                    .sharedTransition(card.name)
+                    // Slow enough to see the way.
+                    .motion(.eased(.milliseconds(600), curve: .sineInOut))
+                    .onPanUpdated { pan in pulled(pan) }
+                    .accessibilityIdentifier("board.detail")
+
+                Text(card.name)
+                    .fontSize(20)
+                    .fontWeight(.semibold)
+                    .horizontalAlignment(.center)
+            }
+            .spacing(10)
+            // THE DETAIL AS THE HAND DRAWS IT: gone back, it goes on from
+            // there into its card at the speed it had.
+            .translationY($down)
+            .scaleX($size)
+            .scaleY($size)
         }
-        .spacing(10)
+
+        /// The hand on the detail: a short spring a step behind it, still
+        /// moving at the hand's speed as the hand lets go.
+        private func pulled(_ pan: PanUpdate) {
+            let following = Motion.spring(response: .milliseconds(80), damping: 1)
+            switch pan.phase {
+            case .began:
+                break
+            case .changed:
+                let pull = max(pan.total.y, 0)
+                $down.journey.move(to: pull, following)
+                $size.journey.move(to: max(0.5, 1 - pull / 600), following)
+            case .ended where pan.total.y > 120 || pan.velocity.y > 800:
+                close()
+            default:
+                (down, size) = (0, 1)
+            }
+        }
     }
 
     /// Makes `update` a change of the board and says how what it started ended.
@@ -284,9 +325,8 @@ struct CommonBoardSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
             }
-            // TIED TO ITS DETAIL by its name: opened, the detail grows from it.
-            // Back, the card comes with its deck, which its arithmetic has not
-            // placed yet: it is no partner, and the change says so.
+            // TIED TO ITS DETAIL by its name: opened, the detail grows from it;
+            // back, the detail shrinks into it as its deck comes.
             .sharedTransition(card.name)
             .motion(.eased(.milliseconds(600), curve: .sineInOut))
             .scale(held ? 1.1 : 1)
@@ -300,8 +340,8 @@ struct CommonBoardSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         Text("Throw the cards sideways and catch them on the way. Hold one still until it lifts, then move it over "
-            + "another. Close the card in front and bring it back. Turn the grid on, open a card, and go back - "
-            + "type in the field first: what you typed stays.")
+            + "another. Close the card in front and bring it back. Turn the grid on, open a card, and pull it down "
+            + "to go back - type in the field first: what you typed stays.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
