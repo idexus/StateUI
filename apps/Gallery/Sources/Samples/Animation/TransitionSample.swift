@@ -22,6 +22,7 @@ struct TransitionSample: SampleContent, ExampleContent {
     @State private var cards: [Int] = []
     @State private var next = 1
     @State private var way = 0
+    @State private var detailed = false
 
     var body: some View {
         VStack {
@@ -76,6 +77,23 @@ struct TransitionSample: SampleContent, ExampleContent {
                     .accessibilityIdentifier("transition.clear")
             }
             .spacing(8)
+
+            SwitchRow("Details", $detailed)
+                .accessibilityIdentifier("transition.details")
+
+            if detailed {
+                // A VIEW WITH A NAME that comes back while it is still
+                // leaving goes on from where it is drawn: off and on again,
+                // the line neither stands twice nor jumps. It is another
+                // view all the same - its state starts anew.
+                Text("A named line, here while the switch is on.")
+                    .fontSize(13)
+                    .id("details")
+                    .transition(Transition(
+                        enter: .opacity.combined(with: .translation(y: -12)),
+                        exit: .opacity.combined(with: .translation(y: 12))))
+                    .motion(.eased(.milliseconds(900), curve: .sineInOut))
+            }
         }
         .spacing(12)
     }
@@ -92,6 +110,11 @@ struct TransitionSample: SampleContent, ExampleContent {
             Text("The second button chooses what the NEXT note comes from. The "
                 + "notes already standing are given the new transition too, and "
                 + "do not move for it: a transition is how a view comes and goes.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Turn Details off, and on again before the line has gone: it "
+                + "comes back from where it is, not from where it enters.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -13487,6 +13487,7 @@ enum Listings {
         @State private var cards: [Int] = []
         @State private var next = 1
         @State private var way = 0
+        @State private var detailed = false
 
         var body: some View {
             VStack {
@@ -13531,6 +13532,21 @@ enum Listings {
                     }
 
                     Button("Clear").onClicked { cards.removeAll() }
+                }
+
+                SwitchRow("Details", $detailed)
+
+                if detailed {
+                    // A VIEW WITH A NAME that comes back while it is still
+                    // leaving goes on from where it is drawn: off and on again,
+                    // the line neither stands twice nor jumps. It is another
+                    // view all the same - its state starts anew.
+                    Text("A named line, here while the switch is on.")
+                        .id("details")
+                        .transition(Transition(
+                            enter: .opacity.combined(with: .translation(y: -12)),
+                            exit: .opacity.combined(with: .translation(y: 12))))
+                        .motion(.eased(.milliseconds(900), curve: .sineInOut))
                 }
             }
         }

@@ -149,7 +149,7 @@ ToolbarSample.swift 12e1a056530504fe
 TooltipSample.swift 75b87b84ff2d3bb2
 TouchThroughSample.swift 2f49a42898ac5f63
 TransformSample.swift 42f89ce8b8c4c513
-TransitionSample.swift d0484da2cbd2eb8b
+TransitionSample.swift 9587695e8e127afc
 TwoFingersSample.swift 44f9905a1657acf0
 TwoLayersSample.swift 5717dd57069aa0b6
 VisualStateSample.swift de176ef7da4dcd00
