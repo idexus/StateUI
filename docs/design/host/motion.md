@@ -108,23 +108,40 @@ host layer keeps one group for each (`PresentationChanges`, the tree's
   before the patch    each change finds its view by its place, as it stands now
                       none, or one that left: both waiters answered `.notPresented`
                       else a group opens on that view's mount
-  the patch applied   a described motion born on that mount or under it joins every open group
-  after the patch     the groups close: `applied` is answered; a group with no member settles at once
-  a member ends       rested: nothing said of it
-                      a new destination for the same property: `.superseded`
+  the patch applied   a property set moving on that mount or under it joins every open group
+                      each element under it the patch says something of is remembered
+  after the patch     `applied` is answered; a group whose patch reached nothing settles at once
+  the layout pass     a place that sets out, or the entry of a view given its first place, joins
+                      the groups whose patch reached that element or the one holding it
+  a frame ends        what arranged since the last is remembered no more
+                      the second frame after the patch, nothing is
+  a member ends       at rest: nothing said of it
+                      another destination for the same property or place: `.superseded`
                       its element released: `.detached`
   the last one ends   `settled` is answered: `.settled`, or `.interrupted` with the reasons gathered
 ```
 
-A group closes with its render. What is born later joins nothing - the
-movement a later write starts in place of a member is that write's own - so
-new animations never prolong an old wait. Two changes whose renders start
-movements of the same view each have their own members, and a movement
-running since before a change opened is no member of it.
+A member is a described motion - a property the patch moved under the
+view's motion, an entry's numbers among them - or a place on its way
+(`LayoutMotion`). Each tells its birth and its end (`born`, `ended`), which
+is all a group hears.
 
-A member is a described motion today: the movement of a property the patch
-moved under the view's motion. `DescribedMotion` tells each birth and each
-end (`born`, `ended`), which is all a group hears.
+A place sets out in the toolkit's layout pass, after the patch is applied
+and the group has answered `applied`. So a group keeps a layout window: the
+elements its patch reached, each until the layout placing it has arranged.
+What is born in a layout pass joins by that - the cause, not the time - so
+an arrangement belongs to the patches that waited for it: a later patch's
+pass moves nothing of an earlier change, and two patches one pass placed
+both have its movements. The window is over once nothing is left to
+arrange, or with the second display frame after the patch: a toolkit that
+lays out after its frame's callback has done so by then
+(`PresentationChanges.layoutWindow`). A group settles only once its window
+is over, and holds the frame clock until then.
+
+What is born as a later patch is applied joins that patch's groups alone:
+the movement a later write starts in place of a member is that write's own,
+so new animations never prolong an old wait. A movement running since
+before a change opened is no member of it.
 
 The trap is finding the view after the patch. A change may remove the very
 view it aims at; the group holds its mount from before.

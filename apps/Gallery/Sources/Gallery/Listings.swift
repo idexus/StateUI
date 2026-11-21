@@ -1957,6 +1957,7 @@ enum Listings {
         "ChangeAwaited": #"""
         // Sources/Samples/Animation/MotionSample.swift
         @State private var shown = true
+        @State private var far = false
         @State private var said = "-"
 
         // THE VIEW A CHANGE WATCHES: everything its writes move in here.
@@ -1972,26 +1973,38 @@ enum Listings {
                         // waits for it as it does for the panel.
                         .opacity(shown ? 1 : 0)
                         .motion(.eased(.milliseconds(1400)))
+                        // AND A PLACE THE PANEL CARRIES IT TO, which sets out
+                        // only as the panel is laid out: waited for all the same.
+                        .horizontalAlignment(far ? .end : .start)
                 }
                 .opacity(shown ? 1 : 0.15)
                 .motion(.eased(.milliseconds(700)))
                 .aim(panel)
 
-                // THE WRITES RUN AT ONCE; what is awaited is what they started.
-                // Pressed again before the fade has ended, the first change ends
-                // interrupted - the second press's movement is the second's.
-                // Each press is a run of its own, so both are heard.
-                Button(shown ? "Hide" : "Show").onClicked(policy: .runConcurrently) {
-                    let change = try panel.presentationChange { shown.toggle() }
-                    said = "under way"
-                    switch try await change.settled() {
-                    case .settled: said = "settled"
-                    case .interrupted: said = "interrupted"
-                    case .notPresented: said = "not presented"
+                HStack {
+                    // THE WRITES RUN AT ONCE; what is awaited is what they
+                    // started. Each press is a run of its own, so a press before
+                    // the last has ended is heard beside it.
+                    Button(shown ? "Hide" : "Show").onClicked(policy: .runConcurrently) {
+                        try await watch(try panel.presentationChange { shown.toggle() })
+                    }
+
+                    Button("Move").onClicked(policy: .runConcurrently) {
+                        try await watch(try panel.presentationChange { far.toggle() })
                     }
                 }
 
                 Text("the change · \(said)")
+            }
+        }
+
+        /// Says how `change` ended, once every movement it started has.
+        private func watch(_ change: PresentationChange) async throws {
+            said = "under way"
+            switch try await change.settled() {
+            case .settled: said = "settled"
+            case .interrupted: said = "interrupted"
+            case .notPresented: said = "not presented"
             }
         }
         """#,

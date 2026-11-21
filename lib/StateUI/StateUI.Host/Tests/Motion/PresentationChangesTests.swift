@@ -42,7 +42,9 @@ final class PresentationChangesTests: XCTestCase {
                 view.animatesProperties = true
                 return view
             }, log: { _ in })
-            show(panel: 1, beside: 1, complete: true)
+            runtime.layoutMotion.applicationMotion = .eased(.milliseconds(200), curve: .linear)
+            show(panel: 1, beside: 1, lines: ["line"], complete: true)
+            place("line", at: 0)
         }
 
         var tree: MountedTree { runtime.tree }
@@ -57,17 +59,40 @@ final class PresentationChangesTests: XCTestCase {
             return patch
         }
 
-        /// Says the panel's opacity and the line's, each moving there in so many milliseconds; nil leaves one out.
+        /// Says the panel's opacity and the line's beside it, each moving there in so many milliseconds; nil says
+        /// nothing of one, which stands as it is. `lines` are the texts the panel holds, where they change.
         func show(
             panel: Double?, over panelTime: Int? = nil, beside: Double?, besideOver besideTime: Int? = nil,
-            complete: Bool = false
+            lines: [String]? = nil, complete: Bool = false
         ) {
             var root = HostPatch(id: .manual("root"), type: .vStack)
-            var children: [HostPatch] = []
-            if let panel { children.append(Self.text("panel", panel, in: panelTime)) }
-            children.append(Self.text("beside", beside, in: besideTime))
-            root.children = .arranged(children)
+            var panelPatch = HostPatch(id: .manual("panel"), type: .vStack)
+            if let panel { panelPatch.properties = [.opacity: .number(panel)] }
+            if let panelTime {
+                panelPatch.transitions = [.opacity: HostTransition(motion: .eased(.milliseconds(panelTime), curve: .linear))]
+            }
+            if let lines { panelPatch.children = .arranged(lines.map { HostPatch(id: .manual($0), type: .text) }) }
+            root.children = .arranged([panelPatch, Self.text("beside", beside, in: besideTime)])
             tree.apply(root, complete: complete)
+        }
+
+        var panel: MountedElement { tree.root!.children[0] }
+
+        /// The views places are given to, by the line's name.
+        private var views: [String: Placed] = [:]
+
+        /// The panel's layout pass: stands its line `name` at `y`, as an arrangement placing what a patch said.
+        func place(_ name: String, at y: Double, entering: Bool = false) {
+            guard let line = panel.children.first(where: { $0.id == .manual(name) }) else { return }
+
+            let view = views[name, default: Placed()]
+            views[name] = view
+            let law = Motion.eased(.milliseconds(200), curve: .linear)
+            runtime.layoutMotion.place(
+                view, mount: line.mount, at: Rect(x: 0, y: y, width: 100, height: 20), stated: [], words: .none,
+                natural: { LayoutSize(width: 100, height: 20) },
+                enter: entering ? { entry in line.enter(Shown(), as: entry) } : nil,
+                in: Arrangement(law: law, lanes: .all, joins: true), room: nil)
         }
 
         /// A change aimed at the panel - or at a view that stands nowhere - whose render `apply` applies.
@@ -85,8 +110,110 @@ final class PresentationChangesTests: XCTestCase {
         }
     }
 
+    /// A view a place is given to.
+    private final class Placed: PlacedView {
+        var placedFrame = Rect(x: 0, y: 0, width: 0, height: 0)
+        var heldWords: LayoutSize?
+    }
+
+    /// A view an entry fades.
+    private final class Shown: FadingView {
+        var isShown = true
+        var opacity = 1.0
+        func setShown(_ shown: Bool) {}
+        func setOpacity(_ opacity: Double) { self.opacity = opacity }
+        func setIgnoresInput(_ ignores: Bool) {}
+    }
+
     override func setUp() async throws {
         _ = Renderer.shared.takeChanges()
+    }
+
+    /// A CHANGE WAITS FOR THE PLACES ITS PATCH MOVED, though they set out in the layout pass after it: the panel's
+    /// line travels to where the next arrangement stands it, and the change is settled as it lands.
+    func testAChangeWaitsForThePlacesItsPatchMoved() {
+        let bench = Bench()
+
+        let change = bench.change { bench.show(panel: 0.9, beside: nil) }
+        XCTAssertNil(change.answered.settled, "its layout has not placed anything yet")
+        bench.place("line", at: 40)
+        bench.frame(at: 50)
+        bench.frame(at: 100)
+        XCTAssertNil(change.answered.settled, "the line is on its way")
+
+        bench.frame(at: 250)
+        XCTAssertEqual(change.answered.settled, .settled)
+    }
+
+    /// A CHANGE WAITS FOR THE ENTRY OF A VIEW ITS PATCH BROUGHT: the entry is told in the layout pass, as the view is
+    /// given its first place.
+    func testAChangeWaitsForTheEntryOfAViewItBrought() {
+        let bench = Bench()
+        let comes = Transition(enter: .opacity, exit: .identity)
+
+        let change = bench.change {
+            var root = HostPatch(id: .manual("root"), type: .vStack)
+            var panel = HostPatch(id: .manual("panel"), type: .vStack)
+            var coming = HostPatch(id: .manual("coming"), type: .text)
+            coming.properties = [.transition: comes.propValue]
+            panel.children = .arranged([HostPatch(id: .manual("line"), type: .text), coming])
+            root.children = .arranged([panel, HostPatch(id: .manual("beside"), type: .text)])
+            bench.tree.apply(root, complete: false)
+        }
+        bench.place("coming", at: 20, entering: true)
+        XCTAssertTrue(bench.tree.describedMotion.isActive, "the entry is under way")
+        bench.frame(at: 50)
+        bench.frame(at: 100)
+        XCTAssertNil(change.answered.settled, "the view is fading in")
+
+        bench.frame(at: 400)
+        XCTAssertEqual(change.answered.settled, .settled)
+    }
+
+    /// A CHANGE'S LAYOUT WINDOW ENDS WITH THE SECOND FRAME AFTER IT: a patch that reached the view and moved nothing
+    /// is settled then, and holds the frame clock until then - while a change whose patch reached nothing under
+    /// its view is settled at once.
+    func testAChangesLayoutWindowEndsWithTheSecondFrame() {
+        let bench = Bench()
+
+        let change = bench.change { bench.show(panel: 0.9, beside: nil) }
+        XCTAssertNil(change.answered.settled)
+        XCTAssertTrue(bench.tree.changes.wantsFrames, "the frames go on for it")
+        bench.frame(at: 16)
+        XCTAssertNil(change.answered.settled, "one frame: a toolkit may lay out after it")
+        bench.frame(at: 32)
+        XCTAssertEqual(change.answered.settled, .settled)
+        XCTAssertFalse(bench.tree.changes.wantsFrames)
+
+        let beside = bench.change { bench.show(panel: nil, beside: 0.5) }
+        XCTAssertEqual(beside.answered.settled, .settled, "nothing under its view was reached")
+    }
+
+    /// AN ARRANGEMENT IS ITS PATCH'S: what a later patch's layout pass moves is no part of an earlier change, and
+    /// two changes whose patches wait for one pass both have what it moves.
+    func testAnArrangementBelongsToThePatchesThatWaitedForIt() {
+        let bench = Bench()
+        let first = bench.change { bench.show(panel: 0.9, beside: nil) }
+        bench.place("line", at: 0)
+        bench.frame(at: 16)
+        let second = bench.change { bench.show(panel: 0.8, beside: nil) }
+        bench.place("line", at: 40)
+        bench.frame(at: 32)
+        XCTAssertEqual(first.answered.settled, .settled, "its own pass moved nothing; the later one is not its own")
+        XCTAssertNil(second.answered.settled)
+        bench.frame(at: 300)
+        XCTAssertEqual(second.answered.settled, .settled)
+
+        let third = bench.change { bench.show(panel: 0.7, beside: nil) }
+        let fourth = bench.change { bench.show(panel: 0.6, beside: nil) }
+        bench.place("line", at: 80)
+        bench.frame(at: 316)
+        bench.frame(at: 332)
+        XCTAssertNil(third.answered.settled, "one pass placed what both patches said")
+        XCTAssertNil(fourth.answered.settled)
+        bench.frame(at: 600)
+        XCTAssertEqual(third.answered.settled, .settled)
+        XCTAssertEqual(fourth.answered.settled, .settled)
     }
 
     /// A CHANGE WAITS FOR WHAT ITS RENDER STARTED UNDER ITS VIEW, AND FOR NOTHING ELSE: applied once the patch is,
@@ -125,8 +252,10 @@ final class PresentationChangesTests: XCTestCase {
         XCTAssertEqual(fading.answered.applied, .applied)
         XCTAssertEqual(runtime.tree.changes.waitingCount, 1, "the fade is under way")
 
-        clock.time = 250
-        runtime.displayCycle.frame(now: 250)
+        for time in [125.0, 250] {
+            clock.time = time
+            runtime.displayCycle.frame(now: time)
+        }
         XCTAssertEqual(fading.answered.settled, .settled)
 
         let idle = try aimedPanel.presentationChange {}
@@ -155,6 +284,7 @@ final class PresentationChangesTests: XCTestCase {
         bench.frame(at: 100)
 
         let second = bench.change { bench.show(panel: 1, over: 200, beside: nil) }
+        bench.frame(at: 116)
         XCTAssertEqual(first.answered.settled, .interrupted([.superseded]))
         XCTAssertEqual(bench.tree.changes.waitingCount, 1, "the later change waits for the movement it started")
 
@@ -171,6 +301,7 @@ final class PresentationChangesTests: XCTestCase {
         var root = HostPatch(id: .manual("root"), type: .vStack)
         root.children = .arranged([HostPatch(id: .manual("beside"), type: .text)])
         bench.tree.apply(root, complete: false)
+        bench.frame(at: 116)
 
         XCTAssertEqual(change.answered.settled, .interrupted([.detached]))
     }

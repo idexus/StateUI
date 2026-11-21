@@ -448,6 +448,8 @@
         for (property, value) in patch.properties {
             properties[property] = value
         }
+        // A patch that says something of the element or of its children is one a change's layout pass places.
+        if case .unchanged = patch.children, changed.isEmpty {} else { tree.changes.reached(self) }
 
         var eventsReplaced = false
         if case .replace(let events) = patch.events {

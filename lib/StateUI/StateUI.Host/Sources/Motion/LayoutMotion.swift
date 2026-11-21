@@ -117,6 +117,12 @@ extension PlacedView {
         return Arrangement(law: law, lanes: .all, joins: arrangement.joins)
     }
 
+    /// Told as a place is given, as one sets out on its way, and as that way ends: what watches the movements a
+    /// change started.
+    var placing: ((UInt64) -> Void)?
+    var born: ((UInt64) -> Void)?
+    var ended: ((UInt64, PresentationChanges.End) -> Void)?
+
     /// The timing `motion` resolves to, or nil where nothing animates.
     public func law(of motion: HostLayoutMotion?) -> Motion? {
         let law = motion.map { $0.motion.kind == .inherited ? applicationMotion : $0.motion } ?? applicationMotion
@@ -140,6 +146,7 @@ extension PlacedView {
             view.placedFrame = target
             return
         }
+        placing?(mount)
 
         // A child with no seat yet is already where it belongs, and enters there.
         guard let seat = seats[mount] else {
@@ -193,7 +200,9 @@ extension PlacedView {
         let standing = Self.rect(start)
         let measured = words == .none ? nil : natural()
         let holds = words == .boxed && measured.map { $0.width > standing.width + 0.5 } == true
+        if running != nil { ended?(mount, .superseded) }
         animator.start(animation, for: key)
+        born?(mount)
         seats[mount]?.standing = standing
         seats[mount]?.destination = target
         seats[mount]?.words = measured
@@ -211,6 +220,7 @@ extension PlacedView {
 
             let standing = Self.rect(step.value)
             seats[mount]?.standing = step.rested ? nil : standing
+            if step.rested { ended?(mount, .rested) }
             if step.rested {
                 seats[mount]?.words = nil
                 seats[mount]?.holds = false
@@ -240,10 +250,12 @@ extension PlacedView {
     /// Forgets the place of an element that leaves the tree.
     public func remove(mount: UInt64) {
         seats[mount] = nil
+        if animator.animation(for: .placed(mount)) != nil { ended?(mount, .detached) }
         animator.halt(.placed(mount))
     }
 
     private func arrive(_ view: any PlacedView, at target: Rect, mount: UInt64) {
+        if animator.animation(for: .placed(mount)) != nil { ended?(mount, .superseded) }
         animator.halt(.placed(mount))
         seats[mount]?.standing = nil
         seats[mount]?.words = nil

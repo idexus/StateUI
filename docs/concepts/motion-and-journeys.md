@@ -436,11 +436,12 @@ until every movement they started has ended and answers a
 | either is `.notPresented` | nothing shows the aimed view; the writes stand |
 
 A change watches the properties its writes move under a view's own
-`.motion(_:)`, on the aimed view and every view in it. It stops nothing and
-owns nothing: a movement started later is no part of it, so a new animation
-never prolongs an old wait, and a task cancelled while it waits stops
-waiting while the movements go on. An aim that reached no view throws before
-the writes are run.
+`.motion(_:)`, the places a layout carries its views to, and the entry of a
+view the writes bring - on the aimed view and every view in it. It stops
+nothing and owns nothing: a movement started later is no part of it, so a
+new animation never prolongs an old wait, and a task cancelled while it
+waits stops waiting while the movements go on. An aim that reached no view
+throws before the writes are run.
 
 ## An engine that animates
 

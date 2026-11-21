@@ -328,9 +328,18 @@
         changes = PresentationChanges(core: core)
         describedMotion.born = { [weak self] key in
             guard let self, let element = byMount[key.mount]?.element else { return }
-            changes.born(key, on: element)
+            changes.born(.described(key), on: element, inLayoutPass: patchTime == nil)
         }
-        describedMotion.ended = { [weak self] key, end in self?.changes.ended(key, as: end) }
+        describedMotion.ended = { [weak self] key, end in self?.changes.ended(.described(key), as: end) }
+        layoutMotion.placing = { [weak self] mount in
+            guard let self, let element = byMount[mount]?.element else { return }
+            changes.placing(element)
+        }
+        layoutMotion.born = { [weak self] mount in
+            guard let self, let element = byMount[mount]?.element else { return }
+            changes.born(.placed(mount), on: element, inLayoutPass: patchTime == nil)
+        }
+        layoutMotion.ended = { [weak self] mount, end in self?.changes.ended(.placed(mount), as: end) }
         // The first take starts the recording, so the log holds every pass from here on.
         if diagnostics.inspects { _ = core.takeInspectionLog() }
     }

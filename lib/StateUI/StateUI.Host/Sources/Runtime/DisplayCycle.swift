@@ -109,7 +109,11 @@ extension FramePresenter {
         HostProbe.timed(.events) { presenter?.commitUserReports(now: now) }
         if let runtime { handPace.pace(now: now, in: runtime) }
         drain(now: now)
+        // A change waiting for the layout pass after its patch counts the frame.
+        // Design: docs/design/host/motion.md#a-change-and-what-it-started
+        runtime?.tree.changes.frameEnded()
         presenter?.renderIfNeeded()
+        hold()
     }
 
     /// Advances the animations, runs the core's cycle, presents what moved and holds the clock.
@@ -215,6 +219,7 @@ extension FramePresenter {
             || core.cyclesPending
             || presenter?.wantsFrames == true
             || presenter?.layoutBodiesMove == true
+            || runtime?.tree.changes.wantsFrames == true
     }
 
     /// Has whoever reads a frame say it again where this frame draws a view elsewhere than the last did with no
