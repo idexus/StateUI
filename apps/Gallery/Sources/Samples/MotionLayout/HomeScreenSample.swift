@@ -75,14 +75,14 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     static let turning = Motion.spring(response: .milliseconds(380), damping: 0.86)
 
     /// How an icon grows into its app, and the app back into the icon.
-    static let opening = Motion.spring(response: .milliseconds(450), damping: 0.86)
+    static let opening = Motion.spring(response: .milliseconds(320), damping: 0.88)
 
     /// How the app and its icon change places at the end of a close: slowly,
     /// then all at once; how the app goes onto its icon; and how it follows
     /// the hand pulling it - a short spring a step behind, still moving at the
     /// hand's speed as the hand lets go, so the close goes on from there.
-    static let late = Motion.eased(.milliseconds(400), curve: .cubicIn)
-    static let closing = Motion.spring(response: .milliseconds(380), damping: 0.9)
+    static let late = Motion.eased(.milliseconds(300), curve: .cubicIn)
+    static let closing = Motion.spring(response: .milliseconds(280), damping: 0.9)
     static let following = Motion.spring(response: .milliseconds(80), damping: 1)
 
     /// The icons, in order.
