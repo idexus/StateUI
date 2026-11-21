@@ -372,7 +372,9 @@ drawn: its handlers, its bindings and its place in the layout ended as the
 tree dropped it, and the views around it take its place at once. An exit is
 drawn where the host keeps a view as it leaves -
 [Platform contract](../platform-contract.md) says which - and for two
-seconds at most; elsewhere a dropped view goes at once.
+seconds at most; elsewhere a dropped view goes at once. So does a view
+holding a web view or a map on any host: its engine would run on for as
+long as it was drawn.
 
 Hiding a view with `isVisible(_:)` keeps the view and its state, and crosses
 as [visibility](#visibility-and-layout-motion) does, whatever transition the

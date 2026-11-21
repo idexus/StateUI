@@ -12,7 +12,7 @@
 /// where a view stands in its window as a scroller's or a list's scroll moves it, and from the safe area at its page's
 /// corner; how a view of a motion layout moves as a body following its place; and what a hand does to a number a
 /// motion layout's interaction names; and how a view joining a standing layout says where it stands and comes by
-/// its transition.
+/// its transition, and one dropped from it goes by it.
 @_spi(Host) public enum ViewTests: ConformanceFamily {
     public static let name = "View"
 
@@ -21,7 +21,7 @@
             [
                 margined(element), drawn(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
                 tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), thrown(element), pressTakenAway(element), takenFromTheHand(element), swiped(element), pinched(element), rotated(element), pointed(element),
-                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element), joined(element),
+                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element), joined(element), left(element),
             ]
         } + [
             scrolledInItsWindow, scrolledInAList, atItsPagesCorner, carriedToItsPlace, onAFirstBaseline, showsItsPress,
@@ -281,6 +281,66 @@
             s.expect(first < 50, true, "behind its place as it leaps")
             s.expect(farthest > 101, true, "past it, on its spring")
             s.expect(abs(moved() - 100) < 0.5, true, "and onto it")
+        }
+    }
+
+    /// A view dropped from a layout already standing goes by the exit it declares: the application's no more at
+    /// once, the view under it given its place - and, where its holder keeps a view that left, standing in its
+    /// window still, deaf to a press, until the exit lands. Where nothing keeps it - a host whose layouts keep
+    /// none, a view an engine runs in - it is gone at once.
+    @MainActor
+    static func left(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aViewLeavingGoesByItsEffect", proves: [
+            Covered(ViewContract.transition, on: element),
+        ], needs: [
+            Covered(ViewContract.layoutFrameChanged, on: element), Covered(ViewContract.layoutFrameChanged, on: "Rectangle"),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let shown = State(wrappedValue: true)
+            let placed = Received<[Double]>()
+            let under = Received<[Double]>()
+            s.start(clock: clock) {
+                VStack {
+                    Button("Drop").onClicked { shown.wrappedValue = false }.id("drop")
+                    if shown.wrappedValue {
+                        reporting(element, placed, [
+                            Write(VisualElementContract.width, 120), Write(VisualElementContract.height, 40),
+                            Write(ViewContract.transition, Transition(enter: .identity, exit: .opacity)),
+                        ])
+                        .motion(.eased(.milliseconds(600), curve: .linear))
+                    }
+                    reporting("Rectangle", under, [
+                        Write(VisualElementContract.width, 120), Write(VisualElementContract.height, 40),
+                    ], id: "under")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.frames(of: clock, until: 200)
+            s.settle { placed.values.last.map(FrameReport.size) == [120, 40] && under.values.last != nil }
+            let leaving = try s.element("specimen")
+            let holder = leaving.parent
+            let home = placed.values.last.map(FrameReport.place) ?? []
+            let stood = try s.place(of: leaving)
+
+            // The clock stands: the view is dropped, and no exit can have moved.
+            try s.perform(.activate, on: s.element("drop"))
+            s.settle { under.values.last.map(FrameReport.place) == home }
+            s.expect(under.values.last.map(FrameReport.place), home, "the view under it is given its place at once")
+            s.expect(leaving.lifecycle == .active, false, "and it is the application's no more")
+
+            guard holder?.native.keepsExits == true, !NodeType.engineTypes.contains(leaving.type) else {
+                s.expect(leaving.lifecycle == .released, true, "gone at once, where nothing keeps it")
+                return
+            }
+            s.expect(try s.place(of: leaving), stood, "standing in its window still, where it stood")
+            s.expect(try s.reaches(leaving, at: Point(x: 60, y: 20)), false, "deaf to a press")
+
+            s.frames(of: clock, until: 1_400)
+            s.settle { leaving.lifecycle == .released }
+            s.expect(leaving.lifecycle == .released, true, "released as its exit lands")
+            s.expect(holder?.presentedChildren.contains { $0 === leaving }, false, "and its holder holds it no more")
         }
     }
 
